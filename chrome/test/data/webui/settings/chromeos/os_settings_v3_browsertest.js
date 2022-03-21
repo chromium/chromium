@@ -296,6 +296,11 @@ var OSSettingsAppManagementAppDetailsV3Test =
   }
 };
 
+function crostiniTestGenPreamble() {
+  GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
+  GEN('fake_crostini_features.SetAll(true);');
+}
+
 TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
   mocha.run();
 });
@@ -308,12 +313,28 @@ var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
 
   /** @override */
   testGenPreamble() {
-    GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
-    GEN('fake_crostini_features.SetAll(true);');
+    return crostiniTestGenPreamble();
   }
 };
 
 TEST_F('OSSettingsCrostiniPageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+var OSSettingsCrostiniExtraContainerPageV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.m.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 

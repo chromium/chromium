@@ -295,6 +295,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cellular_roaming_toggle_button_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cellular_setup_dialog_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/crostini_page_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/crostini_extra_containers_subpage_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cups_printer_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cups_printer_test_utils.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cups_printer_landing_page_tests.m.js",

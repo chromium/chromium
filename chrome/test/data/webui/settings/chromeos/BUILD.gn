@@ -64,6 +64,7 @@ js_modulizer("modulize") {
     "cellular_setup_dialog_test.js",
     "change_dictation_locale_dialog_test.js",
     "crostini_page_test.js",
+    "crostini_extra_containers_subpage_test.js",
     "cups_printer_entry_tests.js",
     "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
