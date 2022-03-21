@@ -1062,6 +1062,19 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
 
   if (apps_.empty())
     MaybeTerminate();
+
+  // Check the integrity of AppState::profiles across all apps. Include the app
+  // ID in the dump, to help pin down the cause.
+  //
+  // TODO(crbug.com/1302722): Remove this once we're confident this never
+  // happens.
+  std::string inconsistent_app_ids;
+  for (const auto& [app_id, app_state] : apps_) {
+    if (app_state->ShouldDeleteAppState())
+      inconsistent_app_ids += app_id + " ";
+  }
+  if (!inconsistent_app_ids.empty())
+    DumpError(inconsistent_app_ids);
 }
 
 void AppShimManager::OnAppStop(content::BrowserContext* context,
@@ -1081,26 +1094,26 @@ void AppShimManager::OnBrowserAdded(Browser* browser) {
 }
 
 void AppShimManager::OnBrowserRemoved(Browser* browser) {
-  const std::string app_id =
-      web_app::GetAppIdFromApplicationName(browser->app_name());
-  auto found_app = apps_.find(app_id);
-  if (found_app == apps_.end())
-    return;
-  AppState* app_state = found_app->second.get();
+  // We can't call OnAppDeactivated() while iterating on |apps_|. It would
+  // invalidate the iterator.
+  std::vector<std::string> apps_to_deactivate;
 
-  for (auto iter_profile = app_state->profiles.begin();
-       iter_profile != app_state->profiles.end(); ++iter_profile) {
-    ProfileState* profile_state = iter_profile->second.get();
-    auto found = profile_state->browsers.find(browser);
-    if (found != profile_state->browsers.end()) {
-      // If we have no browser windows open after erasing this window, then
-      // close the ProfileState (and potentially the shim as well).
-      profile_state->browsers.erase(found);
-      if (profile_state->browsers.empty())
-        OnAppDeactivated(browser->profile(), app_id);
-      return;
+  for (const auto& [app_id, app_state] : apps_) {
+    for (const auto& [profile, profile_state] : app_state->profiles) {
+      auto found = profile_state->browsers.find(browser);
+      if (found != profile_state->browsers.end()) {
+        // If we have no browser windows open after erasing this window, then
+        // close the ProfileState (and potentially the shim as well).
+        profile_state->browsers.erase(found);
+        if (profile_state->browsers.empty())
+          apps_to_deactivate.push_back(app_id);
+        break;  // Break to outer loop.
+      }
     }
   }
+
+  for (const std::string& app_id : apps_to_deactivate)
+    OnAppDeactivated(browser->profile(), app_id);
 }
 
 void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
@@ -1116,6 +1129,29 @@ void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
   if (profile_state)
     UpdateApplicationDockMenu(browser->profile(), profile_state);
+}
+
+void AppShimManager::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.RemoveObservation(profile);
+
+  // Clean up dangling Profile pointers. This can happen in rare cases, if a
+  // Browser is never created for a particular Profile. In those cases,
+  // OnBrowserRemoved() never runs, and it doesn't clean up AppState::profiles.
+  //
+  // Use the same pattern as in OnBrowserRemoved() to avoid invalidating the
+  // iterator.
+  std::vector<std::string> apps_to_deactivate;
+
+  for (const auto& [app_id, app_state] : apps_) {
+    auto found = app_state->profiles.find(profile);
+    if (found != app_state->profiles.end()) {
+      CHECK(found->second->browsers.empty());
+      apps_to_deactivate.push_back(app_id);
+    }
+  }
+
+  for (const std::string& app_id : apps_to_deactivate)
+    OnAppDeactivated(profile, app_id);
 }
 
 void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
@@ -1249,6 +1285,12 @@ AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
             .insert(std::make_pair(profile, std::move(new_profile_state)))
             .first;
   }
+
+  // Listen for OnProfileWillBeDestroyed(), but not more than once per Profile.
+  // O(n), where n is the number of loaded Profiles (AKA a very small number).
+  if (!profile_observation_.IsObservingSource(profile))
+    profile_observation_.AddObservation(profile);
+
   return found_profile->second.get();
 }
 
