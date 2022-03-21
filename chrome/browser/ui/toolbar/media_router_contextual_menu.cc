@@ -67,7 +67,7 @@ MediaRouterContextualMenu::CreateMenuModel() {
     menu_model->SetIcon(
         menu_model->GetIndexOfCommandId(IDC_MEDIA_ROUTER_SHOWN_BY_POLICY),
         ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                       gfx::kChromeIconGrey, 16));
+                                       ui::kColorIcon, 16));
   } else {
     menu_model->AddCheckItemWithStringId(
         IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION,

@@ -53,18 +53,19 @@ namespace media_router {
 
 namespace {
 
-gfx::ImageSkia CreateSinkIcon(SinkIconType icon_type, bool enabled = true) {
-  SkColor icon_color = enabled ? gfx::kChromeIconGrey : gfx::kGoogleGrey500;
-  return gfx::CreateVectorIcon(*CastDialogSinkButton::GetVectorIcon(icon_type),
-                               kPrimaryIconSize, icon_color);
+ui::ImageModel CreateSinkIcon(SinkIconType icon_type, bool enabled = true) {
+  ui::ColorId icon_color = enabled ? ui::kColorIcon : ui::kColorIconDisabled;
+  return ui::ImageModel::FromVectorIcon(
+      *CastDialogSinkButton::GetVectorIcon(icon_type), icon_color,
+      kPrimaryIconSize);
 }
 
-gfx::ImageSkia CreateDisabledSinkIcon(SinkIconType icon_type) {
+ui::ImageModel CreateDisabledSinkIcon(SinkIconType icon_type) {
   return CreateSinkIcon(icon_type, false);
 }
 
 std::unique_ptr<views::ImageView> CreatePrimaryIconView(
-    const gfx::ImageSkia& image) {
+    const ui::ImageModel& image) {
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(image);
   icon_view->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
@@ -74,8 +75,8 @@ std::unique_ptr<views::ImageView> CreatePrimaryIconView(
 std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
   // The stop button has the highest priority, and the issue icon comes second.
   if (sink.state == UIMediaSinkState::CONNECTED) {
-    return CreatePrimaryIconView(gfx::CreateVectorIcon(
-        kGenericStopIcon, kPrimaryIconSize, gfx::kGoogleBlue500));
+    return CreatePrimaryIconView(ui::ImageModel::FromVectorIcon(
+        kGenericStopIcon, ui::kColorAccent, kPrimaryIconSize));
   } else if (sink.issue) {
     auto icon = std::make_unique<views::ImageView>(
         ui::ImageModel::FromVectorIcon(::vector_icons::kInfoOutlineIcon,

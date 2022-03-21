@@ -173,7 +173,7 @@ ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
 
   if (chooser_controller_->IsConnected(row)) {
     return ui::ImageModel::FromVectorIcon(vector_icons::kBluetoothConnectedIcon,
-                                          gfx::kChromeIconGrey,
+                                          ui::kColorIcon,
                                           TableModel::kIconSize);
   }
 

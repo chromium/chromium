@@ -476,7 +476,7 @@ SkColor ThemeHelper::GetDefaultColor(
     case TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
     case TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:
       return color_utils::HSLShift(
-          gfx::kChromeIconGrey,
+          gfx::kGoogleGrey700,
           GetTint(TP::TINT_BUTTONS, incognito, theme_supplier));
     case TP::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE:
       // The active color is overridden in GtkUi.

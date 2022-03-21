@@ -506,7 +506,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // Crashed tab image.
   auto* image = container->AddChildView(std::make_unique<views::ImageView>());
   image->SetImage(
-      gfx::CreateVectorIcon(kCrashedTabIcon, 48, gfx::kChromeIconGrey));
+      ui::ImageModel::FromVectorIcon(kCrashedTabIcon, ui::kColorIcon, 48));
   const int unrelated_vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
   image->SetProperty(views::kMarginsKey,

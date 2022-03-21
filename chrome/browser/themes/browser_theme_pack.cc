@@ -1583,7 +1583,7 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
     // TODO(pkasting): Should this code be shared with
     // ThemeHelper::GetDefaultColor() somehow?
     const SkColor button_color =
-        color_utils::HSLShift(gfx::kChromeIconGrey, button_tint);
+        color_utils::HSLShift(gfx::kGoogleGrey700, button_tint);
     SetColor(TP::COLOR_TAB_THROBBER_SPINNING, button_color);
     SetColor(TP::COLOR_TAB_THROBBER_WAITING, button_color);
   }

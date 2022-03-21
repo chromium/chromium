@@ -103,7 +103,7 @@ MediaControlsHeaderView::~MediaControlsHeaderView() {
   close_button_->RemoveObserver(this);
 }
 
-void MediaControlsHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
+void MediaControlsHeaderView::SetAppIcon(const ui::ImageModel& img) {
   app_icon_view_->SetImage(img);
 }
 

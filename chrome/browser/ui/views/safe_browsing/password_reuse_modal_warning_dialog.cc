@@ -249,7 +249,7 @@ ui::ImageModel PasswordReuseModalWarningDialog::GetWindowIcon() {
                  ReusedPasswordAccountType::SAVED_PASSWORD
              ? ui::ImageModel()
              : ui::ImageModel::FromVectorIcon(
-                   kSecurityIcon, gfx::kChromeIconGrey,
+                   kSecurityIcon, ui::kColorIcon,
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
                        DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

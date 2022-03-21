@@ -83,9 +83,8 @@ ToolbarActionsBarBubbleViews::CreateExtraInfoView() {
   std::unique_ptr<views::ImageView> icon;
   if (extra_view_info->resource) {
     icon = std::make_unique<views::ImageView>();
-    icon->SetImage(gfx::CreateVectorIcon(*extra_view_info->resource,
-                                         kBubbleExtraIconSize,
-                                         gfx::kChromeIconGrey));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        *extra_view_info->resource, ui::kColorIcon, kBubbleExtraIconSize));
   }
 
   std::unique_ptr<views::View> extra_view;

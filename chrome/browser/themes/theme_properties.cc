@@ -276,7 +276,7 @@ color_utils::HSL ThemeProperties::GetDefaultTint(int id,
   // TINT_BUTTONS is used by ThemeService::GetDefaultColor() for both incognito
   // and dark mode, and so must be applied to both.
   if ((id == TINT_BUTTONS) && (incognito || dark_mode))
-    return {-1, 0.57, 0.9605};  // kChromeIconGrey -> kGoogleGrey100
+    return {-1, 0.57, 0.9605};  // kGoogleGrey700 -> kGoogleGrey100
 
   if ((id == TINT_FRAME) && incognito)
     return {-1, 0.7, 0.075};  // #DEE1E6 -> kGoogleGrey900

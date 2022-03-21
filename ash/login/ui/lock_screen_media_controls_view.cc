@@ -644,12 +644,12 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
       break;
     }
     case media_session::mojom::MediaSessionImageType::kSourceIcon: {
-      gfx::ImageSkia session_icon =
-          gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
-      if (session_icon.isNull()) {
-        session_icon =
-            gfx::CreateVectorIcon(message_center::kProductIcon,
-                                  kDesiredSourceIconSize, gfx::kChromeIconGrey);
+      auto session_icon = ui::ImageModel::FromImageSkia(
+          gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap));
+      if (session_icon.IsEmpty()) {
+        session_icon = ui::ImageModel::FromVectorIcon(
+            message_center::kProductIcon, ui::kColorIcon,
+            kDesiredSourceIconSize);
       }
       header_row_->SetAppIcon(session_icon);
     }

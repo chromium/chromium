@@ -10,6 +10,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace ui {
+class ImageModel;
+}
+
 namespace views {
 class ImageView;
 class Label;
@@ -29,7 +33,7 @@ class ASH_EXPORT MediaControlsHeaderView : public views::View,
 
   ~MediaControlsHeaderView() override;
 
-  void SetAppIcon(const gfx::ImageSkia& img);
+  void SetAppIcon(const ui::ImageModel& img);
   void SetAppName(const std::u16string& name);
 
   void SetForceShowCloseButton(bool force_visible);

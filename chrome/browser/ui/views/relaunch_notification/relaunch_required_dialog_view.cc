@@ -90,7 +90,7 @@ std::u16string RelaunchRequiredDialogView::GetWindowTitle() const {
 
 ui::ImageModel RelaunchRequiredDialogView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, gfx::kChromeIconGrey,
+      vector_icons::kBusinessIcon, ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

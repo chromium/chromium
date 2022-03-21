@@ -22,21 +22,12 @@ namespace media_router {
 
 namespace {
 
-std::unique_ptr<views::ImageView> CreatePrimaryIconView(
-    const gfx::ImageSkia& image) {
+std::unique_ptr<views::ImageView> CreatePrimaryIconView() {
   auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetImage(image);
+  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kQrCodeIcon, ui::kColorIcon, kPrimaryIconSize));
   icon_view->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon_view;
-}
-
-std::unique_ptr<views::View> CreatePrimaryIcon() {
-  const gfx::VectorIcon& icon = vector_icons::kQrCodeIcon;
-
-  auto image =
-      gfx::CreateVectorIcon(icon, kPrimaryIconSize, gfx::kChromeIconGrey);
-
-  return CreatePrimaryIconView(image);
 }
 
 // TODO(b/202529859): Change text to match final UX design
@@ -49,7 +40,7 @@ std::u16string CreateText() {
 CastDialogAccessCodeCastButton::CastDialogAccessCodeCastButton(
     PressedCallback callback)
     : HoverButton(std::move(callback),
-                  CreatePrimaryIcon(),
+                  CreatePrimaryIconView(),
                   CreateText(),
                   /** button subtitle */ std::u16string(),
                   /** secondary_icon_view */ nullptr) {}

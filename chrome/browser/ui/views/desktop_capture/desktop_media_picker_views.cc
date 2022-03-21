@@ -214,8 +214,8 @@ bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
 // the picker choices may have been restricted.
 std::unique_ptr<views::View> CreatePolicyRestrictedView() {
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
-      vector_icons::kBusinessIcon, 18, gfx::kChromeIconGrey)));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                                ui::kColorIcon, 18));
 
   auto policy_label = std::make_unique<views::Label>();
   policy_label->SetMultiLine(true);

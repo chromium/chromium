@@ -62,12 +62,11 @@ NotificationSwipeControlView::NotificationSwipeControlView(
     settings_button = std::make_unique<views::ImageButton>(
         base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
                             base::Unretained(this), ButtonId::kSettings));
-    settings_button->SetImage(
+    settings_button->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            message_center::kNotificationSettingsButtonIcon,
-            message_center_style::kSwipeControlButtonImageSize,
-            gfx::kChromeIconGrey));
+        ui::ImageModel::FromVectorIcon(
+            message_center::kNotificationSettingsButtonIcon, ui::kColorIcon,
+            message_center_style::kSwipeControlButtonImageSize));
     settings_button->SetPreferredSize(
         gfx::Size(message_center_style::kSwipeControlButtonSize,
                   message_center_style::kSwipeControlButtonSize));
@@ -211,12 +210,11 @@ void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
     snooze_button_ = new views::ImageButton(
         base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
                             base::Unretained(this), ButtonId::kSnooze));
-    snooze_button_->SetImage(
+    snooze_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            message_center::kNotificationSnoozeButtonIcon,
-            message_center_style::kSwipeControlButtonImageSize,
-            gfx::kChromeIconGrey));
+        ui::ImageModel::FromVectorIcon(
+            message_center::kNotificationSnoozeButtonIcon, ui::kColorIcon,
+            message_center_style::kSwipeControlButtonImageSize));
     snooze_button_->SetImageHorizontalAlignment(
         views::ImageButton::ALIGN_CENTER);
     snooze_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);

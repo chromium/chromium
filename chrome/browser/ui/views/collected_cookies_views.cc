@@ -241,8 +241,8 @@ class InfobarView : public views::View {
   METADATA_HEADER(InfobarView);
   InfobarView() {
     info_image_ = AddChildView(std::make_unique<views::ImageView>());
-    info_image_->SetImage(gfx::CreateVectorIcon(vector_icons::kInfoOutlineIcon,
-                                                16, gfx::kChromeIconGrey));
+    info_image_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kInfoOutlineIcon, ui::kColorIcon, 16));
     label_ = AddChildView(std::make_unique<views::Label>());
 
     const int vertical_distance =

@@ -421,7 +421,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
       // TODO (kylixrd): Investigate the usage of the hard-coded color.
       SetIcon(uninstall_index,
               ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                             gfx::kChromeIconGrey, 16));
+                                             ui::kColorIcon, 16));
     }
   }
 
@@ -435,7 +435,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
       int toggle_visibility_index = GetIndexOfCommandId(TOGGLE_VISIBILITY);
       SetIcon(toggle_visibility_index,
               ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                             gfx::kChromeIconGrey, 16));
+                                             ui::kColorIcon, 16));
     }
   }
 
