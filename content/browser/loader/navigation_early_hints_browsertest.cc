@@ -759,6 +759,15 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
                   ->WasResourceHintsReceived());
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, InvalidHeader_NewLine) {
+  const std::string kPath = "/header-contains-newline.html";
+  ResponseEntry entry(kPath, net::HTTP_OK);
+  entry.AddEarlyHints({HeaderField("invalid-header", "foo\r\nbar")});
+  RegisterResponse(entry);
+  EXPECT_FALSE(
+      NavigateToURL(shell(), net::QuicSimpleTestServer::GetFileURL(kPath)));
+}
+
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {
  public:
   NavigationEarlyHintsAddressSpaceTest() = default;
