@@ -7990,21 +7990,6 @@
             ]
         }
     ],
-    "WebViewLogFirstPartyPageTimeSpent": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewLogFirstPartyPageTimeSpent"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewMeasureScreenCoverage": [
         {
             "platforms": [

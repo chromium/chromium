@@ -3799,6 +3799,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.PageTimeSpent2.{Scheme}{Party}" units="ms"
     expires_after="2022-07-01">
+  <obsolete>
+    Deprecated in March 2022.
+  </obsolete>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

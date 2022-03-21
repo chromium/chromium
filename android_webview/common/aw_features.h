@@ -28,7 +28,6 @@ extern const base::Feature kWebViewExtraHeadersSameOriginOnly;
 extern const base::Feature kWebViewForceDarkModeMatchTheme;
 extern const base::Feature kWebViewJavaJsBridgeMojo;
 extern const base::Feature kWebViewLegacyTlsSupport;
-extern const base::Feature kWebViewLogFirstPartyPageTimeSpent;
 extern const base::Feature kWebViewMeasureScreenCoverage;
 extern const base::Feature kWebViewMixedContentAutoupgrades;
 extern const base::Feature kWebViewOriginTrials;

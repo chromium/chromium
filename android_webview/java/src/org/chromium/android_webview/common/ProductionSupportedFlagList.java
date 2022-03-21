@@ -222,9 +222,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
                     "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                             + " directly."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_LOG_FIRST_PARTY_PAGE_TIME_SPENT,
-                    "Enables logging whether it was a first party page when logging"
-                            + " PageTimeSpent."),
             Flag.baseFeature(BlinkFeatures.FORCE_MAJOR_VERSION_IN_MINOR_POSITION_IN_USER_AGENT,
                     "Force the Chrome major version number to 99 and put the major version"
                             + " number in the minor version position in the User-Agent string."),
