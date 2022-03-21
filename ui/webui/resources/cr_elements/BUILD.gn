@@ -177,7 +177,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr_scrollable_behavior.m.js",
     "cr_search_field/cr_search_field.js",
     "cr_slider/cr_slider.js",
-    "cr_tabs/cr_tabs.js",
     "cr_toast/cr_toast_manager.js",
     "cr_toast/cr_toast.js",
     "cr_toggle/cr_toggle.m.js",
@@ -219,6 +218,7 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
+    "cr_tabs/cr_tabs.ts",
     "cr_nav_menu_item_style.ts",
     "mwb_element_shared_style.ts",
     "mwb_shared_icons.ts",
@@ -266,7 +266,6 @@ group("closure_compile") {
     "cr_radio_group:closure_compile_module",
     "cr_search_field:closure_compile_module",
     "cr_slider:closure_compile_module",
-    "cr_tabs:closure_compile_module",
     "cr_toast:closure_compile_module",
     "cr_toggle:closure_compile_module",
     "cr_toolbar:closure_compile_module",

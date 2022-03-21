@@ -22,9 +22,8 @@
 import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 export class CrTabsElement extends PolymerElement {
   static get is() {
     return 'cr-tabs';
@@ -36,19 +35,13 @@ export class CrTabsElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * Optional icon urls displayed in each tab.
-       * @type {!Array<string>}
-       */
+      // Optional icon urls displayed in each tab.
       tabIcons: {
         type: Array,
         value: () => [],
       },
 
-      /**
-       * Tab names displayed in each tab.
-       * @type {!Array<string>}
-       */
+      // Tab names displayed in each tab.
       tabNames: {
         type: Array,
         value: () => [],
@@ -63,86 +56,55 @@ export class CrTabsElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  tabIcons: string[];
+  tabNames: string[];
+  selected: number;
 
-    /** @private {boolean} */
-    this.isRtl_ = false;
+  private isRtl_: boolean = false;
+  private lastSelected_: number|null = null;
 
-    /** @private {?number} */
-    this.lastSelected_ = null;
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.isRtl_ = this.matches(':host-context([dir=rtl]) cr-tabs');
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'tablist');
-    this.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('mousedown', this.onMouseDown_);
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getAriaSelected_(index) {
+  private getAriaSelected_(index: number): string {
     return index === this.selected ? 'true' : 'false';
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getIconStyle_(index) {
+  private getIconStyle_(index: number): string {
     const icon = this.tabIcons[index];
     return icon ? `-webkit-mask-image: url(${icon}); display: block;` : '';
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getTabindex_(index) {
+  private getTabindex_(index: number): string {
     return index === this.selected ? '0' : '-1';
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getSelectedClass_(index) {
+  private getSelectedClass_(index: number): string {
     return index === this.selected ? 'selected' : '';
   }
 
-  /**
-   * @param {number} newSelected
-   * @param {number} oldSelected
-   * @private
-   */
-  onSelectedChanged_(newSelected, oldSelected) {
-    const tabs = this.shadowRoot.querySelectorAll('.tab');
+  private onSelectedChanged_(newSelected: number, oldSelected: number) {
+    const tabs = this.shadowRoot!.querySelectorAll('.tab');
     if (tabs.length === 0 || oldSelected === undefined) {
       // Tabs are not rendered yet.
       return;
     }
 
-    const oldTabRect = tabs[oldSelected].getBoundingClientRect();
-    const newTabRect = tabs[newSelected].getBoundingClientRect();
+    const oldTabRect = tabs[oldSelected]!.getBoundingClientRect();
+    const newTabRect = tabs[newSelected]!.getBoundingClientRect();
 
-    const newIndicator = /** @type {!HTMLElement} */ (
-        tabs[newSelected].querySelector('.tab-indicator'));
+    const newIndicator =
+        tabs[newSelected]!.querySelector<HTMLElement>('.tab-indicator')!;
     newIndicator.classList.remove('expand', 'contract');
 
     // Make new indicator look like it is the old indicator.
@@ -162,16 +124,11 @@ export class CrTabsElement extends PolymerElement {
     this.updateIndicator_(newIndicator, newTabRect, leftmostEdge, fullWidth);
   }
 
-  /** @private */
-  onMouseDown_() {
+  private onMouseDown_() {
     this.classList.remove('keyboard-focus');
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     this.classList.add('keyboard-focus');
     const count = this.tabNames.length;
     let newSelection;
@@ -189,39 +146,32 @@ export class CrTabsElement extends PolymerElement {
     e.preventDefault();
     e.stopPropagation();
     this.selected = newSelection;
-    this.shadowRoot.querySelector('.tab.selected').focus();
+    this.shadowRoot!.querySelector<HTMLElement>('.tab.selected')!.focus();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onIndicatorTransitionEnd_(event) {
-    const indicator = event.target;
+  private onIndicatorTransitionEnd_(event: Event) {
+    const indicator = event.target as HTMLElement;
     indicator.classList.replace('expand', 'contract');
     indicator.style.transform = `translateX(0) scaleX(1)`;
   }
 
-  /**
-   * @param {!{model: !{index: number}}} _
-   * @private
-   */
-  onTabClick_({model: {index}}) {
-    this.selected = index;
+  private onTabClick_(e: DomRepeatEvent<string>) {
+    this.selected = e.model.index;
   }
 
-  /**
-   * @param {!HTMLElement} indicator
-   * @param {!ClientRect} originRect
-   * @param {number} newLeft
-   * @param {number} newWidth
-   * @private
-   */
-  updateIndicator_(indicator, originRect, newLeft, newWidth) {
+  private updateIndicator_(
+      indicator: HTMLElement, originRect: ClientRect, newLeft: number,
+      newWidth: number) {
     const leftDiff = 100 * (newLeft - originRect.left) / originRect.width;
     const widthRatio = newWidth / originRect.width;
     const transform = `translateX(${leftDiff}%) scaleX(${widthRatio})`;
     indicator.style.transform = transform;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-tabs': CrTabsElement;
   }
 }
 
