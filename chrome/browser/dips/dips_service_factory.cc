@@ -7,9 +7,8 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-
-namespace dips {
 
 // static
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
@@ -34,4 +33,7 @@ KeyedService* DIPSServiceFactory::BuildServiceInstanceFor(
   return new DIPSService(context);
 }
 
-}  // namespace dips
+content::BrowserContext* DIPSServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}

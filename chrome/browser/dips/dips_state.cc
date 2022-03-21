@@ -6,8 +6,6 @@
 
 #include "chrome/browser/dips/dips_storage.h"
 
-namespace dips {
-
 class DIPSStorage;
 
 DIPSState::DIPSState(DIPSStorage* storage, std::string site, bool was_loaded)
@@ -38,5 +36,3 @@ void DIPSState::set_user_interaction_time(absl::optional<base::Time> time) {
   user_interaction_time_ = time;
   dirty_ = true;
 }
-
-}  // namespace dips

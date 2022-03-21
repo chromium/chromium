@@ -8,8 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace dips {
-
 TEST(DirtyBit, Constructor) {
   ASSERT_FALSE(DirtyBit());
   ASSERT_TRUE(DirtyBit(true));
@@ -111,5 +109,3 @@ TEST(DIPSStateTest, DifferentSiteDifferentState) {
   EXPECT_EQ(storage.Read(url1).site_storage_time(), time1);
   EXPECT_EQ(storage.Read(url2).site_storage_time(), time2);
 }
-
-}  // namespace dips

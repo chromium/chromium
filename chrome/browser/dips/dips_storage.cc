@@ -7,8 +7,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-namespace dips {
-
 DIPSStorage::DIPSStorage() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -43,5 +41,3 @@ std::string DIPSStorage::GetSite(const GURL& url) {
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? url.host() : domain;
 }
-
-}  // namespace dips

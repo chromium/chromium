@@ -4,12 +4,15 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
-
-namespace dips {
+#include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 
 DIPSService::DIPSService(content::BrowserContext* context)
-    : browser_context_(context) {}
+    : browser_context_(context),
+      cookie_settings_(CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(context))) {}
 
 DIPSService::~DIPSService() = default;
 
@@ -18,4 +21,10 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
   return DIPSServiceFactory::GetForBrowserContext(context);
 }
 
-}  // namespace dips
+void DIPSService::Shutdown() {
+  cookie_settings_.reset();
+}
+
+bool DIPSService::ShouldBlockThirdPartyCookies() const {
+  return cookie_settings_->ShouldBlockThirdPartyCookies();
+}

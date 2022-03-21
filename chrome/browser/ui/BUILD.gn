@@ -391,7 +391,6 @@ static_library("ui") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce/shopping_list",
     "//chrome/browser/devtools",
-    "//chrome/browser/dips",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media:mojo_bindings",
     "//chrome/browser/media/router:media_router_feature",

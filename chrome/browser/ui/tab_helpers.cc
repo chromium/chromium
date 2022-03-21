@@ -299,8 +299,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DataReductionProxyTabHelper::CreateForWebContents(web_contents);
-  if (dips::DIPSService* dips_service = dips::DIPSService::Get(profile)) {
-    dips::DIPSTabHelper::CreateForWebContents(web_contents, dips_service);
+  if (DIPSService* dips_service = DIPSService::Get(profile)) {
+    DIPSTabHelper::CreateForWebContents(web_contents, dips_service);
   }
   ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
