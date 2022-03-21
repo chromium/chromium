@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -464,6 +465,12 @@ void ImageRecordsManager::ReportLargestIgnoredImage(
     largest_ignored_image_.reset();
     return;
   }
+
+  // Trigger FCP if it's not already set.
+  Document* document = frame_view_->GetFrame().GetDocument();
+  DCHECK(document);
+  PaintTiming::From(*document).MarkFirstContentfulPaint();
+
   RecordId record_id = std::make_pair(node->GetLayoutObject(),
                                       largest_ignored_image_->cached_image);
   recorded_images_.insert(record_id);
