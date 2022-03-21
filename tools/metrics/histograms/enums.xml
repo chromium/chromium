@@ -86572,6 +86572,7 @@ would be helpful to identify which type is being sent.
   <int value="37" label="Manage Chrome themes"/>
   <int value="38" label="Customize search engines"/>
   <int value="39" label="Manage ChromeOS accessibility"/>
+  <int value="40" label="Set Chrome as default browser"/>
 </enum>
 
 <enum name="SuggestionsResponseState">
