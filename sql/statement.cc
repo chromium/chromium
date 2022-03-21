@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "sql/sqlite_result_code.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -587,9 +588,11 @@ int Statement::CheckSqliteResultCode(int sqlite_result_code) {
       (sqlite_result_code == SQLITE_OK || sqlite_result_code == SQLITE_ROW ||
        sqlite_result_code == SQLITE_DONE);
 
-  // Database::OnSqliteError() DCHECKs for
-  if (!succeeded_ && ref_.get() && ref_->database())
-    ref_->database()->OnSqliteError(sqlite_result_code, this, nullptr);
+  if (!succeeded_ && ref_.get() && ref_->database()) {
+    SqliteErrorCode sqlite_error_code =
+        ToSqliteErrorCode(ToSqliteResultCode(sqlite_result_code));
+    ref_->database()->OnSqliteError(sqlite_error_code, this, nullptr);
+  }
   return sqlite_result_code;
 }
 

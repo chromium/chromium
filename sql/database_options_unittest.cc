@@ -5,7 +5,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "sql/error_metrics.h"
+#include "sql/sqlite_result_code.h"
 
 #include "sql/database.h"
 #include "sql/statement.h"

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -27,9 +28,13 @@
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
+#include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// Forward declaration for SQLite structures. Headers in the public sql:: API
+// must NOT include sqlite3.h.
 struct sqlite3;
 struct sqlite3_file;
 struct sqlite3_stmt;
@@ -787,18 +792,18 @@ class COMPONENT_EXPORT(SQL) Database {
   // statically-allocated (valid for the entire duration of the process) buffer
   // pointing to either a SQL statement or a SQL comment (starting with "-- ")
   // pointing to a "sqlite3_" function name.
-  void OnSqliteError(int sqlite_error_code,
+  void OnSqliteError(SqliteErrorCode sqlite_error_code,
                      Statement* statement,
                      const char* sql_statement);
 
   // Like Execute(), but returns a SQLite result code.
   //
-  // This method returns SQLITE_OK or a SQLite error code. In other words, it
-  // never returns SQLITE_DONE or SQLITE_ROW.
+  // This method returns SqliteResultCode::kOk or a SQLite error code. In other
+  // words, it never returns SqliteResultCode::{kDone, kRow}.
   //
   // This method is only exposed to the Database implementation. Code that uses
   // sql::Database should not be concerned with SQLite result codes.
-  [[nodiscard]] int ExecuteAndReturnResultCode(const char* sql);
+  [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(const char* sql);
 
   // Like |Execute()|, but retries if the database is locked.
   [[nodiscard]] bool ExecuteWithTimeout(const char* sql,
