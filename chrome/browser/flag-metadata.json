@@ -2053,8 +2053,8 @@
   },
   {
     "name": "enable-experimental-kernel-vm-support",
-    "owners": [ "zwisler" ],
-    "expiry_milestone": 98
+    "owners": [ "davidmunro@google.com", "zwisler", "clumptini@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-experimental-web-platform-features",
