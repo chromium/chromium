@@ -22,6 +22,10 @@ buildflag_header("buildflags") {
   _enable_dangling_raw_ptr_checks =
       enable_dangling_raw_ptr_checks && _use_backup_ref_ptr
 
+  # MTECheckedPtr is exclusive against BRP (asserted at declaration).
+  # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
+  _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
+
   _record_alloc_info = false
 
   flags = [
@@ -34,6 +38,9 @@ buildflag_header("buildflags") {
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+
+    # Not to be used directly - see `partition_alloc_config.h`.
+    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 
     "USE_FAKE_BINARY_EXPERIMENT=$use_fake_binary_experiment",
 

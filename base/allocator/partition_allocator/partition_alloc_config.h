@@ -216,4 +216,14 @@ constexpr bool kUseLazyCommit = false;
 #define PA_PREFER_SMALLER_SLOT_SPANS
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Build MTECheckedPtr code.
+//
+// Only applicable to code with 64-bit pointers. Currently conflicts with true
+// hardware MTE.
+#if BUILDFLAG(USE_MTE_CHECKED_PTR) && defined(PA_HAS_64_BITS_POINTERS) && \
+    !defined(PA_HAS_MEMORY_TAGGING)
+#define PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS
+#endif  // BUILDFLAG(USE_MTE_CHECKED_PTR) && defined(PA_HAS_64_BITS_POINTERS) &&
+        // !defined(PA_HAS_MEMORY_TAGGING)
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
