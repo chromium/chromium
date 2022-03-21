@@ -5116,22 +5116,26 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
 
-  // Clicking anywhere outside the projector shelf pod should be targeted to the
-  // overlay widget window.
-  EventTargetCatcher event_target_catcher;
-  auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(gfx::Point(10, 10));
-  event_generator->ClickLeftButton();
-  EXPECT_EQ(overlay_window, event_target_catcher.last_event_target());
-
-  // Now move the mouse over the projector shelf pod, the overlay should not
-  // consume the event, and it should instead go through to that pod.
+  // Open the annotation tray bubble.
   auto* root_window = Shell::GetPrimaryRootWindow();
   auto* status_area_widget =
       RootWindowController::ForWindow(root_window)->GetStatusAreaWidget();
   ProjectorAnnotationTray* annotations_tray =
       status_area_widget->projector_annotation_tray();
+  annotations_tray->ShowBubble();
+  EXPECT_TRUE(annotations_tray->GetBubbleView());
 
+  // Clicking anywhere outside the projector shelf pod should be targeted to the
+  // overlay widget window and close the annotation tray bubble.
+  EventTargetCatcher event_target_catcher;
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(gfx::Point(10, 10));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(overlay_window, event_target_catcher.last_event_target());
+  EXPECT_FALSE(annotations_tray->GetBubbleView());
+
+  // Now move the mouse over the projector shelf pod, the overlay should not
+  // consume the event, and it should instead go through to that pod.
   EXPECT_TRUE(annotations_tray->visible_preferred());
   event_generator->MoveMouseTo(
       annotations_tray->GetBoundsInScreen().CenterPoint());

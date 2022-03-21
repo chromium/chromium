@@ -106,6 +106,13 @@ class OverlayTargeter : public aura::WindowTargeter {
                 screen_location)) {
           return nullptr;
         }
+
+        // Ensure that the annotator bubble is closed when a press event is
+        // triggered.
+        if (event->type() == ui::ET_MOUSE_PRESSED ||
+            event->type() == ui::ET_TOUCH_PRESSED) {
+          annotations->ClickedOutsideBubble();
+        }
       }
     }
 
