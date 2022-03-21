@@ -196,15 +196,6 @@ _DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX]
 # setting ssd:0 dimension
 _EXCLUDE_BUILDERLESS_SSD_OS_CATEGORIES = [os_category.MAC]
 
-def _chromium_tests_property(*, project_trigger_overrides):
-    chromium_tests = {}
-
-    project_trigger_overrides = defaults.get_value("project_trigger_overrides", project_trigger_overrides)
-    if project_trigger_overrides:
-        chromium_tests["project_trigger_overrides"] = project_trigger_overrides
-
-    return chromium_tests or None
-
 def _goma_property(*, goma_backend, goma_debug, goma_enable_ats, goma_jobs):
     goma_properties = {}
 
@@ -321,7 +312,6 @@ defaults = args.defaults(
     goma_jobs = None,
     list_view = args.COMPUTE,
     os = None,
-    project_trigger_overrides = None,
     pool = None,
     sheriff_rotations = None,
     xcode = None,
@@ -372,7 +362,6 @@ def builder(
         xcode = args.DEFAULT,
         console_view_entry = None,
         list_view = args.DEFAULT,
-        project_trigger_overrides = args.DEFAULT,
         configure_kitchen = args.DEFAULT,
         kitchen_emulate_gce = args.DEFAULT,
         goma_backend = args.DEFAULT,
@@ -485,11 +474,6 @@ def builder(
         list_view: A string or a list of strings identifying the ID(s) of the
             list view(s) to add an entry to. Supports a module-level default
             that defaults to no list views.
-        project_trigger_overrides: a dict mapping the LUCI projects declared in
-            recipe BotSpecs to the LUCI project to use when triggering builders.
-            When this builder triggers another builder, if the BotSpec for that
-            builder has a LUCI project that is a key in this mapping, the
-            corresponding value will be used instead.
         configure_kitchen: a boolean indicating whether to configure kitchen. If
             True, emits a property to set the 'git_auth' and 'devshell' fields
             of the '$kitchen' property. By default, considered False.
@@ -674,12 +658,6 @@ def builder(
         }
         if defaults.get_value("kitchen_emulate_gce", kitchen_emulate_gce):
             properties["$kitchen"]["emulate_gce"] = True
-
-    chromium_tests = _chromium_tests_property(
-        project_trigger_overrides = project_trigger_overrides,
-    )
-    if chromium_tests != None:
-        properties["$build/chromium_tests"] = chromium_tests
 
     goma_enable_ats = defaults.get_value("goma_enable_ats", goma_enable_ats)
 
