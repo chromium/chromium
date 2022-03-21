@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
@@ -16,6 +16,7 @@
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -47,41 +48,54 @@ proto::AttributionAggregatableSource ConvertToProto(
 
 }  // namespace
 
-// static
-void AttributionDataHostManagerImpl::RecordRegisteredDataPerDataHost(
-    const ReceiverData& receiver_data) {
-  int count = receiver_data.num_data_registered;
-  DCHECK_GE(count, 0);
+struct AttributionDataHostManagerImpl::FrozenContext {
+  // Top-level origin the data host was created in.
+  const url::Origin context_origin;
 
-  if (count == 0)
-    return;
+  // Source type of this context. Note that data hosts which result in
+  // triggers still have a source type of` kEvent` as they share the same web
+  // API surface.
+  const AttributionSourceType source_type;
 
-  if (receiver_data.source_declared_destination_origin.opaque()) {
-    base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
-                                  count, 101);
-  } else {
-    base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
-                                  count, 101);
+  // For receivers with `source_type` `AttributionSourceType::kNavigation`,
+  // the final committed origin of the navigation associated with the data
+  // host.
+  //
+  // For receivers with `source_type` `AttributionSourceType::kEvent`,
+  // initialized to `absl::nullopt`. If the first call is to
+  // `AttributionDataHostManagerImpl::SourceDataAvailable()`, set to the
+  // source's destination. If the first call is to
+  // `AttributionDataHostManagerImpl::TriggerDataAvailable()`, set to an opaque
+  // origin.
+  absl::optional<url::Origin> destination;
+
+  int num_data_registered = 0;
+
+  ~FrozenContext() {
+    DCHECK_GE(num_data_registered, 0);
+
+    if (num_data_registered == 0)
+      return;
+
+    DCHECK(destination.has_value());
+
+    if (destination->opaque()) {
+      base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
+                                    num_data_registered, 101);
+    } else {
+      base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
+                                    num_data_registered, 101);
+    }
   }
-}
+};
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(attribution_manager) {
   DCHECK(attribution_manager_);
-
-  // It's safe to use `base::Unretained()` as `receivers_` is owned by `this`
-  // and will be deleted before `this`.
-  receivers_.set_disconnect_handler(base::BindRepeating(
-      &AttributionDataHostManagerImpl::OnDataHostDisconnected,
-      base::Unretained(this)));
 }
 
-AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() {
-  for (const auto& [id, data] : receiver_data_) {
-    RecordRegisteredDataPerDataHost(data);
-  }
-}
+AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
@@ -129,50 +143,38 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
   // TODO(linnan): Log metrics for early returns.
-  if (data->destination.opaque())
-    return;
 
-  auto [it, inserted] = receiver_data_.emplace(
-      receivers_.current_receiver(),
-      ReceiverData{.source_declared_destination_origin = data->destination,
-                   .num_data_registered = 0});
-  if (!inserted &&
-      data->destination != it->second.source_declared_destination_origin)
+  // The API is only allowed in secure contexts.
+  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(data->destination)) {
     return;
+  }
 
-  const FrozenContext& context = receivers_.current_context();
+  FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
   switch (context.source_type) {
     case AttributionSourceType::kNavigation:
+      DCHECK(context.destination.has_value());
+
       // For navigation sources verify the destination matches the final
       // navigation origin.
       if (net::SchemefulSite(data->destination) !=
-          net::SchemefulSite(context.destination)) {
+          net::SchemefulSite(*context.destination)) {
         return;
       }
       break;
     case AttributionSourceType::kEvent:
-      // For event source verify that all sources are consistent.
-      auto result = receiver_data_.emplace(
-          receivers_.current_receiver(),
-          ReceiverData{.source_declared_destination_origin = data->destination,
-                       .num_data_registered = 0});
-      if (!result.second &&
-          data->destination !=
-              result.first->second.source_declared_destination_origin)
+      // For event sources verify that all sources are consistent.
+      if (!context.destination.has_value()) {
+        context.destination = data->destination;
+      } else if (data->destination != *context.destination) {
         return;
+      }
       break;
   }
 
   base::Time source_time = base::Time::Now();
-  const url::Origin& reporting_origin = data->reporting_origin;
-
-  // The API is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(data->destination)) {
-    return;
-  }
 
   absl::optional<AttributionFilterData> filter_data =
       AttributionFilterData::FromSourceFilterValues(
@@ -186,11 +188,12 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (!aggregatable_source.has_value())
     return;
 
-  it->second.num_data_registered++;
+  context.num_data_registered++;
 
   StorableSource storable_source(CommonSourceInfo(
-      data->source_event_id, context.context_origin, data->destination,
-      reporting_origin, source_time,
+      data->source_event_id, context.context_origin,
+      std::move(data->destination), std::move(data->reporting_origin),
+      source_time,
       CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
                                       context.source_type),
       context.source_type, data->priority, std::move(*filter_data),
@@ -205,14 +208,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
   // TODO(linnan): Log metrics for early returns.
 
-  auto [it, inserted] = receiver_data_.emplace(
-      receivers_.current_receiver(),
-      ReceiverData{.source_declared_destination_origin = url::Origin(),
-                   .num_data_registered = 0});
-  if (!it->second.source_declared_destination_origin.opaque())
+  // The API is only allowed in secure contexts.
+  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin))
     return;
 
-  const FrozenContext& context = receivers_.current_context();
+  FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
   // Only possible in the case of a bad renderer, navigation bound data hosts
@@ -220,11 +220,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   if (context.source_type == AttributionSourceType::kNavigation)
     return;
 
-  const url::Origin& reporting_origin = data->reporting_origin;
-
-  // The API is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(reporting_origin))
+  if (!context.destination.has_value()) {
+    context.destination = url::Origin();
+  } else if (!context.destination->opaque()) {
     return;
+  }
 
   absl::optional<AttributionFilterData> filters =
       AttributionFilterData::FromTriggerFilterValues(
@@ -265,25 +265,16 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   if (!aggregatable_trigger.has_value())
     return;
 
-  it->second.num_data_registered++;
+  context.num_data_registered++;
 
   AttributionTrigger trigger(
-      /*destination_origin=*/context.context_origin, reporting_origin,
-      std::move(*filters),
+      /*destination_origin=*/context.context_origin,
+      std::move(data->reporting_origin), std::move(*filters),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
       std::move(event_triggers), std::move(*aggregatable_trigger));
 
   attribution_manager_->HandleTrigger(std::move(trigger));
-}
-
-void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
-  auto iter = receiver_data_.find(receivers_.current_receiver());
-  if (iter == receiver_data_.end())
-    return;
-
-  RecordRegisteredDataPerDataHost(iter->second);
-  receiver_data_.erase(iter);
 }
 
 }  // namespace content

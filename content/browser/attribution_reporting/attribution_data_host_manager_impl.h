@@ -8,12 +8,10 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -59,28 +57,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
  private:
   // Represents frozen data from the browser process associated with each
   // receiver.
-  struct FrozenContext {
-    // Top-level origin the data host was created in.
-    url::Origin context_origin;
-
-    // Source type of this context. Note that data hosts which result in
-    // triggers still have a source type of` kEvent` as they share the same web
-    // API surface.
-    AttributionSourceType source_type;
-
-    // For receivers with `source_type` `AttributionSourceType::kNavigation`,
-    // the final committed origin of the navigation associated with the data
-    // host. Opaque origin otherwise.
-    url::Origin destination;
-  };
-
-  struct ReceiverData {
-    url::Origin source_declared_destination_origin;
-    int num_data_registered;
-  };
-
-  static void RecordRegisteredDataPerDataHost(
-      const ReceiverData& receiver_data);
+  struct FrozenContext;
 
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
@@ -88,21 +65,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void TriggerDataAvailable(
       blink::mojom::AttributionTriggerDataPtr data) override;
 
-  void OnDataHostDisconnected();
-
   // Owns `this`.
   raw_ptr<AttributionManager> attribution_manager_;
 
   mojo::ReceiverSet<blink::mojom::AttributionDataHost, FrozenContext>
       receivers_;
-
-  // If the receiver is processing sources, stores
-  // the attribution destination, which is required to be non-opaque and to
-  // match between calls to `SourceDataAvailable()` within a single
-  // `AttributionDataHost`.
-  //
-  // If the receiver is processing triggers, stores an opaque origin.
-  base::flat_map<mojo::ReceiverId, ReceiverData> receiver_data_;
 
   // Map which stores pending receivers for data hosts which are going to
   // register sources associated with a navigation. These are not added to
