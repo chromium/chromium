@@ -30,7 +30,7 @@ export type StreamItem = {
 export type StreamArgItem = {
   arg: string,
   index: number,
-}
+};
 
 /**
  * Placeholder for arg_url that can occur in |StreamItem.args|. Sometimes we

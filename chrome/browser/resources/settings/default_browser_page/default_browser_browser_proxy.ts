@@ -16,7 +16,7 @@ export type DefaultBrowserInfo = {
   isDefault: boolean,
   isDisabledByPolicy: boolean,
   isUnknownError: boolean,
-}
+};
 
 export interface DefaultBrowserBrowserProxy {
   /**

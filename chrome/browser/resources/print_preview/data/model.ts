@@ -123,7 +123,7 @@ type CloudJobTicketPrint = {
   duplex?: object,
   color?: {vendor_id?: string, type?: string},
   collate?: object,
-}
+};
 
 type CloudJobTicket = {
   version: string,

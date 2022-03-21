@@ -11,7 +11,7 @@
 type TestCase = {
   pref: chrome.settingsPrivate.PrefObject,
   nextValues: any[],
-}
+};
 
 export const prefsTestCases: TestCase[] = [
   {

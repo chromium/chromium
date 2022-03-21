@@ -38,7 +38,7 @@ export type CanonicalTopic = {
   topicId: number,
   taxonomyVersion: number,
   displayString: string,
-}
+};
 
 export type TopicsState = {
   topTopics: Array<CanonicalTopic>,

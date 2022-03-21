@@ -44,7 +44,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       topicSource: TopicSource.kGooglePhotos,
       url: {url: 'http://test_url3'}
     }
-  ]
+  ];
 
   constructor() {
     super([

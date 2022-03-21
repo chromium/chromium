@@ -37,7 +37,7 @@ export type PreviewTicket = Ticket&{
   pagesPerSheet: number;
   isFirstRequest: boolean;
   requestID: number;
-}
+};
 
 export enum PreviewAreaState {
   LOADING = 'loading',

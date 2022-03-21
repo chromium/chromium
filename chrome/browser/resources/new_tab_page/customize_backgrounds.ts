@@ -68,7 +68,7 @@ export class CustomizeBackgroundsElement extends PolymerElement {
   private collections_: BackgroundCollection[];
   private images_: CollectionImage[];
 
-  private pageHandler_: PageHandlerRemote
+  private pageHandler_: PageHandlerRemote;
 
   constructor() {
     super();

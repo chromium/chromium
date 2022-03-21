@@ -40,7 +40,7 @@ export type SetAmbientModeEnabledAction = Action&{
 export type SetAnimationThemeAction = Action&{
   name: AmbientActionName.SET_ANIMATION_THEME;
   animationTheme: AnimationTheme;
-}
+};
 
 export type SetTemperatureUnitAction = Action&{
   name: AmbientActionName.SET_TEMPERATURE_UNIT;

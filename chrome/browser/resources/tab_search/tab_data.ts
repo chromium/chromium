@@ -30,7 +30,7 @@ export class ItemData {
  */
 export class TabData extends ItemData {
   tab: Tab|RecentlyClosedTab;
-  hostname: string
+  hostname: string;
 
   constructor(tab: Tab|RecentlyClosedTab, type: TabItemType, hostname: string) {
     super();

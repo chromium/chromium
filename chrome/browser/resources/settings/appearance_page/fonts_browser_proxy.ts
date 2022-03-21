@@ -8,7 +8,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 export type FontsData = {
   fontList: Array<[string, string, string]>,
-}
+};
 
 export interface FontsBrowserProxy {
   fetchFontsData(): Promise<FontsData>;

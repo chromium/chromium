@@ -26,7 +26,7 @@ export class TestUserProvider extends
 
   public profileImage: Url = {
     url: 'data://test_profile_url',
-  }
+  };
 
   constructor() {
     super([

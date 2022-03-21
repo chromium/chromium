@@ -80,7 +80,7 @@ export class HistoryToolbarElement extends PolymerElement {
 
   count: number = 0;
   searchTerm: string;
-  spinnerActive: boolean
+  spinnerActive: boolean;
   showMenuPromo: boolean;
   private itemsSelected_: boolean = false;
 

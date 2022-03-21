@@ -8,7 +8,7 @@ export type SliderTick = {
   value: number,
   label: string,
   ariaValue?: number,
-}
+};
 
 interface CrSliderElement extends LegacyElementMixin, HTMLElement {
   disabled: boolean;

@@ -70,7 +70,10 @@ module.exports = {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
         }
-      ]
+      ],
+
+      'semi': 'off',
+      '@typescript-eslint/semi': ['error'],
     }
   }]
 };

@@ -46,7 +46,7 @@ const enum ActivityLogSubpage {
 export type ActivityLogExtensionPlaceholder = {
   id: string,
   isPlaceholder: boolean,
-}
+};
 
 export interface ExtensionsActivityLogElement {
   $: {

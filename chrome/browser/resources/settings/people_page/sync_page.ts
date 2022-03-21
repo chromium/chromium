@@ -210,7 +210,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   prefs: {[key: string]: any};
   focusConfig: FocusConfig;
-  private pageStatus_: PageStatus
+  private pageStatus_: PageStatus;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
   private dataEncrypted_: boolean;

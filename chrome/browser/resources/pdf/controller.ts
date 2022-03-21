@@ -19,7 +19,7 @@ export type SaveAttachmentMessageData = {
   type: string,
   dataToSave: ArrayBuffer,
   messageId: string,
-}
+};
 
 type SaveDataMessageData = {
   dataToSave: ArrayBuffer,
