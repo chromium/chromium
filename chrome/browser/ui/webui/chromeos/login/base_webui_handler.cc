@@ -67,23 +67,10 @@ void BaseWebUIHandler::OnJavascriptDisallowed() {
 
 void BaseWebUIHandler::InsertIntoList(std::vector<base::Value>*) {}
 
-void BaseWebUIHandler::MaybeRecordIncomingEvent(
-    const std::string& function_name,
-    const base::ListValue* args) {
-  if (js_calls_container_->record_all_events_for_test()) {
-    // Do a clone so `args` is still available for the actual handler.
-    std::vector<base::Value> arguments = args->Clone().TakeListDeprecated();
-    js_calls_container_->events()->emplace_back(
-        JSCallsContainer::Event(JSCallsContainer::Event::Type::kIncoming,
-                                function_name, std::move(arguments)));
-  }
-}
-
 void BaseWebUIHandler::OnRawCallback(
     const std::string& function_name,
     const content::WebUI::DeprecatedMessageCallback& callback,
     const base::ListValue* args) {
-  MaybeRecordIncomingEvent(function_name, args);
   callback.Run(args);
 }
 

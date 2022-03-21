@@ -76,13 +76,11 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   template <typename... Args>
   void CallJS(const std::string& function_name, const Args&... args) {
     // Record the call if the WebUI is not loaded or if we are in a test.
-    if (!js_calls_container_->is_initialized() ||
-        js_calls_container_->record_all_events_for_test()) {
+    if (!js_calls_container_->is_initialized()) {
       std::vector<base::Value> arguments;
       InsertIntoList(&arguments, args...);
       js_calls_container_->events()->emplace_back(
-          JSCallsContainer::Event(JSCallsContainer::Event::Type::kOutgoing,
-                                  function_name, std::move(arguments)));
+          JSCallsContainer::Event(function_name, std::move(arguments)));
     }
 
     // Make the call now if the WebUI is loaded.
@@ -167,11 +165,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // insert. Does nothing.
   void InsertIntoList(std::vector<base::Value>*);
 
-  // Record `function_name` and `args` as an incoming event if recording is
-  // enabled.
-  void MaybeRecordIncomingEvent(const std::string& function_name,
-                                const base::ListValue* args);
-
   // These two functions wrap Add(Raw)Callback so that the incoming JavaScript
   // event can be recorded.
   void OnRawCallback(const std::string& function_name,
@@ -181,7 +174,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   void OnCallback(const std::string& function_name,
                   const base::RepeatingCallback<void(Args...)>& callback,
                   const base::ListValue* args) {
-    MaybeRecordIncomingEvent(function_name, args);
     ::login::CallbackWrapper<Args...>(callback, args);
   }
 

@@ -21,22 +21,13 @@ class JSCallsContainer {
  public:
   // An event is a message/JS call to or from WebUI.
   struct Event {
-    enum class Type {
-      // This event was sent from C++ to JS.
-      kOutgoing,
-      // This event was sent from JS to C++.
-      kIncoming,
-    };
-
-    Event(Type type,
-          const std::string& function_name,
+    Event(const std::string& function_name,
           std::vector<base::Value>&& arguments);
     ~Event();
     Event(Event&&);
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    Type type;
     std::string function_name;
     std::vector<base::Value> arguments;
   };
@@ -48,14 +39,6 @@ class JSCallsContainer {
 
   // Used to decide whether the JS call should be deferred.
   bool is_initialized() const { return is_initialized_; }
-
-  // Enable event recording.
-  void set_record_all_events_for_test() { record_all_events_for_test_ = true; }
-
-  // If true then all JS calls should be recorded.
-  bool record_all_events_for_test() const {
-    return record_all_events_for_test_;
-  }
 
   // Recorded events. This is mutable and can be modified.
   std::vector<Event>* events() { return &events_; }
@@ -70,10 +53,6 @@ class JSCallsContainer {
   // The instance becomes initialized after the corresponding message is
   // received from Javascript side.
   bool is_initialized_ = false;
-
-  // Decide if incoming and outgoing JS calls should be recorded. Recording
-  // should only be used for tests.
-  bool record_all_events_for_test_ = false;
 
   std::vector<Event> events_;
 };

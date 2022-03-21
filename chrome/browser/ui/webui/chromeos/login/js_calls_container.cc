@@ -8,12 +8,9 @@
 
 namespace chromeos {
 
-JSCallsContainer::Event::Event(Type type,
-                               const std::string& function_name,
+JSCallsContainer::Event::Event(const std::string& function_name,
                                std::vector<base::Value>&& arguments)
-    : type(type),
-      function_name(function_name),
-      arguments(std::move(arguments)) {}
+    : function_name(function_name), arguments(std::move(arguments)) {}
 
 JSCallsContainer::Event::~Event() = default;
 
@@ -29,9 +26,6 @@ void JSCallsContainer::ExecuteDeferredJSCalls(content::WebUI* web_ui) {
 
   // Execute recorded outgoing events.
   for (const auto& event : events_) {
-    if (event.type != Event::Type::kOutgoing)
-      continue;
-
     // event.arguments is of type std::vector<base::Value>, but
     // CallJavascriptFunctionUnsafe requires std::vector<const base::Value*>.
     // Construct the new vector of pointers from the existing data.
@@ -43,10 +37,7 @@ void JSCallsContainer::ExecuteDeferredJSCalls(content::WebUI* web_ui) {
     web_ui->CallJavascriptFunctionUnsafe(event.function_name, args);
   }
 
-  // Reduce memory usage / drop potentially sensitive data if we're not
-  // recording for a test.
-  if (!record_all_events_for_test_)
-    events_.clear();
+  events_.clear();
 }
 
 }  // namespace chromeos

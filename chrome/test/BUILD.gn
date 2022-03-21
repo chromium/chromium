@@ -3763,8 +3763,6 @@ if (!is_android) {
         "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
         "../browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog_browsertest.cc",
         "../browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_browsertest.cc",
-        "../browser/ui/webui/chromeos/login/js_calls_container_test_api.cc",
-        "../browser/ui/webui/chromeos/login/js_calls_container_test_api.h",
         "../browser/ui/webui/chromeos/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/chromeos/login/testapi/oobe_test_api_browsertest.cc",
         "../browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.cc",
