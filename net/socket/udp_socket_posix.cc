@@ -57,6 +57,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/udp_net_log_parameters.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/native_library.h"
@@ -315,8 +316,9 @@ void UDPSocketPosix::Close() {
   // trace event for this case so that it can be correlated with jank in traces.
   // Use the "base" category since "net" isn't enabled by default. See
   // https://crbug.com/1194888.
-  TRACE_EVENT("base", "CloseSocketUDP", "connected_to_zero",
-              PeerIsZeroIPv4(*this));
+  TRACE_EVENT("base", PeerIsZeroIPv4(*this)
+                          ? perfetto::StaticString{"CloseSocketUDP.PeerIsZero"}
+                          : perfetto::StaticString{"CloseSocketUDP"});
 
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). See https://crbug.com/1151048.
