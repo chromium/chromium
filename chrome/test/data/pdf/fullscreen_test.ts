@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
-import {FittingType, PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createWheelEvent} from './test_util.js';
 
-const viewer = /** @type {!PDFViewerElement} */ (
-    document.body.querySelector('pdf-viewer'));
-const scroller =
-    /** @type {!HTMLElement} */ (viewer.shadowRoot.querySelector('#scroller'));
+const viewer = document.body.querySelector('pdf-viewer')!;
+const scroller = viewer.$.scroller;
 
-/** @return {!Promise<void>} */
-async function ensureFullscreen() {
+async function ensureFullscreen(): Promise<void> {
   if (document.fullscreenElement !== null) {
     return;
   }
 
-  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
+  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar')!;
   toolbar.dispatchEvent(new CustomEvent('present-click'));
   await eventToPromise('fullscreenchange', scroller);
 }
@@ -59,9 +56,7 @@ const tests = [
     await ensureFullscreen();
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
-    const content =
-        /** @type {!HTMLElement} */ (
-            viewer.shadowRoot.querySelector('#content'));
+    const content = viewer.$.content;
 
     // Simulate scrolling towards the bottom.
     content.dispatchEvent(
@@ -111,7 +106,7 @@ const tests = [
   async function testZoomKeyboardShortcutsDisabled() {
     await ensureFullscreen();
 
-    async function keydown(key) {
+    async function keydown(key: string) {
       const whenKeydown = eventToPromise('keydown', viewer);
       keyDownOn(viewer, 0, isMac ? 'meta' : 'ctrl', key);
       return await whenKeydown;
@@ -150,7 +145,7 @@ const tests = [
     await ensureFullscreen();
     document.exitFullscreen();
     await eventToPromise('fullscreenchange', scroller);
-    chrome.test.assertEq('EMBED', getDeepActiveElement().nodeName);
+    chrome.test.assertEq('EMBED', getDeepActiveElement()!.nodeName);
     chrome.test.succeed();
   },
 ];

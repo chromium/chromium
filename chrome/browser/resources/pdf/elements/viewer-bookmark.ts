@@ -18,17 +18,33 @@ import {getTemplate} from './viewer-bookmark.html.js';
 /** Amount that each level of bookmarks is indented by (px). */
 const BOOKMARK_INDENT: number = 20;
 
-type ChangePageAndXyEvent = CustomEvent<{
+export type ChangePageAndXyDetail = {
   page: number,
   x: number,
   y: number,
   origin: string,
-}>;
+};
+
+export type ChangePageDetail = {
+  page: number,
+  origin: 'bookmark'|'thumbnail'|'pageSelector',
+};
+
+export type ChangeZoomDetail = {
+  zoom: number
+};
+
+export type NavigateDetail = {
+  newtab: boolean,
+  uri: string
+};
 
 declare global {
   interface HTMLElementEventMap {
-    'change-page-and-xy': ChangePageAndXyEvent;
-    'change-zoom': CustomEvent<{zoom: number}>;
+    'change-page-and-xy': CustomEvent<ChangePageAndXyDetail>;
+    'change-page': CustomEvent<ChangePageDetail>;
+    'change-zoom': CustomEvent<ChangeZoomDetail>;
+    'navigate': CustomEvent<NavigateDetail>;
   }
 }
 

@@ -127,7 +127,7 @@ export class MockViewportChangedCallback {
     /** @type {boolean} */
     this.wasCalled = false;
 
-    /** @type {!Function} */
+    /** @type {function():void} */
     this.callback = () => {
       this.wasCalled = true;
     };

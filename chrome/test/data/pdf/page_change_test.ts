@@ -5,15 +5,12 @@
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-/** @return {!PDFViewerElement} */
-function getViewer() {
-  return /** @type {!PDFViewerElement} */ (
-      document.body.querySelector('pdf-viewer'));
+function getViewer(): PDFViewerElement {
+  return document.body.querySelector('pdf-viewer')!;
 }
 
-/** @param {boolean} focused */
-function simulateFormFocusChange(focused) {
-  const plugin = getViewer().shadowRoot.querySelector('embed');
+function simulateFormFocusChange(focused: boolean) {
+  const plugin = getViewer().shadowRoot!.querySelector('embed')!;
   plugin.dispatchEvent(
       new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
 }
@@ -24,13 +21,12 @@ function resetDocument() {
   simulateFormFocusChange(false);
 }
 
-/** @return {number} */
-function getCurrentPage() {
+function getCurrentPage(): number {
   return getViewer().viewport.getMostVisiblePage();
 }
 
 function getAllPossibleKeyModifiers() {
-  const modifiers = ['shift', 'ctrl', 'alt', 'meta'];
+  const modifiers: Array<string|string[]> = ['shift', 'ctrl', 'alt', 'meta'];
   modifiers.push(
       ['shift', 'ctrl'], ['shift', 'alt'], ['shift', 'meta'], ['ctrl', 'alt'],
       ['ctrl', 'meta'], ['alt', 'meta']);

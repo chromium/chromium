@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestBrowserProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_browser_proxy.js';
-import {OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
-/** @implements {NavigatorDelegate} */
-class MockNavigatorDelegate extends TestBrowserProxy {
+class MockNavigatorDelegate extends TestBrowserProxy implements
+    NavigatorDelegate {
   constructor() {
     super([
       'navigateInCurrentTab',
@@ -17,18 +17,15 @@ class MockNavigatorDelegate extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  navigateInCurrentTab(url) {
+  navigateInCurrentTab(url: string) {
     this.methodCalled('navigateInCurrentTab', url);
   }
 
-  /** @override */
-  navigateInNewTab(url) {
+  navigateInNewTab(url: string) {
     this.methodCalled('navigateInNewTab', url);
   }
 
-  /** @override */
-  navigateInNewWindow(url) {
+  navigateInNewWindow(url: string) {
     this.methodCalled('navigateInNewWindow', url);
   }
 }
@@ -38,16 +35,12 @@ class MockNavigatorDelegate extends TestBrowserProxy {
  * a new window depending on the value of |disposition|. Use
  * |viewportChangedCallback| and |navigatorDelegate| to check the callbacks,
  * and that the navigation to |expectedResultUrl| happened.
- * @param {!PdfNavigator} navigator
- * @param {string} url
- * @param {!WindowOpenDisposition} disposition
- * @param {(string|undefined)} expectedResultUrl
- * @param {!MockViewportChangedCallback} viewportChangedCallback
- * @param {!MockNavigatorDelegate} navigatorDelegate
  */
 async function doNavigationUrlTest(
-    navigator, url, disposition, expectedResultUrl, viewportChangedCallback,
-    navigatorDelegate) {
+    navigator: PdfNavigator, url: string, disposition: WindowOpenDisposition,
+    expectedResultUrl: string|undefined,
+    viewportChangedCallback: MockViewportChangedCallback,
+    navigatorDelegate: MockNavigatorDelegate) {
   viewportChangedCallback.reset();
   navigatorDelegate.reset();
   await navigator.navigate(url, disposition);
@@ -77,18 +70,16 @@ async function doNavigationUrlTest(
 /**
  * Helper function to run doNavigationUrlTest() for the current tab, a new
  * tab, and a new window.
- * @param {string} originalUrl
- * @param {string} url
- * @param {(string|undefined)} expectedResultUrl
  */
-async function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
+async function doNavigationUrlTests(
+    originalUrl: string, url: string, expectedResultUrl: string|undefined) {
   const mockWindow = new MockElement(100, 100, null);
   const mockSizer = new MockSizer();
   const mockViewportChangedCallback = new MockViewportChangedCallback();
   const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
-  const paramsParser = new OpenPdfParamsParser(function(name) {
+  const paramsParser = new OpenPdfParamsParser(function(_name) {
     return Promise.resolve(
         {messageId: 'getNamedDestination_1', pageNumber: -1});
   });

@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI, PDFViewerElement, ViewerBookmarkElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {Bookmark, ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail, PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
+
+// TODO(crbug.com/1305967): Remove this interface when test_util.js is
+// migrated to TypeScript.
+interface TestBookmarksElement extends HTMLElement {
+  bookmarks: Bookmark[];
+}
 
 const tests = [
   /**
@@ -13,18 +19,17 @@ const tests = [
    * test-bookmarks-with-zoom.pdf.
    */
   function testHasCorrectBookmarks() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('#viewer'));
+    const viewer = document.body.querySelector('pdf-viewer')!;
     const bookmarks = viewer.bookmarks;
 
     // Load all relevant bookmarks.
     chrome.test.assertEq(3, bookmarks.length);
-    const firstBookmark = bookmarks[0];
-    const secondBookmark = bookmarks[1];
-    const uriBookmark = bookmarks[2];
+    const firstBookmark = bookmarks[0]!;
+    const secondBookmark = bookmarks[1]!;
+    const uriBookmark = bookmarks[2]!;
     chrome.test.assertEq(1, firstBookmark.children.length);
     chrome.test.assertEq(0, secondBookmark.children.length);
-    const firstNestedBookmark = firstBookmark.children[0];
+    const firstNestedBookmark = firstBookmark.children[0]!;
 
     // Check titles.
     chrome.test.assertEq('First Section', firstBookmark.title);
@@ -64,38 +69,43 @@ const tests = [
    * test-bookmarks-with-zoom.pdf.
    */
   function testFollowBookmark() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('#viewer'));
-    const bookmarkContent = createBookmarksForTest();
+    const viewer = document.body.querySelector('pdf-viewer')!;
+    const bookmarkContent = createBookmarksForTest() as TestBookmarksElement;
     bookmarkContent.bookmarks = viewer.bookmarks;
     document.body.appendChild(bookmarkContent);
 
     flush();
 
-    const rootBookmarks = /** @type {!NodeList<!ViewerBookmarkElement>} */ (
-        bookmarkContent.shadowRoot.querySelectorAll('viewer-bookmark'));
+    const rootBookmarks =
+        bookmarkContent.shadowRoot!.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(3, rootBookmarks.length, 'three root bookmarks');
-    const expandButton = rootBookmarks[0].$.expand;
+    const expandButton = rootBookmarks[0]!.$.expand;
     chrome.test.assertEq('false', expandButton.getAttribute('aria-expanded'));
     expandButton.click();
 
     flush();
 
     chrome.test.assertEq('true', expandButton.getAttribute('aria-expanded'));
-    const subBookmarks = /** @type {!NodeList<!ViewerBookmarkElement>} */ (
-        rootBookmarks[0].shadowRoot.querySelectorAll('viewer-bookmark'));
+    const subBookmarks =
+        rootBookmarks[0]!.shadowRoot!.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(1, subBookmarks.length, 'one sub bookmark');
 
-    let lastPageChange;
-    let lastXChange;
-    let lastYChange;
-    let lastZoomChange;
-    let lastUriNavigation;
-    bookmarkContent.addEventListener('change-page', function(e) {
-      lastPageChange = e.detail.page;
+    let lastPageChange: number|undefined;
+    let lastXChange: number|undefined;
+    let lastYChange: number|undefined;
+    let lastZoomChange: number|undefined;
+    let lastUriNavigation: string|undefined;
+
+    function resetLastChange() {
+      lastPageChange = undefined;
       lastXChange = undefined;
       lastYChange = undefined;
+      lastZoomChange = undefined;
       lastUriNavigation = undefined;
+    }
+
+    bookmarkContent.addEventListener('change-page', function(e) {
+      lastPageChange = e.detail.page;
     });
     bookmarkContent.addEventListener('change-zoom', function(e) {
       lastZoomChange = e.detail.zoom;
@@ -104,45 +114,39 @@ const tests = [
       lastPageChange = e.detail.page;
       lastXChange = e.detail.x;
       lastYChange = e.detail.y;
-      lastUriNavigation = undefined;
     });
     bookmarkContent.addEventListener('navigate', function(e) {
-      lastPageChange = undefined;
-      lastXChange = undefined;
-      lastYChange = undefined;
       lastUriNavigation = e.detail.uri;
     });
 
-    /**
-     * @param {!HTMLElement} tapTarget
-     * @param {!{
-     *   page: (number|undefined),
-     *   uri: (string|undefined),
-     *   x: (number|undefined),
-     *   y: (number|undefined),
-     *   zoom: (number|undefined)
-     * }} expectedEvent
-     */
-    function testTapTarget(tapTarget, expectedEvent) {
-      lastPageChange = undefined;
-      lastXChange = undefined;
-      lastYChange = undefined;
-      lastZoomChange = undefined;
-      lastUriNavigation = undefined;
+    type ExpectedEventDetail =
+        ChangePageAndXyDetail|ChangePageDetail|ChangeZoomDetail|NavigateDetail;
+
+    function testTapTarget(
+        tapTarget: HTMLElement, expectedDetail: ExpectedEventDetail) {
+      resetLastChange();
       tapTarget.click();
-      chrome.test.assertEq(expectedEvent.page, lastPageChange);
-      chrome.test.assertEq(expectedEvent.x, lastXChange);
-      chrome.test.assertEq(expectedEvent.y, lastYChange);
-      chrome.test.assertEq(expectedEvent.zoom, lastZoomChange);
-      chrome.test.assertEq(expectedEvent.uri, lastUriNavigation);
+      chrome.test.assertEq(
+          (expectedDetail as ChangePageDetail).page, lastPageChange);
+      chrome.test.assertEq(
+          (expectedDetail as ChangePageAndXyDetail).x, lastXChange);
+      chrome.test.assertEq(
+          (expectedDetail as ChangePageAndXyDetail).y, lastYChange);
+      chrome.test.assertEq(
+          (expectedDetail as ChangeZoomDetail).zoom, lastZoomChange);
+      chrome.test.assertEq(
+          (expectedDetail as NavigateDetail).uri, lastUriNavigation);
     }
 
     testTapTarget(
-        rootBookmarks[0].$.item, {page: 0, x: 133, y: 667, zoom: 1.25});
-    testTapTarget(subBookmarks[0].$.item, {page: 1, x: 133, y: 667, zoom: 1.5});
+        rootBookmarks[0]!.$.item, {page: 0, x: 133, y: 667, zoom: 1.25});
     testTapTarget(
-        rootBookmarks[1].$.item, {page: 2, x: 133, y: 667, zoom: 1.75});
-    testTapTarget(rootBookmarks[2].$.item, {uri: 'http://www.chromium.org'});
+        subBookmarks[0]!.$.item, {page: 1, x: 133, y: 667, zoom: 1.5});
+    testTapTarget(
+        rootBookmarks[1]!.$.item, {page: 2, x: 133, y: 667, zoom: 1.75});
+    testTapTarget(
+        rootBookmarks[2]!.$.item,
+        {uri: 'http://www.chromium.org', newtab: false});
 
     chrome.test.succeed();
   }

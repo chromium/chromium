@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 export {FittingType, Point, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
-export {ViewerBookmarkElement} from './elements/viewer-bookmark.js';
+export {ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer-download-controls.js';
 export {ViewerPageSelectorElement} from './elements/viewer-page-selector.js';

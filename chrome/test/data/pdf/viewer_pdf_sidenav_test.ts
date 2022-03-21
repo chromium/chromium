@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewerDocumentOutlineElement, ViewerPdfSidenavElement, ViewerThumbnailBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {ViewerPdfSidenavElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-/** @return {!ViewerPdfSidenavElement} */
-function createSidenav() {
+function createSidenav(): ViewerPdfSidenavElement {
   document.body.innerHTML = '';
-  const sidenav = /** @type {!ViewerPdfSidenavElement} */ (
-      document.createElement('viewer-pdf-sidenav'));
+  const sidenav = document.createElement('viewer-pdf-sidenav');
   document.body.appendChild(sidenav);
   return sidenav;
 }
@@ -23,27 +21,25 @@ const tests = [
 
     // Add some dummy bookmarks so that the tabs selectors appear.
     sidenav.bookmarks = [
-      {title: 'Foo', page: 1},
-      {title: 'Bar', page: 2},
+      {title: 'Foo', page: 1, children: []},
+      {title: 'Bar', page: 2, children: []},
     ];
 
-    const content = sidenav.shadowRoot.querySelector('#content');
-    const [thumbnailButton, outlineButton] =
-        sidenav.shadowRoot.querySelectorAll('cr-icon-button');
+    const content = sidenav.shadowRoot!.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const thumbnailButton = buttons[0]!;
+    const outlineButton = buttons[1]!;
 
-    const thumbnailBar =
-        /** @type {!ViewerThumbnailBarElement} */ (
-            content.querySelector('viewer-thumbnail-bar'));
-    const outline = /** @type {!ViewerDocumentOutlineElement} */ (
-        content.querySelector('viewer-document-outline'));
+    const thumbnailBar = content.querySelector('viewer-thumbnail-bar')!;
+    const outline = content.querySelector('viewer-document-outline')!;
 
 
     // Sidebar starts on thumbnail view.
     chrome.test.assertTrue(
-        thumbnailButton.parentNode.classList.contains('selected'));
+        thumbnailButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(
-        outlineButton.parentNode.classList.contains('selected'));
+        outlineButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(thumbnailBar.hidden);
     chrome.test.assertTrue(outline.hidden);
@@ -51,11 +47,11 @@ const tests = [
     // Click on outline view.
     outlineButton.click();
     chrome.test.assertFalse(
-        thumbnailButton.parentNode.classList.contains('selected'));
+        thumbnailButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq(
         'false', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertTrue(
-        outlineButton.parentNode.classList.contains('selected'));
+        outlineButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq('true', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertTrue(thumbnailBar.hidden);
     chrome.test.assertFalse(outline.hidden);
@@ -63,10 +59,10 @@ const tests = [
     // Return to thumbnail view.
     thumbnailButton.click();
     chrome.test.assertTrue(
-        thumbnailButton.parentNode.classList.contains('selected'));
+        thumbnailButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(
-        outlineButton.parentNode.classList.contains('selected'));
+        outlineButton.parentElement!.classList.contains('selected'));
     chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(thumbnailBar.hidden);
     chrome.test.assertTrue(outline.hidden);
@@ -76,15 +72,16 @@ const tests = [
 
   function testTabIconsHidden() {
     const sidenav = createSidenav();
-    const buttonsContainer = sidenav.shadowRoot.querySelector('#icons');
+    const buttonsContainer =
+        sidenav.shadowRoot!.querySelector<HTMLElement>('#icons')!;
 
     chrome.test.assertEq(0, sidenav.bookmarks.length);
     chrome.test.assertTrue(buttonsContainer.hidden);
 
     // Add dummy bookmarks so that the buttons appear.
     sidenav.bookmarks = [
-      {title: 'Foo', page: 1},
-      {title: 'Bar', page: 2},
+      {title: 'Foo', page: 1, children: []},
+      {title: 'Bar', page: 2, children: []},
     ];
 
     chrome.test.assertFalse(buttonsContainer.hidden);

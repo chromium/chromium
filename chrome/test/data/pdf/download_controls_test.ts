@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
-import {SaveRequestType, ViewerDownloadControlsElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {listenOnce} from 'chrome://resources/js/util.m.js';
+import {SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 const tests = [
   /**
@@ -13,50 +12,37 @@ const tests = [
    */
   async function testEditedPdfOption() {
     document.body.innerHTML = '';
-    /** @type {!ViewerDownloadControlsElement} */
-    const downloadsElement = /** @type {!ViewerDownloadControlsElement} */ (
-        document.createElement('viewer-download-controls'));
+    const downloadsElement = document.createElement('viewer-download-controls');
     downloadsElement.isFormFieldFocused = false;
     downloadsElement.hasEdits = false;
     downloadsElement.hasEnteredAnnotationMode = false;
     document.body.appendChild(downloadsElement);
 
-    /** @type {!CrIconButtonElement} */
-    const downloadButton = /** @type {!CrIconButtonElement} */ (
-        downloadsElement.shadowRoot.querySelector('#download'));
-    /** @type {!CrActionMenuElement} */
-    const actionMenu = /** @type {!CrActionMenuElement} */ (
-        downloadsElement.shadowRoot.querySelector('#menu'));
+    const downloadButton = downloadsElement.$.download;
+    const actionMenu = downloadsElement.$.menu;
     chrome.test.assertFalse(actionMenu.open);
 
     let numRequests = 0;
     downloadsElement.addEventListener('save', () => numRequests++);
 
-    /** @return {!Promise<SaveRequestType>} */
-    const whenSave = function() {
-      return new Promise(resolve => {
-        listenOnce(downloadsElement, 'save', e => resolve(e.detail));
-      });
-    };
-
     // Do not show the menu if there are no edits.
-    let onSave = whenSave();
+    let onSave = eventToPromise('save', downloadsElement);
     downloadButton.click();
-    let requestType = await onSave;
+    let e: CustomEvent<SaveRequestType> = await onSave;
     chrome.test.assertFalse(actionMenu.open);
-    chrome.test.assertEq(SaveRequestType.ORIGINAL, requestType);
+    chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
     chrome.test.assertEq(1, numRequests);
 
     // Set form field focused.
     downloadsElement.isFormFieldFocused = true;
-    onSave = whenSave();
+    onSave = eventToPromise('save', downloadsElement);
     downloadButton.click();
 
     // Unfocus, without making any edits. Saves the original document.
     downloadsElement.isFormFieldFocused = false;
-    requestType = await onSave;
+    e = await onSave;
     chrome.test.assertFalse(actionMenu.open);
-    chrome.test.assertEq(SaveRequestType.ORIGINAL, requestType);
+    chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
     chrome.test.assertEq(2, numRequests);
 
     // Focus again.
@@ -72,11 +58,11 @@ const tests = [
     chrome.test.assertEq(2, numRequests);
 
     // Click on "Edited".
-    const buttons = downloadsElement.shadowRoot.querySelectorAll('button');
-    onSave = whenSave();
-    buttons[0].click();
-    requestType = await onSave;
-    chrome.test.assertEq(SaveRequestType.EDITED, requestType);
+    const buttons = downloadsElement.shadowRoot!.querySelectorAll('button');
+    onSave = eventToPromise('save', downloadsElement);
+    buttons[0]!.click();
+    e = await onSave;
+    chrome.test.assertEq(SaveRequestType.EDITED, e.detail);
     chrome.test.assertFalse(actionMenu.open);
     chrome.test.assertEq(3, numRequests);
 
@@ -86,10 +72,10 @@ const tests = [
     chrome.test.assertTrue(actionMenu.open);
 
     // Click on "Original".
-    onSave = whenSave();
-    buttons[1].click();
-    requestType = await onSave;
-    chrome.test.assertEq(SaveRequestType.ORIGINAL, requestType);
+    onSave = eventToPromise('save', downloadsElement);
+    buttons[1]!.click();
+    e = await onSave;
+    chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
     chrome.test.assertFalse(actionMenu.open);
     chrome.test.assertEq(4, numRequests);
 

@@ -10,7 +10,7 @@ const tests = [
    * Test named destinations.
    */
   async function testParamsParser() {
-    const paramsParser = new OpenPdfParamsParser(function(destination) {
+    const paramsParser = new OpenPdfParamsParser(function(destination: string) {
       // Set the dummy viewport dimensions for calculating the zoom level for
       // view destination with 'FitR' type.
       paramsParser.setViewportDimensions({width: 300, height: 500});
@@ -117,8 +117,8 @@ const tests = [
     params =
         await paramsParser.getViewportFromUrlParams(`${url}#zoom=200,100,200`);
     chrome.test.assertEq(2, params.zoom);
-    chrome.test.assertEq(100, params.position.x);
-    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(100, params.position!.x);
+    chrome.test.assertEq(200, params.position!.y);
 
     // Checking #nameddest=name and zoom=scale.
     params = await paramsParser.getViewportFromUrlParams(
@@ -137,16 +137,16 @@ const tests = [
         `${url}#nameddest=UY&zoom=150,100,200`);
     chrome.test.assertEq(22, params.page);
     chrome.test.assertEq(1.5, params.zoom);
-    chrome.test.assertEq(100, params.position.x);
-    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(100, params.position!.x);
+    chrome.test.assertEq(200, params.position!.y);
 
     // Checking #page=pagenum and zoom=scale,left,top.
     params = await paramsParser.getViewportFromUrlParams(
         `${url}#page=2&zoom=250,100,200`);
     chrome.test.assertEq(1, params.page);
     chrome.test.assertEq(2.5, params.zoom);
-    chrome.test.assertEq(100, params.position.x);
-    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(100, params.position!.x);
+    chrome.test.assertEq(200, params.position!.y);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
     // type is "XYZ" with multiple valid parameters.
@@ -154,8 +154,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZ`);
     chrome.test.assertEq(10, params.page);
     chrome.test.assertEq(1.7, params.zoom);
-    chrome.test.assertEq(111, params.position.x);
-    chrome.test.assertEq(222, params.position.y);
+    chrome.test.assertEq(111, params.position!.x);
+    chrome.test.assertEq(222, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -164,8 +164,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZAtZoomNull`);
     chrome.test.assertEq(10, params.page);
     chrome.test.assertEq(undefined, params.zoom);
-    chrome.test.assertEq(111, params.position.x);
-    chrome.test.assertEq(222, params.position.y);
+    chrome.test.assertEq(111, params.position!.x);
+    chrome.test.assertEq(222, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -174,8 +174,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZWithX0`);
     chrome.test.assertEq(11, params.page);
     chrome.test.assertEq(1.7, params.zoom);
-    chrome.test.assertEq(0, params.position.x);
-    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(0, params.position!.x);
+    chrome.test.assertEq(200, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -184,8 +184,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZWithXNull`);
     chrome.test.assertEq(11, params.page);
     chrome.test.assertEq(1.7, params.zoom);
-    chrome.test.assertTrue(Number.isNaN(params.position.x));
-    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertTrue(Number.isNaN(params.position!.x));
+    chrome.test.assertEq(200, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -194,8 +194,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZWithY0`);
     chrome.test.assertEq(11, params.page);
     chrome.test.assertEq(1.7, params.zoom);
-    chrome.test.assertEq(100, params.position.x);
-    chrome.test.assertEq(0, params.position.y);
+    chrome.test.assertEq(100, params.position!.x);
+    chrome.test.assertEq(0, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -204,8 +204,8 @@ const tests = [
         `${url}#nameddest=DestWithXYZWithYNull`);
     chrome.test.assertEq(11, params.page);
     chrome.test.assertEq(1.7, params.zoom);
-    chrome.test.assertEq(100, params.position.x);
-    chrome.test.assertTrue(Number.isNaN(params.position.y));
+    chrome.test.assertEq(100, params.position!.x);
+    chrome.test.assertTrue(Number.isNaN(params.position!.y));
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -214,8 +214,8 @@ const tests = [
         `${url}#nameddest=DestWithFitR`);
     chrome.test.assertEq(0, params.page);
     chrome.test.assertEq(2.5, params.zoom);
-    chrome.test.assertEq(20, params.position.x);
-    chrome.test.assertEq(100, params.position.y);
+    chrome.test.assertEq(20, params.position!.x);
+    chrome.test.assertEq(100, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
@@ -224,8 +224,8 @@ const tests = [
         `${url}#nameddest=DestWithFitRReversedCoordinates`);
     chrome.test.assertEq(0, params.page);
     chrome.test.assertEq(2.5, params.zoom);
-    chrome.test.assertEq(20, params.position.x);
-    chrome.test.assertEq(100, params.position.y);
+    chrome.test.assertEq(20, params.position!.x);
+    chrome.test.assertEq(100, params.position!.y);
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
