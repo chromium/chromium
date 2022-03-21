@@ -212,8 +212,8 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
                                 sk_color_type, sk_alpha_type);
   ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
                           src_rect.y(), dest_pixels);
-  DCHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
-  return true;
+  return ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
+         ri->GetError() == GL_NO_ERROR;
 }
 
 void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
