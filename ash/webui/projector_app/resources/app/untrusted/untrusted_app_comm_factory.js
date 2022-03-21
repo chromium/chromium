@@ -19,6 +19,26 @@ function getAppElement() {
 }
 
 /**
+ * Waits for the projector-app element to exist in the DOM.
+ */
+function waitForAppElement() {
+  return new Promise(resolve => {
+    if (getAppElement()) {
+      return resolve();
+    }
+
+    const observer = new MutationObserver(mutations => {
+      if (getAppElement()) {
+        resolve();
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, {childList: true, subtree: true});
+  });
+}
+
+/**
  * Implements and supports the methods defined by the
  * projectorApp.ClientDelegate interface defined in
  * //ash/webui/projector_app/resources/communication/projector_app.externs.js.
@@ -242,7 +262,7 @@ export class AppUntrustedCommFactory {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+waitForAppElement().then(() => {
   // Create instances of the singletons (PostMessageAPIClient and
   // RequestHandler) when the document has finished loading.
   AppUntrustedCommFactory.maybeCreateInstances();
