@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
@@ -557,6 +558,16 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
 
   Element* element = element_under_mouse_;
+
+  // When clicking on a <label> for a form associated custom element with
+  // delegatesFocus, we should focus the custom element's focus delegate.
+  if (auto* label = DynamicTo<HTMLLabelElement>(element)) {
+    auto* control = label->control();
+    if (control && control->DelegatesFocus()) {
+      element = control;
+    }
+  }
+
   for (; element; element = element->ParentOrShadowHostElement()) {
     if (element->IsFocusable() && element->IsFocusedElementInDocument())
       return WebInputEventResult::kNotHandled;
