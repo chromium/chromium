@@ -20,7 +20,8 @@ var TabStripTabListTest = class extends TabStripBrowserTest {
   }
 };
 
-TEST_F('TabStripTabListTest', 'All', function() {
+// TODO(https://crbug.com/1247687): flakily times out.
+TEST_F('TabStripTabListTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
