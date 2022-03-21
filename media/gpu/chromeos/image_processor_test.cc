@@ -162,8 +162,9 @@ class ImageProcessorParamTest
     ImageProcessor::PortConfig output_config(
         output_fourcc, output_image->Size(), output_layout->planes(),
         output_image->VisibleRect(), output_storage_types);
-    int rotation =
-        ((output_image->Rotation() - input_image.Rotation() + 4) % 4) * 90;
+    int rotation = (output_image->Rotation() - input_image.Rotation()) % 360;
+    if (rotation < 0)
+      rotation += 360;
     VideoRotation relative_rotation = VIDEO_ROTATION_0;
     switch (rotation) {
       case 0:
