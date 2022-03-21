@@ -63,7 +63,7 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnNonTempTable) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(db_.Execute(
         "CREATE VIRTUAL TABLE recover_backing USING recover(backing, t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
@@ -106,7 +106,7 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingTableName) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(main., t TEXT)"));
@@ -117,7 +117,7 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingSchemaSpec) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(backing)"));
@@ -128,7 +128,7 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingDbName) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(.backing)"));
@@ -168,7 +168,7 @@ TEST_F(RecoverModuleTest, ColumnTypeMappingAnyStrict) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(backing, t ANY STRICT)"));
@@ -180,7 +180,7 @@ TEST_F(RecoverModuleTest, ColumnTypeExtraKeyword) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(backing, t INTEGER SOMETHING)"));
@@ -191,7 +191,7 @@ TEST_F(RecoverModuleTest, ColumnTypeNotNullExtraKeyword) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(backing, t INTEGER NOT NULL SOMETHING)"));
@@ -202,7 +202,7 @@ TEST_F(RecoverModuleTest, ColumnTypeDoubleTypes) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(backing, t INTEGER FLOAT)"));
@@ -213,7 +213,7 @@ TEST_F(RecoverModuleTest, ColumnTypeNotNullDoubleTypes) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_MISUSE);
+    error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
                     "backing, t INTEGER NOT NULL TEXT)"));

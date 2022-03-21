@@ -60,7 +60,7 @@ int ModuleCreate(sqlite3* sqlite_db,
   DCHECK(sqlite_db != nullptr);
   if (argc <= kFirstColumnArgument) {
     // The recovery module needs at least one column specification.
-    return SQLITE_MISUSE;
+    return SQLITE_ERROR;
   }
   DCHECK(argv != nullptr);
   DCHECK(result_sqlite_table != nullptr);
@@ -76,7 +76,7 @@ int ModuleCreate(sqlite3* sqlite_db,
     // temporary database (ATTACH '' AS other_temp). However, there is no easy
     // way to determine if an attachment point corresponds to a temporary
     // database, and "temp" is sufficient for Chrome's purposes.
-    return SQLITE_MISUSE;
+    return SQLITE_ERROR;
   }
 
   base::StringPiece table_name(argv[kVirtualTableNameArgument]);
@@ -84,7 +84,7 @@ int ModuleCreate(sqlite3* sqlite_db,
     // In the future, we may deploy UMA metrics that use the virtual table name
     // to attribute recovery events to Chrome features. In preparation for that
     // future, require all recovery table names to start with "recover_".
-    return SQLITE_MISUSE;
+    return SQLITE_ERROR;
   }
 
   TargetTableSpec backing_table_spec =
@@ -92,13 +92,13 @@ int ModuleCreate(sqlite3* sqlite_db,
   if (!backing_table_spec.IsValid()) {
     // The parser concluded that the string specifying the backing table is
     // invalid. This is definitely an error in the SQL using the virtual table.
-    return SQLITE_MISUSE;
+    return SQLITE_ERROR;
   }
 
   std::vector<RecoveredColumnSpec> column_specs = ParseColumnSpecs(argc, argv);
   if (column_specs.empty()) {
     // The column specifications were invalid.
-    return SQLITE_MISUSE;
+    return SQLITE_ERROR;
   }
 
   auto [sqlite_status, table] = VirtualTable::Create(
