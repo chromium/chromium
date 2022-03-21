@@ -28,6 +28,8 @@ NSString* const kPasteboardChangeCountKey = @"PasteboardChangeCount";
 // Key used to store the last date at which it was detected that the pasteboard
 // changed. It is used to evaluate the age of the pasteboard's content.
 NSString* const kPasteboardChangeDateKey = @"PasteboardChangeDate";
+// Default Scheme to use for urls with no scheme.
+NSString* const kDefaultScheme = @"https";
 
 }  // namespace
 
@@ -391,6 +393,16 @@ NSString* const kPasteboardChangeDateKey = @"PasteboardChangeDate";
                 NSURL* url = [NSURL
                     URLWithString:
                         values[UIPasteboardDetectionPatternProbableWebURL]];
+
+                // |detectValuesForPatterns:| will return a url even if the url
+                // is missing a scheme. In this case, default to https.
+                if (url.scheme == nil) {
+                  NSURLComponents* components =
+                      [[NSURLComponents alloc] initWithURL:url
+                                   resolvingAgainstBaseURL:NO];
+                  components.scheme = kDefaultScheme;
+                  url = components.URL;
+                }
 
                 if (![self.authorizedSchemes containsObject:url.scheme]) {
                   weakSelf.cachedURL = nil;
