@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_scroll_restoration.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
@@ -58,15 +59,23 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
                        NavigationTransitionWhileOptions*,
                        ExceptionState&);
 
+  void restoreScroll(ExceptionState&);
+  void RestoreScrollAfterTransitionIfNeeded();
+
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
   }
   bool ShouldResetFocus() const;
 
+  void SaveStateFromDestinationItem(HistoryItem*);
+
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
 
  private:
+  void RestoreScrollInternal();
+  bool InManualScrollRestorationMode();
+
   String navigation_type_;
   Member<NavigationDestination> destination_;
   bool can_transition_;
@@ -76,9 +85,13 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
   Member<FormData> form_data_;
   ScriptValue info_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
+  absl::optional<V8NavigationScrollRestoration> scroll_restoration_behavior_ =
+      absl::nullopt;
+  absl::optional<HistoryItem::ViewState> history_item_view_state_;
 
   KURL url_;
   HeapVector<ScriptPromise> navigation_action_promises_list_;
+  bool did_restore_scroll_ = false;
 };
 
 }  // namespace blink

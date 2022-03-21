@@ -50,40 +50,37 @@ class NavigateReaction final : public ScriptFunction::Callable {
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     NavigationApiNavigation* navigation,
-                    AbortSignal* signal,
-                    bool should_reset_focus,
+                    NavigateEvent* navigate_event,
                     ReactType react_type) {
     promise.Then(MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, signal, should_reset_focus,
+                                       navigation, navigate_event,
                                        ResolveType::kFulfill, react_type)),
                  MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, signal, should_reset_focus,
+                                       navigation, navigate_event,
                                        ResolveType::kReject, react_type)));
   }
 
   NavigateReaction(NavigationApiNavigation* navigation,
-                   AbortSignal* signal,
-                   bool should_reset_focus,
+                   NavigateEvent* navigate_event,
                    ResolveType resolve_type,
                    ReactType react_type)
       : navigation_(navigation),
-        signal_(signal),
-        should_reset_focus_(should_reset_focus),
+        navigate_event_(navigate_event),
         resolve_type_(resolve_type),
         react_type_(react_type) {}
 
   void Trace(Visitor* visitor) const final {
     ScriptFunction::Callable::Trace(visitor);
     visitor->Trace(navigation_);
-    visitor->Trace(signal_);
+    visitor->Trace(navigate_event_);
   }
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
     auto* window = LocalDOMWindow::From(script_state);
     DCHECK(window);
-    if (signal_->aborted()) {
+    if (navigate_event_->signal()->aborted()) {
       return ScriptValue();
     }
 
@@ -91,13 +88,15 @@ class NavigateReaction final : public ScriptFunction::Callable {
     navigation_api->ongoing_navigation_signal_ = nullptr;
 
     if (resolve_type_ == ResolveType::kFulfill) {
+      if (react_type_ == ReactType::kTransitionWhile)
+        navigate_event_->RestoreScrollAfterTransitionIfNeeded();
       navigation_api->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
     } else {
       navigation_api->RejectPromisesAndFireNavigateErrorEvent(navigation_,
                                                               value);
     }
 
-    if (should_reset_focus_) {
+    if (navigate_event_->ShouldResetFocus()) {
       auto* document = navigation_api->GetSupplementable()->document();
       if (Element* focus_delegate = document->GetAutofocusDelegate()) {
         focus_delegate->focus();
@@ -118,8 +117,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
  private:
   Member<NavigationApiNavigation> navigation_;
-  Member<AbortSignal> signal_;
-  bool should_reset_focus_;
+  Member<NavigateEvent> navigate_event_;
   ResolveType resolve_type_;
   ReactType react_type_;
 };
@@ -754,6 +752,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   auto* navigate_event = NavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
+  navigate_event->SaveStateFromDestinationItem(destination_item);
 
   DCHECK(!ongoing_navigate_event_);
   DCHECK(!ongoing_navigation_signal_);
@@ -804,8 +803,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, tweaked_promise_list),
-        ongoing_navigation_, navigate_event->signal(),
-        navigate_event->ShouldResetFocus(), react_type);
+        ongoing_navigation_, navigate_event, react_type);
   } else if (ongoing_navigation_) {
     // The spec assumes it's ok to leave a promise permanently unresolved, but
     // ScriptPromiseResolver requires either resolution or explicit detach.

@@ -88,7 +88,7 @@ void NavigateEvent::transitionWhile(ScriptState* script_state,
         focus_reset_behavior_->AsEnum() != options->focusReset().AsEnum()) {
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The \"" + options->focusReset().AsString() +
                   "\" value for transitionWhile()'s focusReset option will "
@@ -96,6 +96,22 @@ void NavigateEvent::transitionWhile(ScriptState* script_state,
                   focus_reset_behavior_->AsString() + "\"."));
     }
     focus_reset_behavior_ = options->focusReset();
+  }
+
+  if (options->hasScrollRestoration() && navigation_type_ == "traverse") {
+    if (scroll_restoration_behavior_ &&
+        scroll_restoration_behavior_->AsEnum() !=
+            options->scrollRestoration().AsEnum()) {
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "The \"" + options->scrollRestoration().AsString() +
+                  "\" value for transitionWhile()'s scrollRestoration option "
+                  "will override the previously-passed value of \"" +
+                  scroll_restoration_behavior_->AsString() + "\"."));
+    }
+    scroll_restoration_behavior_ = options->scrollRestoration();
   }
 }
 
@@ -111,6 +127,55 @@ bool NavigateEvent::ShouldResetFocus() const {
   return !focus_reset_behavior_ ||
          focus_reset_behavior_->AsEnum() ==
              V8NavigationFocusReset::Enum::kAfterTransition;
+}
+
+void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
+  if (navigation_type_ != "traverse") {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "restoreScroll() may only be used for \"traverse\" navigations");
+    return;
+  }
+  if (!InManualScrollRestorationMode()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "restoreScroll() may only be used when in manual scroll restoration "
+        "mode");
+    return;
+  }
+  if (did_restore_scroll_)
+    return;
+  RestoreScrollInternal();
+  did_restore_scroll_ = true;
+}
+
+void NavigateEvent::RestoreScrollAfterTransitionIfNeeded() {
+  if (navigation_type_ == "traverse" && !InManualScrollRestorationMode()) {
+    DCHECK(!did_restore_scroll_);
+    RestoreScrollInternal();
+  }
+  did_restore_scroll_ = true;
+}
+
+void NavigateEvent::SaveStateFromDestinationItem(HistoryItem* item) {
+  if (item)
+    history_item_view_state_ = item->GetViewState();
+}
+
+void NavigateEvent::RestoreScrollInternal() {
+  // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
+  // because we are certain that we want to actually restore the scroll if we
+  // reach this point. Using mojom::blink::ScrollRestorationType::kManual would
+  // block the scroll.
+  DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
+      url_, WebFrameLoadType::kBackForward, history_item_view_state_,
+      mojom::blink::ScrollRestorationType::kAuto);
+}
+
+bool NavigateEvent::InManualScrollRestorationMode() {
+  return scroll_restoration_behavior_ &&
+         scroll_restoration_behavior_->AsEnum() ==
+             V8NavigationScrollRestoration::Enum::kManual;
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {

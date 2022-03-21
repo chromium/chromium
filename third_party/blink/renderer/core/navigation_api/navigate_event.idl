@@ -19,4 +19,5 @@
   readonly attribute any info;
 
   [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});
+  [RaisesException] void restoreScroll();
 };

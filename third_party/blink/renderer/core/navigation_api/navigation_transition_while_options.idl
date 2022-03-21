@@ -1,8 +1,14 @@
 dictionary NavigationTransitionWhileOptions {
   NavigationFocusReset focusReset;
+  NavigationScrollRestoration scrollRestoration;
 };
 
 enum NavigationFocusReset {
+  "after-transition",
+  "manual"
+};
+
+enum NavigationScrollRestoration {
   "after-transition",
   "manual"
 };

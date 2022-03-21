@@ -5756,6 +5756,7 @@ interface NavigateEvent : Event
     getter signal
     getter userInitiated
     method constructor
+    method restoreScroll
     method transitionWhile
 interface Navigation : EventTarget
     attribute @@toStringTag
