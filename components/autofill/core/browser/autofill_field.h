@@ -205,7 +205,7 @@ class AutofillField : public FormFieldData {
   // Getter and Setter methods for
   // |value_not_autofilled_over_existing_value_hash_|.
   void set_value_not_autofilled_over_existing_value_hash(
-      size_t value_not_autofilled_over_existing_value_hash) {
+      absl::optional<size_t> value_not_autofilled_over_existing_value_hash) {
     value_not_autofilled_over_existing_value_hash_ =
         value_not_autofilled_over_existing_value_hash;
   }
