@@ -2,10 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './help_resources_icons.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HelpContent, HelpContentList, HelpContentType} from './feedback_types.js';
 
-import {HelpContent, HelpContentList} from './feedback_types.js';
+/**
+ * @const {string}
+ */
+const ICON_NAME_FOR_ARTICLE = 'content-type:article';
+
+/**
+ * @const {string}
+ */
+const ICON_NAME_FOR_FORUM = 'content-type:forum';
 
 /**
  * @fileoverview
@@ -28,6 +39,25 @@ export class HelpContentElement extends PolymerElement {
        */
       helpContentList: {type: HelpContentList, value: () => []}
     };
+  }
+
+  /**
+   * Find the icon name to be used for a help content type.
+   * @param {!HelpContentType} contentType
+   * @return {string}
+   * @protected
+   */
+  getIcon_(contentType) {
+    switch (contentType) {
+      case HelpContentType.kForum:
+        return ICON_NAME_FOR_FORUM;
+      case HelpContentType.kArticle:
+        return ICON_NAME_FOR_ARTICLE;
+      case HelpContentType.kUnknown:
+        return ICON_NAME_FOR_ARTICLE;
+      default:
+        return ICON_NAME_FOR_ARTICLE;
+    }
   }
 
   /**
