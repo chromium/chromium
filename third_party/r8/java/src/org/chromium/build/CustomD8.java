@@ -18,7 +18,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomD8 {
     private static class CommandLineOrigin extends Origin {
@@ -46,6 +50,70 @@ public class CustomD8 {
         return value;
     }
 
+    private static class Deps implements DesugarGraphConsumer {
+        private Map<String, Set<String>> mDeps = new ConcurrentHashMap<>();
+        private String mFileTmpPrefix;
+        private static final String DEP_PREFIX = "  <-  ";
+
+        public Deps(String fileTmpPrefix) {
+            mFileTmpPrefix = fileTmpPrefix;
+        }
+
+        private String formatOrigin(Origin origin) {
+            String path = origin.toString();
+            // Class files are extracted to a temporary directory for incremental dexing.
+            // Remove the prefix of the path corresponding to the temporary directory so
+            // that these paths are consistent between builds.
+            if (mFileTmpPrefix != null && path.startsWith(mFileTmpPrefix)) {
+                return path.substring(mFileTmpPrefix.length());
+            }
+            return path;
+        }
+
+        @Override
+        public void accept(Origin dependentOrigin, Origin dependencyOrigin) {
+            String dependent = formatOrigin(dependentOrigin);
+            String dependency = formatOrigin(dependencyOrigin);
+            add(dependent, dependency);
+        }
+
+        private void add(String dependent, String dependency) {
+            mDeps.computeIfAbsent(dependent, k -> ConcurrentHashMap.newKeySet()).add(dependency);
+        }
+
+        @Override
+        public void finished() {}
+
+        private void loadFromFile(Path path) throws IOException {
+            String dependent = null;
+            for (String line : Files.readAllLines(path)) {
+                if (line.startsWith(DEP_PREFIX)) {
+                    add(dependent, line.substring(DEP_PREFIX.length()));
+                } else {
+                    dependent = line;
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            for (String dependent : sorted(mDeps.keySet())) {
+                builder.append(dependent).append("\n");
+                for (String dependency : sorted(mDeps.get(dependent))) {
+                    builder.append(DEP_PREFIX).append(dependency).append("\n");
+                }
+            }
+            return builder.toString();
+        }
+
+        private static List<String> sorted(Set<String> set) {
+            List<String> list = new ArrayList<>(set);
+            Collections.sort(list);
+            return list;
+        }
+    }
+
     // Entry point for D8 compilation with support for --desugar-dependencies option
     // as well.
     public static void main(String[] args) throws CompilationFailedException, IOException {
@@ -61,41 +129,22 @@ public class CustomD8 {
 
         if (desugarDependenciesPath != null) {
             final Path desugarDependencies = Paths.get(desugarDependenciesPath);
-            PrintWriter desugarDependenciesPrintWriter =
-                    new PrintWriter(Files.newOutputStream(desugarDependencies));
             if (builder.getDesugarGraphConsumer() != null) {
                 throw new CompilationFailedException("Too many desugar graph consumers.");
             }
-            builder.setDesugarGraphConsumer(new DesugarGraphConsumer() {
-                private String formatOrigin(Origin origin) {
-                    String path = origin.toString();
-                    // Class files are extracted to a temporary directory for incremental dexing.
-                    // Remove the prefix of the path corresponding to the temporary directory so
-                    // that these paths are consistent between builds.
-                    if (fileTmpPrefix != null && path.startsWith(fileTmpPrefix)) {
-                        return path.substring(fileTmpPrefix.length());
-                    }
-                    return path;
-                }
-
-                @Override
-                public void accept(Origin dependent, Origin dependency) {
-                    String dependentPath = formatOrigin(dependent);
-                    String dependencyPath = formatOrigin(dependency);
-                    synchronized (desugarDependenciesPrintWriter) {
-                        desugarDependenciesPrintWriter.println(
-                                dependentPath + " -> " + dependencyPath);
-                    }
-                }
-
-                @Override
-                public void finished() {
-                    desugarDependenciesPrintWriter.close();
-                }
-            });
+            Deps deps = new Deps(fileTmpPrefix);
+            if (Files.exists(desugarDependencies)) {
+                deps.loadFromFile(desugarDependencies);
+            }
+            builder.setDesugarGraphConsumer(deps);
+            // Run D8 to create/update the graph before writing deps to the file.
+            D8.run(builder.build());
+            try (PrintWriter desugarDependenciesPrintWriter =
+                            new PrintWriter(Files.newOutputStream(desugarDependencies))) {
+                desugarDependenciesPrintWriter.println(deps.toString());
+            }
+        } else {
+            D8.run(builder.build());
         }
-
-        // Run D8.
-        D8.run(builder.build());
     }
 }
