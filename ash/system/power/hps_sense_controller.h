@@ -32,15 +32,20 @@ class ASH_EXPORT HpsSenseController : public chromeos::HpsDBusClient::Observer {
 
   // chromeos::HpsDBusClient::Observer:
   void OnHpsNotifyChanged(hps::HpsResult state) override;
-  // Re-enables HpsSense on restart if it was enabled before.
+  // Re-enables HpsSense on HpsBusService restart if it was enabled before.
   void OnRestart() override;
   void OnShutdown() override;
 
  private:
-  // Callback used when the Hps Service is available.
-  void OnHpsServiceAvailable(bool service_is_avaible);
+  // Called when the Hps Service is available.
+  void OnHpsServiceAvailable(bool service_is_available);
 
-  bool is_hps_sense_enabled = false;
+  // Indicates whether the hps service is available; it is set inside
+  // OnHpsServiceAvailable and set to false OnShutdown.
+  bool service_available_ = false;
+
+  // Records requested hps sense enable state from client.
+  bool want_hps_sense_ = false;
 
   base::ScopedObservation<chromeos::HpsDBusClient,
                           chromeos::HpsDBusClient::Observer>

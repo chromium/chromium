@@ -210,6 +210,8 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     feature_list_.InitAndEnableFeature(features::kQuickDim);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
     chromeos::HpsDBusClient::InitializeFake();
+    chromeos::FakeHpsDBusClient::Get()->Reset();
+    chromeos::FakeHpsDBusClient::Get()->set_hps_service_is_available(true);
     NoSessionAshTestBase::SetUp();
 
     power_policy_controller_ = chromeos::PowerPolicyController::Get();
@@ -562,8 +564,10 @@ TEST_F(PowerPrefsTest, AlsLoggingEnabled) {
 }
 
 TEST_F(PowerPrefsTest, SetQuickDimParams) {
-  // Set hps service as available so that hps dbus calls can be recorded.
-  chromeos::FakeHpsDBusClient::Get()->set_hps_service_is_available(true);
+  // Check that DisableHpsSense is called on initialization.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->disable_hps_sense_count(), 1);
+  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->enable_hps_sense_count(), 0);
 
   // This will trigger UpdatePowerPolicyFromPrefs and set correct parameters.
   SetQuickDimPreference(true);
@@ -589,7 +593,7 @@ TEST_F(PowerPrefsTest, SetQuickDimParams) {
   // DisableHpsSense should be called when kPowerQuickDimEnabled becomes false.
   SetQuickDimPreference(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->disable_hps_sense_count(), 1);
+  EXPECT_EQ(chromeos::FakeHpsDBusClient::Get()->disable_hps_sense_count(), 2);
 }
 
 TEST_F(PowerPrefsTest, QuickDimMetrics) {
