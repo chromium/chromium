@@ -114,7 +114,7 @@ public class AnrCollector {
         }
 
         byte[] versionBytes = reason.getProcessStateSummary();
-        if (versionBytes.length == 0) {
+        if (versionBytes == null || versionBytes.length == 0) {
             // We have gotten an ANR without an attached process state summary and thus
             // can't be be confident which version this ANR happened on. This would
             // happen if we ANRed before Chrome had set the process state summary.
