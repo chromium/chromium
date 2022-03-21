@@ -317,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   EXPECT_EQ(0, CountRenderProcessHosts());
 }
 
-// TODO(crbug.com/1307548): Flaky on Linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1307548): Flaky on Linux/Lacros/Mac
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC))
 #define MAYBE_RegisteredSWReflectedOnInternalUI \
   DISABLED_RegisteredSWReflectedOnInternalUI
 #else
