@@ -40,9 +40,9 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        TimeDelta delay) override;
-  bool RunsTasksInCurrentSequence() const override;
 
   // SequencedTaskRunner implementation
+  bool RunsTasksInCurrentSequence() const override;
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   TimeDelta delay) override;
