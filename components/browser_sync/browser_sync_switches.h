@@ -19,11 +19,6 @@ inline constexpr char kEnableLocalSyncBackend[] = "enable-local-sync-backend";
 // flag is present.
 inline constexpr char kLocalSyncBackendDir[] = "local-sync-backend-dir";
 
-#if BUILDFLAG(IS_ANDROID)
-inline constexpr base::Feature kSyncUseSessionsUnregisterDelay{
-    "SyncUseSessionsUnregisterDelay", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Sync invalidation switches.
 //
 // Enables providing the list of FCM registration tokens in the commit request.

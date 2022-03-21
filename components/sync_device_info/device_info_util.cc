@@ -6,9 +6,8 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 
 namespace syncer {
@@ -18,14 +17,8 @@ const base::TimeDelta DeviceInfoUtil::kActiveThreshold = base::Days(14);
 
 namespace {
 
-// Feature flag for configuring the pulse interval.
-// TODO(crbug.com/1045940): Remove this when the experiment concludes.
-const base::Feature kPulseInterval{"PulseInterval",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // The delay between periodic updates to the entry corresponding to this device.
-const base::FeatureParam<int> kPulseIntervalMinutes = {
-    &kPulseInterval, "PulseIntervalMinutes", 1440};  // 1 day
+const base::TimeDelta kPulseInterval = base::Days(1);
 
 base::TimeDelta Age(const base::Time last_update, const base::Time now) {
   // Don't allow negative age for things somehow updated in the future.
@@ -36,7 +29,7 @@ base::TimeDelta Age(const base::Time last_update, const base::Time now) {
 
 // static
 base::TimeDelta DeviceInfoUtil::GetPulseInterval() {
-  return base::Minutes(kPulseIntervalMinutes.Get());
+  return kPulseInterval;
 }
 
 // static

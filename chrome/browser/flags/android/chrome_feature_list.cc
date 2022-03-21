@@ -368,7 +368,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceDisableExtendedSyncPromos,
     &syncer::kSyncTrustedVaultPassphraseRecovery,
     &syncer::kSyncAndroidPromosWithSingleButton,
-    &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
     &webapps::features::kInstallableAmbientBadgeInfoBar,

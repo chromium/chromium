@@ -494,8 +494,6 @@ public abstract class ChromeFeatureList {
             "SwapPixelFormatToFixConvertFromTranslucent";
     public static final String SYNC_TRUSTED_VAULT_PASSPHRASE_RECOVERY =
             "SyncTrustedVaultPassphraseRecovery";
-    public static final String SYNC_USE_SESSIONS_UNREGISTER_DELAY =
-            "SyncUseSessionsUnregisterDelay";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_GROUPS_ANDROID = "TabGroupsAndroid";
     public static final String TAB_GROUPS_UI_IMPROVEMENTS_ANDROID =

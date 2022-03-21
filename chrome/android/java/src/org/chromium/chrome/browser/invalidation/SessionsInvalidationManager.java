@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -30,15 +29,6 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
      */
     static final int REGISTER_FOR_SESSION_SYNC_INVALIDATIONS_DELAY_MS =
             (int) DateUtils.SECOND_IN_MILLIS * 20;
-
-    /**
-     * The amount of time after the RecentTabsPage is closed to unregister for session sync
-     * invalidations. The delay is long to avoid registering and unregistering a lot if the user
-     * visits the RecentTabsPage a lot.
-     * Only applied if the feature SyncUseSessionsUnregisterDelay is enabled.
-     */
-    static final int UNREGISTER_FOR_SESSION_SYNC_INVALIDATIONS_DELAY_MS =
-            (int) DateUtils.HOUR_IN_MILLIS;
 
     /**
      * Used to schedule tasks to enable and disable session sync invalidations.
@@ -99,11 +89,7 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
     public void onRecentTabsPageClosed() {
         --mNumRecentTabPages;
         if (mNumRecentTabPages == 0) {
-            setSessionInvalidationsEnabled(false,
-                    ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_USE_SESSIONS_UNREGISTER_DELAY)
-                            ? UNREGISTER_FOR_SESSION_SYNC_INVALIDATIONS_DELAY_MS
-                            : 0);
+            setSessionInvalidationsEnabled(false, 0);
         }
     }
 
