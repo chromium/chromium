@@ -205,6 +205,9 @@ bool AppendRelativePath(const base::FilePath& parent,
 
 }  // namespace
 
+const base::FilePath::CharType kFuseBoxMediaPath[] =
+    FILE_PATH_LITERAL("/media/fuse/fusebox");
+
 const base::FilePath::CharType kRemovableMediaPath[] =
     FILE_PATH_LITERAL("/media/removable");
 

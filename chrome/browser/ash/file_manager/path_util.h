@@ -19,6 +19,9 @@ class Profile;
 namespace file_manager {
 namespace util {
 
+// Absolute path for FuseBox media mount point.
+extern const base::FilePath::CharType kFuseBoxMediaPath[];
+
 // Absolute base path for removable media on Chrome OS. Exposed here so it can
 // be used by tests.
 extern const base::FilePath::CharType kRemovableMediaPath[];
