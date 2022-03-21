@@ -36,6 +36,8 @@ using ValidModelIdCallback = base::OnceCallback<void(bool)>;
 using CheckOptInStatusCallback =
     base::OnceCallback<void(nearby::fastpair::OptInStatus)>;
 using UpdateOptInStatusCallback = base::OnceCallback<void(bool)>;
+using DeleteAssociatedDeviceByAccountKeyCallback =
+    base::OnceCallback<void(bool)>;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
@@ -66,6 +68,13 @@ class FastPairRepository {
   // otherwise.
   virtual bool DeleteAssociatedDevice(
       const device::BluetoothDevice* device) = 0;
+
+  // Deletes the associated data for a given |account_key|.
+  // Runs true if a delete is successful for this account key, false
+  // otherwise on |callback|.
+  virtual void DeleteAssociatedDeviceByAccountKey(
+      const std::vector<uint8_t>& account_key,
+      DeleteAssociatedDeviceByAccountKeyCallback callback) = 0;
 
   // Fetches the |device| images and a record of the device ID -> model ID
   // mapping to memory.

@@ -80,6 +80,11 @@ void FakeFastPairRepository::CheckOptInStatus(
     CheckOptInStatusCallback callback) {}
 
 // Unimplemented.
+void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
+    const std::vector<uint8_t>& account_key,
+    DeleteAssociatedDeviceByAccountKeyCallback callback) {}
+
+// Unimplemented.
 void FakeFastPairRepository::UpdateOptInStatus(
     nearby::fastpair::OptInStatus opt_in_status,
     UpdateOptInStatusCallback callback) {}

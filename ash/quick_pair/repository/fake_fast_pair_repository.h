@@ -65,6 +65,9 @@ class FakeFastPairRepository : public FastPairRepository {
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
                          UpdateOptInStatusCallback callback) override;
+  void DeleteAssociatedDeviceByAccountKey(
+      const std::vector<uint8_t>& account_key,
+      DeleteAssociatedDeviceByAccountKeyCallback callback) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);

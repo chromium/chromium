@@ -283,6 +283,27 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Valid) {
   ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
 }
 
+TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
+  fast_pair_repository_->DeleteAssociatedDeviceByAccountKey(kAccountKey1,
+                                                            callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+}
+
 TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Invalid) {
   ASSERT_FALSE(fast_pair_repository_->DeleteAssociatedDevice(
       &classic_bluetooth_device_));
