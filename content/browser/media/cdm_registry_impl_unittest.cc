@@ -648,4 +648,39 @@ TEST_F(CdmRegistryImplTest,
             GetOtherCdmCapability());
 }
 
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
+  Register(GetTestCdmInfo());
+  Register(kTestKeySystem, GetTestCdmCapability(), Robustness::kHardwareSecure);
+  SelectHardwareSecureDecryption(true);
+
+  GetKeySystemCapabilities();
+
+  // Both software and hardware security are supported for `kTestKeySystem`.
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities_1 = results_[kObserver1][0];
+  ASSERT_EQ(key_system_capabilities_1.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_1.count(kTestKeySystem));
+  const auto& support_1 = key_system_capabilities_1[kTestKeySystem];
+  ASSERT_EQ(support_1.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support_1.hw_secure_capability.value(), GetTestCdmCapability());
+
+  {
+    base::RunLoop run_loop;
+    cdm_registry_.DisableHardwareSecureCdms();
+    run_loop.RunUntilIdle();
+  }
+
+  // Now hardware security is NOT supported for `kTestKeySystem`. Software
+  // security is not affected.
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities_2 = results_[kObserver1][1];
+  ASSERT_EQ(key_system_capabilities_2.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities_2.count(kTestKeySystem));
+  const auto& support_2 = key_system_capabilities_2[kTestKeySystem];
+  ASSERT_EQ(support_2.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_FALSE(support_2.hw_secure_capability);
+}
+
 }  // namespace content

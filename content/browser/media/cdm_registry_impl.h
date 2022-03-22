@@ -56,6 +56,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // thread this function was called on.
   void ObserveKeySystemCapabilities(KeySystemCapabilitiesUpdateCB cb);
 
+  // TODO(xhwang): Provide a way to disable a specific `key_system`
+  void DisableHardwareSecureCdms();
+
  private:
   // Make the test a friend class so it could create CdmRegistryImpl directly,
   // to avoid singleton issues.
