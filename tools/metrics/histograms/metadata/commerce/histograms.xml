@@ -128,7 +128,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
-    enum="ShoppingDataProviderFallback" expires_after="2022-07-17">
+    enum="ShoppingDataProviderFallback" expires_after="2022-09-18">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -140,7 +140,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed"
-    enum="Boolean" expires_after="2022-07-17">
+    enum="Boolean" expires_after="2022-09-18">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>

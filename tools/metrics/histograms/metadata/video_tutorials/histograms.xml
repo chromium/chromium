@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"
-    expires_after="2022-07-03">
+    expires_after="2022-09-18">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

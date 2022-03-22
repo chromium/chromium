@@ -881,7 +881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>rkaplow@chromium.org</owner>
   <summary>
     The amount of time that elapsed during
