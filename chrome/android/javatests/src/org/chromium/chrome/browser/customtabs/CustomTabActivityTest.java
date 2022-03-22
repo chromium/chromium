@@ -650,6 +650,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1308065")
     public void testLoadNewUrlWithSession() throws Exception {
         final Context context = InstrumentationRegistry.getTargetContext();
         final Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
