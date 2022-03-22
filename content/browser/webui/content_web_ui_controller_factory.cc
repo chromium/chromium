@@ -90,11 +90,8 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<QuotaInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIMediaInternalsHost) {
-    if (base::FeatureList::IsEnabled(media::kEnableMediaInternals))
-      return std::make_unique<MediaInternalsUI>(web_ui);
-    return nullptr;
-  }
+  if (url.host_piece() == kChromeUIMediaInternalsHost)
+    return std::make_unique<MediaInternalsUI>(web_ui);
   return nullptr;
 }
 
