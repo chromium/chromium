@@ -5,126 +5,61 @@ come with a checkout of Chromium.
 
 ## Prerequisites
 
-You'll need a Windows machine, a Linux machine, and a Mac; all capable of
-building clang-format. You'll also need permissions to upload to the appropriate
-google storage bucket. Chromium infrastructure team members have this, and
-others can be granted the permission based on need. Talk to ncarter or hinoka
-about getting access.
+You'll also need permissions to upload to the appropriate google storage
+bucket. Chromium infrastructure team members have this, and others can be
+granted the permission based on need. If you need this permission, mention this
+in the tracking bug.
 
-## Pick a head svn revision
+## Fetch and upload prebuilt clang-format binaries from recent clang rolls
 
-Consult http://llvm.org/svn/llvm-project/ for the current head revision. This
-will be the CLANG_REV you'll use later to check out each platform to a
-consistent state.
+Recent clang rolls can be found via looking at the history of
+[update.py](https://crsrc.org/c/tools/clang/scripts/update.py). You can also
+use clang-format packages built in recent successful dry run attempts at
+updating clang as mentioned [here](clang_sheriffing.md).
 
-## Build a release-mode clang-format on each platform
+The following will, for each supported host architecture,
 
-Follow the official instructions here:
-http://clang.llvm.org/get_started.html.
-
-Windows step-by-step:
-
-```shell
-# [double check you have the tools you need]
-where cmake.exe  # You need to install this.
-
-# In chromium/src
-tools\win\setenv amd64_x86
-set CLANG_REV=56ac9d30d35632969baa39829ebc8465ed5937ef  # You must change this value (see above)
-rmdir /S /Q llvm-project
-git clone https://github.com/llvm/llvm-project
-cd llvm-project
-git checkout %CLANG_REV%
-mkdir build
-cd build
-set CC=..\..\third_party\llvm-build\Release+Asserts\bin\clang-cl.exe
-set CXX=..\..\third_party\llvm-build\Release+Asserts\bin\clang-cl.exe
-set CFLAGS=-m32
-set CXXFLAGS=-m32
-cmake -G Ninja ..\llvm -DCMAKE_BUILD_TYPE=Release -DLLVM_USE_CRT_RELEASE=MT ^
-    -DLLVM_ENABLE_ASSERTIONS=NO -DLLVM_ENABLE_THREADS=NO ^
-    -DLLVM_ENABLE_PROJECTS=clang
-ninja clang-format
-bin\clang-format.exe --version
-```
-
-Mac & Linux step-by-step:
+* Fetch the corresponding clang-format package from the specified clang roll
+* Extract and copy the clang-format binary to the proper directory
+* Upload the binary into a publicly accessible google storage bucket, also
+  updating the corresponding `.sha1` files in the local checkout of Chrome
 
 ```shell
-# Check out.
-export CLANG_REV=56ac9d30d35632969baa39829ebc8465ed5937ef   # You must change this value (see above)
-git clone https://github.com/llvm/llvm-project
-cd llvm-project
-git checkout $CLANG_REV
-mkdir build
-cd build
+cd $SRC/chromium/src
 
-# On Mac, do the following:
-MACOSX_DEPLOYMENT_TARGET=10.9 cmake -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_ENABLE_PROJECTS=clang \
-    -DLLVM_ENABLE_ASSERTIONS=NO \
-    -DLLVM_ENABLE_TERMINFO=OFF \
-    -DLLVM_ENABLE_THREADS=NO \
-    -DLLVM_ENABLE_ZLIB=OFF \
-    '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
-    ../llvm/
+GS_PATH=gs://chromium-browser-clang-staging
+CLANG_REV=llvmorg-15-init-234-g567890abc-2
 
-# On Linux, do the following:
-# Note the relative paths that point to your local Chromium checkout.
-# TODO(thakis): Remove DLLVM_ENABLE_Z3_SOLVER in the next roll. At the pinned
-# revision, Z3 detection does not work with a sysroot, but at LLVM trunk it's
-# already fixed.
-cmake -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_ENABLE_PROJECTS=clang \
-    -DLLVM_ENABLE_ASSERTIONS=NO \
-    -DLLVM_ENABLE_TERMINFO=OFF \
-    -DLLVM_ENABLE_THREADS=NO \
-    -DLLVM_ENABLE_ZLIB=OFF \
-    -DLLVM_ENABLE_Z3_SOLVER=NO \
-    -DCMAKE_C_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
-    -DCMAKE_CXX_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
-    -DCMAKE_ASM_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
-    -DCMAKE_CXX_STANDARD_LIBRARIES="-static-libgcc -static-libstdc++" \
-    -DCMAKE_SYSROOT=$HOME/src/chrome/src/build/linux/debian_sid_amd64-sysroot \
-    ../llvm/
+echo Linux
+gsutil cp $GS_PATH/Linux_x64/clang-format-$CLANG_REV.tgz /tmp
+tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/linux64 --strip-component=1 bin/clang-format
 
-# Finally, build the actual clang-format binary with Ninja
-ninja clang-format
-strip bin/clang-format
+echo Win
+gsutil cp $GS_PATH/Win/clang-format-$CLANG_REV.tgz /tmp
+tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/win --strip-component=1 bin/clang-format.exe
 
+echo 'Mac x64'
+gsutil cp $GS_PATH/Mac/clang-format-$CLANG_REV.tgz /tmp
+tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
+mv buildtools/mac/clang-format buildtools/mac/clang-format.x64
 
+echo 'Mac arm64'
+gsutil cp $GS_PATH/Mac_arm64/clang-format-$CLANG_REV.tgz /tmp
+tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
+mv buildtools/mac/clang-format buildtools/mac/clang-format.arm64
+
+echo 'Uploading to GCS and creating sha1 files'
+upload_to_google_storage.py --bucket=chromium-clang-format buildtools/linux64/clang-format
+upload_to_google_storage.py --bucket=chromium-clang-format buildtools/win/clang-format.exe
+upload_to_google_storage.py --bucket=chromium-clang-format buildtools/mac/clang-format.x64
+upload_to_google_storage.py --bucket=chromium-clang-format buildtools/mac/clang-format.arm64
+
+# Clean up
+rm /tmp/clang-format-$CLANG_REV.tgz
+# These aren't in .gitignore because these mac per-arch paths only exist when updating clang-format.
+# gclient runhooks puts these binaries at buildtools/mac/clang-format.
+rm buildtools/mac/clang-format.x64 buildtools/mac/clang-format.arm64
 ```
-
-Platform specific notes:
-
-*   Windows: Visual Studio 2013 only.
-*   Linux: so far (as of January 2014) we've just included a 64-bit binary. It's
-    important to disable threading, else clang-format will depend on
-    libatomic.so.1 which doesn't exist on Precise.
-*   Mac: Remember to set `MACOSX_DEPLOYMENT_TARGET` when building! If you get
-    configure warnings, you may need to install XCode 5 and avoid a goma
-    environment.
-
-## Upload each binary to google storage
-
-Copy the binaries into your chromium checkout (under
-`src/buildtools/(win|linux64|mac)/clang-format(.exe?)`). For each binary, you'll
-need to run `upload_to_google_storage.py` according to the instructions in
-[README.txt](https://chromium.googlesource.com/chromium/src/+/main/buildtools/clang_format/README.txt).
-This will upload the binary into a publicly accessible google storage bucket,
-and update `.sha1` file in your Chrome checkout. You'll check in the `.sha1`
-file (but NOT the clang-format binary) into source control. In order to be able
-to upload, you'll need write permission to the bucket -- see the prerequisites.
-
-## Copy the helper scripts and update README.chromium
-
-There are some auxiliary scripts that ought to be kept updated in lockstep with
-the clang-format binary. These get copied into
-`buildtools/clang_format/script` in your Chromium checkout.
-
-The `README.chromium` file ought to be updated with version and date info.
 
 ## Upload a CL according to the following template
 
@@ -133,7 +68,7 @@ The `README.chromium` file ought to be updated with version and date info.
     I followed these instructions:
     https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang_format_binaries.md
 
-    The binaries were built at clang revision ####### on ####DATETIME####.
+    The binaries were built at clang revision ####### on ##CRREV##.
 
     Bug:
 
