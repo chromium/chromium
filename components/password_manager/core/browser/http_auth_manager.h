@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_MANAGER_H_
 
-#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-
 namespace password_manager {
 
 class PasswordManagerClient;

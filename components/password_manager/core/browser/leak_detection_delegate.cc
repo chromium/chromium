@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
