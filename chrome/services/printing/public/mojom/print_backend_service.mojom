@@ -117,6 +117,30 @@ interface PrintBackendService {
   UseDefaultSettings()
     => (PrintSettingsResult settings);
 
+  // Generates a print settings object from user-selected options via a system
+  // print dialog.  The `parent_window_id` parameter specifies an ID which is
+  // cross-process safe to represent the native window which owns the modal
+  // print dialog used for prompting the user.  Other parameters are the same
+  // as used in `PrintingContext::AskUserForSettings()`.
+  // Currently only supported on Windows:
+  //   - It is impossible for macOS `//ui` code to display a system print
+  //     dialog from a service utility process that is modal to a window in the
+  //     browser process.  Achieving OOP support for a modal macOS system print
+  //     may be possible if all of UI is moved out of the browser process.  See
+  //     https://docs.google.com/document/d/1uAxz9pk3twwkzamchxHTQiImIbKrc0cuKVDpzbn2wsQ
+  //     for discussion on such an effort.
+  //   - TODO(crbug.com/809738):  Determine if Linux Wayland can be made to
+  //     have a system dialog be modal against an application window in the
+  //     browser process.
+  //   - Platforms other than those identified above do not support a system
+  //     print dialog.
+  [EnableIf=is_win]
+  AskUserForSettings(uint32 parent_window_id,
+                     int32 max_pages,
+                     bool has_selection,
+                     bool is_scripted)
+    => (PrintSettingsResult settings);
+
   // Generates a print settings object based upon the job settings used with
   // the device settings.  The driver to be used is expected to be identified
   // in the `job_settings` map by an entry with key

@@ -38,12 +38,14 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
+#include "base/win/win_util.h"
 #include "printing/emf_win.h"
 #include "printing/metafile.h"
 #include "printing/metafile_skia.h"
 #include "printing/printed_page_win.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #endif
 
 namespace printing {
@@ -76,6 +78,19 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
 }
 
 #if BUILDFLAG(IS_WIN)
+void OnDidAskUserForSettings(
+    std::unique_ptr<PrintingContext> context,
+    mojom::PrintBackendService::AskUserForSettingsCallback callback,
+    mojom::ResultCode result) {
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Did not get user settings, error: " << result;
+    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    return;
+  }
+  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
+      *context->TakeAndResetSettings()));
+}
+
 std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
   switch (data_type) {
     case mojom::MetafileDataType::kPDF:
@@ -84,7 +99,7 @@ std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
       return std::make_unique<Emf>();
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 // Local storage of document and associated data needed to submit to job to
 // the operating system's printing API.  All access to the document occurs on
@@ -307,13 +322,25 @@ PrintBackendServiceImpl::PrintingContextDelegate::~PrintingContextDelegate() =
 
 gfx::NativeView
 PrintBackendServiceImpl::PrintingContextDelegate::GetParentView() {
+#if BUILDFLAG(IS_WIN)
+  return parent_native_view_;
+#else
   NOTREACHED();
   return nullptr;
+#endif
 }
 
 std::string PrintBackendServiceImpl::PrintingContextDelegate::GetAppLocale() {
   return locale_;
 }
+
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::PrintingContextDelegate::SetParentWindow(
+    uint32_t parent_window_id) {
+  parent_native_view_ = reinterpret_cast<gfx::NativeView>(
+      base::win::Uint32ToHandle(parent_window_id));
+}
+#endif
 
 void PrintBackendServiceImpl::PrintingContextDelegate::SetAppLocale(
     const std::string& locale) {
@@ -479,6 +506,43 @@ void PrintBackendServiceImpl::UseDefaultSettings(
   std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
       *context->TakeAndResetSettings()));
 }
+
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::AskUserForSettings(
+    uint32_t parent_window_id,
+    int max_pages,
+    bool has_selection,
+    bool is_scripted,
+    mojom::PrintBackendService::AskUserForSettingsCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR)
+        << "Print backend instance has not been initialized for locale.";
+    std::move(callback).Run(
+        mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+    return;
+  }
+
+  // Provide the window which owns the print dialog.  On Windows the call to
+  // `AskUserForSettings()` is a blocking call.  Additionally, the browser
+  // process is to have logic to avoid even making a concurrent call to the
+  // service.  That means there is no concern here about a possible concurrent
+  // call overwriting the parent window ID of `context_delegate_`.
+  // TODO(crbug.com/809738)  When updating for Linux, add extra protection to
+  // guarantee that the parent window ID cannot be overwritten by a concurrent
+  // system print request.
+  context_delegate_.SetParentWindow(parent_window_id);
+
+  // Use a one-time `PrintingContext` to ask for the print settings.
+  // We do not yet know which device (if any) will be selected.
+  std::unique_ptr<PrintingContext> context =
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
+  PrintingContext* context_ptr = context.get();
+  context_ptr->AskUserForSettings(
+      max_pages, has_selection, is_scripted,
+      base::BindOnce(&OnDidAskUserForSettings, std::move(context),
+                     std::move(callback)));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
     base::flat_map<std::string, base::Value> job_settings,
