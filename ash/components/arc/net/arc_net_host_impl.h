@@ -91,7 +91,8 @@ class ArcNetHostImpl : public KeyedService,
   void AddPasspointCredentials(
       mojom::PasspointCredentialsPtr credentials) override;
 
-  void RemovePasspointCredentials(const std::string& package_name) override;
+  void RemovePasspointCredentials(
+      mojom::PasspointRemovalPropertiesPtr properties) override;
 
   void SetAlwaysOnVpn(const std::string& vpnPackage, bool lockdown) override;
 

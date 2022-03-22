@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -121,6 +121,15 @@ struct PasspointCredentials {
 
   // Package name of the App that provided these credentials.
   string package_name@7;
+};
+
+// Values to be used to remove matching Passpoint credentials.
+struct PasspointRemovalProperties {
+  // Home service provider fully qualified domain name.
+  string? fqdn@0;
+
+  // Package name of the app that created the credentials.
+  string? package_name@1;
 };
 
 // The EAP method that will be used when connecting to a 802.1x WiFi network or
@@ -533,7 +542,7 @@ struct ArcPingTestResult {
   int64 duration_ms;
 };
 
-// Next Method ID: 16
+// Next Method ID: 17
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 interface NetHost {
   // Sends a request to get enabled / disabled status of WiFi.
@@ -596,10 +605,14 @@ interface NetHost {
   // platform.
   [MinVersion=16] AddPasspointCredentials@14(PasspointCredentials credentials);
 
-  // Removes all PasspointCredentials blocks provided by an Android App.
+  // Removes all PasspointCredentials blocks that match all property of
+  // |properties|.
   // Calling this will also revoke all associated WiFi Services provisioned
   // with the credentials blocks.
-  [MinVersion=16] RemovePasspointCredentials@15(string package_name);
+  // ARC calls this function whenever an app is removed regardless of whether
+  // the app has configured Passpoint.
+  [MinVersion=17] RemovePasspointCredentials@16(
+      PasspointRemovalProperties properties);
 };
 
 // Next Method ID: 11

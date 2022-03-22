@@ -478,6 +478,13 @@ void AddPasspointCredentialsFailureCallback(const std::string& error_name,
                  << ", message: " << error_message;
 }
 
+void RemovePasspointCredentialsFailureCallback(
+    const std::string& error_name,
+    const std::string& error_message) {
+  NET_LOG(ERROR) << "Failed to remove passpoint credentials, error:"
+                 << error_name << ", message: " << error_message;
+}
+
 }  // namespace
 
 namespace arc {
@@ -1158,8 +1165,33 @@ void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
 }
 
 void ArcNetHostImpl::RemovePasspointCredentials(
-    const std::string& package_name) {
-  // TODO(b/195262431) Call shill Manager RemovePasspointCredentials method.
+    mojom::PasspointRemovalPropertiesPtr properties) {
+  if (!properties) {
+    NET_LOG(ERROR) << "Empty passpoint removal properties";
+    return;
+  }
+
+  const auto* profile = GetNetworkProfile();
+  if (!profile || profile->path.empty()) {
+    NET_LOG(ERROR) << "Unable to get network profile path";
+    return;
+  }
+
+  base::Value shill_properties(base::Value::Type::DICTIONARY);
+  if (properties->fqdn.has_value()) {
+    shill_properties.SetStringKey(shill::kPasspointCredentialsFQDNProperty,
+                                  properties->fqdn.value());
+  }
+  if (properties->package_name.has_value()) {
+    shill_properties.SetStringKey(
+        shill::kPasspointCredentialsAndroidPackageNameProperty,
+        properties->package_name.value());
+  }
+
+  ash::ShillManagerClient::Get()->RemovePasspointCredentials(
+      dbus::ObjectPath(profile->path), shill_properties, base::DoNothing(),
+      base::BindOnce(&RemovePasspointCredentialsFailureCallback));
+
   return;
 }
 
