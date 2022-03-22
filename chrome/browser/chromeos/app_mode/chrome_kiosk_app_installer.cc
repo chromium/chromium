@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -21,6 +22,14 @@
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 namespace ash {
+
+namespace {
+
+void RecordKioskSecondaryAppsInstallResult(bool success) {
+  base::UmaHistogramBoolean("Kiosk.SecondaryApps.InstallSuccessful", success);
+}
+
+}  // namespace
 
 ChromeKioskAppInstaller::AppInstallData::AppInstallData() = default;
 ChromeKioskAppInstaller::AppInstallData::AppInstallData(
@@ -173,10 +182,22 @@ void ChromeKioskAppInstaller::FinalizeAppInstall() {
   // present at this point, crash recovery flow skips app installation steps -
   // this means that the kiosk app might not yet be downloaded. If that is
   // the case, bail out from the app launch.
-  if (!primary_app || !AreSecondaryAppsInstalled()) {
+  if (!primary_app) {
     ReportInstallFailure(
         ChromeKioskAppInstaller::InstallResult::kUnableToLaunch);
     return;
+  }
+  if (!AreSecondaryAppsInstalled()) {
+    ReportInstallFailure(
+        ChromeKioskAppInstaller::InstallResult::kUnableToLaunch);
+    RecordKioskSecondaryAppsInstallResult(false);
+    return;
+  } else {
+    extensions::KioskModeInfo* info =
+        extensions::KioskModeInfo::Get(primary_app);
+    if (!info->secondary_apps.empty()) {
+      RecordKioskSecondaryAppsInstallResult(true);
+    }
   }
 
   const bool offline_enabled =
