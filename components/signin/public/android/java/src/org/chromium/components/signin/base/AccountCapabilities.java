@@ -101,6 +101,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canStopParentalSupervision capability value.
+     */
+    public @Tribool int canStopParentalSupervision() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME);
+    }
+
+    /**
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */

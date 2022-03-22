@@ -48,6 +48,10 @@ class AccountCapabilities {
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
+  // Chrome can stop parental supervision if the user chooses to do so with
+  // this capability.
+  signin::Tribool can_stop_parental_supervision() const;
+
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 

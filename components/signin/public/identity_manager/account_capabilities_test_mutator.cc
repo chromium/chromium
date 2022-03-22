@@ -30,6 +30,12 @@ void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_stop_parental_supervision(
+    bool value) {
+  capabilities_->capabilities_map_[kCanStopParentalSupervisionCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
     bool value) {
   capabilities_->capabilities_map_[kIsSubjectToParentalControlsCapabilityName] =

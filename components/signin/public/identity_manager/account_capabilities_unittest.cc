@@ -43,6 +43,21 @@ TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanStopParentalSupervision) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_stop_parental_supervision(true);
+  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_stop_parental_supervision(false);
+  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_subject_to_parental_controls(),

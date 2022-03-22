@@ -50,6 +50,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
+            case AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME:
+                return capabilities.canStopParentalSupervision();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -79,6 +81,10 @@ public final class AccountCapabilitiesTest {
                         .name("IsSubjectToParentalControls")
                         .value(AccountCapabilitiesConstants
                                         .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME),
+                new ParameterSet()
+                        .name("CanStopParentalSupervision")
+                        .value(AccountCapabilitiesConstants
+                                        .CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("CanOfferExtendedChromeSyncPromos")
                         .value(AccountCapabilitiesConstants
