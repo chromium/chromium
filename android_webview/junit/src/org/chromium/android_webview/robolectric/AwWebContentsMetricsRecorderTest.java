@@ -24,8 +24,8 @@ import org.chromium.android_webview.AwWebContentsMetricsRecorder;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Junit tests for AwWebContentsMetricsRecorder.
@@ -33,7 +33,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
  * Due to the complexity of logging dark mode settings, that part of the class is protected by test
  * cases.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class AwWebContentsMetricsRecorderTest {
     @Before

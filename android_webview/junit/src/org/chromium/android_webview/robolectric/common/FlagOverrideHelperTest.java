@@ -15,7 +15,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.base.CommandLine;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Unit tests for FlagOverrideHelper.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FlagOverrideHelperTest {
     @Before

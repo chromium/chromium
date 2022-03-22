@@ -14,13 +14,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwScrollOffsetManager;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Integration tests for ScrollOffsetManager.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwScrollOffsetManagerTest {
     private static class TestScrollOffsetManagerDelegate implements AwScrollOffsetManager.Delegate {
