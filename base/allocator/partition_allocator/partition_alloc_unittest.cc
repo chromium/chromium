@@ -1770,7 +1770,8 @@ TEST_P(PartitionAllocTest, PartialPages) {
   size_t bucket_index;
 
   PartitionRoot<ThreadSafe>::Bucket* bucket = nullptr;
-  while (size < 1000u) {
+  constexpr size_t kMaxSize = 4000u;
+  while (size < kMaxSize) {
     bucket_index = SizeToIndex(size + kExtraAllocSize);
     bucket = &allocator.root()->buckets[bucket_index];
     if (bucket->num_system_pages_per_slot_span %
@@ -1779,7 +1780,7 @@ TEST_P(PartitionAllocTest, PartialPages) {
     }
     size += sizeof(void*);
   }
-  EXPECT_LT(size, 1000u);
+  EXPECT_LT(size, kMaxSize);
 
   auto* slot_span1 = GetFullSlotSpan(size);
   auto* slot_span2 = GetFullSlotSpan(size);
