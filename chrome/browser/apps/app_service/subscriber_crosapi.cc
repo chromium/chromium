@@ -142,15 +142,15 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
   }
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), app_id,
-                               *icon_key, icon_type, size_hint_in_dip,
-                               /*allow_placeholder_icon=*/false,
-                               std::move(callback));
+    proxy->LoadIconFromIconKey(
+        app_type, app_id, *icon_key, icon_type, size_hint_in_dip,
+        /*allow_placeholder_icon=*/false, std::move(callback));
   } else {
     proxy->LoadIconFromIconKey(
-        app_type, app_id, ConvertIconKeyToMojomIconKey(*icon_key),
+        ConvertAppTypeToMojomAppType(app_type), app_id,
+        ConvertIconKeyToMojomIconKey(*icon_key),
         ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
         /*allow_placeholder_icon=*/false,
         MojomIconValueToIconValueCallback(std::move(callback)));

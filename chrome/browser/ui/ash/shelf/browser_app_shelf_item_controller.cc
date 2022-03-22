@@ -224,14 +224,14 @@ void BrowserAppShelfItemController::LoadIcon(int32_t size_hint_in_dip,
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     icon_loader_releaser_ = proxy->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id,
-        apps::IconType::kStandard,
+        app_type, app_id, apps::IconType::kStandard,
         // matches favicon size
         /* size_hint_in_dip= */ size_hint_in_dip,
         /* allow_placeholder_icon= */ false, std::move(callback));
   } else {
     icon_loader_releaser_ = proxy->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kStandard,
+        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
+        apps::mojom::IconType::kStandard,
         // matches favicon size
         /* size_hint_in_dip= */ size_hint_in_dip,
         /* allow_placeholder_icon= */ false,

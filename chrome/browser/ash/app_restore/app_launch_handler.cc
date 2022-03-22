@@ -138,8 +138,7 @@ void AppLaunchHandler::LaunchApps() {
     if (app_id == app_constants::kChromeAppId)
       continue;
 
-    auto app_type =
-        apps::ConvertMojomAppTypToAppType(cache->GetAppType(app_id));
+    auto app_type = cache->GetAppType(app_id);
 #if !defined(OFFICIAL_BUILD)
     // Make shift-click on the launch button launch apps with a delay. This
     // allows developers to simulate delayed launch behaviors with ARC apps.

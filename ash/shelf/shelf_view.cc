@@ -56,7 +56,7 @@
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -242,7 +242,7 @@ bool IsRemoteApp(const std::string& app_id) {
       Shell::Get()->session_controller()->GetActiveAccountId();
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-  return cache && cache->GetAppType(app_id) == apps::mojom::AppType::kRemote;
+  return cache && cache->GetAppType(app_id) == apps::AppType::kRemote;
 }
 
 bool IsStandaloneBrowser(const std::string& app_id) {
@@ -251,7 +251,7 @@ bool IsStandaloneBrowser(const std::string& app_id) {
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
   return cache &&
-         cache->GetAppType(app_id) == apps::mojom::AppType::kStandaloneBrowser;
+         cache->GetAppType(app_id) == apps::AppType::kStandaloneBrowser;
 }
 
 // Records the user metric action for whenever a shelf item is pinned or

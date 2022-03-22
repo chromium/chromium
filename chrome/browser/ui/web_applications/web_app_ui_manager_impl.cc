@@ -33,6 +33,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/app_sorting.h"
@@ -316,7 +317,7 @@ void WebAppUiManagerImpl::OnShortcutLocationGathered(
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   const bool is_extension = proxy->AppRegistryCache().GetAppType(from_app) ==
-                            apps::mojom::AppType::kChromeApp;
+                            apps::AppType::kChromeApp;
   if (is_extension) {
     WaitForExtensionShortcutsDeleted(
         from_app,

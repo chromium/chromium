@@ -402,8 +402,8 @@ void AppServiceProxyLacros::Uninstall(
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window) {
   // On non-ChromeOS, publishers run the remove dialog.
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  if (app_type == apps::mojom::AppType::kWeb) {
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  if (app_type == AppType::kWeb) {
     web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
                            app_id, uninstall_source, parent_window);
   }

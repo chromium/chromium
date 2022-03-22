@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -54,30 +55,30 @@ using extensions::api::file_manager_private::Verb;
 namespace {
 // TODO(crbug/1092784): Only going to support ARC app and web app
 // for now.
-TaskType GetTaskType(apps::mojom::AppType app_type) {
+TaskType GetTaskType(apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return TASK_TYPE_ARC_APP;
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kStandaloneBrowserExtension:
       // Chrome apps and Extensions both get called file_handler, even though
       // extensions really have file_browser_handler. It doesn't matter anymore
       // because both are executed through App Service, which can tell the
       // difference itself.
       return TASK_TYPE_FILE_HANDLER;
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kCrostini:
-    case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
       return TASK_TYPE_UNKNOWN;
   }
 }
@@ -171,20 +172,18 @@ void FindAppServiceTasks(Profile* profile,
       proxy->GetAppsForFiles(std::move(intent_files));
 
   for (auto& launch_entry : intent_launch_info) {
-    apps::mojom::AppType app_type =
-        proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
-    if (!(app_type == apps::mojom::AppType::kArc ||
-          app_type == apps::mojom::AppType::kWeb ||
-          app_type == apps::mojom::AppType::kSystemWeb ||
-          app_type == apps::mojom::AppType::kChromeApp ||
-          app_type == apps::mojom::AppType::kExtension ||
-          app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp ||
-          app_type == apps::mojom::AppType::kStandaloneBrowserExtension)) {
+    auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
+    if (!(app_type == apps::AppType::kArc || app_type == apps::AppType::kWeb ||
+          app_type == apps::AppType::kSystemWeb ||
+          app_type == apps::AppType::kChromeApp ||
+          app_type == apps::AppType::kExtension ||
+          app_type == apps::AppType::kStandaloneBrowserChromeApp ||
+          app_type == apps::AppType::kStandaloneBrowserExtension)) {
       continue;
     }
 
-    if (app_type == apps::mojom::AppType::kWeb ||
-        app_type == apps::mojom::AppType::kSystemWeb) {
+    if (app_type == apps::AppType::kWeb ||
+        app_type == apps::AppType::kSystemWeb) {
       // Media app and other SWAs can handle "non-native" files.
       if (has_non_native_file &&
           !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
@@ -213,8 +212,8 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    if (app_type == apps::mojom::AppType::kChromeApp ||
-        app_type == apps::mojom::AppType::kExtension) {
+    if (app_type == apps::AppType::kChromeApp ||
+        app_type == apps::AppType::kExtension) {
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;

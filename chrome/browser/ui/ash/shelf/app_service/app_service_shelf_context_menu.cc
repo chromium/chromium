@@ -103,10 +103,9 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
   const arc::ArcAppShelfId arc_shelf_id =
       arc::ArcAppShelfId::FromString(item->id.app_id);
   DCHECK(arc_shelf_id.valid());
-  app_type_ = apps::ConvertMojomAppTypToAppType(
-      apps::AppServiceProxyFactory::GetForProfile(controller->profile())
-          ->AppRegistryCache()
-          .GetAppType(arc_shelf_id.app_id()));
+  app_type_ = apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+                  ->AppRegistryCache()
+                  .GetAppType(arc_shelf_id.app_id());
 }
 
 AppServiceShelfContextMenu::~AppServiceShelfContextMenu() = default;

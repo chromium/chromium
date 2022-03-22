@@ -218,7 +218,7 @@ std::string AppServiceWrapper::GetAppServiceId(const AppId& app_id) const {
 }
 
 bool AppServiceWrapper::IsAppInstalled(const std::string& app_id) {
-  return GetAppCache().GetAppType(app_id) != apps::mojom::AppType::kUnknown;
+  return GetAppCache().GetAppType(app_id) != apps::AppType::kUnknown;
 }
 
 AppId AppServiceWrapper::AppIdFromAppServiceId(

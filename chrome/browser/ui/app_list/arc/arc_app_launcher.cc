@@ -100,7 +100,7 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   if (readiness == apps::Readiness::kUnknown) {
     if (proxy->AppRegistryCache().GetAppType(app_id) ==
-        apps::mojom::AppType::kUnknown) {
+        apps::AppType::kUnknown) {
       return false;
     }
 

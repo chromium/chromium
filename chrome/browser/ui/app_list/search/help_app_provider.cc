@@ -351,20 +351,20 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 }
 
 void HelpAppProvider::LoadIcon() {
-  apps::mojom::AppType app_type =
+  auto app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
 
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     app_service_proxy_->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), web_app::kHelpAppId,
-        apps::IconType::kStandard,
+        app_type, web_app::kHelpAppId, apps::IconType::kStandard,
         ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&HelpAppProvider::OnLoadIcon,
                        weak_factory_.GetWeakPtr()));
   } else {
     app_service_proxy_->LoadIcon(
-        app_type, web_app::kHelpAppId, apps::mojom::IconType::kStandard,
+        apps::ConvertAppTypeToMojomAppType(app_type), web_app::kHelpAppId,
+        apps::mojom::IconType::kStandard,
         ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
         /*allow_placeholder_icon=*/false,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(

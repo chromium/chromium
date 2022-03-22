@@ -15,7 +15,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/favicon/content/content_favicon_driver.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -191,5 +191,5 @@ bool AppServiceAppWindowShelfItemController::IsChromeApp() {
   Profile* const profile = ChromeShelfController::instance()->profile();
   return apps::AppServiceProxyFactory::GetForProfile(profile)
              ->AppRegistryCache()
-             .GetAppType(shelf_id().app_id) == apps::mojom::AppType::kChromeApp;
+             .GetAppType(shelf_id().app_id) == apps::AppType::kChromeApp;
 }

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -136,7 +137,7 @@ ExtensionProvider::ExtensionProvider(
     Observe(&AppServiceProxy->AppRegistryCache());
 
     if (AppServiceProxy->AppRegistryCache().GetAppType(
-            provider_id_.GetExtensionId()) != apps::mojom::AppType::kUnknown) {
+            provider_id_.GetExtensionId()) != apps::AppType::kUnknown) {
       icon_set_.SetIcon(
           IconSet::IconSize::SIZE_16x16,
           apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 16));

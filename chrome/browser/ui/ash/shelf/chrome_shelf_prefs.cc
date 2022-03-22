@@ -666,7 +666,7 @@ bool ChromeShelfPrefs::IsStandaloneBrowserPublishingChromeApps() {
   return crosapi::browser_util::IsLacrosChromeAppsEnabled();
 }
 
-apps::mojom::AppType ChromeShelfPrefs::GetAppType(const std::string& app_id) {
+apps::AppType ChromeShelfPrefs::GetAppType(const std::string& app_id) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   return proxy->AppRegistryCache().GetAppType(app_id);
@@ -711,7 +711,7 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
 
   // Now we have to check if the sync id corresponds to a lacros extension app.
   if (GetAppType(transformed_app_id) ==
-      apps::mojom::AppType::kStandaloneBrowserChromeApp) {
+      apps::AppType::kStandaloneBrowserChromeApp) {
     return transformed_app_id;
   }
 
@@ -728,15 +728,15 @@ std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
   std::string prefix_removed = shelf_id;
   base::ReplaceFirstSubstringAfterOffset(&prefix_removed, /*start_offset=*/0,
                                          kLacrosChromeAppPrefix, "");
-  apps::mojom::AppType type = GetAppType(shelf_id);
-  if (type == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
+  apps::AppType type = GetAppType(shelf_id);
+  if (type == apps::AppType::kStandaloneBrowserChromeApp) {
     return prefix_removed;
   }
 
   // If removing the prefix turns this into an ash chrome app, then we must
   // remove the prefix.
   type = GetAppType(prefix_removed);
-  if (type == apps::mojom::AppType::kChromeApp) {
+  if (type == apps::AppType::kChromeApp) {
     return prefix_removed;
   }
 

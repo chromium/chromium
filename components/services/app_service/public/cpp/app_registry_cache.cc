@@ -238,18 +238,30 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
   deltas_in_progress_.clear();
 }
 
-apps::mojom::AppType AppRegistryCache::GetAppType(const std::string& app_id) {
+AppType AppRegistryCache::GetAppType(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    auto d_iter = deltas_in_progress_.find(app_id);
+    if (d_iter != deltas_in_progress_.end()) {
+      return d_iter->second->app_type;
+    }
+    auto s_iter = states_.find(app_id);
+    if (s_iter != states_.end()) {
+      return s_iter->second->app_type;
+    }
+    return AppType::kUnknown;
+  }
 
   auto d_iter = mojom_deltas_in_progress_.find(app_id);
   if (d_iter != mojom_deltas_in_progress_.end()) {
-    return d_iter->second->app_type;
+    return ConvertMojomAppTypToAppType(d_iter->second->app_type);
   }
   auto s_iter = mojom_states_.find(app_id);
   if (s_iter != mojom_states_.end()) {
-    return s_iter->second->app_type;
+    return ConvertMojomAppTypToAppType(s_iter->second->app_type);
   }
-  return apps::mojom::AppType::kUnknown;
+  return AppType::kUnknown;
 }
 
 void AppRegistryCache::SetAccountId(const AccountId& account_id) {

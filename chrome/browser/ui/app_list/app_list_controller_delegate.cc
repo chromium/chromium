@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -59,10 +60,10 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
   auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile)
                       ->AppRegistryCache()
                       .GetAppType(app_id);
-  DCHECK_NE(app_type, apps::mojom::AppType::kUnknown);
+  DCHECK_NE(app_type, apps::AppType::kUnknown);
 
-  if (app_type == apps::mojom::AppType::kWeb ||
-      app_type == apps::mojom::AppType::kSystemWeb) {
+  if (app_type == apps::AppType::kWeb ||
+      app_type == apps::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(profile, app_id,
                                   ash::settings::AppManagementEntryPoint::
                                       kAppListContextMenuAppInfoWebApp);

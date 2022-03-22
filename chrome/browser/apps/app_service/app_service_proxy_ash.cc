@@ -158,8 +158,8 @@ void AppServiceProxyAsh::PauseApps(
   }
 
   for (auto& data : pause_data) {
-    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(data.first);
-    if (app_type == apps::mojom::AppType::kUnknown) {
+    auto app_type = app_registry_cache_.GetAppType(data.first);
+    if (app_type == AppType::kUnknown) {
       continue;
     }
 
@@ -172,7 +172,8 @@ void AppServiceProxyAsh::PauseApps(
 
     // The app pause dialog can't be loaded for unit tests.
     if (!data.second.should_show_pause_dialog || is_using_testing_profile_) {
-      app_service_->PauseApp(app_type, data.first);
+      app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type),
+                             data.first);
       continue;
     }
 
@@ -193,21 +194,22 @@ void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
   }
 
   for (auto& app_id : app_ids) {
-    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-    if (app_type == apps::mojom::AppType::kUnknown) {
+    auto app_type = app_registry_cache_.GetAppType(app_id);
+    if (app_type == AppType::kUnknown) {
       continue;
     }
 
     pending_pause_requests_.MaybeRemoveApp(app_id);
-    app_service_->UnpauseApp(app_type, app_id);
+    app_service_->UnpauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
   }
 }
 
 void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
                                          apps::mojom::OptionalBool locked) {
   if (app_service_.is_connected()) {
-    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-    app_service_->SetResizeLocked(app_type, app_id, locked);
+    auto app_type = app_registry_cache_.GetAppType(app_id);
+    app_service_->SetResizeLocked(ConvertAppTypeToMojomAppType(app_type),
+                                  app_id, locked);
   }
 }
 

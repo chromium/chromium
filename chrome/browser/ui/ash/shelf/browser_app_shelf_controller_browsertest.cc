@@ -240,7 +240,7 @@ class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
     WAIT_FOR(AppServiceProxy()->AppRegistryCache().GetAppType(app_id) ==
-             apps::mojom::AppType::kWeb);
+             apps::AppType::kWeb);
     return app_id;
   }
 

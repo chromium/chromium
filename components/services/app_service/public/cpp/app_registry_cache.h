@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
 namespace apps {
@@ -119,7 +120,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
               apps::AppType app_type,
               bool should_notify_initialized);
 
-  apps::mojom::AppType GetAppType(const std::string& app_id);
+  AppType GetAppType(const std::string& app_id);
 
   void SetAccountId(const AccountId& account_id);
 

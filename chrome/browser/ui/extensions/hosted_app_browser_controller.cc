@@ -81,8 +81,7 @@ ui::ImageModel HostedAppBrowserController::GetWindowAppIcon() const {
     if (extension &&
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
                 ->AppRegistryCache()
-                .GetAppType(extension->id()) !=
-            apps::mojom::AppType::kUnknown) {
+                .GetAppType(extension->id()) != apps::AppType::kUnknown) {
       LoadAppIcon(true /* allow_placeholder_icon */);
       return GetFallbackAppIcon();
     }

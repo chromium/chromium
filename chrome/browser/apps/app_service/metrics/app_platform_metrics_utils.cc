@@ -380,10 +380,9 @@ AppTypeName GetAppTypeName(Profile* profile,
 
 AppType GetAppType(Profile* profile, const std::string& app_id) {
   DCHECK(AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
-  auto type = ConvertMojomAppTypToAppType(
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->AppRegistryCache()
-          .GetAppType(app_id));
+  auto type = apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->AppRegistryCache()
+                  .GetAppType(app_id);
   if (type != AppType::kUnknown) {
     return type;
   }

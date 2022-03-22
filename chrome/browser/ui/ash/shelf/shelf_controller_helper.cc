@@ -165,8 +165,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   // Launch apps with AppServiceProxy.Launch.
-  if (proxy->AppRegistryCache().GetAppType(app_id) !=
-      apps::mojom::AppType::kUnknown) {
+  if (proxy->AppRegistryCache().GetAppType(app_id) != apps::AppType::kUnknown) {
     proxy->Launch(app_id, event_flags,
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   apps::MakeWindowInfo(display_id));

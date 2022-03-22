@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -212,11 +213,11 @@ bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
   }
   auto* proxy =
       apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
-  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  apps::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
   switch (app_type) {
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
-    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
+    case apps::AppType::kStandaloneBrowser:
       return true;
     default:
       return false;

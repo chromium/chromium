@@ -96,18 +96,18 @@ void AppIconSource::StartDataRequest(
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   const std::string app_id = path_parts[0];
-  const apps::mojom::AppType app_type =
+  const auto app_type =
       app_service_proxy->AppRegistryCache().GetAppType(app_id);
   constexpr bool allow_placeholder_icon = false;
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     app_service_proxy->LoadIcon(
-        ConvertMojomAppTypToAppType(app_type), app_id, IconType::kCompressed,
-        size_in_dip, allow_placeholder_icon,
+        app_type, app_id, IconType::kCompressed, size_in_dip,
+        allow_placeholder_icon,
         base::BindOnce(&RunCallback, std::move(callback)));
   } else {
     app_service_proxy->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kCompressed, size_in_dip,
-        allow_placeholder_icon,
+        ConvertAppTypeToMojomAppType(app_type), app_id,
+        apps::mojom::IconType::kCompressed, size_in_dip, allow_placeholder_icon,
         MojomIconValueToIconValueCallback(
             base::BindOnce(&RunCallback, std::move(callback))));
   }

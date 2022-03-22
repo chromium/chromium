@@ -841,12 +841,12 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
 
   // Apps that are not in the App Service may call this function.
   // E.g. extensions, apps that are using their platform specific IDs.
-  if (app_type == apps::mojom::AppType::kUnknown) {
+  if (app_type == apps::AppType::kUnknown) {
     return;
   }
 
-  if (app_type == apps::mojom::AppType::kWeb ||
-      app_type == apps::mojom::AppType::kSystemWeb) {
+  if (app_type == apps::AppType::kWeb ||
+      app_type == apps::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(
         profile, app_id,
         ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);

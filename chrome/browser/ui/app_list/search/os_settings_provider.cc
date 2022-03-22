@@ -199,21 +199,20 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   DCHECK(app_service_proxy_);
 
   Observe(&app_service_proxy_->AppRegistryCache());
-  apps::mojom::AppType app_type =
-      app_service_proxy_->AppRegistryCache().GetAppType(
-          web_app::kOsSettingsAppId);
+  auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(
+      web_app::kOsSettingsAppId);
 
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), web_app::kOsSettingsAppId,
-        apps::IconType::kStandard, GetAppIconDimension(),
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                       weak_factory_.GetWeakPtr()));
+    app_service_proxy_->LoadIcon(app_type, web_app::kOsSettingsAppId,
+                                 apps::IconType::kStandard,
+                                 GetAppIconDimension(),
+                                 /*allow_placeholder_icon=*/false,
+                                 base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                                                weak_factory_.GetWeakPtr()));
   } else {
     app_service_proxy_->LoadIcon(
-        app_type, web_app::kOsSettingsAppId, apps::mojom::IconType::kStandard,
-        GetAppIconDimension(),
+        apps::ConvertAppTypeToMojomAppType(app_type), web_app::kOsSettingsAppId,
+        apps::mojom::IconType::kStandard, GetAppIconDimension(),
         /*allow_placeholder_icon=*/false,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(
             &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));

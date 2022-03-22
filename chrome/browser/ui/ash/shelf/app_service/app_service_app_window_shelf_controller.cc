@@ -212,7 +212,7 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   // browser app.
   auto shelf_id = GetShelfId(window);
   if (!shelf_id.IsNull() &&
-      GetAppType(shelf_id.app_id) == apps::mojom::AppType::kStandaloneBrowser &&
+      GetAppType(shelf_id.app_id) == apps::AppType::kStandaloneBrowser &&
       widget->IsMinimized()) {
     // Update |state|. The app must be started, and running state. If visible,
     // set it as |kVisible|, otherwise, clear the visible bit.
@@ -242,7 +242,7 @@ void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
   if (shelf_id.IsNull())
     return;
 
-  if (GetAppType(shelf_id.app_id) != apps::mojom::AppType::kBuiltIn)
+  if (GetAppType(shelf_id.app_id) != apps::AppType::kBuiltIn)
     return;
 
   app_service_instance_helper_->OnInstances(shelf_id.app_id, window,
@@ -406,7 +406,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
   // This is the first update for the given window.
   if (update.IsCreation()) {
     const std::string& app_id = update.AppId();
-    if (GetAppType(app_id) == apps::mojom::AppType::kCrostini ||
+    if (GetAppType(app_id) == apps::AppType::kCrostini ||
         crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
       window->SetProperty(aura::client::kAppType,
                           static_cast<int>(ash::AppType::CROSTINI_APP));
@@ -730,22 +730,22 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     shelf_id = ash::ShelfID::Deserialize(window->GetProperty(ash::kShelfIDKey));
   }
   if (!shelf_id.IsNull() &&
-      GetAppType(shelf_id.app_id) != apps::mojom::AppType::kUnknown) {
+      GetAppType(shelf_id.app_id) != apps::AppType::kUnknown) {
     return shelf_id;
   }
   return ash::ShelfID();
 }
 
-apps::mojom::AppType AppServiceAppWindowShelfController::GetAppType(
+apps::AppType AppServiceAppWindowShelfController::GetAppType(
     const std::string& app_id) const {
   for (auto* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
-    if (app_type != apps::mojom::AppType::kUnknown) {
+    if (app_type != apps::AppType::kUnknown) {
       return app_type;
     }
   }
-  return apps::mojom::AppType::kUnknown;
+  return apps::AppType::kUnknown;
 }
 
 void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(

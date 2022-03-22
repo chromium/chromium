@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -67,7 +68,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   apps::AppRegistryCache& registry = proxy->AppRegistryCache();
   const std::string app_id = arc::ArcPackageNameToAppId(
       chromeos::ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
-  if (registry.GetAppType(app_id) != apps::mojom::AppType::kUnknown) {
+  if (registry.GetAppType(app_id) != apps::AppType::kUnknown) {
     // Launch FLH app since it is available.
     proxy->Launch(app_id, ui::EventFlags::EF_NONE,
                   apps::mojom::LaunchSource::kFromParentalControls,
@@ -76,8 +77,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   }
 
   // No FLH app installed, so try to launch Play Store to FLH app install page.
-  if (registry.GetAppType(arc::kPlayStoreAppId) !=
-      apps::mojom::AppType::kUnknown) {
+  if (registry.GetAppType(arc::kPlayStoreAppId) != apps::AppType::kUnknown) {
     proxy->LaunchAppWithUrl(
         arc::kPlayStoreAppId, ui::EF_NONE,
         GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),

@@ -23,6 +23,7 @@
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -148,7 +149,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
         auto it =
             profile_path_to_app_registry_cache_.find(active_profile_path_);
         if (it != profile_path_to_app_registry_cache_.end() && it->second &&
-            it->second->GetAppType(app_id) == apps::mojom::AppType::kUnknown) {
+            it->second->GetAppType(app_id) == apps::AppType::kUnknown) {
           // If the app doesn't exist in AppRegistryCache, this window is an
           // extension window, and we don't need to save the launch info for the
           // extension.
@@ -224,7 +225,7 @@ void FullRestoreSaveHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   std::vector<std::string> arc_app_ids;
   for (const auto& it : launch_list) {
     if (app_registry_cache_it->second->GetAppType(it.first) ==
-        apps::mojom::AppType::kArc) {
+        apps::AppType::kArc) {
       arc_app_ids.push_back(it.first);
     }
   }

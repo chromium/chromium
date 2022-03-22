@@ -32,6 +32,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -136,11 +137,11 @@ GURL RedirectUrlIfSwa(Profile* profile,
   return url;
 }
 
-IntentHandlingMetrics::Platform GetMetricsPlatform(mojom::AppType app_type) {
+IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
   switch (app_type) {
-    case mojom::AppType::kArc:
+    case AppType::kArc:
       return IntentHandlingMetrics::Platform::ARC;
-    case mojom::AppType::kWeb:
+    case AppType::kWeb:
       return IntentHandlingMetrics::Platform::PWA;
     default:
       NOTREACHED();
@@ -221,16 +222,15 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   }
 
   // Only automatically launch supported app types.
-  apps::mojom::AppType app_type =
+  auto app_type =
       proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
-  if (app_type != apps::mojom::AppType::kArc &&
-      app_type != apps::mojom::AppType::kWeb &&
+  if (app_type != AppType::kArc && app_type != AppType::kWeb &&
       !IsSystemWebApp(profile, preferred_app_id.value())) {
     return false;
   }
 
   // Don't capture if already inside the target app scope.
-  if (app_type == apps::mojom::AppType::kWeb) {
+  if (app_type == AppType::kWeb) {
     auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
     if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
       return false;

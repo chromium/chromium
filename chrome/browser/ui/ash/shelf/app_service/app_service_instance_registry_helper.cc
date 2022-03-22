@@ -26,8 +26,8 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
@@ -412,19 +412,18 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
 
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    apps::mojom::AppType app_type =
-        proxy->AppRegistryCache().GetAppType(app_id);
-    if (app_type == apps::mojom::AppType::kUnknown)
+    auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+    if (app_type == apps::AppType::kUnknown)
       continue;
 
     // Skip extensions because the browser controller is responsible for
     // extension windows.
-    if (app_type == apps::mojom::AppType::kExtension)
+    if (app_type == apps::AppType::kExtension)
       return true;
 
-    if (app_type != apps::mojom::AppType::kChromeApp &&
-        app_type != apps::mojom::AppType::kSystemWeb &&
-        app_type != apps::mojom::AppType::kWeb) {
+    if (app_type != apps::AppType::kChromeApp &&
+        app_type != apps::AppType::kSystemWeb &&
+        app_type != apps::AppType::kWeb) {
       return false;
     }
   }

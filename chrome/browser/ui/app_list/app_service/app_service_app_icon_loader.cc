@@ -53,7 +53,7 @@ bool AppServiceAppIconLoader::CanLoadImage(Profile* profile,
   // with the prefix "crostini:".
   if (apps::AppServiceProxyFactory::GetForProfile(profile)
               ->AppRegistryCache()
-              .GetAppType(app_id) != apps::mojom::AppType::kUnknown ||
+              .GetAppType(app_id) != apps::AppType::kUnknown ||
       crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
     return true;
   }
@@ -162,19 +162,19 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
     return;
   }
 
-  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
-  if (app_type == apps::mojom::AppType::kUnknown) {
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (app_type == apps::AppType::kUnknown) {
     return;
   }
 
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type), app_id,
-                    icon_type, icon_size_in_dip(), allow_placeholder_icon,
+    proxy->LoadIcon(app_type, app_id, icon_type, icon_size_in_dip(),
+                    allow_placeholder_icon,
                     base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
                                    weak_ptr_factory_.GetWeakPtr(), app_id));
   } else {
-    proxy->LoadIcon(app_type, app_id, mojom_icon_type, icon_size_in_dip(),
-                    allow_placeholder_icon,
+    proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type), app_id,
+                    mojom_icon_type, icon_size_in_dip(), allow_placeholder_icon,
                     base::BindOnce(&AppServiceAppIconLoader::OnLoadMojomIcon,
                                    weak_ptr_factory_.GetWeakPtr(), app_id));
   }

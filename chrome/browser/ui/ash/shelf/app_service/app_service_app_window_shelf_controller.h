@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window_delegate.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -135,7 +135,7 @@ class AppServiceAppWindowShelfController
   ash::ShelfID GetShelfId(aura::Window* window) const;
 
   // Returns the app type for the given |app_id|.
-  apps::mojom::AppType GetAppType(const std::string& app_id) const;
+  apps::AppType GetAppType(const std::string& app_id) const;
 
   // Register |window| if the owner of the given |window| has a window
   // teleported of the |window|'s application type to the current desktop.

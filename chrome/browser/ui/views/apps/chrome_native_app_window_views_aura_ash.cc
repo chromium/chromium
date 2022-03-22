@@ -594,21 +594,21 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
     apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
         Profile::FromBrowserContext(app_window()->browser_context()));
 
-    apps::mojom::AppType app_type =
+    auto app_type =
         proxy->AppRegistryCache().GetAppType(app_window()->extension_id());
 
-    if (app_type != apps::mojom::AppType::kUnknown) {
+    if (app_type != apps::AppType::kUnknown) {
       if (base::FeatureList::IsEnabled(
               features::kAppServiceLoadIconWithoutMojom)) {
         proxy->LoadIcon(
-            apps::ConvertMojomAppTypToAppType(app_type),
-            app_window()->extension_id(), apps::IconType::kStandard,
+            app_type, app_window()->extension_id(), apps::IconType::kStandard,
             app_window()->app_delegate()->PreferredIconSize(),
             allow_placeholder_icon,
             base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
                            weak_ptr_factory_.GetWeakPtr()));
       } else {
-        proxy->LoadIcon(app_type, app_window()->extension_id(),
+        proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type),
+                        app_window()->extension_id(),
                         apps::mojom::IconType::kStandard,
                         app_window()->app_delegate()->PreferredIconSize(),
                         allow_placeholder_icon,

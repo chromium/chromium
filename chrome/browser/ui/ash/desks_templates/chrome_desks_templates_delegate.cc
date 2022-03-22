@@ -248,11 +248,11 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   auto& app_registry_cache =
       apps::AppServiceProxyFactory::GetForProfile(user_profile)
           ->AppRegistryCache();
-  const apps::mojom::AppType app_type = app_registry_cache.GetAppType(app_id);
+  const auto app_type = app_registry_cache.GetAppType(app_id);
   if (app_id != app_constants::kChromeAppId &&
       app_id != app_constants::kLacrosAppId &&
-      (app_type == apps::mojom::AppType::kChromeApp ||
-       app_type == apps::mojom::AppType::kWeb)) {
+      (app_type == apps::AppType::kChromeApp ||
+       app_type == apps::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
     // application. See http://crbug.com/1232520 for more information.
     if (!app_launch_info->container.has_value() ||
@@ -336,14 +336,14 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
 
   auto app_type = app_service_proxy->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type),
-                                app_id, apps::IconType::kStandard,
+    app_service_proxy->LoadIcon(app_type, app_id, apps::IconType::kStandard,
                                 desired_icon_size,
                                 /*allow_placeholder_icon=*/false,
                                 AppIconResultToImageSkia(std::move(callback)));
   } else {
     app_service_proxy->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kStandard, desired_icon_size,
+        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
+        apps::mojom::IconType::kStandard, desired_icon_size,
         /*allow_placeholder_icon=*/false,
         apps::MojomIconValueToIconValueCallback(
             AppIconResultToImageSkia(std::move(callback))));

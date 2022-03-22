@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class ShelfControllerHelper;
 class PrefService;
@@ -161,7 +161,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   virtual bool IsStandaloneBrowserPublishingChromeApps();
 
   // Virtual for testing. Returns the app type associated with an app id.
-  virtual apps::mojom::AppType GetAppType(const std::string& app_id);
+  virtual apps::AppType GetAppType(const std::string& app_id);
 
   // Virtual for testing. Returns whether this app_id corresponds to an ash
   // extension-based platform app.

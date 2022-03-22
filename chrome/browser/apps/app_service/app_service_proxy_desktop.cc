@@ -7,6 +7,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
 
@@ -33,8 +34,8 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
                                 apps::mojom::UninstallSource uninstall_source,
                                 gfx::NativeWindow parent_window) {
   // On non-ChromeOS, publishers run the remove dialog.
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  if (app_type == apps::mojom::AppType::kWeb) {
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  if (app_type == apps::AppType::kWeb) {
     web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
                            app_id, uninstall_source, parent_window);
   }
@@ -49,8 +50,9 @@ void AppServiceProxy::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
   if (app_service_.is_connected()) {
-    app_service_->SetRunOnOsLoginMode(app_registry_cache_.GetAppType(app_id),
-                                      app_id, run_on_os_login_mode);
+    app_service_->SetRunOnOsLoginMode(
+        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+        app_id, run_on_os_login_mode);
   }
 }
 

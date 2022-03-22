@@ -368,14 +368,14 @@ void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id());
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type), app_id(),
-                    apps::IconType::kStandard, kWebAppIconSmall,
-                    allow_placeholder_icon,
+    proxy->LoadIcon(app_type, app_id(), apps::IconType::kStandard,
+                    kWebAppIconSmall, allow_placeholder_icon,
                     base::BindOnce(&WebAppBrowserController::OnLoadIcon,
                                    weak_ptr_factory_.GetWeakPtr()));
   } else {
-    proxy->LoadIcon(app_type, app_id(), apps::mojom::IconType::kStandard,
-                    kWebAppIconSmall, allow_placeholder_icon,
+    proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type), app_id(),
+                    apps::mojom::IconType::kStandard, kWebAppIconSmall,
+                    allow_placeholder_icon,
                     apps::MojomIconValueToIconValueCallback(
                         base::BindOnce(&WebAppBrowserController::OnLoadIcon,
                                        weak_ptr_factory_.GetWeakPtr())));

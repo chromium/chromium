@@ -15,6 +15,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -361,15 +362,15 @@ base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
 
 std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
                               const std::string& app_id) {
-  const apps::mojom::AppType app_type = app_id == app_constants::kChromeAppId
-                                            ? apps::mojom::AppType::kWeb
-                                            : apps_cache->GetAppType(app_id);
+  const auto app_type = app_id == app_constants::kChromeAppId
+                            ? apps::AppType::kWeb
+                            : apps_cache->GetAppType(app_id);
 
   switch (app_type) {
-    case apps::mojom::AppType::kWeb:
+    case apps::AppType::kWeb:
       return app_id == app_constants::kChromeAppId ? kAppTypeBrowser
                                                    : kAppTypeProgressiveWeb;
-    case apps::mojom::AppType::kChromeApp:
+    case apps::AppType::kChromeApp:
       return kAppTypeChrome;
     default:
       // Default to browser if unsupported, this shouldn't be captured and

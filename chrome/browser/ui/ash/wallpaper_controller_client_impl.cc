@@ -51,6 +51,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
@@ -665,7 +666,7 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(kWallpaperManagerId) ==
-      apps::mojom::AppType::kUnknown) {
+      apps::AppType::kUnknown) {
     return;
   }
 

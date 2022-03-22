@@ -27,6 +27,7 @@
 #include "components/desks_storage/core/desk_template_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -572,7 +573,7 @@ void FillAppWithLaunchContianerAndOpenDisposition(
 // Fill |out_app| with |app_restore_data|.
 void FillApp(WorkspaceDeskSpecifics_App* out_app,
              const std::string& app_id,
-             const apps::mojom::AppType app_type,
+             const apps::AppType app_type,
              const app_restore::AppRestoreData* app_restore_data) {
   FillAppWithWindowInfo(out_app, app_restore_data->GetWindowInfo().get());
 
@@ -586,7 +587,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
 
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
-    case apps::mojom::AppType::kWeb: {
+    case apps::AppType::kWeb: {
       if (app_constants::kChromeAppId == app_id) {
         // Chrome Browser Window.
         BrowserAppWindow* browser_app_window =
@@ -605,13 +606,13 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       }
       break;
     }
-    case apps::mojom::AppType::kStandaloneBrowser: {
+    case apps::AppType::kStandaloneBrowser: {
       // Lacros Browser App. This is currently unsupported.
       // Note, Lacros-chrome has app ID kLacrosAppId, that is different than
       // kChromeAppId.
       break;
     }
-    case apps::mojom::AppType::kChromeApp: {
+    case apps::AppType::kChromeApp: {
       // Chrome extension backed app, Chrome Apps
       ChromeApp* chrome_app_window =
           out_app->mutable_app()->mutable_chrome_app();
@@ -623,7 +624,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       FillAppWithLaunchContianerAndOpenDisposition(app_restore_data, out_app);
       break;
     }
-    case apps::mojom::AppType::kArc: {
+    case apps::AppType::kArc: {
       ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
       arc_app->set_app_id(app_id);
       FillArcApp(arc_app, app_restore_data);
@@ -736,10 +737,9 @@ void FillWorkspaceDeskSpecifics(
           window_id_to_launch_info.second.get();
       // The apps cache returns kChromeApp for browser windows, therefore we
       // short circuit the cache retrieval if we get the browser ID.
-      const apps::mojom::AppType app_type =
-          app_id == app_constants::kChromeAppId
-              ? apps::mojom::AppType::kWeb
-              : apps_cache->GetAppType(app_id);
+      const auto app_type = app_id == app_constants::kChromeAppId
+                                ? apps::AppType::kWeb
+                                : apps_cache->GetAppType(app_id);
 
       WorkspaceDeskSpecifics_App* app =
           out_entry_proto->mutable_desk()->add_apps();

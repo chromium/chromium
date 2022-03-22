@@ -369,8 +369,7 @@ void AppServiceProxyBase::LaunchAppWithUrl(
 
 void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
                                               LaunchCallback callback) {
-  auto app_type = ConvertMojomAppTypToAppType(
-      app_registry_cache_.GetAppType(params.app_id));
+  auto app_type = app_registry_cache_.GetAppType(params.app_id);
   auto* publisher = GetPublisher(app_type);
   if (!publisher) {
     std::move(callback).Run(LaunchResult());
@@ -421,11 +420,11 @@ void AppServiceProxyBase::UninstallSilently(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
   if (app_service_.is_connected()) {
-    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-    app_service_->Uninstall(app_type, app_id, uninstall_source,
+    auto app_type = app_registry_cache_.GetAppType(app_id);
+    app_service_->Uninstall(ConvertAppTypeToMojomAppType(app_type), app_id,
+                            uninstall_source,
                             /*clear_site_data=*/false, /*report_abuse=*/false);
-    PerformPostUninstallTasks(ConvertMojomAppTypToAppType(app_type), app_id,
-                              uninstall_source);
+    PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
 }
 
@@ -433,8 +432,8 @@ void AppServiceProxyBase::StopApp(const std::string& app_id) {
   if (!app_service_.is_connected()) {
     return;
   }
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->StopApp(app_type, app_id);
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  app_service_->StopApp(ConvertAppTypeToMojomAppType(app_type), app_id);
 }
 
 void AppServiceProxyBase::GetMenuModel(
@@ -446,9 +445,9 @@ void AppServiceProxyBase::GetMenuModel(
     return;
   }
 
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->GetMenuModel(app_type, app_id, menu_type, display_id,
-                             std::move(callback));
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  app_service_->GetMenuModel(ConvertAppTypeToMojomAppType(app_type), app_id,
+                             menu_type, display_id, std::move(callback));
 }
 
 void AppServiceProxyBase::ExecuteContextMenuCommand(
@@ -460,9 +459,10 @@ void AppServiceProxyBase::ExecuteContextMenuCommand(
     return;
   }
 
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->ExecuteContextMenuCommand(app_type, app_id, command_id,
-                                          shortcut_id, display_id);
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  app_service_->ExecuteContextMenuCommand(
+      ConvertAppTypeToMojomAppType(app_type), app_id, command_id, shortcut_id,
+      display_id);
 }
 
 void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {
@@ -617,9 +617,9 @@ void AppServiceProxyBase::AddPreferredApp(
 
   preferred_apps_.AddPreferredApp(app_id, intent_filter);
   constexpr bool kFromPublisher = false;
-  app_service_->AddPreferredApp(app_registry_cache_.GetAppType(app_id), app_id,
-                                std::move(intent_filter), intent->Clone(),
-                                kFromPublisher);
+  app_service_->AddPreferredApp(
+      ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+      app_id, std::move(intent_filter), intent->Clone(), kFromPublisher);
 }
 
 void AppServiceProxyBase::SetSupportedLinksPreference(
@@ -640,7 +640,8 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
       });
 
   app_service_->SetSupportedLinksPreference(
-      app_registry_cache_.GetAppType(app_id), app_id, std::move(filters));
+      ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+      app_id, std::move(filters));
 }
 
 void AppServiceProxyBase::RemoveSupportedLinksPreference(
@@ -648,15 +649,17 @@ void AppServiceProxyBase::RemoveSupportedLinksPreference(
   DCHECK(!app_id.empty());
   if (app_service_.is_connected()) {
     app_service_->RemoveSupportedLinksPreference(
-        app_registry_cache_.GetAppType(app_id), app_id);
+        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+        app_id);
   }
 }
 
 void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
                                         apps::mojom::WindowMode window_mode) {
   if (app_service_.is_connected()) {
-    app_service_->SetWindowMode(app_registry_cache_.GetAppType(app_id), app_id,
-                                window_mode);
+    app_service_->SetWindowMode(
+        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+        app_id, window_mode);
   }
 }
 

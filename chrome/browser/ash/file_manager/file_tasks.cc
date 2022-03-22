@@ -57,6 +57,7 @@
 #include "components/drive/drive_api_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -437,7 +438,7 @@ GURL GetIconURL(Profile* profile, const Extension& extension) {
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile) &&
       apps::AppServiceProxyFactory::GetForProfile(profile)
               ->AppRegistryCache()
-              .GetAppType(extension.id()) != apps::mojom::AppType::kUnknown) {
+              .GetAppType(extension.id()) != apps::AppType::kUnknown) {
     return apps::AppIconSource::GetIconURL(
         extension.id(), extension_misc::EXTENSION_ICON_SMALL);
   }

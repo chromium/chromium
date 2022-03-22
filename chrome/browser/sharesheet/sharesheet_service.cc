@@ -291,16 +291,16 @@ void SharesheetService::LoadAppIcons(
   constexpr bool allow_placeholder_icon = false;
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     app_service_proxy_->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id,
-        apps::IconType::kStandard, kIconSize, allow_placeholder_icon,
+        app_type, app_id, apps::IconType::kStandard, kIconSize,
+        allow_placeholder_icon,
         base::BindOnce(&SharesheetService::OnIconLoaded,
                        weak_factory_.GetWeakPtr(),
                        std::move(intent_launch_info), std::move(targets), index,
                        std::move(callback)));
   } else {
     app_service_proxy_->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kStandard, kIconSize,
-        allow_placeholder_icon,
+        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
+        apps::mojom::IconType::kStandard, kIconSize, allow_placeholder_icon,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(
             &SharesheetService::OnIconLoaded, weak_factory_.GetWeakPtr(),
             std::move(intent_launch_info), std::move(targets), index,
@@ -318,10 +318,10 @@ void SharesheetService::OnIconLoaded(
   const auto& app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(launch_entry.app_id);
   auto target_type = TargetType::kUnknown;
-  if (app_type == apps::mojom::AppType::kArc) {
+  if (app_type == apps::AppType::kArc) {
     target_type = TargetType::kArcApp;
-  } else if (app_type == apps::mojom::AppType::kWeb ||
-             app_type == apps::mojom::AppType::kSystemWeb) {
+  } else if (app_type == apps::AppType::kWeb ||
+             app_type == apps::AppType::kSystemWeb) {
     target_type = TargetType::kWebApp;
   }
 
@@ -453,29 +453,29 @@ void SharesheetService::RecordUserActionMetrics(
     auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(
         base::UTF16ToUTF8(target_name));
     switch (app_type) {
-      case apps::mojom::AppType::kArc:
+      case apps::AppType::kArc:
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kArc);
         break;
-      case apps::mojom::AppType::kWeb:
+      case apps::AppType::kWeb:
       // TODO(crbug.com/1186533): Add a separate metrics for System Web Apps if
       // needed.
-      case apps::mojom::AppType::kSystemWeb:
+      case apps::AppType::kSystemWeb:
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kWeb);
         break;
-      case apps::mojom::AppType::kBuiltIn:
-      case apps::mojom::AppType::kCrostini:
-      case apps::mojom::AppType::kChromeApp:
-      case apps::mojom::AppType::kMacOs:
-      case apps::mojom::AppType::kPluginVm:
-      case apps::mojom::AppType::kStandaloneBrowser:
-      case apps::mojom::AppType::kRemote:
-      case apps::mojom::AppType::kBorealis:
-      case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-      case apps::mojom::AppType::kExtension:
-      case apps::mojom::AppType::kStandaloneBrowserExtension:
-      case apps::mojom::AppType::kUnknown:
+      case apps::AppType::kBuiltIn:
+      case apps::AppType::kCrostini:
+      case apps::AppType::kChromeApp:
+      case apps::AppType::kMacOs:
+      case apps::AppType::kPluginVm:
+      case apps::AppType::kStandaloneBrowser:
+      case apps::AppType::kRemote:
+      case apps::AppType::kBorealis:
+      case apps::AppType::kStandaloneBrowserChromeApp:
+      case apps::AppType::kExtension:
+      case apps::AppType::kStandaloneBrowserExtension:
+      case apps::AppType::kUnknown:
         NOTREACHED();
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
