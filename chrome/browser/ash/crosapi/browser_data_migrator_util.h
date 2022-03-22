@@ -208,9 +208,6 @@ constexpr const char* const kExtensionsAshOnly[] = {
 // Extensions path.
 constexpr char kExtensionsFilePath[] = "Extensions";
 
-// IndexedDB path.
-constexpr char kIndexedDBFilePath[] = "IndexedDB";
-
 // `Local Storage` paths.
 constexpr char kLocalStorageFilePath[] = "Local Storage";
 constexpr char kLocalStorageLeveldbName[] = "leveldb";
@@ -230,12 +227,6 @@ enum class LevelDBType {
 
 // Map from ExtensionID -> { leveldb keys..}.
 using ExtensionKeys = std::map<std::string, std::vector<std::string>>;
-
-// Structure containing both IndexedDB paths for an extension.
-struct IndexedDBPaths {
-  base::FilePath blob_path;
-  base::FilePath leveldb_path;
-};
 
 constexpr char kTotalSize[] = "Ash.UserDataStatsRecorder.DataSize.TotalSize";
 
@@ -398,11 +389,6 @@ int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path);
 
 // Record the total size of the user's profile data directory in MB.
 void RecordTotalSize(int64_t size);
-
-// Given an extension id, return the paths of the associated blob
-// and leveldb directories inside IndexedDB.
-IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,
-                                 const char* extension_id);
 
 // Migrate the LevelDB instance at `original_path` to `target_path`,
 // Filter out all the extensions that are not in `kExtensionsAshOnly`.
