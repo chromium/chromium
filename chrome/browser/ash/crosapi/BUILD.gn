@@ -21,6 +21,7 @@ source_set("browser_util") {
     "//chrome/common",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
+    "//components/account_id",
     "//components/exo",
     "//components/prefs",
     "//components/user_manager",
