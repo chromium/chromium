@@ -387,9 +387,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableUrlHandlers;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLoadingTasksUnfreezable;
 
-BLINK_COMMON_EXPORT extern const base::Feature
-    kNetworkRequestUsesOnlyPerProcessBufferLimit;
-
 BLINK_COMMON_EXPORT extern const base::Feature kTargetBlankImpliesNoOpener;
 
 BLINK_COMMON_EXPORT extern const base::Feature

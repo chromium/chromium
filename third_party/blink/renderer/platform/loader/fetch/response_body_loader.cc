@@ -403,7 +403,8 @@ void ResponseBodyLoader::DidReceiveData(base::span<const char> data) {
     // Track the data size for both total per-process bytes and per-request
     // bytes.
     DidBufferLoadWhileInBackForwardCache(data.size());
-    if (!CanContinueBufferingWhileInBackForwardCache()) {
+    if (!BackForwardCacheBufferLimitTracker::Get()
+             .IsUnderPerProcessBufferLimit()) {
       EvictFromBackForwardCache(
           mojom::blink::RendererEvictionReason::kNetworkExceedsBufferLimit);
     }
@@ -464,12 +465,6 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
     return;
   back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
       num_bytes);
-}
-
-bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
-  return OnlyUsePerProcessBufferLimit() &&
-         BackForwardCacheBufferLimitTracker::Get()
-             .IsUnderPerProcessBufferLimit();
 }
 
 void ResponseBodyLoader::Start() {
@@ -591,7 +586,8 @@ void ResponseBodyLoader::OnStateChange() {
         // Save the read data into |body_buffer_| instead.
         DidBufferLoadWhileInBackForwardCache(available);
         body_buffer_->AddChunk(buffer, available);
-        if (!CanContinueBufferingWhileInBackForwardCache()) {
+        if (!BackForwardCacheBufferLimitTracker::Get()
+                 .IsUnderPerProcessBufferLimit()) {
           // We've read too much data while suspended for back-forward cache.
           // Evict the page from the back-forward cache.
           result = bytes_consumer_->EndRead(available);

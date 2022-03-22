@@ -133,7 +133,6 @@ class PLATFORM_EXPORT ResponseBodyLoader final
 
   void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
-  bool CanContinueBufferingWhileInBackForwardCache();
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
