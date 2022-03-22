@@ -14,7 +14,7 @@
     Cast <ph name="HOST_NAME">$1<ex>google.com</ex></ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE" desc="Title for the desktop mirror cast mode. This is shown as a dropdown option, and if selected, also appears as the header of a list of devices.">
-    Cast desktop
+    Cast screen
   </message>
   <message name="IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE" desc="Title for the tab mirror cast mode. This is shown as a dropdown option, and if selected, also appears as the header of a list of devices.">
     Cast tab
@@ -56,13 +56,13 @@
     Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP" desc="Title of an issue to show when the user attempts to create a route to mirror the desktop and the Media Router times out while waiting for a route creation response.">
-    Unable to cast desktop.  Check to see if you confirmed the prompt to start sharing your screen.
+    Unable to cast screen.  Check to see if you confirmed the prompt to start sharing your screen.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB" desc="Title of an issue to show when the user attempts to create a route to mirror a tab and the Media Router times out while waiting for a route creation response.">
     Unable to cast tab.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_UNABLE_TO_CAST_DESKTOP" desc="Title of an issue to show when creating a route for desktop mirroring fails for a reason other than timeout.">
-    Unable to cast desktop.
+    Unable to cast screen.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_GENERIC_ERROR" desc="Title of a generic issue to show when a selected file cannot be cast.">
     Unable to cast file.
@@ -111,7 +111,7 @@
     Available for specific video sites
   </message>
   <message name="IDS_MEDIA_ROUTER_CASTING_DESKTOP" desc="The status text of a Cast device to which we are mirroring the contents of the user's entire screen.">
-    Casting desktop
+    Casting screen
   </message>
   <message name="IDS_MEDIA_ROUTER_CASTING_TAB" desc="The status text of a Cast device to which we are mirroring the contents of a browser tab.">
     Casting tab
@@ -223,7 +223,7 @@ video files, instead of all files.">
     Feature Request
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_PROJECTION_QUALITY" desc="The label of the feedback type for a Projection Quality report.">
-    Tab/Desktop Projection Quality
+    Tab/Screen Projection Quality
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_DISCOVERY" desc="The label of the feedback type for a Device Discovery report.">
     Device Discovery
@@ -357,6 +357,6 @@ video files, instead of all files.">
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC" desc="Option for describing the network with a wired PC.">
     PC is wired and Chromecast is on Wi-Fi
-  </message> 
+  </message>
 
 </grit-part>
