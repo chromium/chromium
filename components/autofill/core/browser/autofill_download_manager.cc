@@ -168,11 +168,10 @@ base::TimeDelta GetThrottleResetPeriod() {
 
 // Returns true if |id| is within |kAutofillExperimentRanges|.
 bool IsAutofillExperimentId(int id) {
-  for (const auto& range : kAutofillExperimentRanges) {
-    if (range.first <= id && id <= range.second)
-      return true;
-  }
-  return false;
+  return base::ranges::any_of(kAutofillExperimentRanges, [id](auto range) {
+    const auto& [low, high] = range;
+    return low <= id && id <= high;
+  });
 }
 
 // Helper to log the HTTP |response_code| and other data received for
@@ -914,10 +913,10 @@ void AutofillDownloadManager::CacheQueryRequest(
 bool AutofillDownloadManager::CheckCacheForQueryRequest(
     const std::vector<FormSignature>& forms_in_query,
     std::string* query_data) const {
-  for (const auto& it : cached_forms_) {
-    if (it.first == forms_in_query) {
+  for (const auto& [signatures, cached_data] : cached_forms_) {
+    if (signatures == forms_in_query) {
       // We hit the cache, fill the data and return.
-      *query_data = it.second;
+      *query_data = cached_data;
       return true;
     }
   }

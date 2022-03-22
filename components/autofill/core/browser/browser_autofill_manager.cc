@@ -2589,17 +2589,13 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
   FormFieldData field = *autofill_field;
   if (absl::holds_alternative<std::pair<CreditCard, std::u16string>>(
           filling_context->profile_or_credit_card_with_cvc)) {
-    FillOrPreviewDataModelForm(
-        mojom::RendererFormDataAction::kFill,
-        /*query_id=*/-1, form, field,
-        &absl::get<std::pair<CreditCard, std::u16string>>(
-             filling_context->profile_or_credit_card_with_cvc)
-             .first,
-        &absl::get<std::pair<CreditCard, std::u16string>>(
-             filling_context->profile_or_credit_card_with_cvc)
-             .second,
-        form_structure, autofill_field,
-        /*is_refill=*/true);
+    const auto& [credit_card, cvc] =
+        absl::get<std::pair<CreditCard, std::u16string>>(
+            filling_context->profile_or_credit_card_with_cvc);
+    FillOrPreviewDataModelForm(mojom::RendererFormDataAction::kFill,
+                               /*query_id=*/-1, form, field, &credit_card, &cvc,
+                               form_structure, autofill_field,
+                               /*is_refill=*/true);
   } else if (absl::holds_alternative<AutofillProfile>(
                  filling_context->profile_or_credit_card_with_cvc)) {
     FillOrPreviewDataModelForm(

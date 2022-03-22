@@ -156,13 +156,7 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
 
   // The |country_to_state_names_map| maps country_code names to a vector of
   // state names that are associated with this corresponding country.
-  for (const auto& entry : country_to_state_names_map) {
-    // country_code is used as the filename.
-    // Example -> File "DE" contains the geographical states data of Germany.
-    const AlternativeStateNameMap::CountryCode& country_code = entry.first;
-    const std::vector<AlternativeStateNameMap::StateName>& states =
-        entry.second;
-
+  for (const auto& [country_code, states] : country_to_state_names_map) {
     // This is a security check to ensure that we only attempt to read files
     // that match to known countries.
     if (!base::Contains(country_codes, country_code.value()))
@@ -170,6 +164,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
 
     ++number_pending_init_tasks_;
 
+    // |country_code| is used as the filename.
+    // Example -> File "DE" contains the geographical states data of Germany.
     base::PostTaskAndReplyWithResult(
         GetTaskRunner().get(), FROM_HERE,
         base::BindOnce(&LoadDataFromFile,

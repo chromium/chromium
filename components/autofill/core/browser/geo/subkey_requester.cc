@@ -38,7 +38,6 @@ class SubKeyRequest : public SubKeyRequester::Request {
         language_(language),
         address_validator_(address_validator),
         on_subkeys_received_(std::move(on_subkeys_received)),
-        has_responded_(false),
         on_timeout_(base::BindOnce(&SubKeyRequest::OnRulesLoaded,
                                    base::Unretained(this))) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -61,9 +60,9 @@ class SubKeyRequest : public SubKeyRequester::Request {
         address_validator_->GetRegionSubKeys(region_code_, language_);
     std::vector<std::string> subkeys_codes;
     std::vector<std::string> subkeys_names;
-    for (auto s : subkeys) {
-      subkeys_codes.push_back(s.first);
-      subkeys_names.push_back(s.second);
+    for (const auto& [code, name] : subkeys) {
+      subkeys_codes.push_back(code);
+      subkeys_names.push_back(name);
     }
     std::move(on_subkeys_received_).Run(subkeys_codes, subkeys_names);
   }
@@ -76,7 +75,7 @@ class SubKeyRequest : public SubKeyRequester::Request {
 
   SubKeyReceiverCallback on_subkeys_received_;
 
-  bool has_responded_;
+  bool has_responded_ = false;
   base::CancelableOnceClosure on_timeout_;
 };
 

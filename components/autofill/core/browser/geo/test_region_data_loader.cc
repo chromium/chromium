@@ -44,8 +44,8 @@ void TestRegionDataLoader::SendRegionData(
     const std::vector<std::pair<std::string, std::string>>& regions,
     autofill::RegionDataLoader::RegionDataLoaded callback) {
   ::i18n::addressinput::RegionData root_region("");
-  for (const auto& region : regions)
-    root_region.AddSubRegion(region.first, region.second);
+  for (const auto& [key, value] : regions)
+    root_region.AddSubRegion(key, value);
 
   callback.Run(root_region.sub_regions());
 }

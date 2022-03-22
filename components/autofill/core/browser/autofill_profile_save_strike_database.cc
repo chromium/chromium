@@ -76,20 +76,20 @@ void AutofillProfileSaveStrikeDatabase::ClearStrikesByOriginAndTimeInternal(
   std::vector<std::string> keys_to_delete;
   keys_to_delete.reserve(GetStrikeCache().size());
 
-  for (auto const& entry : GetStrikeCache()) {
-    std::string strike_id = GetIdFromKey(entry.first);
+  for (auto const& [key, strike_data] : GetStrikeCache()) {
+    std::string strike_id = GetIdFromKey(key);
     if (strike_id.empty()) {
       continue;
     }
 
     base::Time last_update = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(entry.second.last_update_timestamp()));
+        base::Microseconds(strike_data.last_update_timestamp()));
 
     // Check if the time stamp of the record is within deletion range and if the
     // domain is deleted.
     if (last_update >= delete_begin && last_update <= delete_end &&
         hosts_to_delete.count(strike_id) != 0) {
-      keys_to_delete.push_back(entry.first);
+      keys_to_delete.push_back(key);
     }
   }
 

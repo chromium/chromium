@@ -332,13 +332,11 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
 }
 
 TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
-  std::string title;
-  for (int i = 0; i < 300; ++i)
-    title += "a";
   std::string kFormHtml = "<form id='target'>";
   for (int i = 0; i < 10; i++) {
-    std::string kFieldHtml =
-        "<input type='button' value='" + base::NumberToString(i) + title + "'>";
+    std::string kFieldHtml = "<input type='button' value='" +
+                             base::NumberToString(i) + std::string(300, 'a') +
+                             "'>";
     kFormHtml += kFieldHtml;
   }
   kFormHtml += "</form>";
@@ -354,9 +352,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
 
   int total_length = 0;
-  for (auto button_title : actual) {
-    EXPECT_GE(30u, button_title.first.length());
-    total_length += button_title.first.length();
+  for (const auto& [title, title_type] : actual) {
+    EXPECT_GE(30u, title.length());
+    total_length += title.length();
   }
   EXPECT_EQ(200, total_length);
 }

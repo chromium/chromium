@@ -87,8 +87,8 @@ FieldCandidatesMap FormField::ParseFormFields(
 
   size_t fillable_fields = 0;
   if (base::FeatureList::IsEnabled(features::kAutofillFixFillableFieldTypes)) {
-    for (const auto& candidate : field_candidates) {
-      if (IsFillableFieldType(candidate.second.BestHeuristicType()))
+    for (const auto& [field_id, candidates] : field_candidates) {
+      if (IsFillableFieldType(candidates.BestHeuristicType()))
         ++fillable_fields;
     }
   } else {
@@ -113,12 +113,11 @@ FieldCandidatesMap FormField::ParseFormFields(
         for (const auto& field : fields) {
           table_rows << Tr{} << "Field:" << *field;
         }
-        for (const auto& candidate : field_candidates) {
+        for (const auto& [field_id, candidates] : field_candidates) {
           LogBuffer name;
-          name << "Type candidate for frame and renderer ID: "
-               << candidate.first;
+          name << "Type candidate for frame and renderer ID: " << field_id;
           LogBuffer description;
-          ServerFieldType field_type = candidate.second.BestHeuristicType();
+          ServerFieldType field_type = candidates.BestHeuristicType();
           description << "BestHeuristicType: "
                       << AutofillType::ServerFieldTypeToString(field_type)
                       << ", is fillable: " << IsFillableFieldType(field_type);

@@ -100,11 +100,11 @@ void StrikeDatabaseIntegratorBase::LimitNumberOfStoredEntries() {
 
   std::vector<std::pair<std::string, int64_t>> entries;
   entries.reserve(GetStrikeCache().size());
-  for (const auto& entry : GetStrikeCache()) {
-    if (strike_database_->GetPrefixFromKey(entry.first) != GetProjectPrefix()) {
+  for (const auto& [key, data] : GetStrikeCache()) {
+    if (strike_database_->GetPrefixFromKey(key) != GetProjectPrefix()) {
       continue;
     }
-    entries.emplace_back(entry.first, entry.second.last_update_timestamp());
+    entries.push_back({key, data.last_update_timestamp()});
   }
 
   if (entries.size() <= maximum_size) {
@@ -139,18 +139,18 @@ void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
     return;
   }
   std::vector<std::string> expired_keys;
-  for (auto entry : strike_database_->GetStrikeCache()) {
+  for (const auto& [key, data] : strike_database_->GetStrikeCache()) {
     // Only consider keys from the current strike database integrator.
-    if (strike_database_->GetPrefixFromKey(entry.first) != GetProjectPrefix()) {
+    if (strike_database_->GetPrefixFromKey(key) != GetProjectPrefix()) {
       continue;
     }
-    if (GetEntryAge(entry.second) > GetExpiryTimeDelta().value()) {
-      if (strike_database_->GetStrikes(entry.first) > 0) {
-        expired_keys.push_back(entry.first);
+    if (GetEntryAge(data) > GetExpiryTimeDelta().value()) {
+      if (strike_database_->GetStrikes(key) > 0) {
+        expired_keys.push_back(key);
         base::UmaHistogramCounts1000(
             "Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired." +
-                strike_database_->GetPrefixFromKey(entry.first),
-            strike_database_->GetStrikes(entry.first));
+                strike_database_->GetPrefixFromKey(key),
+            strike_database_->GetStrikes(key));
       }
     }
   }

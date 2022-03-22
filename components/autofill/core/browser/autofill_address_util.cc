@@ -224,16 +224,14 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     // Address is handled seprately.
     if (type == ADDRESS_HOME_ADDRESS) {
       if (first_address != second_address) {
-        differences_for_ui.emplace_back(
-            ProfileValueDifference{type, first_address, second_address});
+        differences_for_ui.push_back({type, first_address, second_address});
       }
       continue;
     }
     auto it = differences.find(type);
     if (it == differences.end())
       continue;
-    differences_for_ui.emplace_back(
-        ProfileValueDifference{type, it->second.first, it->second.second});
+    differences_for_ui.push_back({type, it->second.first, it->second.second});
   }
   return differences_for_ui;
 }

@@ -201,8 +201,8 @@ class AutofillProfileComparatorTest
       const AutofillProfile& profile,
       const std::vector<std::pair<ServerFieldType, const char16_t*>>& updates) {
     AutofillProfile new_profile = profile;
-    for (const auto& update : updates) {
-      new_profile.SetRawInfo(update.first, update.second);
+    for (const auto& [field_type, value] : updates) {
+      new_profile.SetRawInfo(field_type, value);
     }
     new_profile.FinalizeAfterImport();
     return new_profile;

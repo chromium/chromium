@@ -146,15 +146,10 @@ FormData ConstructFormDateFromTypeValuePairs(
   form.url = GURL(url);
 
   FormFieldData field;
-  for (auto type_value_pair : type_value_pairs) {
-    ServerFieldType type = type_value_pair.first;
-    std::string value = type_value_pair.second;
-    std::pair<std::string, std::string> name_and_label =
-        GetLabelAndNameForType(type);
-
+  for (const auto& [type, value] : type_value_pairs) {
+    const auto& [name, label] = GetLabelAndNameForType(type);
     test::CreateTestFormField(
-        name_and_label.first.c_str(), name_and_label.second.c_str(),
-        value.c_str(),
+        name.c_str(), label.c_str(), value.c_str(),
         type == ADDRESS_HOME_STREET_ADDRESS ? "textarea" : "text", &field);
     form.fields.push_back(field);
   }
@@ -186,15 +181,15 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromTypeValuePairs(
 AutofillProfile ConstructProfileFromTypeValuePairs(
     std::vector<std::pair<ServerFieldType, std::string>> type_value_pairs) {
   AutofillProfile profile;
-  for (const auto& type_value_pair : type_value_pairs) {
-    if (type_value_pair.first == ADDRESS_HOME_DEPENDENT_LOCALITY &&
+  for (const auto& [type, value] : type_value_pairs) {
+    if (type == ADDRESS_HOME_DEPENDENT_LOCALITY &&
         !base::FeatureList::IsEnabled(
             features::kAutofillEnableDependentLocalityParsing)) {
       continue;
     }
 
     profile.SetRawInfoWithVerificationStatus(
-        type_value_pair.first, base::UTF8ToUTF16(type_value_pair.second),
+        type, base::UTF8ToUTF16(value),
         structured_address::VerificationStatus::kObserved);
   }
   if (!profile.FinalizeAfterImport())

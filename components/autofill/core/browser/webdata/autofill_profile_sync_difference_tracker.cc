@@ -349,11 +349,10 @@ AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
   }
 
   // Check if there is a mergeable local profile.
-  for (const auto& pair : *GetLocalOnlyEntries()) {
-    const AutofillProfile& local_candidate = *pair.second;
-    if (!local_candidate.IsVerified() &&
-        comparator.AreMergeable(local_candidate, remote)) {
-      return local_candidate;
+  for (const auto& [storage_key, local_candidate] : *GetLocalOnlyEntries()) {
+    if (!local_candidate->IsVerified() &&
+        comparator.AreMergeable(*local_candidate, remote)) {
+      return *local_candidate;
     }
   }
   return absl::nullopt;

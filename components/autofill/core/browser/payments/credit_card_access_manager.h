@@ -297,9 +297,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
     return is_authentication_in_progress_;
   }
 
-  // Returns true only if |credit_card| is a local card.
-  bool IsLocalCard(const CreditCard* credit_card);
-
   // Returns whether the user has opted in to FIDO auth.
   bool IsUserOptedInToFidoAuth();
 

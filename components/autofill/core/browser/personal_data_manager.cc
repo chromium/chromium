@@ -2236,8 +2236,8 @@ bool PersonalDataManager::ProfileChangesAreOngoing(const std::string& guid) {
 }
 
 bool PersonalDataManager::ProfileChangesAreOngoing() {
-  for (const auto& task : ongoing_profile_changes_) {
-    if (ProfileChangesAreOngoing(task.first)) {
+  for (const auto& [guid, change] : ongoing_profile_changes_) {
+    if (ProfileChangesAreOngoing(guid)) {
       return true;
     }
   }

@@ -72,9 +72,8 @@ class AutofillImageFetcherTest : public testing::Test {
   void ValidateResult(std::map<GURL, gfx::Image> received_images,
                       std::map<GURL, gfx::Image> expected_images) {
     ASSERT_EQ(expected_images.size(), received_images.size());
-    for (const auto& expected_pair : expected_images) {
-      const gfx::Image& expected_image = expected_pair.second;
-      const gfx::Image& received_image = received_images[expected_pair.first];
+    for (const auto& [expected_url, expected_image] : expected_images) {
+      const gfx::Image& received_image = received_images[expected_url];
       EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, received_image));
     }
   }

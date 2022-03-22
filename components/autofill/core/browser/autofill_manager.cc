@@ -147,8 +147,7 @@ void AutofillManager::OnLanguageDetermined(
   if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     return;
   }
-  for (auto& p : form_structures_) {
-    std::unique_ptr<FormStructure>& form_structure = p.second;
+  for (auto& [form_id, form_structure] : form_structures_) {
     form_structure->set_current_page_language(
         LanguageCode(details.adopted_language));
     form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
@@ -387,11 +386,11 @@ size_t AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature,
     std::vector<FormStructure*>* form_structures) const {
   size_t hits_num = 0;
-  for (const auto& p : form_structures_) {
-    if (p.second->form_signature() == form_signature) {
+  for (const auto& [form_id, form_structure] : form_structures_) {
+    if (form_structure->form_signature() == form_signature) {
       ++hits_num;
       if (form_structures)
-        form_structures->push_back(p.second.get());
+        form_structures->push_back(form_structure.get());
     }
   }
   return hits_num;

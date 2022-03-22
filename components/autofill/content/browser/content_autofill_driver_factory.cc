@@ -91,10 +91,9 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
-  auto insertion_result = driver_map_.emplace(render_frame_host, nullptr);
-  std::unique_ptr<ContentAutofillDriver>& driver =
-      insertion_result.first->second;
-  bool insertion_happened = insertion_result.second;
+  auto [iter, insertion_happened] =
+      driver_map_.emplace(render_frame_host, nullptr);
+  std::unique_ptr<ContentAutofillDriver>& driver = iter->second;
   if (insertion_happened) {
     // The `render_frame_host` may already be deleted (or be in the process of
     // being deleted). In this case, we must not create a new driver. Otherwise,
@@ -115,7 +114,7 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
-      driver_map_.erase(insertion_result.first);
+      driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);
       return nullptr;
     }

@@ -56,9 +56,9 @@ TestInMemoryStrikeDatabase::GetStrikeCache() {
 std::vector<std::string> TestInMemoryStrikeDatabase::GetAllStrikeKeysForProject(
     const std::string& project_prefix) {
   std::vector<std::string> project_keys;
-  for (std::pair<std::string, StrikeData> entry : strike_map_cache_) {
-    if (entry.first.find(project_prefix) == 0) {
-      project_keys.push_back(entry.first);
+  for (const auto& [key, data] : strike_map_cache_) {
+    if (key.find(project_prefix) == 0) {
+      project_keys.push_back(key);
     }
   }
   return project_keys;

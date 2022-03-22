@@ -466,14 +466,14 @@ void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
                           /*include_checksum=*/false, metadata->mutable_name());
   }
 
-  for (const ButtonTitleInfo& e : form.button_titles()) {
+  for (const auto& [title, title_type] : form.button_titles()) {
     auto* button_title = metadata->add_button_title();
-    DCHECK(!e.first.empty());
+    DCHECK(!title.empty());
     EncodeRandomizedValue(encoder, form_signature, kNullFieldSignature,
-                          RandomizedEncoder::FORM_BUTTON_TITLES, e.first,
+                          RandomizedEncoder::FORM_BUTTON_TITLES, title,
                           /*include_checksum=*/false,
                           button_title->mutable_title());
-    button_title->set_type(static_cast<ButtonTitleType>(e.second));
+    button_title->set_type(static_cast<ButtonTitleType>(title_type));
   }
   auto full_source_url = form.full_source_url().spec();
   if (encoder.AnonymousUrlCollectionIsEnabled() && !full_source_url.empty()) {
@@ -2234,11 +2234,11 @@ void FormStructure::EncodeFormForUpload(
 
     field->NormalizePossibleTypesValidities();
 
-    for (const auto& field_type_validities :
+    for (const auto& [field_type, validities] :
          field->possible_types_validities()) {
       auto* type_validities = added_field->add_autofill_type_validities();
-      type_validities->set_type(field_type_validities.first);
-      for (const auto& validity : field_type_validities.second) {
+      type_validities->set_type(field_type);
+      for (const auto& validity : validities) {
         type_validities->add_validity(validity);
       }
     }

@@ -492,9 +492,7 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
                                     &result_map)) {
     // Parsing was successful and results from the result map can be written
     // to the structure.
-    for (const auto& result_entry : result_map) {
-      const std::string& field_type = result_entry.first;
-      std::u16string field_value = base::UTF8ToUTF16(result_entry.second);
+    for (const auto& [field_type, field_value] : result_map) {
       // Do not reassign the value of this node.
       if (field_type == GetStorageTypeName()) {
         continue;

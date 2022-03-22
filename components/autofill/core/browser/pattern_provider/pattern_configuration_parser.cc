@@ -135,31 +135,25 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
     return absl::nullopt;
   }
 
-  for (auto kv : root.DictItems()) {
-    const std::string& field_type = kv.first;
-    const base::Value* field_type_dict = &kv.second;
-
-    if (!field_type_dict->is_dict()) {
+  for (const auto [field_type, field_type_dict] : root.DictItems()) {
+    if (!field_type_dict.is_dict()) {
       DVLOG(1) << "|" << field_type << "| does not contain a dictionary.";
       return absl::nullopt;
     }
 
-    for (auto value : field_type_dict->DictItems()) {
-      LanguageCode language(value.first);
-      const base::Value* inner_list = &value.second;
-
-      if (!inner_list->is_list()) {
+    for (const auto [language, inner_list] : field_type_dict.DictItems()) {
+      if (!inner_list.is_list()) {
         DVLOG(1) << "Language |" << language << "| in |" << field_type
                  << "| does not contain a list.";
         return absl::nullopt;
       }
 
-      for (const auto& matchingPatternObj : inner_list->GetListDeprecated()) {
-        bool success = ParseMatchingPattern(patterns, field_type, language,
-                                            matchingPatternObj);
+      for (const auto& matchingPatternObj : inner_list.GetListDeprecated()) {
+        bool success = ParseMatchingPattern(
+            patterns, field_type, LanguageCode(language), matchingPatternObj);
         if (!success) {
           DVLOG(1) << "Found incorrect |MatchingPattern| object in list |"
-                   << field_type << "|, language |" << language.value() << "|.";
+                   << field_type << "|, language |" << language << "|.";
           return absl::nullopt;
         }
       }

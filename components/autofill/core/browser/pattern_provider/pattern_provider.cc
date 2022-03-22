@@ -27,10 +27,7 @@ const char* kSourceCodeLanguage = "en";
 void EnrichPatternsWithEnVersion(
     PatternProvider::Map* type_and_lang_to_patterns) {
   DCHECK(type_and_lang_to_patterns);
-  for (auto& p : *type_and_lang_to_patterns) {
-    std::map<LanguageCode, std::vector<MatchingPattern>>& lang_to_patterns =
-        p.second;
-
+  for (auto& [type, lang_to_patterns] : *type_and_lang_to_patterns) {
     auto it = lang_to_patterns.find(LanguageCode(kSourceCodeLanguage));
     if (it == lang_to_patterns.end())
       continue;
@@ -39,10 +36,7 @@ void EnrichPatternsWithEnVersion(
       en_pattern.match_field_attributes = {MatchAttribute::kName};
     }
 
-    for (auto& q : lang_to_patterns) {
-      const LanguageCode& page_language = q.first;
-      std::vector<MatchingPattern>& patterns = q.second;
-
+    for (auto& [page_language, patterns] : lang_to_patterns) {
       if (page_language != LanguageCode(kSourceCodeLanguage)) {
         patterns.insert(patterns.end(), en_patterns.begin(), en_patterns.end());
       }
@@ -52,11 +46,8 @@ void EnrichPatternsWithEnVersion(
 
 // Sorts patterns in descending order by their score.
 void SortPatternsByScore(PatternProvider::Map* type_and_lang_to_patterns) {
-  for (auto& p : *type_and_lang_to_patterns) {
-    std::map<LanguageCode, std::vector<MatchingPattern>>& lang_to_patterns =
-        p.second;
-    for (auto& q : lang_to_patterns) {
-      std::vector<MatchingPattern>& patterns = q.second;
+  for (auto& [type, lang_to_patterns] : *type_and_lang_to_patterns) {
+    for (auto& [page_language, patterns] : lang_to_patterns) {
       std::sort(patterns.begin(), patterns.end(),
                 [](const MatchingPattern& mp1, const MatchingPattern& mp2) {
                   return mp1.positive_score > mp2.positive_score;
@@ -137,9 +128,7 @@ const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
       it->second;
 
   std::vector<MatchingPattern> all_language_patterns;
-  for (const auto& p : type_patterns) {
-    const LanguageCode& page_language = p.first;
-    const std::vector<MatchingPattern>& language_patterns = p.second;
+  for (const auto& [page_language, language_patterns] : type_patterns) {
     for (const MatchingPattern& mp : language_patterns) {
       if (page_language == LanguageCode(kSourceCodeLanguage) ||
           mp.language != LanguageCode(kSourceCodeLanguage)) {

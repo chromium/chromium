@@ -3265,16 +3265,16 @@ void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
   constexpr base::StringPiece base_histogram_name =
       "Autofill.NameTokenVerificationStatusAtProfileUsage.";
 
-  for (const auto& type_name_pair : kStructuredNameTypeToNameMap) {
+  for (const auto& [type, name] : kStructuredNameTypeToNameMap) {
     // Do not record the status for empty values.
-    if (profile.GetRawInfo(type_name_pair.first).empty()) {
+    if (profile.GetRawInfo(type).empty()) {
       continue;
     }
 
     structured_address::VerificationStatus status =
-        profile.GetVerificationStatus(type_name_pair.first);
-    base::UmaHistogramEnumeration(
-        base::StrCat({base_histogram_name, type_name_pair.second}), status);
+        profile.GetVerificationStatus(type);
+    base::UmaHistogramEnumeration(base::StrCat({base_histogram_name, name}),
+                                  status);
     base::UmaHistogramEnumeration(base::StrCat({base_histogram_name, "Any"}),
                                   status);
   }
@@ -3285,16 +3285,16 @@ void AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(
   constexpr base::StringPiece base_histogram_name =
       "Autofill.AddressTokenVerificationStatusAtProfileUsage.";
 
-  for (const auto& type_name_pair : kStructuredAddressTypeToNameMap) {
+  for (const auto& [type, name] : kStructuredAddressTypeToNameMap) {
     // Do not record the status for empty values.
-    if (profile.GetRawInfo(type_name_pair.first).empty()) {
+    if (profile.GetRawInfo(type).empty()) {
       continue;
     }
 
     structured_address::VerificationStatus status =
-        profile.GetVerificationStatus(type_name_pair.first);
-    base::UmaHistogramEnumeration(
-        base::StrCat({base_histogram_name, type_name_pair.second}), status);
+        profile.GetVerificationStatus(type);
+    base::UmaHistogramEnumeration(base::StrCat({base_histogram_name, name}),
+                                  status);
     base::UmaHistogramEnumeration(base::StrCat({base_histogram_name, "Any"}),
                                   status);
   }

@@ -82,29 +82,29 @@ void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
 }
 
 void FormFieldTestBase::TestClassificationExpectations() {
-  for (const std::pair<FieldGlobalId, ServerFieldType> p :
-       expected_classifications_) {
-    if (p.second != UNKNOWN_TYPE) {
+  for (const auto [field_id, field_type] : expected_classifications_) {
+    if (field_type != UNKNOWN_TYPE) {
       SCOPED_TRACE(testing::Message()
                    << "Found type "
                    << AutofillType::ServerFieldTypeToString(
-                          field_candidates_map_[p.first].BestHeuristicType())
+                          field_candidates_map_[field_id].BestHeuristicType())
                    << ", expected type "
-                   << AutofillType::ServerFieldTypeToString(p.second));
+                   << AutofillType::ServerFieldTypeToString(field_type));
 
-      ASSERT_TRUE(field_candidates_map_.find(p.first) !=
+      ASSERT_TRUE(field_candidates_map_.find(field_id) !=
                   field_candidates_map_.end());
-      EXPECT_EQ(p.second, field_candidates_map_[p.first].BestHeuristicType());
+      EXPECT_EQ(field_type,
+                field_candidates_map_[field_id].BestHeuristicType());
     } else {
       SCOPED_TRACE(
           testing::Message()
           << "Expected type UNKNOWN_TYPE but got "
           << AutofillType::ServerFieldTypeToString(
-                 field_candidates_map_.find(p.first) !=
+                 field_candidates_map_.find(field_id) !=
                          field_candidates_map_.end()
-                     ? field_candidates_map_[p.first].BestHeuristicType()
+                     ? field_candidates_map_[field_id].BestHeuristicType()
                      : UNKNOWN_TYPE));
-      EXPECT_EQ(field_candidates_map_.find(p.first),
+      EXPECT_EQ(field_candidates_map_.find(field_id),
                 field_candidates_map_.end());
     }
   }
