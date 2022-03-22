@@ -56,19 +56,6 @@ bool CheckRegisteredMayBlock(
   return manager->IsRegisteredMayBlock(GetLacrosComponentName());
 }
 
-// Returns whether any lacros-chrome component is registered.
-bool CheckAnyRegisteredMayBlock(
-    scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  for (const auto& component_info : {browser_util::kLacrosDogfoodCanaryInfo,
-                                     browser_util::kLacrosDogfoodDevInfo,
-                                     browser_util::kLacrosDogfoodBetaInfo,
-                                     browser_util::kLacrosDogfoodStableInfo}) {
-    if (manager->IsRegisteredMayBlock(component_info.name))
-      return true;
-  }
-  return false;
-}
-
 // Checks the local disk structure to confirm whether a component is installed.
 // We intentionally avoid going through CrOSComponentManager since the latter
 // functions around the idea of "registration" -- but the timing of this method
@@ -206,7 +193,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckAnyRegisteredMayBlock, component_manager_),
+      base::BindOnce(&CheckRegisteredMayBlock, component_manager_),
       base::BindOnce(&BrowserLoader::OnLoadSelection,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
