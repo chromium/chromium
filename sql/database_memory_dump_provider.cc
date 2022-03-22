@@ -13,6 +13,8 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -89,33 +91,33 @@ DatabaseMemoryDumpProvider::GetDbMemoryUsage() {
   // See /https://www.sqlite.org/c3ref/c_dbstatus_options.html
   int high_watermark = 0;
 
-  int sqlite_result_code = sqlite3_db_status(
+  auto sqlite_result_code = ToSqliteResultCode(sqlite3_db_status(
       db_, SQLITE_DBSTATUS_CACHE_USED, &result.cache_size, &high_watermark,
-      /*resetFlg=*/0);
-  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      /*resetFlg=*/0));
+  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_status(SQLITE_DBSTATUS_CACHE_USED) failed";
 
 #if DCHECK_IS_ON()
   int shared_cache_size = 0;
-  sqlite_result_code =
+  sqlite_result_code = ToSqliteResultCode(
       sqlite3_db_status(db_, SQLITE_DBSTATUS_CACHE_USED_SHARED,
-                        &shared_cache_size, &high_watermark, /*resetFlg=*/0);
-  DCHECK_EQ(SQLITE_OK, sqlite_result_code)
+                        &shared_cache_size, &high_watermark, /*resetFlg=*/0));
+  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_status(SQLITE_DBSTATUS_CACHE_USED_SHARED) failed";
   DCHECK_EQ(shared_cache_size, result.cache_size)
       << "Memory counting assumes that each database uses a private page cache";
 #endif  // DCHECK_IS_ON()
 
-  sqlite_result_code = sqlite3_db_status(db_, SQLITE_DBSTATUS_SCHEMA_USED,
-                                         &result.schema_size, &high_watermark,
-                                         /*resetFlg=*/0);
-  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+  sqlite_result_code = ToSqliteResultCode(sqlite3_db_status(
+      db_, SQLITE_DBSTATUS_SCHEMA_USED, &result.schema_size, &high_watermark,
+      /*resetFlg=*/0));
+  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_status(SQLITE_DBSTATUS_SCHEMA_USED) failed";
 
-  sqlite_result_code = sqlite3_db_status(
+  sqlite_result_code = ToSqliteResultCode(sqlite3_db_status(
       db_, SQLITE_DBSTATUS_STMT_USED, &result.statement_size, &high_watermark,
-      /*resetFlg=*/0);
-  DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+      /*resetFlg=*/0));
+  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_status(SQLITE_DBSTATUS_STMT_USED) failed";
 
   result.is_valid = true;
