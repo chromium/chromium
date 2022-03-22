@@ -71,7 +71,7 @@ void SetUpLocalStorage(const base::FilePath& path,
   batch.Put("VERSION", "1");
 
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   batch.Put("META:chrome-extension://" + keep_extension_id, "meta");
   batch.Put("_chrome-extension://" + keep_extension_id + "\x00key1"s, "value1");
 
@@ -95,7 +95,7 @@ void SetUpStateStore(const base::FilePath& path,
 
   leveldb::WriteBatch batch;
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   batch.Put(keep_extension_id + ".key1", "value1");
   batch.Put(keep_extension_id + ".key2", "value2");
   batch.Put(std::string(kMoveExtensionId) + ".key1", "value1");
@@ -211,7 +211,7 @@ TEST(BrowserDataMigratorUtilTest, GetExtensionKeys) {
   db.reset();
 
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   ExtensionKeys expected_keys = {
       {keep_extension_id,
        {
@@ -279,7 +279,7 @@ TEST(BrowserDataMigratorUtilTest, MigrateLevelDB) {
   db.reset();
 
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   ExtensionKeys expected_keys = {
       {keep_extension_id,
        {

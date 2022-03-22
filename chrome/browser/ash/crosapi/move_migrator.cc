@@ -537,7 +537,7 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
     }
 
     for (const char* extension_id :
-         browser_data_migrator_util::kExtensionKeepList) {
+         browser_data_migrator_util::kExtensionsAshOnly) {
       base::FilePath lacros_path = lacros_extensions_dir.Append(extension_id);
       if (base::PathExists(lacros_path)) {
         base::FilePath ash_path = ash_extensions_dir.Append(extension_id);

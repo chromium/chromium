@@ -45,7 +45,7 @@ constexpr int kDataSize = sizeof(kDataContent);
 // ID of an extension that will be moved from Ash to Lacros.
 // NOTE: we use a sequence of characters that can't be an
 // actual AppId here, so we can be sure that it won't be
-// included in `kExtensionKeepList`.
+// included in `kExtensionsAshOnly`.
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 constexpr int64_t kRequiredDiskSpaceForBot =
@@ -73,7 +73,7 @@ void SetUpExtensions(const base::FilePath& profile_path,
   // Generate data for an extension that has to stay in Ash.
   if (ash) {
     std::string keep_extension_id =
-        browser_data_migrator_util::kExtensionKeepList[0];
+        browser_data_migrator_util::kExtensionsAshOnly[0];
     ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
     ASSERT_EQ(
         base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
@@ -116,7 +116,7 @@ void SetUpLocalStorage(const base::FilePath& profile_path,
 
   // Generate data for an extension that has to stay in Ash.
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   batch.Put("META:chrome-extension://" + keep_extension_id, "meta");
   batch.Put("_chrome-extension://" + keep_extension_id + "\x00key"s, "value");
 
@@ -137,7 +137,7 @@ void SetUpExtensionState(const base::FilePath& profile_path) {
   ASSERT_TRUE(status.ok());
 
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   leveldb::WriteBatch batch;
   batch.Put(std::string(kMoveExtensionId) + ".key", "value");
   batch.Put(keep_extension_id + ".key", "value");
@@ -361,7 +361,7 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   EXPECT_EQ(3, db_map.size());
   EXPECT_EQ("1", db_map["VERSION"]);
   std::string keep_extension_id =
-      browser_data_migrator_util::kExtensionKeepList[0];
+      browser_data_migrator_util::kExtensionsAshOnly[0];
   std::string key = "_chrome-extension://" + keep_extension_id + "\x00key"s;
   EXPECT_EQ("meta", db_map["META:chrome-extension://" + keep_extension_id]);
   EXPECT_EQ("value", db_map[key]);
@@ -483,7 +483,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
 
     // Extensions.
     std::string keep_extension_id =
-        browser_data_migrator_util::kExtensionKeepList[0];
+        browser_data_migrator_util::kExtensionsAshOnly[0];
     EXPECT_TRUE(base::PathExists(
         original_profile_dir_
             .Append(browser_data_migrator_util::kExtensionsFilePath)

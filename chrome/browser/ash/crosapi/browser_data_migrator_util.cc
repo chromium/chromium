@@ -617,7 +617,7 @@ bool MigrateLevelDB(const base::FilePath& original_path,
 
   // Copy all the key-value pairs that need to be kept in Ash.
   for (const auto& [extension_id, keys] : original_keys) {
-    if (base::Contains(kExtensionKeepList, extension_id)) {
+    if (base::Contains(kExtensionsAshOnly, extension_id)) {
       for (const std::string& key : keys) {
         std::string value;
         status = original_db->Get(leveldb::ReadOptions(), key, &value);

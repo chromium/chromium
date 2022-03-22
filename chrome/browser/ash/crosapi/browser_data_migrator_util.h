@@ -187,10 +187,22 @@ constexpr const char* const kNeedCopyDataPaths[]{
     "shared_proto_db"};
 
 // List of extension ids to be kept in Ash.
-// TODO(crbug.com/1302613): fill this in with the complete list.
-constexpr const char* const kExtensionKeepList[] = {
+// TODO(crbug.com/1302613): make sure this is the complete list.
+constexpr const char* const kExtensionsAshOnly[] = {
+    "gjjabgpgjpampikjhjpfhneeoapjbjaf",  // Google Speech Synthesis Ext. (patts)
+    "dakbfdmgjiabojdgbiljlhgjbokobjpg",  // ESpeak Speech Synthesis Extension
+    "jacnkoglebceckolkoapelihnglgaicd",  // Enhanced Network Tts Extension
+    "klbcgckkldhdhonijdbnhhaiedfkllef",  // Select to Speak Extension
+    "egfdjlfmgnehecnclamagfafdccgfndp",  // Accessibility Common Extension
+    "mndnfokpggljbaajbnioimlmbfngpief",  // Chrome Vox Extension
+    "pmehocpgjmkenlokgjfkaichfjdhpeol",  // Switch Access Extension
+    "jddehjeebkoimngcbdkaahpobgicbffp",  // Braille IME (in IME allowlist)
+    "mppnpdlheglhdfmldimlhpnegondlapf",  // Keyboard App Extension
+    "mecfefiddjlmabpeilblgegnbioikfmp",  // sign in profile testing extension
+    "behllobkkfkfnphdnhnkndlbkcpglgmj",  // guest mode test extension
     "honijodknafkokifofgiaalefdiedpko",  // Help App
-    "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3
+    "pmfjbimdmchhbnneeidfognadeopoehp",  // Image Loader Extension
+    "cnbgggchhmkkdmeppjobngjoejnihlei",  // Arc Support (Play Store)
 };
 
 // Extensions path.
@@ -379,7 +391,7 @@ int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path);
 void RecordTotalSize(int64_t size);
 
 // Migrate the LevelDB instance at `original_path` to `target_path`,
-// Filter out all the extensions that are not in `kExtensionKeepList`.
+// Filter out all the extensions that are not in `kExtensionsAshOnly`.
 // `leveldb_type` determines the schema type.
 bool MigrateLevelDB(const base::FilePath& original_path,
                     const base::FilePath& target_path,
