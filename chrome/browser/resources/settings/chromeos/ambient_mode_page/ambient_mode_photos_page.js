@@ -19,7 +19,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {AmbientModeBrowserProxy, AmbientModeBrowserProxyImpl} from './ambient_mode_browser_proxy.js';

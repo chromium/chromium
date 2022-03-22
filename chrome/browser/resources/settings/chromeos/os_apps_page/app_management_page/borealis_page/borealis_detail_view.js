@@ -14,7 +14,7 @@ import '//resources/cr_elements/icons.m.js';
 
 import {AppManagementStoreClient} from '../store_client.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {routes} from '../../../os_route.m.js';
+import {routes} from '../../../os_route.js';
 import {Router} from '../../../../router.js';
 
 Polymer({

@@ -18,7 +18,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js';
 

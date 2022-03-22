@@ -23,7 +23,7 @@ import './smart_inputs_page.js';
 import './input_method_options_page.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import './languages.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {Router, Route} from '../../router.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';

@@ -13,7 +13,7 @@ import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {RouteOriginBehavior} from '../route_origin_behavior.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';

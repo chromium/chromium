@@ -16,7 +16,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {Router} from '../../../../router.js';
-import {routes} from '../../../os_route.m.js';
+import {routes} from '../../../os_route.js';
 import {AppManagementStoreClient} from '../store_client.js';
 
 import {PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';

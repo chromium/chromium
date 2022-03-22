@@ -37,7 +37,7 @@ import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {MainPageBehavior} from '../os_settings_page/main_page_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

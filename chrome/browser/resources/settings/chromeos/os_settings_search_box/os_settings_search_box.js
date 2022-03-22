@@ -49,7 +49,7 @@ import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js
 import '../../settings_shared_css.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 
 Polymer({
   _template: html`{__html_template__}`,

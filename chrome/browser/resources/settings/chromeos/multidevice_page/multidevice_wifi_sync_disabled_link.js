@@ -8,7 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
 

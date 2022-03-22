@@ -28,7 +28,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

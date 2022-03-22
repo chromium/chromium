@@ -20,7 +20,7 @@ import '../../settings_shared_css.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 
 import {AmbientModeAlbum, AmbientModeTopicSource} from './constants.js';
 

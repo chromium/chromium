@@ -530,6 +530,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_powerwash_dialog_esim_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_browser_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_page.html",
+                                 "chrome/browser/resources/settings/chromeos/os_route.html",
                                  "chrome/browser/resources/settings/chromeos/os_search_page/os_search_page.html",
                                  "chrome/browser/resources/settings/chromeos/os_search_page/os_search_selection_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_search_page/search_engine.html",

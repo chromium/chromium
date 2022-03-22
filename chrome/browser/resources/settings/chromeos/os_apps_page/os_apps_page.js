@@ -34,7 +34,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

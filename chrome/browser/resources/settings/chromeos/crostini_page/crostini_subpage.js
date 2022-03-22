@@ -29,7 +29,7 @@ import {DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, CrostiniPortProtocol, C
 import './crostini_confirmation_dialog.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.js';

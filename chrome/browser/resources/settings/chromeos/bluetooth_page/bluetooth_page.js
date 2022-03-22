@@ -35,7 +35,7 @@ import '../../prefs/prefs.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_page/settings_animated_pages.js';

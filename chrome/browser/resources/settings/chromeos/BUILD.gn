@@ -262,7 +262,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_settings_routes.m.js",
     "chromeos/route_origin_behavior.js",
     "chromeos/search_handler.js",
-    "chromeos/os_route.m.js",
+    "chromeos/os_route.js",
     "chromeos/os_page_visibility.js",
     "chromeos/pref_to_setting_metric_converter.js",
     "chromeos/ensure_lazy_loaded.m.js",
@@ -720,7 +720,6 @@ js_library("os_page_visibility") {
 }
 
 js_library("os_route") {
-  sources = [ "os_route.m.js" ]
   deps = [
     ":os_settings_routes",
     "..:router",

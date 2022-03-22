@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Route, Router} from '../../../router.js';
-import {routes} from '../../os_route.m.js';
+import {routes} from '../../os_route.js';
 
 /**
  * Navigates to the App Detail page.

@@ -8,7 +8,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {OsSettingsRoutes} from '../os_settings_routes.m.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';

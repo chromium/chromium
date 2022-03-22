@@ -22,7 +22,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {Router, Route} from '../../router.js';
 import '../../settings_shared_css.js';
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';

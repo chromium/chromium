@@ -29,7 +29,7 @@ import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {KerberosAccount, KerberosAccountsBrowserProxyImpl, KerberosAccountsBrowserProxy, KerberosErrorType, KerberosConfigErrorCode, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
 import './kerberos_add_account_dialog.js';
 

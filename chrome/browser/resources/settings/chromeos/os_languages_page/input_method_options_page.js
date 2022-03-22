@@ -16,7 +16,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

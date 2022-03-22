@@ -13,7 +13,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {Route, Router} from '../../../router.js';
-import {routes} from '../../os_route.m.js';
+import {routes} from '../../os_route.js';
 import {RouteObserverBehavior} from '../../route_observer_behavior.js';
 
 import {AppManagementStore} from './store.js';

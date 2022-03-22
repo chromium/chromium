@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {Route} from '../../router.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
 

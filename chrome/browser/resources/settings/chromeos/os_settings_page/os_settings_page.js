@@ -37,7 +37,7 @@ import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/
 import {Route, Router} from '../../router.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {MainPageBehavior} from './main_page_behavior.js';

@@ -27,7 +27,7 @@ import {Route, Router} from '../../router.js';
 import {NearbyShareSettingsBehavior} from '../../shared/nearby_share_settings_behavior.m.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

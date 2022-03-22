@@ -38,7 +38,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
 import '../os_icons.js';
 import '../../settings_shared_css.js';
-import {routes} from '../os_route.m.js';
+import {routes} from '../os_route.js';
 
 Polymer({
   _template: html`{__html_template__}`,
