@@ -17,6 +17,9 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+    await importModule(
+        'IntentHandler', '/chromevox/background/editing/intent_handler.js');
+
     window.Dir = constants.Dir;
     window.IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
     window.Movement = cursors.Movement;

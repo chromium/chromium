@@ -46,6 +46,7 @@ goog.require('LibLouis.FormType');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('MathHandler');
+goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('Output');
 goog.require('OutputEventType');
