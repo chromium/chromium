@@ -719,8 +719,8 @@
   ],
   "virtualKeyboard": {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
+    "extension_types": ["platform_app", "extension"],
+    "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk"]
   },
   "virtualKeyboardPrivate": {
