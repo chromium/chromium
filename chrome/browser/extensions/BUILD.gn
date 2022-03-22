@@ -775,6 +775,7 @@ static_library("extensions") {
     "//chrome/browser:theme_properties",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/first_party_sets",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",

@@ -28980,11 +28980,11 @@ Called by update_document_policy_enum.py.-->
   <int value="954" label="WebHidAllowDevicesForUrls"/>
   <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
   <int value="956" label="SecondaryGoogleAccountUsage"/>
-  <int value="957" label="EnableEncryptedReportingPipeline"/>
+  <int value="957" label="DeviceEncryptedReportingPipelineEnabled"/>
   <int value="958" label="EnableDirectSockets"/>
   <int value="959" label="FloatingWorkspaceEnabled"/>
-  <int value="960" label="WindowPlacementAllowedForSites"/>
-  <int value="961" label="WindowPlacementBlockedForSites"/>
+  <int value="960" label="WindowPlacementAllowedForUrls"/>
+  <int value="961" label="WindowPlacementBlockedForUrls"/>
   <int value="962" label="CloudReportingUploadFrequency"/>
   <int value="963" label="OptimizationGuideFetchingEnabled"/>
   <int value="964" label="WebAuthnFactors"/>
@@ -28992,6 +28992,7 @@ Called by update_document_policy_enum.py.-->
   <int value="966" label="WebSQLAccess"/>
   <int value="967" label="SetTimeoutWithout1MsClampEnabled"/>
   <int value="968" label="AllowChromeDataInBackups"/>
+  <int value="969" label="FirstPartySetsOverrides"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

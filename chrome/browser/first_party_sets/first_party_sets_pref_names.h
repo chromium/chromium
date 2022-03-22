@@ -11,6 +11,7 @@ namespace first_party_sets {
 
 // Add Local State prefs below.
 extern const char kFirstPartySetsEnabled[];
+extern const char kFirstPartySetsOverrides[];
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

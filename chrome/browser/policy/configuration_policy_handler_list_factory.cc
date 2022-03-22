@@ -1631,6 +1631,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     webauthn::pref_names::kRemoteProxiedRequestsAllowed,
     base::Value::Type::BOOLEAN },
 #endif
+  { key::kFirstPartySetsOverrides,
+    first_party_sets::kFirstPartySetsOverrides,
+    base::Value::Type::DICTIONARY},
 };
 // clang-format on
 
