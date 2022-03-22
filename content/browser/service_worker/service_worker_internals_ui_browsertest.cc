@@ -51,9 +51,6 @@ void ExpectUnregisterResultAndRun(bool expected,
 }
 }  // namespace
 
-static int CountRenderProcessHosts() {
-  return RenderProcessHost::GetCurrentRenderProcessCountForTesting();
-}
 class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
  public:
   ServiceWorkerInternalsUIBrowserTest() = default;
@@ -119,13 +116,14 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
   // Navigate to the page to set up a renderer page to embed a worker
   void NavigateToServiceWorkerSetupPage() {
     NavigateToURLBlockUntilNavigationsComplete(
-        active_shell_, embedded_test_server()->GetURL(kServiceWorkerSetupPage),
-        1);
+        GetActiveWindow(),
+        embedded_test_server()->GetURL(kServiceWorkerSetupPage), 1);
     FocusContent(FROM_HERE);
   }
 
   void NavigateToServiceWorkerInternalUI() {
-    ASSERT_TRUE(NavigateToURL(active_shell_, GURL(kServiceWorkerInternalsUrl)));
+    ASSERT_TRUE(
+        NavigateToURL(GetActiveWindow(), GURL(kServiceWorkerInternalsUrl)));
     // Ensure the window has focus after the navigation.
     FocusContent(FROM_HERE);
   }
@@ -140,24 +138,22 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         << "Location: " << from_here.ToString();
   }
 
-  WebContentsImpl* web_contents() const {
-    return static_cast<WebContentsImpl*>(active_shell_->web_contents());
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(GetActiveWindow()->web_contents());
   }
 
   // Create a new window and navigate to about::blank.
   Shell* CreateNewWindow() {
-    active_shell_ = CreateBrowser();
-    return active_shell_;
+    SetActiveWindow(CreateBrowser());
+    return GetActiveWindow();
   }
-
   // Tear down the page.
   void TearDownWindow() {
-    active_shell_->Close();
-    active_shell_ = shell();
+    GetActiveWindow()->Close();
+    SetActiveWindow(shell());
   }
-
-  void MoveToWindow(Shell* window) { active_shell_ = window; }
-  void ReloadWindow() { active_shell_->Reload(); }
+  void SetActiveWindow(Shell* window) { active_shell_ = window; }
+  Shell* GetActiveWindow() { return active_shell_; }
 
   // Registers a service worker and then tears down the process it used, for a
   // clean slate going forward.
@@ -193,7 +189,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
                          run_loop.QuitClosure()));
       run_loop.Run();
     }
-    EXPECT_EQ(FindRegistration(),
+    ASSERT_EQ(FindRegistration(),
               blink::ServiceWorkerStatusCode::kErrorNotFound)
         << "Should not be able to find any Service Worker.";
   }
@@ -245,7 +241,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         .ExtractString();
   }
 
-  std::string getServiceWorkerInfoFromInternalUI(
+  std::string GetServiceWorkerInfoFromInternalUI(
       int64_t registration_id,
       std::string service_worker_info) {
     static constexpr char kScript[] = R"(
@@ -290,21 +286,109 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         .ExtractString();
   }
 
+  enum InfoTag {
+    SCOPE,
+    STATUS,
+    RUNNING_STATUS,
+    PROCESS_ID,
+  };
+
+  std::string GetServiceWorkerInfo(int info_tag) {
+    ServiceWorkerRegistrationInfo registration = GetAllRegistrations().front();
+    switch (info_tag) {
+      case SCOPE:
+        return registration.scope.spec();
+      case STATUS:
+        switch (registration.active_version.status) {
+          case ServiceWorkerVersion::NEW:
+            return "NEW";
+          case ServiceWorkerVersion::INSTALLING:
+            return "INSTALLING";
+          case ServiceWorkerVersion::INSTALLED:
+            return "INSTALLED";
+          case ServiceWorkerVersion::ACTIVATING:
+            return "ACTIVATING";
+          case ServiceWorkerVersion::ACTIVATED:
+            return "ACTIVATED";
+          case ServiceWorkerVersion::REDUNDANT:
+            return "REDUNDANT";
+        }
+      case RUNNING_STATUS:
+        switch (registration.active_version.running_status) {
+          case EmbeddedWorkerStatus::STOPPED:
+            return "STOPPED";
+          case EmbeddedWorkerStatus::STARTING:
+            return "STARTING";
+          case EmbeddedWorkerStatus::RUNNING:
+            return "RUNNING";
+          case EmbeddedWorkerStatus::STOPPING:
+            return "STOPPING";
+        }
+      case PROCESS_ID:
+        return base::NumberToString(base::GetProcId(
+            RenderProcessHost::FromID(registration.active_version.process_id)
+                ->GetProcess()
+                .Handle()));
+      default:
+        return "";
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   Shell* active_shell_ = shell();
 };
 
+class WorkerActivatedObserver
+    : public ServiceWorkerContextCoreObserver,
+      public base::RefCountedThreadSafe<WorkerActivatedObserver> {
+ public:
+  explicit WorkerActivatedObserver(ServiceWorkerContextWrapper* context)
+      : context_(context) {}
+
+  WorkerActivatedObserver(const WorkerActivatedObserver&) = delete;
+  WorkerActivatedObserver& operator=(const WorkerActivatedObserver&) = delete;
+
+  void Init() { context_->AddObserver(this); }
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnVersionStateChanged(int64_t version_id,
+                             const GURL& scope,
+                             const blink::StorageKey& key,
+                             ServiceWorkerVersion::Status) override {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    const ServiceWorkerVersion* version = context_->GetLiveVersion(version_id);
+    if (version->status() == ServiceWorkerVersion::ACTIVATED) {
+      context_->RemoveObserver(this);
+      version_id_ = version_id;
+      registration_id_ = version->registration_id();
+      run_loop_.Quit();
+    }
+  }
+  void Wait() { run_loop_.Run(); }
+
+  int64_t registration_id() { return registration_id_; }
+  int64_t version_id() { return version_id_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<WorkerActivatedObserver>;
+  ~WorkerActivatedObserver() override = default;
+
+  int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
+
+  base::RunLoop run_loop_;
+  raw_ptr<ServiceWorkerContextWrapper> context_;
+};
+
 // Tests
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
                        NoRegisteredServiceWorker) {
-  EXPECT_TRUE(CreateNewWindow());
-  EXPECT_EQ(1, CountRenderProcessHosts());
+  ASSERT_TRUE(CreateNewWindow());
 
   NavigateToServiceWorkerInternalUI();
 
-  EXPECT_EQ(0, EvalJs(web_contents()->GetMainFrame(),
+  ASSERT_EQ(0, EvalJs(web_contents()->GetMainFrame(),
                       R"(document.querySelectorAll(
                  "div#serviceworker-list > div:not([style='display: none;'])\
                  > div:not([class='serviceworker-summary'])\
@@ -314,53 +398,50 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
                    .ExtractInt());
 
   TearDownWindow();
-  EXPECT_EQ(0, CountRenderProcessHosts());
 }
 
-// TODO(crbug.com/1307548): Flaky on Linux/Lacros/Mac
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC))
-#define MAYBE_RegisteredSWReflectedOnInternalUI \
-  DISABLED_RegisteredSWReflectedOnInternalUI
-#else
-#define MAYBE_RegisteredSWReflectedOnInternalUI \
-  RegisteredSWReflectedOnInternalUI
-#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       MAYBE_RegisteredSWReflectedOnInternalUI) {
+                       RegisteredSWReflectedOnInternalUI) {
   Shell* SWInternalUIWindow = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
-  EXPECT_EQ(1, CountRenderProcessHosts());
 
   setMutationObserverSWPopulated();
 
   Shell* SWREgistrationWindow = CreateNewWindow();
-  RegisterServiceWorker();
-  EXPECT_EQ(2, CountRenderProcessHosts());
 
-  MoveToWindow(SWInternalUIWindow);
+  // Register and wait for activation.
+  auto observer = base::MakeRefCounted<WorkerActivatedObserver>(wrapper());
+  observer->Init();
+  RegisterServiceWorker();
+  observer->Wait();
+  int64_t registration_id = observer->registration_id();
+  int64_t version_id = observer->version_id();
+
+  SetActiveWindow(SWInternalUIWindow);
 
   TitleWatcher title_watcher(web_contents(), kCompleteTitle);
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-  EXPECT_EQ("done", cleanMutationObserver("SWPopulated"));
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ("done", cleanMutationObserver("SWPopulated"));
 
-  std::vector<ServiceWorkerRegistrationInfo> registrations =
-      GetAllRegistrations();
-  EXPECT_EQ(1u, registrations.size())
+  ASSERT_EQ(base::NumberToString(version_id),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "version_id"));
+  ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
-  EXPECT_EQ(registrations[0].scope.spec(),
-            getServiceWorkerInfoFromInternalUI(registrations[0].registration_id,
-                                               "scope"));
-  EXPECT_EQ("ACTIVATED", getServiceWorkerInfoFromInternalUI(
-                             registrations[0].registration_id, "status"));
-  UnRegisterServiceWorker();
-  EXPECT_GE(2, CountRenderProcessHosts()) << "Unregistering doesn't stop the"
-                                             "workers eagerly, so their RPHs"
-                                             "can still be running.";
-  MoveToWindow(SWREgistrationWindow);
-  TearDownWindow();
+  ASSERT_EQ(GetServiceWorkerInfo(SCOPE),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "scope"));
+  ASSERT_EQ(GetServiceWorkerInfo(STATUS),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "status"));
+  ASSERT_EQ(
+      GetServiceWorkerInfo(RUNNING_STATUS),
+      GetServiceWorkerInfoFromInternalUI(registration_id, "running_status"));
 
-  MoveToWindow(SWInternalUIWindow);
+  ASSERT_EQ(GetServiceWorkerInfo(PROCESS_ID),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "process_id"));
+  UnRegisterServiceWorker();
+
+  SetActiveWindow(SWREgistrationWindow);
   TearDownWindow();
-  EXPECT_GE(1, CountRenderProcessHosts());
+  SetActiveWindow(SWInternalUIWindow);
+  TearDownWindow();
 }
 }  // namespace content
