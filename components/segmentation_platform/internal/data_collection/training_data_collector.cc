@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/features.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -72,8 +73,6 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
   void OnModelMetadataUpdated() override { NOTIMPLEMENTED(); }
 
   void OnServiceInitialized() override {
-    // TODO(xingliu): Filter out segments that doesn't contain enough data.
-    // Maybe reuse ModelExecutionSchedulerImpl::FilterEligibleSegments.
     segment_info_database_->GetAllSegmentInfo(
         base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -89,12 +88,14 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
       // Validate segment info.
       auto validation_result =
           metadata_utils::ValidateSegmentInfo(segment_info);
-      // TODO(xingliu): Record histogram for errors.
       if (validation_result !=
           metadata_utils::ValidationResult::kValidationSuccess) {
         VLOG(1) << "Segment info validation failed for optimization target: "
                 << segment.first << ", validation result:"
                 << static_cast<int>(validation_result);
+        RecordTrainingDataCollectionEvent(
+            segment.first,
+            stats::TrainingDataCollectionEvent::kMetadataValidationFailed);
         continue;
       }
 
@@ -137,6 +138,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments) {
     DCHECK(segments);
     for (const auto& segment : *segments) {
+      RecordTrainingDataCollectionEvent(
+          segment.first,
+          stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
       const proto::SegmentInfo& segment_info = segment.second;
       // Figure out the output index.
       auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
@@ -165,6 +169,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
     if (!segment_info.has_model_version() ||
         !segment_info.has_model_update_time_s() ||
         segment_info.model_update_time_s() == 0) {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kModelInfoMissing);
       return false;
     }
 
@@ -178,12 +185,23 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
     // It's recommended to get the A/B testing experiment fully ramped up before
     // deploying a new model. Or the data collected might be partially based on
     // old behavior of Chrome.
-    if (model_update_time + min_signal_collection_length >= clock_->Now())
+    if (model_update_time + min_signal_collection_length >= clock_->Now()) {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
       return false;
+    }
 
     // Each input must be collected for enough time.
-    return signal_storage_config_->MeetsSignalCollectionRequirement(
-        segment_info.model_metadata());
+    if (!signal_storage_config_->MeetsSignalCollectionRequirement(
+            segment_info.model_metadata())) {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
+      return false;
+    }
+
+    return true;
   }
 
   void OnGetInputTensor(float output_value,
@@ -192,14 +210,24 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
                         int64_t model_version,
                         bool success,
                         const std::vector<float>& inputs) {
-    if (!success)
+    if (!success) {
+      RecordTrainingDataCollectionEvent(
+          segment_id,
+          stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
       return;
+    }
 
     auto ukm_source_id =
         SegmentationUkmHelper::GetInstance()->RecordTrainingData(
             segment_id, model_version, inputs, {output_value}, {output_index});
     if (ukm_source_id == ukm::kInvalidSourceId) {
       VLOG(1) << "Failed to collect training data for segment:" << segment_id;
+      RecordTrainingDataCollectionEvent(
+          segment_id, stats::TrainingDataCollectionEvent::kUkmReportingFailed);
+    } else {
+      RecordTrainingDataCollectionEvent(
+          segment_id,
+          stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess);
     }
   }
 

@@ -15,12 +15,7 @@ namespace segmentation_platform {
 using proto::SignalType;
 namespace stats {
 
-class StatsTest : public testing::Test {
- public:
-  ~StatsTest() override = default;
-};
-
-TEST_F(StatsTest, ModelExecutionZeroValuePercent) {
+TEST(StatsTest, ModelExecutionZeroValuePercent) {
   base::HistogramTester tester;
   std::vector<float> empty{};
   std::vector<float> single_zero{0};
@@ -73,7 +68,7 @@ TEST_F(StatsTest, ModelExecutionZeroValuePercent) {
              "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
 }
 
-TEST_F(StatsTest, AdaptiveToolbarSegmentSwitch) {
+TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
   std::string histogram("SegmentationPlatform.AdaptiveToolbar.SegmentSwitched");
   base::HistogramTester tester;
 
@@ -108,7 +103,7 @@ TEST_F(StatsTest, AdaptiveToolbarSegmentSwitch) {
       "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed", 3);
 }
 
-TEST_F(StatsTest, BooleanSegmentSwitch) {
+TEST(StatsTest, BooleanSegmentSwitch) {
   std::string histogram(
       "SegmentationPlatform.ChromeStartAndroid.SegmentSwitched");
   base::HistogramTester tester;
@@ -143,7 +138,7 @@ TEST_F(StatsTest, BooleanSegmentSwitch) {
       "SegmentationPlatform.ChromeStartAndroid.SegmentSelection.Computed2", 2);
 }
 
-TEST_F(StatsTest, SignalsListeningCount) {
+TEST(StatsTest, SignalsListeningCount) {
   base::HistogramTester tester;
   std::set<uint64_t> user_actions{1, 2, 3, 4};
   std::set<std::pair<std::string, proto::SignalType>> histograms;
@@ -164,6 +159,16 @@ TEST_F(StatsTest, SignalsListeningCount) {
   EXPECT_EQ(
       1, tester.GetBucketCount(
              "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 2));
+}
+
+TEST(StatsTest, TrainingDataCollectionEvent) {
+  base::HistogramTester tester;
+  RecordTrainingDataCollectionEvent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      TrainingDataCollectionEvent::kImmediateCollectionStart);
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.TrainingDataCollectionEvents.Share", 0));
 }
 
 }  // namespace stats

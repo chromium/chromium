@@ -80940,6 +80940,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="16" label="ChromeLowUserEngagement"/>
 </enum>
 
+<enum name="SegmentationPlatformTrainingDataCollectionEvent">
+  <int value="0" label="Immediate collection start"/>
+  <int value="1" label="Immediate collection success"/>
+  <int value="2" label="Model info missing"/>
+  <int value="3" label="Metadata validation failure"/>
+  <int value="4" label="Get input tensors failure"/>
+  <int value="5" label="Not enough data collection time"/>
+  <int value="6" label="UKM reporting failure"/>
+</enum>
+
 <enum name="SegmentationPlatformValidationResult">
   <int value="0" label="ValidationSuccess"/>
   <int value="1" label="SegmentIDNotFound"/>

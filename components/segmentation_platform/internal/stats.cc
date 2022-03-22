@@ -548,4 +548,12 @@ void RecordTooManyInputTensors(int tensor_size) {
       tensor_size);
 }
 
+void RecordTrainingDataCollectionEvent(OptimizationTarget segment_id,
+                                       TrainingDataCollectionEvent event) {
+  base::UmaHistogramEnumeration(
+      "SegmentationPlatform.TrainingDataCollectionEvents." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      event);
+}
+
 }  // namespace segmentation_platform::stats

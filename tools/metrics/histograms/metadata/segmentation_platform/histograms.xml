@@ -484,6 +484,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SegmentationPlatform.TrainingDataCollectionEvents.{SegmentationModel}"
+    enum="SegmentationPlatformTrainingDataCollectionEvent"
+    expires_after="2023-03-21">
+  <owner>ssid@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records training data collection events for segmentation platform. Recorded
+    when the training data collection flow starts, completes or encountering an
+    error.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
 <histogram name="SegmentationPlatform.{BooleanModel}.SegmentSwitched"
     enum="SegmentationBooleanSegmentSwitch" expires_after="2022-08-01">
   <owner>shaktisahu@chromium.org</owner>
