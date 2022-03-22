@@ -172,10 +172,9 @@ class TabController {
       TabActive active,
       BrowserFrameActiveState active_state) const = 0;
 
-  // Returns the tab foreground color of the the text based on the |tab_state|,
-  // the activation state of the window, and the current |background_color|.
-  virtual SkColor GetTabForegroundColor(TabActive active,
-                                        SkColor background_color) const = 0;
+  // Returns the tab foreground color of the the text based on `active` and the
+  // activation state of the window.
+  virtual SkColor GetTabForegroundColor(TabActive active) const = 0;
 
   // Returns the background tab image resource ID if the image has been
   // customized, directly or indirectly, by the theme.

@@ -79,9 +79,7 @@ SkColor FakeTabController::GetTabBackgroundColor(
                                       : tab_bg_color_inactive_;
 }
 
-SkColor FakeTabController::GetTabForegroundColor(
-    TabActive active,
-    SkColor background_color) const {
+SkColor FakeTabController::GetTabForegroundColor(TabActive active) const {
   return active == TabActive::kActive ? tab_fg_color_active_
                                       : tab_fg_color_inactive_;
 }

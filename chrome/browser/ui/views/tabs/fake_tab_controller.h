@@ -64,8 +64,7 @@ class FakeTabController : public TabController {
   SkColor GetTabBackgroundColor(
       TabActive active,
       BrowserFrameActiveState active_state) const override;
-  SkColor GetTabForegroundColor(TabActive active,
-                                SkColor background_color) const override;
+  SkColor GetTabForegroundColor(TabActive active) const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override;

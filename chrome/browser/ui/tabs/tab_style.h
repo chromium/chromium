@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "chrome/browser/ui/tabs/tab_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -111,6 +112,13 @@ class TabStyle {
   // ascending order. Return values are in the range (0,
   // TabStyle::GetMaximumZValue()).
   virtual float GetZValue() const = 0;
+
+  // Returns the current opacity of the "active" portion of the tab's state.
+  virtual float GetActiveOpacity() const = 0;
+
+  // Returns whichever of (active, inactive) the tab appears more like given the
+  // active opacity.
+  virtual TabActive GetApparentActiveState() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
   virtual TabColors CalculateColors() const = 0;

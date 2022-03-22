@@ -27,6 +27,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -738,24 +739,20 @@ absl::optional<SkColor> Tab::GetGroupColor() const {
 }
 
 SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
-  // If theme provider is not yet available, return the default button
-  // color.
-  const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  if (!theme_provider)
-    return foreground_color_;
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  if (!color_provider)
+    return gfx::kPlaceholderColor;
 
-  // TODO(tluk): These color computations should be moved into ThemeProvider
-  // when other tab colors are also computed there.
+  int group;
   switch (state) {
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
-      return color_utils::IsDark(foreground_color_) ? gfx::kGoogleRed600
-                                                    : gfx::kGoogleRed300;
+      group = 0;
+      break;
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::PIP_PLAYING:
-      if (color_utils::IsDark(foreground_color_))
-        return gfx::kGoogleBlue600;
-      [[fallthrough]];
+      group = 1;
+      break;
     case TabAlertState::AUDIO_PLAYING:
     case TabAlertState::AUDIO_MUTING:
     case TabAlertState::BLUETOOTH_CONNECTED:
@@ -764,11 +761,26 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
     case TabAlertState::HID_CONNECTED:
     case TabAlertState::SERIAL_CONNECTED:
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return foreground_color_;
-    default:
-      NOTREACHED();
-      return foreground_color_;
+      group = 2;
+      break;
   }
+  ui::ColorId color_ids[3][2][2] = {
+      {{kColorTabAlertMediaRecordingInactiveFrameInactive,
+        kColorTabAlertMediaRecordingInactiveFrameActive},
+       {kColorTabAlertMediaRecordingActiveFrameInactive,
+        kColorTabAlertMediaRecordingActiveFrameActive}},
+      {{kColorTabAlertPipPlayingInactiveFrameInactive,
+        kColorTabAlertPipPlayingInactiveFrameActive},
+       {kColorTabAlertPipPlayingActiveFrameInactive,
+        kColorTabAlertPipPlayingActiveFrameActive}},
+      {{kColorTabAlertAudioPlayingInactiveFrameInactive,
+        kColorTabAlertAudioPlayingInactiveFrameActive},
+       {kColorTabAlertAudioPlayingActiveFrameInactive,
+        kColorTabAlertAudioPlayingActiveFrameActive}}};
+  return color_provider->GetColor(
+      color_ids[group]
+               [tab_style_->GetApparentActiveState() == TabActive::kActive]
+               [controller_->ShouldPaintAsActiveFrame()]);
 }
 
 bool Tab::IsActive() const {
@@ -1058,16 +1070,9 @@ int Tab::GetWidthOfLargestSelectableRegion() const {
 
 void Tab::UpdateForegroundColors() {
   TabStyle::TabColors colors = tab_style_->CalculateColors();
-
   title_->SetEnabledColor(colors.foreground_color);
-
   close_button_->SetColors(colors);
-
-  if (foreground_color_ != colors.foreground_color) {
-    foreground_color_ = colors.foreground_color;
-    alert_indicator_button_->OnParentTabButtonColorChanged();
-  }
-
+  alert_indicator_button_->OnParentTabButtonColorChanged();
   SchedulePaint();
 }
 

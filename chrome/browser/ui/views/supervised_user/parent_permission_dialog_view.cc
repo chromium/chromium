@@ -386,6 +386,12 @@ void ParentPermissionDialogView::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(std::move(message_container).Build());
 }
 
+void ParentPermissionDialogView::OnThemeChanged() {
+  views::DialogDelegateView::OnThemeChanged();
+  invalid_credential_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
+}
+
 void ParentPermissionDialogView::OnDialogClose() {
   // If the dialog is closed without the user clicking "approve" consider this
   // as ParentPermissionCanceled to avoid showing an error message. If the
@@ -517,8 +523,7 @@ void ParentPermissionDialogView::CreateContents() {
 
   // Cache the pointer so we we can update the invalid credential label when we
   // get an incorrect password.
-  invalid_credential_label_ = invalid_credential_label.get();
-  AddChildView(std::move(invalid_credential_label));
+  invalid_credential_label_ = AddChildView(std::move(invalid_credential_label));
 }
 
 void ParentPermissionDialogView::ShowDialog() {

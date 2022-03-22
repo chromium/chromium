@@ -1536,8 +1536,7 @@ SkColor TabStrip::GetTabBackgroundColor(
   return tp->GetColor(kColorIds[tab_active][frame_active]);
 }
 
-SkColor TabStrip::GetTabForegroundColor(TabActive active,
-                                        SkColor background_color) const {
+SkColor TabStrip::GetTabForegroundColor(TabActive active) const {
   const ui::ColorProvider* cp = GetColorProvider();
   if (!cp)
     return SK_ColorBLACK;
@@ -1948,8 +1947,7 @@ void TabStrip::UpdateContrastRatioValues() {
   constexpr float kRadialGradientContrast = 1.13728f;
   radial_highlight_opacity_ = get_hover_opacity(kRadialGradientContrast);
 
-  const SkColor inactive_fg =
-      GetTabForegroundColor(TabActive::kInactive, inactive_bg);
+  const SkColor inactive_fg = GetTabForegroundColor(TabActive::kInactive);
   // The contrast ratio for the separator between inactive tabs.
   constexpr float kTabSeparatorContrast = 2.5f;
   separator_color_ = get_blend(inactive_fg, kTabSeparatorContrast).color;

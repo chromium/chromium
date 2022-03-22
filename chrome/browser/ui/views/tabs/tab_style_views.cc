@@ -63,6 +63,8 @@ class GM2TabStyle : public TabStyleViews {
       RenderUnits render_units = RenderUnits::kPixels) const override;
   gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
+  float GetActiveOpacity() const override;
+  TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateColors() const override;
   const gfx::FontList& GetFontList() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
@@ -451,28 +453,31 @@ float GM2TabStyle::GetZValue() const {
   return sort_value;
 }
 
-TabStyle::TabColors GM2TabStyle::CalculateColors() const {
+float GM2TabStyle::GetActiveOpacity() const {
+  if (tab_->IsActive())
+    return 1.0f;
+  if (tab_->IsSelected())
+    return kSelectedTabOpacity;
+  if (tab_->mouse_hovered())
+    return GetHoverOpacity();
+  return 0.0f;
+}
+
+TabActive GM2TabStyle::GetApparentActiveState() const {
   // In some cases, inactive tabs may have background more like active tabs than
   // inactive tabs, so colors should be adapted to ensure appropriate contrast.
   // In particular, text should have plenty of contrast in all cases, so switch
   // to using foreground color designed for active tabs if the tab looks more
   // like an active tab than an inactive tab.
-  float expected_opacity = 0.0f;
-  if (tab_->IsActive()) {
-    expected_opacity = 1.0f;
-  } else if (tab_->IsSelected()) {
-    expected_opacity = kSelectedTabOpacity;
-  } else if (tab_->mouse_hovered()) {
-    expected_opacity = GetHoverOpacity();
-  }
+  return GetActiveOpacity() > 0.5f ? TabActive::kActive : TabActive::kInactive;
+}
+
+TabStyle::TabColors GM2TabStyle::CalculateColors() const {
+  const SkColor foreground_color =
+      tab_->controller()->GetTabForegroundColor(GetApparentActiveState());
   const SkColor background_color = color_utils::AlphaBlend(
       GetTabBackgroundColor(TabActive::kActive),
-      GetTabBackgroundColor(TabActive::kInactive), expected_opacity);
-
-  const SkColor foreground_color = tab_->controller()->GetTabForegroundColor(
-      expected_opacity > 0.5f ? TabActive::kActive : TabActive::kInactive,
-      background_color);
-
+      GetTabBackgroundColor(TabActive::kInactive), GetActiveOpacity());
   return {foreground_color, background_color};
 }
 

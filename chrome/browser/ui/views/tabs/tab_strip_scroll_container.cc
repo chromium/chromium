@@ -241,10 +241,8 @@ void TabStripScrollContainer::ScrollTowardsTrailingTab() {
 }
 
 void TabStripScrollContainer::FrameColorsChanged() {
-  const SkColor background_color = tab_strip_->GetTabBackgroundColor(
-      TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
   SkColor foreground_color =
-      tab_strip_->GetTabForegroundColor(TabActive::kInactive, background_color);
+      tab_strip_->GetTabForegroundColor(TabActive::kInactive);
   views::SetImageFromVectorIconWithColor(
       leading_scroll_button_, kScrollingTabstripLeadingIcon, foreground_color);
   views::SetImageFromVectorIconWithColor(trailing_scroll_button_,

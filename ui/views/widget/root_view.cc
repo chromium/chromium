@@ -727,7 +727,7 @@ void RootView::OnDidSchedulePaint(const gfx::Rect& rect) {
 
 void RootView::OnPaint(gfx::Canvas* canvas) {
   if (!layer() || !layer()->fills_bounds_opaquely())
-    canvas->DrawColor(SK_ColorBLACK, SkBlendMode::kClear);
+    canvas->DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
   View::OnPaint(canvas);
 }

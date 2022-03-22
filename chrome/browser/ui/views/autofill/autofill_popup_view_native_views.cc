@@ -174,8 +174,9 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
 
   if (icon_str == "httpsInvalid") {
-    return ImageViewFromImageSkia(gfx::CreateVectorIcon(
-        vector_icons::kNotSecureWarningIcon, kIconSize, gfx::kGoogleRed700));
+    return std::make_unique<views::ImageView>(
+        ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
+                                       ui::kColorAlertHighSeverity, kIconSize));
   }
 
   if (icon_str == "keyIcon")

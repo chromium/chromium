@@ -296,8 +296,7 @@ class TabStrip : public views::View,
   SkColor GetTabBackgroundColor(
       TabActive active,
       BrowserFrameActiveState active_state) const override;
-  SkColor GetTabForegroundColor(TabActive active,
-                                SkColor background_color) const override;
+  SkColor GetTabForegroundColor(TabActive active) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;

@@ -103,10 +103,7 @@ void NewTabButton::RemoveLayerBeneathView(ui::Layer* old_layer) {
 }
 
 SkColor NewTabButton::GetForegroundColor() const {
-  const SkColor background_color = tab_strip_->GetTabBackgroundColor(
-      TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
-  return tab_strip_->GetTabForegroundColor(TabActive::kInactive,
-                                           background_color);
+  return tab_strip_->GetTabForegroundColor(TabActive::kInactive);
 }
 
 void NewTabButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {

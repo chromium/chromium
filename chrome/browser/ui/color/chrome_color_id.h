@@ -33,6 +33,11 @@
   E(kColorBookmarkBarForeground, ThemeProperties::COLOR_BOOKMARK_TEXT) \
   E(kColorBookmarkBarSeparator, ThemeProperties::COLOR_BOOKMARK_SEPARATOR) \
   E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
+  E_CPONLY(kColorBookmarkDragImageBackground) \
+  E_CPONLY(kColorBookmarkDragImageCountBackground) \
+  E_CPONLY(kColorBookmarkDragImageCountForeground) \
+  E_CPONLY(kColorBookmarkDragImageForeground) \
+  E_CPONLY(kColorBookmarkDragImageIconBackground) \
   E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
   E_CPONLY(kColorBookmarkFolderIcon) \
   /* Window caption colors. */ \
@@ -203,6 +208,19 @@
   E_CPONLY(kColorStatusBubbleForegroundFrameActive) \
   E_CPONLY(kColorStatusBubbleForegroundFrameInactive) \
   E(kColorStatusBubbleShadow, ThemeProperties::COLOR_STATUS_BUBBLE_SHADOW) \
+  /* Tab alert colors. */ \
+  E_CPONLY(kColorTabAlertAudioPlayingActiveFrameActive) \
+  E_CPONLY(kColorTabAlertAudioPlayingActiveFrameInactive) \
+  E_CPONLY(kColorTabAlertAudioPlayingInactiveFrameActive) \
+  E_CPONLY(kColorTabAlertAudioPlayingInactiveFrameInactive) \
+  E_CPONLY(kColorTabAlertMediaRecordingActiveFrameActive) \
+  E_CPONLY(kColorTabAlertMediaRecordingActiveFrameInactive) \
+  E_CPONLY(kColorTabAlertMediaRecordingInactiveFrameActive) \
+  E_CPONLY(kColorTabAlertMediaRecordingInactiveFrameInactive) \
+  E_CPONLY(kColorTabAlertPipPlayingActiveFrameActive) \
+  E_CPONLY(kColorTabAlertPipPlayingActiveFrameInactive) \
+  E_CPONLY(kColorTabAlertPipPlayingInactiveFrameActive) \
+  E_CPONLY(kColorTabAlertPipPlayingInactiveFrameInactive) \
   /* Tab colors. */ \
   E(kColorTabBackgroundActiveFrameActive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \
