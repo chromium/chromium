@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -102,13 +103,10 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/masked_targeter_delegate.h"
-#include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/view_observer.h"
-#include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -762,11 +760,6 @@ TabStrip::~TabStrip() {
   // destruction.
   drag_context_->DestroyDragController();
 
-  // Make sure we unhook ourselves as a message loop observer so that we don't
-  // crash in the case where the user closes the window after closing a tab
-  // but before moving the mouse.
-  RemoveMessageLoopObserver();
-
   // The child tabs may call back to us from their destructors. Delete them so
   // that if they call back we aren't in a weird state.
   RemoveAllChildViews();
@@ -995,35 +988,28 @@ void TabStrip::OnGroupVisualsChanged(
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                               bool is_collapsing,
                               ToggleTabGroupCollapsedStateOrigin origin) {
-  // TODO(1295774): Maybe move some of this into TabContainer. Or into
-  // TabGroupViews/TabGroupHeader?
   if (is_collapsing && GetWidget()) {
-    if (origin == ToggleTabGroupCollapsedStateOrigin::kMouse) {
-      AddMessageLoopObserver();
-    } else if (origin == ToggleTabGroupCollapsedStateOrigin::kGesture) {
-      StartResizeLayoutTabsFromTouchTimer();
-    } else {
+    if (origin != ToggleTabGroupCollapsedStateOrigin::kMouse &&
+        origin != ToggleTabGroupCollapsedStateOrigin::kGesture) {
       return;
     }
 
-    // The current group header is expanded which is slightly smaller than the
-    // size when the header is collapsed. Calculate the size of the header once
-    // collapsed for maintaining its position. See
-    // TabGroupHeader::CalculateWidth() for more details.
-    const int empty_group_title_adjustment =
-        GetGroupTitle(group).empty() ? 2 : -2;
-    const int title_chip_width = tab_container_->group_views()[group]
-                                     ->header()
-                                     ->GetTabSizeInfo()
-                                     .standard_width -
-                                 2 * TabStyle::GetTabOverlap() -
-                                 empty_group_title_adjustment;
-    const int collapsed_header_width =
-        title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
+    const int current_group_width =
+        tab_container_->group_views()[group]->GetBounds().width();
+    // A collapsed group only has the width of its header, which is slightly
+    // smaller for collapsed groups compared to expanded groups.
+    const int collapsed_group_width = tab_container_->group_views()[group]
+                                          ->header()
+                                          ->GetCollapsedHeaderWidth();
+    const CloseTabSource source =
+        origin == ToggleTabGroupCollapsedStateOrigin::kMouse
+            ? CloseTabSource::CLOSE_TAB_FROM_MOUSE
+            : CloseTabSource::CLOSE_TAB_FROM_TOUCH;
+
     tab_container_->EnterTabClosingMode(
-        ideal_bounds(GetModelCount() - 1).right() -
-        tab_container_->group_views()[group]->GetBounds().width() +
-        collapsed_header_width);
+        ideal_bounds(GetModelCount() - 1).right() - current_group_width +
+            collapsed_group_width,
+        source);
   } else {
     tab_container_->ExitTabClosingMode();
   }
@@ -1574,10 +1560,6 @@ gfx::Rect TabStrip::GetTabAnimationTargetBounds(const Tab* tab) {
   return tab_container_->bounds_animator().GetTargetBounds(tab);
 }
 
-void TabStrip::MouseMovedOutOfHost() {
-  ResizeLayoutTabs();
-}
-
 float TabStrip::GetHoverOpacityForTab(float range_parameter) const {
   return gfx::Tween::FloatValueBetween(range_parameter, hover_opacity_min_,
                                        hover_opacity_max_);
@@ -1869,12 +1851,7 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
     // Enter tab closing mode now, but wait to calculate the width constraint
     // until RemoveTabAt() is called, since there are code paths that go through
     // RemoveTabAt() but not this method that must also set that constraint.
-    tab_container_->EnterTabClosingMode(absl::nullopt);
-    resize_layout_timer_.Stop();
-    if (source == CLOSE_TAB_FROM_TOUCH)
-      StartResizeLayoutTabsFromTouchTimer();
-    else
-      AddMessageLoopObserver();
+    tab_container_->EnterTabClosingMode(absl::nullopt, source);
   }
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
@@ -2052,31 +2029,6 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
   controller_->MoveGroup(group, target_index);
 }
 
-void TabStrip::ResizeLayoutTabs() {
-  // We've been called back after the TabStrip has been emptied out (probably
-  // just prior to the window being destroyed). We need to do nothing here or
-  // else GetTabAt below will crash.
-  if (GetTabCount() == 0)
-    return;
-
-  // It is critically important that this is unhooked here, otherwise we will
-  // keep spying on messages forever.
-  RemoveMessageLoopObserver();
-
-  tab_container_->ExitTabClosingMode();
-  int pinned_tab_count = GetPinnedTabCount();
-  if (pinned_tab_count == GetTabCount()) {
-    // Only pinned tabs, we know the tab widths won't have changed (all
-    // pinned tabs have the same width), so there is nothing to do.
-    return;
-  }
-  // Don't try and avoid layout based on tab sizes. If tabs are small enough
-  // then the width of the active tab may not change, but other widths may
-  // have. This is particularly important if we've overflowed (all tabs are at
-  // the min).
-  tab_container_->StartBasicAnimation();
-}
-
 void TabStrip::LogTabWidthsForTabScrolling() {
   int active_tab_width = GetActiveTabWidth();
   int inactive_tab_width = GetInactiveTabWidth();
@@ -2088,49 +2040,6 @@ void TabStrip::LogTabWidthsForTabScrolling() {
     UMA_HISTOGRAM_EXACT_LINEAR("Tabs.InactiveTabWidth", inactive_tab_width,
                                257);
   }
-}
-
-void TabStrip::ResizeLayoutTabsFromTouch() {
-  // Don't resize if the user is interacting with the tabstrip.
-  if (!drag_context_->IsDragSessionActive())
-    ResizeLayoutTabs();
-  else
-    StartResizeLayoutTabsFromTouchTimer();
-}
-
-void TabStrip::StartResizeLayoutTabsFromTouchTimer() {
-  // Amount of time we delay before resizing after a close from a touch.
-  constexpr auto kTouchResizeLayoutTime = base::Seconds(2);
-
-  resize_layout_timer_.Stop();
-  resize_layout_timer_.Start(FROM_HERE, kTouchResizeLayoutTime, this,
-                             &TabStrip::ResizeLayoutTabsFromTouch);
-}
-
-void TabStrip::AddMessageLoopObserver() {
-  if (!mouse_watcher_) {
-    // Expand the watched region downwards below the bottom of the tabstrip.
-    // This allows users to move the cursor horizontally, to another tab,
-    // without accidentally exiting closing mode if they drift verticaally
-    // slightly out of the tabstrip.
-    constexpr int kTabStripAnimationVSlop = 40;
-    // Expand the watched region to the right to cover the NTB. This prevents
-    // the scenario where the user goes to click on the NTB while they're in
-    // closing mode, and closing mode exits just as they reach the NTB.
-    constexpr int kTabStripAnimationHSlop = 60;
-    mouse_watcher_ = std::make_unique<views::MouseWatcher>(
-        std::make_unique<views::MouseWatcherViewHost>(
-            this,
-            gfx::Insets(0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
-                        kTabStripAnimationVSlop,
-                        base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
-        this);
-  }
-  mouse_watcher_->Start(GetWidget()->GetNativeWindow());
-}
-
-void TabStrip::RemoveMessageLoopObserver() {
-  mouse_watcher_ = nullptr;
 }
 
 gfx::Rect TabStrip::GetDropBounds(int drop_index,

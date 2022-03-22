@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
 
 #include <memory>
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -16,9 +17,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
+#include "ui/views/mouse_watcher.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
+#include "ui/views/view_targeter_delegate.h"
 
 class TabStrip;
 class TabGroupHeader;
@@ -28,6 +31,7 @@ class TabDragContext;
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainer : public views::View,
                      public views::ViewTargeterDelegate,
+                     public views::MouseWatcherListener,
                      public views::BoundsAnimatorObserver {
  public:
   METADATA_HEADER(TabContainer);
@@ -99,7 +103,11 @@ class TabContainer : public views::View,
 
   void StartResetDragAnimation(int tab_model_index);
 
-  void EnterTabClosingMode(absl::optional<int> override_width);
+  // See |in_tab_close_| for details on tab closing mode. |source| is the input
+  // method used to enter tab closing mode, which determines how it is exited
+  // due to user inactivity.
+  void EnterTabClosingMode(absl::optional<int> override_width,
+                           CloseTabSource source);
   void ExitTabClosingMode();
 
   // Sets the visibility state of all tabs and group headers (if any) based on
@@ -128,6 +136,9 @@ class TabContainer : public views::View,
 
   // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
+
+  // MouseWatcherListener:
+  void MouseMovedOutOfHost() override;
 
   // views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
@@ -175,6 +186,21 @@ class TabContainer : public views::View,
   void UpdateClosingModeOnRemovedTab(int model_index, bool was_active);
 
   void MoveGroupHeader(TabGroupHeader* group_header, int first_tab_model_index);
+
+  // Perform an animated resize-relayout of the TabContainer immediately.
+  void ResizeLayoutTabs();
+
+  // Invokes ResizeLayoutTabs() as long as we're not in a drag session. If we
+  // are in a drag session this restarts the timer.
+  void ResizeLayoutTabsFromTouch();
+
+  // Restarts |resize_layout_timer_|.
+  void StartResizeLayoutTabsFromTouchTimer();
+
+  // Ensure that the message loop observer used for event spying is added and
+  // removed appropriately so we can tell when to resize layout.
+  void AddMessageLoopObserver();
+  void RemoveMessageLoopObserver();
 
   // Returns the corresponding view index of a |tab| to be inserted at
   // |to_model_index|. Used to reorder the child views of the tab container
@@ -240,6 +266,13 @@ class TabContainer : public views::View,
 
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 
+  // MouseWatcher is used when a tab is closed to reset the layout.
+  std::unique_ptr<views::MouseWatcher> mouse_watcher_;
+
+  // Timer used when a tab is closed and we need to relayout. Only used when a
+  // tab close comes from a touch device.
+  base::OneShotTimer resize_layout_timer_;
+
   // Size we last laid out at.
   gfx::Size last_layout_size_;
 
@@ -252,10 +285,10 @@ class TabContainer : public views::View,
   // cursor after the close animation completes.
   absl::optional<int> override_available_width_for_tabs_;
 
-  // True if EnterTabClosingMode has been invoked. Currently, this happens when
-  // a tab is closed with the mouse/touch and when collapsing a tab group. When
-  // true, remove animations preserve current tab bounds, making tabs move more
-  // predictably in case the user wants to perform more mouse-based actions.
+  // The TabContainer enters tab closing mode when a tab is closed or a tab
+  // group is collapsed with the mouse/touch. When in tab closing mode, remove
+  // animations preserve current tab bounds, making tabs move more predictably
+  // in case the user wants to perform more mouse-based actions.
   bool in_tab_close_ = false;
 
   base::RepeatingCallback<int()> available_width_callback_;

@@ -498,6 +498,14 @@ void TabGroupHeader::VisualsChanged() {
   }
 }
 
+int TabGroupHeader::GetCollapsedHeaderWidth() const {
+  const int empty_group_title_adjustment = title_->GetText().empty() ? 2 : -2;
+  const int title_chip_width = GetTabSizeInfo().standard_width -
+                               2 * TabStyle::GetTabOverlap() -
+                               empty_group_title_adjustment;
+  return title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
+}
+
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
   widget->RemoveObserver(&editor_bubble_tracker_);
 }

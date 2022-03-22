@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_utils.h"
 
@@ -313,6 +314,11 @@ TabContainer::~TabContainer() {
   // Since TabGroupViews expects be able to remove the views it creates, clear
   // |group_views_| before removing the remaining children below.
   group_views_.clear();
+
+  // Make sure we unhook ourselves as a message loop observer so that we don't
+  // crash in the case where the user closes the window after closing a tab
+  // but before moving the mouse.
+  RemoveMessageLoopObserver();
 
   RemoveAllChildViews();
 }
@@ -615,9 +621,16 @@ void TabContainer::StartResetDragAnimation(int tab_model_index) {
                               base::Unretained(this))));
 }
 
-void TabContainer::EnterTabClosingMode(absl::optional<int> override_width) {
+void TabContainer::EnterTabClosingMode(absl::optional<int> override_width,
+                                       CloseTabSource source) {
   in_tab_close_ = true;
   override_available_width_for_tabs_ = override_width;
+
+  resize_layout_timer_.Stop();
+  if (source == CLOSE_TAB_FROM_TOUCH)
+    StartResizeLayoutTabsFromTouchTimer();
+  else
+    AddMessageLoopObserver();
 }
 
 void TabContainer::ExitTabClosingMode() {
@@ -783,6 +796,10 @@ views::View* TabContainer::TargetForRect(views::View* root,
     return tab;
 
   return this;
+}
+
+void TabContainer::MouseMovedOutOfHost() {
+  ResizeLayoutTabs();
 }
 
 void TabContainer::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
@@ -1038,6 +1055,74 @@ void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
     ReorderChildView(group_header, first_tab_view_index - 1);
   if (header_index > first_tab_view_index - 1)
     ReorderChildView(group_header, first_tab_view_index);
+}
+
+void TabContainer::ResizeLayoutTabs() {
+  // We've been called back after the TabStrip has been emptied out (probably
+  // just prior to the window being destroyed). We need to do nothing here or
+  // else GetTabAt below will crash.
+  if (GetTabCount() == 0)
+    return;
+
+  // It is critically important that this is unhooked here, otherwise we will
+  // keep spying on messages forever.
+  RemoveMessageLoopObserver();
+
+  ExitTabClosingMode();
+  int pinned_tab_count = layout_helper_->GetPinnedTabCount();
+  if (pinned_tab_count == GetTabCount()) {
+    // Only pinned tabs, we know the tab widths won't have changed (all
+    // pinned tabs have the same width), so there is nothing to do.
+    return;
+  }
+  // Don't try and avoid layout based on tab sizes. If tabs are small enough
+  // then the width of the active tab may not change, but other widths may
+  // have. This is particularly important if we've overflowed (all tabs are at
+  // the min).
+  StartBasicAnimation();
+}
+
+void TabContainer::ResizeLayoutTabsFromTouch() {
+  // Don't resize if the user is interacting with the tabstrip.
+  if (!drag_context_->IsDragSessionActive())
+    ResizeLayoutTabs();
+  else
+    StartResizeLayoutTabsFromTouchTimer();
+}
+
+void TabContainer::StartResizeLayoutTabsFromTouchTimer() {
+  // Amount of time we delay before resizing after a close from a touch.
+  constexpr auto kTouchResizeLayoutTime = base::Seconds(2);
+
+  resize_layout_timer_.Stop();
+  resize_layout_timer_.Start(FROM_HERE, kTouchResizeLayoutTime, this,
+                             &TabContainer::ResizeLayoutTabsFromTouch);
+}
+
+void TabContainer::AddMessageLoopObserver() {
+  if (!mouse_watcher_) {
+    // Expand the watched region downwards below the bottom of the tabstrip.
+    // This allows users to move the cursor horizontally, to another tab,
+    // without accidentally exiting closing mode if they drift verticaally
+    // slightly out of the tabstrip.
+    constexpr int kTabStripAnimationVSlop = 40;
+    // Expand the watched region to the right to cover the NTB. This prevents
+    // the scenario where the user goes to click on the NTB while they're in
+    // closing mode, and closing mode exits just as they reach the NTB.
+    constexpr int kTabStripAnimationHSlop = 60;
+    mouse_watcher_ = std::make_unique<views::MouseWatcher>(
+        std::make_unique<views::MouseWatcherViewHost>(
+            this,
+            gfx::Insets(0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
+                        kTabStripAnimationVSlop,
+                        base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
+        this);
+  }
+  mouse_watcher_->Start(GetWidget()->GetNativeWindow());
+}
+
+void TabContainer::RemoveMessageLoopObserver() {
+  mouse_watcher_ = nullptr;
 }
 
 int TabContainer::GetViewInsertionIndex(

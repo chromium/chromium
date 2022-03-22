@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -36,12 +35,9 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
-#include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Tab;
@@ -75,7 +71,6 @@ class ImageView;
 //    DraggedTab, focusing on tasks that require reshuffling other tabs
 //    in response to dragged tabs.
 class TabStrip : public views::View,
-                 public views::MouseWatcherListener,
                  public views::ViewObserver,
                  public views::WidgetObserver,
                  public TabController,
@@ -310,9 +305,6 @@ class TabStrip : public views::View,
   SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const override;
 
-  // MouseWatcherListener:
-  void MouseMovedOutOfHost() override;
-
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;
   void Layout() override;
@@ -438,24 +430,6 @@ class TabStrip : public views::View,
   // |offset| and moves it if possible.
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 
-  // -- Tab Resize Layout -----------------------------------------------------
-  // TODO(1295774): Maybe move this functionality into TabContainer.
-
-  // Perform an animated resize-relayout of the TabStrip immediately.
-  void ResizeLayoutTabs();
-
-  // Invokes ResizeLayoutTabs() as long as we're not in a drag session. If we
-  // are in a drag session this restarts the timer.
-  void ResizeLayoutTabsFromTouch();
-
-  // Restarts |resize_layout_timer_|.
-  void StartResizeLayoutTabsFromTouchTimer();
-
-  // Ensure that the message loop observer used for event spying is added and
-  // removed appropriately so we can tell when to resize layout the tab strip.
-  void AddMessageLoopObserver();
-  void RemoveMessageLoopObserver();
-
   // -- Link Drag & Drop ------------------------------------------------------
   // TODO(1295774): Maybe move this functionality into TabContainer.
 
@@ -531,9 +505,6 @@ class TabStrip : public views::View,
   // Valid for the lifetime of a drag over us.
   std::unique_ptr<DropArrow> drop_arrow_;
 
-  // MouseWatcher is used when a tab is closed to reset the layout.
-  std::unique_ptr<views::MouseWatcher> mouse_watcher_;
-
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;
 
@@ -545,10 +516,6 @@ class TabStrip : public views::View,
 
   // Number of mouse moves.
   int mouse_move_count_ = 0;
-
-  // Timer used when a tab is closed and we need to relayout. Only used when a
-  // tab close comes from a touch device.
-  base::OneShotTimer resize_layout_timer_;
 
   // This represents the Tabs in |tabs_| that have been selected.
   //

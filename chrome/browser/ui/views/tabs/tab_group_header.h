@@ -64,6 +64,8 @@ class TabGroupHeader : public TabSlotView,
   // for our group.
   void VisualsChanged();
 
+  int GetCollapsedHeaderWidth() const;
+
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
 
