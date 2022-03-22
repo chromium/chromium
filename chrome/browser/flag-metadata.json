@@ -3403,7 +3403,7 @@
   {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "font-access",
