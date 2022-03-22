@@ -15,6 +15,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
+#include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
 #include "chrome/browser/ash/system_logs/device_event_log_source.h"
@@ -46,6 +47,7 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
 #endif
 
   fetcher->AddSource(std::make_unique<TouchLogSource>());
+  fetcher->AddSource(std::make_unique<ConnectedInputDevicesLogSource>());
 
   // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));

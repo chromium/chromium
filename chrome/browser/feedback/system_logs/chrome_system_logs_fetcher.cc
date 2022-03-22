@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
+#include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
@@ -61,6 +62,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
   fetcher->AddSource(std::make_unique<IwlwifiDumpChecker>());
   fetcher->AddSource(std::make_unique<TouchLogSource>());
+  fetcher->AddSource(std::make_unique<ConnectedInputDevicesLogSource>());
 
   // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));
