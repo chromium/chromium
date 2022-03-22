@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_utils.h"
@@ -27,6 +29,7 @@ namespace {
 using StrictMockDownloadItem = testing::StrictMock<download::MockDownloadItem>;
 using DownloadIconState = download::DownloadIconState;
 using DownloadState = download::DownloadItem::DownloadState;
+using OfflineItemState = offline_items_collection::OfflineItemState;
 
 class FakeDownloadDisplay : public DownloadDisplay {
  public:
@@ -73,6 +76,25 @@ class FakeDownloadDisplay : public DownloadDisplay {
   DownloadDisplayController* controller_ = nullptr;
 };
 
+class FakeDownloadBubbleUIController : public DownloadBubbleUIController {
+ public:
+  explicit FakeDownloadBubbleUIController(Profile* profile)
+      : DownloadBubbleUIController(profile) {}
+  ~FakeDownloadBubbleUIController() override = default;
+  const OfflineItemList& GetOfflineItems() override { return offline_items_; }
+  void InitOfflineItems(DownloadDisplayController* display_controller,
+                        base::OnceCallback<void()> callback) override {
+    std::move(callback).Run();
+  }
+  void AddOfflineItem(OfflineItem& item) { offline_items_.push_back(item); }
+  void UpdateOfflineItem(int index, OfflineItemState state) {
+    offline_items_[index].state = state;
+  }
+
+ protected:
+  OfflineItemList offline_items_;
+};
+
 }  // namespace
 
 class DownloadDisplayControllerTest : public testing::Test {
@@ -87,19 +109,21 @@ class DownloadDisplayControllerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
-    Profile* profile =
-        testing_profile_manager_.CreateTestingProfile("testing_profile");
+    profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
     EXPECT_CALL(*manager_.get(), GetBrowserContext())
-        .WillRepeatedly(Return(profile));
+        .WillRepeatedly(Return(profile_));
 
     // Set test delegate to get the corresponding download prefs.
-    auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(profile);
-    DownloadCoreServiceFactory::GetForBrowserContext(profile)
+    auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(profile_);
+    DownloadCoreServiceFactory::GetForBrowserContext(profile_)
         ->SetDownloadManagerDelegateForTesting(std::move(delegate));
 
     display_ = std::make_unique<FakeDownloadDisplay>();
-    controller_ = std::make_unique<DownloadDisplayController>(display_.get(),
-                                                              manager_.get());
+    bubble_controller_ =
+        std::make_unique<FakeDownloadBubbleUIController>(profile_);
+    controller_ = std::make_unique<DownloadDisplayController>(
+        display_.get(), profile_, bubble_controller_.get());
+    controller_->set_manager_for_testing(manager_.get());
     display_->SetController(controller_.get());
   }
 
@@ -117,6 +141,10 @@ class DownloadDisplayControllerTest : public testing::Test {
   download::MockDownloadItem& item(size_t index) { return *items_[index]; }
   FakeDownloadDisplay& display() { return *display_; }
   DownloadDisplayController& controller() { return *controller_; }
+  FakeDownloadBubbleUIController& bubble_controller() {
+    return *bubble_controller_;
+  }
+  Profile* profile() { return profile_; }
 
   void InitDownloadItem(const base::FilePath::CharType* path,
                         DownloadState state) {
@@ -144,7 +172,21 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
         .WillRepeatedly(SetArgPointee<0>(items));
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
-    controller().OnDownloadCreated(&manager(), &item(index));
+    controller().OnNewItem(state == download::DownloadItem::IN_PROGRESS);
+  }
+
+  void InitOfflineItem(OfflineItemState state) {
+    OfflineItem item;
+    item.state = state;
+    bubble_controller().AddOfflineItem(item);
+    controller().OnNewItem(state == OfflineItemState::IN_PROGRESS);
+  }
+
+  void UpdateOfflineItem(int item_index, OfflineItemState state) {
+    if (state == OfflineItemState::COMPLETE) {
+      bubble_controller().UpdateOfflineItem(item_index, state);
+    }
+    controller().OnUpdatedItem(state == OfflineItemState::COMPLETE);
   }
 
   void UpdateDownloadItem(int item_index, DownloadState state) {
@@ -161,7 +203,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
-    item(item_index).NotifyObserversDownloadUpdated();
+    controller().OnUpdatedItem(state == DownloadState::COMPLETE);
   }
 
   bool VerifyDisplayState(bool shown,
@@ -203,8 +245,11 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<DownloadDisplayController> controller_;
   std::unique_ptr<FakeDownloadDisplay> display_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
+
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
+  std::unique_ptr<FakeDownloadBubbleUIController> bubble_controller_;
   TestingProfileManager testing_profile_manager_;
+  Profile* profile_;
 };
 
 TEST_F(DownloadDisplayControllerTest, GetProgressItemsInProgress) {
@@ -218,6 +263,22 @@ TEST_F(DownloadDisplayControllerTest, GetProgressItemsInProgress) {
 
   EXPECT_EQ(progress.download_count, 2);
   EXPECT_EQ(progress.progress_percentage, 50);
+}
+
+TEST_F(DownloadDisplayControllerTest, OfflineItemsUncertainProgress) {
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::COMPLETE);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar4.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  // This offline item has uncertain progress
+  InitOfflineItem(OfflineItemState::IN_PROGRESS);
+  DownloadDisplayController::ProgressInfo progress = controller().GetProgress();
+
+  EXPECT_EQ(progress.download_count, 3);
+  EXPECT_EQ(progress.progress_percentage, 50);
+  EXPECT_FALSE(progress.progress_certain);
 }
 
 TEST_F(DownloadDisplayControllerTest, GetProgressItemsAllComplete) {
@@ -306,6 +367,17 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
+
+  InitOfflineItem(OfflineItemState::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+  display().SetDetailsShown(false);
+
+  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest,
@@ -328,7 +400,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
   DownloadPrefs::FromDownloadManager(&manager())
       ->SetLastCompleteTime(current_time - base::Hours(25));
 
-  DownloadDisplayController controller(&display(), &manager());
+  DownloadDisplayController controller(&display(), profile(),
+                                       &bubble_controller());
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
@@ -340,7 +413,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
   DownloadPrefs::FromDownloadManager(&manager())
       ->SetLastCompleteTime(current_time - base::Hours(23));
 
-  DownloadDisplayController controller(&display(), &manager());
+  DownloadDisplayController controller(&display(), profile(),
+                                       &bubble_controller());
   // The initial state should not display details.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
@@ -355,7 +429,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_NoLastDownload) {
-  DownloadDisplayController controller(&display(), &manager());
+  DownloadDisplayController controller(&display(), profile(),
+                                       &bubble_controller());
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));

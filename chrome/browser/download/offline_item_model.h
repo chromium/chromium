@@ -28,10 +28,19 @@ class OfflineItemModel : public DownloadUIModel,
  public:
   static DownloadUIModelPtr Wrap(OfflineItemModelManager* manager,
                                  const OfflineItem& offline_item);
+  static DownloadUIModelPtr Wrap(
+      OfflineItemModelManager* manager,
+      const OfflineItem& offline_item,
+      std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+          status_text_builder);
 
   // Constructs a OfflineItemModel.
   OfflineItemModel(OfflineItemModelManager* manager,
                    const OfflineItem& offline_item);
+  OfflineItemModel(OfflineItemModelManager* manager,
+                   const OfflineItem& offline_item,
+                   std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+                       status_text_builder);
 
   OfflineItemModel(const OfflineItemModel&) = delete;
   OfflineItemModel& operator=(const OfflineItemModel&) = delete;
@@ -56,6 +65,7 @@ class OfflineItemModel : public DownloadUIModel,
   download::DownloadItem::DownloadState GetState() const override;
   bool IsPaused() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
+  base::Time GetStartTime() const override;
   base::Time GetEndTime() const override;
   bool IsDone() const override;
   base::FilePath GetFullPath() const override;

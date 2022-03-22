@@ -154,9 +154,7 @@ DownloadUIModel::DownloadUIModelPtr DownloadItemModel::Wrap(
 }
 
 DownloadItemModel::DownloadItemModel(DownloadItem* download)
-    : download_(download) {
-  download_->AddObserver(this);
-}
+    : DownloadItemModel(download, std::make_unique<StatusTextBuilder>()) {}
 
 DownloadItemModel::DownloadItemModel(
     download::DownloadItem* download,
@@ -509,6 +507,10 @@ bool DownloadItemModel::IsOpenWhenCompleteByPolicy() const {
 
 bool DownloadItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   return download_->TimeRemaining(remaining);
+}
+
+base::Time DownloadItemModel::GetStartTime() const {
+  return download_->GetStartTime();
 }
 
 base::Time DownloadItemModel::GetEndTime() const {

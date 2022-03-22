@@ -421,6 +421,10 @@ bool DownloadUIModel::ShouldShowInShelf() const {
 
 void DownloadUIModel::SetShouldShowInShelf(bool should_show) {}
 
+bool DownloadUIModel::ShouldShowInBubble() const {
+  return ShouldShowInShelf();
+}
+
 bool DownloadUIModel::ShouldNotifyUI() const {
   return true;
 }
@@ -503,6 +507,10 @@ bool DownloadUIModel::IsOpenWhenCompleteByPolicy() const {
 
 bool DownloadUIModel::TimeRemaining(base::TimeDelta* remaining) const {
   return false;
+}
+
+base::Time DownloadUIModel::GetStartTime() const {
+  return base::Time();
 }
 
 base::Time DownloadUIModel::GetEndTime() const {
@@ -867,14 +875,19 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
   if (!status_text.empty())
     return status_text;
 
-  std::u16string total_text = ui::FormatBytes(model_->GetTotalBytes());
-  std::u16string delta_str = ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - model_->GetEndTime());
-  return base::StrCat(
-      {total_text,
-       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
-       delta_str});
+  if (model_->GetEndTime().is_null()) {
+    // Offline items have these null.
+    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_DONE);
+  } else {
+    std::u16string total_text = ui::FormatBytes(model_->GetTotalBytes());
+    std::u16string delta_str = ui::TimeFormat::Simple(
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+        base::Time::Now() - model_->GetEndTime());
+    return base::StrCat(
+        {total_text,
+         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
+         delta_str});
+  }
 }
 
 // To clarify variable / method names in methods below that help form failure

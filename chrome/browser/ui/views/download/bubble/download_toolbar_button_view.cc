@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,7 +14,8 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,6 +34,16 @@ namespace {
 constexpr int kProgressRingRadius = 9;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 
+std::unique_ptr<DownloadBubbleRowListView> CreateRowListView(
+    std::vector<DownloadUIModelPtr> model_list) {
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
+  for (DownloadUIModelPtr& model : model_list) {
+    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
+        std::move(model), row_list_view.get()));
+  }
+  return row_list_view;
+}
+
 }  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
@@ -45,13 +57,13 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
   Profile* profile = browser_->profile();
-  content::DownloadManager* manager = profile->GetDownloadManager();
   SetVisible(false);
 
-  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(manager);
+  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(profile);
   // Wait until we're done with everything else before creating `controller_`
   // since it can call `Show()` synchronously.
-  controller_ = std::make_unique<DownloadDisplayController>(this, manager);
+  controller_ = std::make_unique<DownloadDisplayController>(
+      this, profile, bubble_controller_.get());
 }
 
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
@@ -112,7 +124,8 @@ void DownloadToolbarButtonView::UpdateDownloadIcon() {
 void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
     std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-        CreateBubbleDialogDelegate(bubble_controller_->GetPartialView());
+        CreateBubbleDialogDelegate(
+            CreateRowListView(bubble_controller_->GetPartialView()));
     bubble_delegate_ = bubble_delegate.get();
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
@@ -183,7 +196,7 @@ void DownloadToolbarButtonView::ButtonPressed() {
   if (!bubble_delegate_) {
     std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
         CreateBubbleDialogDelegate(std::make_unique<DownloadDialogView>(
-            browser_, bubble_controller_->GetMainView()));
+            browser_, CreateRowListView(bubble_controller_->GetMainView())));
     bubble_delegate_ = bubble_delegate.get();
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
