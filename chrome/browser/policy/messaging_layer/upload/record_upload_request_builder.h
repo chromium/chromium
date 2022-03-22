@@ -81,6 +81,8 @@ class UploadEncryptedReportingRequestBuilder {
   UploadEncryptedReportingRequestBuilder& SetRequestId(
       base::StringPiece request_id);
 
+  // Return the built dictionary. Also set requestId to a random string if it
+  // hasn't been set yet.
   absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetEncryptedRecordListPath();
