@@ -228,6 +228,7 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
         AppListItemView::Context::kRecentAppsView));
     item_view->UpdateAppListConfig(app_list_config_);
     item_views_.push_back(item_view);
+    item_view->InitializeIconLoader();
   }
 }
 

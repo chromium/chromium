@@ -1143,6 +1143,7 @@ void AppsGridView::Update() {
   DCHECK(!selected_view_);
   DCHECK(!drag_view_);
 
+  std::vector<AppListItemView*> item_views;
   if (item_list_ && item_list_->item_count()) {
     for (size_t i = 0; i < item_list_->item_count(); ++i) {
       // Skip "page break" items.
@@ -1150,7 +1151,7 @@ void AppsGridView::Update() {
         continue;
       std::unique_ptr<AppListItemView> view = CreateViewForItemAtIndex(i);
       view_model_.Add(view.get(), view_model_.view_size());
-      items_container_->AddChildView(std::move(view));
+      item_views.push_back(items_container_->AddChildView(std::move(view)));
     }
   }
   view_structure_.LoadFromMetadata();
@@ -1158,6 +1159,11 @@ void AppsGridView::Update() {
   UpdatePaging();
   UpdatePulsingBlockViews();
   InvalidateLayout();
+
+  // Icon load can change the item position in the view model, so don't iterate
+  // over view model to get items to update.
+  for (auto* item_view : item_views)
+    item_view->InitializeIconLoader();
 
   if (!folder_delegate_)
     RecordPageMetrics();
@@ -2500,6 +2506,7 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
       drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
       drag_view_->RequestFocus();
     }
+    view->InitializeIconLoader();
   }
 
   view_structure_.LoadFromMetadata();

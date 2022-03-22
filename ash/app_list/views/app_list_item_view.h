@@ -119,6 +119,13 @@ class ASH_EXPORT AppListItemView : public views::Button,
   AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
 
+  // Initializes icon loader. Should be called after the view has been added to
+  // the apps grid view model - otherwise, if icon gets updated synchronously,
+  // it may update the item metadata before the view gets added to the view
+  // model. If the metadata update causes a position change, attempts to move
+  // the item in the view model could crash.
+  void InitializeIconLoader();
+
   // Sets the app list config that should be used to size the app list icon, and
   // margins within the app list item view. The owner should ensure the
   // `AppListItemView` does not outlive the object referenced by
