@@ -636,8 +636,9 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
         Error("GetSizeStats: volume with ID * not found", params->volume_id));
 
   // For fusebox volumes, get the underlying (aka original) volume.
-  if (base::StartsWith(volume->file_system_type(), "fusebox")) {
-    auto volume_id = params->volume_id.substr(std::string("fusebox").length());
+  const auto fusebox = base::StringPiece(file_manager::util::kFuseBox);
+  if (base::StartsWith(volume->file_system_type(), fusebox)) {
+    auto volume_id = params->volume_id.substr(fusebox.length());
     volume = volume_manager->FindVolumeById(volume_id);
     if (!volume.get())
       return RespondNow(

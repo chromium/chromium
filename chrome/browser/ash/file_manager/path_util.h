@@ -35,6 +35,9 @@ extern const base::FilePath::CharType kSystemFontsPath[];
 // Absolute path for the folder containing archive mounts.
 extern const base::FilePath::CharType kArchiveMountPath[];
 
+// FuseBox as a named constant string: "fusebox".
+extern const char kFuseBox[];
+
 // Name of the mount point used to store temporary files for sharing.
 extern const char kShareCacheMountPointName[];
 
