@@ -465,11 +465,17 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
 }
 
 void DeskMiniView::OnCloseButtonPressed() {
+  if (!desk_)
+    return;
+
   auto* controller = DesksController::Get();
   if (!controller->CanRemoveDesks())
     return;
 
-  // Hide the close button so it can no longer be pressed.
+  // We want to avoid the possibility of getting triggered multiple times. We
+  // therefore hide the close button and mark ourselves (including children) as
+  // no longer processing events.
+  SetCanProcessEventsWithinSubtree(false);
   close_desk_button_->SetVisible(false);
 
   desk_preview_->OnRemovingDesk();
