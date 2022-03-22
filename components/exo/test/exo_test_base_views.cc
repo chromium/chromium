@@ -93,11 +93,6 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
     return aura::client::DragUpdateInfo();
   }
   void OnDragExited() override {}
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override {
-    return ui::mojom::DragOperation::kNone;
-  }
   WMHelper::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
     return base::DoNothing();

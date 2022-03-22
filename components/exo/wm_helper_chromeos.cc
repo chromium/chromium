@@ -147,21 +147,12 @@ void WMHelperChromeOS::OnDragExited() {
     observer.OnDragExited();
 }
 
-ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  auto drop_cb = GetDropCallback(event);
-  auto output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(std::move(data), output_drag_op);
-  return output_drag_op;
-}
-
 aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
     const ui::DropTargetEvent& event) {
   std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks;
   for (DragDropObserver& observer : drag_drop_observers_) {
     WMHelper::DragDropObserver::DropCallback drop_cb =
-        observer.GetDropCallback(event);
+        observer.GetDropCallback();
     if (!drop_cb.is_null()) {
       drop_callbacks.push_back(std::move(drop_cb));
     }

@@ -19,6 +19,7 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/manager/display_manager.h"
@@ -44,9 +45,7 @@ class MockDragDropObserver : public WMHelper::DragDropObserver {
     return aura::client::DragUpdateInfo();
   }
   void OnDragExited() override {}
-  DragOperation OnPerformDrop() override { return drop_result_; }
-  WMHelper::DragDropObserver::DropCallback GetDropCallback(
-      const ui::DropTargetEvent& event) override {
+  WMHelper::DragDropObserver::DropCallback GetDropCallback() override {
     return base::BindOnce(
         [](DragOperation drop_result, DragOperation& output_drag_op) {
           output_drag_op = drop_result;
@@ -116,14 +115,17 @@ TEST_F(WMHelperChromeOSTest, MultipleDragDropObservers) {
 
   ui::DropTargetEvent target_event(ui::OSExchangeData(), gfx::PointF(),
                                    gfx::PointF(), ui::DragDropTypes::DRAG_NONE);
-  DragOperation op = wm_helper_chromeos->OnPerformDrop(
-      target_event, std::make_unique<ui::OSExchangeData>());
-  EXPECT_EQ(op, DragOperation::kNone);
+  auto drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
+  DragOperation output_drop_op = DragOperation::kNone;
+  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(),
+                         output_drop_op);
+  EXPECT_EQ(output_drop_op, DragOperation::kNone);
 
   wm_helper_chromeos->AddDragDropObserver(&observer_copy_drop);
-  op = wm_helper_chromeos->OnPerformDrop(
-      target_event, std::make_unique<ui::OSExchangeData>());
-  EXPECT_NE(op, DragOperation::kNone);
+  drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
+  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(),
+                         output_drop_op);
+  EXPECT_NE(output_drop_op, DragOperation::kNone);
 
   wm_helper_chromeos->RemoveDragDropObserver(&observer_no_drop);
   wm_helper_chromeos->RemoveDragDropObserver(&observer_copy_drop);

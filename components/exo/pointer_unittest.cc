@@ -1191,10 +1191,7 @@ class PointerDragDropObserver : public WMHelper::DragDropObserver {
     return aura::client::DragUpdateInfo();
   }
   void OnDragExited() override {}
-  ui::mojom::DragOperation OnPerformDrop() override {
-    return ui::mojom::DragOperation::kNone;
-  }
-  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+  DropCallback GetDropCallback() override {
     return base::BindOnce([](std::unique_ptr<Surface> surface,
                              ui::mojom::DragOperation& output_drag_op) {},
                           std::move(surface_));
