@@ -5789,6 +5789,29 @@ chromium-metrics-reviews@google.com.
   <summary>The number of times a user stops different types of routes.</summary>
 </histogram>
 
+<histogram name="MediaRouter.Ui.Android.DialogAction"
+    enum="MediaRouterAndroidDialogAction" expires_after="2022-09-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    A Mediarouter dialog can be two types: (1) A route controller dialog where
+    users can stop casting. (2) A device picker where users can select a device
+    and cast to it. This histogram records when users interact with the dialog
+    (start or stop casting).
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.Ui.Android.DialogType"
+    enum="MediaRouterAndroidDialogType" expires_after="2022-09-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    A MediaRouter dialog is opened when users click on the Cast buttons supplied
+    by the Cast SDK or the default HTML media player. This histogram records the
+    type of the dialog when the dialog is created.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
     expires_after="2023-01-03">
   <owner>takumif@chromium.org</owner>

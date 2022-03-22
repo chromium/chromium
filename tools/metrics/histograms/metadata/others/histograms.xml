@@ -1745,8 +1745,10 @@ chromium-metrics-reviews@google.com.
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
-    Records where the user started RemotePlayback on Clank. This does not
-    include RemotePlayback sessions initiated through the Cast SDK.
+    Records the location when users interact with the RemotePlayback API on
+    Clank. Please note, this metric does not show whether a session is started
+    or stopped and does not include RemotePlayback sessions initiated through
+    the Cast SDK.
   </summary>
 </histogram>
 

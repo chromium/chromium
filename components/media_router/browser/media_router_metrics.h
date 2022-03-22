@@ -20,9 +20,9 @@ namespace media_router {
 
 enum class SinkIconType;
 
-// NOTE: Do not renumber enums as that would confuse interpretation of
-// previously logged data. When making changes, also update the enum list
-// in tools/metrics/histograms/enums.xml to keep it in sync.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. When making changes, also update the
+// enum list in tools/metrics/histograms/enums.xml to keep it in sync.
 
 // NOTE: For metrics specific to the Media Router component extension, see
 // mojo/media_router_mojo_metrics.h.
@@ -118,6 +118,18 @@ enum class UiType {
   kGlobalMediaControls,
 };
 
+enum class MediaRouterAndroidDialogType {
+  kRouteController = 0,
+  kRouteChooser = 1,
+  kMaxValue = kRouteChooser,
+};
+
+enum class MediaRouterAndroidDialogAction {
+  kTerminateRoute = 0,
+  kStartRoute = 1,
+  kMaxValue = kStartRoute,
+};
+
 class MediaRouterMetrics {
  public:
   MediaRouterMetrics();
@@ -142,6 +154,8 @@ class MediaRouterMetrics {
   static const char kHistogramUiDialogPaint[];
   static const char kHistogramUiFirstAction[];
   static const char kHistogramUiIconStateAtInit[];
+  static const char kHistogramUiAndroidDialogType[];
+  static const char kHistogramUiAndroidDialogAction[];
 
   // When recording the number of devices shown in UI we record after a delay
   // because discovering devices can take some time after the UI is shown.
@@ -247,6 +261,14 @@ class MediaRouterMetrics {
   static void RecordMediaRouteProviderTerminateRoute(
       RouteRequestResult::ResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
+
+  // Records the type of the MediaRouter dialog opened. Android only.
+  static void RecordMediaRouterAndroidDialogType(
+      MediaRouterAndroidDialogType type);
+
+  // Records the action taken on the MediaRouter dialog. Android only.
+  static void RecordMediaRouterAndroidDialogAction(
+      MediaRouterAndroidDialogAction action);
 };
 
 }  // namespace media_router

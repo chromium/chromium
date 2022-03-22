@@ -60211,6 +60211,16 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="ErrorTooManyRetries"/>
 </enum>
 
+<enum name="MediaRouterAndroidDialogAction">
+  <int value="0" label="kTerminateRoute"/>
+  <int value="1" label="kStartRoute"/>
+</enum>
+
+<enum name="MediaRouterAndroidDialogType">
+  <int value="0" label="RouteController"/>
+  <int value="1" label="RouteChooser"/>
+</enum>
+
 <enum name="MediaRouterCastChannelError">
   <int value="0" label="Unknown"/>
   <int value="1" label="Authentication"/>

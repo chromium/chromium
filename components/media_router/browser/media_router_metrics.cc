@@ -136,6 +136,10 @@ const char MediaRouterMetrics::kHistogramUiFirstAction[] =
     "MediaRouter.Ui.FirstAction";
 const char MediaRouterMetrics::kHistogramUiIconStateAtInit[] =
     "MediaRouter.Ui.IconStateAtInit";
+const char MediaRouterMetrics::kHistogramUiAndroidDialogType[] =
+    "MediaRouter.Ui.Android.DialogType";
+const char MediaRouterMetrics::kHistogramUiAndroidDialogAction[] =
+    "MediaRouter.Ui.Android.DialogAction";
 
 // static
 const base::TimeDelta MediaRouterMetrics::kDeviceCountMetricDelay =
@@ -340,6 +344,18 @@ void MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
       GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,
                                   provider_id),
       result_code, RouteRequestResult::TOTAL_COUNT);
+}
+
+// static
+void MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
+    MediaRouterAndroidDialogType type) {
+  base::UmaHistogramEnumeration(kHistogramUiAndroidDialogType, type);
+}
+
+// static
+void MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
+    MediaRouterAndroidDialogAction action) {
+  base::UmaHistogramEnumeration(kHistogramUiAndroidDialogAction, action);
 }
 
 }  // namespace media_router

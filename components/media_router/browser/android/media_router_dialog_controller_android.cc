@@ -16,6 +16,7 @@
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_context.h"
@@ -71,6 +72,8 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
       base::BindOnce(&StartPresentationContext::HandleRouteResponse,
                      std::move(start_presentation_context)),
       base::TimeDelta(), browser_context->IsOffTheRecord());
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
+      MediaRouterAndroidDialogAction::kStartRoute);
 }
 
 void MediaRouterDialogControllerAndroid::OnRouteClosed(
@@ -85,6 +88,8 @@ void MediaRouterDialogControllerAndroid::OnRouteClosed(
   router->TerminateRoute(media_route_id);
 
   CancelPresentationRequest();
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
+      MediaRouterAndroidDialogAction::kTerminateRoute);
 }
 
 void MediaRouterDialogControllerAndroid::OnDialogCancelled(
@@ -158,6 +163,8 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
 
     Java_BrowserMediaRouterDialogController_openRouteControllerDialog(
         env, java_dialog_controller_, jsource_id, jmedia_route_id);
+    MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
+        MediaRouterAndroidDialogType::kRouteController);
     return;
   }
 
@@ -169,6 +176,8 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
       base::android::ToJavaArrayOfStrings(env, source_ids);
   Java_BrowserMediaRouterDialogController_openRouteChooserDialog(
       env, java_dialog_controller_, jsource_ids);
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
+      MediaRouterAndroidDialogType::kRouteChooser);
 }
 
 void MediaRouterDialogControllerAndroid::CloseMediaRouterDialog() {
