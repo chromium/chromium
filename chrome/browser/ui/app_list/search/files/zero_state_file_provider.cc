@@ -140,6 +140,10 @@ bool ZeroStateFileProvider::ShouldBlockZeroState() const {
   return true;
 }
 
+void ZeroStateFileProvider::Start(const std::u16string& query) {
+  ClearResultsSilently();
+}
+
 void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
   ClearResultsSilently();
