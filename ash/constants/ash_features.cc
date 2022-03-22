@@ -495,7 +495,7 @@ const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
 // trackpad to switch desks.
 // TODO(https://crbug.com/1191545): Remove this after the feature is launched.
 const base::Feature kEnableDesksTrackpadSwipeImprovements{
-    "EnableDesksTrackpadSwipeImprovements", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableDesksTrackpadSwipeImprovements", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the DNS proxy service providing support split and secure DNS
 // for Chrome OS.
