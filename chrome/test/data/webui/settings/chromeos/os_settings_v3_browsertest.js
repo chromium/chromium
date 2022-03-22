@@ -280,6 +280,10 @@ var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
+TEST_F('OSSettingsSearchEngineV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 var OSSettingsAppManagementAppDetailsV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
