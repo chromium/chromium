@@ -9,15 +9,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_ACCOUNT_CONSISTENCY_METHOD_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_ACCOUNT_CONSISTENCY_METHOD_H_
 
-#include "base/feature_list.h"
-#include "build/build_config.h"
-
 namespace signin {
-
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag for promo-related changes of `kMobileIdentityConsistency`.
-extern const base::Feature kMobileIdentityConsistencyPromos;
-#endif  // BUILDFLAG(IS_ANDROID)
 
 enum class AccountConsistencyMethod : int {
   // No account consistency.

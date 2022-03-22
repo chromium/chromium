@@ -20,7 +20,6 @@ buildflag_header("signin_buildflags") {
 
 static_library("base") {
   sources = [
-    "account_consistency_method.cc",
     "account_consistency_method.h",
     "avatar_icon_util.cc",
     "avatar_icon_util.h",

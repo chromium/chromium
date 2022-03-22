@@ -56,7 +56,6 @@
 #include "components/security_state/core/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/sync/base/features.h"
@@ -362,7 +361,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfV2,
     &share::kPersistShareHubOnAppSwitch,
     &share::kUpcomingSharingFeatures,
-    &signin::kMobileIdentityConsistencyPromos,
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,

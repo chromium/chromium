@@ -517,13 +517,8 @@ public class SigninPromoController {
             view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
             view.getSecondaryButton().setVisibility(View.GONE);
         } else {
-            final String primaryButtonText =
-                    ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)
-                    ? context.getString(R.string.signin_promo_continue_as,
-                            mProfileData.getGivenNameOrFullNameOrEmail())
-                    : context.getString(R.string.sync_promo_turn_on_sync);
-            view.getPrimaryButton().setText(primaryButtonText);
+            view.getPrimaryButton().setText(context.getString(R.string.signin_promo_continue_as,
+                    mProfileData.getGivenNameOrFullNameOrEmail()));
 
             view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
             view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));

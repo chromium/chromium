@@ -397,8 +397,6 @@ public abstract class ChromeFeatureList {
             "MessagesForAndroidReduceLayoutChanges";
     public static final String MESSAGES_FOR_ANDROID_SAVE_CARD = "MessagesForAndroidSaveCard";
     public static final String MESSAGES_FOR_ANDROID_SYNC_ERROR = "MessagesForAndroidSyncError";
-    public static final String MOBILE_IDENTITY_CONSISTENCY_PROMOS =
-            "MobileIdentityConsistencyPromos";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
     public static final String NEW_WINDOW_APP_MENU = "NewWindowAppMenu";
