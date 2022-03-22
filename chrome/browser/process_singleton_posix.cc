@@ -718,7 +718,7 @@ void ProcessSingleton::LinuxWatcher::SocketReader::
   }
 
   // Stop the expiration timer to prevent this SocketReader object from being
-  // terminated unexpectly.
+  // terminated unexpectedly.
   timer_.Stop();
 
   std::string current_dir = tokens[1];

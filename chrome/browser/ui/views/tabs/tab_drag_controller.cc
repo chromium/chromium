@@ -1680,7 +1680,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
     if (previous_state != DragState::kNotStarted) {
       // After the drag ends, sometimes it shouldn't restore the focus, because
       // - if |attached_context_| is showing in overview mode, overview mode
-      //   may be ended unexpectly because of the window activation.
+      //   may be ended unexpectedly because of the window activation.
       // - Some dragging gesture (like fling down) minimizes the window, but the
       //   window activation cancels minimized status. See
       //   https://crbug.com/902897
