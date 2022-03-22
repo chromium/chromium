@@ -128,7 +128,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      LayoutSwitcher,
                                      UIScrollViewAccessibilityDelegate,
                                      UISearchBarDelegate,
-                                     ViewRevealingAnimatee>
+                                     ViewRevealingAnimatee,
+                                     UIGestureRecognizerDelegate>
 // Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
 // |-viewWillDisappear methods. Note that the |Did| methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -166,9 +167,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Whether the scroll view is animating its content offset to the current page.
 @property(nonatomic, assign, getter=isScrollViewAnimatingContentOffset)
     BOOL scrollViewAnimatingContentOffset;
-// The height of the bottom of the tab grid which is currently covered by the
-// software keyboard.
-@property(nonatomic, assign) CGFloat keyboardOverlap;
 
 @property(nonatomic, assign) PageChangeInteraction pageChangeInteraction;
 // UIView whose background color changes to create a fade-in / fade-out effect
@@ -184,6 +182,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
 // If the scrim view is being presented.
 @property(nonatomic, assign) BOOL isScrimDisplayed;
+// Pan gesture for when the search results view is scrolled during the search
+// mode.
+@property(nonatomic, strong) UIPanGestureRecognizer* searchResultPanRecognizer;
 
 @end
 
@@ -278,18 +279,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       pageViewController.view.accessibilityElementsHidden = YES;
     }
   }
-
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleKeyboardWillShow:)
-             name:UIKeyboardWillShowNotification
-           object:nil];
-
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleKeyboardWillHide:)
-             name:UIKeyboardWillHideNotification
-           object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -953,27 +942,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   inset.left = self.scrollView.safeAreaInsets.left;
   inset.right = self.scrollView.safeAreaInsets.right;
   inset.top += self.scrollView.safeAreaInsets.top;
-  if (self.keyboardOverlap > 0) {
-    // Override normal bottom insets which will be behind keyboard.
-    inset.bottom = self.keyboardOverlap;
-  } else {
-    inset.bottom += self.scrollView.safeAreaInsets.bottom;
-  }
+  inset.bottom += self.scrollView.safeAreaInsets.bottom;
   self.incognitoTabsViewController.gridView.contentInset = inset;
   self.regularTabsViewController.gridView.contentInset = inset;
-}
-
-- (void)handleKeyboardWillShow:(NSNotification*)notification {
-  CGRect keyboardFrame =
-      [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  CGRect viewFrameInWindow = [self.scrollView convertRect:self.scrollView.bounds
-                                                   toView:nil];
-  self.keyboardOverlap =
-      CGRectIntersection(keyboardFrame, viewFrameInWindow).size.height;
-}
-
-- (void)handleKeyboardWillHide:(NSNotification*)notification {
-  self.keyboardOverlap = 0.0;
 }
 
 // Returns the corresponding GridViewController for |page|. Returns |nil| if
@@ -993,9 +964,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Original current page is about to not be visible. Disable it from being
   // focused by VoiceOver.
   self.currentPageViewController.view.accessibilityElementsHidden = YES;
+  UIViewController* previousPageVC = self.currentPageViewController;
   _currentPage = currentPage;
   self.currentPageViewController.view.accessibilityElementsHidden = NO;
-  // Force VoiceOver to update its accessibility element tree immediately.
   if (self.tabGridMode == TabGridModeSearch) {
     // |UIAccessibilityLayoutChangedNotification| doesn't change the current
     // item focused by the voiceOver if the notification argument provided with
@@ -1004,6 +975,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // be posted instead.
     UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                     nil);
+    // If the search mode is active. the previous page should have the result
+    // gesture recognizer installed, make sure to move the gesture recognizer to
+    // the new page's view.
+    [previousPageVC.view
+        removeGestureRecognizer:self.searchResultPanRecognizer];
+    [self.currentPageViewController.view
+        addGestureRecognizer:self.searchResultPanRecognizer];
   } else {
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                     nil);
@@ -1836,6 +1814,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.scrimView addTarget:self
                      action:@selector(cancelSearchButtonTapped:)
            forControlEvents:UIControlEventTouchUpInside];
+  // Add a gesture recognizer to identify when the user interactions with the
+  // search results.
+  self.searchResultPanRecognizer =
+      [[UIPanGestureRecognizer alloc] initWithTarget:self.view
+                                              action:@selector(endEditing:)];
+  self.searchResultPanRecognizer.cancelsTouchesInView = NO;
+  self.searchResultPanRecognizer.delegate = self;
 }
 
 // Shows scrim overlay.
@@ -1883,10 +1868,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       }];
 }
 
+#pragma mark UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  if (gestureRecognizer == self.searchResultPanRecognizer)
+    return YES;
+  return NO;
+}
+
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar*)searchBar {
   [self updateScrimVisibilityForText:searchBar.text];
+  [self.currentPageViewController.view
+      addGestureRecognizer:self.searchResultPanRecognizer];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar*)searchBar {
+  [self.currentPageViewController.view
+      removeGestureRecognizer:self.searchResultPanRecognizer];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar {
