@@ -450,7 +450,7 @@ CommandStore.CMD_ALLOWLIST = {
     denyOOBE: true,
     category: 'help_commands'
   },
-  'showKbExplorerPage': {
+  'showLearnModePage': {
     announce: false,
     denyContinuation: true,
     msgId: 'show_kb_explorer_page',

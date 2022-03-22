@@ -504,7 +504,7 @@ KeyMap.BINDINGS_ = [
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}}
   },
   {
-    command: 'showKbExplorerPage',
+    command: 'showLearnModePage',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}}
   },
   {

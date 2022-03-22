@@ -24,7 +24,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
       const mockFeedback = this.createMockFeedback();
       const desktop = await new Promise(r => chrome.automation.getDesktop(r));
       function listener(evt) {
-        if (evt.target.docUrl.indexOf('learn_mode/kbexplorer.html') === -1 ||
+        if (evt.target.docUrl.indexOf('learn_mode/learn_mode.html') === -1 ||
             !evt.target.docLoaded) {
           return;
         }
@@ -37,19 +37,8 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
 
       desktop.addEventListener(
           chrome.automation.EventType.LOAD_COMPLETE, listener);
-      CommandHandlerInterface.instance.onCommand('showKbExplorerPage');
+      CommandHandlerInterface.instance.onCommand('showLearnModePage');
     });
-  }
-
-  getLearnModeWindow() {
-    let learnModeWindow = null;
-    while (!learnModeWindow) {
-      learnModeWindow = chrome.extension.getViews().find(function(view) {
-        return view.location.href.indexOf(
-                   'chromevox/learn_mode/kbexplorer.html') > 0;
-      });
-    }
-    return learnModeWindow;
   }
 
   makeMockKeyEvent(params) {
@@ -65,26 +54,38 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
 
   doKeyDown(evt) {
     return () => {
-      this.getLearnModeWindow().KbExplorer.onKeyDown(
-          this.makeMockKeyEvent(evt));
+      chrome.runtime.sendMessage({
+        target: 'LearnMode',
+        action: 'onKeyDown',
+        args: [this.makeMockKeyEvent(evt)]
+      });
     };
   }
 
   doKeyUp(evt) {
     return () => {
-      this.getLearnModeWindow().KbExplorer.onKeyUp(this.makeMockKeyEvent(evt));
+      chrome.runtime.sendMessage({
+        target: 'LearnMode',
+        action: 'onKeyUp',
+        args: [this.makeMockKeyEvent(evt)]
+      });
     };
   }
 
   doLearnModeGesture(gesture) {
     return () => {
-      this.getLearnModeWindow().KbExplorer.onAccessibilityGesture(gesture);
+      chrome.runtime.sendMessage({
+        target: 'LearnMode',
+        action: 'onAccessibilityGesture',
+        args: [gesture]
+      });
     };
   }
 
   doBrailleKeyEvent(evt) {
     return () => {
-      this.getLearnModeWindow().KbExplorer.onBrailleKeyEvent(evt);
+      chrome.runtime.sendMessage(
+          {target: 'LearnMode', action: 'onBrailleKeyEvent', args: [evt]});
     };
   }
 };
@@ -132,7 +133,8 @@ TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
 
 TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
-  this.getLearnModeWindow().KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0;
+  chrome.runtime.sendMessage(
+      {target: 'LearnMode', action: 'clearTouchExploreOutputTime'});
   mockFeedback.call(doLearnModeGesture(Gesture.SWIPE_RIGHT1))
       .expectSpeechWithQueueMode(
           'Swipe one finger right', QueueMode.CATEGORY_FLUSH)

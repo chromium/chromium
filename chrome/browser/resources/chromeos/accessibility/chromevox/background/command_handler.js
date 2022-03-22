@@ -125,9 +125,9 @@ export class CommandHandler extends CommandHandlerInterface {
         ChromeVox.passThroughMode = true;
         ChromeVox.tts.speak(Msgs.getMsg('pass_through_key'), QueueMode.QUEUE);
         return true;
-      case 'showKbExplorerPage':
+      case 'showLearnModePage':
         const explorerPage = {
-          url: 'chromevox/learn_mode/kbexplorer.html',
+          url: 'chromevox/learn_mode/learn_mode.html',
           type: 'panel'
         };
         chrome.windows.create(explorerPage);

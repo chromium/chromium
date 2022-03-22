@@ -7,24 +7,10 @@
  *
  */
 
-goog.provide('KbExplorer');
-
-goog.require('BrailleCommandData');
-goog.require('GestureCommandData');
-goog.require('Spannable');
-goog.require('AbstractTts');
-goog.require('BrailleKeyCommand');
-goog.require('ChromeVoxKbHandler');
-goog.require('CommandStore');
-goog.require('KeyMap');
-goog.require('KeyUtil');
-goog.require('LibLouis');
-goog.require('NavBraille');
-
 /**
  * Class to manage the keyboard explorer.
  */
-KbExplorer = class {
+export class LearnMode {
   constructor() {}
 
   /**
@@ -36,14 +22,14 @@ KbExplorer = class {
     window.ChromeVox = window.backgroundWindow['ChromeVox'];
 
     window.backgroundWindow.addEventListener(
-        'keydown', KbExplorer.onKeyDown, true);
-    window.backgroundWindow.addEventListener('keyup', KbExplorer.onKeyUp, true);
+        'keydown', LearnMode.onKeyDown, true);
+    window.backgroundWindow.addEventListener('keyup', LearnMode.onKeyUp, true);
     window.backgroundWindow.addEventListener(
-        'keypress', KbExplorer.onKeyPress, true);
+        'keypress', LearnMode.onKeyPress, true);
     chrome.brailleDisplayPrivate.onKeyEvent.addListener(
-        KbExplorer.onBrailleKeyEvent);
+        LearnMode.onBrailleKeyEvent);
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
-        KbExplorer.onAccessibilityGesture);
+        LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
     chrome.runtime.sendMessage(
         {target: 'BrailleCommandHandler', action: 'setEnabled', value: false});
@@ -53,15 +39,32 @@ KbExplorer = class {
     ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
     /** @type {LibLouis.Translator} */
-    KbExplorer.currentBrailleTranslator_ = await new Promise(
+    LearnMode.currentBrailleTranslator_ = await new Promise(
         resolve => chrome.runtime.sendMessage(
             {target: 'BrailleBackground', action: 'getDefaultTranslator'},
             resolve));
 
-    ChromeVoxKbHandler.commandHandler = KbExplorer.onCommand;
+    ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
     $('instruction').textContent = Msgs.getMsg('learn_mode_intro');
-    KbExplorer.shouldFlushSpeech_ = true;
+    LearnMode.shouldFlushSpeech_ = true;
+
+    chrome.runtime.onMessage.addListener(message => {
+      if (message['target'] !== 'LearnMode') {
+        return;
+      }
+
+      switch (message['action']) {
+        case 'onKeyDown':
+        case 'onKeyUp':
+        case 'onAccessibilityGesture':
+        case 'onBrailleKeyEvent':
+          LearnMode[message['action']].apply(LearnMode, message['args']);
+          break;
+        case 'clearTouchExploreOutputTime':
+          LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0;
+      }
+    });
   }
 
   /**
@@ -74,16 +77,16 @@ KbExplorer = class {
     // Process this event only once; it isn't a repeat (i.e. a user is holding a
     // key down).
     if (!evt.repeat) {
-      KbExplorer.output(KeyUtil.getReadableNameForKeyCode(evt.keyCode));
+      LearnMode.output(KeyUtil.getReadableNameForKeyCode(evt.keyCode));
 
       // Allow Ctrl+W or escape to be handled.
       if ((evt.key === 'w' && evt.ctrlKey) || evt.key === 'Escape') {
-        KbExplorer.close_();
+        LearnMode.close_();
         return true;
       }
 
       ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
-      KbExplorer.clearRange();
+      LearnMode.clearRange();
     }
 
     evt.preventDefault();
@@ -96,9 +99,9 @@ KbExplorer = class {
    * @param {Event} evt key event.
    */
   static onKeyUp(evt) {
-    KbExplorer.shouldFlushSpeech_ = true;
-    KbExplorer.maybeClose_();
-    KbExplorer.clearRange();
+    LearnMode.shouldFlushSpeech_ = true;
+    LearnMode.maybeClose_();
+    LearnMode.clearRange();
     evt.preventDefault();
     evt.stopPropagation();
   }
@@ -108,7 +111,7 @@ KbExplorer = class {
    * @param {Event} evt key event.
    */
   static onKeyPress(evt) {
-    KbExplorer.clearRange();
+    LearnMode.clearRange();
     evt.preventDefault();
     evt.stopPropagation();
   }
@@ -117,8 +120,8 @@ KbExplorer = class {
    * @param {BrailleKeyEvent} evt The key event.
    */
   static onBrailleKeyEvent(evt) {
-    KbExplorer.shouldFlushSpeech_ = true;
-    KbExplorer.maybeClose_();
+    LearnMode.shouldFlushSpeech_ = true;
+    LearnMode.maybeClose_();
     let msgid;
     const msgArgs = [];
     let text;
@@ -157,7 +160,7 @@ KbExplorer = class {
         const keyCode = BrailleKeyEvent.brailleChordsToStandardKeyCode[dots];
         if (keyCode) {
           if (keyCode === 'Escape') {
-            callback = KbExplorer.close_;
+            callback = LearnMode.close_;
           }
 
           text = keyCode;
@@ -183,7 +186,7 @@ KbExplorer = class {
         }
 
         const command = BrailleCommandData.getCommand(dots);
-        if (command && KbExplorer.onCommand(command)) {
+        if (command && LearnMode.onCommand(command)) {
           return;
         }
         text = BrailleCommandData.makeShortcutText(dots, true);
@@ -196,10 +199,9 @@ KbExplorer = class {
         const cells = new ArrayBuffer(1);
         const view = new Uint8Array(cells);
         view[0] = dots;
-        KbExplorer.currentBrailleTranslator_.backTranslate(
-            cells, function(res) {
-              KbExplorer.output(res);
-            }.bind(this));
+        LearnMode.currentBrailleTranslator_.backTranslate(cells, function(res) {
+          LearnMode.output(res);
+        }.bind(this));
       }
         return;
       case BrailleKeyCommand.STANDARD_KEY:
@@ -208,8 +210,9 @@ KbExplorer = class {
     if (msgid) {
       text = Msgs.getMsg(msgid, msgArgs);
     }
-    KbExplorer.output(text || evt.command, callback);
-    KbExplorer.clearRange();
+
+    LearnMode.output(text || evt.command, callback);
+    LearnMode.clearRange();
   }
 
   /**
@@ -218,30 +221,30 @@ KbExplorer = class {
    *     ax::mojom::Gesture enum defined in ui/accessibility/ax_enums.mojom
    */
   static onAccessibilityGesture(gesture) {
-    KbExplorer.shouldFlushSpeech_ = true;
-    KbExplorer.maybeClose_();
+    LearnMode.shouldFlushSpeech_ = true;
+    LearnMode.maybeClose_();
 
     let callback;
     if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
-      if ((new Date() - KbExplorer.lastTouchExplore_) <
-          KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_) {
+      if ((new Date() - LearnMode.lastTouchExplore_) <
+          LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_) {
         return;
       }
-      KbExplorer.lastTouchExplore_ = new Date();
+      LearnMode.lastTouchExplore_ = new Date();
     } else if (gesture === chrome.accessibilityPrivate.Gesture.SWIPE_LEFT2) {
-      callback = KbExplorer.close_;
+      callback = LearnMode.close_;
     }
 
     const gestureData = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
     if (gestureData) {
       if (gestureData.msgId) {
-        KbExplorer.output(Msgs.getMsg(gestureData.msgId));
+        LearnMode.output(Msgs.getMsg(gestureData.msgId));
       }
       if (gestureData.command) {
-        KbExplorer.onCommand(gestureData.command);
+        LearnMode.onCommand(gestureData.command);
       }
       if (gestureData.commandDescriptionMsgId) {
-        KbExplorer.output(
+        LearnMode.output(
             Msgs.getMsg(gestureData.commandDescriptionMsgId), callback);
       }
     }
@@ -256,8 +259,8 @@ KbExplorer = class {
     const msg = CommandStore.messageForCommand(command);
     if (msg) {
       const commandText = Msgs.getMsg(msg);
-      KbExplorer.output(commandText);
-      KbExplorer.clearRange();
+      LearnMode.output(commandText);
+      LearnMode.clearRange();
       return true;
     }
   }
@@ -270,12 +273,12 @@ KbExplorer = class {
   static output(text, opt_speakCallback) {
     ChromeVox.tts.speak(
         text,
-        KbExplorer.shouldFlushSpeech_ ?
+        LearnMode.shouldFlushSpeech_ ?
             window.backgroundWindow.QueueMode.CATEGORY_FLUSH :
             window.backgroundWindow.QueueMode.QUEUE,
         {endCallback: opt_speakCallback});
     ChromeVox.braille.write(new NavBraille({text: new Spannable(text)}));
-    KbExplorer.shouldFlushSpeech_ = false;
+    LearnMode.shouldFlushSpeech_ = false;
   }
 
   /** Clears ChromeVox range. */
@@ -288,15 +291,15 @@ KbExplorer = class {
   /** @private */
   static resetListeners_() {
     window.backgroundWindow.removeEventListener(
-        'keydown', KbExplorer.onKeyDown, true);
+        'keydown', LearnMode.onKeyDown, true);
     window.backgroundWindow.removeEventListener(
-        'keyup', KbExplorer.onKeyUp, true);
+        'keyup', LearnMode.onKeyUp, true);
     window.backgroundWindow.removeEventListener(
-        'keypress', KbExplorer.onKeyPress, true);
+        'keypress', LearnMode.onKeyPress, true);
     chrome.brailleDisplayPrivate.onKeyEvent.removeListener(
-        KbExplorer.onBrailleKeyEvent);
+        LearnMode.onBrailleKeyEvent);
     chrome.accessibilityPrivate.onAccessibilityGesture.removeListener(
-        KbExplorer.onAccessibilityGesture);
+        LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, false);
     chrome.runtime.sendMessage(
         {target: 'BrailleCommandHandler', action: 'setEnabled', value: true});
@@ -316,32 +319,36 @@ KbExplorer = class {
         return;
       }
 
-      KbExplorer.close_();
+      LearnMode.close_();
     });
   }
 
   /** @private */
   static close_() {
-    KbExplorer.output(Msgs.getMsg('learn_mode_outtro'));
-    KbExplorer.resetListeners_();
+    LearnMode.output(Msgs.getMsg('learn_mode_outtro'));
+    LearnMode.resetListeners_();
     window.close();
   }
-};
+}
 
 /**
  * Indicates when speech output should flush previous speech.
  * @private {boolean}
  */
-KbExplorer.shouldFlushSpeech_ = false;
+LearnMode.shouldFlushSpeech_ = false;
 
 /**
  * Last time a touch explore gesture was described.
  * @private {!Date}
  */
-KbExplorer.lastTouchExplore_ = new Date();
+LearnMode.lastTouchExplore_ = new Date();
 
 /**
  * The minimum time to wait before describing another touch explore gesture.
  * @private {number}
  */
-KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 1000;
+LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 1000;
+
+document.addEventListener('DOMContentLoaded', function() {
+  LearnMode.init();
+}, false);
