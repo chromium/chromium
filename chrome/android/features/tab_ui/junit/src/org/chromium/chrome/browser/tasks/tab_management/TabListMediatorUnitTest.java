@@ -1555,40 +1555,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
-    public void updateSpanCount_onLargeTabletWithThreeTabs_landscape() {
-        // Init 3 tabs
-        initAndAssertAllProperties(1);
-        // Mock large tablet
-        when(mResources.getInteger(R.integer.min_screen_width_bucket))
-                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
-
-        Configuration portraitConfiguration = new Configuration();
-        portraitConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
-        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
-
-        verify(mGridLayoutManager).setSpanCount(mTabModel.getCount());
-    }
-
-    @Test
-    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
-    public void updateSpanCount_onLargeTabletWithThreeTabs_portrait() {
-        // Init 3 tabs
-        initAndAssertAllProperties(1);
-        // Mock large tablet
-        when(mResources.getInteger(R.integer.min_screen_width_bucket))
-                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
-
-        Configuration portraitConfiguration = new Configuration();
-        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
-        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
-
-        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE);
-    }
-
-    @Test
     public void resetWithListOfTabs_MruOrder() {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {

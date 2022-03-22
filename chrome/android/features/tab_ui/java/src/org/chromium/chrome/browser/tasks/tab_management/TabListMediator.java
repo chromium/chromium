@@ -1315,13 +1315,11 @@ class TabListMediator {
     private int getSpanCount(int orientation, int screenWidthDp) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
-            int spanCount = screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
+            return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
                     ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
                     : screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP
                             ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM
                             : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT || mModel.size() == 0) return spanCount;
-            return mModel.size() == 1 ? 2 : Math.min(spanCount, mModel.size());
         }
         return orientation == Configuration.ORIENTATION_PORTRAIT
                         || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
