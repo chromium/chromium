@@ -133,31 +133,6 @@ chrome.terminalPrivate.getPrefs = function(paths, callback) {};
 chrome.terminalPrivate.setPrefs = function(prefs, callback) {};
 
 /**
- * Returns an object (DictionaryValue) containing UI settings such as font style
- * and colors used by terminal and stored as a syncable pref.  The UI currently
- * has ~70 properties and we wish to allow flexibility for these to change in
- * the UI without updating this API, so we allow any properties.
- * @param {function(Object): void} callback Callback that will be called with
- *     settings.
- */
-chrome.terminalPrivate.getSettings = function(callback) {};
-
-/**
- * Sets terminal UI settings which are stored as a syncable pref.
- * @param {Object} settings Settings to update into prefs.
- * @param {function(): void} callback Callback that will be called when
- *     complete.
- */
-chrome.terminalPrivate.setSettings = function(settings, callback) {};
-
-/**
- * Returns a boolean indicating whether the accessibility spoken feedback is on.
- * @param {function(boolean): void} callback Callback that will be called with
- *     the a11y status.
- */
-chrome.terminalPrivate.getA11yStatus = function(callback) {};
-
-/**
  * Fired when an opened process writes something to its output. Observing
  * further process output will be blocked until |ackOutput| for the terminal is
  * called. Internally, first event argument will be ID of the tab that contains
@@ -172,15 +147,3 @@ chrome.terminalPrivate.onProcessOutput;
  * @type {!ChromeEvent}
  */
 chrome.terminalPrivate.onPrefChanged;
-
-/**
- * Fired when terminal UI settings change.
- * @type {!ChromeEvent}
- */
-chrome.terminalPrivate.onSettingsChanged;
-
-/**
- * Fired when a11y spoken feedback is enabled/disabled.
- * @type {!ChromeEvent}
- */
-chrome.terminalPrivate.onA11yStatusChanged;

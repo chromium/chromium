@@ -68,7 +68,6 @@ namespace CloseTerminalProcess =
     extensions::api::terminal_private::CloseTerminalProcess;
 namespace SendInput = extensions::api::terminal_private::SendInput;
 namespace AckOutput = extensions::api::terminal_private::AckOutput;
-namespace SetSettings = extensions::api::terminal_private::SetSettings;
 namespace OpenWindow = extensions::api::terminal_private::OpenWindow;
 namespace GetPrefs = extensions::api::terminal_private::GetPrefs;
 namespace SetPrefs = extensions::api::terminal_private::SetPrefs;
@@ -211,21 +210,6 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   event_router->BroadcastEvent(std::move(event));
 }
 
-void PreferenceChanged(Profile* profile,
-                       const std::string& pref_name,
-                       extensions::events::HistogramValue histogram,
-                       const char* eventName) {
-  PrefChanged(profile, pref_name);
-  std::vector<base::Value> args;
-  args.push_back(profile->GetPrefs()->Get(pref_name)->Clone());
-  extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
-  if (event_router) {
-    auto event = std::make_unique<extensions::Event>(histogram, eventName,
-                                                     std::move(args));
-    event_router->BroadcastEvent(std::move(event));
-  }
-}
-
 }  // namespace
 
 namespace extensions {
@@ -235,27 +219,14 @@ TerminalPrivateAPI::TerminalPrivateAPI(content::BrowserContext* context)
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   Profile* profile = Profile::FromBrowserContext(context);
   pref_change_registrar_->Init(profile->GetPrefs());
-  // TODO(b/223076712): onPrefChanged() will replace
-  // on{Settings,A11yStatus}Changed(). Introduced in M101/nassh0.45.  Old
-  // functions can be removed once JS client code is updated to use new code.
-  pref_change_registrar_->Add(
-      crostini::prefs::kCrostiniTerminalSettings,
-      base::BindRepeating(
-          &PreferenceChanged, profile,
-          crostini::prefs::kCrostiniTerminalSettings,
-          extensions::events::TERMINAL_PRIVATE_ON_SETTINGS_CHANGED,
-          terminal_private::OnSettingsChanged::kEventName));
-  pref_change_registrar_->Add(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-      base::BindRepeating(
-          &PreferenceChanged, profile,
-          ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-          extensions::events::TERMINAL_PRIVATE_ON_A11Y_STATUS_CHANGED,
-          terminal_private::OnA11yStatusChanged::kEventName));
-  pref_change_registrar_->Add(crostini::prefs::kCrostiniContainers,
-                              base::BindRepeating(&PrefChanged, profile));
-  pref_change_registrar_->Add(crostini::prefs::kCrostiniEnabled,
-                              base::BindRepeating(&PrefChanged, profile));
+  auto prefs = {ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+                crostini::prefs::kCrostiniContainers,
+                crostini::prefs::kCrostiniEnabled,
+                crostini::prefs::kCrostiniTerminalSettings};
+  for (const auto* pref : prefs) {
+    pref_change_registrar_->Add(pref,
+                                base::BindRepeating(&PrefChanged, profile));
+  }
 }
 
 TerminalPrivateAPI::~TerminalPrivateAPI() = default;
@@ -719,9 +690,6 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   return RespondNow(OneArgument(std::move(info)));
 }
 
-// TODO(b/223076712): {get,set}Prefs() will replace
-// {get,set}{Settings,A11yStatus}(). Introduced in M101/nassh0.45.  Old
-// functions can be removed once JS client code is updated to use new code.
 TerminalPrivateGetPrefsFunction::~TerminalPrivateGetPrefsFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
@@ -780,45 +748,6 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
     service->Set(it.key(), it.value());
   }
   return RespondNow(NoArguments());
-}
-
-TerminalPrivateGetSettingsFunction::~TerminalPrivateGetSettingsFunction() =
-    default;
-
-ExtensionFunction::ResponseAction TerminalPrivateGetSettingsFunction::Run() {
-  crostini::RecordTerminalSettingsChangesUMAs(
-      Profile::FromBrowserContext(browser_context()));
-  PrefService* service =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  const base::Value* value =
-      service->GetDictionary(crostini::prefs::kCrostiniTerminalSettings);
-  return RespondNow(OneArgument(value->Clone()));
-}
-
-TerminalPrivateSetSettingsFunction::~TerminalPrivateSetSettingsFunction() =
-    default;
-
-ExtensionFunction::ResponseAction TerminalPrivateSetSettingsFunction::Run() {
-  std::unique_ptr<SetSettings::Params> params(
-      SetSettings::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  PrefService* service =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  service->Set(crostini::prefs::kCrostiniTerminalSettings,
-               params->settings.additional_properties);
-  return RespondNow(NoArguments());
-}
-
-TerminalPrivateGetA11yStatusFunction::~TerminalPrivateGetA11yStatusFunction() =
-    default;
-
-ExtensionFunction::ResponseAction TerminalPrivateGetA11yStatusFunction::Run() {
-  return RespondNow(
-      OneArgument(Profile::FromBrowserContext(browser_context())
-                      ->GetPrefs()
-                      ->Get(ash::prefs::kAccessibilitySpokenFeedbackEnabled)
-                      ->Clone()));
 }
 
 }  // namespace extensions

@@ -248,10 +248,6 @@
           ]
         }
       },
-      // TODO(b/223076712): getPrefs(), setPrefs(), onPrefChanged() will replace
-      // {get,set}{Settings,A11yStatus}() and on{Settings,A11yStatus}Changed().
-      // Introduced in M101/nassh0.45.  Old functions can be removed once JS
-      // client code is updated to use new code.
       {
         "name": "getPrefs",
         "type": "function",
@@ -306,69 +302,6 @@
           "description": "Callback that will be called when complete.",
           "parameters": []
         }
-      },
-      {
-        "name": "getSettings",
-        "type": "function",
-        "description": "Returns an object (DictionaryValue) containing UI settings such as font style and colors used by terminal and stored as a syncable pref.  The UI currently has ~70 properties and we wish to allow flexibility for these to change in the UI without updating this API, so we allow any properties.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "Callback that will be called with settings.",
-          "parameters": [
-            {
-              "name": "settings",
-              "type": "object",
-              "additionalProperties":
-                {
-                  "type": "any" ,
-                  "preserveNull": true
-                },
-              "description": "Settings from prefs.",
-              "preserveNull": true
-            }
-          ]
-        }
-      },
-      {
-        "name": "setSettings",
-        "type": "function",
-        "description": "Sets terminal UI settings which are stored as a syncable pref.",
-        "parameters": [
-          {
-            "name": "settings",
-            "type": "object",
-            "description": "Settings to update into prefs.",
-            "additionalProperties":
-              {
-                "type": "any" ,
-                "preserveNull": true
-              },
-            "preserveNull": true
-          }
-        ],
-        "returns_async": {
-          "name": "callback",
-          "description": "Callback that will be called when complete.",
-          "parameters": []
-        }
-      },
-      {
-        "name": "getA11yStatus",
-        "type": "function",
-        "description": "Returns a boolean indicating whether the accessibility spoken feedback is on.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "Callback that will be called with the a11y status.",
-          "parameters": [
-            {
-              "name": "a11yStatus",
-              "type": "boolean",
-              "description": "True if a11y spoken feedback is on."
-            }
-          ]
-        }
       }
     ],
     "events": [
@@ -409,36 +342,6 @@
                 "preserveNull": true
               },
             "preserveNull": true
-          }
-        ]
-      },
-      {
-        "name": "onSettingsChanged",
-        "type": "function",
-        "description": "Fired when terminal UI settings change.",
-        "parameters": [
-          {
-            "name": "settings",
-            "type": "object",
-            "description": "Terminal UI Settings with updated values.",
-            "additionalProperties":
-              {
-                "type": "any" ,
-                "preserveNull": true
-              },
-            "preserveNull": true
-          }
-        ]
-      },
-      {
-        "name": "onA11yStatusChanged",
-        "type": "function",
-        "description": "Fired when a11y spoken feedback is enabled/disabled.",
-        "parameters": [
-          {
-            "name": "status",
-            "type": "boolean",
-            "description": "True if a11y spoken feedback is on."
           }
         ]
       }

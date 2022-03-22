@@ -319,38 +319,6 @@ chrome.test.runTests([
     });
   },
 
-  function settingsTest() {
-    const listener = (settings) => {
-      // 3. Event is fired - {'k': 'v'}.
-      chrome.test.assertEq(1, Object.keys(settings).length);
-      chrome.test.assertEq('v', settings['k']);
-
-      // 4. Get settings - {'k': 'v'}.
-      chrome.terminalPrivate.getSettings((settings) => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertEq(1, Object.keys(settings).length);
-        chrome.test.assertEq('v', settings['k']);
-
-        // 5. Cleanup.
-        chrome.terminalPrivate.onSettingsChanged.removeListener(listener);
-        chrome.terminalPrivate.onSettingsChanged.addListener(
-            chrome.test.succeed);
-        chrome.terminalPrivate.setSettings({}, chrome.test.assertNoLastError);
-      });
-    };
-    chrome.terminalPrivate.onSettingsChanged.addListener(listener);
-
-    // 1. Get settings - {}.
-    chrome.terminalPrivate.getSettings((settings) => {
-      chrome.test.assertNoLastError();
-      chrome.test.assertEq(0, Object.keys(settings).length);
-
-      // 2. Set {'k': 'v'}.
-      chrome.terminalPrivate.setSettings(
-          {k: 'v'}, () => chrome.test.assertNoLastError());
-    });
-  },
-
   function invalidTerminalIdTest() {
     const foreign_id = (new URLSearchParams(location.search)).get('foreign_id');
     chrome.test.assertTrue(!!foreign_id);
