@@ -93,7 +93,7 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
 
   const ComputedStyle* style = dark_element->GetComputedStyle();
   EXPECT_EQ(mojom::blink::ColorScheme::kLight, style->UsedColorScheme());
-  EXPECT_EQ(Color(0xdd, 0xdd, 0xdd),
+  EXPECT_EQ(Color(0xef, 0xef, 0xef),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 
   // Change color scheme to dark.
@@ -104,7 +104,7 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
 
   style = dark_element->GetComputedStyle();
   EXPECT_EQ(mojom::blink::ColorScheme::kDark, style->UsedColorScheme());
-  EXPECT_EQ(Color(0x44, 0x44, 0x44),
+  EXPECT_EQ(Color(0x6b, 0x6b, 0x6b),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 

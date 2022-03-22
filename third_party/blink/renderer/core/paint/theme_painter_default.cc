@@ -49,8 +49,6 @@ namespace blink {
 
 namespace {
 
-const unsigned kDefaultButtonBackgroundColor = 0xffdddddd;
-
 bool IsIndeterminate(const Element& element) {
   if (const auto* input = DynamicTo<HTMLInputElement>(element))
     return input->ShouldAppearIndeterminate();
@@ -230,12 +228,7 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   WebThemeEngine::ExtraParams extra_params;
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.has_border = true;
-  extra_params.button.background_color = kDefaultButtonBackgroundColor;
   extra_params.button.zoom = style.EffectiveZoom();
-  if (style.HasBackground()) {
-    extra_params.button.background_color =
-        style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
-  }
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartButton,

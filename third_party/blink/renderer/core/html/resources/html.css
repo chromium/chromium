@@ -663,7 +663,7 @@ button {
     padding: 1px 6px;
     border: 2px outset ButtonBorder;
     box-sizing: border-box;
-    background-color: -internal-light-dark(#efefef, #3B3B3B);
+    background-color: ButtonFace;
     color: ButtonText;
 }
 
@@ -804,8 +804,8 @@ input[type="color" i] {
     padding: 1px 2px;
     cursor: default;
     box-sizing: border-box;
-    background-color: -internal-light-dark(#efefef, #3B3B3B);
-    color: -internal-light-dark(black, white);
+    background-color: ButtonFace;
+    color: ButtonText;
 }
 
 input[type="color" i]::-webkit-color-swatch-wrapper {

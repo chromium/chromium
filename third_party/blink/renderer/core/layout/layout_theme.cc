@@ -613,8 +613,8 @@ Color LayoutTheme::DefaultSystemColor(
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
                                                               : 0xFF767676;
     case CSSValueID::kButtonface:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF444444
-                                                              : 0xFFDDDDDD;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
+                                                              : 0xFFEFEFEF;
     case CSSValueID::kButtonhighlight:
       return 0xFFDDDDDD;
     case CSSValueID::kButtonshadow:

@@ -17,13 +17,16 @@
   <!-- Reference elements -->
   <!-- Buttons -->
   <div id="buttons">
-    <button name="button"></button><input type="submit" name="submit button"><input type="reset" name="reset button">
+    <button name="button"></button><input type="submit" name="submit button">
+    <input type="reset" name="reset button"><input type="color" name="color picker">
   </div>
   <mark id="mark">Marked text</mark>
   <script>
     for (let element of document.getElementById("buttons").children) {
       style = document.defaultView.getComputedStyle(element);
-      test_computed_value(`color`, `ButtonText`, style.getPropertyValue('color'), 'has the same color as text on a ' + element.name);
+      test_computed_value('color', 'ButtonBorder', style.getPropertyValue('border-color'), 'resolves to the same color as the border-color of a ' + element.name);
+      test_computed_value('color', 'ButtonFace', style.getPropertyValue('background-color'), 'resolves to the same color as the background-color of a ' + element.name);
+      test_computed_value('color', 'ButtonText', style.getPropertyValue('color'), 'resolves to the same color as text on a ' + element.name);
     }
     // Mark and MarkText
     style = document.defaultView.getComputedStyle(document.getElementById('mark'));

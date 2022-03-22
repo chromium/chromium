@@ -2042,6 +2042,7 @@ crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-001.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-004.html [ Failure ]
+crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-005.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-006.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-008.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-010.html [ Failure ]
