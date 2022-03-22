@@ -147,12 +147,14 @@ class BackgroundSyncManagerTest
     base::RunLoop().RunUntilIdle();
     RegisterServiceWorkers();
 
-    storage_partition_impl_->GetDevToolsBackgroundServicesContext()
+    static_cast<DevToolsBackgroundServicesContextImpl*>(
+        storage_partition_impl_->GetDevToolsBackgroundServicesContext())
         ->AddObserver(this);
   }
 
   void TearDown() override {
-    storage_partition_impl_->GetDevToolsBackgroundServicesContext()
+    static_cast<DevToolsBackgroundServicesContextImpl*>(
+        storage_partition_impl_->GetDevToolsBackgroundServicesContext())
         ->RemoveObserver(this);
     // Restore the network observer functionality for subsequent tests.
     background_sync_test_util::SetIgnoreNetworkChanges(false);
@@ -301,7 +303,8 @@ class BackgroundSyncManagerTest
         base::MakeRefCounted<TestBackgroundSyncContext>();
     background_sync_context_->Init(
         helper_->context_wrapper(),
-        storage_partition_impl_->GetDevToolsBackgroundServicesContext());
+        static_cast<DevToolsBackgroundServicesContextImpl*>(
+            storage_partition_impl_->GetDevToolsBackgroundServicesContext()));
     base::RunLoop().RunUntilIdle();
 
     storage_partition_impl_->ShutdownBackgroundSyncContextForTesting();
@@ -2332,7 +2335,8 @@ TEST_F(BackgroundSyncManagerTest, DispatchPeriodicSyncEvent) {
 TEST_F(BackgroundSyncManagerTest, EventsLoggedForRegistration) {
   // Note that the dispatch is mocked out, so those events are not registered
   // by these tests.
-  storage_partition_impl_->GetDevToolsBackgroundServicesContext()
+  static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition_impl_->GetDevToolsBackgroundServicesContext())
       ->StartRecording(devtools::proto::BACKGROUND_SYNC);
 
   SetMaxSyncAttemptsAndRestartManager(3);
@@ -2370,7 +2374,8 @@ TEST_F(BackgroundSyncManagerTest, EventsLoggedForRegistration) {
 }
 
 TEST_F(BackgroundSyncManagerTest, EventsLoggedForPeriodicSyncRegistration) {
-  storage_partition_impl_->GetDevToolsBackgroundServicesContext()
+  static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition_impl_->GetDevToolsBackgroundServicesContext())
       ->StartRecording(devtools::proto::PERIODIC_BACKGROUND_SYNC);
 
   SetMaxSyncAttemptsAndRestartManager(3);

@@ -157,7 +157,8 @@ void BackgroundSyncServiceImplTestHarness::CreateBackgroundSyncContext() {
   background_sync_context_ = base::MakeRefCounted<TestBackgroundSyncContext>();
   background_sync_context_->Init(
       embedded_worker_helper_->context_wrapper(),
-      storage_partition_impl_->GetDevToolsBackgroundServicesContext());
+      static_cast<DevToolsBackgroundServicesContextImpl*>(
+          storage_partition_impl_->GetDevToolsBackgroundServicesContext()));
 
   // Tests do not expect the sync event to fire immediately after
   // register (and cleanup up the sync registrations).  Prevent the sync

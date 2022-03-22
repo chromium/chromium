@@ -58,9 +58,8 @@ void SharedWorkerConnectorImpl::Connect(
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
             host->GetStoragePartition(), std::move(blob_url_token));
   }
-  SharedWorkerServiceImpl* service =
-      static_cast<StoragePartitionImpl*>(host->GetStoragePartition())
-          ->GetSharedWorkerService();
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      host->GetStoragePartition()->GetSharedWorkerService());
   service->ConnectToWorker(
       client_render_frame_host_id_, std::move(info), std::move(client),
       creation_context_type, blink::MessagePortChannel(std::move(message_port)),

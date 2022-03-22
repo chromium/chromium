@@ -128,7 +128,8 @@ void BackgroundServiceHandler::SetRenderer(int process_host_id,
     return;
   }
 
-  devtools_context_ = storage_partition->GetDevToolsBackgroundServicesContext();
+  devtools_context_ = static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition->GetDevToolsBackgroundServicesContext());
   DCHECK(devtools_context_);
 }
 

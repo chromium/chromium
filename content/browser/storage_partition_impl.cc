@@ -59,6 +59,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
+#include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
@@ -85,6 +86,7 @@
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1541,7 +1543,7 @@ DedicatedWorkerServiceImpl* StoragePartitionImpl::GetDedicatedWorkerService() {
   return dedicated_worker_service_.get();
 }
 
-SharedWorkerServiceImpl* StoragePartitionImpl::GetSharedWorkerService() {
+SharedWorkerService* StoragePartitionImpl::GetSharedWorkerService() {
   DCHECK(initialized_);
   return shared_worker_service_.get();
 }
@@ -1616,7 +1618,7 @@ StoragePartitionImpl::GetGeneratedCodeCacheContext() {
   return generated_code_cache_context_.get();
 }
 
-DevToolsBackgroundServicesContextImpl*
+DevToolsBackgroundServicesContext*
 StoragePartitionImpl::GetDevToolsBackgroundServicesContext() {
   DCHECK(initialized_);
   return devtools_background_services_context_.get();

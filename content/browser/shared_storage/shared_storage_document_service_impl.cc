@@ -8,6 +8,7 @@
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {

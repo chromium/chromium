@@ -200,7 +200,8 @@ BackgroundFetchTestBase::CreateBackgroundFetchRegistrationData(
 
 scoped_refptr<DevToolsBackgroundServicesContextImpl>
 BackgroundFetchTestBase::devtools_context() {
-  return storage_partition()->GetDevToolsBackgroundServicesContext();
+  return static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition()->GetDevToolsBackgroundServicesContext());
 }
 
 }  // namespace content

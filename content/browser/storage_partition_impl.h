@@ -24,22 +24,22 @@
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
-#include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
-#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/trust_tokens.mojom.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -58,6 +58,7 @@ class IsolationInfo;
 namespace content {
 
 class AggregationServiceImpl;
+class AttributionManagerImpl;
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
@@ -65,8 +66,8 @@ class BroadcastChannelService;
 class BucketContext;
 class CacheStorageControlWrapper;
 class ComputePressureManager;
-class AttributionManagerImpl;
 class CookieStoreManager;
+class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
 class FontAccessManagerImpl;
@@ -84,6 +85,7 @@ class PrefetchURLLoaderService;
 class PushMessagingContext;
 class QuotaContext;
 class SharedStorageWorkletHostManager;
+class SharedWorkerServiceImpl;
 
 class CONTENT_EXPORT StoragePartitionImpl
     : public StoragePartition,
@@ -174,9 +176,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
   ServiceWorkerContextWrapper* GetServiceWorkerContext() override;
   DedicatedWorkerServiceImpl* GetDedicatedWorkerService() override;
-  SharedWorkerServiceImpl* GetSharedWorkerService() override;
+  SharedWorkerService* GetSharedWorkerService() override;
   GeneratedCodeCacheContext* GetGeneratedCodeCacheContext() override;
-  DevToolsBackgroundServicesContextImpl* GetDevToolsBackgroundServicesContext()
+  DevToolsBackgroundServicesContext* GetDevToolsBackgroundServicesContext()
       override;
   ContentIndexContextImpl* GetContentIndexContext() override;
   NativeIOContext* GetNativeIOContext() override;

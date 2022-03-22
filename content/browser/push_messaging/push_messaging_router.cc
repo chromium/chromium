@@ -103,8 +103,9 @@ void StartServiceWorkerForDispatch(ServiceWorkerMetrics::EventType event_type,
           partition->GetServiceWorkerContext());
   auto devtools_context =
       base::WrapRefCounted<DevToolsBackgroundServicesContextImpl>(
-          service_worker_context->storage_partition()
-              ->GetDevToolsBackgroundServicesContext());
+          static_cast<DevToolsBackgroundServicesContextImpl*>(
+              service_worker_context->storage_partition()
+                  ->GetDevToolsBackgroundServicesContext()));
 
   FindServiceWorkerRegistration(
       event_type, std::move(service_worker_context),
