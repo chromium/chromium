@@ -242,6 +242,14 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
   ShowAndVerifyUi();
 }
 
+// RecoveryInstallGlobalError only exists on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
+                       InvokeUi_RecoveryInstallGlobalError) {
+  ShowAndVerifyUi();
+}
+#endif
+
 // Signin global errors never happon on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest, InvokeUi_SigninGlobalError) {
