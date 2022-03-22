@@ -7,8 +7,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -75,65 +73,34 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
   auto data_source = CreateFileDataSource(
       remote.InitWithNewPipeAndPassReceiver(), std::move(file));
 
-  absl::optional<std::vector<uint8_t>> result_data;
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        /*offset=*/0, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(/*offset=*/0, test_length, future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(first16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(first16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length - test_length, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length - test_length, test_length,
+                      future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(last16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(last16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length - test_length, test_length + 1,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length - test_length, test_length + 1,
+                      future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(last16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(last16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length + 1, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length + 1, test_length, future.GetCallback());
+    ASSERT_FALSE(future.Get());
   }
-  ASSERT_FALSE(result_data);
 
   {
     base::test::TestFuture<int64_t> future;

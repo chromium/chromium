@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,47 +148,28 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
 
-  web_package::mojom::BundleMetadataPtr metadata_result;
-  {
-    base::RunLoop run_loop;
-    parser.ParseMetadata(base::BindOnce(
-        [](base::OnceClosure quit_closure,
-           web_package::mojom::BundleMetadataPtr* metadata_result,
-           web_package::mojom::BundleMetadataPtr metadata,
-           web_package::mojom::BundleMetadataParseErrorPtr error) {
-          EXPECT_TRUE(metadata);
-          EXPECT_FALSE(error);
-          if (metadata)
-            *metadata_result = std::move(metadata);
-          std::move(quit_closure).Run();
-        },
-        run_loop.QuitClosure(), &metadata_result));
-    run_loop.Run();
-  }
-  ASSERT_TRUE(metadata_result);
-  const auto& requests = metadata_result->requests;
+  base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
+                         web_package::mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  parser.ParseMetadata(metadata_future.GetCallback());
+  auto [metadata, metadata_error] = metadata_future.Take();
+  ASSERT_TRUE(metadata);
+  ASSERT_FALSE(metadata_error);
+  const auto& requests = metadata->requests;
   ASSERT_EQ(requests.size(), 4u);
 
   std::map<std::string, web_package::mojom::BundleResponsePtr> responses;
   for (auto& entry : requests) {
-    base::RunLoop run_loop;
-    parser.ParseResponse(
-        entry.second->response_locations[0]->offset,
-        entry.second->response_locations[0]->length,
-        base::BindOnce(
-            [](base::OnceClosure quit_closure, const std::string url,
-               std::map<std::string, web_package::mojom::BundleResponsePtr>*
-                   responses,
-               web_package::mojom::BundleResponsePtr response,
-               web_package::mojom::BundleResponseParseErrorPtr error) {
-              EXPECT_TRUE(response);
-              EXPECT_FALSE(error);
-              if (response)
-                responses->insert({url, std::move(response)});
-              std::move(quit_closure).Run();
-            },
-            run_loop.QuitClosure(), entry.first.spec(), &responses));
-    run_loop.Run();
+    base::test::TestFuture<web_package::mojom::BundleResponsePtr,
+                           web_package::mojom::BundleResponseParseErrorPtr>
+        response_future;
+    parser.ParseResponse(entry.second->response_locations[0]->offset,
+                         entry.second->response_locations[0]->length,
+                         response_future.GetCallback());
+    auto [response, response_error] = response_future.Take();
+    ASSERT_TRUE(response);
+    ASSERT_FALSE(response_error);
+    responses.insert({entry.first.spec(), std::move(response)});
   }
 
   ASSERT_TRUE(responses["https://test.example.org/"]);

@@ -7,8 +7,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -97,15 +97,11 @@ ParseBundleResult ParseBundle(TestDataSource* data_source,
                               std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
-  base::RunLoop run_loop;
-  ParseBundleResult result;
-  parser.ParseMetadata(base::BindLambdaForTesting(
-      [&result, &run_loop](mojom::BundleMetadataPtr metadata,
-                           mojom::BundleMetadataParseErrorPtr error) {
-        result = std::make_pair(std::move(metadata), std::move(error));
-        run_loop.QuitClosure().Run();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<mojom::BundleMetadataPtr,
+                         mojom::BundleMetadataParseErrorPtr>
+      future;
+  parser.ParseMetadata(future.GetCallback());
+  ParseBundleResult result = future.Take();
   EXPECT_TRUE((result.first && !result.second) ||
               (!result.first && result.second));
   return result;
@@ -149,18 +145,12 @@ mojom::BundleResponsePtr ParseResponse(
                               std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
-  base::RunLoop run_loop;
-  mojom::BundleResponsePtr result;
-  parser.ParseResponse(
-      location->offset, location->length,
-      base::BindLambdaForTesting(
-          [&result, &run_loop](mojom::BundleResponsePtr response,
-                               mojom::BundleResponseParseErrorPtr error) {
-            result = std::move(response);
-            run_loop.QuitClosure().Run();
-          }));
-  run_loop.Run();
-  return result;
+  base::test::TestFuture<mojom::BundleResponsePtr,
+                         mojom::BundleResponseParseErrorPtr>
+      future;
+  parser.ParseResponse(location->offset, location->length,
+                       future.GetCallback());
+  return std::get<0>(future.Take());
 }
 
 cbor::Value CreateByteString(base::StringPiece s) {
