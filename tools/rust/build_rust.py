@@ -184,6 +184,7 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
                         if gcc_toolchain_path else '')
   # These affect how C/C++ files are compiled, but not Rust libs/exes.
   RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
+  RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
   RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
   # These affect how Rust crates are built. A `-Clink-arg=<foo>` arg passes foo
   # to the clang invocation used to link.
