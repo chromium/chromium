@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_MANAGER_MAC_H_
 #define CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_MANAGER_MAC_H_
 
+#include <Security/Security.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -195,8 +197,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
 
-  static base::ScopedCFTypeRef<CFStringRef>
-      BuildAppShimRequirementStringFromFrameworkRequirementString(CFStringRef);
+  static base::ScopedCFTypeRef<SecRequirementRef>
+      BuildAppShimRequirementFromFrameworkRequirementString(CFStringRef);
 
  protected:
   typedef std::set<Browser*> BrowserSet;

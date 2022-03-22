@@ -1489,52 +1489,61 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
 
 TEST_F(AppShimManagerTest,
        BuildAppShimRequirementStringFromFrameworkRequirementStringTest) {
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
-                "leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR(
-              "cdhash H\"daa66a31aeb85125bd2459bebf548b2dff5ee83b\" or cdhash "
-              "H\"a8e5300bf9223510fc5b107b23de0d12f419acac\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("malformed")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"\"\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"")));
-  CFStringRef framework_req = CFSTR(
+  EXPECT_TRUE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
+  EXPECT_TRUE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf[subject.OU] = \"42HXZ8M8AV\"")));
+
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("cdhash H\"daa66a31aeb85125bd2459bebf548b2dff5ee83b\" or cdhash "
+            "H\"a8e5300bf9223510fc5b107b23de0d12f419acac\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("malformed")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"\"\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"")));
+
+  // Crafted to pass all our requirement checks but fail
+  // SecRequirementCreateWithString().
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and fail here")));
+  // Missing quote in the post "identifier" portion which is caught by
+  // SecRequirementCreateWithString().
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf = Hc9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
+
+  CFStringRef framework_req_string = CFSTR(
       "identifier \"com.google.Chrome.framework\" and anchor "
       "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
       "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
       "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
-  base::ScopedCFTypeRef<CFStringRef> got_req =
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          framework_req);
+  base::ScopedCFTypeRef<SecRequirementRef> got_req(
+      manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+          framework_req_string));
   ASSERT_TRUE(got_req);
-  CFStringRef want_req = CFSTR(
+  base::ScopedCFTypeRef<CFStringRef> got_req_string;
+  ASSERT_EQ(SecRequirementCopyString(got_req, kSecCSDefaultFlags,
+                                     got_req_string.InitializeInto()),
+            errSecSuccess);
+  CFStringRef want_req_string = CFSTR(
       "identifier \"app_mode_loader\" and anchor "
       "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
       "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
       "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
-  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req),
-            base::SysCFStringRefToUTF8(want_req));
+  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string),
+            base::SysCFStringRefToUTF8(want_req_string));
 }
 
 }  // namespace apps
