@@ -24,6 +24,15 @@ buildflag_header("buildflags") {
   ]
 }
 
+if (is_android) {
+  generate_stubs("mediacodec_stubs") {
+    extra_header = "android/mediacodec.fragment"
+    sigs = [ "android/mediacodec.sigs" ]
+    output_name = "android/mediacodec_stubs"
+    deps = [ "//base" ]
+  }
+}
+
 component("gpu") {
   output_name = "media_gpu"
 
@@ -133,6 +142,7 @@ component("gpu") {
       "android/maybe_render_early_manager.h",
       "android/media_codec_video_decoder.cc",
       "android/media_codec_video_decoder.h",
+      "android/ndk_constants.cc",
       "android/pooled_shared_image_video_provider.cc",
       "android/pooled_shared_image_video_provider.h",
       "android/promotion_hint_aggregator.h",
@@ -146,8 +156,15 @@ component("gpu") {
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
     ]
+    defines += [
+      # We need to reference functions and constants from NDK API levels
+      # beyond the one Chromium compiles with by default.
+      # Therefore relax the verification of functions and constants.
+      "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+    ]
     libs += [ "android" ]
     deps += [
+      ":mediacodec_stubs",
       "//gpu/ipc/common:android_image_reader_utils",
 
       # TODO(crbug.com/789435): This can be removed once CdmManager is removed.
