@@ -481,6 +481,12 @@
       "F9AEB1FBFD91AFB39A16798763FB4707E5EB71C2",  // http://crbug.com/1256996
       "A547E19FA29B6371C507EFF218B4948AF7B8597B"   // http://crbug.com/1256996
     ]
+  },
+  {
+    "channel": "dev",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos", "lacros"],
+    "session_types": ["kiosk"]
   }],
   "networkingPrivate": {
     "channel": "stable",
