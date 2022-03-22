@@ -38,7 +38,7 @@ constexpr float kTodayRoundedRadius = 20.f;
 
 // Radius of the small dot we display on a CalendarDateCellView if events are
 // present for that day.
-constexpr float kEventsPresentRoundedRadius = 2.f;
+constexpr float kEventsPresentRoundedRadius = 1.f;
 
 // The gap padding between the date and the indicator.
 constexpr int kGapBetweenDateAndIndicator = 1;
@@ -267,13 +267,21 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   if (GetEventNumber() == 0)
     return;
 
+  const SkColor indicator_color =
+      is_selected_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                         AshColorProvider::BaseLayerType::kTransparent90)
+                   : AshColorProvider::Get()->GetControlsLayerColor(
+                         AshColorProvider::ControlsLayerType::kFocusRingColor);
+
+  const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
+                                              : kEventsPresentRoundedRadius;
+
   cc::PaintFlags indicator_paint_flags;
-  indicator_paint_flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  indicator_paint_flags.setColor(indicator_color);
   indicator_paint_flags.setStyle(cc::PaintFlags::kFill_Style);
   indicator_paint_flags.setAntiAlias(true);
   canvas->DrawCircle(GetEventsPresentIndicatorCenterPosition(),
-                     kEventsPresentRoundedRadius, indicator_paint_flags);
+                     indicator_radius, indicator_paint_flags);
 }
 
 int CalendarDateCellView::GetEventNumber() {
