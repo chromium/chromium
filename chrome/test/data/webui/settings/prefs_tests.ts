@@ -53,10 +53,7 @@ suite('CrSettingsPrefs', function() {
     for (const testCase of prefsTestCases) {
       const expectedValue =
           JSON.stringify(testCase.nextValues[testCaseValueIndex]);
-      const prefsObject =
-          (fakeApi.prefs as
-           {[key: string]:
-                chrome.settingsPrivate.PrefObject})[testCase.pref.key]!;
+      const prefsObject = fakeApi.prefs[testCase.pref.key]!;
       const actualValue = JSON.stringify(prefsObject.value);
       assertEquals(expectedValue, actualValue, testCase.pref.key);
     }
@@ -107,9 +104,7 @@ suite('CrSettingsPrefs', function() {
     // Test that each pref has been successfully copied to the Polymer
     // |prefs| property.
     for (const key in fakeApi.prefs) {
-      const expectedPref =
-          (fakeApi.prefs as
-           {[key: string]: chrome.settingsPrivate.PrefObject})[key];
+      const expectedPref = fakeApi.prefs[key];
       const actualPref = getPrefFromKey(prefs.prefs, key);
       assertNotEquals(undefined, actualPref);
       assertEquals(JSON.stringify(expectedPref), JSON.stringify(actualPref));

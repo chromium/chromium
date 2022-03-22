@@ -3,31 +3,30 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting,ContentSettingProvider,ContentSettingsTypes,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {CategoryDefaultSettingElement,ContentSetting,ContentSettingProvider,ContentSettingsTypes,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSiteSettingsPrefs,SiteSettingsPref} from './test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for category-default-setting. */
 suite('CategoryDefaultSetting', function() {
   /**
    * A site settings category created before each test.
-   * @type {SiteSettingsCategory}
    */
-  let testElement;
+  let testElement: CategoryDefaultSettingElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy = null;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   // Initialize a site-settings-category before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('category-default-setting');
     testElement.subOptionLabel = 'test label';
     document.body.appendChild(testElement);
@@ -63,21 +62,22 @@ suite('CategoryDefaultSetting', function() {
   // Verifies that the widget works as expected for a given |category|, initial
   // |prefs|, and given expectations.
   function testCategoryEnabled(
-      testElement, category, prefs, expectedEnabled,
-      expectedEnabledContentSetting) {
+      testElement: CategoryDefaultSettingElement,
+      category: ContentSettingsTypes, prefs: SiteSettingsPref,
+      expectedEnabled: boolean, expectedEnabledContentSetting: ContentSetting) {
     testElement.category = category;
     browserProxy.reset();
     browserProxy.setPrefs(prefs);
 
     return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then(function(contentType) {
+        .then(function(contentType: ContentSettingsTypes) {
           assertEquals(category, contentType);
           assertEquals(expectedEnabled, testElement.categoryEnabled);
           browserProxy.resetResolver('setDefaultValueForContentType');
           testElement.$.toggle.click();
           return browserProxy.whenCalled('setDefaultValueForContentType');
         })
-        .then(function(args) {
+        .then(function(args: ContentSettingsTypes[]) {
           assertEquals(category, args[0]);
           const oppositeSetting = expectedEnabled ?
               ContentSetting.BLOCK :
@@ -90,9 +90,8 @@ suite('CategoryDefaultSetting', function() {
   test('categoryEnabled correctly represents prefs (enabled)', function() {
     /**
      * An example pref where the location category is enabled.
-     * @type {SiteSettingsPref}
      */
-    const prefsLocationEnabled = createSiteSettingsPrefs(
+    const prefsLocationEnabled: SiteSettingsPref = createSiteSettingsPrefs(
         [
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
@@ -109,9 +108,8 @@ suite('CategoryDefaultSetting', function() {
   test('categoryEnabled correctly represents prefs (disabled)', function() {
     /**
      * An example pref where the location category is disabled.
-     * @type {SiteSettingsPref}
      */
-    const prefsLocationDisabled = createSiteSettingsPrefs(
+    const prefsLocationDisabled: SiteSettingsPref = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
               setting: ContentSetting.BLOCK,
@@ -155,110 +153,6 @@ suite('CategoryDefaultSetting', function() {
         });
   });
 
-  function testTristateCategory(
-      prefs, category, thirdState, secondaryToggleId) {
-    testElement.category = category;
-    browserProxy.setPrefs(prefs);
-
-    let secondaryToggle = null;
-
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then(function(contentType) {
-          flush();
-          secondaryToggle = testElement.$$(secondaryToggleId);
-          assertTrue(!!secondaryToggle);
-
-          assertEquals(category, contentType);
-          assertTrue(testElement.categoryEnabled);
-          assertFalse(secondaryToggle.disabled);
-          assertTrue(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          testElement.$.toggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check THIRD_STATE => BLOCK transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(ContentSetting.BLOCK, args[1]);
-          assertFalse(testElement.categoryEnabled);
-          assertTrue(secondaryToggle.disabled);
-          assertTrue(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          testElement.$.toggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check BLOCK => THIRD_STATE transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(thirdState, args[1]);
-          assertTrue(testElement.categoryEnabled);
-          assertFalse(secondaryToggle.disabled);
-          assertTrue(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          secondaryToggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check THIRD_STATE => ALLOW transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(ContentSetting.ALLOW, args[1]);
-          assertTrue(testElement.categoryEnabled);
-          assertFalse(secondaryToggle.disabled);
-          assertFalse(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          testElement.$.toggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check ALLOW => BLOCK transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(ContentSetting.BLOCK, args[1]);
-          assertFalse(testElement.categoryEnabled);
-          assertTrue(secondaryToggle.disabled);
-          assertFalse(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          testElement.$.toggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check BLOCK => ALLOW transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(ContentSetting.ALLOW, args[1]);
-          assertTrue(testElement.categoryEnabled);
-          assertFalse(secondaryToggle.disabled);
-          assertFalse(secondaryToggle.checked);
-
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          secondaryToggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args) {
-          // Check ALLOW => THIRD_STATE transition succeeded.
-          flush();
-
-          assertEquals(category, args[0]);
-          assertEquals(thirdState, args[1]);
-          assertTrue(testElement.categoryEnabled);
-          assertFalse(secondaryToggle.disabled);
-          assertTrue(secondaryToggle.checked);
-        });
-  }
-
   test('test popups content setting default value', function() {
     testElement.category = ContentSettingsTypes.POPUPS;
     return browserProxy.getDefaultValueForContentType(testElement.category)
@@ -269,7 +163,7 @@ suite('CategoryDefaultSetting', function() {
   });
 
   test('test popups content setting in BLOCKED state', function() {
-    const prefs = createSiteSettingsPrefs(
+    const prefs: SiteSettingsPref = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.POPUPS, createDefaultContentSetting({
               setting: ContentSetting.BLOCK,
@@ -282,7 +176,7 @@ suite('CategoryDefaultSetting', function() {
   });
 
   test('test popups content setting in ALLOWED state', function() {
-    const prefs = createSiteSettingsPrefs(
+    const prefs: SiteSettingsPref = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.POPUPS, createDefaultContentSetting({
               setting: ContentSetting.ALLOW,

@@ -171,6 +171,7 @@ export {AllSitesElement} from './site_settings/all_sites.js';
 // <if expr="chromeos">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>
+export {CategoryDefaultSettingElement} from './site_settings/category_default_setting.js';
 export {CategorySettingExceptionsElement} from './site_settings/category_setting_exceptions.js';
 export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';

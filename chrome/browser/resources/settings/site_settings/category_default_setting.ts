@@ -41,6 +41,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './category_default_setting.html.js';
@@ -56,10 +57,17 @@ enum SubOptionMode {
   NONE = 'none',
 }
 
+export interface CategoryDefaultSettingElement {
+  $: {
+    toggle: SettingsToggleButtonElement,
+  };
+}
+
 const CategoryDefaultSettingElementBase =
     WebUIListenerMixin(SiteSettingsMixin(PolymerElement));
 
-class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
+export class CategoryDefaultSettingElement extends
+    CategoryDefaultSettingElementBase {
   static get is() {
     return 'category-default-setting';
   }
@@ -287,6 +295,13 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
     return (subOptionMode === SubOptionMode.PREF);
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'category-default-setting': CategoryDefaultSettingElement;
+  }
+}
+
 
 customElements.define(
     CategoryDefaultSettingElement.is, CategoryDefaultSettingElement);

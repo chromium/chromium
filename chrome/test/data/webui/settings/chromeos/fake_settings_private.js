@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {FakeChromeEvent} from '../fake_chrome_event.js';
+import {FakeChromeEvent} from '../../fake_chrome_event.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
@@ -18,12 +18,12 @@ function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-  /**
-   * Fake of chrome.settingsPrivate API. Use by setting
-   * CrSettingsPrefs.deferInitialization to true, then passing a
-   * FakeSettingsPrivate to settings-prefs#initialize().
-   * @implements {SettingsPrivate}
-   */
+/**
+ * Fake of chrome.settingsPrivate API. Use by setting
+ * CrSettingsPrefs.deferInitialization to true, then passing a
+ * FakeSettingsPrivate to settings-prefs#initialize().
+ * @implements {SettingsPrivate}
+ */
 export class FakeSettingsPrivate {
   /** @param {Array<!chrome.settingsPrivate.PrefObject>=} opt_initialPrefs */
   constructor(opt_initialPrefs) {
