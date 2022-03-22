@@ -843,6 +843,13 @@ class FencedFrameTreeBrowserTest
         {/* disabled_features */});
   }
 
+  net::Error InvalidUrnError() {
+    return GetParam() ==
+                   blink::features::FencedFramesImplementationType::kShadowDOM
+               ? net::ERR_ABORTED
+               : net::ERR_INVALID_URL;
+  }
+
   // This is needed because `TestFrameNavigationObserver` doesn't work properly
   // from within the context of a fenced frame's FrameTree. See the comments
   // below.
@@ -1193,7 +1200,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
   observer.Wait();
-  EXPECT_EQ(observer.last_net_error_code(), net::ERR_ABORTED);
+  EXPECT_EQ(observer.last_net_error_code(), InvalidUrnError());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2151,7 +2158,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckInvalidUrnError) {
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
-      fenced_frame_root_node, urn_uuid, navigate_urn_script, net::ERR_ABORTED);
+      fenced_frame_root_node, urn_uuid, navigate_urn_script, InvalidUrnError());
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,

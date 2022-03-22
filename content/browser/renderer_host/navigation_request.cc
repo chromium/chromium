@@ -1955,13 +1955,20 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components
     // directly.
     pending_ad_components_map_ = std::move(pending_ad_components_map);
+  } else {
+    if (frame_tree_node_->IsFencedFrameRoot() &&
+        blink::features::IsFencedFramesMPArchBased()) {
+      StartNavigation();
+      OnRequestFailedInternal(
+          network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
+          false /* skip_throttles */, absl::nullopt /* error_page_content*/,
+          false /* collapse_frame */);
+      return;
+    }
+    // else (for iframes and shadow-dom fenced frames) try the urn as-is to
+    // maintain existing behavior which will abort the navigation as the url is
+    // unresolvable.
   }
-  // else try the urn as-is to maintain existing behavior which will abort the
-  // navigation as the url is unresolvable.
-  //
-  // TODO(crbug.com/1123606): Consider switching to proper error page behavior
-  // after fenced frames switched to MPArch for which error page isolation is
-  // enabled.
 
   BeginNavigationImpl();
   // DO NOT ADD CODE after this. The previous call to BeginNavigationImpl may
