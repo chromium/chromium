@@ -37,7 +37,7 @@ class FencedFrameTestHelper {
                                      const GURL& url,
                                      net::Error expected_error_code = net::OK);
 
-  // This method is similar to `FencedFrameTestUtil::CreateFencedFrame` but
+  // This method is similar to `FencedFrameTestHelper::CreateFencedFrame` but
   // doesn't wait until the fenced frame completes loading.
   void CreateFencedFrameAsync(RenderFrameHost* fenced_frame_parent_rfh,
                               const GURL& url);
