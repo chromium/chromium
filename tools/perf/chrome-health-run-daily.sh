@@ -18,13 +18,13 @@ cd ~/chromium/src
 git checkout -b branch_$releaseBranchNo branch-heads/$releaseBranchNo
 git checkout -f branch_$releaseBranchNo
 git pull
-headOfRelease=`git whatchanged --format="%H" -1 | head -n 1`
+headOfRelease=`git whatchanged --grep="Incrementing VERSION" --format="%H" -1 | head -n 1`
 echo $headOfRelease
 
 # main branch
 git checkout -f main
 git pull
-headOfMain=`git whatchanged --format="%H" -1 | head -n 1`
+headOfMain=`git whatchanged --grep="Updating trunk VERSION" --format="%H" -1 | head -n 1`
 
 # M vs. M-1
 pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health
