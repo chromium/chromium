@@ -118,6 +118,9 @@ void CameraPreviewView::Layout() {
           capture_mode::kSpaceBetweenResizeButtonAndCameraPreview,
       resize_button_size.width(), resize_button_size.height());
   resize_button_->SetBoundsRect(bounds);
+
+  GetWidget()->GetLayer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(height() / 2.f));
 }
 
 void CameraPreviewView::OnResizeButtonPressed() {

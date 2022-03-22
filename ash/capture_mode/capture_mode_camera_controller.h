@@ -170,8 +170,9 @@ class ASH_EXPORT CaptureModeCameraController
   void SetCameraPreviewSnapPosition(CameraPreviewSnapPosition value);
 
   // Updates the bounds of `camera_preview_widget_` to current
-  // GetPreviewWidgetBounds() when necessary.
-  void MaybeUpdatePreviewWidgetBounds();
+  // GetPreviewWidgetBounds() when necessary. If `animate` is set to true, the
+  // widget will animate to the new target bounds.
+  void MaybeUpdatePreviewWidgetBounds(bool animate = false);
 
   // Handles drag events forwarded from `camera_preview_view_`.
   void StartDraggingPreview(const gfx::PointF& screen_location);

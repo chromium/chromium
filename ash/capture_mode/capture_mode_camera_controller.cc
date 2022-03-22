@@ -40,6 +40,10 @@ namespace {
 // `selected_camera_`.
 constexpr base::TimeDelta kDisconnectionGracePeriod = base::Seconds(10);
 
+// The animation duration for the bounds change operation on the camera preview.
+constexpr base::TimeDelta kCameraResizeAnimationDuration =
+    base::Milliseconds(150);
+
 // Defines a map type to map a camera model ID (or display name) to the number
 // of cameras of that model that are currently connected.
 using ModelIdToCountMap = std::map<std::string, int>;
@@ -284,7 +288,7 @@ void CaptureModeCameraController::SetCameraPreviewSnapPosition(
   MaybeUpdatePreviewWidgetBounds();
 }
 
-void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds() {
+void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
   if (!camera_preview_widget_)
     return;
 
@@ -297,10 +301,18 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds() {
   }
 
   const gfx::Rect target_bounds = GetPreviewWidgetBounds();
-  camera_preview_widget_->SetBounds(target_bounds);
-  ui::Layer* layer = camera_preview_widget_->GetLayer();
-  layer->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(target_bounds.height() / 2.f));
+
+  if (animate) {
+    ui::Layer* layer = camera_preview_widget_->GetLayer();
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(kCameraResizeAnimationDuration)
+        .SetBounds(layer, target_bounds, gfx::Tween::FAST_OUT_SLOW_IN_3);
+  } else {
+    camera_preview_widget_->SetBounds(target_bounds);
+  }
 }
 
 void CaptureModeCameraController::StartDraggingPreview(
@@ -371,7 +383,7 @@ void CaptureModeCameraController::ToggleCameraPreviewSize() {
   preferred_size = gfx::ScaleToFlooredSize(preferred_size, scale_factor);
   camera_preview_view_->SetPreferredSize(preferred_size);
 
-  MaybeUpdatePreviewWidgetBounds();
+  MaybeUpdatePreviewWidgetBounds(/*animate=*/true);
 }
 
 void CaptureModeCameraController::OnDevicesChanged(
@@ -475,8 +487,6 @@ void CaptureModeCameraController::RefreshCameraPreview() {
         std::make_unique<CameraPreviewView>(this, preview_bounds.size()));
     ui::Layer* layer = camera_preview_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
-    layer->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(preview_bounds.height() / 2.f));
   }
   camera_preview_widget_->Show();
 }
