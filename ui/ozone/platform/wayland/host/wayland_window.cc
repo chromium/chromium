@@ -1006,10 +1006,17 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsPx(
 
 bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px,
                                             float scale_factor) {
+  // TODO(crbug.com/1307501): Optimize this to be less expensive. Maybe
+  // precompute in pixels for configure events. pending_configures_ can have 10s
+  // of elements in it for several frames under some conditions.
   auto result = std::find_if(
       pending_configures_.begin(), pending_configures_.end(),
-      [&size_px, &scale_factor](auto& configure) {
-        return gfx::ScaleToRoundedRect(configure.bounds_dip, scale_factor)
+      [this, &size_px, &scale_factor](auto& configure) {
+        // Since size_px comes from SetBounds via UpdateVisualSize in
+        // WaylandTopLevelWindow, we also need to adjust it for bounds to see if
+        // we match.
+        return AdjustBoundsToConstraintsPx(
+                   gfx::ScaleToRoundedRect(configure.bounds_dip, scale_factor))
                        .size() == size_px &&
                configure.set;
       });
