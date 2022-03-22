@@ -95,7 +95,7 @@ class TurnSyncOnHelperShutdownNotifierFactory
 // User input handler for the signin confirmation dialog.
 class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
  public:
-  explicit SigninDialogDelegate(signin::SigninChoiceCallback callback)
+  explicit SigninDialogDelegate(TurnSyncOnHelper::SigninChoiceCallback callback)
       : callback_(std::move(callback)) {
     DCHECK(callback_);
   }
@@ -105,21 +105,21 @@ class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
 
   void OnCancelSignin() override {
     DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
   }
 
   void OnContinueSignin() override {
     DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_CONTINUE);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
 
   void OnSigninWithNewProfile() override {
     DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
+    std::move(callback_).Run(TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
   }
 
  private:
-  signin::SigninChoiceCallback callback_;
+  TurnSyncOnHelper::SigninChoiceCallback callback_;
 };
 
 struct CurrentTurnSyncOnHelperUserData : public base::SupportsUserData::Data {
@@ -263,54 +263,53 @@ bool TurnSyncOnHelper::HasCanOfferSigninError() {
   return true;
 }
 
-void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
+void TurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
   switch (choice) {
-    case signin::SIGNIN_CHOICE_NEW_PROFILE:
+    case SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(
           base::UserMetricsAction("Signin_ImportDataPrompt_DontImport"));
       TurnSyncOnWithProfileMode(ProfileMode::NEW_PROFILE);
       break;
-    case signin::SIGNIN_CHOICE_CONTINUE:
+    case SIGNIN_CHOICE_CONTINUE:
       base::RecordAction(
           base::UserMetricsAction("Signin_ImportDataPrompt_ImportData"));
       TurnSyncOnWithProfileMode(ProfileMode::CURRENT_PROFILE);
       break;
-    case signin::SIGNIN_CHOICE_CANCEL:
+    case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(
           base::UserMetricsAction("Signin_ImportDataPrompt_Cancel"));
       AbortAndDelete();
       break;
-    case signin::SIGNIN_CHOICE_SIZE:
+    case SIGNIN_CHOICE_SIZE:
       NOTREACHED();
       AbortAndDelete();
       break;
   }
 }
 
-void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
-    signin::SigninChoice choice) {
-  enterprise_account_confirmed_ = choice == signin::SIGNIN_CHOICE_CONTINUE ||
-                                  choice == signin::SIGNIN_CHOICE_NEW_PROFILE;
+void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(SigninChoice choice) {
+  enterprise_account_confirmed_ =
+      choice == SIGNIN_CHOICE_CONTINUE || choice == SIGNIN_CHOICE_NEW_PROFILE;
   signin_util::RecordEnterpriseProfileCreationUserChoice(
       profile_, enterprise_account_confirmed_);
 
   switch (choice) {
-    case signin::SIGNIN_CHOICE_CANCEL:
+    case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(
           base::UserMetricsAction("Signin_EnterpriseAccountPrompt_Cancel"));
       AbortAndDelete();
       break;
-    case signin::SIGNIN_CHOICE_CONTINUE:
+    case SIGNIN_CHOICE_CONTINUE:
       base::RecordAction(
           base::UserMetricsAction("Signin_EnterpriseAccountPrompt_ImportData"));
       LoadPolicyWithCachedCredentials();
       break;
-    case signin::SIGNIN_CHOICE_NEW_PROFILE:
+    case SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(base::UserMetricsAction(
           "Signin_EnterpriseAccountPrompt_DontImportData"));
       CreateNewSignedInProfile();
       break;
-    case signin::SIGNIN_CHOICE_SIZE:
+    case SIGNIN_CHOICE_SIZE:
       NOTREACHED();
       AbortAndDelete();
       break;

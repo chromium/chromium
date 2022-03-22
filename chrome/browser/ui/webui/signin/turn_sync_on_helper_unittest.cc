@@ -31,7 +31,6 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -93,10 +92,10 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      signin::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      signin::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
@@ -387,9 +386,10 @@ class TurnSyncOnHelperTest : public testing::Test {
     login_error_ = error;
   }
 
-  void OnShowMergeSyncDataConfirmation(const std::string& previous_email,
-                                       const std::string& new_email,
-                                       signin::SigninChoiceCallback callback) {
+  void OnShowMergeSyncDataConfirmation(
+      const std::string& previous_email,
+      const std::string& new_email,
+      TurnSyncOnHelper::SigninChoiceCallback callback) {
     EXPECT_FALSE(sync_confirmation_shown_);
     EXPECT_FALSE(previous_email.empty());
     EXPECT_FALSE(new_email.empty());
@@ -405,7 +405,7 @@ class TurnSyncOnHelperTest : public testing::Test {
 
   void OnShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      signin::SigninChoiceCallback callback) {
+      TurnSyncOnHelper::SigninChoiceCallback callback) {
     EXPECT_FALSE(sync_confirmation_shown_);
     EXPECT_FALSE(account_info.email.empty());
     EXPECT_TRUE(enterprise_confirmation_email_.empty())
@@ -472,8 +472,10 @@ class TurnSyncOnHelperTest : public testing::Test {
   enum SyncDisabledConfirmation { kNotShown, kShownManaged, kShownNonManaged };
 
   // Delegate behavior.
-  signin::SigninChoice merge_data_choice_ = signin::SIGNIN_CHOICE_CANCEL;
-  signin::SigninChoice enterprise_choice_ = signin::SIGNIN_CHOICE_CANCEL;
+  TurnSyncOnHelper::SigninChoice merge_data_choice_ =
+      TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
+  TurnSyncOnHelper::SigninChoice enterprise_choice_ =
+      TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
   LoginUIService::SyncConfirmationUIClosedResult sync_confirmation_result_ =
       LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
   bool run_delegate_callbacks_ = true;
@@ -533,14 +535,14 @@ void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
 void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   test_fixture_->OnShowMergeSyncDataConfirmation(previous_email, new_email,
                                                  std::move(callback));
 }
 
 void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   test_fixture_->OnShowEnterpriseAccountConfirmation(account_info,
                                                      std::move(callback));
 }
@@ -744,7 +746,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
-  merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   // Signin flow.
@@ -762,7 +764,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
-  merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   user_policy_signin_service()->set_dm_token("foo");
@@ -788,7 +790,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompletedForNextProfileCreated();
   // Configure the test.
-  merge_data_choice_ = signin::SIGNIN_CHOICE_NEW_PROFILE;
+  merge_data_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
   // Signin flow.
@@ -828,7 +830,7 @@ TEST_F(TurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
@@ -850,7 +852,7 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = signin::SIGNIN_CHOICE_NEW_PROFILE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
@@ -874,7 +876,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = signin::SIGNIN_CHOICE_NEW_PROFILE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin);
@@ -908,7 +910,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin);
@@ -1174,7 +1176,7 @@ TEST_F(TurnSyncOnHelperTest, ProfileDeletion) {
   expected_sync_confirmation_shown_ = true;
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  enterprise_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
+  enterprise_choice_ = TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 

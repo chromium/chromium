@@ -52,29 +52,29 @@ Browser* EnsureBrowser(Browser* browser, Profile* profile) {
 
 // Converts SigninEmailConfirmationDialog::Action to
 // TurnSyncOnHelper::SigninChoice and invokes |callback| on it.
-void OnEmailConfirmation(signin::SigninChoiceCallback callback,
+void OnEmailConfirmation(TurnSyncOnHelper::SigninChoiceCallback callback,
                          SigninEmailConfirmationDialog::Action action) {
   DCHECK(callback) << "This function should be called only once.";
   switch (action) {
     case SigninEmailConfirmationDialog::START_SYNC:
-      std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
       return;
     case SigninEmailConfirmationDialog::CREATE_NEW_USER:
-      std::move(callback).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE);
       return;
     case SigninEmailConfirmationDialog::CLOSE:
-      std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
+      std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
       return;
   }
   NOTREACHED();
 }
 
 void OnProfileCheckComplete(const AccountInfo& account_info,
-                            signin::SigninChoiceCallback callback,
+                            TurnSyncOnHelper::SigninChoiceCallback callback,
                             base::WeakPtr<Browser> browser,
                             bool prompt_for_new_profile) {
   if (!browser) {
-    std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
+    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
     return;
   }
   ProfileAttributesEntry* entry =
@@ -84,14 +84,15 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
   browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, GenerateNewProfileColor(entry).color,
       base::BindOnce(
-          [](signin::SigninChoiceCallback callback, Browser* browser,
+          [](TurnSyncOnHelper::SigninChoiceCallback callback, Browser* browser,
              bool prompt_for_new_profile, bool create_profile) {
             browser->signin_view_controller()->CloseModalSignin();
             std::move(callback).Run(
-                create_profile ? prompt_for_new_profile
-                                     ? signin::SIGNIN_CHOICE_NEW_PROFILE
-                                     : signin::SIGNIN_CHOICE_CONTINUE
-                               : signin::SIGNIN_CHOICE_CANCEL);
+                create_profile
+                    ? prompt_for_new_profile
+                          ? TurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
+                          : TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
+                    : TurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
           },
           std::move(callback), browser.get(), prompt_for_new_profile));
 }
@@ -123,7 +124,7 @@ void TurnSyncOnHelperDelegateImpl::
 
 void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
   // Checking whether to show the prompt for a new profile is sometimes
   // asynchronous.
@@ -154,7 +155,7 @@ void TurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
 void TurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   DCHECK(callback);
   browser_ = EnsureBrowser(browser_, profile_);
   browser_->signin_view_controller()->ShowModalSigninEmailConfirmationDialog(

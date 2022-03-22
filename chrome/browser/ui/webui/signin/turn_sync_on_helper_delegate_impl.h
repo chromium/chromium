@@ -34,7 +34,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
  protected:
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      signin::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   virtual void ShouldEnterpriseConfirmationPromptForNewProfile(
       Profile* profile,
       base::OnceCallback<void(bool)> callback);
@@ -45,7 +45,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      signin::SigninChoiceCallback callback) override;
+      TurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;

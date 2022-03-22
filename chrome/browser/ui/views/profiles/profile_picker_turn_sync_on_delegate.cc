@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 
 namespace {
@@ -105,21 +104,21 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
 void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   // A brand new profile cannot have a conflict in sync accounts.
   NOTREACHED();
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
-    signin::SigninChoiceCallback callback) {
+    TurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_account_ = true;
   // In this flow, the enterprise confirmation is replaced by an enterprise
   // welcome screen. Knowing if sync is enabled is needed for the screen. Thus,
   // it is delayed until either ShowSyncConfirmation() or
   // ShowSyncDisabledConfirmation() gets called.
   // Assume an implicit "Continue" here.
-  std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
+  std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   return;
 }
 
