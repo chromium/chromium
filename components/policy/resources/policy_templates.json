@@ -5606,7 +5606,7 @@
     {
       'name': 'ExtensionAllowedTypes',
       'owners': ['benwells@chromium.org', 'file://extensions/OWNERS'],
-      'type': 'list',
+      'type': 'string-enum-list',
       'schema': {
         'type': 'array',
         'items': {
@@ -5622,6 +5622,38 @@
         },
         'id': 'ExtensionAllowedTypes',
       },
+      'items': [
+        {
+          'name': 'extension',
+          'value': 'extension',
+          'caption': '''Extension''',
+        },
+        {
+          'name': 'theme',
+          'value': 'theme',
+          'caption': '''Theme''',
+        },
+        {
+          'name': 'user_script',
+          'value': 'user_script',
+          'caption': '''User script''',
+        },
+        {
+          'name': 'hosted_app',
+          'value': 'hosted_app',
+          'caption': '''Hosted app''',
+        },
+        {
+          'name': 'legacy_packaged_app',
+          'value': 'legacy_packaged_app',
+          'caption': '''Legacy packaged app''',
+        },
+        {
+          'name': 'platform_app',
+          'value': 'platform_app',
+          'caption': '''Platform app''',
+        },
+      ],
       'supported_on': ['chrome.*:25-', 'chrome_os:25-'],
       'features': {
         'dynamic_refresh': True,
