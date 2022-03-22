@@ -141,6 +141,7 @@ source_set("unit_tests") {
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",
+    "policy_conversions_client_unittest.cc",
     "policy_error_map_unittest.cc",
     "signin/user_cloud_signin_restriction_policy_fetcher_unittest.cc",
     "url_allowlist_policy_handler_unittest.cc",

@@ -56,6 +56,10 @@ void PolicyConversionsClient::EnableUserPolicies(bool enabled) {
   user_policies_enabled_ = enabled;
 }
 
+void PolicyConversionsClient::SetDropDefaultValues(bool enabled) {
+  drop_default_values_enabled_ = enabled;
+}
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void PolicyConversionsClient::SetUpdaterPolicies(
     std::unique_ptr<PolicyMap> policies) {
@@ -366,6 +370,8 @@ Value PolicyConversionsClient::GetPolicyValues(
     const std::string& policy_name = entry.first;
     const PolicyMap::Entry& policy = entry.second;
     if (policy.scope == POLICY_SCOPE_USER && !user_policies_enabled_)
+      continue;
+    if (policy.IsDefaultValue() && drop_default_values_enabled_)
       continue;
     base::Value value =
         GetPolicyValue(policy_name, policy, deprecated_policies,
