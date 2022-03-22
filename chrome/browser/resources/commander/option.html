@@ -2,12 +2,14 @@
   :host {
     align-items: center;
     box-sizing: border-box;
+    color: var(--google-grey-900);
     cursor: default;
     display: flex;
     height: 48px;
     padding: 1em;
     width: 100%;
   }
+
 
   :host(:hover) {
     background-color: #eee;
@@ -17,8 +19,12 @@
     background-color: rgba(var(--google-grey-900-rgb), 6%);
   }
 
+  :host(.focused) #focus-indicator {
+    display: block;
+  }
+
   .annotation {
-    color: var(--google-blue-600);
+    color: var(--google-grey-700);
     margin-inline-start: auto;
   }
 
@@ -32,17 +38,21 @@
   }
 
   .match {
-    font-weight: 700;
-    text-decoration: underline;
+    font-weight: 600;
   }
 
-  iron-icon {
-    flex-shrink: 0;
-    margin-inline-end: .5em;
-    --iron-icon-fill-color: --google-grey-800;
+  #focus-indicator {
+    background-color: var(--google-blue-600);
+    border-radius: 3px;
+    display: none;
+    height: 48px;
+    margin-inline-start: -16px; /*-1 * (host padding + width / 2)*/
+    position: absolute;
+    width: 6px;
   }
+
 </style>
-<iron-icon icon="[[computeIcon_(model.entity)]]"></iron-icon>
+<div id="focus-indicator"></div>
 <span class="title">
 <template is="dom-repeat"
     items="[[computeMatchSpans_(model.title, model.matchedRanges)]]"

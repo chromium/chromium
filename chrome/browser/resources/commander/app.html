@@ -1,6 +1,7 @@
 <style>
   :host {
     background-color: #fff;
+    font-size: 13px;
     overflow: hidden;
   }
 
@@ -9,7 +10,7 @@
     box-sizing: border-box;
     height: 100%;
     margin:0;
-    padding: 1em 1em 1em .5em;
+    padding: 1em 1em 1em 0;
     width: 100%;
   }
 
@@ -26,7 +27,7 @@
   }
 
   #noResults {
-    border-top: 1px #aaa;
+    border-top: 1px solid var(--google-grey-300);
     box-sizing: border-box;
     font-weight: bold;
     height: 48px;
@@ -47,18 +48,23 @@
     white-space: nowrap;
   }
 
+  commander-option:first-child {
+    border-top: 1px solid var(--google-grey-300);
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
 
   iron-icon {
     margin-inline-start: 1em;
-    --iron-icon-fill-color: #999;
+    margin-top: 0.5em;
+    --iron-icon-fill-color: var(--google-grey-600);
   }
 </style>
 <div id="inputRow" aria-owns="options"
     aria-expanded="[[computeExpanded_(options_)]]" role="combobox" >
-  <iron-icon icon="cr:search"></iron-icon>
+  <iron-icon icon="commander-icons:chrome"></iron-icon>
   <template is="dom-if" if="[[computeShowChip_(promptText_)]]">
     <div class="chip">[[promptText_]]</div>
   </template>
