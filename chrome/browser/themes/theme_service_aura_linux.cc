@@ -15,12 +15,12 @@
 
 namespace {
 
-class SystemThemeX11 : public CustomThemeSupplier {
+class SystemThemeLinux : public CustomThemeSupplier {
  public:
-  explicit SystemThemeX11(PrefService* pref_service);
+  explicit SystemThemeLinux(PrefService* pref_service);
 
-  SystemThemeX11(const SystemThemeX11&) = delete;
-  SystemThemeX11& operator=(const SystemThemeX11&) = delete;
+  SystemThemeLinux(const SystemThemeLinux&) = delete;
+  SystemThemeLinux& operator=(const SystemThemeLinux&) = delete;
 
   // Overridden from CustomThemeSupplier:
   void StartUsingTheme() override;
@@ -32,54 +32,54 @@ class SystemThemeX11 : public CustomThemeSupplier {
   bool HasCustomImage(int id) const override;
 
  private:
-  ~SystemThemeX11() override;
+  ~SystemThemeLinux() override;
 
   // These pointers are not owned by us.
   views::LinuxUI* const linux_ui_;
   PrefService* const pref_service_;
 };
 
-SystemThemeX11::SystemThemeX11(PrefService* pref_service)
+SystemThemeLinux::SystemThemeLinux(PrefService* pref_service)
     : CustomThemeSupplier(NATIVE_X11),
       linux_ui_(views::LinuxUI::instance()),
       pref_service_(pref_service) {}
 
-void SystemThemeX11::StartUsingTheme() {
+void SystemThemeLinux::StartUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, true);
   // Have the former theme notify its observers of change.
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
-void SystemThemeX11::StopUsingTheme() {
+void SystemThemeLinux::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
   if (linux_ui_)
     linux_ui_->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
 }
 
-bool SystemThemeX11::GetTint(int id, color_utils::HSL* hsl) const {
+bool SystemThemeLinux::GetTint(int id, color_utils::HSL* hsl) const {
   return linux_ui_ && linux_ui_->GetTint(id, hsl);
 }
 
-bool SystemThemeX11::GetColor(int id, SkColor* color) const {
+bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
   return linux_ui_ && linux_ui_->GetColor(id, color,
                                           pref_service_->GetBoolean(
                                               prefs::kUseCustomChromeFrame));
 }
 
-bool SystemThemeX11::GetDisplayProperty(int id, int* result) const {
+bool SystemThemeLinux::GetDisplayProperty(int id, int* result) const {
   return linux_ui_ && linux_ui_->GetDisplayProperty(id, result);
 }
 
-gfx::Image SystemThemeX11::GetImageNamed(int id) const {
+gfx::Image SystemThemeLinux::GetImageNamed(int id) const {
   return gfx::Image();
 }
 
-bool SystemThemeX11::HasCustomImage(int id) const {
+bool SystemThemeLinux::HasCustomImage(int id) const {
   return false;
 }
 
-SystemThemeX11::~SystemThemeX11() {}
+SystemThemeLinux::~SystemThemeLinux() {}
 
 }  // namespace
 
@@ -90,7 +90,7 @@ bool ThemeServiceAuraLinux::ShouldInitWithSystemTheme() const {
 }
 
 void ThemeServiceAuraLinux::UseSystemTheme() {
-  SetCustomDefaultTheme(new SystemThemeX11(profile()->GetPrefs()));
+  SetCustomDefaultTheme(new SystemThemeLinux(profile()->GetPrefs()));
 }
 
 bool ThemeServiceAuraLinux::IsSystemThemeDistinctFromDefaultTheme() const {
