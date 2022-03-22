@@ -30,9 +30,11 @@
 namespace gpu {
 
 bool SharedImageRepresentationGLOzoneShared::BeginAccess(
+    GLenum mode,
     SharedImageBackingOzone* ozone_backing) {
+  bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing->BeginAccess(&fences);
+  ozone_backing->BeginAccess(readonly, &fences);
 
   if (ozone_backing->NeedsSynchronization()) {
     // ChromeOS VMs don't support gpu fences, so there is no good way to
@@ -176,7 +178,8 @@ gles2::Texture* SharedImageRepresentationGLTextureOzone::GetTexture() {
 bool SharedImageRepresentationGLTextureOzone::BeginAccess(GLenum mode) {
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
-  return SharedImageRepresentationGLOzoneShared::BeginAccess(ozone_backing());
+  return SharedImageRepresentationGLOzoneShared::BeginAccess(
+      current_access_mode_, ozone_backing());
 }
 
 void SharedImageRepresentationGLTextureOzone::EndAccess() {
@@ -247,7 +250,8 @@ bool SharedImageRepresentationGLTexturePassthroughOzone::BeginAccess(
     GLenum mode) {
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
-  return SharedImageRepresentationGLOzoneShared::BeginAccess(ozone_backing());
+  return SharedImageRepresentationGLOzoneShared::BeginAccess(
+      current_access_mode_, ozone_backing());
 }
 
 void SharedImageRepresentationGLTexturePassthroughOzone::EndAccess() {

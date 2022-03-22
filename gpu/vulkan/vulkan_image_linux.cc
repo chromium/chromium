@@ -43,6 +43,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     return false;
   }
 
+  queue_family_index_ = queue_family_index;
   auto& native_pixmap_handle = gmb_handle.native_pixmap_handle;
 
   // 2 plane images are ok, they just need ycbcr set up.

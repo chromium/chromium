@@ -58,7 +58,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
       << "Multi-plane formats are not supported.";
 
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing()->BeginAccess(&fences);
+  ozone_backing()->BeginAccess(/*readonly=*/false, &fences);
 
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};

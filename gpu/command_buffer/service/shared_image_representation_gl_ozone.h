@@ -21,7 +21,7 @@ namespace gpu {
 
 class SharedImageRepresentationGLOzoneShared {
  public:
-  static bool BeginAccess(SharedImageBackingOzone* ozone_backing);
+  static bool BeginAccess(GLenum mode, SharedImageBackingOzone* ozone_backing);
   static void EndAccess(GLenum mode, SharedImageBackingOzone* ozone_backing);
   static absl::optional<GLuint> SetupTexture(
       scoped_refptr<gl::GLImageNativePixmap> image,

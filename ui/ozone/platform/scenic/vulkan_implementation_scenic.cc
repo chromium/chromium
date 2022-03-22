@@ -284,6 +284,7 @@ VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
+  image->set_queue_family_index(VK_QUEUE_FAMILY_EXTERNAL);
   image->set_native_pixmap(collection->CreateNativePixmap(
       gmb_handle.native_pixmap_handle.buffer_index));
   return image;

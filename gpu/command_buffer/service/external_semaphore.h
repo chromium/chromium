@@ -50,6 +50,9 @@ class GPU_GLES2_EXPORT ExternalSemaphore {
   bool is_valid() const { return context_provider_ && handle_.is_valid(); }
   SemaphoreHandle handle() { return handle_.Duplicate(); }
 
+  // Take ownership of semaphore handle and then calls Reset().
+  SemaphoreHandle TakeSemaphoreHandle();
+
  private:
   raw_ptr<viz::VulkanContextProvider> context_provider_ = nullptr;
   VkSemaphore semaphore_ = VK_NULL_HANDLE;

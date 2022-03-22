@@ -84,20 +84,17 @@ class SharedImageBackingOzone::SharedImageRepresentationVaapiOzone
 class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
     : public SharedImageRepresentationOverlay {
  public:
-  SharedImageRepresentationOverlayOzone(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      scoped_refptr<gl::GLImageNativePixmap> image)
-      : SharedImageRepresentationOverlay(manager, backing, tracker),
-        gl_image_(image) {}
+  SharedImageRepresentationOverlayOzone(SharedImageManager* manager,
+                                        SharedImageBacking* backing,
+                                        MemoryTypeTracker* tracker)
+      : SharedImageRepresentationOverlay(manager, backing, tracker) {}
   ~SharedImageRepresentationOverlayOzone() override = default;
 
  private:
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
-    ozone_backing->BeginAccess(&fences);
+    ozone_backing->BeginAccess(/*readonly=*/true, &fences);
     for (auto& fence : fences) {
       acquire_fences->emplace_back(std::move(fence));
     }
@@ -105,9 +102,21 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
     auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
-    ozone_backing->EndAccess(true, std::move(release_fence));
+    ozone_backing->EndAccess(/*readonly=*/true, std::move(release_fence));
   }
-  gl::GLImage* GetGLImage() override { return gl_image_.get(); }
+
+  gl::GLImage* GetGLImage() override {
+    if (!gl_image_) {
+      gfx::BufferFormat buffer_format = viz::BufferFormat(format());
+      auto pixmap =
+          static_cast<SharedImageBackingOzone*>(backing())->GetNativePixmap();
+      gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
+          pixmap->GetBufferSize(), buffer_format);
+      gl_image_->Initialize(pixmap);
+    }
+
+    return gl_image_.get();
+  }
 
   scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
@@ -222,12 +231,8 @@ SharedImageBackingOzone::ProduceSkia(
 std::unique_ptr<SharedImageRepresentationOverlay>
 SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {
-  gfx::BufferFormat buffer_format = viz::BufferFormat(format());
-  auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(
-      pixmap_->GetBufferSize(), buffer_format);
-  image->Initialize(pixmap_);
-  return std::make_unique<SharedImageRepresentationOverlayOzone>(
-      manager, this, tracker, image);
+  return std::make_unique<SharedImageRepresentationOverlayOzone>(manager, this,
+                                                                 tracker);
 }
 
 SharedImageBackingOzone::SharedImageBackingOzone(
@@ -352,8 +357,27 @@ bool SharedImageBackingOzone::NeedsSynchronization() const {
          (usage() & SHARED_IMAGE_USAGE_SCANOUT);
 }
 
-void SharedImageBackingOzone::BeginAccess(
+bool SharedImageBackingOzone::BeginAccess(
+    bool readonly,
     std::vector<gfx::GpuFenceHandle>* fences) {
+  if (is_write_in_progress_) {
+    DLOG(ERROR) << "Unable to begin read or write access because another write "
+                   "access is in progress";
+    return false;
+  }
+
+  if (reads_in_progress_ && !readonly) {
+    DLOG(ERROR)
+        << "Unable to begin write access because a read access is in progress";
+    return false;
+  }
+
+  if (readonly) {
+    ++reads_in_progress_;
+  } else {
+    is_write_in_progress_ = true;
+  }
+
   if (NeedsSynchronization()) {
     // Technically, we don't need to wait on other read fences when performing
     // a read access, but like in the case of |ExternalVkImageBacking|, reading
@@ -366,11 +390,21 @@ void SharedImageBackingOzone::BeginAccess(
       write_fence_ = gfx::GpuFenceHandle();
     }
   }
+
+  return true;
 }
 
 void SharedImageBackingOzone::EndAccess(bool readonly,
                                         gfx::GpuFenceHandle fence) {
-  if (NeedsSynchronization() && !fence.is_null()) {
+  if (readonly) {
+    DCHECK_GT(reads_in_progress_, 0u);
+    --reads_in_progress_;
+  } else {
+    DCHECK(is_write_in_progress_);
+    is_write_in_progress_ = false;
+  }
+
+  if (NeedsSynchronization()) {
     if (readonly) {
       read_fences_.push_back(std::move(fence));
     } else {
@@ -378,6 +412,8 @@ void SharedImageBackingOzone::EndAccess(bool readonly,
       DCHECK(read_fences_.empty());
       write_fence_ = std::move(fence);
     }
+  } else {
+    DCHECK(fence.is_null());
   }
 }
 

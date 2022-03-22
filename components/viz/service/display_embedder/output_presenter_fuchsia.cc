@@ -15,7 +15,6 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
-#include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -63,7 +62,6 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
 
  private:
   VulkanContextProvider* vulkan_context_provider_ = nullptr;
-  gpu::ExternalSemaphorePool* exernal_semaphore_pool_ = nullptr;
 
   std::unique_ptr<gpu::SharedImageRepresentationOverlay>
       overlay_representation_;
@@ -87,8 +85,6 @@ bool PresenterImageFuchsia::Initialize(
     const gpu::Mailbox& mailbox,
     SkiaOutputSurfaceDependency* deps) {
   vulkan_context_provider_ = deps->GetVulkanContextProvider();
-  exernal_semaphore_pool_ =
-      deps->GetSharedContextState()->external_semaphore_pool();
 
   if (!Image::Initialize(factory, representation_factory, mailbox, deps))
     return false;
@@ -123,18 +119,12 @@ void PresenterImageFuchsia::BeginPresent() {
     }
   }
 
-  auto* vulkan_implementation =
-      vulkan_context_provider_->GetVulkanImplementation();
-  VkDevice vk_device =
-      vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
-
   // A new release fence is generated for each present. The fence for the last
   // present gets waited on before giving up read access to the shared image.
-  gpu::SemaphoreHandle handle = vulkan_implementation->GetSemaphoreHandle(
-      vk_device,
-      exernal_semaphore_pool_->GetOrCreateSemaphore().GetVkSemaphore());
-  DCHECK(handle.is_valid());
-  read_end_fence_.owned_event = zx::event(handle.TakeHandle());
+  gpu::ExternalSemaphore semaphore =
+      gpu::ExternalSemaphore::Create(vulkan_context_provider_);
+  DCHECK(semaphore.is_valid());
+  read_end_fence_ = semaphore.TakeSemaphoreHandle().ToGpuFenceHandle();
 
   scoped_overlay_read_access_->SetReleaseFence(read_end_fence_.Clone());
 }

@@ -187,4 +187,11 @@ VkSemaphore ExternalSemaphore::GetVkSemaphore() {
   return semaphore_;
 }
 
+SemaphoreHandle ExternalSemaphore::TakeSemaphoreHandle() {
+  SemaphoreHandle handle = std::move(handle_);
+  DCHECK(!handle_.is_valid());
+  Reset();
+  return handle;
+}
+
 }  // namespace gpu
