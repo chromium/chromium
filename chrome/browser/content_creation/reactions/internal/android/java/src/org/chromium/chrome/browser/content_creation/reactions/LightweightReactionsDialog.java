@@ -49,10 +49,21 @@ public class LightweightReactionsDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mCurrentOrientation = getResources().getConfiguration().orientation;
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
+        // There is a known issue where if the app was sent to the background and some OS settings
+        // were changed (battery saver, dark / light theme, etc), then when the app comes back to
+        // the foreground the dialog gets partially recreated. At that point the scene coordinator
+        // is null, which is an unrecoverable state. If this happens, dismiss the dialog to avoid
+        // a crash. A {@link Dialog} still needs to be returned by this method, so return an empty
+        // one.
+        if (mSceneCoordinator == null) {
+            dismiss();
+            return builder.create();
+        }
+
+        mCurrentOrientation = getResources().getConfiguration().orientation;
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         setBackgroundImage();
         mSceneCoordinator.setSceneViews(mContentView.findViewById(R.id.lightweight_reactions_scene),
