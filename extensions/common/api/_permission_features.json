@@ -681,6 +681,12 @@
         "E24F1786D842E91E74C27929B0B3715A4689A473",  // CryptoToken
         "A28C9619C4C41306FA5236FB4D94DA812F504DE8"   // CryptoToken (dev)
       ]
+    },
+    {
+      "channel": "dev",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos", "lacros"],
+      "session_types": ["kiosk"]
     }
   ],
   "usbDevices": [
@@ -701,6 +707,12 @@
         "4839A26B29CD1BD021B2E126EF6D28C9CB84018B",  // http://crbug.com/710541
         "8F44FBB4474CCDF23450B166C9E83E85BD03AE24"   // http://crbug.com/710541
       ]
+    },
+    {
+      "channel": "dev",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos", "lacros"],
+      "session_types": ["kiosk"]
     }
   ],
   "videoCapture": [
