@@ -40,6 +40,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.skipPostLoginScreens",
               &OobeTestAPIHandler::SkipPostLoginScreens);
   AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
+  AddCallback("OobeTestApi.showGaiaDialog",
+              &OobeTestAPIHandler::ShowGaiaDialog);
 }
 
 void OobeTestAPIHandler::Initialize() {}
@@ -88,6 +90,10 @@ void OobeTestAPIHandler::LoginAsGuest() {
   UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
   ash::ExistingUserController::current_controller()->Login(context,
                                                            SigninSpecifics());
+}
+
+void OobeTestAPIHandler::ShowGaiaDialog() {
+  LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
 }
 
 }  // namespace chromeos

@@ -219,7 +219,8 @@ cr.define('cr.ui', function() {
      * Shows the add user dialog. Used in browser tests.
      */
     static showAddUserForTesting() {
-      chrome.send('showAddUser');
+      // TODO(crbug.com/1100910): migrate logic to dedicated test api.
+      chrome.send('OobeTestApi.showGaiaDialog');
     }
 
     /**

@@ -574,13 +574,5 @@ std::string GetAttributeExpression(
   return result;
 }
 
-std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
-    const std::string& oobe_screen_id) {
-  std::string js = "Oobe.getInstance().currentScreen.id=='$ScreenId'";
-  base::ReplaceSubstringsAfterOffset(&js, 0, "$ScreenId", oobe_screen_id);
-  std::string description = "OOBE Screen is " + oobe_screen_id;
-  return OobeJS().CreateWaiterWithDescription(js, description);
-}
-
 }  // namespace test
 }  // namespace ash

@@ -237,7 +237,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void HandleIdentifierEntered(const std::string& account_identifier);
 
   void HandleAuthExtensionLoaded();
-  void HandleShowAddUser(const base::ListValue* args);
   void HandleGetIsSamlUserPasswordless(const std::string& callback_id,
                                        const std::string& typed_email,
                                        const std::string& gaia_id);
@@ -258,8 +257,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // Called when password is entered for authentication during login.
   void HandlePasswordEntered();
-
-  void OnShowAddUser();
 
   // Really handles the complete login message.
   void DoCompleteLogin(const std::string& gaia_id,

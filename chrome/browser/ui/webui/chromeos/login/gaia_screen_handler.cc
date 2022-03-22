@@ -670,7 +670,6 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("identifierEntered", &GaiaScreenHandler::HandleIdentifierEntered);
   AddCallback("authExtensionLoaded",
               &GaiaScreenHandler::HandleAuthExtensionLoaded);
-  AddRawCallback("showAddUser", &GaiaScreenHandler::HandleShowAddUser);
   AddCallback("getIsSamlUserPasswordless",
               &GaiaScreenHandler::HandleGetIsSamlUserPasswordless);
   AddCallback("setIsFirstSigninStep",
@@ -942,23 +941,6 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   }
 }
 
-void GaiaScreenHandler::HandleShowAddUser(const base::ListValue* args) {
-  // TODO(xiaoyinh): Add trace event for gaia webui in views login screen.
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
-      "ui", "ShowAddUser",
-      TRACE_ID_WITH_SCOPE(LoginDisplayHostWebUI::kShowLoginWebUIid,
-                          TRACE_ID_GLOBAL(1)));
-
-  std::string email;
-  // `args` can be null if it's OOBE.
-  if (args && !args->GetListDeprecated().empty() &&
-      args->GetListDeprecated()[0].is_string()) {
-    email = args->GetListDeprecated()[0].GetString();
-  }
-  populated_account_id_ = AccountId::FromUserEmail(email);
-  OnShowAddUser();
-}
-
 void GaiaScreenHandler::HandleGetIsSamlUserPasswordless(
     const std::string& callback_id,
     const std::string& typed_email,
@@ -1044,10 +1026,6 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
 void GaiaScreenHandler::HandlePasswordEntered() {
   base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests",
                                 login_request_variant_);
-}
-
-void GaiaScreenHandler::OnShowAddUser() {
-  LoginDisplayHost::default_host()->ShowGaiaDialog(populated_account_id_);
 }
 
 void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
@@ -1246,7 +1224,7 @@ void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
     SubmitLoginFormForTest();
   } else if (frame_state() != GaiaScreenHandler::FRAME_STATE_LOADING &&
              !auth_extension_being_loaded_) {
-    OnShowAddUser();
+    LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
   }
 }
 

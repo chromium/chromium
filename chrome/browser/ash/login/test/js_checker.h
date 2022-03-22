@@ -263,23 +263,16 @@ std::string GetAttributeExpression(
     const std::string& attribute,
     std::initializer_list<base::StringPiece> element_ids);
 
-// Creates a waiter that allows to wait until screen with `oobe_screen_id` is
-// shown in webui.
-[[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
-    const std::string& oobe_screen_id);
-
 }  // namespace test
 }  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace chromeos {
-namespace test {
+namespace chromeos::test {
 using ::ash::test::ExecuteOobeJS;
 using ::ash::test::GetOobeElementPath;
 using ::ash::test::OobeJS;
 using ::ash::test::UIPath;
-}  // namespace test
-}  // namespace chromeos
+}  // namespace chromeos::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_

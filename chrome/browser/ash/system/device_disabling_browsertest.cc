@@ -135,8 +135,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableDuringNormalOperation) {
   MarkDisabledAndWaitForPolicyFetch();
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
@@ -162,31 +160,11 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // Mark the device as disabled and wait until cros settings update.
   MarkDisabledAndWaitForPolicyFetch();
 
-  // When the ephemeral users policy is enabled, Chrome OS removes any non-owner
-  // cryptohomes on startup. At the end of that process, JavaScript attempts to
-  // show the login screen. Simulate this.
-  const LoginDisplayHost* host = LoginDisplayHost::default_host();
-  ASSERT_TRUE(host);
-  content::WebContents* web_contents = host->GetOobeWebContents();
-  ASSERT_TRUE(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "Oobe.showAddUserForTesting();"));
-
-  // The login profile is scrubbed before attempting to show the login screen.
-  // Wait for the scrubbing to finish.
-  base::RunLoop run_loop;
-  ProfileHelper::Get()->ClearSigninProfile(run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Verify that the login screen was not shown and the device disabled screen
-  // is still being shown instead.
-
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   // Disconnect from the fake Ethernet network.
+  const LoginDisplayHost* host = LoginDisplayHost::default_host();
   OobeUI* const oobe_ui = host->GetOobeUI();
   ASSERT_TRUE(oobe_ui);
   const scoped_refptr<NetworkStateInformer> network_state_informer =
@@ -207,8 +185,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // screen is still being shown instead.
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 }
 
 class DeviceDisablingWithUsersTest : public DeviceDisablingTest {
@@ -297,8 +273,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }

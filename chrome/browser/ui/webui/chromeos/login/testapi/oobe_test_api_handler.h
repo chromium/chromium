@@ -29,6 +29,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void AdvanceToScreen(const std::string& screen);
   void SkipPostLoginScreens();
   void LoginAsGuest();
+  void ShowGaiaDialog();
 };
 
 }  // namespace chromeos
