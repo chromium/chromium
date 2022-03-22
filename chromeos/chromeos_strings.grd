@@ -1182,6 +1182,21 @@ Try tapping the mic to ask me anything.
         USB touchscreen
       </message>
 
+      <message name="IDS_INPUT_DIAGNOSTICS_TESTER_DONE" desc="Text for a button the user clicks to indicate that they are done testing an input device, causing the dialog to close.">
+        Done
+      </message>
+
+      <!-- Input diagnostics: keyboard tester -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK" desc="Text offering a link to the help center page for a keyboard testing UI.">
+        For more help, go to the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Help Center<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_INSTRUCTION" desc="Instruction text in a keyboard testing UI. Appears above a visual representation showing the keys currently pressed on the keyboard.">
+        Type any key on your keyboard. You can press up to 4 keys at the same time.
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE" desc="Title for a dialog allowing the user to test their keyboard.">
+        Test your keyboard
+      </message>
+
       <!-- Ash keyboard diagram ARIA labels -->
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_NOT_PRESSED" desc="ARIA label that describes a key that has not yet been pressed, as part of a keyboard testing UI. Key names could be single letters like Q, or a phrase like 'Down arrow'.">
         <ph name="KEY_NAME">$1<ex>Q</ex></ph> key not pressed
