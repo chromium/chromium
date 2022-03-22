@@ -113,8 +113,8 @@ class CommanderAppElement extends PolymerElement {
     if (viewModel.action === Action.DISPLAY_RESULTS) {
       this.options_ = viewModel.options || [];
       this.resultSetId_ = viewModel.resultSetId;
-      this.showNoResults_ =
-          this.resultSetId_ != null && this.options_.length === 0;
+      this.showNoResults_ = this.resultSetId_ != null &&
+          this.$.input.value !== '' && this.options_.length === 0;
       if (this.options_.length > 0) {
         this.focusedIndex_ = 0;
       }

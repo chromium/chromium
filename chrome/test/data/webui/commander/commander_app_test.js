@@ -139,6 +139,7 @@ suite('CommanderWebUIBrowserTest', () => {
 
   test('no results view shown if no results', async () => {
     assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+    app.$.input.value = 'A';
     webUIListenerCallback('view-model-updated', createStubViewModel(42, []));
     await flushTasks();
 
@@ -146,6 +147,15 @@ suite('CommanderWebUIBrowserTest', () => {
     assertNotEquals(null, app.shadowRoot.querySelector('#noResults'));
   });
 
+  test('no results view not shown for empty input', async () => {
+    assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+    webUIListenerCallback('view-model-updated', createStubViewModel(42, []));
+    await flushTasks();
+
+    assertEquals('', app.$.input.value);
+    assertEquals(0, app.shadowRoot.querySelectorAll('commander-option').length);
+    assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+  });
 
   test('arrow keys change selection', async () => {
     const input = app.$.input;
