@@ -22,8 +22,8 @@ Web tests should be used to accomplish one of the following goals:
 
 Note: if you are looking for a guide for the Web Platform Test, you should read
 ["Web platform tests"](./web_platform_tests.md) (WPT). This document does not
-cover WPT specific features/behaviors. The WPT is recommended today rather than
-test types mentioned below!
+cover WPT specific features/behaviors. **The WPT is recommended today rather than
+test types mentioned below!**
 
 *** promo
 If you know that Blink web tests are upstreamed to other projects, such as
