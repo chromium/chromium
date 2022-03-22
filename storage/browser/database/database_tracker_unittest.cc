@@ -103,7 +103,8 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   TestQuotaManagerProxy()
       : QuotaManagerProxy(
             /*quota_manager_impl=*/nullptr,
-            base::SequencedTaskRunnerHandle::Get()) {}
+            base::SequencedTaskRunnerHandle::Get(),
+            /*profile_path=*/base::FilePath()) {}
 
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,

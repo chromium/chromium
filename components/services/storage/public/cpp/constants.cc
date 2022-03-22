@@ -28,4 +28,22 @@ const base::FilePath::CharType kServiceWorkerDirectory[] =
 const base::FilePath::CharType kMediaLicenseDatabaseFileName[] =
     FILE_PATH_LITERAL("Media Licenses.db");
 
+// The path where File System data is persisted on disk for partitioned storage.
+const base::FilePath::CharType kFileSystemDirectory[] =
+    FILE_PATH_LITERAL("FileSystem");
+
+// The path where IndexedDB data is persisted on disk for partitioned storage.
+const base::FilePath::CharType kIndexedDbDirectory[] =
+    FILE_PATH_LITERAL("IndexedDB");
+
+// The path where CacheStorage data is persisted on disk for partitioned
+// storage.
+const base::FilePath::CharType kCacheStorageDirectory[] =
+    FILE_PATH_LITERAL("CacheStorage");
+
+// The path where ServiceWorker script data is persisted on disk for partitioned
+// storage.
+const base::FilePath::CharType kScriptCacheDirectory[] =
+    FILE_PATH_LITERAL("ScriptCache");
+
 }  // namespace storage

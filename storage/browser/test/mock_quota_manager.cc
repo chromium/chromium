@@ -50,7 +50,8 @@ MockQuotaManager::MockQuotaManager(
                    std::move(io_thread),
                    /*quota_change_callback=*/base::DoNothing(),
                    std::move(special_storage_policy),
-                   GetQuotaSettingsFunc()) {
+                   GetQuotaSettingsFunc()),
+      profile_path_(profile_path) {
   QuotaManagerImpl::SetEvictionDisabledForTesting(false);
 }
 

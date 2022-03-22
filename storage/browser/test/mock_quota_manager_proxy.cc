@@ -16,7 +16,10 @@ namespace storage {
 MockQuotaManagerProxy::MockQuotaManagerProxy(
     MockQuotaManager* quota_manager,
     scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner)
-    : QuotaManagerProxy(quota_manager, std::move(quota_manager_task_runner)),
+    : QuotaManagerProxy(
+          quota_manager,
+          std::move(quota_manager_task_runner),
+          quota_manager ? quota_manager->profile_path() : base::FilePath()),
       mock_quota_manager_(quota_manager),
       storage_accessed_count_(0),
       storage_modified_count_(0),

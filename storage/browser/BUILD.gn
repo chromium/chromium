@@ -327,6 +327,7 @@ source_set("unittests") {
     "file_system/transient_file_util_unittest.cc",
     "quota/quota_database_migrations_unittest.cc",
     "quota/quota_database_unittest.cc",
+    "quota/quota_manager_proxy_unittest.cc",
     "quota/quota_manager_unittest.cc",
     "quota/quota_settings_unittest.cc",
     "quota/quota_temporary_storage_evictor_unittest.cc",

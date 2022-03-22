@@ -15,9 +15,12 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -65,13 +68,41 @@ void DidGetStatus(
 
 QuotaManagerProxy::QuotaManagerProxy(
     QuotaManagerImpl* quota_manager_impl,
-    scoped_refptr<base::SequencedTaskRunner> quota_manager_impl_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> quota_manager_impl_task_runner,
+    const base::FilePath& profile_path)
     : quota_manager_impl_(quota_manager_impl),
       quota_manager_impl_task_runner_(
-          std::move(quota_manager_impl_task_runner)) {
+          std::move(quota_manager_impl_task_runner)),
+      profile_path_(profile_path) {
   DCHECK(quota_manager_impl_task_runner_.get());
 
   DETACH_FROM_SEQUENCE(quota_manager_impl_sequence_checker_);
+}
+
+base::FilePath QuotaManagerProxy::GetBucketPath(const BucketLocator& bucket) {
+  return profile_path_.Append(kWebStorageDirectory)
+      .AppendASCII(base::NumberToString(bucket.id.value()));
+}
+
+base::FilePath QuotaManagerProxy::GetClientBucketPath(
+    const BucketLocator& bucket,
+    QuotaClientType client_type) {
+  base::FilePath bucket_directory = GetBucketPath(bucket);
+
+  switch (client_type) {
+    case QuotaClientType::kFileSystem:
+      return bucket_directory.Append(kFileSystemDirectory);
+    case QuotaClientType::kIndexedDatabase:
+      return bucket_directory.Append(kIndexedDbDirectory);
+    case QuotaClientType::kBackgroundFetch:
+    case QuotaClientType::kServiceWorkerCache:
+      return bucket_directory.Append(kCacheStorageDirectory);
+    case QuotaClientType::kServiceWorker:
+      return bucket_directory.Append(kScriptCacheDirectory);
+    default:
+      NOTREACHED() << "Unsupported QuotaClientType";
+      return base::FilePath();
+  }
 }
 
 void QuotaManagerProxy::RegisterClient(

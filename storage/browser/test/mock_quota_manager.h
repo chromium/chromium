@@ -197,6 +197,10 @@ class MockQuotaManager : public QuotaManager {
   void DidDeleteBucketData(StatusCallback callback,
                            blink::mojom::QuotaStatusCode status);
 
+  base::FilePath profile_path() { return profile_path_; }
+
+  const base::FilePath profile_path_;
+
   BucketId::Generator bucket_id_generator_;
 
   // The list of stored buckets that have been added via AddBucket.

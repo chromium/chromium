@@ -1190,7 +1190,9 @@ QuotaManagerImpl::QuotaManagerImpl(
     : RefCountedDeleteOnSequence<QuotaManagerImpl>(io_thread),
       is_incognito_(is_incognito),
       profile_path_(profile_path),
-      proxy_(base::MakeRefCounted<QuotaManagerProxy>(this, io_thread)),
+      proxy_(base::MakeRefCounted<QuotaManagerProxy>(this,
+                                                     io_thread,
+                                                     profile_path)),
       io_thread_(std::move(io_thread)),
       db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
