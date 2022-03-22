@@ -58,6 +58,7 @@ bool SnapFlingController::HandleGestureScrollUpdate(
   }
 
   if (start_offset == target_offset) {
+    client_->ScrollEndForSnapFling(true /* did_finish */);
     state_ = State::kFinished;
     return true;
   }
