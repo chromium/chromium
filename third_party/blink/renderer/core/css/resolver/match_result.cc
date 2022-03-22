@@ -72,6 +72,11 @@ void MatchResult::FinishAddingUARules() {
 
 void MatchResult::FinishAddingUserRules() {
   DCHECK_EQ(current_origin_, CascadeOrigin::kUser);
+  current_origin_ = CascadeOrigin::kAuthorPresentationalHint;
+}
+
+void MatchResult::FinishAddingPresentationalHints() {
+  DCHECK_EQ(current_origin_, CascadeOrigin::kAuthorPresentationalHint);
   current_origin_ = CascadeOrigin::kAuthor;
 }
 

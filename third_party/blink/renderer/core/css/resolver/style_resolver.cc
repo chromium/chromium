@@ -727,16 +727,9 @@ void StyleResolver::MatchRuleSet(ElementRuleCollector& collector,
   collector.SortAndTransferMatchedRules();
 }
 
-DISABLE_CFI_PERF
-void StyleResolver::MatchAllRules(StyleResolverState& state,
-                                  ElementRuleCollector& collector,
-                                  bool include_smil_properties) {
+void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
+                                             ElementRuleCollector& collector) {
   Element& element = state.GetElement();
-  MatchUARules(element, collector);
-  MatchUserRules(collector);
-
-  // Now check author rules, beginning first with presentational attributes
-  // mapped from HTML.
   if (element.IsStyledElement() && !state.IsForPseudoElement()) {
     collector.AddElementStyleProperties(element.PresentationAttributeStyle());
 
@@ -756,6 +749,20 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
       }
     }
   }
+  collector.FinishAddingPresentationalHints();
+}
+
+DISABLE_CFI_PERF
+void StyleResolver::MatchAllRules(StyleResolverState& state,
+                                  ElementRuleCollector& collector,
+                                  bool include_smil_properties) {
+  Element& element = state.GetElement();
+  MatchUARules(element, collector);
+  MatchUserRules(collector);
+
+  // Now check author rules, beginning first with presentational attributes
+  // mapped from HTML.
+  MatchPresentationalHints(state, collector);
 
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
   MatchAuthorRules(element, element_scope_resolver, collector);
@@ -1384,6 +1391,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     set->SetProperty(property.GetCSSPropertyName(), *value);
     cascade.MutableMatchResult().FinishAddingUARules();
     cascade.MutableMatchResult().FinishAddingUserRules();
+    cascade.MutableMatchResult().FinishAddingPresentationalHints();
     cascade.MutableMatchResult().AddMatchedProperties(set);
     cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
         element.GetTreeScope());
@@ -1587,6 +1595,8 @@ void StyleResolver::CollectPseudoRulesForElement(
     MatchUserRules(collector);
   else
     collector.FinishAddingUserRules();
+
+  collector.FinishAddingPresentationalHints();
 
   if (rules_to_include & kAuthorCSSRules) {
     collector.SetSameOriginOnly(!(rules_to_include & kCrossOriginCSSRules));
@@ -1880,6 +1890,7 @@ const CSSValue* StyleResolver::ComputeValue(
   set->SetProperty(property_name, value);
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
+  cascade.MutableMatchResult().FinishAddingPresentationalHints();
   cascade.MutableMatchResult().AddMatchedProperties(set);
   cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
       element->GetTreeScope());

@@ -32,6 +32,7 @@ class MatchedPropertiesCacheTestKey {
                                 const TreeScope& tree_scope) {
     result_.FinishAddingUARules();
     result_.FinishAddingUserRules();
+    result_.FinishAddingPresentationalHints();
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.AddMatchedProperties(set);
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);

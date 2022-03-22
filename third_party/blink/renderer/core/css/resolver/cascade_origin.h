@@ -16,13 +16,15 @@ enum class CascadeOrigin : uint8_t {
   kNone = 0,
   kUserAgent = 0b0001,
   kUser = 0b0010,
-  kAuthor = 0b0011,
-  kAnimation = 0b0100,
+  // https://drafts.csswg.org/css-cascade-5/#preshint
+  kAuthorPresentationalHint = 0b0011,
+  kAuthor = 0b0100,
+  kAnimation = 0b0101,
   // The lower four bits of kAuthor, kUser and kUserAgent can be inverted to
   // efficiently produce a "cascade correct" value when compared with the values
   // specified in this enum:
   //
-  // kAuthor important:    ~0b0011 == 0b1100 (> kAnimation)
+  // kAuthor important:    ~0b0100 == 0b1011 (> kAnimation)
   // kUser important:      ~0b0010 == 0b1101 (> kAuthor important)
   // kUserAgent important: ~0b0001 == 0b1110 (> kUser important)
   //

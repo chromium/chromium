@@ -234,6 +234,10 @@ class TestCascade {
         break;
       case CascadeOrigin::kUser:
         cascade_.MutableMatchResult().FinishAddingUserRules();
+        current_origin_ = CascadeOrigin::kAuthorPresentationalHint;
+        break;
+      case CascadeOrigin::kAuthorPresentationalHint:
+        cascade_.MutableMatchResult().FinishAddingPresentationalHints();
         current_origin_ = CascadeOrigin::kAuthor;
         break;
       case CascadeOrigin::kAuthor:

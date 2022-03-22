@@ -85,6 +85,7 @@ TEST_F(CascadeExpansionTest, UARules) {
   result.AddMatchedProperties(ParseDeclarationBlock("cursor:help;top:1px"));
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -107,6 +108,7 @@ TEST_F(CascadeExpansionTest, UserRules) {
   result.AddMatchedProperties(ParseDeclarationBlock("cursor:help"));
   result.AddMatchedProperties(ParseDeclarationBlock("float:left"));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(2u, result.GetMatchedProperties().size());
@@ -134,6 +136,7 @@ TEST_F(CascadeExpansionTest, AuthorRules) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("cursor:help;top:1px"));
   result.AddMatchedProperties(ParseDeclarationBlock("float:left"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -169,6 +172,7 @@ TEST_F(CascadeExpansionTest, AllOriginRules) {
   result.FinishAddingUARules();
   result.AddMatchedProperties(ParseDeclarationBlock("cursor:help;top:1px"));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("left:1px"));
   result.AddMatchedProperties(ParseDeclarationBlock("float:left"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -231,6 +235,7 @@ TEST_F(CascadeExpansionTest, Name) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("--x:1px;--y:2px"));
   result.AddMatchedProperties(ParseDeclarationBlock("float:left"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -265,6 +270,7 @@ TEST_F(CascadeExpansionTest, Value) {
   result.AddMatchedProperties(ParseDeclarationBlock("background-color:red"));
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -285,6 +291,7 @@ TEST_F(CascadeExpansionTest, LinkOmitted) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"),
                               AddMatchedPropertiesOptions::Builder()
                                   .SetLinkMatchType(CSSSelector::kMatchVisited)
@@ -304,6 +311,7 @@ TEST_F(CascadeExpansionTest, InternalVisited) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -323,6 +331,7 @@ TEST_F(CascadeExpansionTest, InternalVisitedOmitted) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"),
                               AddMatchedPropertiesOptions::Builder()
                                   .SetLinkMatchType(CSSSelector::kMatchLink)
@@ -342,6 +351,7 @@ TEST_F(CascadeExpansionTest, InternalVisitedWithTrailer) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("color:red;left:1px"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -364,6 +374,7 @@ TEST_F(CascadeExpansionTest, All) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("all:unset"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -384,6 +395,7 @@ TEST_F(CascadeExpansionTest, InlineAll) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("left:1px;all:unset;right:1px"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -413,6 +425,7 @@ TEST_F(CascadeExpansionTest, FilterNormalNonInherited) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("font-size:1px;left:1px"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -433,6 +446,7 @@ TEST_F(CascadeExpansionTest, FilterInternalVisited) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -451,6 +465,7 @@ TEST_F(CascadeExpansionTest, FilterFirstLetter) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       AddMatchedPropertiesOptions::Builder()
@@ -469,6 +484,7 @@ TEST_F(CascadeExpansionTest, FilterFirstLine) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("display:none;font-size:1px"),
       AddMatchedPropertiesOptions::Builder()
@@ -487,6 +503,7 @@ TEST_F(CascadeExpansionTest, FilterCue) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       AddMatchedPropertiesOptions::Builder()
@@ -505,6 +522,7 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       AddMatchedPropertiesOptions::Builder()
@@ -523,6 +541,7 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("display:block;background-color:lime;"),
       AddMatchedPropertiesOptions::Builder()
@@ -544,6 +563,7 @@ TEST_F(CascadeExpansionTest, FilterAllNonInherited) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("all:unset"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -566,6 +586,7 @@ TEST_F(CascadeExpansionTest, Importance) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("cursor:help;display:block !important"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -590,6 +611,7 @@ TEST_F(CascadeExpansionTest, AllImportance) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("all:unset !important"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -611,6 +633,7 @@ TEST_F(CascadeExpansionTest, AllNonImportance) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("all:unset"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
@@ -632,6 +655,7 @@ TEST_F(CascadeExpansionTest, AllVisitedOnly) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"),
       AddMatchedPropertiesOptions::Builder()
@@ -656,6 +680,7 @@ TEST_F(CascadeExpansionTest, AllVisitedOrLink) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"),
       AddMatchedPropertiesOptions::Builder()
@@ -680,6 +705,7 @@ TEST_F(CascadeExpansionTest, AllLinkOnly) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"),
       AddMatchedPropertiesOptions::Builder()
@@ -699,6 +725,7 @@ TEST_F(CascadeExpansionTest, Position) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("left:1px;top:1px"));
   result.AddMatchedProperties(ParseDeclarationBlock("bottom:1px;right:1px"));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());

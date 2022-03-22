@@ -196,6 +196,7 @@ class CORE_EXPORT MatchResult {
 
   void FinishAddingUARules();
   void FinishAddingUserRules();
+  void FinishAddingPresentationalHints();
   void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
 
   void SetIsCacheable(bool cacheable) { is_cacheable_ = cacheable; }

@@ -113,6 +113,7 @@ CascadeOrigin TargetOriginForRevert(CascadeOrigin origin) {
       return CascadeOrigin::kNone;
     case CascadeOrigin::kUser:
       return CascadeOrigin::kUserAgent;
+    case CascadeOrigin::kAuthorPresentationalHint:
     case CascadeOrigin::kAuthor:
     case CascadeOrigin::kAnimation:
       return CascadeOrigin::kUser;
@@ -152,6 +153,7 @@ bool IsInterpolation(CascadePriority priority) {
     case CascadeOrigin::kNone:
     case CascadeOrigin::kUserAgent:
     case CascadeOrigin::kUser:
+    case CascadeOrigin::kAuthorPresentationalHint:
     case CascadeOrigin::kAuthor:
       return false;
   }
@@ -451,10 +453,11 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
           Resolve(property, e.Value(), priority, origin, resolver);
       // TODO(futhark): Use a user scope TreeScope to support tree-scoped names
       // for animations in user stylesheets.
-      const TreeScope* tree_scope =
-          origin == CascadeOrigin::kAuthor
-              ? &match_result_.ScopeFromTreeOrder(e.TreeOrder())
-              : nullptr;
+      const TreeScope* tree_scope = nullptr;
+      if (origin == CascadeOrigin::kAuthor)
+        tree_scope = &match_result_.ScopeFromTreeOrder(e.TreeOrder());
+      else if (origin == CascadeOrigin::kAuthorPresentationalHint)
+        tree_scope = &GetDocument();
       StyleBuilder::ApplyProperty(property, state_,
                                   ScopedCSSValue(*value, tree_scope));
     }
@@ -586,6 +589,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   const TreeScope* tree_scope{nullptr};
   if (origin == CascadeOrigin::kAuthor)
     tree_scope = &TreeScopeAt(match_result_, priority.GetPosition());
+  else if (origin == CascadeOrigin::kAuthorPresentationalHint)
+    tree_scope = &GetDocument();
   StyleBuilder::ApplyProperty(property, state_,
                               ScopedCSSValue(*value, tree_scope));
 }
@@ -833,6 +838,7 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
       return cssvalue::CSSUnsetValue::Create();
     case CascadeOrigin::kUserAgent:
     case CascadeOrigin::kUser:
+    case CascadeOrigin::kAuthorPresentationalHint:
     case CascadeOrigin::kAuthor:
     case CascadeOrigin::kAnimation: {
       const CascadePriority* p =

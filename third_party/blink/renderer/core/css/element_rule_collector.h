@@ -140,6 +140,9 @@ class CORE_EXPORT ElementRuleCollector {
   void FinishAddingUserRules() {
     result_.FinishAddingUserRules();
   }
+  void FinishAddingPresentationalHints() {
+    result_.FinishAddingPresentationalHints();
+  }
   void FinishAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
   }

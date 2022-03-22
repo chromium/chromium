@@ -57,6 +57,7 @@ TEST_F(MatchResultTest, CascadeOriginUserAgent) {
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 2u);
@@ -70,6 +71,7 @@ TEST_F(MatchResultTest, CascadeOriginUser) {
   result.AddMatchedProperties(PropertySet(0));
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 2u);
@@ -81,6 +83,7 @@ TEST_F(MatchResultTest, CascadeOriginAuthor) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(0));
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
@@ -97,6 +100,7 @@ TEST_F(MatchResultTest, CascadeOriginAll) {
   result.AddMatchedProperties(PropertySet(1));
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
@@ -117,6 +121,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUserAgent) {
   result.AddMatchedProperties(PropertySet(1));
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
@@ -135,6 +140,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUser) {
   result.AddMatchedProperties(PropertySet(0));
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
@@ -154,6 +160,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptAuthor) {
   result.AddMatchedProperties(PropertySet(1));
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 3u);
@@ -168,6 +175,7 @@ TEST_F(MatchResultTest, CascadeOriginTreeScopes) {
   result.FinishAddingUARules();
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
@@ -196,6 +204,7 @@ TEST_F(MatchResultTest, ExpansionsRange) {
   result.FinishAddingUARules();
   result.AddMatchedProperties(ParseDeclarationBlock("display:block"));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(ParseDeclarationBlock("left:unset"));
   result.AddMatchedProperties(ParseDeclarationBlock("top:unset"));
   result.AddMatchedProperties(
@@ -223,6 +232,7 @@ TEST_F(MatchResultTest, EmptyExpansionsRange) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   CascadeFilter filter;
@@ -236,6 +246,7 @@ TEST_F(MatchResultTest, Reset) {
   result.FinishAddingUARules();
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
@@ -270,6 +281,7 @@ TEST_F(MatchResultTest, Reset) {
   result.FinishAddingUARules();
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
@@ -304,6 +316,7 @@ TEST_F(MatchResultTest, ResetTreeScope) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(0));
   result.FinishAddingAuthorRulesForTreeScope(scope1);
 
@@ -314,6 +327,7 @@ TEST_F(MatchResultTest, ResetTreeScope) {
 
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(PropertySet(0));
   result.FinishAddingAuthorRulesForTreeScope(scope2);
 
