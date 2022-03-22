@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -74,17 +75,18 @@ class ArcInputOverlayManager : public KeyedService,
 
   class InputMethodObserver;
 
+  // TODO(djacobo|cuicuiruan): Sort this, functions first, members last.
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
   base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
       input_overlay_enabled_windows_;
   bool is_text_input_active_ = false;
-  ui::InputMethod* input_method_ = nullptr;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
   std::unique_ptr<InputMethodObserver> input_method_observer_;
   // Only one window is registered since there is only one window can be focused
   // each time.
-  aura::Window* registered_top_level_window_ = nullptr;
+  raw_ptr<aura::Window> registered_top_level_window_ = nullptr;
   std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
   std::unique_ptr<input_overlay::DisplayOverlayController>
       display_overlay_controller_;

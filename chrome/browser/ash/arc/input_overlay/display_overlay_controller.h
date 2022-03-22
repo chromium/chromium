@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
@@ -77,15 +78,16 @@ class DisplayOverlayController {
 
   TouchInjector* touch_injector() { return touch_injector_; }
 
-  TouchInjector* touch_injector_;
+  raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
-  InputMappingView* input_mapping_view_ = nullptr;
+  raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
+  raw_ptr<InputMenuView> input_menu_view_ = nullptr;
+  raw_ptr<views::ImageButton> menu_entry_ = nullptr;
+  raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
+  raw_ptr<EditModeExitView> edit_mode_view_ = nullptr;
+
   DisplayMode display_mode_ = DisplayMode::kNone;
-  InputMenuView* input_menu_view_ = nullptr;
-  views::ImageButton* menu_entry_ = nullptr;
-  ActionEditMenu* action_edit_menu_ = nullptr;
-  EditModeExitView* edit_mode_view_ = nullptr;
 };
 
 }  // namespace input_overlay

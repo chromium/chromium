@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_KEY_EVENT_SOURCE_REWRITER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_KEY_EVENT_SOURCE_REWRITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/event_source.h"
@@ -30,12 +31,13 @@ class KeyEventSourceRewriter : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
-  aura::Window* top_level_window_;
   base::ScopedObservation<ui::EventSource,
                           ui::EventRewriter,
                           &ui::EventSource::AddEventRewriter,
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
+
+  raw_ptr<aura::Window> top_level_window_;
 };
 
 }  // namespace arc

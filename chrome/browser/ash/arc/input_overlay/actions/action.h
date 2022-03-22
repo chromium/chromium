@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
@@ -118,9 +119,9 @@ class Action {
   // lock will be released.
   bool require_mouse_locked_ = false;
   int parsed_input_sources_ = 0;
-  aura::Window* target_window_;
   absl::optional<int> touch_id_;
   size_t current_position_index_ = 0;
+  raw_ptr<aura::Window> target_window_;
 
   gfx::PointF last_touch_root_location_;
   base::flat_set<ui::DomCode> keys_pressed_;

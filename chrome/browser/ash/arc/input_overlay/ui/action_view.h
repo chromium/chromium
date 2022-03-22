@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_H_
 
 #include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -46,15 +47,15 @@ class ActionView : public views::View {
 
  protected:
   // Reference to the action of this UI.
-  Action* action_ = nullptr;
+  raw_ptr<Action> action_ = nullptr;
   // Reference to the owner class.
-  DisplayOverlayController* const display_overlay_controller_ = nullptr;
+  const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   // Some types are not supported to edit.
   bool editable_ = false;
   // Three-dot button to show the |ActionEditMenu|.
-  ActionEditButton* menu_entry_ = nullptr;
+  raw_ptr<ActionEditButton> menu_entry_ = nullptr;
   // The circle view shows up for editing the action.
-  ActionCircle* circle_ = nullptr;
+  raw_ptr<ActionCircle> circle_ = nullptr;
   // Labels for mapping hints.
   std::vector<ActionTag*> tags_;
   // Current display mode.

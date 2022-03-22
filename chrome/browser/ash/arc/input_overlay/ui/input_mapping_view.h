@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_INPUT_MAPPING_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_INPUT_MAPPING_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/views/view.h"
@@ -25,7 +26,7 @@ class InputMappingView : public views::View {
   void SetDisplayMode(const DisplayMode mode);
 
  private:
-  DisplayOverlayController* const display_overlay_controller_ = nullptr;
+  const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   DisplayMode current_display_mode_ = DisplayMode::kNone;
 };
 
