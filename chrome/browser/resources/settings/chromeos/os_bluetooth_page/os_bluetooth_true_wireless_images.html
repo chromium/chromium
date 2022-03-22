@@ -87,15 +87,25 @@
     </div>
   </template>
   <template is="dom-if" restamp
-      if="[[shouldShowNotConnectedInfo_(device)]]">
-    <div id="notConnectedContainer" class="battery-container">
+      if="[[shouldShowDefaultInfo_(device)]]">
+    <div id="defaultContainer" class="battery-container">
       <div class="image-wrapper">
         <img src="[[getImageSrc_(device, BatteryType.DEFAULT)]]"
             alt="Default device image">
       </div>
-      <span id="notConnectedLabel">
-        $i18n{bluetoothDeviceDetailDisconnected}
-      </span>
+      <template is="dom-if" restamp
+        if="[[isDeviceNotConnected_(device)]]">
+        <span id="notConnectedLabel">
+          $i18n{bluetoothDeviceDetailDisconnected}
+        </span>
+      </template>
+      <template is="dom-if" restamp
+        if="[[!isDeviceNotConnected_(device)]]">
+        <bluetooth-battery-icon-percentage
+          device="[[device]]"
+          battery-type="[[BatteryType.DEFAULT]]">
+        </bluetooth-battery-icon-percentage>
+      </template>
     </div>
   </template>
 </div>

@@ -210,7 +210,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     await flushAsync();
     assertTrue(!!getTrueWirelessImages());
 
-    // If detailed battery info is not available, only show True Wireless
+    // If battery info is not available, only show True Wireless
     // component if not connected.
     device.deviceProperties.batteryInfo = {};
     device.deviceProperties.connectionState =
@@ -230,6 +230,22 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertFalse(!!getTrueWirelessImages());
+
+    // Having either default battery info or True Wireless battery info
+    // should show True Wireless component if device is connected.
+    device.deviceProperties.batteryInfo = {
+      defaultProperties: {batteryPercentage: 90}
+    };
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
+
+    device.deviceProperties.batteryInfo = {
+      rightBudInfo: {batteryPercentage: 90}
+    };
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
   });
 
   test('Show change settings row, and navigate to subpages', async function() {

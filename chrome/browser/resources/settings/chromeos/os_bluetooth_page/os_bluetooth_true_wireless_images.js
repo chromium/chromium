@@ -15,7 +15,7 @@ import {assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 
 /**
  * @constructor
@@ -80,16 +80,40 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
   }
 
   /**
+   * If the device is connected but we don't have detailed battery information
+   * for that device, fallback to showing the default image with default info.
+   * We also display the default image alongside the "Disconnected" label when
+   * the device is disconnected.
+   *
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @protected
    */
-  shouldShowNotConnectedInfo_(device) {
+  shouldShowDefaultInfo_(device) {
     if (!hasDefaultImage(device)) {
       return false;
     }
 
+    // Always show the default image when the device is not connected.
+    if (this.isDeviceNotConnected_(device)) {
+      return true;
+    }
+
+    // If we aren't showing any other detailed battery info and we have
+    // default battery info, show the default image alongside the default info.
+    return !hasAnyDetailedBatteryInfo(device) &&
+        getBatteryPercentage(device, BatteryType.DEFAULT) !== undefined;
+  }
+
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   *     device
+   * @return {boolean}
+   * @protected
+   */
+  isDeviceNotConnected_(device) {
     return device.connectionState ===
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected ||
         device.connectionState ===
