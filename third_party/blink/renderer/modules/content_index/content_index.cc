@@ -8,6 +8,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_icon_definition.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -207,16 +209,22 @@ void ContentIndex::DidCheckOfflineCapability(
 
 void ContentIndex::DidAdd(ScriptPromiseResolver* resolver,
                           mojom::blink::ContentIndexError error) {
-  ScriptState* script_state = resolver->GetScriptState();
-  ScriptState::Scope scope(script_state);
+  DCHECK(resolver);
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
 
   switch (error) {
     case mojom::blink::ContentIndexError::NONE:
       resolver->Resolve();
       return;
     case mojom::blink::ContentIndexError::STORAGE_ERROR:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kAbortError,
           "Failed to add description due to I/O error."));
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
@@ -224,8 +232,9 @@ void ContentIndex::DidAdd(ScriptPromiseResolver* resolver,
       NOTREACHED();
       return;
     case mojom::blink::ContentIndexError::NO_SERVICE_WORKER:
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          script_state->GetIsolate(), "Service worker must be active"));
+      resolver->Reject(
+          V8ThrowException::CreateTypeError(resolver_script_state->GetIsolate(),
+                                            "Service worker must be active"));
       return;
   }
 }
@@ -252,16 +261,22 @@ ScriptPromise ContentIndex::deleteDescription(ScriptState* script_state,
 
 void ContentIndex::DidDeleteDescription(ScriptPromiseResolver* resolver,
                                         mojom::blink::ContentIndexError error) {
-  ScriptState* script_state = resolver->GetScriptState();
-  ScriptState::Scope scope(script_state);
+  DCHECK(resolver);
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
 
   switch (error) {
     case mojom::blink::ContentIndexError::NONE:
       resolver->Resolve();
       return;
     case mojom::blink::ContentIndexError::STORAGE_ERROR:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kAbortError,
           "Failed to delete description due to I/O error."));
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
@@ -298,8 +313,14 @@ void ContentIndex::DidGetDescriptions(
     ScriptPromiseResolver* resolver,
     mojom::blink::ContentIndexError error,
     Vector<mojom::blink::ContentDescriptionPtr> descriptions) {
-  ScriptState* script_state = resolver->GetScriptState();
-  ScriptState::Scope scope(script_state);
+  DCHECK(resolver);
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
 
   HeapVector<Member<ContentDescription>> blink_descriptions;
   blink_descriptions.ReserveCapacity(descriptions.size());
@@ -311,8 +332,8 @@ void ContentIndex::DidGetDescriptions(
       resolver->Resolve(std::move(blink_descriptions));
       return;
     case mojom::blink::ContentIndexError::STORAGE_ERROR:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kAbortError,
           "Failed to get descriptions due to I/O error."));
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
