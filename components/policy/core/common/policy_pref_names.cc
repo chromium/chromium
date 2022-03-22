@@ -79,6 +79,11 @@ const char kIntensiveWakeUpThrottlingEnabled[] =
 const char kTargetBlankImpliesNoOpener[] =
     "policy.target_blank_implies_noopener";
 
+// Boolean policy preference for force enabling or disabling the
+// SetTimeoutWithoutClamp web feature.
+const char kSetTimeoutWithout1MsClampEnabled[] =
+    "policy.set_timeout_without_1ms_clamp";
+
 #if BUILDFLAG(IS_ANDROID)
 // Boolean policy preference to disable the BackForwardCache feature.
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";

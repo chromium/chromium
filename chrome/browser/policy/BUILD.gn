@@ -221,6 +221,7 @@ source_set("policy_specific_browser_tests") {
       "test/download_directory_browsertest.cc",
       "test/hide_webstore_icon_policy_browsertest.cc",
       "test/media_stream_policy_browsertest.cc",
+      "test/set_timeout_without_1ms_clamp_policy_browsertest.cc",
       "test/signed_exchange_browsertest.cc",
       "test/task_manager_end_process_enabled_browsertest.cc",
       "test/web_rtc_event_log_collection_allowed_policy_browsertest.cc",
