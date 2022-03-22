@@ -793,8 +793,10 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
       prediction_grant_likelihood_,
-      current_request_ui_to_use_->decision_held_back, did_show_bubble_,
-      did_click_manage_, did_click_learn_more_);
+      current_request_ui_to_use_
+          ? current_request_ui_to_use_->decision_held_back
+          : absl::nullopt,
+      did_show_bubble_, did_click_manage_, did_click_learn_more_);
 
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
