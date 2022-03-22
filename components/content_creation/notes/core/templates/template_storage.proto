@@ -49,13 +49,13 @@ message Date {
 // Specifies the collection of all templates in order in which they should
 // be displayed.
 message Collection {
-  repeated CollectionItem templates = 1;
+  repeated CollectionItem collectionItems = 1;
   int32 max_template_number = 2;
 }
 // Specifies activation/expiration and GEO for which the given template should
 // be valid.
 message CollectionItem {
-  NoteTemplate templateId = 1;
+  NoteTemplate noteTemplate = 1;
   Date activation = 2;
   Date expiration = 3;
   repeated string geo = 4;

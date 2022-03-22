@@ -62,7 +62,6 @@ void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
 
 void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
   if (IsDynamicTemplatesEnabled()) {
-    LOG(ERROR) << "enabled";
     FetchTemplates(std::move(callback));
   } else {
     base::PostTaskAndReplyWithResult(
@@ -90,20 +89,19 @@ std::vector<NoteTemplate> TemplateStore::BuildDefaultTemplates() {
   return templates;
 }
 
-bool TemplateStore::TemplateDateAvailable(
-    proto::CollectionItem current_template,
-    base::Time today) {
+bool TemplateStore::TemplateDateAvailable(proto::CollectionItem current_item,
+                                          base::Time today) {
   base::Time activation;
   base::Time expiration;
 
-  if (current_template.has_activation() &&
-      (!ConvertProtoDateToTime(current_template.activation(), activation) ||
+  if (current_item.has_activation() &&
+      (!ConvertProtoDateToTime(current_item.activation(), activation) ||
        today < activation)) {
     return false;
   }
 
-  if (current_template.has_expiration() &&
-      (!ConvertProtoDateToTime(current_template.expiration(), expiration) ||
+  if (current_item.has_expiration() &&
+      (!ConvertProtoDateToTime(current_item.expiration(), expiration) ||
        today >= expiration)) {
     return false;
   }
@@ -112,10 +110,10 @@ bool TemplateStore::TemplateDateAvailable(
 }
 
 bool TemplateStore::TemplateLocationAvailable(
-    proto::CollectionItem current_template) {
+    proto::CollectionItem current_item) {
   // If there are no locations set, the template is considered available for all
   // locations.
-  if (current_template.geo_size() == 0) {
+  if (current_item.geo_size() == 0) {
     return true;
   }
 
@@ -125,7 +123,7 @@ bool TemplateStore::TemplateLocationAvailable(
     return false;
   }
 
-  for (std::string template_location : current_template.geo()) {
+  for (std::string template_location : current_item.geo()) {
     if (country_code_ == template_location) {
       return true;
     }
@@ -148,20 +146,20 @@ std::vector<NoteTemplate> TemplateStore::ParseTemplatesFromString(
 
   int numTemplates = 0;
 
-  for (int i = 0; i < collection.templates_size() &&
+  for (int i = 0; i < collection.collectionitems_size() &&
                   numTemplates < collection.max_template_number();
        i++) {
-    proto::CollectionItem current_template = collection.templates(i);
+    proto::CollectionItem current_item = collection.collectionitems(i);
 
-    if (!TemplateDateAvailable(current_template, today)) {
+    if (!TemplateDateAvailable(current_item, today)) {
       continue;
     }
 
-    if (!TemplateLocationAvailable(current_template)) {
+    if (!TemplateLocationAvailable(current_item)) {
       continue;
     }
 
-    templates.push_back(NoteTemplate(current_template.templateid()));
+    templates.push_back(NoteTemplate(current_item.notetemplate()));
     numTemplates++;
   }
 

@@ -191,11 +191,11 @@ class TemplateStoreTest : public testing::Test {
     proto::NoteTemplate classic = GetClassicTemplate();
     proto::NoteTemplate friendly = GetFriendlyTemplate();
 
-    proto::CollectionItem* classic_template = collection.add_templates();
-    classic_template->set_allocated_templateid(
+    proto::CollectionItem* classic_template = collection.add_collectionitems();
+    classic_template->set_allocated_notetemplate(
         new proto::NoteTemplate(classic));
-    proto::CollectionItem* friendly_template = collection.add_templates();
-    friendly_template->set_allocated_templateid(
+    proto::CollectionItem* friendly_template = collection.add_collectionitems();
+    friendly_template->set_allocated_notetemplate(
         new proto::NoteTemplate(friendly));
 
     collection.SerializeToString(&data);
@@ -211,11 +211,11 @@ class TemplateStoreTest : public testing::Test {
     proto::NoteTemplate classic = GetClassicTemplate();
     proto::NoteTemplate friendly = GetFriendlyTemplate();
 
-    proto::CollectionItem* classic_template = collection.add_templates();
-    classic_template->set_allocated_templateid(
+    proto::CollectionItem* classic_template = collection.add_collectionitems();
+    classic_template->set_allocated_notetemplate(
         new proto::NoteTemplate(classic));
-    proto::CollectionItem* friendly_template = collection.add_templates();
-    friendly_template->set_allocated_templateid(
+    proto::CollectionItem* friendly_template = collection.add_collectionitems();
+    friendly_template->set_allocated_notetemplate(
         new proto::NoteTemplate(friendly));
 
     collection.SerializeToString(&data);
@@ -261,8 +261,8 @@ TEST_F(TemplateStoreTest, DefaultTemplates) {
 
 // Test that templates without any dates will still be available.
 TEST_F(TemplateStoreTest, NoDates) {
-  proto::CollectionItem* no_dates = collection_.add_templates();
-  no_dates->set_allocated_templateid(
+  proto::CollectionItem* no_dates = collection_.add_collectionitems();
+  no_dates->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   EXPECT_TRUE(template_store_->TemplateDateAvailable(*no_dates, jan_01_1970_));
@@ -271,8 +271,8 @@ TEST_F(TemplateStoreTest, NoDates) {
 // Tests that templates with expiration dates that have not expired yet will be
 // available.
 TEST_F(TemplateStoreTest, ActiveExpiration) {
-  proto::CollectionItem* active_expiration = collection_.add_templates();
-  active_expiration->set_allocated_templateid(
+  proto::CollectionItem* active_expiration = collection_.add_collectionitems();
+  active_expiration->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   active_expiration->set_allocated_expiration(new proto::Date(jan_10_2001_));
@@ -282,8 +282,9 @@ TEST_F(TemplateStoreTest, ActiveExpiration) {
 
 // Tests that templates with expired expiration dates will not be available.
 TEST_F(TemplateStoreTest, InactiveExpiration) {
-  proto::CollectionItem* inactive_expiration = collection_.add_templates();
-  inactive_expiration->set_allocated_templateid(
+  proto::CollectionItem* inactive_expiration =
+      collection_.add_collectionitems();
+  inactive_expiration->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   inactive_expiration->set_allocated_expiration(new proto::Date(jan_10_1960_));
@@ -294,16 +295,16 @@ TEST_F(TemplateStoreTest, InactiveExpiration) {
 // Tests that templates with proto::Date objects that are missing fields will
 // not be available.
 TEST_F(TemplateStoreTest, InvalidDates) {
-  proto::CollectionItem* invalid_expiration = collection_.add_templates();
-  invalid_expiration->set_allocated_templateid(
+  proto::CollectionItem* invalid_expiration = collection_.add_collectionitems();
+  invalid_expiration->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   invalid_expiration->set_allocated_expiration(new proto::Date(invalid_date_));
   EXPECT_FALSE(template_store_->TemplateDateAvailable(*invalid_expiration,
                                                       jan_01_1970_));
 
-  proto::CollectionItem* invalid_activation = collection_.add_templates();
-  invalid_activation->set_allocated_templateid(
+  proto::CollectionItem* invalid_activation = collection_.add_collectionitems();
+  invalid_activation->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   invalid_activation->set_allocated_activation(new proto::Date(invalid_date_));
@@ -314,8 +315,8 @@ TEST_F(TemplateStoreTest, InvalidDates) {
 // Tests that templates with activation dates that have passed will be
 // available.
 TEST_F(TemplateStoreTest, ActiveActivation) {
-  proto::CollectionItem* active_activation = collection_.add_templates();
-  active_activation->set_allocated_templateid(
+  proto::CollectionItem* active_activation = collection_.add_collectionitems();
+  active_activation->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   active_activation->set_allocated_activation(new proto::Date(jan_10_1960_));
@@ -326,8 +327,9 @@ TEST_F(TemplateStoreTest, ActiveActivation) {
 // Tests that templates with activation dates that have yet to pass will not be
 // available.
 TEST_F(TemplateStoreTest, InactiveActivation) {
-  proto::CollectionItem* inactive_activation = collection_.add_templates();
-  inactive_activation->set_allocated_templateid(
+  proto::CollectionItem* inactive_activation =
+      collection_.add_collectionitems();
+  inactive_activation->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   inactive_activation->set_allocated_activation(new proto::Date(jan_10_2001_));
@@ -338,8 +340,8 @@ TEST_F(TemplateStoreTest, InactiveActivation) {
 // Tests that if today's date is within activation and expiration date, it will
 // be available.
 TEST_F(TemplateStoreTest, BothDatesActive) {
-  proto::CollectionItem* both_dates_active = collection_.add_templates();
-  both_dates_active->set_allocated_templateid(
+  proto::CollectionItem* both_dates_active = collection_.add_collectionitems();
+  both_dates_active->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   both_dates_active->set_allocated_activation(new proto::Date(jan_10_1960_));
@@ -351,8 +353,9 @@ TEST_F(TemplateStoreTest, BothDatesActive) {
 // Tests that if the activation and expiration dates are in the wrong order
 // (activation comes after the expiration here), it will not be available.
 TEST_F(TemplateStoreTest, BothDatesInactive) {
-  proto::CollectionItem* both_dates_inactive = collection_.add_templates();
-  both_dates_inactive->set_allocated_templateid(
+  proto::CollectionItem* both_dates_inactive =
+      collection_.add_collectionitems();
+  both_dates_inactive->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   both_dates_inactive->set_allocated_activation(new proto::Date(jan_10_2001_));
@@ -365,8 +368,8 @@ TEST_F(TemplateStoreTest, BothDatesInactive) {
 // 1000000th year (base::Time::exploded requires year be 4 digits) it will not
 // available.
 TEST_F(TemplateStoreTest, ImpossibleDates) {
-  proto::CollectionItem* invalid_expiration = collection_.add_templates();
-  invalid_expiration->set_allocated_templateid(
+  proto::CollectionItem* invalid_expiration = collection_.add_collectionitems();
+  invalid_expiration->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   invalid_date_.set_day(40);
@@ -424,8 +427,8 @@ TEST_F(TemplateStoreTest, EmptyString) {
 // Tests that template will be available if it does not have any
 // country codes set.
 TEST_F(TemplateStoreTest, NoLocation) {
-  proto::CollectionItem* no_location = collection_.add_templates();
-  no_location->set_allocated_templateid(
+  proto::CollectionItem* no_location = collection_.add_collectionitems();
+  no_location->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   EXPECT_TRUE(template_store_->TemplateLocationAvailable(*no_location));
@@ -434,8 +437,8 @@ TEST_F(TemplateStoreTest, NoLocation) {
 // Tests that template will be available if the user's location is
 // specified by the template.
 TEST_F(TemplateStoreTest, AvailableLocation) {
-  proto::CollectionItem* available_location = collection_.add_templates();
-  available_location->set_allocated_templateid(
+  proto::CollectionItem* available_location = collection_.add_collectionitems();
+  available_location->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   available_location->add_geo("US");
@@ -446,8 +449,9 @@ TEST_F(TemplateStoreTest, AvailableLocation) {
 // Tests that template will not be available if the user's location
 // is not specified by the template.
 TEST_F(TemplateStoreTest, UnavailableLocation) {
-  proto::CollectionItem* unavailable_location = collection_.add_templates();
-  unavailable_location->set_allocated_templateid(
+  proto::CollectionItem* unavailable_location =
+      collection_.add_collectionitems();
+  unavailable_location->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   unavailable_location->add_geo("UK");
@@ -459,8 +463,8 @@ TEST_F(TemplateStoreTest, UnavailableLocation) {
 // Tests that template will be available if there are multiple
 // locations, including the user's.
 TEST_F(TemplateStoreTest, MultipleLocations) {
-  proto::CollectionItem* multiple_locations = collection_.add_templates();
-  multiple_locations->set_allocated_templateid(
+  proto::CollectionItem* multiple_locations = collection_.add_collectionitems();
+  multiple_locations->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   multiple_locations->add_geo("UK");
@@ -478,8 +482,9 @@ TEST_F(TemplateStoreTest, UndeterminedLocation) {
       std::make_unique<TemplateStore>(&testing_pref_service_,
                                       test_url_loader_factory(), "");
 
-  proto::CollectionItem* undetermined_location = collection_.add_templates();
-  undetermined_location->set_allocated_templateid(
+  proto::CollectionItem* undetermined_location =
+      collection_.add_collectionitems();
+  undetermined_location->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   undetermined_location->add_geo("UK");
@@ -495,8 +500,9 @@ TEST_F(TemplateStoreTest, AvailableToAllAndUndeterminedLocation) {
       std::make_unique<TemplateStore>(&testing_pref_service_,
                                       test_url_loader_factory(), "");
 
-  proto::CollectionItem* undetermined_location = collection_.add_templates();
-  undetermined_location->set_allocated_templateid(
+  proto::CollectionItem* undetermined_location =
+      collection_.add_collectionitems();
+  undetermined_location->set_allocated_notetemplate(
       new proto::NoteTemplate(GetFriendlyTemplate()));
 
   EXPECT_TRUE(
