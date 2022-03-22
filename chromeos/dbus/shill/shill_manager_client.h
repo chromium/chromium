@@ -224,6 +224,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                        base::OnceClosure callback,
                                        ErrorCallback error_callback) = 0;
 
+  // Removes all Passpoint credentials that matches all property of |properties|
+  // in the profile referenced by |profile_path|.
+  virtual void RemovePasspointCredentials(const dbus::ObjectPath& profile_path,
+                                          const base::Value& properties,
+                                          base::OnceClosure callback,
+                                          ErrorCallback error_callback) = 0;
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 

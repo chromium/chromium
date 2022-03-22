@@ -188,6 +188,19 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
+  void RemovePasspointCredentials(const dbus::ObjectPath& profile_path,
+                                  const base::Value& properties,
+                                  base::OnceClosure callback,
+                                  ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kRemovePasspointCredentialsFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendObjectPath(profile_path);
+    ShillClientHelper::AppendServiceProperties(&writer, properties);
+    helper_->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                             std::move(error_callback));
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {

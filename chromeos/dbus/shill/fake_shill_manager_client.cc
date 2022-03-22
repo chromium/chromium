@@ -492,9 +492,13 @@ void FakeShillManagerClient::AddPasspointCredentials(
     const dbus::ObjectPath& profile_path,
     const base::Value& properties,
     base::OnceClosure callback,
-    ErrorCallback error_callback) {
-  return;
-}
+    ErrorCallback error_callback) {}
+
+void FakeShillManagerClient::RemovePasspointCredentials(
+    const dbus::ObjectPath& profile_path,
+    const base::Value& properties,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {}
 
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
   return this;
