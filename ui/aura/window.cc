@@ -1252,7 +1252,6 @@ bool Window::CleanupGestureState() {
 
   // Cancelling active touches may end up destroying this window. We use a
   // tracker to detect this.
-  // TODO(crbug.com/1292271): Add a regression test for this.
   WindowTracker tracking_this({this});
 
   bool state_modified = false;
