@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SHARED_BUFFER_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SHARED_BUFFER_BYTES_CONSUMER_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 

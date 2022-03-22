@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

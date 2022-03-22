@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"

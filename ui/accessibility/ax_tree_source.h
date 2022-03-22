@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"

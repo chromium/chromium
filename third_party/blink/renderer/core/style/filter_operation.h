@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_FILTER_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_FILTER_OPERATION_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"

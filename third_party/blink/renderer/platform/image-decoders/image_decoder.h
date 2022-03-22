@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"

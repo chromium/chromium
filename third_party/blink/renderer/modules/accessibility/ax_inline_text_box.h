@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"

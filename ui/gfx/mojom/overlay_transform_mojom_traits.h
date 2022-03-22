@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_OVERLAY_TRANSFORM_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_OVERLAY_TRANSFORM_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gfx/mojom/overlay_transform.mojom.h"
 #include "ui/gfx/overlay_transform.h"
 

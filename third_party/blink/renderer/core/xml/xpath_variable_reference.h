@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_VARIABLE_REFERENCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_VARIABLE_REFERENCE_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 
 namespace blink {

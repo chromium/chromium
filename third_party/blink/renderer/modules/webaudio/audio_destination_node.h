@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_DESTINATION_NODE_H_
 
 #include <atomic>
+#include "base/notreached.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
 namespace blink {

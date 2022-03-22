@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_ACCELERATED_WIDGET_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_ACCELERATED_WIDGET_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/gfx/mojom/accelerated_widget.mojom.h"
 #include "ui/gfx/native_widget_types.h"

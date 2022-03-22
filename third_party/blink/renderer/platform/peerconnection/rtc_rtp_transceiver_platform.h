@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

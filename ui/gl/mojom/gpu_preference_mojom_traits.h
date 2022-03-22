@@ -5,6 +5,7 @@
 #ifndef UI_GL_MOJOM_GPU_PREFERENCE_MOJOM_TRAITS_H_
 #define UI_GL_MOJOM_GPU_PREFERENCE_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/mojom/gpu_preference.mojom.h"
 

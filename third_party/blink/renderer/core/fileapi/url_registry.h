@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_REGISTRY_H_
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"

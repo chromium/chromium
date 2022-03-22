@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_RRECT_F_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_RRECT_F_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/rrect_f_builder.h"

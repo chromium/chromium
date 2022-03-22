@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_ROW_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_ROW_LAYOUT_ALGORITHM_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"

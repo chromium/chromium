@@ -28,6 +28,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
+#include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"

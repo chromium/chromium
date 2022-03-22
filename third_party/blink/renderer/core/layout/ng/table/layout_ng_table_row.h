@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_ROW_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"

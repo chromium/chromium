@@ -21,6 +21,7 @@
 #include "base/containers/stack.h"
 #include "base/i18n/break_iterator.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

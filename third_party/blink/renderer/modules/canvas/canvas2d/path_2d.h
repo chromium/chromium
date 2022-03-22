@@ -28,6 +28,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_PATH_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_PATH_2D_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_2d_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_path2d_string.h"

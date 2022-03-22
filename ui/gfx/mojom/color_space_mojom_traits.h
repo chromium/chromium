@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/mojom/color_space.mojom-shared.h"
 

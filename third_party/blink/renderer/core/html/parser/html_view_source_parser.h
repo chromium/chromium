@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_VIEW_SOURCE_PARSER_H_
 
 #include <memory>
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/decoded_data_document_parser.h"
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"

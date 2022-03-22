@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_OVERLAY_PRIORITY_HINT_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_OVERLAY_PRIORITY_HINT_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gfx/mojom/overlay_priority_hint.mojom.h"
 #include "ui/gfx/overlay_priority_hint.h"
 

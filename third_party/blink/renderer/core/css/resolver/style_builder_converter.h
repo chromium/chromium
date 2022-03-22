@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"

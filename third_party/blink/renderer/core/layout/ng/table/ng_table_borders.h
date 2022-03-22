@@ -7,6 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"

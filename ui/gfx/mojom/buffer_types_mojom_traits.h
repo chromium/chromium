@@ -7,6 +7,7 @@
 
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

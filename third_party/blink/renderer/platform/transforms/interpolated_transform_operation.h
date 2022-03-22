@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_INTERPOLATED_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_INTERPOLATED_TRANSFORM_OPERATION_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"

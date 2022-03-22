@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

@@ -28,6 +28,7 @@
 
 #include <libxml/tree.h>
 #include <memory>
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner.h"

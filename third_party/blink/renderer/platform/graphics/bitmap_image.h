@@ -30,6 +30,7 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"

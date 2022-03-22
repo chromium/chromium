@@ -36,6 +36,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"

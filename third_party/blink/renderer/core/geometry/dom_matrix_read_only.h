@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"

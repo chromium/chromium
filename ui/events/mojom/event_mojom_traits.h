@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/mojom/event.mojom.h"

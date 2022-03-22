@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

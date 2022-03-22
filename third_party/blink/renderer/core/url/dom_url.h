@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 
+#include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"

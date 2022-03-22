@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STATIC_BITMAP_IMAGE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"

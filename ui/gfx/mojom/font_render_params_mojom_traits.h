@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_FONT_RENDER_PARAMS_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_FONT_RENDER_PARAMS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/mojom/font_render_params.mojom.h"
 
