@@ -51,21 +51,22 @@ class BackgroundDownloadService : public KeyedService {
     UNAVAILABLE = 2,
   };
 
-  // Returns useful configuration information about the DownloadService.
+  // Returns useful configuration information about the DownloadService. Not
+  // supported on iOS.
   virtual const ServiceConfig& GetConfig() = 0;
 
   // Callback method to run by the service when a pre-scheduled task starts.
   // This method is invoked on main thread and while it is running, the system
   // holds a wakelock which is not released until either the |callback| is run
   // or OnStopScheduledTask is invoked by the system. Do not call this method
-  // directly.
+  // directly. Not supported on iOS.
   virtual void OnStartScheduledTask(DownloadTaskType task_type,
                                     TaskFinishedCallback callback) = 0;
 
   // Callback method to run by the service if the system decides to stop the
   // task. Returns true if the task needs to be rescheduled. Any pending
   // TaskFinishedCallback should be reset after this call. Do not call this
-  // method directly.
+  // method directly. Not supported on iOS.
   virtual bool OnStopScheduledTask(DownloadTaskType task_type) = 0;
 
   // Whether or not the BackgroundDownloadService is currently available,
@@ -79,17 +80,17 @@ class BackgroundDownloadService : public KeyedService {
 
   // Allows any feature to pause or resume downloads at will.  Paused downloads
   // will not start or stop based on scheduling criteria.  They will be
-  // effectively frozen.
+  // effectively frozen. Not supported on iOS.
   virtual void PauseDownload(const std::string& guid) = 0;
   virtual void ResumeDownload(const std::string& guid) = 0;
 
   // Cancels a download in this service.  The canceled download will be
-  // interrupted if it is running.
+  // interrupted if it is running. Not supported on iOS.
   virtual void CancelDownload(const std::string& guid) = 0;
 
   // Changes the current scheduling criteria for a download.  This is useful if
   // a user action might constrain or loosen the device state during which this
-  // download can run.
+  // download can run. Not supported on iOS.
   virtual void ChangeDownloadCriteria(const std::string& guid,
                                       const SchedulingParams& params) = 0;
 

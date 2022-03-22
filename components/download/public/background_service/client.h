@@ -102,9 +102,11 @@ class Client {
   // Called when a download has been successfully completed.
   // The file and the database record will be automatically removed if it is not
   // renamed or deleted after a window of time (12 hours, but finch
-  // configurable).
-  // The timeout is meant to be a failsafe to ensure that we clean up properly.
+  // configurable). The timeout is meant to be a failsafe to ensure that we
+  // clean up properly.
   // TODO(dtrainor): Point to finch configurable timeout when it is added.
+  // On iOS, the client needs to move the file immediately, and
+  // the file is supposed to be deleted on next Chrome launch.
   virtual void OnDownloadSucceeded(const std::string& guid,
                                    const CompletionInfo& completion_info) = 0;
 
@@ -119,7 +121,8 @@ class Client {
 
   // Called by the service to ask the client to provide the upload data.
   // The client is responsible for posting the callback with an appropriate
-  // ResourceRequestBody or nullptr, if it is a regular download.
+  // ResourceRequestBody or nullptr, if it is a regular download. Not supported
+  // on iOS.
   virtual void GetUploadData(const std::string& guid,
                              GetUploadDataCallback callback) = 0;
 };

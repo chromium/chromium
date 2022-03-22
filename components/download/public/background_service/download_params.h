@@ -22,7 +22,8 @@ namespace download {
 
 // The parameters describing when to run a download.  This allows the caller to
 // specify restrictions on what impact this download will have on the device
-// (battery, network conditions, priority, etc.).
+// (battery, network conditions, priority, etc.). On iOS, the network and
+// battery requirements are mapped to NSURLSessionConfiguration.discretionary.
 struct SchedulingParams {
  public:
   enum class NetworkRequirements {
@@ -87,7 +88,7 @@ struct SchedulingParams {
   bool operator==(const SchedulingParams& rhs) const;
 
   // Cancel the download after this time.  Will cancel in-progress downloads.
-  // base::Time::Max() if not specified.
+  // base::Time::Max() if not specified. Not supported on iOS.
   base::Time cancel_time;
 
   // The suggested priority.  Non-UI priorities may not be honored by the
@@ -111,17 +112,19 @@ struct RequestParams {
   net::HttpRequestHeaders request_headers;
 
   // If the request will fetch HTTP error response body and treat them as
-  // a successful download.
+  // a successful download. Not supported on iOS.
   bool fetch_error_body;
 
   // Whether the download is not trustworthy and requires safe browsing checks.
+  // Not supported on iOS.
   bool require_safety_checks;
 
-  // The credentials mode of the request.
+  // The credentials mode of the request. Not supported on iOS.
   ::network::mojom::CredentialsMode credentials_mode;
 
   // The isolation info of the request, this won't be persisted to db and will
-  // be invalidate during download resumption in new browser session.
+  // be invalidate during download resumption in new browser session. Not
+  // supported on iOS.
   absl::optional<net::IsolationInfo> isolation_info;
 };
 
@@ -178,7 +181,7 @@ struct DownloadParams {
 
   // Custom key value pair to store custom data for various purposes. Has a 1024
   // bytes size limit for each key or value. Will be sent back to clients when
-  // download is completed or failed.
+  // download is completed or failed. Not supported on iOS.
   CustomData custom_data;
 
   // The parameters that determine under what device conditions this download
