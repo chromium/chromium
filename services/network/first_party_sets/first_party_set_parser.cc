@@ -280,8 +280,17 @@ FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
     if (!maybe_value.has_value())
       return {};
     FirstPartySetParser::SingleSet output;
-    if (ParseSet(*maybe_value, elements, output).has_value())
+    if (absl::optional<FirstPartySetParser::ParseError> error =
+            ParseSet(*maybe_value, elements, output);
+        error.has_value()) {
+      if (*error == FirstPartySetParser::ParseError::kInvalidOrigin) {
+        // Ignore sets that include an invalid domain (which might have been
+        // caused by a PSL update), but don't let that break other sets.
+        continue;
+      }
+      // Abort, something is wrong with the component.
       return {};
+    }
     auto [owner, members] = output;
     map.emplace_back(owner, owner);
     for (net::SchemefulSite& member : members) {
