@@ -13,6 +13,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -717,6 +718,8 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DBeforePrint) {
 }
 
 TEST_P(PrintContextOOPRCanvasTest, Canvas2DFlushForImageListener) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kCanvas2dStaysGPUOnReadback);
   // Verifies that a flush triggered by a change to a source canvas results
   // in printing falling out of vector print mode.
 

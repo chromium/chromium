@@ -38,7 +38,7 @@ function startDetection(videoElementId, width, height) {
 
   gFingerprints = [];
   gDetectorInterval = setInterval(function() {
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {willReadFrequently: true});
     if (video.videoWidth == 0)
       return;  // The video element isn't playing anything.
 

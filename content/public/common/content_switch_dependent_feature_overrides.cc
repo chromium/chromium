@@ -96,9 +96,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(blink::features::kClipboardCustomFormats),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
-     std::cref(blink::features::kCanvas2dStaysGPUOnReadback),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(blink::features::kEditContext),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
