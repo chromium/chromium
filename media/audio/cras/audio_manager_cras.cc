@@ -79,42 +79,178 @@ void AudioManagerCras::GetAudioOutputDeviceNames(
   }
 }
 
+// Checks if a system AEC with a specific group ID is flagged to be deactivated
+// by the field trial.
+bool IsSystemAecDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kCrOSSystemAECDeactivatedGroups,
+      base::NumberToString(aec_group_id), false);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based AEC effect.
+bool IsDspBasedAecDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedAecDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAecAllowed);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based NS effect.
+bool IsDspBasedNsDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedNsDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedNsAllowed);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based AGC effect.
+bool IsDspBasedAgcDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedAgcDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAgcAllowed);
+}
+
+// Specifies which DSP-based effects are allowed based on media constraints and
+// any finch field trials.
+void SetAllowedDspBasedEffects(int aec_group_id, AudioParameters& params) {
+  int effects = params.effects();
+
+  // Allow AEC to be applied by CRAS on DSP if the AEC is active in CRAS and if
+  // using the AEC on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::ECHO_CANCELLER) &&
+      !IsDspBasedAecDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
+  }
+
+  // Allow NS to be applied by CRAS on DSP if the NS is active in CRAS and if
+  // using the NS on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::NOISE_SUPPRESSION) &&
+      !IsDspBasedNsDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
+  }
+
+  // Allow AGC to be applied by CRAS on DSP if the AGC is active in CRAS and if
+  // using the AGC on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::AUTOMATIC_GAIN_CONTROL) &&
+      !IsDspBasedAgcDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
+  }
+
+  params.set_effects(effects);
+}
+
+
+// Collects flags values for whether, and in what way, the AEC, NS or AGC
+// effects should be enforced in spite of them not being flagged as supported by
+// the board.
+void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
+                                  bool& enforce_system_ns,
+                                  bool& enforce_system_agc,
+                                  bool& tuned_system_aec_allowed) {
+  const bool enforce_system_aec_ns_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNsAgc);
+  const bool enforce_system_aec_ns_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNs);
+  const bool enforce_system_aec_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecAgc);
+  const bool enforce_system_aec_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAec);
+
+  enforce_system_aec =
+      enforce_system_aec_feature || enforce_system_aec_ns_agc_feature ||
+      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature;
+  enforce_system_ns =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_ns_feature;
+  enforce_system_agc =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_agc_feature;
+
+  tuned_system_aec_allowed =
+      base::FeatureList::IsEnabled(features::kCrOSSystemAEC);
+}
+
+AudioParameters AudioManagerCras::GetStreamParametersForSystem(
+    int user_buffer_size) {
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
+      kDefaultSampleRate, user_buffer_size,
+      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
+                                            limits::kMaxAudioBufferSize));
+
+  bool enforce_system_aec;
+  bool enforce_system_ns;
+  bool enforce_system_agc;
+  bool tuned_system_aec_allowed;
+  RetrieveSystemEffectFeatures(enforce_system_aec, enforce_system_ns,
+                               enforce_system_agc, tuned_system_aec_allowed);
+
+  // Activation of the system AEC. Allow experimentation with system AEC with
+  // all devices, but enable it by default on devices that actually support it.
+  params.set_effects(params.effects() |
+                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+
+  // Rephrase the field aec_supported to properly reflect its meaning in this
+  // context (since it currently signals whether an CrAS APM with tuned settings
+  // is available).
+  // TODO(crbug.com/1307680): add unit tests and caching cras_util_ results.
+  const bool tuned_system_apm_available = cras_util_->CrasGetAecSupported();
+
+  // Don't use the system AEC if it is deactivated for this group ID. Also never
+  // activate NS nor AGC for this board if the AEC is not activated, since this
+  // will cause issues for the Browser AEC.
+  bool use_system_aec =
+      (tuned_system_apm_available && tuned_system_aec_allowed) ||
+      enforce_system_aec;
+
+  // TODO(hychao): query from CRAS
+  bool system_ns_supported = true;
+  bool system_agc_supported = true;
+
+  int aec_group_id = cras_util_->CrasGetAecGroupId();
+  if (!use_system_aec || IsSystemAecDeactivated(aec_group_id)) {
+    SetAllowedDspBasedEffects(aec_group_id, params);
+    return params;
+  }
+
+  // Activation of the system AEC.
+  params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
+
+  // Don't use system NS or AGC if the AEC has board-specific tunings.
+  if (!tuned_system_apm_available) {
+    // Activation of the system NS.
+    if (system_ns_supported || enforce_system_ns) {
+      params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
+    }
+
+    // Activation of the system AGC.
+    if (system_agc_supported || enforce_system_agc) {
+      params.set_effects(params.effects() |
+                         AudioParameters::AUTOMATIC_GAIN_CONTROL);
+    }
+  }
+
+  SetAllowedDspBasedEffects(aec_group_id, params);
+  return params;
+}
+
 AudioParameters AudioManagerCras::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   int user_buffer_size = GetUserBufferSize();
-  int buffer_size =
+  user_buffer_size =
       user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
 
-  AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
-      kDefaultSampleRate, buffer_size,
-      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
-                                            limits::kMaxAudioBufferSize));
-
-  // Allow experimentation with system echo cancellation with all devices,
-  // but enable it by default on devices that actually support it.
-  params.set_effects(params.effects() |
-                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-  if (base::FeatureList::IsEnabled(features::kCrOSSystemAEC)) {
-    if (cras_util_->CrasGetAecSupported()) {
-      const int32_t aec_group_id = cras_util_->CrasGetAecGroupId();
-
-      // Check if the system AEC has a group ID which is flagged to be
-      // deactivated by the field trial.
-      const bool system_aec_deactivated =
-          base::GetFieldTrialParamByFeatureAsBool(
-              features::kCrOSSystemAECDeactivatedGroups,
-              base::NumberToString(aec_group_id), false);
-
-      if (!system_aec_deactivated) {
-        params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
-      }
-    }
-  }
-
-  return params;
+  return GetStreamParametersForSystem(user_buffer_size);
 }
 
 std::string AudioManagerCras::GetDefaultInputDeviceID() {

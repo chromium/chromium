@@ -5801,28 +5801,29 @@ const FeatureEntry kFeatureEntries[] = {
          "CCTResizableThirdPartiesDefaultPolicy")},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
-     flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS,
+     flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAecAllowed)},
     {"allow-dsp-based-ns", flag_descriptions::kCrOSDspBasedNsAllowedName,
-     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS,
+     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedNsAllowed)},
     {"allow-dsp-based-agc", flag_descriptions::kCrOSDspBasedAgcAllowedName,
-     flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS,
+     flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAgcAllowed)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
-     flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
+     flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAec)},
     {"enforce-system-aec-agc", flag_descriptions::kCrOSEnforceSystemAecAgcName,
-     flag_descriptions::kCrOSEnforceSystemAecAgcDescription, kOsCrOS,
+     flag_descriptions::kCrOSEnforceSystemAecAgcDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecAgc)},
     {"enforce-system-aec-ns-agc",
      flag_descriptions::kCrOSEnforceSystemAecNsAgcName,
-     flag_descriptions::kCrOSEnforceSystemAecNsAgcDescription, kOsCrOS,
+     flag_descriptions::kCrOSEnforceSystemAecNsAgcDescription,
+     kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNsAgc)},
     {"enforce-system-aec-ns", flag_descriptions::kCrOSEnforceSystemAecNsName,
-     flag_descriptions::kCrOSEnforceSystemAecNsDescription, kOsCrOS,
+     flag_descriptions::kCrOSEnforceSystemAecNsDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNs)},
 #endif
 

@@ -2606,27 +2606,6 @@ extern const char kQuickSettingsPWANotificationsDescription[];
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 
-extern const char kCrOSDspBasedAecAllowedName[];
-extern const char kCrOSDspBasedAecAllowedDescription[];
-
-extern const char kCrOSDspBasedNsAllowedName[];
-extern const char kCrOSDspBasedNsAllowedDescription[];
-
-extern const char kCrOSDspBasedAgcAllowedName[];
-extern const char kCrOSDspBasedAgcAllowedDescription[];
-
-extern const char kCrOSEnforceSystemAecName[];
-extern const char kCrOSEnforceSystemAecDescription[];
-
-extern const char kCrOSEnforceSystemAecAgcName[];
-extern const char kCrOSEnforceSystemAecAgcDescription[];
-
-extern const char kCrOSEnforceSystemAecNsName[];
-extern const char kCrOSEnforceSystemAecNsDescription[];
-
-extern const char kCrOSEnforceSystemAecNsAgcName[];
-extern const char kCrOSEnforceSystemAecNsAgcDescription[];
-
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
@@ -3211,6 +3190,27 @@ extern const char
 
 extern const char kBluetoothAdvertisementMonitoringName[];
 extern const char kBluetoothAdvertisementMonitoringDescription[];
+
+extern const char kCrOSDspBasedAecAllowedName[];
+extern const char kCrOSDspBasedAecAllowedDescription[];
+
+extern const char kCrOSDspBasedNsAllowedName[];
+extern const char kCrOSDspBasedNsAllowedDescription[];
+
+extern const char kCrOSDspBasedAgcAllowedName[];
+extern const char kCrOSDspBasedAgcAllowedDescription[];
+
+extern const char kCrOSEnforceSystemAecName[];
+extern const char kCrOSEnforceSystemAecDescription[];
+
+extern const char kCrOSEnforceSystemAecAgcName[];
+extern const char kCrOSEnforceSystemAecAgcDescription[];
+
+extern const char kCrOSEnforceSystemAecNsName[];
+extern const char kCrOSEnforceSystemAecNsDescription[];
+
+extern const char kCrOSEnforceSystemAecNsAgcName[];
+extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 
 extern const char kDefaultCalculatorWebAppName[];
 extern const char kDefaultCalculatorWebAppDescription[];
