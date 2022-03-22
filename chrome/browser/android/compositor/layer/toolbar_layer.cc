@@ -4,14 +4,18 @@
 
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 
+#include "base/feature_list.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
+
+using chrome::android::kDisableCompositedProgressBar;
 
 namespace android {
 
@@ -128,6 +132,9 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      int progress_bar_background_width,
                                      int progress_bar_background_height,
                                      int progress_bar_background_color) {
+  if (base::FeatureList::IsEnabled(kDisableCompositedProgressBar))
+    return;
+
   bool is_progress_bar_background_visible = SkColorGetA(
       progress_bar_background_color);
   progress_bar_background_layer_->SetHideLayerAndSubtree(
@@ -157,6 +164,10 @@ void ToolbarLayer::SetOpacity(float opacity) {
   toolbar_background_layer_->SetOpacity(opacity);
   url_bar_background_layer_->SetOpacity(opacity);
   bitmap_layer_->SetOpacity(opacity);
+
+  if (base::FeatureList::IsEnabled(kDisableCompositedProgressBar))
+    return;
+
   progress_bar_layer_->SetOpacity(opacity);
   progress_bar_background_layer_->SetOpacity(opacity);
 }
@@ -180,13 +191,15 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
   bitmap_layer_->SetIsDrawable(true);
   layer_->AddChild(bitmap_layer_);
 
-  progress_bar_background_layer_->SetIsDrawable(true);
-  progress_bar_background_layer_->SetHideLayerAndSubtree(true);
-  layer_->AddChild(progress_bar_background_layer_);
+  if (!base::FeatureList::IsEnabled(kDisableCompositedProgressBar)) {
+    progress_bar_background_layer_->SetIsDrawable(true);
+    progress_bar_background_layer_->SetHideLayerAndSubtree(true);
+    layer_->AddChild(progress_bar_background_layer_);
 
-  progress_bar_layer_->SetIsDrawable(true);
-  progress_bar_layer_->SetHideLayerAndSubtree(true);
-  layer_->AddChild(progress_bar_layer_);
+    progress_bar_layer_->SetIsDrawable(true);
+    progress_bar_layer_->SetHideLayerAndSubtree(true);
+    layer_->AddChild(progress_bar_layer_);
+  }
 
   debug_layer_->SetIsDrawable(true);
   debug_layer_->SetBackgroundColor(SK_ColorGREEN);
