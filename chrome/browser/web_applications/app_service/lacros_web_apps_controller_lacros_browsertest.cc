@@ -23,8 +23,10 @@ namespace web_app {
 
 using LacrosWebAppsControllerBrowserTest = web_app::WebAppControllerBrowserTest;
 
+// TODO(crbug.com/1309148): Disabled for flakiness.
 // Test that the default context menu for a web app has the correct items.
-IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
+                       DISABLED_DefaultContextMenu) {
   // If ash is does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
   if (chromeos::LacrosService::Get()->GetInterfaceVersion(
