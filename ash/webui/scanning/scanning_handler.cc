@@ -193,8 +193,14 @@ void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
   const std::string name = args->GetListDeprecated()[1].GetString();
   const int count = args->GetListDeprecated()[2].GetInt();
 
-  const std::u16string localized_string = l10n_util::GetPluralStringFUTF16(
-      string_id_map_.find(name)->second, count);
+  auto iter = string_id_map_.find(name);
+  if (iter == string_id_map_.end()) {
+    // Only reachable if the WebUI renderer is misbehaving.
+    return;
+  }
+
+  const std::u16string localized_string =
+      l10n_util::GetPluralStringFUTF16(iter->second, count);
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(localized_string));
 }
