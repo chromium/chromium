@@ -75,15 +75,15 @@ std::string GetTokenLevelInEnglish(TokenLevel token) {
 
 std::string GetJobLevelInEnglish(JobLevel job) {
   switch (job) {
-    case JOB_LOCKDOWN:
+    case JobLevel::kLockdown:
       return "Lockdown";
-    case JOB_LIMITED_USER:
+    case JobLevel::kLimitedUser:
       return "Limited User";
-    case JOB_INTERACTIVE:
+    case JobLevel::kInteractive:
       return "Interactive";
-    case JOB_UNPROTECTED:
+    case JobLevel::kUnprotected:
       return "Unprotected";
-    case JOB_NONE:
+    case JobLevel::kNone:
       return "None";
   }
 }

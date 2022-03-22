@@ -142,8 +142,8 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
 
 // Creates a job and tries to run a process inside it. The function can be
 // called with up to two parameters. The first one if set to "none" means that
-// the child process should be run with the JOB_NONE JobLevel else it is run
-// with JOB_LOCKDOWN level. The second if present specifies that the
+// the child process should be run with the JobLevel::kNone JobLevel else it is
+// run with JobLevel::kLockdown level. The second if present specifies that the
 // JOB_OBJECT_LIMIT_BREAKAWAY_OK flag should be set on the job object created
 // in this function. The return value is either SBOX_TEST_SUCCEEDED if the test
 // has passed or a value between 0 and 4 indicating which part of the test has
@@ -174,9 +174,9 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_job(int argc, wchar_t **argv) {
   if (!::AssignProcessToJobObject(job, ::GetCurrentProcess()))
     return 3;
 
-  JobLevel job_level = JOB_LOCKDOWN;
+  JobLevel job_level = JobLevel::kLockdown;
   if (argc > 0 && wcscmp(argv[0], L"none") == 0)
-    job_level = JOB_NONE;
+    job_level = JobLevel::kNone;
 
   TestRunner runner(job_level, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
   runner.SetTimeout(TestTimeouts::action_timeout());
@@ -242,7 +242,8 @@ TEST(IntegrationTestsTest, WaitForStuckChild) {
 }
 
 TEST(IntegrationTestsTest, NoWaitForStuckChildNoJob) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
   runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
@@ -263,7 +264,8 @@ TEST(IntegrationTestsTest, TwoStuckChildrenSecondOneHasNoJob) {
   runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LOCKDOWN);
   runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
@@ -289,7 +291,8 @@ TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
   runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LOCKDOWN);
   runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
@@ -312,7 +315,7 @@ TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
 
 std::unique_ptr<TestRunner> StuckChildrenRunner() {
   auto runner = std::make_unique<TestRunner>(
-      JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+      JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
   runner->SetTimeout(TestTimeouts::action_timeout());
   runner->SetAsynchronous(true);
   runner->SetKillOnDestruction(false);

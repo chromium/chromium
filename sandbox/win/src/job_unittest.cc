@@ -7,6 +7,7 @@
 #include "sandbox/win/src/job.h"
 
 #include "base/win/scoped_process_information.h"
+#include "sandbox/win/src/security_level.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -18,7 +19,7 @@ TEST(JobTest, TestCreation) {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+              job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
 
     // check if the job exists.
     HANDLE job_handle =
@@ -43,7 +44,7 @@ TEST(JobTest, TestExceptions) {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name",
+              job.Init(JobLevel::kLockdown, L"my_test_job_name",
                        JOB_OBJECT_UILIMIT_READCLIPBOARD, 0));
 
     job_handle = job.GetHandle();
@@ -62,7 +63,7 @@ TEST(JobTest, TestExceptions) {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+              job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
 
     job_handle = job.GetHandle();
     ASSERT_TRUE(job_handle != INVALID_HANDLE_VALUE);
@@ -82,9 +83,9 @@ TEST(JobTest, DoubleInit) {
   // Create the job.
   Job job;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+            job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
   ASSERT_EQ(static_cast<DWORD>(ERROR_ALREADY_INITIALIZED),
-            job.Init(JOB_LOCKDOWN, L"test", 0, 0));
+            job.Init(JobLevel::kLockdown, L"test", 0, 0));
 }
 
 // Tests the error case when we use a method and the object is not yet
@@ -101,29 +102,27 @@ TEST(JobTest, NoInit) {
 TEST(JobTest, SecurityLevel) {
   Job job_lockdown;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job_lockdown.Init(JOB_LOCKDOWN, L"job_lockdown", 0, 0));
+            job_lockdown.Init(JobLevel::kLockdown, L"job_lockdown", 0, 0));
 
   Job job_limited_user;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job_limited_user.Init(JOB_LIMITED_USER, L"job_limited_user", 0, 0));
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_limited_user.Init(JobLevel::kLimitedUser, L"job_limited_user", 0, 0));
 
   Job job_interactive;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job_interactive.Init(JOB_INTERACTIVE, L"job_interactive", 0, 0));
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_interactive.Init(JobLevel::kInteractive, L"job_interactive", 0, 0));
 
   Job job_unprotected;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job_unprotected.Init(JOB_UNPROTECTED, L"job_unprotected", 0, 0));
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_unprotected.Init(JobLevel::kUnprotected, L"job_unprotected", 0, 0));
 
-  // JOB_NONE means we run without a job object so Init should fail.
+  // JobLevel::kNone means we run without a job object so Init should fail.
   Job job_none;
   ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job_none.Init(JOB_NONE, L"job_none", 0, 0));
-
-  Job job_bad_args;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job_bad_args.Init(static_cast<JobLevel>(JOB_NONE + 1),
-                              L"job_bad_args", 0, 0));
+            job_none.Init(JobLevel::kNone, L"job_none", 0, 0));
 }
 
 // Tests the method "AssignProcessToJob".
@@ -131,7 +130,7 @@ TEST(JobTest, ProcessInJob) {
   // Create the job.
   Job job;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job.Init(JOB_UNPROTECTED, L"job_test_process", 0, 0));
+            job.Init(JobLevel::kUnprotected, L"job_test_process", 0, 0));
 
   wchar_t notepad[] = L"notepad";
   STARTUPINFO si = {sizeof(si)};

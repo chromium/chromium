@@ -557,7 +557,7 @@ bool IsAppContainerEnabled() {
 
 ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
                              TargetPolicy* policy) {
-  DCHECK_NE(policy->GetJobLevel(), JOB_NONE);
+  DCHECK_NE(policy->GetJobLevel(), JobLevel::kNone);
 
 #ifdef _WIN64
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
@@ -784,7 +784,7 @@ ResultCode LaunchWithoutSandbox(
       static Job* job_object = nullptr;
       if (!job_object) {
         job_object = new Job;
-        DWORD result = job_object->Init(JOB_UNPROTECTED, nullptr, 0, 0);
+        DWORD result = job_object->Init(JobLevel::kUnprotected, nullptr, 0, 0);
         if (result != ERROR_SUCCESS) {
           job_object = nullptr;
           return SBOX_ERROR_CANNOT_INIT_JOB;
@@ -832,7 +832,7 @@ ResultCode SandboxWin::SetJobLevel(const base::CommandLine& cmd_line,
                                    uint32_t ui_exceptions,
                                    TargetPolicy* policy) {
   if (!ShouldSetJobLevel(policy->GetAllowNoSandboxJob()))
-    return policy->SetJobLevel(JOB_NONE, 0);
+    return policy->SetJobLevel(JobLevel::kNone, 0);
 
   ResultCode ret = policy->SetJobLevel(job_level, ui_exceptions);
   if (ret != SBOX_ALL_OK)
@@ -1070,7 +1070,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   if (result != SBOX_ALL_OK)
     return result;
 
-  result = SetJobLevel(cmd_line, JOB_LOCKDOWN, 0, policy.get());
+  result = SetJobLevel(cmd_line, JobLevel::kLockdown, 0, policy.get());
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -1130,7 +1130,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     // Set a policy that would normally allow for process creation. This allows
     // the mf cdm process to launch the protected media pipeline process
     // (mfpmp.exe) without process interception.
-    result = policy->SetJobLevel(JOB_INTERACTIVE, 0);
+    result = policy->SetJobLevel(JobLevel::kInteractive, 0);
     if (result != SBOX_ALL_OK)
       return result;
   }

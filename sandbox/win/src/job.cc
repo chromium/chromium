@@ -36,7 +36,7 @@ DWORD Job::Init(JobLevel security_level,
   // Set the settings for the different security levels. Note: The higher levels
   // inherit from the lower levels.
   switch (security_level) {
-    case JOB_LOCKDOWN: {
+    case JobLevel::kLockdown: {
       jeli.BasicLimitInformation.LimitFlags |=
           JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_WRITECLIPBOARD;
@@ -45,19 +45,19 @@ DWORD Job::Init(JobLevel security_level,
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_GLOBALATOMS;
       [[fallthrough]];
     }
-    case JOB_LIMITED_USER: {
+    case JobLevel::kLimitedUser: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_DISPLAYSETTINGS;
       jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
       jeli.BasicLimitInformation.ActiveProcessLimit = 1;
       [[fallthrough]];
     }
-    case JOB_INTERACTIVE: {
+    case JobLevel::kInteractive: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_DESKTOP;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_EXITWINDOWS;
       [[fallthrough]];
     }
-    case JOB_UNPROTECTED: {
+    case JobLevel::kUnprotected: {
       if (memory_limit) {
         jeli.BasicLimitInformation.LimitFlags |=
             JOB_OBJECT_LIMIT_PROCESS_MEMORY;
@@ -68,7 +68,9 @@ DWORD Job::Init(JobLevel security_level,
           JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
       break;
     }
-    default: { return ERROR_BAD_ARGUMENTS; }
+    case JobLevel::kNone: {
+      return ERROR_BAD_ARGUMENTS;
+    }
   }
 
   if (!::SetInformationJobObject(job_handle_.Get(),

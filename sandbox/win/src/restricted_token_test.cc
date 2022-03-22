@@ -24,7 +24,8 @@ namespace {
 int RunOpenProcessTest(bool unsandboxed,
                        bool lockdown_dacl,
                        DWORD access_mask) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
   runner.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   if (lockdown_dacl)
@@ -33,7 +34,8 @@ int RunOpenProcessTest(bool unsandboxed,
   // This spins up a renderer level process, we don't care about the result.
   runner.RunTest(L"IntegrationTestsTest_args 1");
 
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LIMITED);
   runner2.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner2.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner2.SetUnsandboxed(unsandboxed);
@@ -46,7 +48,7 @@ int RunOpenProcessTest(bool unsandboxed,
 int RunRestrictedOpenProcessTest(bool unsandboxed,
                                  bool lockdown_dacl,
                                  DWORD access_mask) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
   runner.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   if (lockdown_dacl) {
@@ -57,7 +59,8 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
   // This spins up a GPU level process, we don't care about the result.
   runner.RunTest(L"IntegrationTestsTest_args 1");
 
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LIMITED);
   runner2.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner2.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner2.SetUnsandboxed(unsandboxed);
@@ -68,7 +71,7 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
 }
 
 int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
   runner.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetLockdownDefaultDacl();
@@ -154,7 +157,7 @@ TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
 }
 
 TEST(RestrictedTokenTest, CheckNonAdminRestricted) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS,
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
                     USER_RESTRICTED_NON_ADMIN);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"RestrictedTokenTest_IsRestricted"));

@@ -226,7 +226,8 @@ TEST(PolicyTargetTest, OpenProcess) {
 }
 
 TEST(PolicyTargetTest, PolicyBaseNoJobLifetime) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
   runner.SetReleasePolicyInRun(true);
   // TargetPolicy and its SharedMemIPCServer should continue to exist until
   // the child process dies.

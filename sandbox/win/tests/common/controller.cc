@@ -126,7 +126,9 @@ TestRunner::TestRunner(JobLevel job_level,
 }
 
 TestRunner::TestRunner()
-    : TestRunner(JOB_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN) {}
+    : TestRunner(JobLevel::kLockdown,
+                 USER_RESTRICTED_SAME_ACCESS,
+                 USER_LOCKDOWN) {}
 
 TargetPolicy* TestRunner::GetPolicy() {
   return policy_.get();

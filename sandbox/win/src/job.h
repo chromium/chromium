@@ -8,14 +8,14 @@
 #include <stddef.h>
 
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/restricted_token_utils.h"
 
 namespace sandbox {
+enum class JobLevel;
 
 // Handles the creation of job objects based on a security profile.
 // Sample usage:
 //   Job job;
-//   job.Init(JOB_LOCKDOWN, nullptr);  //no job name
+//   job.Init(JobLevel::kLockdown, nullptr);  //no job name
 //   job.AssignProcessToJob(process_handle);
 class Job {
  public:

@@ -92,7 +92,7 @@ PolicyBase::PolicyBase()
     : ref_count(1),
       lockdown_level_(USER_LOCKDOWN),
       initial_level_(USER_LOCKDOWN),
-      job_level_(JOB_LOCKDOWN),
+      job_level_(JobLevel::kLockdown),
       ui_exceptions_(0),
       memory_limit_(0),
       use_alternate_desktop_(false),
@@ -153,7 +153,7 @@ ResultCode PolicyBase::SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) {
   // Cannot set this after the job has been initialized.
   if (job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
-  if (memory_limit_ && job_level == JOB_NONE) {
+  if (memory_limit_ && job_level == JobLevel::kNone) {
     return SBOX_ERROR_BAD_PARAMS;
   }
   job_level_ = job_level;
@@ -398,7 +398,7 @@ ResultCode PolicyBase::InitJob() {
   if (job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (job_level_ == JOB_NONE)
+  if (job_level_ == JobLevel::kNone)
     return SBOX_ALL_OK;
 
   // Create the Windows job object.
@@ -421,7 +421,7 @@ ResultCode PolicyBase::DropActiveProcessLimit() {
   if (!job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (job_level_ >= JOB_INTERACTIVE)
+  if (job_level_ >= JobLevel::kInteractive)
     return SBOX_ALL_OK;
 
   if (ERROR_SUCCESS != job_.SetActiveProcessLimit(0))

@@ -62,7 +62,7 @@ scoped_refptr<sandbox::TargetPolicy> GetSandboxPolicy(
       sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LOCKDOWN);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
-  sandbox_result = policy->SetJobLevel(sandbox::JOB_LOCKDOWN, 0);
+  sandbox_result = policy->SetJobLevel(sandbox::JobLevel::kLockdown, 0);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
 #ifdef NDEBUG

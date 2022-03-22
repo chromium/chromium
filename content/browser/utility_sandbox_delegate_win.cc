@@ -26,7 +26,7 @@ namespace {
 //  lockdown_level_(sandbox::USER_LOCKDOWN),
 //  initial_level_(sandbox::USER_RESTRICTED_SAME_ACCESS),
 //
-//  job_level_(sandbox::JOB_LOCKDOWN),
+//  job_level_(sandbox::JobLevel::kLockdown),
 //
 //  integrity_level_(sandbox::INTEGRITY_LEVEL_LOW),
 //  delayed_integrity_level_(sandbox::INTEGRITY_LEVEL_UNTRUSTED),
@@ -221,7 +221,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     // Unprotected token/job.
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
     sandbox::policy::SandboxWin::SetJobLevel(
-        cmd_line_, sandbox::JOB_UNPROTECTED, 0, policy);
+        cmd_line_, sandbox::JobLevel::kUnprotected, 0, policy);
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||

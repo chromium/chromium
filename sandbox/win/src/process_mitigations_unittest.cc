@@ -1023,8 +1023,8 @@ TEST(ProcessMitigationsTest, CheckWin10MsSigned_MsSuccess) {
 
 //------------------------------------------------------------------------------
 // Disable child process creation.
-// - JobLevel <= JOB_LIMITED_USER (on < WIN10_TH2).
-// - JobLevel <= JOB_LIMITED_USER which also triggers setting
+// - JobLevel <= JobLevel::kLimitedUser (on < WIN10_TH2).
+// - JobLevel <= JobLevel::kLimitedUser which also triggers setting
 //   PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY to
 //   PROCESS_CREATION_CHILD_PROCESS_RESTRICTED in
 //   BrokerServicesBase::SpawnTarget (on >= WIN10_TH2).
@@ -1038,7 +1038,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   // Set a policy that would normally allow for process creation.
-  policy->SetJobLevel(JOB_INTERACTIVE, 0);
+  policy->SetJobLevel(JobLevel::kInteractive, 0);
   policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 
@@ -1060,9 +1060,9 @@ TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
   TestRunner runner;
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  // Now set the job level to be <= JOB_LIMITED_USER
+  // Now set the job level to be <= JobLevel::kLimitedUser
   // and ensure we can no longer create a child process.
-  policy->SetJobLevel(JOB_LIMITED_USER, 0);
+  policy->SetJobLevel(JobLevel::kLimitedUser, 0);
   policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 
@@ -1088,7 +1088,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   // Set a policy that would normally allow for process creation.
-  policy->SetJobLevel(JOB_INTERACTIVE, 0);
+  policy->SetJobLevel(JobLevel::kInteractive, 0);
   policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 

@@ -43,8 +43,8 @@ SBOX_TESTS_COMMAND int CheckIntegrityLevel(int argc, wchar_t** argv) {
 }
 
 std::unique_ptr<TestRunner> LowILRealRunner() {
-  auto runner = std::make_unique<TestRunner>(JOB_LOCKDOWN, USER_INTERACTIVE,
-                                             USER_INTERACTIVE);
+  auto runner = std::make_unique<TestRunner>(
+      JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
   runner->SetTimeout(INFINITE);
   runner->GetPolicy()->SetAlternateDesktop(true);
   runner->GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
@@ -61,8 +61,8 @@ TEST(IntegrityLevelTest, TestLowILReal) {
 }
 
 std::unique_ptr<TestRunner> LowILDelayedRunner() {
-  auto runner = std::make_unique<TestRunner>(JOB_LOCKDOWN, USER_INTERACTIVE,
-                                             USER_INTERACTIVE);
+  auto runner = std::make_unique<TestRunner>(
+      JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
   runner->SetTimeout(INFINITE);
   runner->GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   return runner;
@@ -78,7 +78,7 @@ TEST(DelayedIntegrityLevelTest, TestLowILDelayed) {
 }
 
 TEST(IntegrityLevelTest, TestNoILChange) {
-  TestRunner runner(JOB_LOCKDOWN, USER_INTERACTIVE, USER_INTERACTIVE);
+  TestRunner runner(JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
 
   runner.SetTimeout(INFINITE);
 
@@ -86,7 +86,8 @@ TEST(IntegrityLevelTest, TestNoILChange) {
 }
 
 TEST(IntegrityLevelTest, TestUntrustedIL) {
-  TestRunner runner(JOB_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner(JobLevel::kLockdown, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
   runner.GetPolicy()->SetLockdownDefaultDacl();
@@ -98,7 +99,8 @@ TEST(IntegrityLevelTest, TestUntrustedIL) {
 }
 
 TEST(IntegrityLevelTest, TestLowIL) {
-  TestRunner runner(JOB_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  TestRunner runner(JobLevel::kLockdown, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   runner.GetPolicy()->SetLockdownDefaultDacl();

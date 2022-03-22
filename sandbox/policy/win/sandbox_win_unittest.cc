@@ -385,7 +385,7 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
   // detail, but just that GeneratePolicyForSandboxedProcess generated some kind
   // of valid policy.
   EXPECT_EQ(IntegrityLevel::INTEGRITY_LEVEL_LOW, policy->GetIntegrityLevel());
-  EXPECT_EQ(JobLevel::JOB_LOCKDOWN, policy->GetJobLevel());
+  EXPECT_EQ(JobLevel::kLockdown, policy->GetJobLevel());
   EXPECT_EQ(TokenLevel::USER_LOCKDOWN, policy->GetLockdownTokenLevel());
 }
 
