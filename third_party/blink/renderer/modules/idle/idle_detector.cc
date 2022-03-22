@@ -10,6 +10,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -162,23 +164,35 @@ void IdleDetector::Abort(AbortSignal* signal) {
   if (signal_ != signal)
     return;
 
-  if (resolver_) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+  ScriptState* resolver_script_state(nullptr);
+
+  if (resolver_ && (resolver_script_state = resolver_->GetScriptState()) &&
+      IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                    resolver_script_state)) {
+    ScriptState::Scope script_state_scope(resolver_->GetScriptState());
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kAbortError, kAbortMessage));
-    resolver_ = nullptr;
   }
 
+  resolver_ = nullptr;
   has_state_ = false;
   receiver_.reset();
 }
 
 void IdleDetector::OnMonitorDisconnected() {
-  if (resolver_) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+  ScriptState* resolver_script_state(nullptr);
+
+  if (resolver_ && (resolver_script_state = resolver_->GetScriptState()) &&
+      IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                    resolver_script_state)) {
+    ScriptState::Scope script_state_scope(resolver_->GetScriptState());
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotSupportedError, "Idle detection not available."));
-    resolver_ = nullptr;
   }
 
+  resolver_ = nullptr;
   has_state_ = false;
   receiver_.reset();
 }
@@ -186,11 +200,21 @@ void IdleDetector::OnMonitorDisconnected() {
 void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
                                 IdleManagerError error,
                                 mojom::blink::IdleStatePtr state) {
+  DCHECK(resolver);
+  ScriptState* resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    resolver_ = nullptr;
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   switch (error) {
     case IdleManagerError::kPermissionDisabled:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError,
-          "Idle detection permission denied"));
+      resolver->Reject(
+          V8ThrowDOMException::CreateOrDie(resolver_script_state->GetIsolate(),
+                                           DOMExceptionCode::kNotAllowedError,
+                                           "Idle detection permission denied"));
       break;
     case IdleManagerError::kSuccess:
       DCHECK(state);
