@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -148,16 +149,52 @@ void SetUpExtensionState(const base::FilePath& profile_path) {
   ASSERT_TRUE(status.ok());
 }
 
+void SetUpIndexedDB(const base::FilePath& profile_path,
+                    bool ash = true,
+                    bool lacros = true) {
+  if (lacros) {
+    const auto [move_extension_blob_path, move_extension_leveldb_path] =
+        browser_data_migrator_util::GetIndexedDBPaths(profile_path,
+                                                      kMoveExtensionId);
+    ASSERT_TRUE(base::CreateDirectory(move_extension_blob_path));
+    ASSERT_TRUE(base::CreateDirectory(move_extension_leveldb_path));
+    ASSERT_EQ(base::WriteFile(move_extension_blob_path.Append(kDataFilePath),
+                              kDataContent, kDataSize),
+              kDataSize);
+    ASSERT_EQ(base::WriteFile(move_extension_leveldb_path.Append(kDataFilePath),
+                              kDataContent, kDataSize),
+              kDataSize);
+  }
+
+  if (ash) {
+    const char* keep_extension_id =
+        browser_data_migrator_util::kExtensionKeepList[0];
+    const auto [keep_extension_blob_path, keep_extension_leveldb_path] =
+        browser_data_migrator_util::GetIndexedDBPaths(profile_path,
+                                                      keep_extension_id);
+    ASSERT_TRUE(base::CreateDirectory(keep_extension_blob_path));
+    ASSERT_TRUE(base::CreateDirectory(keep_extension_leveldb_path));
+    ASSERT_EQ(base::WriteFile(keep_extension_blob_path.Append(kDataFilePath),
+                              kDataContent, kDataSize),
+              kDataSize);
+    ASSERT_EQ(base::WriteFile(keep_extension_leveldb_path.Append(kDataFilePath),
+                              kDataContent, kDataSize),
+              kDataSize);
+  }
+}
+
 void SetUpProfileDirectory(const base::FilePath& path) {
   // Setup `path` as below.
   // |- Bookmarks/
   // |- Cache/
   // |- Cookies
   // |- Downloads/
-  // |- Extensions/
   // |- Extension State/
-  // |- Policy/
+  // |- Extensions/
+  // |- IndexedDB/
   // |- Local Storage/
+  // |- Login Data/
+  // |- Policy/
 
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
   ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
@@ -187,6 +224,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   SetUpExtensions(path);
   SetUpLocalStorage(path);
   SetUpExtensionState(path);
+  SetUpIndexedDB(path);
 }
 
 std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
@@ -322,6 +360,10 @@ TEST(MoveMigratorTest, MoveLacrosItemsToNewDir) {
   EXPECT_FALSE(base::PathExists(original_profile_dir.Append(kCookiesFilePath)));
   EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kBookmarksFilePath)));
   EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kCookiesFilePath)));
+  EXPECT_TRUE(base::PathExists(
+      tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+  EXPECT_TRUE(base::PathExists(
+      tmp_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath)));
 }
 
 TEST(MoveMigratorTest, MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem) {
@@ -443,13 +485,16 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // migration.
     // |- Downloads
     // |- Extensions
+    // |- IndexedDB
     // |- Local Storage
+    // |- Login Data
     // |- Policy
     // |- lacros/First Run
     // |- lacros/Default/
     //     |- Bookmarks
     //     |- Cookies
     //     |- Extensions
+    //     |- IndexedDB
     //     |- Local Storage
     //     |- Policy
 
@@ -513,6 +558,38 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // Lacros contains all the keys.
     auto lacros_local_storage = ReadLevelDB(lacros_local_storage_path);
     EXPECT_EQ(5, lacros_local_storage.size());
+
+    // Ash contains only IndexedDB folders of extensions in keeplist.
+    {
+      const auto [keep_extension_blob_path, keep_extension_leveldb_path] =
+          browser_data_migrator_util::GetIndexedDBPaths(
+              original_profile_dir_, keep_extension_id.c_str());
+      const auto [move_extension_blob_path, move_extension_leveldb_path] =
+          browser_data_migrator_util::GetIndexedDBPaths(original_profile_dir_,
+                                                        kMoveExtensionId);
+      EXPECT_TRUE(
+          base::PathExists(keep_extension_blob_path.Append(kDataFilePath)));
+      EXPECT_TRUE(
+          base::PathExists(keep_extension_leveldb_path.Append(kDataFilePath)));
+      EXPECT_FALSE(base::PathExists(move_extension_blob_path));
+      EXPECT_FALSE(base::PathExists(move_extension_leveldb_path));
+    }
+
+    // Lacros contains only IndexedDB folders of extensions not in keeplist.
+    {
+      const auto [keep_extension_blob_path, keep_extension_leveldb_path] =
+          browser_data_migrator_util::GetIndexedDBPaths(
+              new_profile_dir, keep_extension_id.c_str());
+      const auto [move_extension_blob_path, move_extension_leveldb_path] =
+          browser_data_migrator_util::GetIndexedDBPaths(new_profile_dir,
+                                                        kMoveExtensionId);
+      EXPECT_FALSE(base::PathExists(keep_extension_blob_path));
+      EXPECT_FALSE(base::PathExists(keep_extension_leveldb_path));
+      EXPECT_TRUE(
+          base::PathExists(move_extension_blob_path.Append(kDataFilePath)));
+      EXPECT_TRUE(
+          base::PathExists(move_extension_leveldb_path.Append(kDataFilePath)));
+    }
   }
 
   void TearDown() override { EXPECT_TRUE(scoped_temp_dir_.Delete()); }
@@ -555,6 +632,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   // |- move_migrator/Default/
   //     |- Bookmarks
   //     |- Extensions
+  //     |- IndexedDB
   //     |- Local Storage
   //     |- Policy
   // |- move_migrator_split/
@@ -587,6 +665,12 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
 
+  // IndexedDB has been moved to Lacros's tmp dir.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kIndexedDBFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath)));
+
   // Local Storage has been split.
   ASSERT_TRUE(
       base::Move(original_profile_dir_.Append(
@@ -618,6 +702,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   //     |- Bookmarks
   //     |- Cookies
   //     |- Extensions
+  //     |- IndexedDB
   //     |- Local Storage
   //     |- Policy
   // |- move_migrator_split/
@@ -652,6 +737,11 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+  // Same for IndexedDB.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kIndexedDBFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath)));
 
   // Local Storage has been split, but not yet moved to Ash profile dir.
   ASSERT_TRUE(
@@ -714,6 +804,12 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
       browser_data_migrator_util::kExtensionsFilePath)));
   SetUpExtensions(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpExtensions(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+
+  // IndexedDB has been split, and Ash's version is in its final place.
+  ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
+      browser_data_migrator_util::kIndexedDBFilePath)));
+  SetUpIndexedDB(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpIndexedDB(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   // Local Storage has been split, and Ash's version is in its final place.
   ASSERT_TRUE(

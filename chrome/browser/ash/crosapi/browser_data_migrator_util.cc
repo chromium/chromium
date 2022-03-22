@@ -138,6 +138,10 @@ absl::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
 constexpr char kMetaPrefix[] = "META:chrome-extension://";
 constexpr char kKeyPrefix[] = "_chrome-extension://";
 
+// IndexedDB extension suffixes.
+constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
+constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
+
 }  // namespace
 
 CancelFlag::CancelFlag() : cancelled_(false) {}
@@ -569,6 +573,18 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
   }
 
   return it->status();
+}
+
+IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,
+                                 const char* extension_id) {
+  const base::FilePath indexed_db_dir = profile_path.Append(kIndexedDBFilePath);
+  const base::FilePath base_path = indexed_db_dir.Append(
+      "chrome_extension_" + std::string(extension_id) + "_0");
+
+  return {
+      base_path.AddExtension(kIndexedDBBlobExtension),
+      base_path.AddExtension(kIndexedDBLevelDBExtension),
+  };
 }
 
 bool MigrateLevelDB(const base::FilePath& original_path,
