@@ -14,7 +14,8 @@
 
   #footerContainer {
     border-top: 0;
-    display: flex;
+    /* Components that use the footer should set this to "flex". */
+    display: var(--settings-textarea-footer-display, none);
     font-size: var(--cr-form-field-label-font-size);
     height: var(--cr-form-field-label-height);
     justify-content: space-between;
@@ -43,10 +44,10 @@
   :host([autogrow]) textarea {
     border: 0;
     box-sizing: border-box;
-    padding-bottom: var(--cr-input-padding-bottom);
-    padding-inline-end: var(--cr-input-padding-end);
-    padding-inline-start: var(--cr-input-padding-start);
-    padding-top: var(--cr-input-padding-top);
+    padding-bottom: var(--cr-input-padding-bottom, 6px);
+    padding-inline-end: var(--cr-input-padding-end, 8px);
+    padding-inline-start: var(--cr-input-padding-start, 8px);
+    padding-top: var(--cr-input-padding-top, 6px);
   }
 
   :host([autogrow]) textarea {
@@ -76,8 +77,7 @@
       maxlength$="[[maxlength]]" readonly$="[[readonly]]"></textarea>
   <div id="underline"></div>
 </div>
-<div id="footerContainer"
-    class$="cr-row" hidden$="[[!shouldShowFooter_(firstFooter, secondFooter)]]">
+<div id="footerContainer" class="cr-row">
   <div id="firstFooter" aria-live="[[getFooterAria_(invalid)]]">
     [[firstFooter]]
   </div>

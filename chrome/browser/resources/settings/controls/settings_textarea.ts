@@ -175,10 +175,6 @@ export class SettingsTextareaElement extends PolymerElement {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
   }
 
-  private shouldShowFooter_(): boolean {
-    return !!(this.firstFooter || this.secondFooter);
-  }
-
   private getFooterAria_(): string {
     return this.invalid ? 'assertive' : 'polite';
   }
