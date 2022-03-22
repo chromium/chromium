@@ -446,7 +446,7 @@ void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
       page_->OnAppAdded(CreateUIAppPtr(update));
     }
 
-    if (update.ShowInManagement().value_or(true) ||
+    if (!update.ShowInManagement().value_or(true) ||
         !apps_util::IsInstalled(update.Readiness())) {
       page_->OnAppRemoved(update.AppId());
     }
