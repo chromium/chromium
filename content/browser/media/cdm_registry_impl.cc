@@ -48,6 +48,11 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
                             available);
 }
 
+bool IsEnabled(CdmInfo::Status status) {
+  return status == CdmInfo::Status::kEnabled ||
+         status == CdmInfo::Status::kCommandLineOverridden;
+}
+
 // Returns a CdmCapability with codecs specified on command line. Returns null
 // if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
 // codecs specified.
@@ -124,21 +129,20 @@ absl::optional<media::CdmCapability> GetSoftwareSecureCapability(
 
 // Trying to get hardware secure capability synchronously. If lazy
 // initialization is needed, set `lazy_initialize` to true.
-absl::optional<media::CdmCapability> GetHardwareSecureCapability(
-    const CdmRegistryImpl& cdm_registry_impl,
-    const std::string& key_system,
-    bool* lazy_initialize) {
-  *lazy_initialize = false;
+std::tuple<absl::optional<media::CdmCapability>, CdmInfo::Status>
+GetHardwareSecureCapability(const CdmRegistryImpl& cdm_registry_impl,
+                            const std::string& key_system) {
+  using Status = CdmInfo::Status;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kLacrosUseChromeosProtectedMedia)) {
-    return absl::nullopt;
+    return {absl::nullopt, Status::kHardwareSecureDecryptionDisabled};
   }
 #elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!media::IsHardwareSecureDecryptionEnabled()) {
     DVLOG(1) << "Hardware secure decryption disabled";
-    return absl::nullopt;
+    return {absl::nullopt, Status::kHardwareSecureDecryptionDisabled};
   }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
@@ -147,7 +151,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
       GetHardwareSecureCapabilityOverriddenFromCommandLine();
   if (overridden_capability) {
     DVLOG(1) << "Hardware secure codecs overridden from command line";
-    return overridden_capability;
+    return {overridden_capability, Status::kCommandLineOverridden};
   }
 
   // Hardware secure video codecs need hardware video decoder support.
@@ -159,7 +163,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
     DVLOG(1) << "Hardware secure codecs not supported because accelerated "
                 "video decode disabled";
-    return absl::nullopt;
+    return {absl::nullopt, Status::kAcceleratedVideoDecodeDisabled};
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -170,8 +174,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
               gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY)) {
     DVLOG(1) << "Disable Media Foundation Hardware security due to GPU "
                 "workarounds";
-
-    return absl::nullopt;
+    return {absl::nullopt, Status::kGpuFeatureDisabled};
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -179,17 +182,14 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
       key_system, CdmInfo::Robustness::kHardwareSecure);
   if (!cdm_info) {
     DVLOG(1) << "No Hardware secure decryption CDM registered";
-    return absl::nullopt;
+    return {absl::nullopt, Status::kEnabled};
   }
 
-  if (cdm_info->capability) {
-    DVLOG(1) << "Hardware secure decryption CDM registered";
-    return cdm_info->capability;
-  }
+  DCHECK(!(cdm_info->status == CdmInfo::Status::kUninitialized &&
+           cdm_info->capability))
+      << "Capability should not have value if uninitialized.";
 
-  DVLOG(1) << "Lazy initialization of CdmCapability";
-  *lazy_initialize = true;
-  return absl::nullopt;
+  return {cdm_info->capability, cdm_info->status};
 }
 
 }  // namespace
@@ -304,16 +304,18 @@ void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
       continue;
     }
 
-    if (cdm_info->capability) {
+    if (cdm_info->status != CdmInfo::Status::kUninitialized) {
       DVLOG(1) << "Hardware secure capability already finalized";
       continue;
     }
 
-    bool lazy_initialize = false;
-    auto hw_secure_capability =
-        GetHardwareSecureCapability(*this, key_system, &lazy_initialize);
-    if (!lazy_initialize) {
-      FinalizeHardwareSecureCapability(key_system, hw_secure_capability);
+    absl::optional<media::CdmCapability> hw_secure_capability;
+    CdmInfo::Status status;
+    std::tie(hw_secure_capability, status) =
+        GetHardwareSecureCapability(*this, key_system);
+    if (status != CdmInfo::Status::kUninitialized) {
+      FinalizeHardwareSecureCapability(key_system, hw_secure_capability,
+                                       status);
       continue;
     }
 
@@ -327,7 +329,7 @@ void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
 
   // If not empty, we'll handle it in OnHardwareSecureCapabilityInitialized().
   if (pending_lazy_initialize_key_systems_.empty())
-    UpdateKeySystemCapabilities();
+    UpdateAndNotifyKeySystemCapabilities();
 }
 
 // TODO(xhwang): Find a way to register this as callbacks so we don't have to
@@ -361,18 +363,21 @@ void CdmRegistryImpl::OnHardwareSecureCapabilityInitialized(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_lazy_initialize_key_systems_.count(key_system));
 
-  FinalizeHardwareSecureCapability(key_system, std::move(cdm_capability));
+  FinalizeHardwareSecureCapability(key_system, std::move(cdm_capability),
+                                   CdmInfo::Status::kEnabled);
 
   pending_lazy_initialize_key_systems_.erase(key_system);
   if (pending_lazy_initialize_key_systems_.empty())
-    UpdateKeySystemCapabilities();
+    UpdateAndNotifyKeySystemCapabilities();
 }
 
-bool CdmRegistryImpl::FinalizeHardwareSecureCapability(
+void CdmRegistryImpl::FinalizeHardwareSecureCapability(
     const std::string& key_system,
-    absl::optional<media::CdmCapability> cdm_capability) {
+    absl::optional<media::CdmCapability> cdm_capability,
+    CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(status != CdmInfo::Status::kUninitialized);
 
   auto itr = cdms_.begin();
   for (; itr != cdms_.end(); itr++) {
@@ -383,26 +388,20 @@ bool CdmRegistryImpl::FinalizeHardwareSecureCapability(
   }
 
   if (itr == cdms_.end()) {
-    DVLOG(1) << __func__ << ": Cannot find CdmInfo to finalize";
-    return false;
+    DLOG(ERROR) << __func__ << ": Cannot find CdmInfo to finalize";
+    return;
   }
 
-  if (itr->capability) {
-    DVLOG(1) << __func__ << ": CdmCapability already finalized";
-    return false;
+  if (itr->status != CdmInfo::Status::kUninitialized) {
+    DLOG(ERROR) << __func__ << ": CdmCapability already finalized";
+    return;
   }
 
-  if (!cdm_capability) {
-    DVLOG(1) << __func__ << ": No CdmCapability supported. Removing CdmInfo!";
-    cdms_.erase(itr);
-    return false;
-  }
-
-  itr->capability = cdm_capability.value();
-  return true;
+  itr->status = status;
+  itr->capability = cdm_capability;
 }
 
-void CdmRegistryImpl::UpdateKeySystemCapabilities() {
+void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -436,12 +435,19 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
   std::set<std::string> supported_key_systems = GetSupportedKeySystems();
   for (const auto& key_system : supported_key_systems) {
     media::mojom::KeySystemCapability capability;
+
+    // Software secure capability
     capability.sw_secure_capability =
         GetSoftwareSecureCapability(*this, key_system);
-    bool lazy_initialize = false;
+
+    // Hardware secure capability
+    absl::optional<media::CdmCapability> hw_secure_capability;
+    CdmInfo::Status status;
+    std::tie(hw_secure_capability, status) =
+        GetHardwareSecureCapability(*this, key_system);
+    DCHECK(status != CdmInfo::Status::kUninitialized);
     capability.hw_secure_capability =
-        GetHardwareSecureCapability(*this, key_system, &lazy_initialize);
-    DCHECK(!lazy_initialize);
+        IsEnabled(status) ? hw_secure_capability : absl::nullopt;
 
     if (capability.sw_secure_capability || capability.hw_secure_capability)
       key_system_capabilities[key_system] = std::move(capability);

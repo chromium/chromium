@@ -622,12 +622,13 @@ export class ClientRenderer {
   createCdmRow_(cdm) {
     const template = $('cdm-row');
     const span = template.content.querySelectorAll('span');
-    span[0].textContent = cdm.key_system;
-    span[1].textContent = cdm.robustness;
-    span[2].textContent = cdm.name;
-    span[3].textContent = cdm.version;
-    span[4].textContent = cdm.path;
-    span[5].textContent = JSON.stringify(cdm.capability);
+    span[0].textContent = 'Key System: ' + cdm.key_system;
+    span[1].textContent = 'Robustness: ' + cdm.robustness;
+    span[2].textContent = 'Name: ' + cdm.name;
+    span[3].textContent = 'Version: ' + cdm.version;
+    span[4].textContent = 'Path: ' + cdm.path;
+    span[5].textContent = 'Status: ' + cdm.status;
+    span[6].textContent = 'Capabilities: ' + JSON.stringify(cdm.capability);
     return document.importNode(template.content, true);
   }
 }

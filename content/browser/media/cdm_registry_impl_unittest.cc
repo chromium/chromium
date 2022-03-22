@@ -415,7 +415,8 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_LazyInitialize_NotSupported) {
 
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
-  ASSERT_FALSE(cdm_info);
+  ASSERT_EQ(cdm_info->status, CdmInfo::Status::kEnabled);
+  ASSERT_FALSE(cdm_info->capability);
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecureDisabled) {
@@ -430,7 +431,9 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecureDisabled) {
 
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
-  ASSERT_FALSE(cdm_info);
+  ASSERT_EQ(cdm_info->status,
+            CdmInfo::Status::kHardwareSecureDecryptionDisabled);
+  ASSERT_FALSE(cdm_info->capability);
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareAndHardwareSecure) {

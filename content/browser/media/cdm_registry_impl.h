@@ -83,13 +83,13 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // CdmCapability is null (lazy initialization). No-op if the CdmInfo does not
   // exist, or if the CdmInfo's CdmCapability is not null. The CdmInfo will be
   // removed if `cdm_capability` is null, since the CDM does not support any
-  // capability. Returns whether the CdmInfo was successfully updated with a
-  // valid CdmCapability.
-  bool FinalizeHardwareSecureCapability(
+  // capability.
+  void FinalizeHardwareSecureCapability(
       const std::string& key_system,
-      absl::optional<media::CdmCapability> cdm_capability);
+      absl::optional<media::CdmCapability> cdm_capability,
+      CdmInfo::Status status);
 
-  void UpdateKeySystemCapabilities();
+  void UpdateAndNotifyKeySystemCapabilities();
 
   std::set<std::string> GetSupportedKeySystems() const;
 

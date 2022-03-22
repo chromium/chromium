@@ -38,6 +38,19 @@ struct CONTENT_EXPORT CdmInfo {
     kSoftwareSecure,
   };
 
+  // Status of the `capability`.
+  enum class Status {
+    kUninitialized,  // Uninitialized; `capability` must be nullopt.
+    kEnabled,  // Initialized and enabled; if `capability` is nullopt, then no
+               // capability is supported.
+    kCommandLineOverridden,  // Overridden from command line and enabled
+    kHardwareSecureDecryptionDisabled,  // kHardwareSecureDecryption disabled
+    kAcceleratedVideoDecodeDisabled,    // kDisableAcceleratedVideoDecode
+    kGpuFeatureDisabled,  // gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY
+    kDisabled,            // Explicitly disabled
+  };
+
+  // If `capability` is nullopt, the `capability` will be lazy initialized.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
           absl::optional<media::CdmCapability> capability,
@@ -64,9 +77,10 @@ struct CONTENT_EXPORT CdmInfo {
   Robustness robustness;
 
   // CDM capability, e.g. video codecs, encryption schemes and session types.
-  // Optional to allow lazy initialization, i.e. to populate the capability
-  // after registration.
   absl::optional<media::CdmCapability> capability;
+
+  // Whether the CdmInfo is enabled etc. This only affects capability query.
+  Status status = Status::kEnabled;
 
   // Whether we also support sub key systems of the `key_system`.
   // A sub key system to a key system is like a sub domain to a domain.

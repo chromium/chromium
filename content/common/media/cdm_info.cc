@@ -26,18 +26,23 @@ CdmInfo::CdmInfo(const std::string& key_system,
       version(version),
       path(path) {
   DCHECK(!this->capability || !this->capability->encryption_schemes.empty());
+
+  if (!this->capability.has_value())
+    this->status = Status::kUninitialized;
 }
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
                  absl::optional<media::CdmCapability> capability,
                  const media::CdmType& type)
-    : key_system(key_system),
-      robustness(robustness),
-      capability(std::move(capability)),
-      type(type) {
-  DCHECK(!this->capability || !this->capability->encryption_schemes.empty());
-}
+    : CdmInfo(key_system,
+              robustness,
+              std::move(capability),
+              /*supports_sub_key_systems=*/false,
+              /*name=*/"",
+              type,
+              base::Version(),
+              base::FilePath()) {}
 
 CdmInfo::CdmInfo(const CdmInfo& other) = default;
 
