@@ -192,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
 #else
 #define MAYBE_Histograms_StorageThenClick Histograms_StorageThenClick
 #endif
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+                       MAYBE_Histograms_StorageThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
@@ -217,8 +218,15 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Histograms_StorageThenClick_Incognito \
+  DISABLED_Histograms_StorageThenClick_Incognito
+#else
+#define MAYBE_Histograms_StorageThenClick_Incognito \
+  Histograms_StorageThenClick_Incognito
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
-                       Histograms_StorageThenClick_Incognito) {
+                       MAYBE_Histograms_StorageThenClick_Incognito) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
@@ -254,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
 #else
 #define MAYBE_Histograms_ClickThenStorage Histograms_ClickThenStorage
 #endif
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+                       MAYBE_Histograms_ClickThenStorage) {
   base::HistogramTester histograms;
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
