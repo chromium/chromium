@@ -38,9 +38,9 @@ using CheckOptInStatusCallback =
 using UpdateOptInStatusCallback = base::OnceCallback<void(bool)>;
 using DeleteAssociatedDeviceByAccountKeyCallback =
     base::OnceCallback<void(bool)>;
-using GetSavedDevicesCallback = base::OnceCallback<void(
-    nearby::fastpair::OptInStatus,
-    std::vector<nearby::fastpair::StoredDiscoveryItem>)>;
+using GetSavedDevicesCallback =
+    base::OnceCallback<void(nearby::fastpair::OptInStatus,
+                            std::vector<nearby::fastpair::FastPairDevice>)>;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.

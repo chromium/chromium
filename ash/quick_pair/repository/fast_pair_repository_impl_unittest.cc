@@ -157,7 +157,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
 
   void GetSavedDevicesCallback(
       nearby::fastpair::OptInStatus status,
-      std::vector<nearby::fastpair::StoredDiscoveryItem> devices) {
+      std::vector<nearby::fastpair::FastPairDevice> devices) {
     status_ = status;
     devices_ = devices;
   }
@@ -165,7 +165,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
  protected:
   std::unique_ptr<FastPairRepositoryImpl> fast_pair_repository_;
   nearby::fastpair::OptInStatus status_;
-  std::vector<nearby::fastpair::StoredDiscoveryItem> devices_;
+  std::vector<nearby::fastpair::FastPairDevice> devices_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   testing::NiceMock<device::MockBluetoothDevice> ble_bluetooth_device_;
   testing::NiceMock<device::MockBluetoothDevice> classic_bluetooth_device_;

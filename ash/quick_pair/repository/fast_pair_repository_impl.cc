@@ -303,16 +303,14 @@ void FastPairRepositoryImpl::OnGetSavedDevices(
 
   nearby::fastpair::OptInStatus opt_in_status =
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
-  std::vector<nearby::fastpair::StoredDiscoveryItem> saved_devices;
+  std::vector<nearby::fastpair::FastPairDevice> saved_devices;
   for (const auto& info : user_devices->fast_pair_info()) {
     if (info.has_opt_in_status()) {
       opt_in_status = info.opt_in_status();
     }
 
-    nearby::fastpair::StoredDiscoveryItem device;
-    if (info.has_device() &&
-        device.ParseFromString(info.device().discovery_item_bytes())) {
-      saved_devices.push_back(device);
+    if (info.has_device()) {
+      saved_devices.push_back(info.device());
     }
   }
 
