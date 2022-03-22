@@ -35,7 +35,7 @@ constexpr char kBookmarksFilePath[] = "Bookmarks";             // lacros
 constexpr char kCookiesFilePath[] = "Cookies";                 // lacros
 constexpr char kDownloadsFilePath[] = "Downloads";             // remain in ash
 constexpr char kExtensionStateFilePath[] = "Extension State";  // split
-constexpr char kLoginDataFilePath[] = "Login Data";            // need copy
+constexpr char kPolicyFilePath[] = "Policy";                   // need copy
 constexpr char kCacheFilePath[] = "Cache";                     // deletable
 
 constexpr char kDataFilePath[] = "Data";
@@ -156,7 +156,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   // |- Downloads/
   // |- Extensions/
   // |- Extension State/
-  // |- Login Data/
+  // |- Policy/
   // |- Local Storage/
 
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
@@ -179,11 +179,10 @@ void SetUpProfileDirectory(const base::FilePath& path) {
       base::WriteFile(path.Append(kCookiesFilePath), kDataContent, kDataSize),
       kDataSize);
 
-  ASSERT_TRUE(base::CreateDirectory(path.Append(kLoginDataFilePath)));
-  ASSERT_EQ(
-      base::WriteFile(path.Append(kLoginDataFilePath).Append(kDataFilePath),
-                      kDataContent, kDataSize),
-      kDataSize);
+  ASSERT_TRUE(base::CreateDirectory(path.Append(kPolicyFilePath)));
+  ASSERT_EQ(base::WriteFile(path.Append(kPolicyFilePath).Append(kDataFilePath),
+                            kDataContent, kDataSize),
+            kDataSize);
 
   SetUpExtensions(path);
   SetUpLocalStorage(path);
@@ -302,7 +301,7 @@ TEST(MoveMigratorTest, SetupLacrosDir) {
   // Check chrome::kFirstRunSentinel, need copy item and lacros item exist in
   // lacros dir.
   EXPECT_TRUE(base::PathExists(tmp_user_dir.Append(chrome::kFirstRunSentinel)));
-  EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kLoginDataFilePath)));
+  EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kPolicyFilePath)));
 }
 
 TEST(MoveMigratorTest, MoveLacrosItemsToNewDir) {
@@ -445,14 +444,14 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // |- Downloads
     // |- Extensions
     // |- Local Storage
-    // |- Login Data
+    // |- Policy
     // |- lacros/First Run
     // |- lacros/Default/
     //     |- Bookmarks
     //     |- Cookies
     //     |- Extensions
     //     |- Local Storage
-    //     |- Login Data
+    //     |- Policy
 
     const base::FilePath new_user_dir =
         original_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -471,8 +470,8 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     EXPECT_TRUE(base::PathExists(new_profile_dir.Append(kCookiesFilePath)));
 
     EXPECT_TRUE(
-        base::PathExists(original_profile_dir_.Append(kLoginDataFilePath)));
-    EXPECT_TRUE(base::PathExists(new_profile_dir.Append(kLoginDataFilePath)));
+        base::PathExists(original_profile_dir_.Append(kPolicyFilePath)));
+    EXPECT_TRUE(base::PathExists(new_profile_dir.Append(kPolicyFilePath)));
 
     EXPECT_TRUE(
         base::PathExists(original_profile_dir_.Append(kDownloadsFilePath)));
@@ -551,13 +550,13 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   // Setup `original_profile_dir_` as below.
   // |- Cookies
   // |- Downloads
-  // |- Login Data
+  // |- Policy
   // |- move_migrator/First Run
   // |- move_migrator/Default/
   //     |- Bookmarks
   //     |- Extensions
   //     |- Local Storage
-  //     |- Login Data
+  //     |- Policy
   // |- move_migrator_split/
   //     |- Local Storage
 
@@ -576,9 +575,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
       0);
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
-  ASSERT_TRUE(base::CopyDirectory(
-      original_profile_dir_.Append(kLoginDataFilePath),
-      tmp_profile_dir.Append(kLoginDataFilePath), true /* recursive */));
+  ASSERT_TRUE(base::CopyDirectory(original_profile_dir_.Append(kPolicyFilePath),
+                                  tmp_profile_dir.Append(kPolicyFilePath),
+                                  true /* recursive */));
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
                          tmp_profile_dir.Append(kBookmarksFilePath)));
 
@@ -613,14 +612,14 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
 
   // Setup `original_profile_dir_` as below.
   // |- Downloads
-  // |- Login Data
+  // |- Policy
   // |- move_migrator/First Run
   // |- move_migrator/Default/
   //     |- Bookmarks
   //     |- Cookies
   //     |- Extensions
   //     |- Local Storage
-  //     |- Login Data
+  //     |- Policy
   // |- move_migrator_split/
   //     |- Local Storage
 
@@ -639,9 +638,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
       0);
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
-  ASSERT_TRUE(base::CopyDirectory(
-      original_profile_dir_.Append(kLoginDataFilePath),
-      tmp_profile_dir.Append(kLoginDataFilePath), true /* recursive */));
+  ASSERT_TRUE(base::CopyDirectory(original_profile_dir_.Append(kPolicyFilePath),
+                                  tmp_profile_dir.Append(kPolicyFilePath),
+                                  true /* recursive */));
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
                          tmp_profile_dir.Append(kBookmarksFilePath)));
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
@@ -681,14 +680,14 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   // |- Downloads
   // |- Extensions
   // |- Local Storage
-  // |- Login Data
+  // |- Policy
   // |- move_migrator/First Run
   // |- move_migrator/Default/
   //     |- Bookmarks
   //     |- Cookies
   //     |- Extensions
   //     |- Local Storage
-  //     |- Login Data
+  //     |- Policy
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -702,9 +701,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
       base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "", 0),
       0);
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
-  ASSERT_TRUE(base::CopyDirectory(
-      original_profile_dir_.Append(kLoginDataFilePath),
-      tmp_profile_dir.Append(kLoginDataFilePath), true /* recursive */));
+  ASSERT_TRUE(base::CopyDirectory(original_profile_dir_.Append(kPolicyFilePath),
+                                  tmp_profile_dir.Append(kPolicyFilePath),
+                                  true /* recursive */));
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
                          tmp_profile_dir.Append(kBookmarksFilePath)));
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
