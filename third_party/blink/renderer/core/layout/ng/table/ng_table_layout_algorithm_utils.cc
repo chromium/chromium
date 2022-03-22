@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -734,6 +735,13 @@ void NGTableAlgorithmUtils::RecomputeRowBaselines(
                 is_initial_block_size_indefinite, is_table_block_size_specified,
                 has_collapsed_borders, NGCacheSlot::kLayout)
                 .ToConstraintSpace();
+
+        // This layout bypasses the typically tree-structure, and uses the
+        // layout cache-slot. Due to this we need to disable side-effects - as
+        // we may end up with incorrect fragments on our layout-objects.
+        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+        if (!cell.GetLayoutBox()->NeedsLayout())
+          disable_side_effects.emplace();
         const NGLayoutResult* layout_result = cell.Layout(cell_space);
 
         const NGBoxFragment fragment(
