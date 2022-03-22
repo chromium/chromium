@@ -1,40 +1,39 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_
-#define ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_
+#ifndef ASH_COMPONENTS_PHONEHUB_COMBINED_ACCESS_SETUP_OPERATION_H_
+#define ASH_COMPONENTS_PHONEHUB_COMBINED_ACCESS_SETUP_OPERATION_H_
 
 #include <ostream>
 
 #include "base/callback.h"
-#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
 
-// Implements the notification access setup flow. This flow involves:
+// Implements the combined access setup flow. This flow involves:
 // (1) Creating a connection to the phone if one does not already exist.
 // (2) Sending a message to the phone which asks it to begin the setup flow;
 //     upon receipt of the message, the phone displays a UI which asks the
-//     user to enable notification access for Phone Hub.
+//     user to enable permissions for the Phone Hub features that need setup.
 // (3) Waiting for the user to complete the flow; once the flow is complete, the
-//     phone sends a message back to this device which indicates that
-//     notification access has been granted.
+//     phone sends a message back to this device which indicates that permission
+//     has been granted.
 //
 // If an instance of this class exists, the flow continues until the status
 // changes to a "final" status (i.e., a success or a fatal error). To cancel the
 // ongoing setup operation, simply delete the instance of this class.
-class NotificationAccessSetupOperation {
+class CombinedAccessSetupOperation {
  public:
   // Note: Numerical values should not be changed because they must stay in
-  // sync with multidevice_notification_access_setup_dialog.js, with the
+  // sync with multidevice_permissions_access_setup_dialog.js, with the
   // exception of NOT_STARTED, which has a value of 0. Also, these values are
   // persisted to logs. Entries should not be renumbered and numeric values
   // should never be reused. If entries are added, kMaxValue should be updated.
   enum class Status {
-    // Connecting to the phone in order to set up notification access.
+    // Connecting to the phone in order to set up feature access.
     kConnecting = 1,
 
     // No connection was able to be made to the phone within the expected time
@@ -46,14 +45,14 @@ class NotificationAccessSetupOperation {
     kConnectionDisconnected = 3,
 
     // A connection to the phone has succeeded, and a message has been sent to
-    // the phone to start the notification access opt-in flow. However, the user
+    // the phone to start the feature access opt-in flow. However, the user
     // has not yet completed the flow phone-side.
     kSentMessageToPhoneAndWaitingForResponse = 4,
 
     // The user has completed the phone-side opt-in flow.
     kCompletedSuccessfully = 5,
 
-    // The user's phone is prohibited from granting notification access (e.g.,
+    // The user's phone is prohibited from granting feature access (e.g.,
     // the user could be using a Work Profile).
     kProhibitedFromProvidingAccess = 6,
 
@@ -69,31 +68,29 @@ class NotificationAccessSetupOperation {
     virtual ~Delegate() = default;
 
     // Called when status of the setup flow has changed.
-    virtual void OnNotificationStatusChange(Status new_status) = 0;
+    virtual void OnCombinedStatusChange(Status new_status) = 0;
   };
 
-  NotificationAccessSetupOperation(const NotificationAccessSetupOperation&) =
+  CombinedAccessSetupOperation(const CombinedAccessSetupOperation&) = delete;
+  CombinedAccessSetupOperation& operator=(const CombinedAccessSetupOperation&) =
       delete;
-  NotificationAccessSetupOperation& operator=(
-      const NotificationAccessSetupOperation&) = delete;
-  virtual ~NotificationAccessSetupOperation();
+  virtual ~CombinedAccessSetupOperation();
 
  private:
   friend class MultideviceFeatureAccessManager;
 
-  NotificationAccessSetupOperation(Delegate* delegate,
-                                   base::OnceClosure destructor_callback);
+  CombinedAccessSetupOperation(Delegate* delegate,
+                               base::OnceClosure destructor_callback);
 
-  void NotifyNotificationStatusChanged(Status new_status);
+  void NotifyCombinedStatusChanged(Status new_status);
 
   absl::optional<Status> current_status_;
-  const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
   Delegate* const delegate_;
   base::OnceClosure destructor_callback_;
 };
 
 std::ostream& operator<<(std::ostream& stream,
-                         NotificationAccessSetupOperation::Status status);
+                         CombinedAccessSetupOperation::Status status);
 
 }  // namespace phonehub
 }  // namespace ash
@@ -101,8 +98,8 @@ std::ostream& operator<<(std::ostream& stream,
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace chromeos {
 namespace phonehub {
-using ::ash::phonehub::NotificationAccessSetupOperation;
+using ::ash::phonehub::CombinedAccessSetupOperation;
 }
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_
+#endif  // ASH_COMPONENTS_PHONEHUB_COMBINED_ACCESS_SETUP_OPERATION_H_

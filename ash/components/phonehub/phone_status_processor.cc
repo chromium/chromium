@@ -284,6 +284,10 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
     recent_apps_interaction_handler_->set_user_states(
         GetUserStates(phone_properties.user_states()));
   }
+
+  multidevice_feature_access_manager_->SetFeatureSetupRequestSupportedInternal(
+      phone_properties.feature_setup_config()
+          .feature_setup_request_supported());
 }
 
 void PhoneStatusProcessor::MaybeSetPhoneModelName(

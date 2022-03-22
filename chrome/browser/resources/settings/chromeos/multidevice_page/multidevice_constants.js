@@ -141,7 +141,8 @@ export const PhoneHubPermissionsSetupMode = {
  *   isNearbyShareDisallowedByPolicy: boolean,
  *   isPhoneHubAppsAccessGranted: boolean,
  *   isPhoneHubPermissionsDialogSupported: boolean,
- *   isCameraRollFilePermissionGranted: boolean
+ *   isCameraRollFilePermissionGranted: boolean,
+ *   isPhoneHubFeatureCombinedSetupSupported: boolean
  * }}
  */
 export let MultiDevicePageContentData;

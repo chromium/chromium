@@ -52,6 +52,7 @@ export const SetupFlowStatus = {
   SET_LOCKSCREEN: 1,
   WAIT_FOR_PHONE_NOTIFICATION: 2,
   WAIT_FOR_PHONE_APPS: 3,
+  WAIT_FOR_PHONE_COMBINED: 4,
 };
 
 Polymer({
@@ -171,6 +172,15 @@ Polymer({
       computed: 'computeShouldShowDisabledDoneButton_(setupState_)',
       reflectToAttribute: true,
     },
+
+    /**
+     * Whether the combined setup for Notifications and Camera Roll is supported
+     * on the connected phone.
+     */
+    combinedSetupSupported: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {?MultiDeviceBrowserProxy} */
@@ -189,6 +199,9 @@ Polymer({
     this.addWebUIListener(
         'settings.onAppsAccessSetupStatusChanged',
         this.onAppsSetupStateChanged_.bind(this));
+    this.addWebUIListener(
+        'settings.onCombinedAccessSetupStatusChanged',
+        this.onCombinedSetupStateChanged_.bind(this));
     this.$.dialog.showModal();
   },
 
@@ -229,6 +242,36 @@ Polymer({
 
     if (this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
       this.browserProxy_.setFeatureEnabledState(MultiDeviceFeature.ECHE, true);
+    }
+  },
+
+  /**
+   * @param {!PermissionsSetupStatus} setupState
+   * @private
+   */
+  onCombinedSetupStateChanged_(setupState) {
+    if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
+      return;
+    }
+
+    this.setupState_ = setupState;
+    if (this.setupState_ !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+      return;
+    }
+
+    if (this.showCameraRoll) {
+      this.browserProxy_.setFeatureEnabledState(
+          MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
+    }
+    if (this.showNotifications) {
+      this.browserProxy_.setFeatureEnabledState(
+          MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+    }
+
+    if (this.showAppStreaming) {
+      this.browserProxy_.attemptAppsSetup();
+      this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_APPS;
+      this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
     }
   },
 
@@ -298,7 +341,13 @@ Polymer({
         break;
     }
 
-    if (this.showNotifications) {
+    if ((this.showCameraRoll || this.showNotifications) &&
+        this.combinedSetupSupported) {
+      this.browserProxy_.attemptCombinedFeatureSetup(
+          this.showCameraRoll, this.showNotifications);
+      this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_COMBINED;
+      this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
+    } else if (this.showNotifications && !this.combinedSetupSupported) {
       this.browserProxy_.attemptNotificationSetup();
       this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION;
       this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
@@ -306,11 +355,6 @@ Polymer({
       this.browserProxy_.attemptAppsSetup();
       this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_APPS;
       this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
-    } else if (this.showCameraRoll) {
-      // Camera Roll setup is not implemented yet
-      // Dialog fails if Camera Roll is only feature needing setup
-      this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION;
-      this.setupState_ = PermissionsSetupStatus.TIMED_OUT_CONNECTING;
     }
   },
 
@@ -320,6 +364,8 @@ Polymer({
       this.browserProxy_.cancelNotificationSetup();
     } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_APPS) {
       this.browserProxy_.cancelAppsSetup();
+    } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
+      this.browserProxy_.cancelCombinedFeatureSetup();
     }
     this.$.dialog.close();
   },

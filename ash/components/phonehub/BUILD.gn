@@ -26,6 +26,8 @@ static_library("phonehub") {
     "camera_roll_thumbnail_decoder.h",
     "camera_roll_thumbnail_decoder_impl.cc",
     "camera_roll_thumbnail_decoder_impl.h",
+    "combined_access_setup_operation.cc",
+    "combined_access_setup_operation.h",
     "connection_scheduler.h",
     "connection_scheduler_impl.cc",
     "connection_scheduler_impl.h",

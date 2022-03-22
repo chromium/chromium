@@ -60,6 +60,8 @@ cr.define('multidevice', function() {
         'cancelNotificationSetup',
         'attemptAppsSetup',
         'cancelAppsSetup',
+        'attemptCombinedFeatureSetup',
+        'cancelCombinedFeatureSetup',
       ]);
       this.data = createFakePageContentData(
           settings.MultiDeviceSettingsMode.NO_HOST_SET);
@@ -136,6 +138,17 @@ cr.define('multidevice', function() {
     /** @override */
     cancelAppsSetup() {
       this.methodCalled('cancelAppsSetup');
+    }
+
+    /** @override */
+    attemptCombinedFeatureSetup(cameraRoll, notifications) {
+      this.methodCalled(
+          'attemptCombinedFeatureSetup', [cameraRoll, notifications]);
+    }
+
+    /** @override */
+    cancelCombinedFeatureSetup() {
+      this.methodCalled('cancelCombinedFeatureSetup');
     }
 
     /**
