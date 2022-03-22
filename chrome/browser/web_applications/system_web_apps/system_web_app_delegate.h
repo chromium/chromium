@@ -190,6 +190,12 @@ class SystemWebAppDelegate {
   virtual bool ShouldAnimateThemeChanges() const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
+  // Returns whether the specified tab should be pinned.
+  virtual bool ShouldPinTab(GURL url) const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  protected:
   Profile* profile() const { return profile_; }
 

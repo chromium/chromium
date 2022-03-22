@@ -18,6 +18,8 @@ class Profile;
 
 namespace crostini {
 
+extern const char kTerminalHomePath[];
+
 extern const char kShortcutKey[];
 extern const char kShortcutValueSSH[];
 extern const char kShortcutValueTerminal[];

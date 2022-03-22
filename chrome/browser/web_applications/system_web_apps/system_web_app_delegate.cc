@@ -147,4 +147,10 @@ bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool SystemWebAppDelegate::ShouldPinTab(GURL url) const {
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace web_app

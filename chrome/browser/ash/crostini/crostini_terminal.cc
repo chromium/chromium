@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -55,12 +56,15 @@
 
 namespace crostini {
 
+const char kTerminalHomePath[] = "html/terminal_home.html";
+
 const char kShortcutKey[] = "shortcut";
 const char kShortcutValueSSH[] = "ssh";
 const char kShortcutValueTerminal[] = "terminal";
 const char kProfileIdKey[] = "profileId";
 
 namespace {
+
 constexpr char kSettingPrefix[] = "/hterm/profiles/default/";
 const size_t kSettingPrefixSize = std::size(kSettingPrefix) - 1;
 
@@ -82,7 +86,7 @@ base::flat_map<std::string, std::string> ExtrasFromShortcutId(
 
 void LaunchTerminalImpl(Profile* profile,
                         const GURL& url,
-                        const apps::AppLaunchParams& params) {
+                        apps::AppLaunchParams params) {
   // This function is called asynchronously, so we need to check whether
   // `profile` is still valid first.
   if (g_browser_process) {
@@ -95,8 +99,24 @@ void LaunchTerminalImpl(Profile* profile,
       //
       // System Web Apps managed by Web App publisher should call
       // LaunchSystemWebAppAsync.
-      web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::TERMINAL,
-                                      url, params);
+
+      // Launch without a pinned home tab (settings page).
+      if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH) ||
+          params.disposition == WindowOpenDisposition::NEW_POPUP) {
+        web_app::LaunchSystemWebAppImpl(
+            profile, web_app::SystemAppType::TERMINAL, url, params);
+        return;
+      }
+
+      // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
+      // For TerminalSSH, if opening a new tab, first pin home tab.
+      GURL home(base::StrCat(
+          {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
+      Browser* browser = web_app::LaunchSystemWebAppImpl(
+          profile, web_app::SystemAppType::TERMINAL, home, params);
+      if (url != home) {
+        chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
+      }
       return;
     }
   }
@@ -157,7 +177,7 @@ void LaunchTerminalHome(Profile* profile, int64_t display_id) {
   LaunchTerminalWithUrl(
       profile, display_id,
       GURL(base::StrCat(
-          {chrome::kChromeUIUntrustedTerminalURL, "html/terminal_home.html"})));
+          {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath})));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,
