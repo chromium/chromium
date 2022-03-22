@@ -9,7 +9,8 @@
       "system-services": [
         "fuchsia.device.NameProvider",
         "fuchsia.scheduler.ProfileProvider",
-        "fuchsia.sysmem.Allocator"
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.scenic.Scenic"
       ]
     }
   },
@@ -19,7 +20,8 @@
       "fuchsia.fonts.Provider",
       "fuchsia.memorypressure.Provider",
       "fuchsia.sysmem.Allocator",
-      "fuchsia.web.ContextProvider"
+      "fuchsia.web.ContextProvider",
+      "fuchsia.ui.scenic.Scenic"
     ]
   }
 }

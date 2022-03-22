@@ -61,6 +61,7 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   }
 
   // content::BrowserMainParts overrides.
+  int PreEarlyInitialization() override;
   void PostEarlyInitialization() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(
