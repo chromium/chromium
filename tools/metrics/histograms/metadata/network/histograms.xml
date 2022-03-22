@@ -2206,11 +2206,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.EverConnected"
-    units="BooleanConnected" expires_after="2022-04-01">
+    units="BooleanConnected" expires_after="2023-04-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
-  <owner>cros-privacy-core@google.com</owner>
+  <owner>pwg-cros@google.com</owner>
   <summary>
     Chrome OS network metric tracking whether there has ever been a successful
     connection for each WiFi network which is configured with a hidden SSID. The
@@ -2221,11 +2221,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.LastConnected" units="days"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
-  <owner>cros-privacy-core@google.com</owner>
+  <owner>pwg-cros@google.com</owner>
   <summary>
     Chrome OS network metric tracking the number of days since the last
     connection for each WiFi network configured with hidden SSID. The metric
