@@ -5,14 +5,14 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "sql/sqlite_result_code.h"
-
 #include "sql/database.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -68,6 +68,22 @@ class DatabaseOptionsTest : public testing::TestWithParam<OpenVariant> {
     }
   }
 
+  // Runs a rolled back transaction, followed by a committed transaction.
+  void RunTransactions(Database& db) {
+    {
+      Transaction rolled_back(&db);
+      ASSERT_TRUE(rolled_back.Begin());
+      ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+      rolled_back.Rollback();
+    }
+    {
+      Transaction committed(&db);
+      ASSERT_TRUE(committed.Begin());
+      ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+      ASSERT_TRUE(committed.Commit());
+    }
+  }
+
  protected:
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -107,18 +123,7 @@ TEST_P(DatabaseOptionsTest, FlushToDisk_False_DoesNotCrash) {
 
   EXPECT_EQ("0", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
       << "Invalid test setup";
-  {
-    Transaction rolled_back(&db);
-    ASSERT_TRUE(rolled_back.Begin());
-    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
-    rolled_back.Rollback();
-  }
-  {
-    Transaction committed(&db);
-    ASSERT_TRUE(committed.Begin());
-    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
-    ASSERT_TRUE(committed.Commit());
-  }
+  RunTransactions(db);
 }
 
 TEST_P(DatabaseOptionsTest, FlushToDisk_True_DoesNotCrash) {
@@ -131,18 +136,7 @@ TEST_P(DatabaseOptionsTest, FlushToDisk_True_DoesNotCrash) {
 
   EXPECT_EQ("1", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
       << "Invalid test setup";
-  {
-    Transaction rolled_back(&db);
-    ASSERT_TRUE(rolled_back.Begin());
-    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
-    rolled_back.Rollback();
-  }
-  {
-    Transaction committed(&db);
-    ASSERT_TRUE(committed.Begin());
-    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
-    ASSERT_TRUE(committed.Commit());
-  }
+  RunTransactions(db);
 }
 
 TEST_P(DatabaseOptionsTest, PageSize_Default) {
@@ -156,6 +150,12 @@ TEST_P(DatabaseOptionsTest, PageSize_Default) {
 
   OpenDatabase(db);
   EXPECT_EQ("4096", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
+
+  RunTransactions(db);
+  if (open_variant() != OpenVariant::kInMemory) {
+    db.Close();
+    EXPECT_EQ(4096, sql::test::ReadDatabasePageSize(db_path_).value_or(-1));
+  }
 }
 
 TEST_P(DatabaseOptionsTest, PageSize_Large) {
@@ -169,6 +169,12 @@ TEST_P(DatabaseOptionsTest, PageSize_Large) {
 
   OpenDatabase(db);
   EXPECT_EQ("16384", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
+
+  RunTransactions(db);
+  if (open_variant() != OpenVariant::kInMemory) {
+    db.Close();
+    EXPECT_EQ(16384, sql::test::ReadDatabasePageSize(db_path_).value_or(-1));
+  }
 }
 
 TEST_P(DatabaseOptionsTest, PageSize_Small) {
@@ -182,6 +188,12 @@ TEST_P(DatabaseOptionsTest, PageSize_Small) {
 
   OpenDatabase(db);
   EXPECT_EQ("1024", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
+
+  RunTransactions(db);
+  if (open_variant() != OpenVariant::kInMemory) {
+    db.Close();
+    EXPECT_EQ(1024, sql::test::ReadDatabasePageSize(db_path_).value_or(-1));
+  }
 }
 
 TEST_P(DatabaseOptionsTest, CacheSize_Legacy) {
