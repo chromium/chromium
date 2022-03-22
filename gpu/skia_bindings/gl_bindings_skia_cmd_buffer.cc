@@ -181,6 +181,8 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       gles_bind(&GLES2Interface::GetBufferParameteriv, impl, context_support);
   functions->fGetError =
       gles_bind(&GLES2Interface::GetError, impl, context_support);
+  functions->fGetFloatv =
+      gles_bind(&GLES2Interface::GetFloatv, impl, context_support);
   functions->fGetIntegerv = get_integerv;
   functions->fGetInternalformativ =
       gles_bind(&GLES2Interface::GetInternalformativ, impl, context_support);
@@ -232,6 +234,8 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       gles_bind(&GLES2Interface::ReadBuffer, impl, context_support);
   functions->fReadPixels =
       gles_bind(&GLES2Interface::ReadPixels, impl, context_support);
+  functions->fSamplerParameterf =
+      gles_bind(&GLES2Interface::SamplerParameterf, impl, context_support);
   functions->fSamplerParameteri =
       gles_bind(&GLES2Interface::SamplerParameteri, impl, context_support);
   functions->fSamplerParameteriv =

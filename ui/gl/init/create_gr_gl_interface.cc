@@ -387,6 +387,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND_EXTENSION(GenBuffers, GenBuffersARB);
   BIND(GetBufferParameteriv);
   BIND(GetError);
+  BIND(GetFloatv);
   BIND(GetIntegerv);
   BIND(GetMultisamplefv);
   BIND(GetQueryObjectiv);
@@ -448,6 +449,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 
   BIND(ReadBuffer);
   BIND(ReadPixels);
+  BIND(SamplerParameterf);
   BIND(SamplerParameteri);
   BIND(SamplerParameteriv);
   BIND(Scissor);
