@@ -443,8 +443,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       g_browser_process->policy_service()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()))
-          .GetValue(policy::key::kQuicAllowed);
-  if (value && value->is_bool())
+          .GetValue(policy::key::kQuicAllowed, base::Value::Type::BOOLEAN);
+  if (value)
     is_quic_allowed_ = value->GetBool();
 #endif
   shared_url_loader_factory_ = new URLLoaderFactoryForSystem(this);

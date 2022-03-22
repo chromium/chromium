@@ -61,7 +61,7 @@ const base::DictionaryValue* GetKeyPermissionsMap(
   const policy::PolicyMap& policies = profile_policies->GetPolicies(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
   const base::Value* policy_value =
-      policies.GetValue(policy::key::kKeyPermissions);
+      policies.GetValue(policy::key::kKeyPermissions, base::Value::Type::DICT);
   if (!policy_value) {
     DVLOG(1) << "KeyPermissions policy is not set";
     return nullptr;

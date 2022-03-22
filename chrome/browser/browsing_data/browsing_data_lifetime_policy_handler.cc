@@ -34,8 +34,9 @@ bool BrowsingDataLifetimePolicyHandler::CheckPolicySettings(
   if (!policies.Get(policy_name()))
     return true;
 
-  const auto* sync_disabled = policies.Get(policy::key::kSyncDisabled);
-  if (!sync_disabled || !sync_disabled->value()->GetBool()) {
+  const auto* sync_disabled =
+      policies.GetValue(policy::key::kSyncDisabled, base::Value::Type::BOOLEAN);
+  if (!sync_disabled || !sync_disabled->GetBool()) {
     errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR,
                      policy::key::kSyncDisabled, "true");
     return false;

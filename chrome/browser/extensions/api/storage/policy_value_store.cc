@@ -44,7 +44,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   base::DictionaryValue current_policy;
   for (const auto& it : policy) {
     if (it.second.level == policy::POLICY_LEVEL_MANDATORY) {
-      current_policy.SetKey(it.first, it.second.value()->Clone());
+      current_policy.SetKey(it.first, it.second.value_unsafe()->Clone());
     }
   }
 

@@ -31,7 +31,7 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   bool mode_is_applicable = true;
   bool templates_is_applicable = true;
 
-  const base::Value* mode = policies.GetValue(key::kDnsOverHttpsMode);
+  const base::Value* mode = policies.GetValueUnsafe(key::kDnsOverHttpsMode);
   base::StringPiece mode_str;
   if (!mode) {
     mode_is_applicable = false;
@@ -53,7 +53,8 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     }
   }
 
-  const base::Value* templates = policies.GetValue(key::kDnsOverHttpsTemplates);
+  const base::Value* templates =
+      policies.GetValueUnsafe(key::kDnsOverHttpsTemplates);
   if (IsTemplatesPolicyNotSpecified(templates, mode_str)) {
     errors->AddError(key::kDnsOverHttpsTemplates,
                      IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
@@ -88,19 +89,19 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
-  const base::Value* mode = policies.GetValue(key::kDnsOverHttpsMode);
+  const base::Value* mode =
+      policies.GetValue(key::kDnsOverHttpsMode, base::Value::Type::STRING);
   base::StringPiece mode_str;
-  if (mode && mode->is_string()) {
+  if (mode) {
     mode_str = mode->GetString();
-    if (SecureDnsConfig::ParseMode(mode_str)) {
-      prefs->SetString(prefs::kDnsOverHttpsMode, std::string(mode_str));
-    } else {
-      // Default to "off".
-      prefs->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
-    }
+    prefs->SetString(prefs::kDnsOverHttpsMode,
+                     SecureDnsConfig::ParseMode(mode_str)
+                         ? std::string(mode_str)
+                         : SecureDnsConfig::kModeOff);
   }
 
-  const base::Value* templates = policies.GetValue(key::kDnsOverHttpsTemplates);
+  const base::Value* templates =
+      policies.GetValue(key::kDnsOverHttpsTemplates, base::Value::Type::STRING);
 
   // A templates not specified error means that the pref should be set blank.
   if (IsTemplatesPolicyNotSpecified(templates, mode_str))
@@ -113,12 +114,10 @@ bool SecureDnsPolicyHandler::IsTemplatesPolicyNotSpecified(
     const base::Value* templates,
     base::StringPiece mode_str) {
   if (mode_str == SecureDnsConfig::kModeSecure) {
-    if (!templates)
+    if (!templates || !templates->is_string())
       return true;
 
-    if (!templates->is_string())
-      return true;
-
+    DCHECK(templates->is_string());
     base::StringPiece templates_str = templates->GetString();
 
     if (templates_str.size() == 0)
@@ -130,13 +129,7 @@ bool SecureDnsPolicyHandler::IsTemplatesPolicyNotSpecified(
 
 bool SecureDnsPolicyHandler::ShouldSetTemplatesPref(
     const base::Value* templates) {
-  if (!templates)
-    return false;
-
-  if (!templates->is_string())
-    return false;
-
-  return true;
+  return templates != nullptr;
 }
 
 }  // namespace policy
