@@ -214,10 +214,6 @@ class AutofillProfile : public AutofillDataModel {
   bool has_converted() const { return has_converted_; }
   void set_has_converted(bool has_converted) { has_converted_ = has_converted; }
 
-  base::WeakPtr<const AutofillProfile> GetWeakPtr() const {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   // Calls |FinalizeAfterImport()| on all |FormGroup| members that are
   // implemented using the hybrid-structure |AddressComponent|.
   // If possible, this will initiate the completion of the structure tree to
@@ -335,8 +331,6 @@ class AutofillProfile : public AutofillDataModel {
   // Only useful for SERVER_PROFILEs. Whether this server profile has been
   // converted to a local profile.
   bool has_converted_;
-
-  mutable base::WeakPtrFactory<AutofillProfile> weak_ptr_factory_{this};
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().
