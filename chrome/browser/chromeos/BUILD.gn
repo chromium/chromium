@@ -3932,8 +3932,6 @@ static_library("test_support") {
     "../ash/plugin_vm/fake_plugin_vm_features.h",
     "../ash/policy/core/user_policy_test_helper.cc",
     "../ash/policy/core/user_policy_test_helper.h",
-    "../ash/policy/dlp/mock_dlp_content_manager_ash.cc",
-    "../ash/policy/dlp/mock_dlp_content_manager_ash.h",
     "../ash/policy/handlers/fake_device_name_policy_handler.cc",
     "../ash/policy/handlers/fake_device_name_policy_handler.h",
     "../ash/policy/handlers/minimum_version_policy_test_helpers.cc",
@@ -3958,6 +3956,8 @@ static_library("test_support") {
     "extensions/test_external_cache.h",
     "policy/dlp/dlp_content_manager_test_helper.cc",
     "policy/dlp/dlp_content_manager_test_helper.h",
+    "policy/dlp/mock_dlp_content_manager.cc",
+    "policy/dlp/mock_dlp_content_manager.h",
   ]
 
   deps = [
@@ -4808,8 +4808,6 @@ source_set("unit_tests") {
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_rules_manager_test_utils.cc",
     "policy/dlp/dlp_rules_manager_test_utils.h",
-    "policy/dlp/mock_dlp_content_manager.cc",
-    "policy/dlp/mock_dlp_content_manager.h",
     "policy/dlp/mock_dlp_content_observer.cc",
     "policy/dlp/mock_dlp_content_observer.h",
     "policy/dlp/mock_dlp_rules_manager.cc",

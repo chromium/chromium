@@ -248,19 +248,6 @@ void DlpContentManagerAsh::OnWindowRestrictionChanged(
   MaybeChangeOnScreenRestrictions();
 }
 
-/* static */
-void DlpContentManagerAsh::SetDlpContentManagerAshForTesting(
-    DlpContentManagerAsh* dlp_content_manager) {
-  if (g_dlp_content_manager)
-    delete g_dlp_content_manager;
-  g_dlp_content_manager = dlp_content_manager;
-}
-
-/* static */
-void DlpContentManagerAsh::ResetDlpContentManagerAshForTesting() {
-  g_dlp_content_manager = nullptr;
-}
-
 DlpContentManagerAsh::VideoCaptureInfo::VideoCaptureInfo(
     const ScreenshotArea& area)
     : area(area) {}
@@ -677,17 +664,6 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
   }
   // No restrictions apply.
   std::move(callback).Run(true);
-}
-
-// ScopedDlpContentManagerAshForTesting
-ScopedDlpContentManagerAshForTesting::ScopedDlpContentManagerAshForTesting(
-    DlpContentManagerAsh* test_dlp_content_manager) {
-  DlpContentManagerAsh::SetDlpContentManagerAshForTesting(
-      test_dlp_content_manager);
-}
-
-ScopedDlpContentManagerAshForTesting::~ScopedDlpContentManagerAshForTesting() {
-  DlpContentManagerAsh::ResetDlpContentManagerAshForTesting();
 }
 
 }  // namespace policy
