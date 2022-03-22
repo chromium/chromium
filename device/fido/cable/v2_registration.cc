@@ -237,6 +237,25 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return absl::nullopt;
     }
 
+    // For testing, we allow a special value `999` to indicate that the newer
+    // protocol revision should be used. We are not able to make this the
+    // default until support on desktop has been out for a while.
+    cbor_it = map.find(cbor::Value(999));
+    if (cbor_it != map.end()) {
+      if (!cbor_it->second.is_integer()) {
+        return absl::nullopt;
+      }
+      int64_t protocol_revision = cbor_it->second.GetInteger();
+      constexpr int64_t upper_bound =
+          std::numeric_limits<decltype(event->protocol_revision)>::max();
+      if (protocol_revision < 0) {
+        return absl::nullopt;
+      } else if (protocol_revision > upper_bound) {
+        protocol_revision = upper_bound;
+      }
+      event->protocol_revision = protocol_revision;
+    }
+
     return event;
   }
 

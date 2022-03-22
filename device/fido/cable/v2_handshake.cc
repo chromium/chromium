@@ -441,6 +441,8 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
 
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 
+  qr_contents.emplace(4, true);  // client supports storing linking information.
+
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
   return std::string(kPrefix) + BytesToDigits(*qr_data);

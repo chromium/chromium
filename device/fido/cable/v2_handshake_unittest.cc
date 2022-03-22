@@ -91,6 +91,9 @@ TEST(CableV2Encoding, QRs) {
   // number should only grow over time.
   EXPECT_GE(decoded->num_known_domains, 2u);
 
+  // Chromium always sets this flag.
+  EXPECT_TRUE(decoded->supports_linking);
+
   url[0] ^= 4;
   EXPECT_FALSE(qr::Parse(url));
   EXPECT_FALSE(qr::Parse("nonsense"));
