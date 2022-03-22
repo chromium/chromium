@@ -90,6 +90,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // Invoked when the view was destroyed by by someone other than this class.
   void ViewDestroyed() override;
 
+  // Handles a key press event and returns whether the event should be swallowed
+  // (meaning that no other handler, in not particular the default handler, can
+  // process it).
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
  protected:
@@ -138,6 +141,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // Returns true if the given id refers to an element that can be accepted.
   bool CanAccept(int id);
+
+  // Returns true if the given id refers to an element that can be accepted if
+  // the user presses the tab key or shift tab.
+  bool CanAcceptForTabKeyPressEvent(int id);
 
   // Returns true if the popup still has non-options entries to show the user.
   bool HasSuggestions();

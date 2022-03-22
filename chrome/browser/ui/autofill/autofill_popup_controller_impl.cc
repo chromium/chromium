@@ -300,8 +300,13 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
       // change the cursor location.
       // We don't want to handle Mod+TAB for other modifiers because this may
       // have other purposes (e.g., change the tab).
-      if (!has_non_shift_modifier)
+      // Also want tab to only trigger selecting the line for events that fill
+      // a text field.
+      if (!has_non_shift_modifier &&
+          CanAcceptForTabKeyPressEvent(
+              suggestions_[*selected_line_].frontend_id)) {
         AcceptSelectedLine();
+      }
       return false;
     case ui::VKEY_RETURN:
       return AcceptSelectedLine();
@@ -539,6 +544,12 @@ bool AutofillPopupControllerImpl::CanAccept(int id) {
   return id != POPUP_ITEM_ID_SEPARATOR &&
          id != POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE &&
          id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE && id != POPUP_ITEM_ID_TITLE;
+}
+
+bool AutofillPopupControllerImpl::CanAcceptForTabKeyPressEvent(int id) {
+  // Only items that fill a field when selected are eligible for acceptance
+  // via the tab key.
+  return id > 0 || base::Contains(kItemsTriggeringFieldFilling, id);
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() {

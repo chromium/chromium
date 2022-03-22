@@ -38,6 +38,17 @@ enum PopupItemId {
   POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL = -28
 };
 
+// List of `PopupItemId` that trigger filling a value into an input element
+// when the user selects the `PopupItemId`.
+constexpr PopupItemId kItemsTriggeringFieldFilling[] = {
+    POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+    POPUP_ITEM_ID_PASSWORD_ENTRY,
+    POPUP_ITEM_ID_DATALIST_ENTRY,
+    POPUP_ITEM_ID_USERNAME_ENTRY,
+    POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY,
+    POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY,
+    POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY};
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_

@@ -39,6 +39,8 @@
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_utils.h"
 
@@ -127,6 +129,8 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
 
   MOCK_METHOD0(ClearPreviewedForm, void());
   MOCK_METHOD0(OnPopupSuppressed, void());
+  MOCK_METHOD4(DidAcceptSuggestion,
+               void(const std::u16string&, int, const std::string&, int));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
@@ -288,6 +292,19 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
   MockAutofillPopupView* autofill_popup_view() {
     return autofill_popup_view_.get();
+  }
+
+  content::NativeWebKeyboardEvent CreateTabKeyPressEvent() {
+    content::NativeWebKeyboardEvent event(
+        blink::WebInputEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.dom_key = ui::DomKey::TAB;
+    event.dom_code = static_cast<int>(ui::DomCode::TAB);
+    event.native_key_code =
+        ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::TAB);
+    event.windows_key_code = ui::VKEY_TAB;
+    return event;
   }
 
  protected:
@@ -839,5 +856,51 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
   accessibility_mode_setter_.ResetMode();
 }
 #endif
+
+// Verify that pressing the tab key while an autofillable entry is selected
+// triggers the filling.
+TEST_F(AutofillPopupControllerUnitTest, FillOnTabPressed) {
+  // Set up the popup.
+  std::vector<Suggestion> suggestions = {
+      Suggestion("value", "", "", 1),
+      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
+      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
+  autofill_popup_controller_->Show(suggestions,
+                                   /*autoselect_first_suggestion=*/false,
+                                   PopupType::kUnspecified);
+  // Select the autofill suggestion.
+  autofill_popup_controller_->SetSelectedLine(0);
+
+  // Because the first line is an autofillable entry, we expect that the tab
+  // key triggers autofill.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion);
+  bool swallow_event =
+      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
+  EXPECT_FALSE(swallow_event);
+}
+
+// Verify that pressing the tab key while the "Manage addresses..." entry is
+// selected does not trigger "accepting" the entry (which would mean opening
+// a tab with the autofill settings).
+TEST_F(AutofillPopupControllerUnitTest,
+       NoAutofillOptionsTriggeredOnTabPressed) {
+  // Set up the popup.
+  std::vector<Suggestion> suggestions = {
+      Suggestion("value", "", "", 1),
+      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
+      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
+  autofill_popup_controller_->Show(suggestions,
+                                   /*autoselect_first_suggestion=*/false,
+                                   PopupType::kUnspecified);
+  // Select the POPUP_ITEM_ID_AUTOFILL_OPTIONS line.
+  autofill_popup_controller_->SetSelectedLine(2);
+
+  // Because the selected line is POPUP_ITEM_ID_AUTOFILL_OPTIONS, we expect that
+  // the tab key does not trigger anything.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
+  bool swallow_event =
+      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
+  EXPECT_FALSE(swallow_event);
+}
 
 }  // namespace autofill
