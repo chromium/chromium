@@ -70,7 +70,7 @@ enum class UnpackerError {
   // kFingerprintWriteFailed = 17,    // Deprecated. Don't use.
 };
 
-// These errors are returned with the |kService| error category and
+// These errors are returned with the |kInstall| error category and
 // are returned by the component installers.
 enum class InstallError {
   NONE = 0,
