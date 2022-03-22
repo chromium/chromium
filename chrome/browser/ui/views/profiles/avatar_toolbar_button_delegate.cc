@@ -154,6 +154,10 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (identity_animation_state_ == IdentityAnimationState::kShowing)
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
 
+  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
+    return AvatarToolbarButton::State::kNormal;
+  }
+
   // Show any existing sync errors (sync-the-feature or sync-the-transport).
   // |last_avatar_error_| should be checked here rather than
   // ::GetAvatarSyncErrorType(), so the result agrees with

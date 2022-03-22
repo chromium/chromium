@@ -512,6 +512,10 @@ void ProfileMenuView::BuildSyncInfo() {
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
     return;
 
+  if (!SyncServiceFactory::IsSyncAllowed(profile)) {
+    return;
+  }
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   bool is_sync_feature_enabled =
