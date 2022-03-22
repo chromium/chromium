@@ -3429,8 +3429,13 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
 
   // Pass through log severity only on builtin components pages to limit console
   // spew.
+  const bool is_web_ui = HasWebUIScheme(GetMainFrame()->GetLastCommittedURL());
+  if (is_web_ui) {
+    DCHECK_EQ(GetMainFrame(), GetOutermostMainFrame())
+        << "The mainframe and outermost mainframe should be the same in WebUI.";
+  }
   const bool is_builtin_component =
-      HasWebUIScheme(GetMainFrame()->GetLastCommittedURL()) ||
+      is_web_ui ||
       GetContentClient()->browser()->IsBuiltinComponent(
           GetProcess()->GetBrowserContext(), GetLastCommittedOrigin());
   const bool is_off_the_record =
@@ -7555,6 +7560,8 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
 RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback() {
+  // TODO(crbug.com/1240924): Consider if it needs a URL from the outermost
+  // frame, either.
   return delegate_->GetRecordAggregateWatchTimeCallback(
       GetMainFrame()->GetLastCommittedURL());
 }

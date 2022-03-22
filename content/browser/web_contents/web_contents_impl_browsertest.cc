@@ -5487,6 +5487,72 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, DoNotUpdateAXTree) {
   EXPECT_NE(nullptr, fenced_frame_rfh);
 }
 
+class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
+ public:
+  explicit MediaWatchTimeChangedDelegate(WebContents* contents)
+      : watch_time_(GURL(),
+                    GURL(),
+                    base::TimeDelta(),
+                    base::TimeDelta(),
+                    false,
+                    false) {
+    contents->SetDelegate(this);
+  }
+  ~MediaWatchTimeChangedDelegate() override = default;
+  MediaWatchTimeChangedDelegate(const LoadStateWaiter&) = delete;
+  MediaWatchTimeChangedDelegate& operator=(
+      const MediaWatchTimeChangedDelegate&) = delete;
+
+  // WebContentsDelegate:
+  void MediaWatchTimeChanged(const MediaPlayerWatchTime& watch_time) override {
+    watch_time_ = watch_time;
+  }
+  base::WeakPtr<WebContentsDelegate> GetDelegateWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  const MediaPlayerWatchTime& watch_time() { return watch_time_; }
+
+ private:
+  MediaPlayerWatchTime watch_time_;
+  base::WeakPtrFactory<MediaWatchTimeChangedDelegate> weak_factory_{this};
+};
+
+// Tests that a media in a fenced frame reports the watch time based on its
+// own main frame.
+IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
+                       MediaWatchTimeCallback) {
+  MediaWatchTimeChangedDelegate delegate(web_contents());
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+  const GURL top_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), top_url));
+
+  // Create a fenced frame.
+  GURL fenced_frame_url(
+      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  // Insert a video element.
+  EXPECT_TRUE(ExecJs(fenced_frame, R"(
+    var video = document.createElement('video');
+    document.body.appendChild(video);
+    video.src = '../media/bear.webm';
+    video.play();
+  )"));
+
+  // Get a watch time callback from `fenced_frame`.
+  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
+      record_playback_cb = static_cast<RenderFrameHostImpl*>(fenced_frame)
+                               ->GetRecordAggregateWatchTimeCallback();
+  std::move(record_playback_cb)
+      .Run(base::TimeDelta(), base::TimeDelta(), true, true);
+  // Check if the URL is from the fenced frame url.
+  DCHECK_EQ(fenced_frame_url, delegate.watch_time().url);
+}
+
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
 
 namespace {
