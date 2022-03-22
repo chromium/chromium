@@ -301,16 +301,6 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv6) {
   }
 }
 
-TEST(IPAddressTest, ConsiderLoopbackIPToBePubliclyRoutableForTestingMethod) {
-  IPAddress address;
-  EXPECT_TRUE(address.AssignFromIPLiteral("127.0.0.1"));
-  ASSERT_TRUE(address.IsValid());
-  EXPECT_FALSE(address.IsPubliclyRoutable());
-
-  IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-  EXPECT_TRUE(address.IsPubliclyRoutable());
-}
-
 TEST(IPAddressTest, IsZero) {
   uint8_t address1[4] = {};
   IPAddress zero_ipv4_address(address1);

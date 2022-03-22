@@ -22,8 +22,6 @@
 namespace net {
 namespace {
 
-bool g_consider_loopback_ip_to_be_publicly_routable_for_testing = false;
-
 // The prefix for IPv6 mapped IPv4 addresses.
 // https://tools.ietf.org/html/rfc4291#section-2.5.5.2
 constexpr uint8_t kIPv4MappedPrefix[] = {0, 0, 0, 0, 0,    0,
@@ -236,22 +234,12 @@ bool IPAddress::IsValid() const {
 }
 
 bool IPAddress::IsPubliclyRoutable() const {
-  if (g_consider_loopback_ip_to_be_publicly_routable_for_testing &&
-      IsLoopback()) {
-    return true;
-  }
-
   if (IsIPv4()) {
     return IsPubliclyRoutableIPv4(ip_address_);
   } else if (IsIPv6()) {
     return IsPubliclyRoutableIPv6(ip_address_);
   }
   return true;
-}
-
-// static
-void IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting() {
-  g_consider_loopback_ip_to_be_publicly_routable_for_testing = true;
 }
 
 bool IPAddress::IsZero() const {
