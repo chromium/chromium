@@ -6,6 +6,7 @@ import inspect
 import itertools
 import os
 import re
+import sys
 import unittest
 import unittest.mock as mock
 
@@ -17,6 +18,7 @@ from gpu_tests import pixel_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import webgl_conformance_integration_test
 from gpu_tests import webgl_test_util
+from gpu_tests import webgpu_cts_integration_test
 
 from py_utils import discover
 from py_utils import tempfile_ext
@@ -62,7 +64,9 @@ GENERIC_CONDITIONS = OS_CONDITIONS + GPU_CONDITIONS
 VALID_BUG_REGEXES = [
     re.compile(r'crbug\.com\/\d+'),
     re.compile(r'crbug\.com\/angleproject\/\d+'),
+    re.compile(r'crbug\.com\/dawn\/\d+'),
     re.compile(r'crbug\.com\/swiftshader\/\d+'),
+    re.compile(r'crbug\.com\/tint\/\d+'),
     re.compile(r'skbug\.com\/\d+'),
 ]
 
@@ -236,6 +240,15 @@ def _FindTestCases():
         base_class=gpu_integration_test.GpuIntegrationTest,
         pattern='*_integration_test.py')
     test_cases.extend(modules_to_classes.values())
+  # Filter out WebGPU tests on Windows 7 since listing tests breaks there due
+  # to Node not working properly on Windows 7.
+  # pylint:disable=no-member
+  if sys.platform == 'win32' and sys.getwindowsversion().major < 10:
+    # pylint:enable=no-member
+    test_cases = [
+        c for c in test_cases
+        if c != webgpu_cts_integration_test.WebGpuCtsIntegrationTest
+    ]
   return test_cases
 
 

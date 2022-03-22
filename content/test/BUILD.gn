@@ -786,10 +786,40 @@ group("telemetry_gpu_integration_test_support") {
     ":telemetry_gpu_integration_test_data",
 
     # For WebGPU CTS tests.
+    ":webgpu_cts_js",
+    ":webgpu_cts_scripts",
+    ":webgpu_cts_test_page",
     "//third_party/dawn/third_party/gn/webgpu-cts",
 
     # For anything using Skia Gold (pixel, maps).
     "//ui/base:goldctl",
+  ]
+}
+
+# This needs to be copied to the output directory since the CTS tests also
+# serve resources that are copied into it.
+copy("webgpu_cts_test_page") {
+  testonly = true
+  sources = [
+    "//third_party/blink/web_tests/wpt_internal/webgpu/cts_chrome.https.html",
+  ]
+  outputs = [ "$target_gen_dir/cts_chrome.https.html" ]
+}
+
+copy("webgpu_cts_js") {
+  testonly = true
+  sources = [ "//third_party/webgpu-cts/chrome_telemetry.js" ]
+  outputs = [ "$target_gen_dir/chrome_telemetry.js" ]
+}
+
+group("webgpu_cts_scripts") {
+  testonly = true
+  data = [
+    "//third_party/node/",
+    "//third_party/webgpu-cts/scripts/",
+    "//third_party/webgpu-cts/src/src/",
+    "//third_party/webgpu-cts/src/node.tsconfig.json",
+    "//third_party/webgpu-cts/src/tsconfig.json",
   ]
 }
 

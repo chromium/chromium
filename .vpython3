@@ -337,6 +337,11 @@ wheel: <
   >
 >
 
+wheel: <
+  name: "infra/python/wheels/websockets-py3"
+  version: "version:10.1"
+>
+
 # Used by:
 #   //tools/infra/find_bad_builds.py
 wheel: <
