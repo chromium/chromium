@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
@@ -42,7 +43,8 @@ class UseCounter;
 // word 'observer' from ImageResource.
 class CORE_EXPORT ImageResourceContent final
     : public GarbageCollected<ImageResourceContent>,
-      public ImageObserver {
+      public ImageObserver,
+      public MediaTiming {
  public:
   // Used for loading.
   // Returned content will be associated immediately later with ImageResource.
@@ -106,14 +108,17 @@ class CORE_EXPORT ImageResourceContent final
   // ImageResourceContent::GetContentStatus() can be different from
   // ImageResource::GetStatus(). Use ImageResourceContent::GetContentStatus().
   ResourceStatus GetContentStatus() const;
+  bool IsSufficientContentLoadedForPaint() const override;
   bool IsLoaded() const;
   bool IsLoading() const;
   bool ErrorOccurred() const;
   bool LoadFailedOrCanceled() const;
-  bool IsAnimatedImageWithPaintedFirstFrame() const;
+  bool IsAnimatedImage() const override;
+  bool IsPaintedFirstFrame() const override;
+  bool TimingAllowPassed() const override;
 
   // Redirecting methods to Resource.
-  const KURL& Url() const;
+  const KURL& Url() const override;
   base::TimeTicks LoadResponseEnd() const;
   bool IsAccessAllowed() const;
   const ResourceResponse& GetResponse() const;
@@ -188,7 +193,7 @@ class CORE_EXPORT ImageResourceContent final
   // file, but currently just returns the complete file size.
   // TODO(iclelland): Eventually switch this, and related calculations, to bits
   // rather than bytes.
-  uint64_t ContentSizeForEntropy() const;
+  uint64_t ContentSizeForEntropy() const override;
 
   // Returns true if the image content is well-compressed (and not full of
   // extraneous metadata). "well-compressed" is determined by comparing the

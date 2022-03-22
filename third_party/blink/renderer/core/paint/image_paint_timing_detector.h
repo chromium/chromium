@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -26,15 +27,16 @@ class TracedValue;
 class Image;
 
 // TODO(crbug/960502): we should limit the access of these properties.
+// TODO(yoav): Rename all mentioned of "image" to "media"
 class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
  public:
   ImageRecord(DOMNodeId new_node_id,
-              const ImageResourceContent* new_cached_image,
+              const MediaTiming* new_media_timing,
               uint64_t new_first_size,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect)
       : node_id(new_node_id),
-        cached_image(new_cached_image),
+        media_timing(new_media_timing),
         first_size(new_first_size) {
     static unsigned next_insertion_index_ = 1;
     insertion_index = next_insertion_index_++;
@@ -48,11 +50,11 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
 
   // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
   // determine whether the image is a potential LCP candidate. Will return 0.0
-  // if there is no `cached_image`.
+  // if there is no `media_timing`.
   double EntropyForLCP() const;
 
   DOMNodeId node_id = kInvalidDOMNodeId;
-  WeakPersistent<const ImageResourceContent> cached_image;
+  WeakPersistent<const MediaTiming> media_timing;
   // Mind that |first_size| has to be assigned before pusing to
   // |size_ordered_set_| since it's the sorting key.
   uint64_t first_size = 0;
@@ -69,7 +71,7 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
 };
 
-typedef std::pair<const LayoutObject*, const ImageResourceContent*> RecordId;
+typedef std::pair<const LayoutObject*, const MediaTiming*> RecordId;
 
 // |ImageRecordsManager| is the manager of all of the images that Largest
 // Image Paint cares about. Note that an image does not necessarily correspond
@@ -118,7 +120,7 @@ class CORE_EXPORT ImageRecordsManager {
     // TODO(npm): Ideally NotifyImageFinished() would only be called when the
     // record has not yet been inserted in |image_finished_times_| but that's
     // not currently the case. If we plumb some information from
-    // ImageResourceContent we may be able to ensure that this call does not
+    // MediaTiming we may be able to ensure that this call does not
     // require the Contains() check, which would save time.
     if (!image_finished_times_.Contains(record_id)) {
       image_finished_times_.insert(record_id, base::TimeTicks::Now());
@@ -155,7 +157,7 @@ class CORE_EXPORT ImageRecordsManager {
  private:
   std::unique_ptr<ImageRecord> CreateImageRecord(
       const LayoutObject& object,
-      const ImageResourceContent* cached_image,
+      const MediaTiming* media_timing,
       const uint64_t& visual_size,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect);
@@ -242,13 +244,13 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // value to the ImageRecord.
   void RecordImage(const LayoutObject&,
                    const gfx::Size& intrinsic_size,
-                   const ImageResourceContent&,
+                   const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleFetchedImage*,
                    const gfx::Rect& image_border);
-  void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
+  void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
   void OnPaintFinished();
-  void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
+  void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
   // After the method being called, the detector stops to recording new entries.
   // We manually clean up the |images_queued_for_paint_time_| since those may be
   // used in the presentation callbacks, and we do not want any new paint times
@@ -288,7 +290,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
                                 const gfx::Size&,
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
-                                const ImageResourceContent&);
+                                const MediaTiming&);
 
   // Used to find the last candidate.
   unsigned count_candidates_ = 0;

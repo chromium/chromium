@@ -148,7 +148,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
 void PaintTimingDetector::NotifyImagePaint(
     const LayoutObject& object,
     const gfx::Size& intrinsic_size,
-    const ImageResourceContent& cached_image,
+    const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   if (IgnorePaintTimingScope::ShouldIgnore())
@@ -161,17 +161,16 @@ void PaintTimingDetector::NotifyImagePaint(
   if (!detector)
     return;
 
-  detector->RecordImage(object, intrinsic_size, cached_image,
+  detector->RecordImage(object, intrinsic_size, media_timing,
                         current_paint_chunk_properties, nullptr, image_border);
 }
 
-void PaintTimingDetector::NotifyImageFinished(
-    const LayoutObject& object,
-    const ImageResourceContent* cached_image) {
+void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
+                                              const MediaTiming* media_timing) {
   if (IgnorePaintTimingScope::ShouldIgnore())
     return;
   if (image_paint_timing_detector_)
-    image_paint_timing_detector_->NotifyImageFinished(object, cached_image);
+    image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
 }
 
 void PaintTimingDetector::LayoutObjectWillBeDestroyed(
@@ -279,8 +278,8 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
     // default, we'd be able to use the value of
     // largest_image_record->first_animated_frame_time directly.
-    if (image_record && image_record->cached_image &&
-        image_record->cached_image->IsAnimatedImageWithPaintedFirstFrame()) {
+    if (image_record && image_record->media_timing &&
+        image_record->media_timing->IsPaintedFirstFrame()) {
       // Set the animated image flag.
       largest_contentful_paint_type_ |=
           LargestContentfulPaintType::kLCPTypeAnimatedImage;
