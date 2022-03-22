@@ -64,7 +64,10 @@ enum ChromeTextContext {
   CONTEXT_IPH_BUBBLE_BODY,
 
   // Button label in the IPH bubble. Usually 13pt.
-  CONTEXT_IPH_BUBBLE_BUTTON
+  CONTEXT_IPH_BUBBLE_BUTTON,
+
+  // Title label in the browser side panel. Usually 13pt.
+  CONTEXT_SIDE_PANEL_TITLE,
 };
 
 enum ChromeTextStyle {
