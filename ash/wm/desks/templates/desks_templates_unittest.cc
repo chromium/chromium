@@ -3208,4 +3208,40 @@ TEST_F(DesksTemplatesTest, NudgeOnTheCorrectDisplay) {
             window_util::GetActiveWindow()->GetRootWindow());
 }
 
+// Tests that the save desk as template button is properly placed after an
+// overview item is closed via swipe.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonVisibleAfterSwipeToClose) {
+  // Use a test widget so we can close it properly after swiping to close. The
+  // order matters here; overview items are ordered by MRU order, so the most
+  // recently created widget corresponds to the first overview item.
+  auto widget2 = CreateTestWidget();
+  auto widget1 = CreateTestWidget();
+
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  OverviewItem* item1 = GetOverviewItemForWindow(widget1->GetNativeWindow());
+  ASSERT_TRUE(item1);
+
+  // Swipe down on `item1` to close it.
+  GetEventGenerator()->set_current_screen_location(
+      gfx::ToRoundedPoint(item1->target_bounds().CenterPoint()));
+  GetEventGenerator()->PressMoveAndReleaseTouchBy(0, 200);
+
+  // `NativeWidgetAura::Close()` is on a post task so flush that task.
+  base::RunLoop().RunUntilIdle();
+
+  item1 = GetOverviewItemForWindow(widget1->GetNativeWindow());
+  ASSERT_FALSE(item1);
+
+  // Tests that the save desk as template button and the remaining overview item
+  // bounds do not intersect (they are both fully visible).
+  OverviewItem* item2 = GetOverviewItemForWindow(widget2->GetNativeWindow());
+  ASSERT_TRUE(item2);
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_FALSE(item2->target_bounds().Intersects(
+      gfx::RectF(save_desk_as_template_widget->GetWindowBoundsInScreen())));
+}
+
 }  // namespace ash

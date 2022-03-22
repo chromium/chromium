@@ -1859,12 +1859,17 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   if (!desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
+  // If there is only one item and it is animating to close, hide the widget as
+  // the closing window cannot be saved as part of a template.
+  const bool no_items =
+      window_list_.empty() ||
+      (window_list_.size() == 1u && window_list_.front()->animating_to_close());
+
   // Do not create or show the save desk as template button if there are no
   // windows in this grid, during a window drag or in tablet mode, or the desks
   // templates grid is visible.
   const bool target_visible =
-      !window_list_.empty() &&
-      !overview_session_->GetCurrentDraggedOverviewItem() &&
+      !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       !IsShowingDesksTemplatesGrid();
 
@@ -1937,10 +1942,18 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   }
   save_template->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 
+  gfx::RectF first_overview_item_bounds;
+  if (window_list_.front()->animating_to_close()) {
+    DCHECK_GT(window_list_.size(), 1u);
+    first_overview_item_bounds = window_list_[1]->target_bounds();
+  } else {
+    first_overview_item_bounds = window_list_.front()->target_bounds();
+  }
+
   // Set the widget position above the overview item window and default width
   // and height.
   const gfx::Point first_overview_item_origin =
-      gfx::ToRoundedPoint(window_list_.front()->target_bounds().origin());
+      gfx::ToRoundedPoint(first_overview_item_bounds.origin());
   const gfx::Size preferred_size =
       save_desk_as_template_widget_->GetContentsView()->GetPreferredSize();
 
