@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -33,18 +34,6 @@ namespace {
 
 constexpr int kProgressRingRadius = 9;
 constexpr float kProgressRingStrokeWidth = 1.7f;
-
-std::unique_ptr<DownloadBubbleRowListView> CreateRowListView(
-    std::vector<DownloadUIModelPtr> model_list,
-    DownloadBubbleUIController* bubble_controller) {
-  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
-  for (DownloadUIModelPtr& model : model_list) {
-    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller));
-  }
-  return row_list_view;
-}
-
 }  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
@@ -124,12 +113,8 @@ void DownloadToolbarButtonView::UpdateDownloadIcon() {
 // there is nothing to do here, the controller should update the partial view.
 void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
-    std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-        CreateBubbleDialogDelegate(CreateRowListView(
-            bubble_controller_->GetPartialView(), bubble_controller_.get()));
-    bubble_delegate_ = bubble_delegate.get();
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-    bubble_delegate_->GetWidget()->Show();
+    is_primary_partial_view_ = true;
+    CreateBubbleDialogDelegate(GetPrimaryView());
   }
 }
 
@@ -160,12 +145,34 @@ void DownloadToolbarButtonView::UpdateIcon() {
   }
 }
 
+std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
+  if (is_primary_partial_view_) {
+    return CreateRowListView(bubble_controller_->GetPartialView());
+  } else {
+    // raw ptr is safe as the toolbar view owns the bubble.
+    return std::make_unique<DownloadDialogView>(
+        browser_, CreateRowListView(bubble_controller_->GetMainView()), this);
+  }
+}
+
+void DownloadToolbarButtonView::OpenPrimaryDialog() {
+  bubble_delegate_->SetContentsView(GetPrimaryView());
+}
+
+// TODO(bhatiarohit): Open subpage here.
+void DownloadToolbarButtonView::OpenSecurityDialog(
+    DownloadUIModel::DownloadUIModelPtr download) {}
+
+void DownloadToolbarButtonView::CloseDialog() {
+  bubble_delegate_->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   bubble_delegate_ = nullptr;
 }
 
-std::unique_ptr<views::BubbleDialogDelegate>
-DownloadToolbarButtonView::CreateBubbleDialogDelegate(
+void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
       std::make_unique<views::BubbleDialogDelegate>(
@@ -173,11 +180,9 @@ DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  // base::Unretained(this) is fine as DownloadToolbarButtonView is the anchor
-  // view, and owns the child view/widgets.
   bubble_delegate->RegisterDeleteDelegateCallback(
       base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
   bubble_delegate->SetContentsView(std::move(bubble_contents_view));
 
   bubble_delegate->set_fixed_width(
@@ -186,7 +191,9 @@ DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->set_margins(
       gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  return bubble_delegate;
+  bubble_delegate_ = bubble_delegate.get();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+  bubble_delegate_->GetWidget()->Show();
 }
 
 // If the bubble delegate is set (either the main or the partial view), the
@@ -195,15 +202,23 @@ DownloadToolbarButtonView::CreateBubbleDialogDelegate(
 // If the bubble delegate is not set, show the main view.
 void DownloadToolbarButtonView::ButtonPressed() {
   if (!bubble_delegate_) {
-    std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-        CreateBubbleDialogDelegate(std::make_unique<DownloadDialogView>(
-            browser_, CreateRowListView(bubble_controller_->GetMainView(),
-                                        bubble_controller_.get())));
-    bubble_delegate_ = bubble_delegate.get();
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-    bubble_delegate_->GetWidget()->Show();
+    is_primary_partial_view_ = false;
+    CreateBubbleDialogDelegate(GetPrimaryView());
   }
   controller_->OnButtonPressed();
+}
+
+std::unique_ptr<DownloadBubbleRowListView>
+DownloadToolbarButtonView::CreateRowListView(
+    std::vector<DownloadUIModel::DownloadUIModelPtr> model_list) {
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
+  for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
+    // raw pointer is safe as the toolbar owns the bubble, which owns an
+    // individual row view.
+    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
+        std::move(model), row_list_view.get(), bubble_controller_.get(), this));
+  }
+  return row_list_view;
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
@@ -20,7 +21,8 @@ class DownloadDialogView : public views::View {
   DownloadDialogView& operator=(const DownloadDialogView&) = delete;
 
   DownloadDialogView(raw_ptr<Browser> browser,
-                     std::unique_ptr<DownloadBubbleRowListView> row_list_view);
+                     std::unique_ptr<DownloadBubbleRowListView> row_list_view,
+                     DownloadBubbleNavigationHandler* navigation_handler);
 
  private:
   void CloseBubble();
@@ -29,6 +31,7 @@ class DownloadDialogView : public views::View {
   void ShowAllDownloads();
   void OnThemeChanged() override;
 
+  raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<views::Link> footer_link_ = nullptr;
 };

@@ -72,6 +72,11 @@ class DownloadUIModel {
    public:
     std::u16string GetInProgressStatusText() const override;
     std::u16string GetCompletedStatusText() const override;
+    std::u16string GetInterruptedStatusText(
+        offline_items_collection::FailState fail_state) const override;
+
+   private:
+    std::u16string GetBubbleWarningStatusText() const;
   };
 
   using DownloadUIModelPtr =

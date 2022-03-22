@@ -762,10 +762,26 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
 }
 
 std::u16string
+DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
+  if (!model_->IsDangerous()) {
+    return std::u16string();
+  }
+  // "Blocked • Malware"
+  return base::StrCat(
+      {l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_BLOCKED),
+       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
+       l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_MALWARE)});
+}
+
+std::u16string
 DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
   DCHECK_EQ(DownloadItem::IN_PROGRESS, model_->GetState());
-  const auto web_drive = model_->GetWebDriveName();
 
+  std::u16string warning_status_text = GetBubbleWarningStatusText();
+  if (!warning_status_text.empty())
+    return warning_status_text;
+
+  const auto web_drive = model_->GetWebDriveName();
   base::TimeDelta time_remaining;
   // time_remaining is only known if the download isn't paused, and it isn't
   // going to be rerouted to a web drive.
@@ -871,6 +887,10 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetCompletedStatusText()
 
 std::u16string
 DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
+  std::u16string warning_status_text = GetBubbleWarningStatusText();
+  if (!warning_status_text.empty())
+    return warning_status_text;
+
   std::u16string status_text = GetCompletedRemovedOrSavedStatusText();
   if (!status_text.empty())
     return status_text;
@@ -966,6 +986,26 @@ std::u16string DownloadUIModel::StatusTextBuilderBase::GetInterruptedStatusText(
   // "Fail to save to <WEB_DRIVE> - <STATE_MESSAGE>"
   return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED,
                                     web_drive, state_msg);
+}
+
+std::u16string
+DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
+    FailState fail_state) const {
+  auto state_msg = GetFailStateMessage(fail_state);
+  const auto web_drive = model_->GetWebDriveName();
+  if (web_drive.empty()) {
+    // "Failed • <STATE_MESSAGE>"
+    return base::StrCat(
+        {l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_FAILED),
+         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
+         state_msg});
+  }
+  // "Fail to save to <WEB_DRIVE> • <STATE_MESSAGE>"
+  return base::StrCat(
+      {l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_FAILED_WEBDRIVE),
+       web_drive,
+       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
+       state_msg});
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

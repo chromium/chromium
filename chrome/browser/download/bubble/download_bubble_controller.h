@@ -23,7 +23,7 @@ using OfflineContentAggregator =
     ::offline_items_collection::OfflineContentAggregator;
 using OfflineItem = ::offline_items_collection::OfflineItem;
 using UpdateDelta = ::offline_items_collection::UpdateDelta;
-using DownloadUIModelPtr = ::OfflineItemModel::DownloadUIModelPtr;
+using DownloadUIModelPtr = ::DownloadUIModel::DownloadUIModelPtr;
 using OfflineItemList =
     ::offline_items_collection::OfflineContentAggregator::OfflineItemList;
 
@@ -60,6 +60,23 @@ class DownloadBubbleUIController
 
   // Remove the entry from Partial view candidates.
   void RemoveContentIdFromPartialView(const ContentId& id);
+
+  // Submits download to download feedback service if the user has approved and
+  // the download is suitable for submission, then applies |command|.
+  // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
+  void MaybeSubmitDownloadToFeedbackService(DownloadUIModel* model,
+                                            DownloadCommands::Command command);
+
+  // Submits the downloaded file to the safebrowsing download feedback service.
+  // Applies |command| if submission succeeds. Returns whether submission was
+  // successful.
+  bool SubmitDownloadToFeedbackService(DownloadUIModel* model,
+                                       DownloadCommands::Command command) const;
+
+  // Process Warning keep or discard button press on the bubble. Submit
+  // download to feedback service for non-mixed content downloads.
+  void ProcessDownloadWarningButtonPress(DownloadUIModel* model,
+                                         DownloadCommands::Command command);
 
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;

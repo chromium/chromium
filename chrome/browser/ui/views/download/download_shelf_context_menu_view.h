@@ -23,12 +23,16 @@ class MenuRunner;
 class Widget;
 }
 
+class DownloadBubbleUIController;
+
 class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
  public:
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
   explicit DownloadShelfContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
+  DownloadShelfContextMenuView(base::WeakPtr<DownloadUIModel> download_ui_model,
+                               DownloadBubbleUIController* bubble_controller);
   DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
   DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
       delete;
@@ -55,6 +59,9 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   // Parent download item view.
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   raw_ptr<DownloadItemView> download_item_view_ = nullptr;
+
+  // Use this instead of DownloadItemView to submit download for feedback.
+  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   base::OnceClosure on_menu_will_show_callback_;
 

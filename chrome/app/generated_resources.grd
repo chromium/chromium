@@ -2547,6 +2547,22 @@ are declared in tools/grit/grit_rule.gni.
                desc="When a download is finished, let the user know.">
         Done
       </message>
+      <message name="IDS_DOWNLOAD_STATUS_BLOCKED"
+               desc="When a download is blocked because of warnings, let the user know.">
+        Blocked
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_FAILED"
+               desc="When a download is failed, let the user know.">
+        Failed
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_FAILED_WEBDRIVE"
+               desc="When a download is failed and was expecting to save to web drive, let the user know.">
+        '''Failed to save to '''
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_MALWARE"
+               desc="Malware warning for the user.">
+        Malware
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">

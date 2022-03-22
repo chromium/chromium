@@ -34,8 +34,7 @@
 #include "ui/views/window/vector_icons/vector_icons.h"
 
 void DownloadDialogView::CloseBubble() {
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  navigation_handler_->CloseDialog();
 }
 
 void DownloadDialogView::ShowAllDownloads() {
@@ -117,8 +116,9 @@ void DownloadDialogView::AddFooter() {
 
 DownloadDialogView::DownloadDialogView(
     raw_ptr<Browser> browser,
-    std::unique_ptr<DownloadBubbleRowListView> row_list_view)
-    : browser_(browser) {
+    std::unique_ptr<DownloadBubbleRowListView> row_list_view,
+    DownloadBubbleNavigationHandler* navigation_handler)
+    : navigation_handler_(navigation_handler), browser_(browser) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   AddHeader();

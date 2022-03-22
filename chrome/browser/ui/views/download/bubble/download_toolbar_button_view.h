@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -16,11 +17,23 @@ class Browser;
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleUIController;
+class DownloadBubbleRowListView;
+
+class DownloadBubbleNavigationHandler {
+ public:
+  // Primary dialog is either main or partial view.
+  virtual void OpenPrimaryDialog() = 0;
+  virtual void OpenSecurityDialog(
+      DownloadUIModel::DownloadUIModelPtr download) = 0;
+  virtual void CloseDialog() = 0;
+};
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
 // to that of its parent ToolbarView. The icon is made visible when downloads
 // are in progress or when a download was initiated in the past 24 hours.
-class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
+class DownloadToolbarButtonView : public ToolbarButton,
+                                  public DownloadDisplay,
+                                  public DownloadBubbleNavigationHandler {
  public:
   METADATA_HEADER(DownloadToolbarButtonView);
   explicit DownloadToolbarButtonView(BrowserView* browser_view);
@@ -41,16 +54,28 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   // ToolbarButton:
   void UpdateIcon() override;
 
+  // DownloadBubbleNavigationHandler:
+  void OpenPrimaryDialog() override;
+  void OpenSecurityDialog(
+      DownloadUIModel::DownloadUIModelPtr download) override;
+  void CloseDialog() override;
+
  private:
   // views::Button overrides:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   void ButtonPressed();
-  std::unique_ptr<views::BubbleDialogDelegate> CreateBubbleDialogDelegate(
-      std::unique_ptr<View> bubble_contents_view);
+  void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
   void OnBubbleDelegateDeleted();
 
+  // Get the primary view, which may be the full or the partial view.
+  std::unique_ptr<View> GetPrimaryView();
+  // Create a row list view for either the full or the partial view.
+  std::unique_ptr<DownloadBubbleRowListView> CreateRowListView(
+      std::vector<DownloadUIModel::DownloadUIModelPtr> model_list);
+
   raw_ptr<Browser> browser_;
+  bool is_primary_partial_view_ = false;
   // Controller for the DownloadToolbarButton UI.
   std::unique_ptr<DownloadDisplayController> controller_;
   // Controller for keeping track of items for both main view and partial view.

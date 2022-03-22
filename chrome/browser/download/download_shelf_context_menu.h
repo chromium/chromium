@@ -47,6 +47,8 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
 
+  DownloadUIModel* GetDownload() { return download_.get(); }
+
  private:
   friend class DownloadShelfContextMenuTest;
   FRIEND_TEST_ALL_PREFIXES(DownloadShelfContextMenuTest,

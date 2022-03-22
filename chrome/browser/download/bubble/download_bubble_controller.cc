@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
@@ -12,6 +14,8 @@
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/download_manager.h"
@@ -278,4 +282,43 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
   return GetDownloadUIModels(/*is_main_view=*/false);
+}
+
+void DownloadBubbleUIController::ProcessDownloadWarningButtonPress(
+    DownloadUIModel* model,
+    DownloadCommands::Command command) {
+  DownloadCommands commands(model->GetWeakPtr());
+  if (model->IsMixedContent())
+    commands.ExecuteCommand(command);
+  else
+    MaybeSubmitDownloadToFeedbackService(model, command);
+}
+
+void DownloadBubbleUIController::MaybeSubmitDownloadToFeedbackService(
+    DownloadUIModel* model,
+    DownloadCommands::Command command) {
+  DownloadCommands commands(model->GetWeakPtr());
+  if (!model->ShouldAllowDownloadFeedback() ||
+      !SubmitDownloadToFeedbackService(model, command)) {
+    commands.ExecuteCommand(command);
+  }
+}
+
+bool DownloadBubbleUIController::SubmitDownloadToFeedbackService(
+    DownloadUIModel* model,
+    DownloadCommands::Command command) const {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto* const sb_service = g_browser_process->safe_browsing_service();
+  if (!sb_service)
+    return false;
+  auto* const dp_service = sb_service->download_protection_service();
+  if (!dp_service)
+    return false;
+  // TODO(shaktisahu): Enable feedback service for offline item.
+  return !model->download() || dp_service->MaybeBeginFeedbackForDownload(
+                                   profile_, model->download(), command);
+#else
+  NOTREACHED();
+  return false;
+#endif
 }

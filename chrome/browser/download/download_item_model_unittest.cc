@@ -237,16 +237,18 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     SetupInterruptedDownloadItem(test_case.reason);
     std::string expected_status_msg =
         base::StringPrintf(test_case.expected_status_msg, default_failed_msg);
-    std::string expected_bubble_status_msg =
-        test_case.expected_bubble_status_msg.empty()
-            ? expected_status_msg
-            : test_case.expected_bubble_status_msg;
+    std::u16string expected_bubble_status_msg =
+        base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
+    if (expected_bubble_status_msg.empty()) {
+      expected_bubble_status_msg = base::UTF8ToUTF16(expected_status_msg);
+      base::ReplaceFirstSubstringAfterOffset(&expected_bubble_status_msg, 0,
+                                             u"-", u"•");
+    }
     SetStatusTextBuilder(/*for_bubble=*/false);
     EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
 
     SetStatusTextBuilder(/*for_bubble=*/true);
-    EXPECT_EQ(expected_bubble_status_msg,
-              base::UTF16ToUTF8(model().GetStatusText()));
+    EXPECT_EQ(expected_bubble_status_msg, model().GetStatusText());
   }
 
   const std::string provider_failed_msg =
@@ -268,15 +270,17 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     }
     SetStatusTextBuilder(/*for_bubble=*/false);
     EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
-    std::string expected_bubble_status_msg =
-        test_case.expected_bubble_status_msg.empty()
-            ? expected_status_msg
-            : test_case.expected_bubble_status_msg;
+    std::u16string expected_bubble_status_msg =
+        base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
+    if (expected_bubble_status_msg.empty()) {
+      expected_bubble_status_msg = base::UTF8ToUTF16(expected_status_msg);
+      base::ReplaceFirstSubstringAfterOffset(&expected_bubble_status_msg, 0,
+                                             u"-", u"•");
+    }
     EXPECT_EQ(expected_history_page_text,
               base::UTF16ToUTF8(model().GetHistoryPageStatusText()));
     SetStatusTextBuilder(/*for_bubble=*/true);
-    EXPECT_EQ(expected_bubble_status_msg,
-              base::UTF16ToUTF8(model().GetStatusText()));
+    EXPECT_EQ(expected_bubble_status_msg, model().GetStatusText());
   }
 }
 

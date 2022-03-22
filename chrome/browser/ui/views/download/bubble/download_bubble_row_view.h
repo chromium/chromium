@@ -8,7 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/view.h"
@@ -23,15 +25,33 @@ class ProgressBar;
 class DownloadShelfContextMenuView;
 class DownloadBubbleUIController;
 
+// Style info for a single download row.
+struct DownloadStyleInfo {
+  // kColorAlertHighSeverity, kColorAlertMediumSeverity, or
+  // kColorSecondaryForeground
+  SkColor secondary_text_color = ui::kColorSecondaryForeground;
+  bool has_progress_and_cancel = false;
+  bool has_subpage_button = false;
+  download::DownloadItemMode mode = download::DownloadItemMode::kNormal;
+  download::DownloadItem::DownloadState state =
+      download::DownloadItem::DownloadState::IN_PROGRESS;
+  ui::ImageModel icon_model_override;
+  DownloadStyleInfo() = default;
+  // Only compare the state variables that indicate layout invalidation.
+  bool operator==(const DownloadStyleInfo& rhs);
+};
+
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
                               public DownloadUIModel::Observer {
  public:
   METADATA_HEADER(DownloadBubbleRowView);
 
-  explicit DownloadBubbleRowView(DownloadUIModel::DownloadUIModelPtr model,
-                                 DownloadBubbleRowListView* row_list_view,
-                                 DownloadBubbleUIController* bubble_controller);
+  explicit DownloadBubbleRowView(
+      DownloadUIModel::DownloadUIModelPtr model,
+      DownloadBubbleRowListView* row_list_view,
+      DownloadBubbleUIController* bubble_controller,
+      DownloadBubbleNavigationHandler* navigation_handler);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -54,18 +74,26 @@ class DownloadBubbleRowView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
+  // Calculate styling info, returning if there is any change.
+  bool CalculateDownloadStyleInfo();
+  void UpdateUIForInProgressItems();
+  void UpdateUIForWarnings();
+
   // Load the icon, from the cache or from IconManager::LoadIcon.
   void LoadIcon();
 
   // Called when icon has been loaded by IconManager::LoadIcon.
-  void SetIcon(gfx::Image icon);
+  void SetIconFromImage(gfx::Image icon);
+  void SetIconFromImageModel(ui::ImageModel icon);
 
-  // Called when cancel button is pressed for an in progress download.
   void OnCancelButtonPressed();
+  void OnDiscardButtonPressed();
+  void OnMainButtonPressed();
 
   // TODO(bhatiarohit): Add platform-independent icons.
   // The icon for the file. We get platform-specific icons from IconLoader.
   raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::ImageView> subpage_icon_ = nullptr;
 
   // The primary label.
   raw_ptr<views::Label> primary_label_ = nullptr;
@@ -75,6 +103,12 @@ class DownloadBubbleRowView : public views::View,
 
   // The cancel button for in-progress downloads.
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
+
+  // The discard button for dangerous downloads.
+  raw_ptr<views::MdTextButton> discard_button_ = nullptr;
+
+  // Main row of the download row, everything above the progress bar.
+  raw_ptr<views::View> main_row_ = nullptr;
 
   // The progress bar for in-progress downloads.
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
@@ -96,6 +130,10 @@ class DownloadBubbleRowView : public views::View,
 
   // Controller for keeping track of downloads.
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
+
+  raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
+
+  DownloadStyleInfo style_info_;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };
