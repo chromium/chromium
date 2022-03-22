@@ -251,6 +251,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // BrowserRootView::DropTarget
   BrowserRootView::DropIndex GetDropIndex(
       const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
   // Changes the visibility of the Chrome Labs entry point based on prefs.

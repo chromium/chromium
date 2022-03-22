@@ -372,20 +372,23 @@ void BrowserRootView::OnEventProcessingStarted(ui::Event* event) {
 
 BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
     const ui::DropTargetEvent& event) {
+  BrowserRootView::DropTarget* target = nullptr;
+
   // See if we should drop links onto tabstrip first.
-  if (tabstrip()->GetVisible()) {
-    // Allow the drop as long as the mouse is over tabstrip or vertically
-    // before it.
-    gfx::Point tabstrip_loc_in_host;
-    ConvertPointToTarget(tabstrip(), this, &tabstrip_loc_in_host);
-    if (event.y() < tabstrip_loc_in_host.y() + tabstrip()->height())
-      return tabstrip();
-  }
+  gfx::Point loc_in_tabstrip(event.location());
+  ConvertPointToTarget(this, tabstrip(), &loc_in_tabstrip);
+  target = tabstrip()->GetDropTarget(loc_in_tabstrip);
 
   // See if we can drop links onto toolbar.
-  gfx::Point loc_in_toolbar(event.location());
-  ConvertPointToTarget(this, toolbar(), &loc_in_toolbar);
-  return toolbar()->HitTestPoint(loc_in_toolbar) ? toolbar() : nullptr;
+  if (!target) {
+    gfx::Point loc_in_toolbar(event.location());
+    ConvertPointToTarget(this, toolbar(), &loc_in_toolbar);
+    target =
+        static_cast<BrowserRootView::DropTarget*>(toolbar())->GetDropTarget(
+            loc_in_toolbar);
+  }
+
+  return target;
 }
 
 BrowserRootView::DropIndex BrowserRootView::GetDropIndexForEvent(

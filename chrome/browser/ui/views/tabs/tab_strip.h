@@ -57,10 +57,6 @@ namespace ui {
 class ListSelectionModel;
 }
 
-namespace views {
-class ImageView;
-}
-
 // A View that represents the TabStripModel. The TabStrip has the
 // following responsibilities:
 //
@@ -311,6 +307,9 @@ class TabStrip : public views::View,
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
+  // These system drag & drop methods are forwarded to TabDragController to
+  // support its fallback tab dragging mode in the case where the platform can't
+  // support the usual run loop based mode.
   bool CanDrop(const OSExchangeData& data) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
@@ -321,12 +320,15 @@ class TabStrip : public views::View,
   // transfer any data.
 
   // BrowserRootView::DropTarget:
+  // These methods handle link drag & drop. They are independent from the above
+  // fallback tab dragging mode methods, except that these will not be called
+  // while the aforementioned mode is active (see WantsToReceiveAllDragEvents).
+  // TODO(1307594): Use the standard drag and drop methods above instead.
   BrowserRootView::DropIndex GetDropIndex(
       const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
-  void HandleDragUpdate(
-      const absl::optional<BrowserRootView::DropIndex>& index) override;
-  void HandleDragExited() override;
 
  private:
   class TabDragContextImpl;
@@ -349,46 +351,6 @@ class TabStrip : public views::View,
 
    private:
     const raw_ptr<TabStrip> parent_;
-  };
-
-  // Used during a drop session of a url. Tracks the position of the drop as
-  // well as a window used to highlight where the drop occurs.
-  class DropArrow : public views::WidgetObserver {
-   public:
-    DropArrow(const BrowserRootView::DropIndex& index,
-              bool point_down,
-              views::Widget* context);
-    DropArrow(const DropArrow&) = delete;
-    DropArrow& operator=(const DropArrow&) = delete;
-    ~DropArrow() override;
-
-    void set_index(const BrowserRootView::DropIndex& index) { index_ = index; }
-    BrowserRootView::DropIndex index() const { return index_; }
-
-    void SetPointDown(bool down);
-    bool point_down() const { return point_down_; }
-
-    void SetWindowBounds(const gfx::Rect& bounds);
-
-    // views::WidgetObserver:
-    void OnWidgetDestroying(views::Widget* widget) override;
-
-   private:
-    // Index of the tab to drop on.
-    BrowserRootView::DropIndex index_;
-
-    // Direction the arrow should point in. If true, the arrow is displayed
-    // above the tab and points down. If false, the arrow is displayed beneath
-    // the tab and points up.
-    bool point_down_ = false;
-
-    // Renders the drop indicator.
-    raw_ptr<views::Widget> arrow_window_ = nullptr;
-
-    raw_ptr<views::ImageView> arrow_view_ = nullptr;
-
-    base::ScopedObservation<views::Widget, views::WidgetObserver>
-        scoped_observation_{this};
   };
 
   void Init();
@@ -429,25 +391,6 @@ class TabStrip : public views::View,
   // Determines whether a group can be shifted by one in the direction of
   // |offset| and moves it if possible.
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
-
-  // -- Link Drag & Drop ------------------------------------------------------
-  // TODO(1295774): Maybe move this functionality into TabContainer.
-
-  // Returns the bounds to render the drop at, in screen coordinates. Sets
-  // |is_beneath| to indicate whether the arrow is beneath the tab, or above
-  // it.
-  gfx::Rect GetDropBounds(int drop_index,
-                          bool drop_before,
-                          bool drop_in_group,
-                          bool* is_beneath);
-
-  // Show drop arrow with passed |tab_data_index| and |drop_before|.
-  // If |tab_data_index| is negative, the arrow will disappear.
-  void SetDropArrow(const absl::optional<BrowserRootView::DropIndex>& index);
-
-  // Returns the image to use for indicating a drop on a tab. If is_down is
-  // true, this returns an arrow pointing down.
-  static gfx::ImageSkia* GetDropArrowImage(bool is_down);
 
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
@@ -501,9 +444,6 @@ class TabStrip : public views::View,
 
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;
-
-  // Valid for the lifetime of a drag over us.
-  std::unique_ptr<DropArrow> drop_arrow_;
 
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;

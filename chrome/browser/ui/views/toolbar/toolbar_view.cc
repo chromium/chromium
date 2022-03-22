@@ -935,6 +935,11 @@ BrowserRootView::DropIndex ToolbarView::GetDropIndex(
   return {browser_->tab_strip_model()->active_index(), false};
 }
 
+BrowserRootView::DropTarget* ToolbarView::GetDropTarget(
+    gfx::Point loc_in_local_coords) {
+  return HitTestPoint(loc_in_local_coords) ? this : nullptr;
+}
+
 views::View* ToolbarView::GetViewForDrop() {
   return this;
 }

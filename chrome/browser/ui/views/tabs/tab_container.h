@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -30,6 +31,7 @@ class TabDragContext;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainer : public views::View,
+                     public BrowserRootView::DropTarget,
                      public views::ViewTargeterDelegate,
                      public views::MouseWatcherListener,
                      public views::BoundsAnimatorObserver {
@@ -134,6 +136,16 @@ class TabContainer : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
+  // BrowserRootView::DropTarget:
+  BrowserRootView::DropIndex GetDropIndex(
+      const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
+  views::View* GetViewForDrop() override;
+  void HandleDragUpdate(
+      const absl::optional<BrowserRootView::DropIndex>& index) override;
+  void HandleDragExited() override;
+
   // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
@@ -145,6 +157,46 @@ class TabContainer : public views::View,
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
  private:
+  // Used during a drop session of a url. Tracks the position of the drop as
+  // well as a window used to highlight where the drop occurs.
+  class DropArrow : public views::WidgetObserver {
+   public:
+    DropArrow(const BrowserRootView::DropIndex& index,
+              bool point_down,
+              views::Widget* context);
+    DropArrow(const DropArrow&) = delete;
+    DropArrow& operator=(const DropArrow&) = delete;
+    ~DropArrow() override;
+
+    void set_index(const BrowserRootView::DropIndex& index) { index_ = index; }
+    BrowserRootView::DropIndex index() const { return index_; }
+
+    void SetPointDown(bool down);
+    bool point_down() const { return point_down_; }
+
+    void SetWindowBounds(const gfx::Rect& bounds);
+
+    // views::WidgetObserver:
+    void OnWidgetDestroying(views::Widget* widget) override;
+
+   private:
+    // Index of the tab to drop on.
+    BrowserRootView::DropIndex index_;
+
+    // Direction the arrow should point in. If true, the arrow is displayed
+    // above the tab and points down. If false, the arrow is displayed beneath
+    // the tab and points up.
+    bool point_down_ = false;
+
+    // Renders the drop indicator.
+    raw_ptr<views::Widget> arrow_window_ = nullptr;
+
+    raw_ptr<views::ImageView> arrow_view_ = nullptr;
+
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        scoped_observation_{this};
+  };
+
   class RemoveTabDelegate;
 
   // Invoked prior to starting a new animation.
@@ -231,6 +283,20 @@ class TabContainer : public views::View,
   // to clip).
   bool ShouldTabBeVisible(const Tab* tab) const;
 
+  // -- Link Drag & Drop ------------------------------------------------------
+
+  // Returns the bounds to render the drop at, in screen coordinates. Sets
+  // |is_beneath| to indicate whether the arrow is beneath the tab, or above
+  // it.
+  gfx::Rect GetDropBounds(int drop_index,
+                          bool drop_before,
+                          bool drop_in_group,
+                          bool* is_beneath);
+
+  // Show drop arrow with passed |tab_data_index| and |drop_before|.
+  // If |tab_data_index| is negative, the arrow will disappear.
+  void SetDropArrow(const absl::optional<BrowserRootView::DropIndex>& index);
+
   // Updates the indexes and count for AX data on all tabs. Used by some screen
   // readers (e.g. ChromeVox).
   void UpdateAccessibleTabIndices();
@@ -272,6 +338,9 @@ class TabContainer : public views::View,
   // Timer used when a tab is closed and we need to relayout. Only used when a
   // tab close comes from a touch device.
   base::OneShotTimer resize_layout_timer_;
+
+  // Valid for the lifetime of a link drag over us.
+  std::unique_ptr<DropArrow> drop_arrow_;
 
   // Size we last laid out at.
   gfx::Size last_layout_size_;

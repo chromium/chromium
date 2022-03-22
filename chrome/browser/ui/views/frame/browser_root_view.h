@@ -54,6 +54,7 @@ class BrowserRootView : public views::internal::RootView {
     DropTarget& operator=(const DropTarget&) = delete;
 
     virtual DropIndex GetDropIndex(const ui::DropTargetEvent& event) = 0;
+    virtual DropTarget* GetDropTarget(gfx::Point loc_in_local_coords) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
     virtual void HandleDragUpdate(const absl::optional<DropIndex>& index) {}
