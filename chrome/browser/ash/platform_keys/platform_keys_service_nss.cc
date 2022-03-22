@@ -24,7 +24,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -183,8 +182,6 @@ class GenerateRSAKeyState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& public_key_spki_der,
                 Status status) {
-    UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.GenerateKey.RSA",
-                          status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -222,8 +219,6 @@ class GenerateECKeyState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& public_key_spki_der,
                 Status status) {
-    UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.GenerateKey.EC",
-                          status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -279,25 +274,11 @@ class SignState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& signature,
                 Status status) {
-    EmitOperationStatusToHistogram(status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), signature, status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
-  }
-
-  void EmitOperationStatusToHistogram(bool success) const {
-    switch (key_type_) {
-      case KeyType::kRsassaPkcs1V15:
-        UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.SignKey.RSA",
-                              success);
-        break;
-      case KeyType::kEcdsa:
-        UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.SignKey.EC",
-                              success);
-        break;
-    }
   }
 
   // Must be called on origin thread, therefore use CallBack().
