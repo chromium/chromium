@@ -23,8 +23,13 @@
 
 namespace base {
 namespace {
+#if BUILDFLAG(IS_IOS)
+// For M99, 45% of devices have 2GB of RAM, and 55% have more.
+constexpr int64_t kLowMemoryDeviceThresholdMB = 1024;
+#else
 // Updated Desktop default threshold to match the Android 2021 definition.
 constexpr int64_t kLowMemoryDeviceThresholdMB = 2048;
+#endif
 }  // namespace
 
 // static
