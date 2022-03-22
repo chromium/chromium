@@ -270,7 +270,7 @@ def MakeScenarioDriver(scenario_name,
     return NavigationScenario(
         browser_driver,
         navigation_duration=datetime.timedelta(seconds=15),
-        navigation_cycles=70,
+        navigation_cycles=140,
         sites=NAVIGATED_SITES,
         scenario_name=scenario_name)
   if "zero_window" == scenario_name:
