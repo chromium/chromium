@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -101,20 +102,19 @@ TreeView::TreeView()
   constexpr bool kUseMdIcons = false;
 #endif
   if (kUseMdIcons) {
-    closed_icon_ = open_icon_ =
-        gfx::CreateVectorIcon(vector_icons::kFolderIcon, gfx::kChromeIconGrey);
+    closed_icon_ = open_icon_ = ui::ImageModel::FromVectorIcon(
+        vector_icons::kFolderIcon, ui::kColorIcon);
   } else {
     // TODO(ellyjones): if the pre-Harmony codepath goes away, merge
     // closed_icon_ and open_icon_.
-    closed_icon_ = *ui::ResourceBundle::GetSharedInstance()
-                        .GetImageNamed(IDR_FOLDER_CLOSED)
-                        .ToImageSkia();
-    open_icon_ = *ui::ResourceBundle::GetSharedInstance()
-                      .GetImageNamed(IDR_FOLDER_OPEN)
-                      .ToImageSkia();
+    closed_icon_ = ui::ImageModel::FromImage(
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            IDR_FOLDER_CLOSED));
+    open_icon_ = ui::ImageModel::FromImage(
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_FOLDER_OPEN));
   }
-  text_offset_ =
-      closed_icon_.width() + kImagePadding + kImagePadding + kArrowRegionSize;
+  text_offset_ = closed_icon_.Size().width() + kImagePadding + kImagePadding +
+                 kArrowRegionSize;
 }
 
 TreeView::~TreeView() {
@@ -1180,12 +1180,15 @@ void TreeView::PaintNodeIcon(gfx::Canvas* canvas,
     canvas->Translate(gfx::Vector2d(bounds.x(), 0));
     scoped_canvas.FlipIfRTL(bounds.width());
     // Now paint the icon local to that flipped region.
-    PaintRowIcon(canvas, node->is_expanded() ? open_icon_ : closed_icon_,
+    PaintRowIcon(canvas,
+                 (node->is_expanded() ? open_icon_ : closed_icon_)
+                     .Rasterize(GetColorProvider()),
                  icon_x,
                  gfx::Rect(0, bounds.y(), bounds.width(), bounds.height()));
   } else {
-    const gfx::ImageSkia& icon = icons_[icon_index];
-    icon_x += (open_icon_.width() - icon.width()) / 2;
+    const gfx::ImageSkia& icon =
+        icons_[icon_index].Rasterize(GetColorProvider());
+    icon_x += (open_icon_.Size().width() - icon.width()) / 2;
     if (base::i18n::IsRTL())
       icon_x = bounds.width() - icon_x - icon.width();
     PaintRowIcon(canvas, icon, icon_x, bounds);

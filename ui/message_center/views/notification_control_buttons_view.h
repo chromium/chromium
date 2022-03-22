@@ -29,6 +29,8 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
       const NotificationControlButtonsView&) = delete;
   ~NotificationControlButtonsView() override;
 
+  void OnThemeChanged() override;
+
   // Change the visibility of the close button. True to show, false to hide.
   void ShowCloseButton(bool show);
   // Change the visibility of the settings button. True to show, false to hide.
@@ -71,7 +73,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   raw_ptr<PaddedButton> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
-  SkColor icon_color_;
+  absl::optional<SkColor> icon_color_;
   // The background color for readability of the icons.
   SkColor background_color_ = SK_ColorTRANSPARENT;
 };

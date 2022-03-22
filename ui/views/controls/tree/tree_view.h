@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"
@@ -466,11 +467,11 @@ class VIEWS_EXPORT TreeView : public View,
   raw_ptr<ui::TreeModel> model_ = nullptr;
 
   // Default icons for closed/open.
-  gfx::ImageSkia closed_icon_;
-  gfx::ImageSkia open_icon_;
+  ui::ImageModel closed_icon_;
+  ui::ImageModel open_icon_;
 
   // Icons from the model.
-  std::vector<gfx::ImageSkia> icons_;
+  std::vector<ui::ImageModel> icons_;
 
   // The root node.
   InternalNode root_;

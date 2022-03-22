@@ -161,10 +161,7 @@ constexpr SkAlpha kGoogleGreyAlpha600 = 0x8C;  //  55%
 constexpr SkAlpha kGoogleGreyAlpha700 = 0xB5;  //  71%
 constexpr SkAlpha kGoogleGreyAlpha800 = 0xDB;  //  86%
 
-// kChromeIconGrey is subject to change in the future, kGoogleGrey700 is set in
-// stone. If you're semantically looking for "the icon color Chrome uses" then
-// use kChromeIconGrey, if you're looking for GG700 grey specifically, use the
-// Google-grey constant directly.
+// TODO(pkasting): Remove.
 constexpr SkColor kChromeIconGrey = kGoogleGrey700;
 
 // An alpha value for designating a control's disabled state. In specs this is
