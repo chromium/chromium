@@ -74,10 +74,8 @@ class PasswordStoreProxyBackendTest : public testing::Test {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
         &main_backend_, &shadow_backend_, &prefs_, &sync_delegate_);
 
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                               {{"stage", "1"}}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kUnifiedPasswordManagerAndroid, {{"stage", "1"}});
 
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
@@ -319,10 +317,9 @@ TEST_F(PasswordStoreProxyBackendTest,
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowGetAllLoginsAsyncWithoutSyncOrMigration) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   base::HistogramTester histogram_tester;
@@ -355,10 +352,9 @@ TEST_F(PasswordStoreProxyBackendTest,
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowGetAutofillableLoginsAsyncWithoutSyncOrMigration) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(false));
@@ -371,10 +367,9 @@ TEST_F(PasswordStoreProxyBackendTest,
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowFillMatchingLoginsAsyncWithoutSyncOrMigration) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(false));
@@ -399,10 +394,9 @@ TEST_F(PasswordStoreProxyBackendTest, NoShadowAddLoginAsyncWhenSyncEnabled) {
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowAddLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -419,10 +413,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowAddLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -441,10 +434,9 @@ TEST_F(PasswordStoreProxyBackendTest,
   // Set the prefs such that no initial migration is required to allow shadow
   // write operations.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
   // Shadow write operations run only for non-syncing users.
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -495,10 +487,9 @@ TEST_F(PasswordStoreProxyBackendTest, NoShadowUpdateLoginAsyncWhenSyncEnabled) {
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowUpdateLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -515,10 +506,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowGetAllLoginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(false));
@@ -556,10 +546,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowUpdateLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -584,10 +573,9 @@ TEST_F(PasswordStoreProxyBackendTest, NoShadowRemoveLoginAsyncWhenSyncEnabled) {
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowRemoveLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -604,14 +592,29 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowRemoveLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginAsync);
+  proxy_backend().RemoveLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowRemoveLoginAsyncWhenSyncEnabledAtEnabledForSyncingUsersStage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
 
   EXPECT_CALL(main_backend(), RemoveLoginAsync);
   EXPECT_CALL(shadow_backend(), RemoveLoginAsync);
@@ -638,10 +641,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     NoShadowRemoveLoginsByURLAndTimeAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -657,15 +659,35 @@ TEST_F(
       /*callback=*/base::DoNothing());
 }
 
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowRemoveLoginsByURLAndTimeAsyncWhenSyncEnabledAtEnabledForSyncingUsersStage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsByURLAndTimeAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsByURLAndTimeAsync);
+  proxy_backend().RemoveLoginsByURLAndTimeAsync(
+      base::BindRepeating(&FilterNoUrl),
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*sync_completion=*/base::OnceCallback<void(bool)>(),
+      /*callback=*/base::DoNothing());
+}
+
 // TODO(crbug.com/1306001): Reenable or clean up for local-only users.
 TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowRemoveLoginsByURLAndTimeAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -698,10 +720,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     NoShadowRemoveLoginsCreatedBetweenAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -715,15 +736,33 @@ TEST_F(
       /*callback=*/base::DoNothing());
 }
 
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowRemoveLoginsCreatedBetweenAsyncWhenSyncEnabledAtEnabledForSyncingUsersStage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsCreatedBetweenAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsCreatedBetweenAsync);
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*callback=*/base::DoNothing());
+}
+
 // TODO(crbug.com/1306001): Reenable or clean up for local-only users.
 TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowRemoveLoginsCreatedBetweenAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -752,10 +791,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     NoShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -772,10 +810,9 @@ TEST_F(
     PasswordStoreProxyBackendTest,
     DISABLED_ShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
-                             {{"migration_version", "2"}, {"stage", "1"}}}},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)

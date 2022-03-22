@@ -313,7 +313,8 @@ bool ManagesLocalPasswordsInUnifiedPasswordManager() {
     case UpmExperimentVariation::kShadowSyncingUsers:
       return false;
   }
-  NOTREACHED() << "Define explicitly whether migration is required!";
+  NOTREACHED()
+      << "Define explicitly whether local password management is supported!";
   return false;
 }
 #endif  // IS_ANDROID

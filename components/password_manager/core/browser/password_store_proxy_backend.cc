@@ -46,6 +46,30 @@ bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
              features::UpmExperimentVariation::kShadowSyncingUsers;
 }
 
+bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
+                                           bool is_syncing) {
+  if (ShouldExecuteModifyOperationsOnShadowBackend(prefs, is_syncing))
+    return true;
+
+  if (!is_syncing)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
+    return false;
+
+  features::UpmExperimentVariation variation =
+      features::kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case features::UpmExperimentVariation::kEnableForSyncingUsers:
+      return true;
+    case features::UpmExperimentVariation::kShadowSyncingUsers:
+      return false;
+  }
+  NOTREACHED()
+      << "Define explicitly whether deletions on both backends are required!";
+  return false;
+}
+
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
 struct LoginsResultImpl {
@@ -414,7 +438,7 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
                                PasswordStoreChangeListImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
-  if (ShouldExecuteModifyOperationsOnShadowBackend(
+  if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend_->RemoveLoginAsync(
         form,
@@ -440,7 +464,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
                          PasswordStoreChangeListImpl>::RecordMainResult,
                      handler)
           .Then(std::move(callback)));
-  if (ShouldExecuteModifyOperationsOnShadowBackend(
+  if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend_->RemoveLoginsByURLAndTimeAsync(
         url_filter, std::move(delete_begin), std::move(delete_end),
@@ -465,7 +489,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
                          PasswordStoreChangeListImpl>::RecordMainResult,
                      handler)
           .Then(std::move(callback)));
-  if (ShouldExecuteModifyOperationsOnShadowBackend(
+  if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend_->RemoveLoginsCreatedBetweenAsync(
         std::move(delete_begin), std::move(delete_end),
