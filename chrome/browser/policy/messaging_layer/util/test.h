@@ -48,6 +48,17 @@ class AttachEncryptionSettingsMatcher : public RequestValidityMatcherInterface {
   std::string Name() const override;
 };
 
+// attachEncryptionSettings must be absent.
+class NoAttachEncryptionSettingsMatcher
+    : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
 // encryptedRecord must be a list. This matcher is recommended to be applies
 // before verifying the details of any record (e.g., via |RecordMatcher|) to
 // generate more readable error messages.
@@ -130,6 +141,10 @@ class RequestValidityMatcherBuilder {
   RequestValidityMatcherBuilder<T>& operator=(
       RequestValidityMatcherBuilder<T>&&) = default;
 
+  // These creator functions are helpful because they are common starting point
+  // of a combination of matchers and are friendly to be adapted slightly for
+  // some test cases.
+
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains no matchers.
   static RequestValidityMatcherBuilder<T> CreateEmpty() {
@@ -154,12 +169,18 @@ class RequestValidityMatcherBuilder {
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying an encryption key-request
-  // upload request.
-  static RequestValidityMatcherBuilder<T> CreateEncryptionKeyRequestUpload() {
-    // A gap upload is a data upload with no encryptedWrappedRecord.
-    return std::move(RequestValidityMatcherBuilder<T>::CreateEmpty()
-                         .AppendMatcher(AttachEncryptionSettingsMatcher())
-                         .AppendMatcher(RequestIdMatcher()));
+  // upload request. If need_key is false, the matcher will ensure the request
+  // does not request an encryption key.
+  static RequestValidityMatcherBuilder<T> CreateEncryptionKeyRequestUpload(
+      bool need_key) {
+    auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
+    builder.AppendMatcher(RequestIdMatcher());
+    if (need_key) {
+      builder.AppendMatcher(AttachEncryptionSettingsMatcher());
+    } else {
+      builder.AppendMatcher(NoAttachEncryptionSettingsMatcher());
+    }
+    return builder;
   }
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
@@ -254,10 +275,13 @@ Matcher<T> IsDataUploadRequestValid() {
   return RequestValidityMatcherBuilder<T>::CreateDataUpload().Build();
 }
 
-// Match an encryption key-request upload request that is valid.
+// Match an encryption key-request upload request that is valid. If need_key is
+// false, this matcher will ensure the request does not request an encryption
+// key.
 template <class T = base::Value::Dict>
-Matcher<T> IsEncryptionKeyRequestUploadRequestValid() {
-  return RequestValidityMatcherBuilder<T>::CreateEncryptionKeyRequestUpload()
+Matcher<T> IsEncryptionKeyRequestUploadRequestValid(bool need_key = true) {
+  return RequestValidityMatcherBuilder<T>::CreateEncryptionKeyRequestUpload(
+             need_key)
       .Build();
 }
 

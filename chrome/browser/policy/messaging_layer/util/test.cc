@@ -66,6 +66,29 @@ std::string AttachEncryptionSettingsMatcher::Name() const {
   return "attach-encryption-settings-matcher";
 }
 
+bool NoAttachEncryptionSettingsMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  if (arg.Find("attachEncryptionSettings") != nullptr) {
+    *listener << "Found \"attachEncryptionSettings\" in the argument.";
+    return false;
+  }
+  return true;
+}
+
+void NoAttachEncryptionSettingsMatcher::DescribeTo(std::ostream* os) const {
+  *os << "expectedly has no attachEncryptionSettings field.";
+}
+
+void NoAttachEncryptionSettingsMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "unexpectedly has an attachEncryptionSettings field.";
+}
+
+std::string NoAttachEncryptionSettingsMatcher::Name() const {
+  return "no-attach-encryption-settings-matcher";
+}
+
 bool EncryptedRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
