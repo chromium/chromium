@@ -129,7 +129,13 @@ void AppendSuggestionIfMatching(
     suggestion.additional_label =
         std::u16string(password_length, kPasswordReplacementChar);
     suggestion.voice_over = l10n_util::GetStringFUTF16(
-        IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.label);
+        IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.value);
+    if (!suggestion.label.empty()) {
+      // The domainname is only shown for passwords with a common eTLD+1
+      // but different subdomain.
+      *suggestion.voice_over += u", ";
+      *suggestion.voice_over += suggestion.label;
+    }
     if (from_account_store) {
       suggestion.frontend_id =
           is_password_field
