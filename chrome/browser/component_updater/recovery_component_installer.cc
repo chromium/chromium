@@ -526,14 +526,6 @@ void RegisterPrefsForRecoveryComponent(PrefRegistrySimple* registry) {
 
 void AcceptedElevatedRecoveryInstall(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  ElevatedInstallRecoveryComponent(
-      prefs->GetFilePath(prefs::kRecoveryComponentUnpackPath));
-#endif
-#endif
-
   prefs->SetBoolean(prefs::kRecoveryComponentNeedsElevation, false);
 }
 

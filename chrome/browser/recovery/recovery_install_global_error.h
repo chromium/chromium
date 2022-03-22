@@ -14,6 +14,10 @@
 
 class Profile;
 
+// TODO(crbug.com/1309161) - remove the `RecoveryInstallGlobalError` class
+// which is not used because the old recovery component is not registered
+// anymore. The code has never been used on macOS either.
+//
 // Shows elevation needed for recovery component install on the wrench menu
 // using a bubble view and a menu item.
 class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
