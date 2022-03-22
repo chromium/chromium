@@ -68,6 +68,17 @@ void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
 COMPONENT_EXPORT(VARIATIONS)
 void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output);
 
+// Returns true if a synthetic trial with the name `trial_name` is currently
+// active, i.e. the named trial has chosen a group. Returns false otherwise.
+COMPONENT_EXPORT(VARIATIONS)
+bool HasSyntheticTrial(const std::string& trial_name);
+
+// Returns true if a synthetic trial with the name `trial_name` is active
+// with its chosen group matching `trial_group`. Returns false otherwise.
+COMPONENT_EXPORT(VARIATIONS)
+bool IsInSyntheticTrialGroup(const std::string& trial_name,
+                             const std::string& trial_group);
+
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.
 // TODO(crbug/507665): Move this to field_trials_provider once it moves

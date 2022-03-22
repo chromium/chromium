@@ -936,19 +936,6 @@ class HttpsOnlyModePrefsBrowserTest : public InProcessBrowserTest {
     return prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   }
 
-  // Returns whether the synthetic trial `trial_name` has been logged and is in
-  // the `trial_group` for the trial.
-  bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                               const std::string& trial_group) {
-    std::vector<std::string> synthetic_trials;
-    variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-    std::string expected_entry =
-        base::StringPrintf("%x-%x", variations::HashName(trial_name),
-                           variations::HashName(trial_group));
-    return std::find(synthetic_trials.begin(), synthetic_trials.end(),
-                     expected_entry) != synthetic_trials.end();
-  }
-
   base::HistogramTester* histograms() { return &histograms_; }
 
  private:
@@ -966,15 +953,15 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModePrefsBrowserTest, PRE_PrefStatesRecorded) {
   histograms()->ExpectUniqueSample(
       "Security.HttpsFirstMode.SettingEnabledAtStartup", false, 1);
 
-  EXPECT_TRUE(
-      IsInSyntheticTrialGroup("HttpsFirstModeClientSetting", "Disabled"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Disabled"));
 
   // Change the pref to true. This should get recorded in the histogram.
   SetPref(true);
   histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged",
                                    true, 1);
-  EXPECT_TRUE(
-      IsInSyntheticTrialGroup("HttpsFirstModeClientSetting", "Enabled"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Enabled"));
 }
 
 IN_PROC_BROWSER_TEST_F(HttpsOnlyModePrefsBrowserTest, PrefStatesRecorded) {
@@ -984,8 +971,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModePrefsBrowserTest, PrefStatesRecorded) {
   EXPECT_TRUE(GetPref());
   histograms()->ExpectUniqueSample(
       "Security.HttpsFirstMode.SettingEnabledAtStartup", true, 1);
-  EXPECT_TRUE(
-      IsInSyntheticTrialGroup("HttpsFirstModeClientSetting", "Enabled"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Enabled"));
 
   // Open an Incognito window. Startup metrics should not get recorded.
   CreateIncognitoBrowser();

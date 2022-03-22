@@ -1957,31 +1957,6 @@ class SiteIsolationForPasswordSitesBrowserTest
     return sites;
   }
 
-  bool HasSyntheticTrial(const std::string& trial_name) {
-    std::vector<std::string> synthetic_trials;
-    variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-    std::string trial_hash =
-        base::StringPrintf("%x", variations::HashName(trial_name));
-    auto it =
-        std::find_if(synthetic_trials.begin(), synthetic_trials.end(),
-                     [trial_hash](const auto& trial) {
-                       return base::StartsWith(trial, trial_hash,
-                                               base::CompareCase::SENSITIVE);
-                     });
-    return it != synthetic_trials.end();
-  }
-
-  bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                               const std::string& trial_group) {
-    std::vector<std::string> synthetic_trials;
-    variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-    std::string expected_entry =
-        base::StringPrintf("%x-%x", variations::HashName(trial_name),
-                           variations::HashName(trial_group));
-    return std::find(synthetic_trials.begin(), synthetic_trials.end(),
-                     expected_entry) != synthetic_trials.end();
-  }
-
   const std::string kSiteIsolationSyntheticTrialName = "SiteIsolationActive";
   const std::string kOOPIFSyntheticTrialName = "OutOfProcessIframesActive";
   const std::string kSyntheticTrialGroup = "Enabled";
@@ -2080,26 +2055,26 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
           web_contents);
   recorder->EnableSiteIsolationSyntheticTrialForTesting();
 
-  EXPECT_FALSE(HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
-  EXPECT_FALSE(HasSyntheticTrial(kOOPIFSyntheticTrialName));
+  EXPECT_FALSE(variations::HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
+  EXPECT_FALSE(variations::HasSyntheticTrial(kOOPIFSyntheticTrialName));
 
   // Browse to a page with some iframes without involving any isolated origins.
   GURL unisolated_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c(a))"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unisolated_url));
-  EXPECT_FALSE(HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
+  EXPECT_FALSE(variations::HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
 
   // Now browse to an isolated origin.
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated1.com", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
-  EXPECT_TRUE(IsInSyntheticTrialGroup(kSiteIsolationSyntheticTrialName,
-                                      kSyntheticTrialGroup));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+      kSiteIsolationSyntheticTrialName, kSyntheticTrialGroup));
 
   // The OOPIF synthetic trial shouldn't be activated, since the isolated
   // oriign page doesn't have any OOPIFs.
-  EXPECT_FALSE(
-      IsInSyntheticTrialGroup(kOOPIFSyntheticTrialName, kSyntheticTrialGroup));
+  EXPECT_FALSE(variations::IsInSyntheticTrialGroup(kOOPIFSyntheticTrialName,
+                                                   kSyntheticTrialGroup));
 }
 
 // This test checks that the synthetic field trials for both site isolation and
@@ -2115,17 +2090,17 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
           web_contents);
   recorder->EnableSiteIsolationSyntheticTrialForTesting();
 
-  EXPECT_FALSE(HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
-  EXPECT_FALSE(HasSyntheticTrial(kOOPIFSyntheticTrialName));
+  EXPECT_FALSE(variations::HasSyntheticTrial(kSiteIsolationSyntheticTrialName));
+  EXPECT_FALSE(variations::HasSyntheticTrial(kOOPIFSyntheticTrialName));
 
   // Browse to a page with an isolated origin on one of the iframes.
   GURL isolated_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c,isolated2,d)"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
-  EXPECT_TRUE(IsInSyntheticTrialGroup(kSiteIsolationSyntheticTrialName,
-                                      kSyntheticTrialGroup));
-  EXPECT_TRUE(
-      IsInSyntheticTrialGroup(kOOPIFSyntheticTrialName, kSyntheticTrialGroup));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+      kSiteIsolationSyntheticTrialName, kSyntheticTrialGroup));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kOOPIFSyntheticTrialName,
+                                                  kSyntheticTrialGroup));
 }
 
 // Verifies that persistent isolated sites survive restarts.  Part 1.

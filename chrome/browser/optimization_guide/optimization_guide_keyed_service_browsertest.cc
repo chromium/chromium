@@ -228,19 +228,6 @@ class OptimizationGuideKeyedServiceBrowserTest
     consumer_->set_callback(std::move(callback));
   }
 
-  // Returns whether the synthetic trial |trial_name| has been logged and is in
-  // the |trial_group| for the trial.
-  bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                               const std::string& trial_group) {
-    std::vector<std::string> synthetic_trials;
-    variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-    std::string expected_entry =
-        base::StringPrintf("%x-%x", variations::HashName(trial_name),
-                           variations::HashName(trial_group));
-    return std::find(synthetic_trials.begin(), synthetic_trials.end(),
-                     expected_entry) != synthetic_trials.end();
-  }
-
   // Returns the last decision from the CanApplyOptimization() method seen by
   // the consumer of the OptimizationGuideKeyedService.
   optimization_guide::OptimizationGuideDecision
@@ -300,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", false, 1);
-  EXPECT_TRUE(IsInSyntheticTrialGroup(
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
       "SyntheticOptimizationGuideRemoteFetching", "Disabled"));
 #endif
 }
@@ -679,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
-  EXPECT_TRUE(IsInSyntheticTrialGroup(
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
       "SyntheticOptimizationGuideRemoteFetching", "Enabled"));
 #endif
 }
