@@ -121,7 +121,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         port = self.make_port()
         port.host.executive = MockExecutive(run_command_fn=run_command_fake)
         port.host.environ['HOME'] = '/home/user'
-        port.host.filesystem.files['/home/user/.Xauthority'] = ''
+        port.host.filesystem.write_text_file('/home/user/.Xauthority', '')
 
         # Set up the test run; the temporary home directory should be set up.
         port.setup_test_run()
@@ -195,7 +195,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
             return 0
 
         port = self.make_port()
-        port.host.filesystem.files['/tmp/.X99-lock'] = ''
+        port.host.filesystem.write_text_file('/tmp/.X99-lock', '')
         port.host.executive = MockExecutive(run_command_fn=run_command_fake)
 
         self.assertIsNone(port.setup_test_run())

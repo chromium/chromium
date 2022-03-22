@@ -75,7 +75,7 @@ class TestWPTServe(LoggingTestCase):
         server = WPTServe(self.port, '/foo')
         server._prepare_config()
         config = json.loads(
-            self.port._filesystem.files[server._config_file])
+            self.port._filesystem.read_text_file(server._config_file))
         self.assertEqual(len(config['aliases']), 1)
         self.assertDictEqual(config['aliases'][0], {
             'url-path': '/gen/',
@@ -102,9 +102,10 @@ class TestWPTServe(LoggingTestCase):
         server.start()
         # PID file should be overwritten (MockProcess.pid == 42)
         self.assertEqual(server._pid, 42)
-        self.assertEqual(self.host.filesystem.files[server._pid_file], b'42')
+        self.assertEqual(self.host.filesystem.read_text_file(server._pid_file),
+                         '42')
         # Config file should exist.
-        json.loads(self.port._filesystem.files[server._config_file])
+        json.loads(self.port._filesystem.read_text_file(server._config_file))
 
         logs = self.logMessages()
         self.assertEqual(len(logs), 4)
@@ -138,7 +139,8 @@ class TestWPTServe(LoggingTestCase):
 
         server.start()
         self.assertEqual(server._pid, 42)
-        self.assertEqual(self.host.filesystem.files[server._pid_file], b'42')
+        self.assertEqual(self.host.filesystem.read_text_file(server._pid_file),
+                         '42')
 
         # In this case, we'll try to kill the process repeatedly,
         # then give up and just try to start a new process anyway.

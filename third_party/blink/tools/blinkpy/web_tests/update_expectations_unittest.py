@@ -1222,7 +1222,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
 
         main(host, expectation_factory, [])
         self.assertEqual(
-            host.filesystem.files[test_expectation_path],
+            host.filesystem.read_text_file(test_expectation_path),
             _strip_multiline_string_spaces("""
             # tags: [ Linux ]
             # tags: [ Release ]
@@ -1230,7 +1230,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
             # Keep since there's a failure on release bot.
             [ Linux Release ] test/b.html [ Failure Pass ]
             # Keep since there's a failure on debug bot.
-            [ Linux ] test/d.html [ Failure ]""").encode('utf8', 'replace'))
+            [ Linux ] test/d.html [ Failure ]"""))
 
     def test_harness_no_expectations(self):
         """Tests behavior when TestExpectations file doesn't exist.
@@ -1317,7 +1317,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
 
         self.assertTrue(host.filesystem.isfile(test_expectation_path))
         self.assertEqual(
-            host.filesystem.files[test_expectation_path], b"""
+            host.filesystem.read_text_file(test_expectation_path), """
             # Remove since passing on both bots.
             # tags: [ Linux ]
             # results: [ Failure Pass ]""")

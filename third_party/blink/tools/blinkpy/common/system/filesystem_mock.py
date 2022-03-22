@@ -34,7 +34,17 @@ import unittest
 
 from blinkpy.common.system.filesystem import _remove_contents, _sanitize_filename
 
-from six import StringIO
+from six import ensure_binary, StringIO
+
+_TEXT_ENCODING = 'utf-8'
+
+
+def _ensure_binary_contents(file_contents):
+    # Iterate over a copy while the underlying mapping is mutated.
+    for path, contents in list(file_contents.items()):
+        if contents is not None:
+            contents = ensure_binary(contents, _TEXT_ENCODING)
+        file_contents[path] = contents
 
 
 class MockFileSystem(object):
@@ -59,6 +69,7 @@ class MockFileSystem(object):
         self.cwd = cwd
         self.dirs = set(dirs or [])
         self.dirs.add(cwd)
+        _ensure_binary_contents(self.files)
         for file_path in self.files:
             directory = self.dirname(file_path)
             while directory not in self.dirs:
@@ -352,7 +363,8 @@ class MockFileSystem(object):
     def open_text_file_for_reading(self, path):
         if self.files[path] is None:
             self._raise_not_found(path)
-        return ReadableTextFileObject(self, path, self.files[path])
+        contents = self.files[path].decode(_TEXT_ENCODING)
+        return ReadableTextFileObject(self, path, contents)
 
     def open_text_file_for_writing(self, path):
         return WritableTextFileObject(self, path)
@@ -361,10 +373,10 @@ class MockFileSystem(object):
         return WritableTextFileObject(self, path, append=True)
 
     def read_text_file(self, path):
-        return self.read_binary_file(path).decode('utf-8')
+        return self.read_binary_file(path).decode(_TEXT_ENCODING)
 
     def write_text_file(self, path, contents):
-        return self.write_binary_file(path, contents.encode('utf-8'))
+        return self.write_binary_file(path, contents.encode(_TEXT_ENCODING))
 
     def sha1(self, path):
         contents = self.read_binary_file(path)
@@ -490,14 +502,16 @@ class WritableTextFileObject(WritableBinaryFileObject):
         super(WritableTextFileObject, self).__init__(fs, path, append)
 
     def write(self, string):
-        WritableBinaryFileObject.write(self, string)
+        contents = string.encode(_TEXT_ENCODING)
+        super(WritableTextFileObject, self).write(contents)
 
     def writelines(self, lines):
-        self.fs.files[self.path] = "".join(lines)
-        self.fs.written_files[self.path] = self.fs.files[self.path]
+        contents = b''.join(line.encode(_TEXT_ENCODING) for line in lines)
+        self.fs.files[self.path] = contents
+        self.fs.written_files[self.path] = contents
 
     def setup_path(self, path):
-        self.fs.files[path] = ''
+        super(WritableTextFileObject, self).setup_path(path)
 
 
 class ReadableBinaryFileObject(object):
@@ -510,7 +524,7 @@ class ReadableBinaryFileObject(object):
         try:
             # Maintain a text version if possible to
             # support readline.
-            data_str = data.decode('utf8', 'replace')
+            data_str = data.decode(_TEXT_ENCODING, 'replace')
             self.text = StringIO(data_str)
         except:
             pass
@@ -532,10 +546,10 @@ class ReadableBinaryFileObject(object):
         return self.data[start:self.offset]
 
     def readline(self, length=None):
-        return self.text.readline(length).encode('utf8', 'replace')
+        return self.text.readline(length).encode(_TEXT_ENCODING, 'replace')
 
     def readlines(self):
-        return self.text.readlines().encode('utf8', 'replace')
+        return self.text.readlines().encode(_TEXT_ENCODING, 'replace')
 
     def seek(self, offset, whence=os.SEEK_SET):
         if whence == os.SEEK_SET:
@@ -586,6 +600,7 @@ class FileSystemTestCase(unittest.TestCase):
             self.test_case = test_case
             self.mock_filesystem = mock_filesystem
             self.expected_files = expected_files
+            _ensure_binary_contents(self.expected_files)
 
         def __enter__(self):
             # Make sure that the expected_files aren't already in the mock

@@ -432,16 +432,17 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         self.port.virtual_test_suites = lambda: [
             VirtualTestSuite(prefix='foo', bases=['test'], args=['--foo']),
             VirtualTestSuite(prefix='bar', bases=['test'], args=['--bar']), ]
-        self.host.filesystem.maybe_make_directory(WEB_TEST_DIR + '/test')
+        fs = self.host.filesystem
+        fs.maybe_make_directory(fs.join(WEB_TEST_DIR, 'test'))
 
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertEqual(len(res), 2)
 
-        self.host.filesystem.files[WEB_TEST_DIR +
-                                   '/virtual/foo/README.md'] = ''
-        self.host.filesystem.files[WEB_TEST_DIR +
-                                   '/virtual/bar/test/README.txt'] = ''
+        fs.write_text_file(
+            fs.join(WEB_TEST_DIR, 'virtual', 'foo', 'README.md'), '')
+        fs.write_text_file(
+            fs.join(WEB_TEST_DIR, 'virtual', 'bar', 'test', 'README.txt'), '')
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertFalse(res)
@@ -473,10 +474,11 @@ class CheckVirtualSuiteTest(unittest.TestCase):
             VirtualTestSuite(prefix='foo', bases=['base1', 'base2', 'base3.html'], args=['-foo']),
         ]
 
-        self.host.filesystem.maybe_make_directory(WEB_TEST_DIR + '/base1')
-        self.host.filesystem.files[WEB_TEST_DIR + '/base3.html'] = ''
-        self.host.filesystem.files[WEB_TEST_DIR +
-                                   '/virtual/foo/README.md'] = ''
+        fs = self.host.filesystem
+        fs.maybe_make_directory(fs.join(WEB_TEST_DIR, 'base1'))
+        fs.write_text_file(fs.join(WEB_TEST_DIR, 'base3.html'), '')
+        fs.write_text_file(
+            fs.join(WEB_TEST_DIR, 'virtual', 'foo', 'README.md'), '')
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertEqual(len(res), 1)

@@ -1460,26 +1460,27 @@ class WebTestDirMergerTests(unittest.TestCase):
 
         for fname, expected_contents in self.web_test_output_filesystem.items(
         ):
-            self.assertIn(fname, fs.files)
+            self.assertTrue(fs.isfile(fname))
             if fname.endswith(".json"):
-                actual_json_str = fs.files[fname]
+                actual_json_str = fs.read_text_file(fname)
                 expected_json_str = expected_contents
                 if "failing_results" in fname:
                     self.assertTrue(
                         MergeFilesJSONPTests.check_before_after(
-                            fs.files[fname], b'ADD_RESULTS(', b");"))
+                            actual_json_str, 'ADD_RESULTS(', ');'))
                     self.assertTrue(
                         MergeFilesJSONPTests.check_before_after(
-                            expected_contents, 'ADD_RESULTS(', ");"))
+                            expected_contents, 'ADD_RESULTS(', ');'))
                     actual_json_str = MergeFilesJSONPTests.remove_before_after(
-                        fs.files[fname], b'ADD_RESULTS(', b");")
+                        actual_json_str, 'ADD_RESULTS(', ');')
                     expected_json_str = MergeFilesJSONPTests.remove_before_after(
-                        expected_contents, b'ADD_RESULTS(', b");")
+                        expected_contents, 'ADD_RESULTS(', ');')
 
                 self.assertEqual(json.loads(actual_json_str),
                                  json.loads(expected_json_str))
             else:
-                self.assertMultiLineEqual(expected_contents, fs.files[fname])
+                self.assertMultiLineEqual(expected_contents,
+                                          fs.read_text_file(fname))
 
 
 class MarkMissingShardsTest(unittest.TestCase):
@@ -1560,9 +1561,9 @@ class MarkMissingShardsTest(unittest.TestCase):
     web_test_filesystem = {
         '/out/output.json': output_output_json,
         '/swarm/summary.json': summary_json,
-        '/0/output.json': {
+        '/0/output.json': json.dumps({
             'successes': ['fizz', 'baz'],
-        },
+        }),
     }
 
     final_output_json = """\
@@ -1637,6 +1638,6 @@ class MarkMissingShardsTest(unittest.TestCase):
             ['/0'],  #only dir paths
             '/out/output.json',
             fs)
-        final_merged_output_json = fs.files['/out/output.json']
+        final_merged_output_json = fs.read_text_file('/out/output.json')
         self.assertEqual(json.loads(final_merged_output_json),
                          json.loads(self.final_output_json))

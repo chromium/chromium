@@ -38,7 +38,8 @@ class PrintWebTestTimesTest(unittest.TestCase):
         fs = host.filesystem
         artifacts_directory = host.port_factory.get().artifacts_directory()
         if files:
-            fs.files = files
+            for path, contents in files.items():
+                fs.write_text_file(path, contents)
         else:
             fs.write_text_file(
                 fs.join(artifacts_directory, 'times_ms.json'), """
@@ -98,6 +99,6 @@ class PrintWebTestTimesTest(unittest.TestCase):
 
     def test_path_to_file(self):
         # Tests that we can use a custom file rather than the port's default.
-        self.check([b'/tmp/times_ms.json'],
+        self.check(['/tmp/times_ms.json'],
                    'foo/bar.html 1\n',
-                   files={b'/tmp/times_ms.json': b'{"foo":{"bar.html": 1}}'})
+                   files={'/tmp/times_ms.json': '{"foo":{"bar.html": 1}}'})

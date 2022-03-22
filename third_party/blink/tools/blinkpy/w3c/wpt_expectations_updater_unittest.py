@@ -1399,24 +1399,27 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
     def test_cleanup_all_deleted_tests_in_expectations_files(self):
         host = MockHost()
         port = host.port_factory.get()
-        host.filesystem.files[MOCK_WEB_TESTS + 'TestExpectations'] = (
-            b'# results: [ Failure ]\n'
-            b'external/wpt/some/test/a.html?hello%20world [ Failure ]\n'
-            b'some/test/b.html [ Failure ]\n'
-            b'# This line should be deleted\n'
-            b'some/test/c.html [ Failure ]\n'
-            b'# line below should exist in new file\n'
-            b'some/test/d.html [ Failure ]\n')
-        host.filesystem.files[MOCK_WEB_TESTS + 'VirtualTestSuites'] = b'[]'
-        host.filesystem.files[MOCK_WEB_TESTS + 'new/a.html'] = b''
-        host.filesystem.files[MOCK_WEB_TESTS + 'new/b.html'] = b''
-        host.filesystem.files[
-            host.filesystem.join(
-                port.web_tests_dir(), 'some', 'test', 'd.html')] = b''
+        fs = host.filesystem
+        expectations_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
+
+        fs.write_text_file(
+            expectations_path,
+            ('# results: [ Failure ]\n'
+             'external/wpt/some/test/a.html?hello%20world [ Failure ]\n'
+             'some/test/b.html [ Failure ]\n'
+             '# This line should be deleted\n'
+             'some/test/c.html [ Failure ]\n'
+             '# line below should exist in new file\n'
+             'some/test/d.html [ Failure ]\n'))
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'VirtualTestSuites'), '[]')
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'a.html'), '')
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'b.html'), '')
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'some', 'test', 'd.html'), '')
         # TODO(rmhasan): Remove creation of Android files within
         # tests.
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, '')
+            fs.write_text_file(path, '')
 
         updater = WPTExpectationsUpdater(host)
 
@@ -1428,63 +1431,70 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.git.run = _git_command_return_val
         updater._relative_to_web_test_dir = lambda test_path: test_path
         updater.cleanup_test_expectations_files()
-        self.assertMultiLineEqual(
-            host.filesystem.read_text_file(MOCK_WEB_TESTS +
-                                           'TestExpectations'),
-            ('# results: [ Failure ]\n'
-             '# line below should exist in new file\n'
-             'some/test/d.html [ Failure ]\n'))
+        self.assertMultiLineEqual(fs.read_text_file(expectations_path),
+                                  ('# results: [ Failure ]\n'
+                                   '# line below should exist in new file\n'
+                                   'some/test/d.html [ Failure ]\n'))
 
     def test_skip_slow_timeout_tests(self):
         host = MockHost()
-        host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'SlowTests',
-            ('# results: [ Slow ]\n'
-             'foo/slow_timeout.html [ Slow ]\n'
-             'bar/slow.html [ Slow ]\n'))
+        fs = host.filesystem
+        expectations_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
         data = ('# results: [ Pass Failure Crash Timeout Skip ]\n'
                 'foo/failure.html [ Failure ]\n'
                 'foo/slow_timeout.html [ Timeout ]\n'
                 'bar/text.html [ Pass ]\n')
-        host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'TestExpectations', data)
+
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'SlowTests'),
+                           ('# results: [ Slow ]\n'
+                            'foo/slow_timeout.html [ Slow ]\n'
+                            'bar/slow.html [ Slow ]\n'))
+        fs.write_text_file(expectations_path, data)
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, '')
+            fs.write_text_file(path, '')
+
         newdata = data.replace('foo/slow_timeout.html [ Timeout ]',
                                'foo/slow_timeout.html [ Skip Timeout ]')
         updater = WPTExpectationsUpdater(host)
         rv = updater.skip_slow_timeout_tests(host.port_factory.get())
         self.assertTrue(rv)
-        self.assertEqual(
-            newdata,
-            host.filesystem.read_text_file(MOCK_WEB_TESTS + 'TestExpectations'))
+        self.assertEqual(newdata, fs.read_text_file(expectations_path))
 
     def test_cleanup_all_test_expectations_files(self):
         host = MockHost()
-        host.filesystem.files[MOCK_WEB_TESTS + 'TestExpectations'] = (
-            b'# results: [ Failure ]\n'
-            b'some/test/a.html [ Failure ]\n'
-            b'some/test/b.html [ Failure ]\n'
-            b'ignore/globs/* [ Failure ]\n'
-            b'some/test/c\*.html [ Failure ]\n'
-            # default test case, line below should exist in new file
-            b'some/test/d.html [ Failure ]\n')
-        host.filesystem.files[MOCK_WEB_TESTS + 'WebDriverExpectations'] = (
-            b'# results: [ Failure ]\n'
-            b'external/wpt/webdriver/some/test/a\*.html>>foo\* [ Failure ]\n'
-            b'external/wpt/webdriver/some/test/a\*.html>>bar [ Failure ]\n'
-            b'external/wpt/webdriver/some/test/b.html>>foo [ Failure ]\n'
-            b'external/wpt/webdriver/some/test/c.html>>a [ Failure ]\n'
-            # default test case, line below should exist in new file
-            b'external/wpt/webdriver/some/test/d.html>>foo [ Failure ]\n')
-        host.filesystem.files[MOCK_WEB_TESTS + 'VirtualTestSuites'] = b'[]'
-        host.filesystem.files[MOCK_WEB_TESTS + 'new/a.html'] = b''
-        host.filesystem.files[MOCK_WEB_TESTS + 'new/b.html'] = b''
+        fs = host.filesystem
+        test_expect_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
+        webdriver_expect_path = fs.join(MOCK_WEB_TESTS,
+                                        'WebDriverExpectations')
+
+        fs.write_text_file(
+            test_expect_path,
+            (
+                '# results: [ Failure ]\n'
+                'some/test/a.html [ Failure ]\n'
+                'some/test/b.html [ Failure ]\n'
+                'ignore/globs/* [ Failure ]\n'
+                'some/test/c\*.html [ Failure ]\n'
+                # default test case, line below should exist in new file
+                'some/test/d.html [ Failure ]\n'))
+        fs.write_text_file(
+            webdriver_expect_path,
+            (
+                '# results: [ Failure ]\n'
+                'external/wpt/webdriver/some/test/a\*.html>>foo\* [ Failure ]\n'
+                'external/wpt/webdriver/some/test/a\*.html>>bar [ Failure ]\n'
+                'external/wpt/webdriver/some/test/b.html>>foo [ Failure ]\n'
+                'external/wpt/webdriver/some/test/c.html>>a [ Failure ]\n'
+                # default test case, line below should exist in new file
+                'external/wpt/webdriver/some/test/d.html>>foo [ Failure ]\n'))
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'VirtualTestSuites'), '[]')
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'a.html'), '')
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'b.html'), '')
 
         # TODO(rmhasan): Remove creation of Android files within
         # tests.
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, '')
+            fs.write_text_file(path, '')
 
         updater = WPTExpectationsUpdater(
             host, ['--clean-up-test-expectations-only',
@@ -1501,17 +1511,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater._list_deleted_files = lambda: deleted_files
         updater._list_renamed_files = lambda: renamed_file_pairs
         updater.cleanup_test_expectations_files()
+        self.assertMultiLineEqual(fs.read_text_file(test_expect_path),
+                                  ('# results: [ Failure ]\n'
+                                   'new/a.html [ Failure ]\n'
+                                   'ignore/globs/* [ Failure ]\n'
+                                   'new/c\*.html [ Failure ]\n'
+                                   'some/test/d.html [ Failure ]\n'))
         self.assertMultiLineEqual(
-            host.filesystem.read_text_file(MOCK_WEB_TESTS +
-                                           'TestExpectations'),
-            ('# results: [ Failure ]\n'
-             'new/a.html [ Failure ]\n'
-             'ignore/globs/* [ Failure ]\n'
-             'new/c\*.html [ Failure ]\n'
-             'some/test/d.html [ Failure ]\n'))
-        self.assertMultiLineEqual(
-            host.filesystem.read_text_file(MOCK_WEB_TESTS +
-                                           'WebDriverExpectations'),
+            fs.read_text_file(webdriver_expect_path),
             ('# results: [ Failure ]\n'
              'old/a\*.html>>foo\* [ Failure ]\n'
              'old/a\*.html>>bar [ Failure ]\n'
