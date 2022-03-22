@@ -888,8 +888,10 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
           state.Style()->GetCurrentColor());
     }
 
-    if (element->IsMathMLElement())
+    if (RuntimeEnabledFeatures::MathMLCoreEnabled() &&
+        IsA<MathMLElement>(element)) {
       ApplyMathMLCustomStyleProperties(element, state);
+    }
   } else if (IsHighlightPseudoElement(style_request.pseudo_id)) {
     if (element->GetComputedStyle() &&
         element->GetComputedStyle()->TextShadow() !=
@@ -1013,7 +1015,8 @@ void StyleResolver::InitStyleAndApplyInheritance(
 void StyleResolver::ApplyMathMLCustomStyleProperties(
     Element* element,
     StyleResolverState& state) {
-  DCHECK(element && element->IsMathMLElement());
+  DCHECK(RuntimeEnabledFeatures::MathMLCoreEnabled() &&
+         IsA<MathMLElement>(element));
   ComputedStyle& style = state.StyleRef();
   if (auto* space = DynamicTo<MathMLSpaceElement>(*element)) {
     space->AddMathBaselineIfNeeded(style, state.CssToLengthConversionData());

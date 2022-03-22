@@ -1,0 +1,3 @@
+MathML elements should not cause any crash with MathMLCore disabled.
+
+ 

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -783,6 +784,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 
   auto* svg_element = DynamicTo<SVGElement>(element);
+
+  bool is_mathml_element = RuntimeEnabledFeatures::MathMLCoreEnabled() &&
+                           IsA<MathMLElement>(element);
+
   if (style.Display() != EDisplay::kNone) {
     if (svg_element)
       AdjustStyleForSvgElement(*svg_element, style);
@@ -819,8 +824,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // math display values on non-MathML elements compute to flow display
     // values.
-    if ((!element || !element->IsMathMLElement()) &&
+    if ((!element || !is_mathml_element) &&
         style.IsDisplayMathBox(style.Display())) {
+      DCHECK(RuntimeEnabledFeatures::MathMLCoreEnabled());
       style.SetDisplay(style.Display() == EDisplay::kBlockMath
                            ? EDisplay::kBlock
                            : EDisplay::kInline);
@@ -943,7 +949,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
     style.SetCssDominantBaseline(baseline);
 
-  } else if (element && element->IsMathMLElement()) {
+  } else if (is_mathml_element) {
     if (style.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
       style.SetDisplay(EDisplay::kNone);

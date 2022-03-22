@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <math id="math" style="display: math"></math>
+    <math id="contents" style="display: contents"></math>
+    <script>
+      function getDisplayOf(id) {
+          const style = window.getComputedStyle(document.getElementById(id));
+          return style.getPropertyValue("display");
+      }
+      test(function() {
+        assert_equals(getDisplayOf("math"), "inline");
+      }, "Computation of 'display: math' on MathML elements when MathML Core is disabled.");
+      test(function() {
+        assert_equals(getDisplayOf("contents"), "contents");
+      }, "Computation of 'display: contents' on MathML elements when MathML Core is disabled.");
+    </script>
+  </body>
+</html>
