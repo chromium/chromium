@@ -3761,7 +3761,7 @@
   {
     "name": "keyboard-based-display-arrangement-in-settings",
     "owners": [ "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 94
+    "expiry_milestone": 112
   },
   {
     "name": "lacros-availability-ignore",
