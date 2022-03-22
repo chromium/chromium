@@ -37,7 +37,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/bounds_animator.h"
-#include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
@@ -79,7 +78,6 @@ class TabStrip : public views::View,
                  public views::MouseWatcherListener,
                  public views::ViewObserver,
                  public views::WidgetObserver,
-                 public views::BoundsAnimatorObserver,
                  public TabController,
                  public BrowserRootView::DropTarget {
  public:
@@ -170,6 +168,7 @@ class TabStrip : public views::View,
                              const tab_groups::TabGroupVisualData* new_visuals);
 
   // Handles animations relating to toggling the collapsed state of a group.
+  // TODO(1295774): Maybe move this functionality into TabContainer.
   void ToggleTabGroup(const tab_groups::TabGroupId& group,
                       bool is_collapsing,
                       ToggleTabGroupCollapsedStateOrigin origin);
@@ -405,10 +404,6 @@ class TabStrip : public views::View,
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
 
-  // Invoked from |MoveTab| after |tab_data_| has been updated to animate the
-  // move.
-  void StartMoveTabAnimation();
-
   // Returns whether the close button should be highlighted after a remove.
   bool ShouldHighlightCloseButtonAfterRemove();
 
@@ -445,6 +440,7 @@ class TabStrip : public views::View,
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 
   // -- Tab Resize Layout -----------------------------------------------------
+  // TODO(1295774): Maybe move this functionality into TabContainer.
 
   // Perform an animated resize-relayout of the TabStrip immediately.
   void ResizeLayoutTabs();
@@ -462,6 +458,7 @@ class TabStrip : public views::View,
   void RemoveMessageLoopObserver();
 
   // -- Link Drag & Drop ------------------------------------------------------
+  // TODO(1295774): Maybe move this functionality into TabContainer.
 
   // Returns the bounds to render the drop at, in screen coordinates. Sets
   // |is_beneath| to indicate whether the arrow is beneath the tab, or above
@@ -478,12 +475,6 @@ class TabStrip : public views::View,
   // Returns the image to use for indicating a drop on a tab. If is_down is
   // true, this returns an arrow pointing down.
   static gfx::ImageSkia* GetDropArrowImage(bool is_down);
-
-  // -- Animations ------------------------------------------------------------
-
-  // Starts various types of TabStrip animations.
-  void StartResizeLayoutAnimation();
-  void StartPinnedTabAnimation();
 
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
@@ -511,10 +502,6 @@ class TabStrip : public views::View,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-
-  // views::BoundsAnimatorObserver:
-  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
-  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
   void OnTouchUiChanged();
 

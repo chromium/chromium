@@ -15,6 +15,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -25,7 +26,9 @@ class TabHoverCardController;
 class TabDragContext;
 
 // A View that contains a sequence of Tabs for the TabStrip.
-class TabContainer : public views::View, public views::ViewTargeterDelegate {
+class TabContainer : public views::View,
+                     public views::ViewTargeterDelegate,
+                     public views::BoundsAnimatorObserver {
  public:
   METADATA_HEADER(TabContainer);
 
@@ -41,19 +44,16 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
   void MoveTab(Tab* tab, int from_model_index, int to_model_index);
   void RemoveTab(int index, bool was_active);
+  void SetTabPinned(int model_index, TabPinned pinned);
 
   void ScrollTabToVisible(int model_index);
 
   void OnGroupCreated(const tab_groups::TabGroupId& group, TabStrip* tab_strip);
-
   // Opens the editor bubble for the tab |group| as a result of an explicit user
   // action to create the |group|.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
-
   void OnGroupMoved(const tab_groups::TabGroupId& group);
-
-  void MoveGroupHeader(TabGroupHeader* group_header, int first_tab_model_index);
-
+  void OnGroupClosed(const tab_groups::TabGroupId& group);
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id);
 
   int GetModelIndexOf(const TabSlotView* slot_view) const;
@@ -67,10 +67,6 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   void UpdateHoverCard(Tab* tab,
                        TabController::HoverCardUpdateType update_type);
 
-  // Updates the indexes and count for AX data on all tabs. Used by some screen
-  // readers (e.g. ChromeVox).
-  void UpdateAccessibleTabIndices();
-
   void HandleLongTap(ui::GestureEvent* event);
 
   bool IsRectInWindowCaption(const gfx::Rect& rect);
@@ -80,18 +76,11 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // Called whenever a tab or group header animation has progressed.
   void OnTabSlotAnimationProgressed(TabSlotView* view);
 
-  // Invoked prior to starting a new animation.
-  void PrepareForAnimation();
-
-  // Generates and sets the ideal bounds for each of the tabs as well as the new
-  // tab button. Note: Does not animate the tabs to those bounds so callers can
-  // use this information for other purposes - see AnimateToIdealBounds.
-  void UpdateIdealBounds();
-
-  // Animates all the views to their ideal bounds.
-  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
-  // currently set in ideal_bounds.
-  void AnimateToIdealBounds();
+  // Animates tabs and group views from where they are to where they should be.
+  // Callers that want to do fancier things can manipulate starting bounds
+  // before calling this and/or replace the animation for some tabs or group
+  // views after calling this.
+  void StartBasicAnimation();
 
   // Force recalculation of ideal bounds at the next layout. Used to cause tabs
   // to animate to their ideal bounds after somebody other than TabContainer
@@ -105,20 +94,9 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // Invoked from Layout if the size changes or layout is really needed.
   void CompleteAnimationAndLayout();
 
-  // Calculates the width that can be occupied by the tabs in the container.
-  // This can differ from GetAvailableWidthForTabContainer() when in tab closing
-  // mode.
-  int CalculateAvailableWidthForTabs() const;
-
   // Returns the total width available for the TabContainer's use.
   int GetAvailableWidthForTabContainer() const;
 
-  // Teleports the tabs to their ideal bounds.
-  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
-  // currently set in ideal_bounds.
-  void SnapToIdealBounds();
-
-  void AnimateTabClosed(Tab* tab, int former_model_index);
   void StartResetDragAnimation(int tab_model_index);
 
   void EnterTabClosingMode(absl::optional<int> override_width);
@@ -129,9 +107,6 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   void SetTabSlotVisibility();
 
   bool in_tab_close() { return in_tab_close_; }
-  absl::optional<int> override_available_width_for_tabs() {
-    return override_available_width_for_tabs_;
-  }
 
   // TODO (1295774): Move callers down into TabContainer so this
   // encapsulation-breaking getter can be removed.
@@ -154,11 +129,40 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
+  // views::BoundsAnimatorObserver:
+  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
+  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
+
  private:
   class RemoveTabDelegate;
 
+  // Invoked prior to starting a new animation.
+  void PrepareForAnimation();
+
+  // Generates and sets the ideal bounds for each of the tabs as well as the new
+  // tab button. Note: Does not animate the tabs to those bounds so callers can
+  // use this information for other purposes - see AnimateToIdealBounds.
+  void UpdateIdealBounds();
+
+  // Animates all the views to their ideal bounds.
+  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
+  // currently set in ideal_bounds.
+  void AnimateToIdealBounds();
+
+  // Teleports the tabs to their ideal bounds.
+  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
+  // currently set in ideal_bounds.
+  void SnapToIdealBounds();
+
+  // Calculates the width that can be occupied by the tabs in the container.
+  // This can differ from GetAvailableWidthForTabContainer() when in tab closing
+  // mode.
+  int CalculateAvailableWidthForTabs() const;
+
   // Invoked from |AddTab| after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index);
+
+  void StartRemoveTabAnimation(Tab* tab, int former_model_index);
 
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
   // so it can be animated closed.
@@ -169,6 +173,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // Updates |override_available_width_for_tabs_|, if necessary, to account for
   // the removal of the tab at |model_index|.
   void UpdateClosingModeOnRemovedTab(int model_index, bool was_active);
+
+  void MoveGroupHeader(TabGroupHeader* group_header, int first_tab_model_index);
 
   // Returns the corresponding view index of a |tab| to be inserted at
   // |to_model_index|. Used to reorder the child views of the tab container
@@ -198,6 +204,10 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // changing that to the first tab would cause |tab| to be pushed over enough
   // to clip).
   bool ShouldTabBeVisible(const Tab* tab) const;
+
+  // Updates the indexes and count for AX data on all tabs. Used by some screen
+  // readers (e.g. ChromeVox).
+  void UpdateAccessibleTabIndices();
 
   bool IsValidModelIndex(int model_index) const;
 

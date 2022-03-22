@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
@@ -297,6 +298,11 @@ TabContainer::TabContainer(TabStripController* controller,
           base::BindRepeating(&TabContainer::tabs_view_model,
                               base::Unretained(this)))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  if (!gfx::Animation::ShouldRenderRichAnimation())
+    bounds_animator().SetAnimationDuration(base::TimeDelta());
+
+  bounds_animator().AddObserver(this);
 }
 
 TabContainer::~TabContainer() {
@@ -343,25 +349,39 @@ void TabContainer::MoveTab(Tab* tab, int from_model_index, int to_model_index) {
                                               to_model_index));
   tabs_view_model_.Move(from_model_index, to_model_index);
   layout_helper_->MoveTab(tab->group(), from_model_index, to_model_index);
+
+  layout_helper()->SetTabPinned(to_model_index, tab->data().pinned
+                                                    ? TabPinned::kPinned
+                                                    : TabPinned::kUnpinned);
+
+  StartBasicAnimation();
+
+  UpdateAccessibleTabIndices();
 }
 
 void TabContainer::RemoveTab(int model_index, bool was_active) {
   UpdateClosingModeOnRemovedTab(model_index, was_active);
-
-  PrepareForAnimation();
 
   Tab* tab = GetTabAtModelIndex(model_index);
   tab->SetClosing(true);
 
   RemoveTabFromViewModel(model_index);
 
-  UpdateIdealBounds();
-  AnimateToIdealBounds();
-
-  // Animate the tab closed.
-  AnimateTabClosed(tab, model_index);
+  StartRemoveTabAnimation(tab, model_index);
 
   UpdateAccessibleTabIndices();
+}
+
+void TabContainer::SetTabPinned(int model_index, TabPinned pinned) {
+  layout_helper()->SetTabPinned(model_index, pinned);
+
+  if (GetWidget() && GetWidget()->IsVisible()) {
+    ExitTabClosingMode();
+
+    StartBasicAnimation();
+  } else {
+    CompleteAnimationAndLayout();
+  }
 }
 
 void TabContainer::ScrollTabToVisible(int model_index) {
@@ -447,20 +467,12 @@ void TabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
   MoveGroupHeader(group_header, first_tab_model_index);
 }
 
-void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
-                                   int first_tab_model_index) {
-  const int header_index = GetIndexOf(group_header);
-  const int first_tab_view_index =
-      GetViewIndexForModelIndex(first_tab_model_index);
+void TabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
+  bounds_animator().StopAnimatingView(group_views().at(group).get()->header());
+  layout_helper()->RemoveGroupHeader(group);
 
-  // The header should be just before the first tab. If it isn't, reorder the
-  // header such that it is. Note that the index to reorder to is different
-  // depending on whether the header is before or after the tab, since the
-  // header itself occupies an index.
-  if (header_index < first_tab_view_index - 1)
-    ReorderChildView(group_header, first_tab_view_index - 1);
-  if (header_index > first_tab_view_index - 1)
-    ReorderChildView(group_header, first_tab_view_index);
+  StartBasicAnimation();
+  group_views().erase(group);
 }
 
 void TabContainer::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
@@ -497,13 +509,6 @@ void TabContainer::UpdateHoverCard(
     return;
 
   hover_card_controller_->UpdateHoverCard(tab, update_type);
-}
-
-void TabContainer::UpdateAccessibleTabIndices() {
-  const int num_tabs = GetTabCount();
-  for (int i = 0; i < num_tabs; ++i)
-    GetTabAtModelIndex(i)->GetViewAccessibility().OverridePosInSet(i + 1,
-                                                                   num_tabs);
 }
 
 void TabContainer::HandleLongTap(ui::GestureEvent* event) {
@@ -556,83 +561,10 @@ void TabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
     UpdateTabGroupVisuals(view->group().value());
 }
 
-void TabContainer::PrepareForAnimation() {
-  if (drag_context_ && !drag_context_->IsDragSessionActive() &&
-      !TabDragController::IsAttachedTo(drag_context_)) {
-    for (int i = 0; i < GetTabCount(); ++i)
-      GetTabAtModelIndex(i)->set_dragging(false);
-  }
-}
-
-void TabContainer::UpdateIdealBounds() {
-  if (GetTabCount() == 0)
-    return;  // Should only happen during creation/destruction, ignore.
-
-  // Update |last_available_width_| in case there is a different amount of
-  // available width than there was in the last layout (e.g. if the tabstrip
-  // is currently hidden).
-  last_available_width_ = GetAvailableWidthForTabContainer();
-
-  const int available_width_for_tabs = CalculateAvailableWidthForTabs();
-  layout_helper()->UpdateIdealBounds(available_width_for_tabs);
-}
-
-void TabContainer::AnimateToIdealBounds() {
-  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kAnimating);
-
-  for (int i = 0; i < GetTabCount(); ++i) {
-    // If the tab is being dragged manually, skip it.
-    Tab* tab = GetTabAtModelIndex(i);
-    if (tab->dragging() && !bounds_animator().IsAnimating(tab))
-      continue;
-
-    // Also skip tabs already being animated to the same ideal bounds.  Calling
-    // AnimateViewTo() again restarts the animation, which changes the timing of
-    // how the tab animates, leading to hitches.
-    const gfx::Rect& target_bounds = tabs_view_model_.ideal_bounds(i);
-    if (bounds_animator().GetTargetBounds(tab) == target_bounds)
-      continue;
-
-    // Set an animation delegate for the tab so it will clip appropriately.
-    // Don't do this if dragging() is true.  In this case the tab was
-    // previously being dragged and is now animating back to its ideal
-    // bounds; it already has an associated ResetDraggingStateDelegate that
-    // will reset this dragging state. Replacing this delegate would mean
-    // this code would also need to reset the dragging state immediately,
-    // and that could allow the new tab button to be drawn atop this tab.
-    if (bounds_animator().IsAnimating(tab) && tab->dragging()) {
-      bounds_animator().SetTargetBounds(tab, target_bounds);
-    } else {
-      bounds_animator().AnimateViewTo(
-          tab, target_bounds,
-          std::make_unique<TabSlotAnimationDelegate>(
-              this, tab,
-              base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                                  base::Unretained(this))));
-    }
-  }
-
-  for (const auto& header_pair : group_views()) {
-    TabGroupHeader* const header = header_pair.second->header();
-
-    // If the header is being dragged manually, skip it.
-    if (header->dragging() && !bounds_animator().IsAnimating(header))
-      continue;
-
-    bounds_animator().AnimateViewTo(
-        header,
-        layout_helper()->group_header_ideal_bounds().at(header_pair.first),
-        std::make_unique<TabSlotAnimationDelegate>(
-            this, header,
-            base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                                base::Unretained(this))));
-  }
-
-  // Because the preferred size of the tabstrip depends on the IsAnimating()
-  // condition, but starting an animation doesn't necessarily invalidate the
-  // existing preferred size and layout (which may now be incorrect), we need to
-  // signal this explicitly.
-  PreferredSizeChanged();
+void TabContainer::StartBasicAnimation() {
+  PrepareForAnimation();
+  UpdateIdealBounds();
+  AnimateToIdealBounds();
 }
 
 void TabContainer::InvalidateIdealBounds() {
@@ -662,11 +594,6 @@ void TabContainer::CompleteAnimationAndLayout() {
   SchedulePaint();
 }
 
-int TabContainer::CalculateAvailableWidthForTabs() const {
-  return override_available_width_for_tabs_.value_or(
-      GetAvailableWidthForTabContainer());
-}
-
 int TabContainer::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
   // |available_width_callback_| is not defined, e.g. when tab scrolling is
@@ -674,58 +601,6 @@ int TabContainer::GetAvailableWidthForTabContainer() const {
   return available_width_callback_
              ? available_width_callback_.Run()
              : parent()->GetAvailableSize(this).width().value();
-}
-
-void TabContainer::SnapToIdealBounds() {
-  for (int i = 0; i < GetTabCount(); ++i)
-    GetTabAtModelIndex(i)->SetBoundsRect(tabs_view_model_.ideal_bounds(i));
-
-  for (const auto& header_pair : group_views()) {
-    header_pair.second->header()->SetBoundsRect(
-        layout_helper()->group_header_ideal_bounds().at(header_pair.first));
-    header_pair.second->UpdateBounds();
-  }
-
-  PreferredSizeChanged();
-}
-
-void TabContainer::AnimateTabClosed(Tab* tab, int former_model_index) {
-  if (in_tab_close_ && GetTabCount() > 0 &&
-      override_available_width_for_tabs_ >
-          tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()) {
-    // Tab closing mode is no longer constraining tab widths - they're at full
-    // size. Exit tab closing mode so that it doesn't artificially inflate our
-    // bounds.
-    ExitTabClosingMode();
-  }
-
-  const int tab_overlap = TabStyle::GetTabOverlap();
-
-  // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
-  // calls, each of which closes a new tab and thus generates different ideal
-  // bounds.  We should update the animations of any other tabs that are
-  // currently being closed to reflect the new ideal bounds, or else change from
-  // removing one tab at a time to animating the removal of all tabs at once.
-
-  // Compute the target bounds for animating this tab closed.  The tab's left
-  // edge should stay joined to the right edge of the previous tab, if any.
-  gfx::Rect target_bounds = tab->bounds();
-  target_bounds.set_x(
-      (former_model_index > 0)
-          ? (tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
-             tab_overlap)
-          : 0);
-
-  // The tab should animate to the width of the overlap in order to close at the
-  // same speed the surrounding tabs are moving, since at this width the
-  // subsequent tab is naturally positioned at the same X coordinate.
-  target_bounds.set_width(tab_overlap);
-  bounds_animator().AnimateViewTo(
-      tab, target_bounds,
-      std::make_unique<RemoveTabDelegate>(
-          this, tab,
-          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                              base::Unretained(this))));
 }
 
 void TabContainer::StartResetDragAnimation(int tab_model_index) {
@@ -910,9 +785,117 @@ views::View* TabContainer::TargetForRect(views::View* root,
   return this;
 }
 
-void TabContainer::StartInsertTabAnimation(int model_index) {
-  PrepareForAnimation();
+void TabContainer::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
+  // Send the Container a message to simulate a mouse moved event at the current
+  // mouse position. This tickles the Tab the mouse is currently over to show
+  // the "hot" state of the close button, or to show the hover card, etc.  Note
+  // that this is not required (and indeed may crash!) during a drag session.
+  if (drag_context_ && !drag_context_->IsDragSessionActive()) {
+    // The widget can apparently be null during shutdown.
+    views::Widget* widget = GetWidget();
+    if (widget)
+      widget->SynthesizeMouseMoveEvent();
+  }
+}
 
+void TabContainer::PrepareForAnimation() {
+  if (drag_context_ && !drag_context_->IsDragSessionActive() &&
+      !TabDragController::IsAttachedTo(drag_context_)) {
+    for (int i = 0; i < GetTabCount(); ++i)
+      GetTabAtModelIndex(i)->set_dragging(false);
+  }
+}
+
+void TabContainer::UpdateIdealBounds() {
+  if (GetTabCount() == 0)
+    return;  // Should only happen during creation/destruction, ignore.
+
+  // Update |last_available_width_| in case there is a different amount of
+  // available width than there was in the last layout (e.g. if the tabstrip
+  // is currently hidden).
+  last_available_width_ = GetAvailableWidthForTabContainer();
+
+  const int available_width_for_tabs = CalculateAvailableWidthForTabs();
+  layout_helper()->UpdateIdealBounds(available_width_for_tabs);
+}
+
+void TabContainer::AnimateToIdealBounds() {
+  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kAnimating);
+
+  for (int i = 0; i < GetTabCount(); ++i) {
+    // If the tab is being dragged manually, skip it.
+    Tab* tab = GetTabAtModelIndex(i);
+    if (tab->dragging() && !bounds_animator().IsAnimating(tab))
+      continue;
+
+    // Also skip tabs already being animated to the same ideal bounds.  Calling
+    // AnimateViewTo() again restarts the animation, which changes the timing of
+    // how the tab animates, leading to hitches.
+    const gfx::Rect& target_bounds = tabs_view_model_.ideal_bounds(i);
+    if (bounds_animator().GetTargetBounds(tab) == target_bounds)
+      continue;
+
+    // Set an animation delegate for the tab so it will clip appropriately.
+    // Don't do this if dragging() is true.  In this case the tab was
+    // previously being dragged and is now animating back to its ideal
+    // bounds; it already has an associated ResetDraggingStateDelegate that
+    // will reset this dragging state. Replacing this delegate would mean
+    // this code would also need to reset the dragging state immediately,
+    // and that could allow the new tab button to be drawn atop this tab.
+    if (bounds_animator().IsAnimating(tab) && tab->dragging()) {
+      bounds_animator().SetTargetBounds(tab, target_bounds);
+    } else {
+      bounds_animator().AnimateViewTo(
+          tab, target_bounds,
+          std::make_unique<TabSlotAnimationDelegate>(
+              this, tab,
+              base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                                  base::Unretained(this))));
+    }
+  }
+
+  for (const auto& header_pair : group_views()) {
+    TabGroupHeader* const header = header_pair.second->header();
+
+    // If the header is being dragged manually, skip it.
+    if (header->dragging() && !bounds_animator().IsAnimating(header))
+      continue;
+
+    bounds_animator().AnimateViewTo(
+        header,
+        layout_helper()->group_header_ideal_bounds().at(header_pair.first),
+        std::make_unique<TabSlotAnimationDelegate>(
+            this, header,
+            base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                                base::Unretained(this))));
+  }
+
+  // Because the preferred size of the tabstrip depends on the IsAnimating()
+  // condition, but starting an animation doesn't necessarily invalidate the
+  // existing preferred size and layout (which may now be incorrect), we need to
+  // signal this explicitly.
+  PreferredSizeChanged();
+}
+
+void TabContainer::SnapToIdealBounds() {
+  for (int i = 0; i < GetTabCount(); ++i)
+    GetTabAtModelIndex(i)->SetBoundsRect(tabs_view_model_.ideal_bounds(i));
+
+  for (const auto& header_pair : group_views()) {
+    header_pair.second->header()->SetBoundsRect(
+        layout_helper()->group_header_ideal_bounds().at(header_pair.first));
+    header_pair.second->UpdateBounds();
+  }
+
+  PreferredSizeChanged();
+}
+
+int TabContainer::CalculateAvailableWidthForTabs() const {
+  return override_available_width_for_tabs_.value_or(
+      GetAvailableWidthForTabContainer());
+}
+
+void TabContainer::StartInsertTabAnimation(int model_index) {
   ExitTabClosingMode();
 
   gfx::Rect bounds = GetTabAtModelIndex(model_index)->bounds();
@@ -938,8 +921,48 @@ void TabContainer::StartInsertTabAnimation(int model_index) {
   GetTabAtModelIndex(model_index)->SetBoundsRect(bounds);
 
   // Animate in to the full width.
-  UpdateIdealBounds();
-  AnimateToIdealBounds();
+  StartBasicAnimation();
+}
+
+void TabContainer::StartRemoveTabAnimation(Tab* tab, int former_model_index) {
+  if (in_tab_close_ && GetTabCount() > 0 &&
+      override_available_width_for_tabs_ >
+          tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()) {
+    // Tab closing mode is no longer constraining tab widths - they're at full
+    // size. Exit tab closing mode so that it doesn't artificially inflate our
+    // bounds.
+    ExitTabClosingMode();
+  }
+
+  StartBasicAnimation();
+
+  const int tab_overlap = TabStyle::GetTabOverlap();
+
+  // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
+  // calls, each of which closes a new tab and thus generates different ideal
+  // bounds.  We should update the animations of any other tabs that are
+  // currently being closed to reflect the new ideal bounds, or else change from
+  // removing one tab at a time to animating the removal of all tabs at once.
+
+  // Compute the target bounds for animating this tab closed.  The tab's left
+  // edge should stay joined to the right edge of the previous tab, if any.
+  gfx::Rect target_bounds = tab->bounds();
+  target_bounds.set_x(
+      (former_model_index > 0)
+          ? (tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
+             tab_overlap)
+          : 0);
+
+  // The tab should animate to the width of the overlap in order to close at the
+  // same speed the surrounding tabs are moving, since at this width the
+  // subsequent tab is naturally positioned at the same X coordinate.
+  target_bounds.set_width(tab_overlap);
+  bounds_animator().AnimateViewTo(
+      tab, target_bounds,
+      std::make_unique<RemoveTabDelegate>(
+          this, tab,
+          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                              base::Unretained(this))));
 }
 
 void TabContainer::RemoveTabFromViewModel(int index) {
@@ -999,6 +1022,22 @@ void TabContainer::UpdateClosingModeOnRemovedTab(int model_index,
         tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
         tab_overlap;
   }
+}
+
+void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
+                                   int first_tab_model_index) {
+  const int header_index = GetIndexOf(group_header);
+  const int first_tab_view_index =
+      GetViewIndexForModelIndex(first_tab_model_index);
+
+  // The header should be just before the first tab. If it isn't, reorder the
+  // header such that it is. Note that the index to reorder to is different
+  // depending on whether the header is before or after the tab, since the
+  // header itself occupies an index.
+  if (header_index < first_tab_view_index - 1)
+    ReorderChildView(group_header, first_tab_view_index - 1);
+  if (header_index > first_tab_view_index - 1)
+    ReorderChildView(group_header, first_tab_view_index);
 }
 
 int TabContainer::GetViewInsertionIndex(
@@ -1149,6 +1188,14 @@ bool TabContainer::ShouldTabBeVisible(const Tab* tab) const {
     right_edge = bounds_animator_.GetTargetBounds(tab).right();
   return (right_edge + layout_helper_->active_tab_width() -
           layout_helper_->inactive_tab_width()) <= tabstrip_right;
+}
+
+void TabContainer::UpdateAccessibleTabIndices() {
+  const int num_tabs = GetTabCount();
+  for (int i = 0; i < num_tabs; ++i) {
+    GetTabAtModelIndex(i)->GetViewAccessibility().OverridePosInSet(i + 1,
+                                                                   num_tabs);
+  }
 }
 
 bool TabContainer::IsValidModelIndex(int model_index) const {

@@ -465,25 +465,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     for (int i = 0; i < GetTabCount(); ++i)
       GetTabAt(i)->set_dragging(false);
 
-    for (size_t i = 0; i < views.size(); ++i) {
-      views[i]->set_dragging(true);
-      tab_strip_->tab_container_->bounds_animator().StopAnimatingView(views[i]);
-    }
+    tab_strip_->tab_container_->CompleteAnimationAndLayout();
 
-    // Move the dragged tabs to their ideal bounds.
-    tab_strip_->tab_container_->UpdateIdealBounds();
-
-    // Sets the bounds of the dragged tab slots.
-    for (TabSlotView* view : views) {
-      if (view->GetTabSlotViewType() ==
-          TabSlotView::ViewType::kTabGroupHeader) {
-        view->SetBoundsRect(ideal_bounds(view->group().value()));
-      } else {
-        int tab_data_index = GetIndexOf(view);
-        DCHECK_NE(TabStripModel::kNoTab, tab_data_index);
-        view->SetBoundsRect(ideal_bounds(tab_data_index));
-      }
-    }
+    for (TabSlotView* dragged_view : views)
+      dragged_view->set_dragging(true);
 
     // If this is a header drag, start painting the group highlight.
     TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
@@ -910,18 +895,11 @@ void TabStrip::MoveTab(int from_model_index,
   DCHECK_GT(GetTabCount(), 0);
 
   Tab* moving_tab = tab_at(from_model_index);
-  const bool pinned = data.pinned;
   moving_tab->SetData(std::move(data));
 
   tab_container_->MoveTab(moving_tab, from_model_index, to_model_index);
 
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
-
-  tab_container_->layout_helper()->SetTabPinned(
-      to_model_index, pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
-  StartMoveTabAnimation();
-
-  tab_container_->UpdateAccessibleTabIndices();
 
   for (TabStripObserver& observer : observers_)
     observer.OnTabMoved(from_model_index, to_model_index);
@@ -962,14 +940,9 @@ void TabStrip::SetTabData(int model_index, TabRendererData data) {
   if (HoverCardIsShowingForTab(tab))
     UpdateHoverCard(tab, HoverCardUpdateType::kTabDataChanged);
 
-  if (pinned_state_changed) {
-    tab_container_->layout_helper()->SetTabPinned(
+  if (pinned_state_changed)
+    tab_container_->SetTabPinned(
         model_index, pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
-    if (GetWidget() && GetWidget()->IsVisible())
-      StartPinnedTabAnimation();
-    else
-      tab_container_->CompleteAnimationAndLayout();
-  }
 }
 
 void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
@@ -1001,8 +974,7 @@ void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
   // The group header may be in the wrong place if the tab didn't actually
   // move in terms of model indices.
   OnGroupMoved(group);
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
+  tab_container_->StartBasicAnimation();
 }
 
 void TabStrip::OnGroupVisualsChanged(
@@ -1017,13 +989,14 @@ void TabStrip::OnGroupVisualsChanged(
                        new_visuals->is_collapsed();
   if (!is_collapsing)
     tab_container_->ExitTabClosingMode();
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
+  tab_container_->StartBasicAnimation();
 }
 
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                               bool is_collapsing,
                               ToggleTabGroupCollapsedStateOrigin origin) {
+  // TODO(1295774): Maybe move some of this into TabContainer. Or into
+  // TabGroupViews/TabGroupHeader?
   if (is_collapsing && GetWidget()) {
     if (origin == ToggleTabGroupCollapsedStateOrigin::kMouse) {
       AddMessageLoopObserver();
@@ -1061,12 +1034,7 @@ void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
 }
 
 void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
-  tab_container_->bounds_animator().StopAnimatingView(group_header(group));
-  tab_container_->layout_helper()->RemoveGroupHeader(group);
-
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
-  tab_container_->group_views().erase(group);
+  tab_container_->OnGroupClosed(group);
 }
 
 void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
@@ -1158,8 +1126,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     // closure--we won't expand the tabstrip back to the full window
     // width--because PrepareForCloseAt() will have set
     // |override_available_width_for_tabs_| already.
-    tab_container_->UpdateIdealBounds();
-    tab_container_->AnimateToIdealBounds();
+    tab_container_->StartBasicAnimation();
   } else {
     // As in the animating case above, the selection change will have
     // affected the desired bounds of the tabs, but since we're not animating
@@ -1198,19 +1165,6 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
         ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   }
   UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
-}
-
-void TabStrip::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  // Send the Container a message to simulate a mouse moved event at the current
-  // mouse position. This tickles the Tab the mouse is currently over to show
-  // the "hot" state of the close button, or to show the hover card, etc.  Note
-  // that this is not required (and indeed may crash!) during a drag session.
-  if (!GetDragContext()->IsDragSessionActive()) {
-    // The widget can apparently be null during shutdown.
-    views::Widget* widget = GetWidget();
-    if (widget)
-      widget->SynthesizeMouseMoveEvent();
-  }
 }
 
 void TabStrip::SetTabNeedsAttention(int model_index, bool attention) {
@@ -1806,11 +1760,6 @@ void TabStrip::Init() {
 
   UpdateContrastRatioValues();
 
-  if (!gfx::Animation::ShouldRenderRichAnimation())
-    tab_container_->bounds_animator().SetAnimationDuration(base::TimeDelta());
-
-  tab_container_->bounds_animator().AddObserver(this);
-
   if (!base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     // Our size should match that of |tab_container_|, our only child.
     // With tab scrolling disabled, FillLayout will size us based on the size of
@@ -1861,12 +1810,6 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   controller_->CreateNewTab();
   if (event.type() == ui::ET_GESTURE_TAP)
     TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
-}
-
-void TabStrip::StartMoveTabAnimation() {
-  tab_container_->PrepareForAnimation();
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
@@ -1942,6 +1885,10 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
 }
 
 void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
+  // TODO(1305016): Could this work better? It's structured very weirdly. Maybe
+  // batching? Its usage in TabStripTest doesn't make that much sense to me,
+  // either.
+
   if (view &&
       view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader) {
     view->set_dragging(false);
@@ -1960,11 +1907,8 @@ void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
 
   if (*is_first_view) {
     *is_first_view = false;
-    tab_container_->PrepareForAnimation();
-
     // Animate the view back to its correct position.
-    tab_container_->UpdateIdealBounds();
-    tab_container_->AnimateToIdealBounds();
+    tab_container_->StartBasicAnimation();
   }
 
   tab_container_->StartResetDragAnimation(tab_data_index);
@@ -2132,7 +2076,7 @@ void TabStrip::ResizeLayoutTabs() {
   // then the width of the active tab may not change, but other widths may
   // have. This is particularly important if we've overflowed (all tabs are at
   // the min).
-  StartResizeLayoutAnimation();
+  tab_container_->StartBasicAnimation();
 }
 
 void TabStrip::LogTabWidthsForTabScrolling() {
@@ -2350,21 +2294,6 @@ void TabStrip::DropArrow::OnWidgetDestroying(views::Widget* widget) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-void TabStrip::StartResizeLayoutAnimation() {
-  tab_container_->PrepareForAnimation();
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
-}
-
-void TabStrip::StartPinnedTabAnimation() {
-  tab_container_->ExitTabClosingMode();
-
-  tab_container_->PrepareForAnimation();
-
-  tab_container_->UpdateIdealBounds();
-  tab_container_->AnimateToIdealBounds();
-}
 
 const gfx::Rect& TabStrip::ideal_bounds(tab_groups::TabGroupId group) const {
   return tab_container_->layout_helper()->group_header_ideal_bounds().at(group);
