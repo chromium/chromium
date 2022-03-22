@@ -1576,17 +1576,21 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
   }
 }
 
-void BookmarkBarView::OnTabGroupButtonPressed(const SavedTabGroup* group,
-                                              const ui::Event& event) {
+void BookmarkBarView::OnTabGroupButtonPressed(
+    const tab_groups::TabGroupId& group_id,
+    const ui::Event& event) {
+  DCHECK(saved_tab_group_model_->Contains(group_id));
+
+  const SavedTabGroup* group = saved_tab_group_model_->Get(group_id);
+
   // TODO: Handle click if group has already been opened (crbug.com/1238539)
   // left click on a saved tab group opens all links in new group
-
-  // This happens when trying to open an empty saved tab group.
-  // See https://crbug.com/1271130
-  if (!(group->urls.empty()))
-    return;
-  chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(), group,
-                            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
+    if (group->urls.empty())
+      return;
+    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(), group,
+                              WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  }
 }
 
 void BookmarkBarView::ShowContextMenuForViewImpl(
@@ -1823,7 +1827,7 @@ std::unique_ptr<views::View> BookmarkBarView::CreateTabGroupButton(
   std::unique_ptr<views::LabelButton> button;
   button = std::make_unique<TabGroupButton>(
       base::BindRepeating(&BookmarkBarView::OnTabGroupButtonPressed,
-                          base::Unretained(this), &group),
+                          base::Unretained(this), group.group_id),
       group.title, group.color);
   ConfigureButton(group, button.get());
   tab_group_buttons_.insert(tab_group_buttons_.begin() + index, button.get());
