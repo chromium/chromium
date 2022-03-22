@@ -196,21 +196,4 @@ absl::optional<WebImpression> GetImpressionForAnchor(
       element);
 }
 
-absl::optional<WebImpression> GetImpressionFromWindowFeatures(
-    ExecutionContext* execution_context,
-    const ImpressionFeatures& features) {
-  if (features.impression_data.IsNull() ||
-      features.conversion_destination.IsNull())
-    return absl::nullopt;
-
-  LocalFrame* frame = GetFrame(execution_context);
-
-  return GetImpression(execution_context, features.impression_data,
-                       features.conversion_destination,
-                       features.reporting_origin,
-                       ParseExpiry(features.expiry, frame),
-                       ParsePriority(features.priority, frame),
-                       /*element=*/nullptr);
-}
-
 }  // namespace blink
