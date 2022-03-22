@@ -104,6 +104,8 @@ component("ash") {
     "accessibility/magnifier/magnifier_utils.h",
     "accessibility/magnifier/partial_magnifier_controller.cc",
     "accessibility/magnifier/partial_magnifier_controller.h",
+    "accessibility/scoped_a11y_override_window_setter.cc",
+    "accessibility/scoped_a11y_override_window_setter.h",
     "accessibility/sticky_keys/sticky_keys_controller.cc",
     "accessibility/sticky_keys/sticky_keys_controller.h",
     "accessibility/sticky_keys/sticky_keys_overlay.cc",
