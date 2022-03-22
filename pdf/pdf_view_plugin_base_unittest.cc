@@ -41,9 +41,14 @@ namespace chrome_pdf {
 
 namespace {
 
+using blink::WebPrintParams;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -168,6 +173,9 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   using PdfViewPluginBase::HandleInputEvent;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::LoadUrl;
+  using PdfViewPluginBase::PrintBegin;
+  using PdfViewPluginBase::PrintEnd;
+  using PdfViewPluginBase::PrintPages;
   using PdfViewPluginBase::SetCaretPosition;
   using PdfViewPluginBase::SetZoom;
   using PdfViewPluginBase::UpdateGeometryOnPluginRectChanged;
@@ -1310,6 +1318,73 @@ TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
     "grayscale": true,
     "pageCount": 1,
   })"));
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, NormalPrinting) {
+  WebPrintParams params;
+  const std::vector<int> kPageNumbers = {0};
+
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  engine->SetPermissions({DocumentPermission::kPrintHighQuality,
+                          DocumentPermission::kPrintLowQuality});
+
+  InSequence sequence;
+  EXPECT_CALL(*engine,
+              PrintPages(kPageNumbers,
+                         Field(&WebPrintParams::rasterize_pdf, IsFalse())))
+      .Times(1);
+  EXPECT_CALL(
+      *engine,
+      PrintPages(kPageNumbers, Field(&WebPrintParams::rasterize_pdf, IsTrue())))
+      .Times(1);
+
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            fake_plugin_.PrintBegin(params));
+  fake_plugin_.PrintPages(kPageNumbers);
+  fake_plugin_.PrintEnd();
+
+  params.rasterize_pdf = true;
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            fake_plugin_.PrintBegin(params));
+  fake_plugin_.PrintPages(kPageNumbers);
+  fake_plugin_.PrintEnd();
+}
+
+// Regression test for crbug.com/1307219.
+TEST_F(PdfViewPluginBaseWithEngineTest, LowQualityPrinting) {
+  WebPrintParams params;
+  const std::vector<int> kPageNumbers = {0};
+
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  engine->SetPermissions({DocumentPermission::kPrintLowQuality});
+
+  EXPECT_CALL(
+      *engine,
+      PrintPages(kPageNumbers, Field(&WebPrintParams::rasterize_pdf, IsTrue())))
+      .Times(2);
+
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            fake_plugin_.PrintBegin(params));
+  fake_plugin_.PrintPages(kPageNumbers);
+  fake_plugin_.PrintEnd();
+
+  params.rasterize_pdf = true;
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            fake_plugin_.PrintBegin(params));
+  fake_plugin_.PrintPages(kPageNumbers);
+  fake_plugin_.PrintEnd();
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, NoPrinting) {
+  WebPrintParams params;
+
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  engine->SetPermissions({});
+
+  EXPECT_EQ(0, fake_plugin_.PrintBegin(params));
+
+  params.rasterize_pdf = true;
+  EXPECT_EQ(0, fake_plugin_.PrintBegin(params));
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {
