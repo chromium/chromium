@@ -68,6 +68,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_bluetooth_settings_count_;
   }
 
+  int show_network_settings_count() const {
+    return show_network_settings_count_;
+  }
+
   int show_bluetooth_pairing_dialog_count() const {
     return show_bluetooth_pairing_dialog_count_;
   }
@@ -102,7 +106,12 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return last_bluetooth_settings_device_id_;
   }
 
+  const std::string& last_network_settings_network_id() const {
+    return last_network_settings_network_id_;
+  }
+
  private:
+  int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
   int show_bluetooth_pairing_dialog_count_ = 0;
   int show_multi_device_setup_count_ = 0;
@@ -113,6 +122,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_sim_unlock_settings_count_ = 0;
   int show_firmware_update_count_ = 0;
   std::string last_bluetooth_settings_device_id_;
+  std::string last_network_settings_network_id_;
 };
 
 }  // namespace ash

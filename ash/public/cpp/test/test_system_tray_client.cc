@@ -90,7 +90,10 @@ void TestSystemTrayClient::ShowThirdPartyVpnCreate(
 
 void TestSystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {}
 
-void TestSystemTrayClient::ShowNetworkSettings(const std::string& network_id) {}
+void TestSystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
+  show_network_settings_count_++;
+  last_network_settings_network_id_ = network_id;
+}
 
 void TestSystemTrayClient::ShowMultiDeviceSetup() {
   show_multi_device_setup_count_++;
