@@ -156,10 +156,6 @@ class NET_EXPORT IPAddress {
   // IPv4-mapped-to-IPv6 addresses are considered publicly routable.
   bool IsPubliclyRoutable() const;
 
-  // Let future IsPubliclyRoutable() calls in the current process always return
-  // true for a loopback ip.
-  static void ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
   // Returns true if the IP is "zero" (e.g. the 0.0.0.0 IPv4 address).
   bool IsZero() const;
 
