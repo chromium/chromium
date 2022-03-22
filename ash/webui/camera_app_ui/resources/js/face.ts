@@ -89,17 +89,17 @@ export class FaceOverlay {
         x2 *= this.canvas.width;
         y2 = (Math.max(y2 - clipped, 0) / normalizedCanvasHeight) *
             this.canvas.height;
-      } else if (canvasAspectRatio < sensorAspectRatio) {
+      } else {
         // Canvas has taller aspect than the sensor, e.g. when we're showing a
         // 4:3 stream captured from a 16:9 sensor. Based on our hardware
         // requirement, we assume the stream is cropped into pillarbox from the
         // active array.
         const normalizedCanvasWidth = canvasAspectRatio / sensorAspectRatio;
         const clipped = (1 - normalizedCanvasWidth) / 2;
-        x1 = (Math.max(x1 - clipped, 0) * normalizedCanvasWidth) *
+        x1 = (Math.max(x1 - clipped, 0) / normalizedCanvasWidth) *
             this.canvas.width;
         y1 *= this.canvas.height;
-        x2 = (Math.max(x2 - clipped, 0) * normalizedCanvasWidth) *
+        x2 = (Math.max(x2 - clipped, 0) / normalizedCanvasWidth) *
             this.canvas.width;
         y2 *= this.canvas.height;
       }
