@@ -334,10 +334,16 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     mojo->wifi->security =
         TranslateWiFiSecurity(network_state->security_class());
     mojo->wifi->frequency = network_state->frequency();
-    mojo->wifi->hidden_ssid =
-        shill_dict &&
-        shill_dict->FindBoolPath(shill::kWifiHiddenSsid).value_or(false);
     mojo->wifi->signal_strength = network_state->signal_strength();
+    if (shill_dict) {
+      mojo->wifi->hidden_ssid =
+          shill_dict->FindBoolPath(shill::kWifiHiddenSsid).value_or(false);
+      const auto* fqdn =
+          shill_dict->FindStringPath(shill::kPasspointFQDNProperty);
+      if (fqdn && !fqdn->empty()) {
+        mojo->wifi->fqdn = *fqdn;
+      }
+    }
   }
 
   return mojo;
