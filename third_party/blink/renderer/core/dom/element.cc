@@ -3249,14 +3249,19 @@ StyleRecalcChange Element::RecalcOwnStyle(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
-  if (change.RecalcChildren() && HasRareData() && NeedsStyleRecalc()) {
-    // This element needs recalc because its parent changed inherited
-    // properties or there was some style change in the ancestry which needed a
-    // full subtree recalc. In that case we cannot use the BaseComputedStyle
-    // optimization.
-    if (ElementAnimations* element_animations =
-            GetElementRareData()->GetElementAnimations())
-      element_animations->SetAnimationStyleChange(false);
+
+  StyleRecalcContext new_style_recalc_context = style_recalc_context;
+  if (change.RecalcChildren() && NeedsStyleRecalc()) {
+    if (HasRareData()) {
+      // This element needs recalc because its parent changed inherited
+      // properties or there was some style change in the ancestry which needed
+      // a full subtree recalc. In that case we cannot use the BaseComputedStyle
+      // optimization.
+      if (ElementAnimations* element_animations =
+              GetElementRareData()->GetElementAnimations())
+        element_animations->SetAnimationStyleChange(false);
+    }
+    new_style_recalc_context.parent_forces_recalc = true;
   }
 
   scoped_refptr<ComputedStyle> new_style;
@@ -3276,7 +3281,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // This is the normal flow through the function; calculates
     // the element's style more or less from scratch (typically
     // ending up calling StyleResolver::ResolveStyle()).
-    new_style = StyleForLayoutObject(style_recalc_context);
+    new_style = StyleForLayoutObject(new_style_recalc_context);
   }
   if (new_style && !ShouldStoreComputedStyle(*new_style))
     new_style = nullptr;
@@ -3291,7 +3296,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
           parent_highlights ? parent_highlights->Selection() : nullptr;
       StyleRequest style_request{kPseudoIdSelection, highlight_parent};
       highlights.SetSelection(
-          StyleForPseudoElement(style_recalc_context, style_request));
+          StyleForPseudoElement(new_style_recalc_context, style_request));
     }
 
     if (new_style->HasPseudoElementStyle(kPseudoIdTargetText)) {
@@ -3300,7 +3305,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
           parent_highlights ? parent_highlights->TargetText() : nullptr;
       StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
       highlights.SetTargetText(
-          StyleForPseudoElement(style_recalc_context, style_request));
+          StyleForPseudoElement(new_style_recalc_context, style_request));
     }
 
     if (new_style->HasPseudoElementStyle(kPseudoIdSpellingError)) {
@@ -3309,7 +3314,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
           parent_highlights ? parent_highlights->SpellingError() : nullptr;
       StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
       highlights.SetSpellingError(
-          StyleForPseudoElement(style_recalc_context, style_request));
+          StyleForPseudoElement(new_style_recalc_context, style_request));
     }
 
     if (new_style->HasPseudoElementStyle(kPseudoIdGrammarError)) {
@@ -3318,7 +3323,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
           parent_highlights ? parent_highlights->GrammarError() : nullptr;
       StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
       highlights.SetGrammarError(
-          StyleForPseudoElement(style_recalc_context, style_request));
+          StyleForPseudoElement(new_style_recalc_context, style_request));
     }
 
     if (new_style->HasPseudoElementStyle(kPseudoIdHighlight)) {
@@ -3337,7 +3342,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
                                      custom_highlight_name};
           highlights.SetCustomHighlight(
               custom_highlight_name,
-              StyleForPseudoElement(style_recalc_context, style_request));
+              StyleForPseudoElement(new_style_recalc_context, style_request));
         }
       }
     }
@@ -6866,8 +6871,12 @@ void Element::StyleAttributeChanged(
 }
 
 void Element::InlineStyleChanged() {
+  // NOTE: This is conservative; we can be more precise it in the future
+  // if need be.
+  const bool only_changed_independent_properties = false;
+
   DCHECK(IsStyledElement());
-  InvalidateStyleAttribute();
+  InvalidateStyleAttribute(only_changed_independent_properties);
   probe::DidInvalidateStyleAttr(this);
 
   if (MutationObserverInterestGroup* recipients =
@@ -7202,10 +7211,13 @@ void Element::SetActive(bool active) {
     InvalidateIfHasEffectiveAppearance();
 }
 
-void Element::InvalidateStyleAttribute() {
+void Element::InvalidateStyleAttribute(
+    bool only_changed_independent_properties) {
   DCHECK(GetElementData());
   GetElementData()->SetStyleAttributeIsDirty(true);
-  SetNeedsStyleRecalc(kLocalStyleChange,
+  SetNeedsStyleRecalc(only_changed_independent_properties
+                          ? kInlineIndependentStyleChange
+                          : kLocalStyleChange,
                       StyleChangeReasonForTracing::Create(
                           style_change_reason::kInlineCSSStyleMutated));
   GetDocument().GetStyleEngine().AttributeChangedForElement(

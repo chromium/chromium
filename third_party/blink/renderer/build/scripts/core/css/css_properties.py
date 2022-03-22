@@ -18,7 +18,7 @@ PRIMITIVE_TYPES = [
 ]
 
 
-def validate_property(prop):
+def validate_property(prop, longhands):
     name = prop['name']
     has_method = lambda x: x in prop['property_methods']
     assert prop['is_property'] or prop['is_descriptor'], \
@@ -43,6 +43,20 @@ def validate_property(prop):
         'Only longhands can be valid_for_highlight [%s]' % name
     assert not prop['is_internal'] or prop['computable'] is None, \
         'Internal properties are always non-computable [%s]' % name
+    if prop['supports_incremental_style']:
+        assert not prop['inherited'], \
+            'We do not currently support incremental style on inherited properties [%s]' % name
+        assert not prop['is_animation_property'], \
+            'Animation properties can not be applied incrementally [%s]' % name
+        assert prop['idempotent'], \
+            'Incrementally applied properties must be idempotent [%s]' % name
+        if prop['is_shorthand']:
+            for subprop_name in prop['longhands']:
+                subprop = [
+                    p for p in longhands if str(p['name']) == subprop_name
+                ][0]
+                assert subprop['supports_incremental_style'], \
+                    '%s must be incrementally applicable when its shorthand %s is' % (subprop_name, name)
 
 
 def validate_alias(alias):
@@ -144,7 +158,7 @@ class CSSProperties(object):
         # Sort properties by priority, then alphabetically.
         for property_ in self._longhands + self._shorthands:
             self.expand_parameters(property_)
-            validate_property(property_)
+            validate_property(property_, self._longhands)
             priority_numbers = {'High': 0, 'Low': 1}
             priority = priority_numbers[property_['priority']]
             name_without_leading_dash = property_['name'].original

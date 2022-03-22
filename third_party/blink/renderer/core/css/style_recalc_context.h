@@ -48,6 +48,17 @@ class CORE_EXPORT StyleRecalcContext {
   // Set to the nearest container (for container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;
+
+  // If true, something about the parent's style (e.g., that it has
+  // modifications to one or more non-independent inherited properties)
+  // forces a full recalculation of this element's style, precluding
+  // any incremental style calculation.
+  //
+  // NOTE: For the base computed style optimization, we do not only
+  // rely on this, but also on the fact that the caller calls
+  // SetAnimationStyleChange(false) directly. This is somewhat out of
+  // legacy reasons.
+  bool parent_forces_recalc = false;
 };
 
 }  // namespace blink

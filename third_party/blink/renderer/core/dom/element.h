@@ -59,7 +59,7 @@
 namespace gfx {
 class QuadF;
 class Vector2dF;
-}
+}  // namespace gfx
 
 namespace blink {
 
@@ -443,7 +443,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual const CSSPropertyValueSet* AdditionalPresentationAttributeStyle() {
     return nullptr;
   }
-  void InvalidateStyleAttribute();
+  void InvalidateStyleAttribute(bool only_changed_independent_properties);
 
   const CSSPropertyValueSet* InlineStyle() const {
     return GetElementData() ? GetElementData()->inline_style_.Get() : nullptr;

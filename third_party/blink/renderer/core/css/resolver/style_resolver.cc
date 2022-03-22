@@ -1048,6 +1048,103 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
   }
 }
 
+bool CanApplyInlineStyleIncrementally(Element* element,
+                                      const StyleResolverState& state,
+                                      const StyleRequest& style_request) {
+  // If non-independent properties are modified, we need to do a full
+  // recomputation; otherwise, the properties we're setting could affect
+  // the interpretation of other properties (e.g. if a script is setting
+  // el.style.fontSize = "24px", that could affect the interpretation
+  // of "border-width: 0.2em", but our incremental style recalculation
+  // won't update border width).
+  //
+  // This also covers the case where the inline style got new or removed
+  // existing property declarations. We cannot say easily how that would
+  // affect the cascade, so we do a full recalculation in that case.
+  if (element->GetStyleChangeType() != kInlineIndependentStyleChange) {
+    return false;
+  }
+
+  // We must, obviously, have an existing style to do incremental calculation.
+  if (!element->GetComputedStyle()) {
+    return false;
+  }
+
+  // Pseudo-elements can't have inline styles. We also don't have the old
+  // style in this situation (|element| is the originating element in in
+  // this case, so using that style would be wrong).
+  if (style_request.IsPseudoStyleRequest()) {
+    return false;
+  }
+
+  // Links have special handling of visited/not-visited colors (they are
+  // represented using special -internal-* properties), which happens
+  // during expansion of the CSS cascade. Since incremental style doesn't
+  // replicate this behavior, we don't try to compute incremental style
+  // for anything that is a link or inside a link.
+  if (element->GetComputedStyle()->InsideLink() !=
+      EInsideLink::kNotInsideLink) {
+    return false;
+  }
+
+  // If in the existing style, any inline property _lost_ the cascade
+  // (e.g. to an !important class declaration), modifying the ComputedStyle
+  // directly may be wrong. This is rare, so we can just skip those cases.
+  if (element->GetComputedStyle()->InlineStyleLostCascade()) {
+    return false;
+  }
+
+  // Custom style callbacks can do style adjustment after style resolution.
+  if (element->HasCustomStyleCallbacks()) {
+    return false;
+  }
+
+  // We don't bother with the root element; it's a special case.
+  if (!state.ParentStyle()) {
+    return false;
+  }
+
+  // We don't currently support combining incremental style and the
+  // base computed style animation; we'd have to apply the incremental
+  // style onto the base as opposed to the computed style itself,
+  // and we don't support that. It should be rare to animate elements
+  // _both_ with animations and mutating inline style anyway.
+  if (GetElementAnimations(state)) {
+    return false;
+  }
+
+  const CSSPropertyValueSet* inline_style = element->InlineStyle();
+  if (inline_style) {
+    int num_properties = inline_style->PropertyCount();
+    for (int property_idx = 0; property_idx < num_properties; ++property_idx) {
+      CSSPropertyValueSet::PropertyReference property =
+          inline_style->PropertyAt(property_idx);
+
+      // If a script mutated inline style properties that are not idempotent,
+      // we would not normally even reach this path (we wouldn't get a changed
+      // signal saying “inline incremental style modified”, just “style
+      // modified”). However, we could have such properties set on inline style
+      // _before_ this calculation, and their continued existence blocks us from
+      // reusing the style (because e.g. the StyleAdjuster is not necessarily
+      // idempotent in such cases).
+      if (!CSSProperty::Get(property.Id()).IsIdempotent()) {
+        return false;
+      }
+
+      // Variables and reverts are resolved in StyleCascade, which we don't run
+      // in this path; thus, we cannot support them.
+      if (property.Value().IsVariableReferenceValue() ||
+          property.Value().IsPendingSubstitutionValue() ||
+          property.Value().IsRevertValue() ||
+          property.Value().IsRevertLayerValue()) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 // This is the core of computing base style for a given element, ie., the style
 // that does not depend on animations.
 //
@@ -1153,7 +1250,16 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
 // In the normal case, just a forwarder to ApplyBaseStyleNoCache(); see that
 // function for the meat of the computation. However, this is where the
-// “computed base style optimization” is applied if possible.
+// “computed base style optimization” is applied if possible, and also
+// incremental inline style updates:
+//
+// If we have an existing computed style, and the only changes have been
+// mutations of independent properties on the element's inline style
+// (see CanApplyInlineStyleIncrementally() for the precise conditions),
+// we may reuse the old computed style and just reapply the element's
+// inline style on top of it. This allows us to skip collecting elements
+// and computing the full cascade, which can be a significant win when
+// animating elements via inline style from JavaScript.
 void StyleResolver::ApplyBaseStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
@@ -1194,7 +1300,65 @@ void StyleResolver::ApplyBaseStyle(
     return;
   }
 
-  // The cache didn't apply, so we need a full recalculation.
+  if (!style_recalc_context.parent_forces_recalc &&
+      CanApplyInlineStyleIncrementally(element, state, style_request)) {
+    // We are in a situation where we can reuse the old style
+    // and just apply the element's inline style on top of it
+    // (see the function comment).
+    state.SetStyle(ComputedStyle::Clone(*element->GetComputedStyle()));
+
+    const CSSPropertyValueSet* inline_style = element->InlineStyle();
+    if (inline_style) {
+      int num_properties = inline_style->PropertyCount();
+      for (int property_idx = 0; property_idx < num_properties;
+           ++property_idx) {
+        CSSPropertyValueSet::PropertyReference property =
+            inline_style->PropertyAt(property_idx);
+        StyleBuilder::ApplyProperty(
+            property.Name(), state,
+            ScopedCSSValue(property.Value(), &GetDocument()));
+      }
+    }
+
+    // AdjustComputedStyle() will set these flags if needed,
+    // but will (generally) not unset them, so reset them before
+    // computation.
+    state.StyleRef().SetIsStackingContextWithoutContainment(false);
+    state.StyleRef().SetInsideFragmentationContextWithNondeterministicEngine(
+        state.ParentStyle()
+            ->InsideFragmentationContextWithNondeterministicEngine());
+
+    StyleAdjuster::AdjustComputedStyle(
+        state, style_request.IsPseudoStyleRequest() ? nullptr : element);
+
+    // Normally done by StyleResolver::MaybeAddToMatchedPropertiesCache(),
+    // when applying the cascade. Note that this is probably redundant
+    // (we'll be loading pending resources later), but not doing so would
+    // currently create diffs below.
+    state.LoadPendingResources();
+
+#if DCHECK_IS_ON()
+    // Verify that we got the right answer.
+    scoped_refptr<ComputedStyle> incremental_style = state.TakeStyle();
+    ApplyBaseStyleNoCache(element, style_recalc_context, style_request, state,
+                          cascade);
+
+    // Having false positives here is OK (and can happen if an inline style
+    // element used to be “inherit” but no longer is); it is only used to see
+    // whether parent elements need to propagate inherited properties down to
+    // children or not. We'd be doing too much work in such cases, but still
+    // maintain correctness.
+    if (incremental_style->HasExplicitInheritance()) {
+      state.StyleRef().SetHasExplicitInheritance();
+    }
+
+    DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(incremental_style.get(),
+                                                        *state.Style()));
+#endif
+    return;
+  }
+
+  // None of the caches applied, so we need a full recalculation.
   ApplyBaseStyleNoCache(element, style_recalc_context, style_request, state,
                         cascade);
 }

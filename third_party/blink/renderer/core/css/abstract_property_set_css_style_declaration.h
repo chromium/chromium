@@ -42,7 +42,7 @@ class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
  public:
   virtual Element* ParentElement() const { return nullptr; }
   StyleSheetContents* ContextStyleSheet() const;
-  AbstractPropertySetCSSStyleDeclaration(ExecutionContext* context)
+  explicit AbstractPropertySetCSSStyleDeclaration(ExecutionContext* context)
       : CSSStyleDeclaration(context) {}
 
   void Trace(Visitor*) const override;
@@ -81,7 +81,15 @@ class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
   bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const final;
 
  protected:
-  enum MutationType { kNoChanges, kPropertyChanged };
+  enum MutationType {
+    kNoChanges,
+    // Only properties that were independent changed, so that if there are
+    // no other changes and this is on the inline style, it may be
+    // possible to reuse an already-computed style and just apply
+    // the new changes on top of it.
+    kIndependentPropertyChanged,
+    kPropertyChanged
+  };
   virtual void WillMutate() {}
   virtual void DidMutate(MutationType) {}
   virtual MutableCSSPropertyValueSet& PropertySet() const = 0;

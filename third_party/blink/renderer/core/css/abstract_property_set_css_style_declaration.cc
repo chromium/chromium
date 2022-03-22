@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/style_property_shorthand.h"
 
 namespace blink {
 
@@ -193,26 +194,34 @@ void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
   StyleAttributeMutationScope mutation_scope(this);
   WillMutate();
 
-  bool did_change = false;
+  MutableCSSPropertyValueSet::SetResult result;
   if (unresolved_property == CSSPropertyID::kVariable) {
     AtomicString atomic_name(custom_property_name);
 
     bool is_animation_tainted = IsKeyframeStyle();
-    did_change = PropertySet().SetProperty(
-                     atomic_name, value, important, secure_context_mode,
-                     ContextStyleSheet(), is_animation_tainted) >=
-                 MutableCSSPropertyValueSet::kModifiedExisting;
+    result = PropertySet().SetProperty(atomic_name, value, important,
+                                       secure_context_mode, ContextStyleSheet(),
+                                       is_animation_tainted);
   } else {
-    did_change =
+    result =
         PropertySet().SetProperty(unresolved_property, value, important,
-                                  secure_context_mode, ContextStyleSheet()) >=
-        MutableCSSPropertyValueSet::kModifiedExisting;
+                                  secure_context_mode, ContextStyleSheet());
   }
 
-  DidMutate(did_change ? kPropertyChanged : kNoChanges);
-
-  if (!did_change)
+  if (result == MutableCSSPropertyValueSet::kParseError ||
+      result == MutableCSSPropertyValueSet::kUnchanged) {
+    DidMutate(kNoChanges);
     return;
+  }
+
+  CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
+
+  if (result == MutableCSSPropertyValueSet::kModifiedExisting &&
+      CSSProperty::Get(property_id).SupportsIncrementalStyle()) {
+    DidMutate(kIndependentPropertyChanged);
+  } else {
+    DidMutate(kPropertyChanged);
+  }
 
   mutation_scope.EnqueueMutationRecord();
 }

@@ -55,6 +55,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsVisited() const { return flags_ & kVisited; }
   bool IsInternal() const { return flags_ & kInternal; }
   bool IsAnimationProperty() const { return flags_ & kAnimation; }
+  bool SupportsIncrementalStyle() const {
+    return flags_ & kSupportsIncrementalStyle;
+  }
+  bool IsIdempotent() const { return flags_ & kIdempotent; }
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
@@ -162,13 +166,16 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // to initial, rather than the UA default.
     // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
     kHighlightColors = 1 << 22,
+    // See supports_incremental_style in css_properties.json5.
+    kSupportsIncrementalStyle = 1 << 23,
+    // See idempotent in css_properties.json5.
+    kIdempotent = 1 << 24,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
                         Flags flags,
                         char repetition_separator)
-      : CSSUnresolvedProperty(),
-        property_id_(property_id),
+      : property_id_(property_id),
         flags_(flags),
         repetition_separator_(repetition_separator) {}
 

@@ -46,6 +46,16 @@ def update_css_ranking(css_ranking_file, css_ranking_api):
             css_ranking, key=lambda x: -float(x["day_percentage"]))
     ]
 
+    # Pseudo-properties are normally not part of this list, and thus get put fairly far down.
+    # However, IsStackingContextWithoutContainment is accessed and mutated fairly often
+    # in the case of e.g. the “transform” property being mutated. If it is put down in rare data,
+    # incremental computation of inline style will end up being significantly less efficient
+    # in such cases, as copy-on-write will be invoked on the mutated subobject. (See e.g.
+    # the MotionMark “multiply” subtest, which does this a lot.) Thus, we give it special treatment
+    # and push it to the top of the list.
+    css_ranking_content["data"].insert(0,
+                                       "IsStackingContextWithoutContainment")
+
     reformat_properties_name(css_ranking_content["data"])
 
     with open(css_ranking_file, "w") as fw:

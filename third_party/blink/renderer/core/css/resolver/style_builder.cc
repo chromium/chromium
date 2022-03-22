@@ -74,6 +74,8 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   // These values must be resolved by StyleCascade before application:
   DCHECK(!value.IsVariableReferenceValue());
   DCHECK(!value.IsPendingSubstitutionValue());
+  DCHECK(!value.IsRevertValue());
+  DCHECK(!value.IsRevertLayerValue());
 
   DCHECK(!property.IsShorthand())
       << "Shorthand property id = " << static_cast<int>(id)

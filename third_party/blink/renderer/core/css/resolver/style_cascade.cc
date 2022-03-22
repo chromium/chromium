@@ -219,14 +219,16 @@ void StyleCascade::Apply(CascadeFilter filter) {
   ApplyMatchResult(resolver);
   ApplyInterpolations(resolver);
 
-  if (state_.Style()->HasAppearance()) {
-    if (resolver.AuthorFlags() & CSSProperty::kBackground)
-      state_.Style()->SetHasAuthorBackground();
-    if (resolver.AuthorFlags() & CSSProperty::kBorder)
-      state_.Style()->SetHasAuthorBorder();
-    if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
-      state_.Style()->SetHasAuthorBorderRadius();
-  }
+  // These three flags are only used if HasAppearance() is set
+  // (they are used for knowing whether appearance: auto is to be overridden),
+  // but we compute them nevertheless, to avoid suddenly having to compute them
+  // after-the-fact if inline style is updated incrementally.
+  if (resolver.AuthorFlags() & CSSProperty::kBackground)
+    state_.Style()->SetHasAuthorBackground();
+  if (resolver.AuthorFlags() & CSSProperty::kBorder)
+    state_.Style()->SetHasAuthorBorder();
+  if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
+    state_.Style()->SetHasAuthorBorderRadius();
 
   // TODO(crbug.com/1024156): spec issue: user origin?
   // TODO(crbug.com/1024156): https://github.com/w3c/csswg-drafts/issues/6386

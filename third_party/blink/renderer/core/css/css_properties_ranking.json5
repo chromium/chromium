@@ -2,6 +2,7 @@
 // used property according to: https://www.chromestatus.com/metrics/css/popularity
 {
     "data": [
+        "IsStackingContextWithoutContainment",
         "width",
         "height",
         "display",
