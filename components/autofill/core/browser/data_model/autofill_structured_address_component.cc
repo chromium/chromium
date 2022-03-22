@@ -487,18 +487,19 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
 bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
     const std::u16string& value,
     const RE2* parse_expression) {
-  std::map<std::string, std::string> result_map;
-  if (ParseValueByRegularExpression(base::UTF16ToUTF8(value), parse_expression,
-                                    &result_map)) {
+  absl::optional<base::flat_map<std::string, std::string>> result_map =
+      ParseValueByRegularExpression(base::UTF16ToUTF8(value), parse_expression);
+  if (result_map) {
     // Parsing was successful and results from the result map can be written
     // to the structure.
-    for (const auto& [field_type, field_value] : result_map) {
+    for (const auto& [field_type, field_value] : *result_map) {
       // Do not reassign the value of this node.
       if (field_type == GetStorageTypeName()) {
         continue;
       }
-      bool success = SetValueForTypeIfPossible(field_type, field_value,
-                                               VerificationStatus::kParsed);
+      bool success =
+          SetValueForTypeIfPossible(field_type, base::UTF8ToUTF16(field_value),
+                                    VerificationStatus::kParsed);
       // Setting the value should always work unless the regular expression is
       // invalid.
       DCHECK(success);

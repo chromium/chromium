@@ -183,23 +183,17 @@ bool HasHispanicLatinxNameCharaceristics(const std::string& name) {
   return false;
 }
 
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const std::string& pattern,
-    std::map<std::string, std::string>* result_map) {
-  DCHECK(result_map);
-
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value,
+                              const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
-
-  return ParseValueByRegularExpression(value, regex, result_map);
+  return ParseValueByRegularExpression(value, regex);
 }
 
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const RE2* regex,
-    std::map<std::string, std::string>* result_map) {
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   if (!regex || !regex->ok())
-    return false;
+    return absl::nullopt;
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -220,16 +214,16 @@ bool ParseValueByRegularExpression(
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
                        number_of_capturing_groups - 1))
-    return false;
+    return absl::nullopt;
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario
   // in the indexing.
-  for (auto named_group : regex->NamedCapturingGroups())
-    (*result_map)[named_group.first] =
-        std::move(results.at(named_group.second - 1));
-
-  return true;
+  return base::MakeFlatMap<std::string, std::string>(
+      regex->NamedCapturingGroups(), {}, [&results](const auto& group) mutable {
+        const auto& [name, index] = group;
+        return std::make_pair(name, std::move(results[index - 1]));
+      });
 }
 
 bool IsPartialMatch(const std::string& value, RegEx regex) {

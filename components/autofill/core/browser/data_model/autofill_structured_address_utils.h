@@ -10,12 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
@@ -192,20 +194,16 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name);
 std::u16string ReduceToInitials(const std::u16string& value);
 
 // Parses |value| with an regular expression defined by |pattern|.
-// Returns true on success meaning that the expressions is fully matched.
-// The matching results are written into the supplied |result_map|, keyed by the
-// name of the capture group with the captured substrings as the value.
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const std::string& pattern,
-    std::map<std::string, std::string>* result_map);
+// If the expression is fully matched, returns the matching results, keyed by
+// the name of the capture group with the captured substrings as the value.
+// Otherwise returns `nullopt`.
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value, const RE2* regex);
 
-// Same as above, but accepts a compiled regular expression instead of the
-// pattern.
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const RE2* regex,
-    std::map<std::string, std::string>* result_map);
+// Same as above, but accepts pattern instead of a compiled regular expression.
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value,
+                              const std::string& pattern);
 
 // Returns a compiled case sensitive regular expression for |pattern|.
 std::unique_ptr<const RE2> BuildRegExFromPattern(const std::string& pattern);
