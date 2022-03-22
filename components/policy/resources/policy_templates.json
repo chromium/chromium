@@ -17167,7 +17167,7 @@
     {
       'name': 'UsbDetachableAllowlist',
       'owners': ['vpalatin@chromium.org', 'hendrich@chromium.org'],
-      'type': 'list',
+      'type': 'dict',
       'schema': {
         'type': 'array',
         'items': {
