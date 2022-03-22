@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -56,20 +57,6 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
     KEEP_ACCOUNT
   };
 
-  // User choice when signing in.
-  // Used for UMA histograms, Hence, constants should never be deleted or
-  // reordered, and  new constants should only be appended at the end.
-  // Keep this in sync with SigninChoice in histograms.xml.
-  enum SigninChoice {
-    SIGNIN_CHOICE_CANCEL = 0,       // Signin is cancelled.
-    SIGNIN_CHOICE_CONTINUE = 1,     // Signin continues in the current profile.
-    SIGNIN_CHOICE_NEW_PROFILE = 2,  // Signin continues in a new profile.
-    // SIGNIN_CHOICE_SIZE should always be last.
-    SIGNIN_CHOICE_SIZE,
-  };
-
-  using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
-
   // Delegate implementing the UI prompts.
   class Delegate {
    public:
@@ -83,7 +70,7 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
     virtual void ShowMergeSyncDataConfirmation(
         const std::string& previous_email,
         const std::string& new_email,
-        SigninChoiceCallback callback) = 0;
+        signin::SigninChoiceCallback callback) = 0;
 
     // Shows a confirmation dialog when the user is signing in a managed
     // account. |callback| must be called.
@@ -97,7 +84,7 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
     // engine gets a 'disabled-by-enterprise' error from the server).
     virtual void ShowEnterpriseAccountConfirmation(
         const AccountInfo& account_info,
-        SigninChoiceCallback callback) = 0;
+        signin::SigninChoiceCallback callback) = 0;
 
     // Shows a sync confirmation screen offering to open the Sync settings.
     // |callback| must be called.
@@ -191,10 +178,10 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   bool HasCanOfferSigninError();
 
   // Used as callback for ShowMergeSyncDataConfirmation().
-  void OnMergeAccountConfirmation(SigninChoice choice);
+  void OnMergeAccountConfirmation(signin::SigninChoice choice);
 
   // Used as callback for ShowEnterpriseAccountConfirmation().
-  void OnEnterpriseAccountConfirmation(SigninChoice choice);
+  void OnEnterpriseAccountConfirmation(signin::SigninChoice choice);
 
   // Turns sync on with the current profile or a new profile.
   void TurnSyncOnWithProfileMode(ProfileMode profile_mode);

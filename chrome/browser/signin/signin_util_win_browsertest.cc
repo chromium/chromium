@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/signin_util_win.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -48,13 +49,13 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      TurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      signin::SigninChoiceCallback callback) override {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      TurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      signin::SigninChoiceCallback callback) override {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>

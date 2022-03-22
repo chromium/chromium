@@ -132,7 +132,7 @@ class ForcedSigninTurnSyncOnHelperDelegate
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      TurnSyncOnHelper::SigninChoiceCallback callback) override {
+      signin::SigninChoiceCallback callback) override {
     NOTREACHED();
   }
 };

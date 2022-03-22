@@ -53,10 +53,10 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      TurnSyncOnHelper::SigninChoiceCallback callback) override;
+      signin::SigninChoiceCallback callback) override;
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      TurnSyncOnHelper::SigninChoiceCallback callback) override;
+      signin::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
@@ -102,7 +102,7 @@ void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
         const std::string& previous_email,
         const std::string& new_email,
-        TurnSyncOnHelper::SigninChoiceCallback callback) {
+        signin::SigninChoiceCallback callback) {
   NOTREACHED() << "Sign-in intercept shouldn't create a profile for an "
                   "account known to Chrome";
 }
@@ -110,12 +110,12 @@ void SigninInterceptFirstRunExperienceDialog::
 void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
         const AccountInfo& account_info,
-        TurnSyncOnHelper::SigninChoiceCallback callback) {
+        signin::SigninChoiceCallback callback) {
   // This is a brand new profile. Skip the enterprise confirmation.
   // TODO(crbug.com/1282157): Do not show the sync promo if either
   // - PromotionalTabsEnabled policy is set to False, or
   // - the user went through the Profile Separation dialog.
-  std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+  std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
 }
 
 void SigninInterceptFirstRunExperienceDialog::
