@@ -535,7 +535,8 @@ bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format,
   struct v4l2_capability cap;
   memset(&cap, 0, sizeof(cap));
 
-  DCHECK(Ioctl(VIDIOC_QUERYCAP, &cap));
+  const bool ret = Ioctl(VIDIOC_QUERYCAP, &cap);
+  DCHECK(ret);
 
   LOG(INFO) << "Driver=\"" << cap.driver << "\" bus_info=\"" << cap.bus_info
             << "\" card=\"" << cap.card;
@@ -574,7 +575,8 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
     v4l_buffer.length = queue->num_planes();
     v4l_buffer.m.planes = planes.data();
 
-    DCHECK(Ioctl(VIDIOC_QUERYBUF, &v4l_buffer));
+    const bool ret = Ioctl(VIDIOC_QUERYBUF, &v4l_buffer);
+    DCHECK(ret);
 
     buffers.emplace_back(base::MakeRefCounted<MmapedBuffer>(
         decode_fd_.GetPlatformFile(), v4l_buffer));
