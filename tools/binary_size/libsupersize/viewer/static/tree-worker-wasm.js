@@ -160,6 +160,7 @@ function wasmLoadSizeProperties() {
  * @property {string} includeSections
  * @property {number} minSymbolSize
  * @property {number} flagToFilter
+ * @property {boolean} disassemblyMode
  */
 
 /**
@@ -197,6 +198,7 @@ function parseOptions(optionsStr) {
   }
 
   ret.flagToFilter = _NAMES_TO_FLAGS[params.get('flag_filter')] || 0;
+  ret.disassemblyMode = params.get('flag_filter') == 'disassembly'
 
   return ret;
 }
@@ -288,6 +290,7 @@ async function wasmBuildTree(optionsStr) {
     includeSections,
     minSymbolSize,
     flagToFilter,
+    disassemblyMode,
   } = parseOptions(optionsStr);
 
   const cwrapBuildTree = Module.cwrap(
@@ -295,8 +298,8 @@ async function wasmBuildTree(optionsStr) {
       ['bool', 'string', 'string', 'string', 'string', 'number', 'number']);
   const start_time = Date.now();
   const diffMode = cwrapBuildTree(
-      methodCountMode, groupBy, includeRegex, excludeRegex,
-      includeSections, minSymbolSize, flagToFilter);
+      methodCountMode, groupBy, includeRegex, excludeRegex, includeSections,
+      minSymbolSize, flagToFilter, disassemblyMode);
   console.log(
       'Constructed tree in ' + (Date.now() - start_time) / 1000.0 + ' seconds');
   return diffMode;

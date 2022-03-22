@@ -91,7 +91,8 @@ bool BuildTree(bool method_count_mode,
                const char* exclude_regex_str,
                const char* include_sections,
                int minimum_size_bytes,
-               int match_flag) {
+               int match_flag,
+               bool disassembly_mode) {
   std::vector<TreeBuilder::FilterFunc> filters;
 
   const bool diff_mode = info && before_info;
@@ -128,6 +129,12 @@ bool BuildTree(bool method_count_mode,
         [match_flag](const GroupedPath&, const BaseSymbol& sym) -> bool {
           return match_flag & sym.Flags();
         });
+  }
+
+  if (disassembly_mode) {
+    filters.push_back([](const GroupedPath&, const BaseSymbol& sym) -> bool {
+      return sym.Disassembly() != nullptr;
+    });
   }
 
   std::array<bool, 256> include_sections_map{};
