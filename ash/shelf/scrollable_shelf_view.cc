@@ -1013,6 +1013,26 @@ void ScrollableShelfView::HandleAccessibleActionScrollToMakeVisible(
   GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
 }
 
+void ScrollableShelfView::OnButtonWillBeRemoved() {
+  const int view_size_before_removal = shelf_view_->view_model()->view_size();
+  DCHECK_GT(view_size_before_removal, 0);
+
+  // Ensure `last_tappable_app_index_` to be valid after removal. Normally
+  // `last_tappable_app_index_` updates when the shelf button is removed. But
+  // button removal could be performed at the end of the button fade out
+  // animation, which means that incorrect `last_tappable_app_index_` could be
+  // accessed during the animation. To handle this issue, update
+  // `last_tappable_app_index_` before removal finishes.
+  // The code block also covers the edge case that the only shelf item is going
+  // to be removed, i.e. `view_size_before_removal_` is one. In this case,
+  // both `first_tappable_app_index_` and `last_tappable_app_index_` are reset
+  // to invalid values (see https://crbug.com/1300561).
+  last_tappable_app_index_ =
+      std::min(last_tappable_app_index_, view_size_before_removal - 2);
+  first_tappable_app_index_ =
+      std::min(first_tappable_app_index_, last_tappable_app_index_);
+}
+
 std::unique_ptr<ScrollableShelfView::ScopedActiveInkDropCount>
 ScrollableShelfView::CreateScopedActiveInkDropCount(const ShelfButton* sender) {
   if (!ShouldCountActivatedInkDrop(sender))
@@ -2184,8 +2204,11 @@ void ScrollableShelfView::OnActiveInkDropChange(bool increase) {
   // When long pressing icons, sometimes there are more ripple animations
   // pending over others buttons. Only activate rounded corners when at least
   // one button needs them.
+  // NOTE: `last_tappable_app_index_` is used to compute whether a button is
+  // at the corner or not. Meanwhile, `last_tappable_app_index_` could update
+  // before the button fade out animation ends. As a result, in edge cases
+  // `activated_corner_buttons_` could be greater than 2.
   CHECK_GE(activated_corner_buttons_, 0);
-  CHECK_LE(activated_corner_buttons_, 2);
   EnableShelfRoundedCorners(activated_corner_buttons_ > 0);
 }
 

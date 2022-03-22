@@ -1214,6 +1214,34 @@ TEST_P(ScrollableShelfViewRTLTest, ClickAtLastIcon) {
   EXPECT_FALSE(shelf_view_->IsShowingMenuForView(last_icon));
 }
 
+// Verifies that mouse click at the second last shelf item during the last item
+// removal animation does not lead to crash (see https://crbug.com/1300561).
+TEST_F(ScrollableShelfViewTest, RemoveLastItemWhileClickingSeoncdLastOne) {
+  PopulateAppShortcut(3);
+  ASSERT_EQ(ScrollableShelfView::kNotShowArrowButtons,
+            scrollable_shelf_view_->layout_strategy_for_test());
+
+  const int view_size_before_removal =
+      shelf_view_->view_model_for_test()->view_size();
+  {
+    // Remove the last shelf item with animation enabled.
+    ui::ScopedAnimationDurationScaleMode regular_animations(
+        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    ShelfModel::Get()->RemoveItemAt(view_size_before_removal - 1);
+    EXPECT_TRUE(shelf_view_->IsAnimating());
+  }
+
+  // Mouse right click at the second last item and wait for the ink drop
+  // animation to complete.
+  ShelfAppButton* second_last_item =
+      ShelfViewTestAPI(shelf_view_).GetButton(view_size_before_removal - 2);
+  GetEventGenerator()->MoveMouseTo(
+      second_last_item->GetBoundsInScreen().CenterPoint());
+  InkDropAnimationWaiter waiter(second_last_item);
+  GetEventGenerator()->ClickRightButton();
+  waiter.Wait();
+}
+
 // Verifies that presentation time for shelf gesture scroll is recorded as
 // expected (https://crbug.com/1095259).
 TEST_F(ScrollableShelfViewTest, PresentationTimeMetricsForGestureScroll) {

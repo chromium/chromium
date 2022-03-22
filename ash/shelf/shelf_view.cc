@@ -2112,6 +2112,8 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   // If std::move is not called on |view|, |view| will be deleted once out of
   // scope.
   std::unique_ptr<views::View> view(view_model_->view_at(model_index));
+
+  shelf_button_delegate_->OnButtonWillBeRemoved();
   view_model_->Remove(model_index);
 
   if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
