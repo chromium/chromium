@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -18,8 +18,6 @@ The toolchain version can be overridden by setting MAC_TOOLCHAIN_REVISION with
 the full revision, e.g. 9A235.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import pkg_resources
@@ -32,8 +30,6 @@ import sys
 
 def LoadPList(path):
   """Loads Plist at |path| and returns it as a dictionary."""
-  if sys.version_info.major == 2:
-    return plistlib.readPlist(path)
   with open(path, 'rb') as f:
     return plistlib.load(f)
 
