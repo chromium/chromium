@@ -227,6 +227,8 @@ void ProjectorAnnotationTray::OnThemeChanged() {
 void ProjectorAnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
+  // Reset pen color to default color.
+  current_pen_color_ = kRedPenColor;
 }
 
 void ProjectorAnnotationTray::ToggleAnnotator() {
