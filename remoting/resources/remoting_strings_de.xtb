@@ -28,7 +28,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="2329392777730037872"><ph name="URL" /> konnte auf dem Client nicht geöffnet werden.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="2359808026110333948">Weiter</translation>
-<translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von Ihnen verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
+<translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von dir verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Zuletzt online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> Berechtigung für die Bedienungshilfen erteilen</translation>
 <translation id="2509394361235492552">Verbunden mit <ph name="HOSTNAME" /></translation>
