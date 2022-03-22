@@ -831,6 +831,17 @@ class MediaStreamManager::DeviceRequest {
 
   GenerateStreamCallback generate_stream_cb;
 
+  // This callback is used by transferred MediaStreamTracks to access and clone
+  // an existing open MediaStreamDevice (identified by its session_id). If the
+  // device is found, it is returned to this callback along with a
+  // MediaStreamRequestResult::OK. Otherwise, returns
+  // MediaStreamRequestResult::INVALID_STATE along with absl::nullopt instead of
+  // a MediaStreamDevice.
+  GetOpenDeviceCallback get_open_device_cb;
+
+  // This callback is only used by pepper and tries to open the device
+  // identified by device_id. If it is opened successfully, it returns this
+  // device. Otherwise, returns an empty device.
   OpenDeviceCallback open_device_cb;
 
   DeviceStoppedCallback device_stopped_cb;
@@ -1071,30 +1082,24 @@ void MediaStreamManager::GenerateStream(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SendLogMessage(GetGenerateStreamLogString(render_process_id, render_frame_id,
                                             requester_id, page_request_id));
-
-  DeviceRequest* request = new DeviceRequest(
+  std::unique_ptr<DeviceRequest> request = CreateMediaGenerateStreamRequest(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      user_gesture, std::move(audio_stream_selection_info_ptr),
-      blink::MEDIA_GENERATE_STREAM, controls, std::move(salt_and_origin),
-      std::move(device_stopped_cb));
-  request->device_changed_cb = std::move(device_changed_cb);
-  request->device_request_state_change_cb =
-      std::move(device_request_state_change_cb);
-  request->device_capture_handle_change_cb =
-      std::move(device_capture_handle_change_cb);
-
-  const std::string& label = AddRequest(base::WrapUnique(request));
-
+      controls, std::move(salt_and_origin), user_gesture,
+      std::move(audio_stream_selection_info_ptr), std::move(device_stopped_cb),
+      std::move(device_changed_cb), std::move(device_request_state_change_cb),
+      std::move(device_capture_handle_change_cb));
   request->generate_stream_cb = std::move(generate_stream_cb);
+  DeviceRequest* const request_ptr = request.get();
+  const std::string label = AddRequest(std::move(request));
 
   if (generate_stream_test_callback_) {
     // The test callback is responsible to verify whether the |controls| is
     // as expected. Then we need to finish getUserMedia and let Javascript
     // access the result.
     if (std::move(generate_stream_test_callback_).Run(controls)) {
-      FinalizeGenerateStream(label, request);
+      FinalizeGenerateStream(label, request_ptr);
     } else {
-      FinalizeRequestFailed(label, request,
+      FinalizeRequestFailed(label, request_ptr,
                             MediaStreamRequestResult::INVALID_STATE);
     }
     return;
@@ -1108,6 +1113,42 @@ void MediaStreamManager::GenerateStream(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MediaStreamManager::SetUpRequest,
                                 base::Unretained(this), label));
+}
+
+void MediaStreamManager::GetOpenDevice(
+    const base::UnguessableToken& device_session_id,
+    int render_process_id,
+    int render_frame_id,
+    int requester_id,
+    int page_request_id,
+    MediaDeviceSaltAndOrigin salt_and_origin,
+    GetOpenDeviceCallback get_open_device_cb,
+    DeviceStoppedCallback device_stopped_cb,
+    DeviceChangedCallback device_changed_cb,
+    DeviceRequestStateChangeCallback device_request_state_change_cb,
+    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer)) {
+    ReceivedBadMessage(render_process_id,
+                       bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE);
+    return;
+  }
+
+  // TODO(crbug.com/1304181): Add new MediaStreamRequestType for GetOpenDevice.
+  std::unique_ptr<DeviceRequest> request = CreateMediaGenerateStreamRequest(
+      render_process_id, render_frame_id, requester_id, page_request_id,
+      StreamControls(), std::move(salt_and_origin), /*user_gesture=*/false,
+      /*audio_stream_selection_info_ptr=*/nullptr, std::move(device_stopped_cb),
+      std::move(device_changed_cb), std::move(device_request_state_change_cb),
+      std::move(device_capture_handle_change_cb));
+
+  request->get_open_device_cb = std::move(get_open_device_cb);
+
+  // TODO(https://crbug.com/1288839): Find and clone MediaStreamDevice using
+  // |device_session_id| and return that.
+  std::move(request->get_open_device_cb)
+      .Run(MediaStreamRequestResult::NOT_SUPPORTED, absl::nullopt);
 }
 
 void MediaStreamManager::CancelRequest(int render_process_id,
@@ -1491,6 +1532,33 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
       base::BindOnce(&MediaStreamManager::DevicesEnumerated,
                      base::Unretained(this), request_audio_input,
                      request_video_input, label));
+}
+
+std::unique_ptr<MediaStreamManager::DeviceRequest>
+MediaStreamManager::CreateMediaGenerateStreamRequest(
+    int render_process_id,
+    int render_frame_id,
+    int requester_id,
+    int page_request_id,
+    const blink::StreamControls& controls,
+    MediaDeviceSaltAndOrigin salt_and_origin,
+    bool user_gesture,
+    blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+    DeviceStoppedCallback device_stopped_cb,
+    DeviceChangedCallback device_changed_cb,
+    DeviceRequestStateChangeCallback device_request_state_change_cb,
+    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
+  auto request = std::make_unique<DeviceRequest>(
+      render_process_id, render_frame_id, requester_id, page_request_id,
+      user_gesture, std::move(audio_stream_selection_info_ptr),
+      blink::MEDIA_GENERATE_STREAM, controls, std::move(salt_and_origin),
+      std::move(device_stopped_cb));
+  request->device_changed_cb = std::move(device_changed_cb);
+  request->device_request_state_change_cb =
+      std::move(device_request_state_change_cb);
+  request->device_capture_handle_change_cb =
+      std::move(device_capture_handle_change_cb);
+  return request;
 }
 
 std::string MediaStreamManager::AddRequest(
@@ -1970,6 +2038,7 @@ bool MediaStreamManager::FindExistingRequestedDevice(
 void MediaStreamManager::FinalizeGenerateStream(const std::string& label,
                                                 DeviceRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request);
   DCHECK(request->generate_stream_cb);
   SendLogMessage(
       base::StringPrintf("FinalizeGenerateStream({label=%s}, {requester_id="

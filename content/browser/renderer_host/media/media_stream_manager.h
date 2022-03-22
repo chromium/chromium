@@ -42,6 +42,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/capture_handle_manager.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
@@ -200,6 +201,8 @@ class CONTENT_EXPORT MediaStreamManager
   // receive device stopped notifications. |device_changed_cb| is set to receive
   // device changed notifications. |device_request_state_change_cb| is used to
   // notify clients about request state changes.
+  // TODO(crbug.com/1288839): Package device-related callbacks into a single
+  // struct.
   void GenerateStream(
       int render_process_id,
       int render_frame_id,
@@ -210,6 +213,22 @@ class CONTENT_EXPORT MediaStreamManager
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
       GenerateStreamCallback generate_stream_cb,
+      DeviceStoppedCallback device_stopped_cb,
+      DeviceChangedCallback device_changed_cb,
+      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
+
+  // Accesses an existing open device, identified by |device_session_id|,
+  // and associates it with a new DeviceRequest. This device is then returned by
+  // invoking |get_open_device_cb| asynchronously.
+  void GetOpenDevice(
+      const base::UnguessableToken& device_session_id,
+      int render_process_id,
+      int render_frame_id,
+      int requester_id,
+      int page_request_id,
+      MediaDeviceSaltAndOrigin salt_and_origin,
+      GetOpenDeviceCallback get_open_device_cb,
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
@@ -463,6 +482,20 @@ class CONTENT_EXPORT MediaStreamManager
   MediaStreamProvider* GetDeviceManager(
       blink::mojom::MediaStreamType stream_type);
   void StartEnumeration(DeviceRequest* request, const std::string& label);
+  // Creates and returns a DeviceRequest of type MEDIA_GENERATE_STREAM.
+  static std::unique_ptr<DeviceRequest> CreateMediaGenerateStreamRequest(
+      int render_process_id,
+      int render_frame_id,
+      int requester_id,
+      int page_request_id,
+      const blink::StreamControls& controls,
+      MediaDeviceSaltAndOrigin salt_and_origin,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      DeviceStoppedCallback device_stopped_cb,
+      DeviceChangedCallback device_changed_cb,
+      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
   std::string AddRequest(std::unique_ptr<DeviceRequest> request);
   DeviceRequest* FindRequest(const std::string& label) const;
   void DeleteRequest(const std::string& label);
