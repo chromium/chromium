@@ -18786,7 +18786,7 @@
     {
       'name': 'QuickUnlockModeAllowlist',
       'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
-      'type': 'list',
+      'type': 'string-enum-list',
       'schema': {
         'type': 'array',
         'items': {
@@ -18799,6 +18799,23 @@
         },
         'id': 'QuickUnlockModeAllowlist',
       },
+      'items': [
+        {
+          'name': 'all',
+          'value': 'all',
+          'caption': '''All''',
+        },
+        {
+          'name': 'PIN',
+          'value': 'PIN',
+          'caption': '''PIN''',
+        },
+        {
+          'name': 'FINGERPRINT',
+          'value': 'FINGERPRINT',
+          'caption': '''Fingerprint''',
+        },
+      ],
       'supported_on': ['chrome_os:87-'],
       'features': {
         'dynamic_refresh': True,
