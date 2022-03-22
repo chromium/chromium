@@ -22,6 +22,8 @@
 
 namespace sql {
 
+enum class SqliteResultCode : int;
+
 // Possible return values from ColumnType in a statement. These should match
 // the values in sqlite3.h.
 enum class ColumnType {
@@ -211,7 +213,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   //
   // This method reports error codes to the associated Database, and updates
   // internal state to reflect whether the statement succeeded or not.
-  int CheckSqliteResultCode(int sqlite_result_code);
+  SqliteResultCode CheckSqliteResultCode(SqliteResultCode sqlite_result_code);
 
   // Should be called by all mutating methods to check that the statement is
   // valid. Returns true if the statement is valid. DCHECKS and returns false
@@ -229,7 +231,7 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Helper for Run() and Step(), calls sqlite3_step() and returns the checked
   // value from it.
-  int StepInternal();
+  SqliteResultCode StepInternal();
 
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is

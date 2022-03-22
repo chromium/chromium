@@ -58,7 +58,8 @@ inline SqliteResultCode ToSqliteResultCode(int sqlite_result_code) {
 // Converts a SqliteResultCode into a SqliteErrorCode.
 //
 // Callers should make sure that `sqlite_result_code` is indeed an error code,
-// and does not indicate success.
+// and does not indicate success. IsSqliteSuccessCode() could be used for this
+// purpose.
 #if DCHECK_IS_ON()
 COMPONENT_EXPORT(SQL)
 SqliteErrorCode ToSqliteErrorCode(SqliteResultCode sqlite_error_code);
@@ -67,6 +68,13 @@ inline SqliteErrorCode ToSqliteErrorCode(SqliteResultCode sqlite_error_code) {
   return static_cast<SqliteErrorCode>(sqlite_error_code);
 }
 #endif  // DCHECK_IS_ON()
+
+// Returns true if `sqlite_result_code` reports a successful operation.
+//
+// `sqlite_result_code` should only be passed to ToSqliteErrorCode() if this
+// function returns false.
+COMPONENT_EXPORT(SQL)
+bool IsSqliteSuccessCode(SqliteResultCode sqlite_result_code);
 
 // Helper for logging a SQLite result code to a UMA histogram.
 //

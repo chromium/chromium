@@ -359,6 +359,31 @@ SqliteErrorCode ToSqliteErrorCode(SqliteResultCode sqlite_error_code) {
 
 #endif  // DCHECK_IS_ON()
 
+bool IsSqliteSuccessCode(SqliteResultCode sqlite_result_code) {
+  // https://www.sqlite.org/rescode.html lists the result codes that are not
+  // errors.
+  bool is_success = (sqlite_result_code == SqliteResultCode::kOk) ||
+                    (sqlite_result_code == SqliteResultCode::kRow) ||
+                    (sqlite_result_code == SqliteResultCode::kDone);
+
+#if DCHECK_IS_ON()
+  SqliteLoggedResultCode logged_code = static_cast<SqliteLoggedResultCode>(
+      FindResultCode(static_cast<int>(sqlite_result_code)).logged_code);
+
+  DCHECK_EQ(is_success, logged_code == SqliteLoggedResultCode::kNoError)
+      << __func__ << " logic disagrees with the code mapping for "
+      << sqlite_result_code;
+
+  DCHECK_NE(logged_code, SqliteLoggedResultCode::kUnusedSqlite)
+      << "SQLite reported code marked for internal use: " << sqlite_result_code;
+  DCHECK_NE(logged_code, SqliteLoggedResultCode::kUnusedChrome)
+      << "SQLite reported code that should never show up in Chrome: "
+      << sqlite_result_code;
+#endif  // DCHECK_IS_ON()
+
+  return is_success;
+}
+
 SqliteLoggedResultCode ToSqliteLoggedResultCode(int sqlite_result_code) {
   SqliteLoggedResultCode logged_code = static_cast<SqliteLoggedResultCode>(
       FindResultCode(sqlite_result_code).logged_code);

@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -65,16 +66,16 @@ bool Statement::CheckValid() const {
   return is_valid();
 }
 
-int Statement::StepInternal() {
+SqliteResultCode Statement::StepInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CheckValid())
-    return SQLITE_ERROR;
+    return SqliteResultCode::kError;
 
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
-  int sqlite_result_code = sqlite3_step(ref_->stmt());
+  auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
   return CheckSqliteResultCode(sqlite_result_code);
 }
 
@@ -86,7 +87,7 @@ bool Statement::Run() {
   run_called_ = true;
   DCHECK(!step_called_) << "Run() must not be mixed with Step()";
 #endif  // DCHECK_IS_ON()
-  return StepInternal() == SQLITE_DONE;
+  return StepInternal() == SqliteResultCode::kDone;
 }
 
 bool Statement::Step() {
@@ -96,7 +97,7 @@ bool Statement::Step() {
   DCHECK(!run_called_) << "Run() must not be mixed with Step()";
   step_called_ = true;
 #endif  // DCHECK_IS_ON()
-  return StepInternal() == SQLITE_ROW;
+  return StepInternal() == SqliteResultCode::kRow;
 }
 
 void Statement::Reset(bool clear_bound_vars) {
@@ -579,18 +580,13 @@ const char* Statement::GetSQLStatement() {
   return sqlite3_sql(ref_->stmt());
 }
 
-int Statement::CheckSqliteResultCode(int sqlite_result_code) {
+SqliteResultCode Statement::CheckSqliteResultCode(
+    SqliteResultCode sqlite_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // https://www.sqlite.org/rescode.html lists the result codes that are not'
-  // errors.
-  succeeded_ =
-      (sqlite_result_code == SQLITE_OK || sqlite_result_code == SQLITE_ROW ||
-       sqlite_result_code == SQLITE_DONE);
-
+  succeeded_ = IsSqliteSuccessCode(sqlite_result_code);
   if (!succeeded_ && ref_.get() && ref_->database()) {
-    SqliteErrorCode sqlite_error_code =
-        ToSqliteErrorCode(ToSqliteResultCode(sqlite_result_code));
+    auto sqlite_error_code = ToSqliteErrorCode(sqlite_result_code);
     ref_->database()->OnSqliteError(sqlite_error_code, this, nullptr);
   }
   return sqlite_result_code;

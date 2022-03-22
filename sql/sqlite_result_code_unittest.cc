@@ -123,6 +123,44 @@ TEST(SqliteResultCodeTest, ToSqliteErrorCode_ChromeBugError) {
 #endif
 }
 
+TEST(SqliteResultCodeTest, ToSqliteErrorCode_Success) {
+  EXPECT_TRUE(IsSqliteSuccessCode(SqliteResultCode::kOk));
+  EXPECT_TRUE(IsSqliteSuccessCode(SqliteResultCode::kDone));
+  EXPECT_TRUE(IsSqliteSuccessCode(SqliteResultCode::kRow));
+}
+
+TEST(SqliteResultCodeTest, IsSqliteSuccessCode_PrimaryErrorCodes) {
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kIo));
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kCorrupt));
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kConstraint));
+}
+
+TEST(SqliteResultCodeTest, IsSqliteSuccessCode_ExtendedErrorCodes) {
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kIoRead));
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kIoWrite));
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kCorruptIndex));
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kConstraintUnique));
+}
+
+TEST(SqliteResultCodeTest, IsSqliteSuccessCode_SqliteInternalError) {
+#if DCHECK_IS_ON()
+  EXPECT_DCHECK_DEATH_WITH(IsSqliteSuccessCode(SqliteResultCode::kInternal),
+                           "SQLite reported code marked for internal use: 2");
+#else
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kInternal));
+#endif
+}
+
+TEST(SqliteResultCodeTest, IsSqliteSuccessCode_ChromeBugError) {
+#if DCHECK_IS_ON()
+  EXPECT_DCHECK_DEATH_WITH(
+      IsSqliteSuccessCode(SqliteResultCode::kNotFound),
+      "SQLite reported code that should never show up in Chrome: 12");
+#else
+  EXPECT_FALSE(IsSqliteSuccessCode(SqliteResultCode::kNotFound));
+#endif
+}
+
 TEST(SqliteResultCodeTest, ToSqliteLoggedResultCode_Success) {
   EXPECT_EQ(SqliteLoggedResultCode::kNoError,
             ToSqliteLoggedResultCode(SQLITE_OK));
