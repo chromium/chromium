@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
    public:
     ~Observer() override;
 
+    // Called when the presence of a user starts or stops being detected.
+    virtual void OnHpsSenseChanged(hps::HpsResult state) = 0;
+
     // Called when the presence of a "snooper" looking over the user's shoulder
     // starts or stops being detected.
     virtual void OnHpsNotifyChanged(hps::HpsResult state) = 0;
@@ -42,7 +45,7 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
     virtual void OnShutdown() = 0;
   };
 
-  using GetResultHpsNotifyCallback =
+  using GetResultCallback =
       base::OnceCallback<void(absl::optional<hps::HpsResult>)>;
 
   HpsDBusClient(const HpsDBusClient&) = delete;
@@ -54,8 +57,10 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // D-Bus methods.
+  // Polls the HPS sense state.
+  virtual void GetResultHpsSense(GetResultCallback cb) = 0;
   // Polls the HPS notify state.
-  virtual void GetResultHpsNotify(GetResultHpsNotifyCallback cb) = 0;
+  virtual void GetResultHpsNotify(GetResultCallback cb) = 0;
   // Enables HpsSense in HpsService.
   virtual void EnableHpsSense(const hps::FeatureConfig& config) = 0;
   // Disables HpsSense in HpsService.

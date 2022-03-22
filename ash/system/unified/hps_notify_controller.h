@@ -62,6 +62,7 @@ class ASH_EXPORT HpsNotifyController
   void OnOrientationChanged(bool suitable_for_hps) override;
 
   // chromeos::HpsDBusClient::Observer:
+  void OnHpsSenseChanged(hps::HpsResult state) override;
   void OnHpsNotifyChanged(hps::HpsResult state) override;
   void OnRestart() override;
   void OnShutdown() override;

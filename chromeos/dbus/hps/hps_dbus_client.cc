@@ -24,8 +24,8 @@ namespace {
 
 HpsDBusClient* g_instance = nullptr;
 
-// Extracts snooping data out of a DBus response.
-absl::optional<hps::HpsResult> UnwrapHpsNotifyResult(dbus::Response* response) {
+// Extracts result data out of a DBus response.
+absl::optional<hps::HpsResult> UnwrapHpsResult(dbus::Response* response) {
   if (response == nullptr) {
     return absl::nullopt;
   }
@@ -46,6 +46,14 @@ class HpsDBusClientImpl : public HpsDBusClient {
       : hps_proxy_(bus->GetObjectProxy(hps::kHpsServiceName,
                                        dbus::ObjectPath(hps::kHpsServicePath))),
         weak_ptr_factory_(this) {
+    // Connect to HpsSenseChanged signal.
+    hps_proxy_->ConnectToSignal(
+        hps::kHpsServiceInterface, hps::kHpsSenseChanged,
+        base::BindRepeating(&HpsDBusClientImpl::HpsSenseChangedReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&HpsDBusClientImpl::HpsSenseChangedConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
     // Connect to HpsNotifyChanged signal.
     hps_proxy_->ConnectToSignal(
         hps::kHpsServiceInterface, hps::kHpsNotifyChanged,
@@ -64,6 +72,21 @@ class HpsDBusClientImpl : public HpsDBusClient {
   HpsDBusClientImpl(const HpsDBusClientImpl&) = delete;
   HpsDBusClientImpl& operator=(const HpsDBusClientImpl&) = delete;
 
+  // Called when user presence signal is received.
+  void HpsSenseChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    hps::HpsResultProto result;
+    if (!reader.PopArrayOfBytesAsProto(&result)) {
+      LOG(ERROR) << "Invalid HpsSenseChanged signal: " << signal->ToString();
+      return;
+    }
+
+    // Notify observers of state change.
+    for (auto& observer : observers_) {
+      observer.OnHpsSenseChanged(result.value());
+    }
+  }
+
   // Called when snooping signal is received.
   void HpsNotifyChangedReceived(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
@@ -73,7 +96,7 @@ class HpsDBusClientImpl : public HpsDBusClient {
       return;
     }
 
-    // Notify observers of state changed.
+    // Notify observers of state change.
     for (auto& observer : observers_) {
       observer.OnHpsNotifyChanged(result.value());
     }
@@ -90,6 +113,13 @@ class HpsDBusClientImpl : public HpsDBusClient {
     }
   }
 
+  // Called when the HpsSenseChanged signal is initially connected.
+  void HpsSenseChangedConnected(const std::string& /* interface_name */,
+                                const std::string& /* signal_name */,
+                                bool success) {
+    LOG_IF(ERROR, !success) << "Failed to connect to HpsSenseChanged signal.";
+  }
+
   // Called when the HpsNotifyChanged signal is initially connected.
   void HpsNotifyChangedConnected(const std::string& /* interface_name */,
                                  const std::string& /* signal_name */,
@@ -98,13 +128,22 @@ class HpsDBusClientImpl : public HpsDBusClient {
   }
 
   // HpsDBusClient:
-  void GetResultHpsNotify(GetResultHpsNotifyCallback cb) override {
+  void GetResultHpsSense(GetResultCallback cb) override {
+    dbus::MethodCall method_call(hps::kHpsServiceInterface,
+                                 hps::kGetResultHpsSense);
+    dbus::MessageWriter writer(&method_call);
+    hps_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UnwrapHpsResult).Then(std::move(cb)));
+  }
+
+  void GetResultHpsNotify(GetResultCallback cb) override {
     dbus::MethodCall method_call(hps::kHpsServiceInterface,
                                  hps::kGetResultHpsNotify);
     dbus::MessageWriter writer(&method_call);
     hps_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UnwrapHpsNotifyResult).Then(std::move(cb)));
+        base::BindOnce(&UnwrapHpsResult).Then(std::move(cb)));
   }
 
   void AddObserver(Observer* observer) override {

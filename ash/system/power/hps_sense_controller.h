@@ -31,6 +31,7 @@ class ASH_EXPORT HpsSenseController : public chromeos::HpsDBusClient::Observer {
   void DisableHpsSense();
 
   // chromeos::HpsDBusClient::Observer:
+  void OnHpsSenseChanged(hps::HpsResult state) override;
   void OnHpsNotifyChanged(hps::HpsResult state) override;
   // Re-enables HpsSense on HpsBusService restart if it was enabled before.
   void OnRestart() override;

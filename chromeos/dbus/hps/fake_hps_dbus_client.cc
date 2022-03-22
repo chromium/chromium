@@ -40,7 +40,14 @@ void FakeHpsDBusClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeHpsDBusClient::GetResultHpsNotify(GetResultHpsNotifyCallback cb) {
+void FakeHpsDBusClient::GetResultHpsSense(GetResultCallback cb) {
+  ++hps_sense_count_;
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(cb), hps_sense_result_));
+}
+
+void FakeHpsDBusClient::GetResultHpsNotify(GetResultCallback cb) {
   ++hps_notify_count_;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(

@@ -1,0 +1,56 @@
+﻿<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>HPS Internals</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" href="hps_internals_icon.svg">
+  <link rel="import" href="chrome://resources/html/polymer.html">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="hps_internals.css">
+  <script type="module" src="hps_internals.js"></script>
+</head>
+
+<body id="root">
+<h1>HPS Internals</h1>
+
+<div id="connection-error" style="display: none">
+  Unable to connect to HPS. Are the screen privacy settings enabled?
+</div>
+
+<div id="enable-error" style="display: none">
+  Failed to enable feature.
+</div>
+
+<div class="flexbar">
+<div class="feature-panel">
+  <h2>👤 Sense feature</h2>
+  <div class="flexbar">
+    <div class="flexbar">
+      <button id="enable-sense">Enable</button>
+      <button id="disable-sense">Disable</button>
+    </div>
+    <div class="spacer"></div>
+    <div id="sense-state" class="unknown"></div>
+  </div>
+  <div class="history" id="sense-history"></div>
+</div>
+
+<div class="feature-panel">
+  <h2>👥 Notify feature</h2>
+  <div class="flexbar">
+    <div class="flexbar">
+      <button id="enable-notify">Enable</button>
+      <button id="disable-notify">Disable</button>
+    </div>
+    <div class="spacer"></div>
+    <div id="notify-state" class="unknown"></div>
+  </div>
+  <div class="history" id="notify-history"></div>
+</div>
+</div>
+
+</body>
+</html>

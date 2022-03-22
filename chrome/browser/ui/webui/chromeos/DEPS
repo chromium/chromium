@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/utility",
+  "+ash/system/hps",
 
   # Chrome OS depends on views, so allow code in this directory to depend on
   # ui/views.

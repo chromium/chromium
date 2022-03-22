@@ -62,6 +62,8 @@ void HpsSenseController::DisableHpsSense() {
     DisableHpsSenseViaDBus();
 }
 
+void HpsSenseController::OnHpsSenseChanged(hps::HpsResult state) {}
+
 void HpsSenseController::OnHpsNotifyChanged(hps::HpsResult state) {}
 
 void HpsSenseController::OnRestart() {

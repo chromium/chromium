@@ -129,6 +129,8 @@ void HpsNotifyController::OnOrientationChanged(bool suitable_for_hps) {
   UpdateSnooperStatus(new_state);
 }
 
+void HpsNotifyController::OnHpsSenseChanged(hps::HpsResult) {}
+
 void HpsNotifyController::OnHpsNotifyChanged(hps::HpsResult hps_state) {
   const bool present = hps_state == hps::HpsResult::POSITIVE;
 

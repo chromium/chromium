@@ -27,7 +27,8 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
   // HpsDBusClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void GetResultHpsNotify(GetResultHpsNotifyCallback cb) override;
+  void GetResultHpsSense(GetResultCallback cb) override;
+  void GetResultHpsNotify(GetResultCallback cb) override;
   void EnableHpsSense(const hps::FeatureConfig& config) override;
   void DisableHpsSense() override;
   void EnableHpsNotify(const hps::FeatureConfig& config) override;
@@ -40,8 +41,12 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
   void set_hps_notify_result(absl::optional<hps::HpsResult> result) {
     hps_notify_result_ = result;
   }
+  void set_hps_sense_result(absl::optional<hps::HpsResult> result) {
+    hps_sense_result_ = result;
+  }
 
   int hps_notify_count() const { return hps_notify_count_; }
+  int hps_sense_count() const { return hps_sense_count_; }
 
   // Methods for co-ordinating WaitForServiceToBeAvailable calls in tests.
   void set_hps_service_is_available(bool is_available) {
@@ -64,7 +69,9 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
 
  private:
   absl::optional<hps::HpsResult> hps_notify_result_;
+  absl::optional<hps::HpsResult> hps_sense_result_;
   int hps_notify_count_ = 0;
+  int hps_sense_count_ = 0;
   int enable_hps_notify_count_ = 0;
   int disable_hps_notify_count_ = 0;
   int enable_hps_sense_count_ = 0;

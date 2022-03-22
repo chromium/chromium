@@ -3,11 +3,16 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//chrome/test/base/js2gtest.gni")
+
+assert(is_chromeos_ash)
 
 static_library("hps") {
   sources = [
     "hps_configuration.cc",
     "hps_configuration.h",
+    "hps_internals.cc",
+    "hps_internals.h",
   ]
 
   deps = [ "//ash/constants:constants" ]
@@ -28,4 +33,12 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "webui"
+
+  sources = [ "test/hps_internals_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
