@@ -181,7 +181,14 @@ void TerminateProcessWithHistograms(const base::Process& process,
   if (result) {
     DWORD wait_error = 0;
     // The process may not end immediately due to pending I/O
-    DWORD wait_result = ::WaitForSingleObject(process.Handle(), 60 * 1000);
+    DWORD wait_result;
+    {
+      TRACE_EVENT0("startup",
+                   "ProcessSingleton:TerminateProcessWithHistograms:"
+                   "WaitForSingleObject");
+      wait_result = ::WaitForSingleObject(process.Handle(), 60 * 1000);
+    }
+
     if (wait_result != WAIT_OBJECT_0) {
       if (wait_result == WAIT_FAILED)
         wait_error = ::GetLastError();
