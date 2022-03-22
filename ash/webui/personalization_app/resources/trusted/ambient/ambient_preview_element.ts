@@ -10,14 +10,18 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import '../../common/styles.js';
+import '../cros_button_style.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPhotoCount, getTopicSourceName, replaceResolutionSuffix} from '../utils.js';
 
+import {setAmbientModeEnabled} from './ambient_controller.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 
 export class AmbientPreview extends WithPersonalizationStore {
@@ -31,6 +35,7 @@ export class AmbientPreview extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      ambientModeEnabled_: Boolean,
       albums_: {
         type: Array,
         value: null,
@@ -47,13 +52,19 @@ export class AmbientPreview extends WithPersonalizationStore {
         type: AmbientModeAlbum,
         computed: 'computeFirstPreviewAlbum_(previewAlbums_)',
       },
+      loading_: {
+        type: Boolean,
+        computed: 'computeLoading_(ambientModeEnabled_, albums_, topicSource_)',
+      }
     };
   }
 
+  private ambientModeEnabled_: boolean|null;
   private albums_: AmbientModeAlbum[]|null;
   private topicSource_: TopicSource|null;
   private previewAlbums_: AmbientModeAlbum[]|null;
   private firstPreviewAlbum_: AmbientModeAlbum|null;
+  private loading_: boolean;
 
   override ready() {
     super.ready();
@@ -62,9 +73,24 @@ export class AmbientPreview extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.watch(
+        'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
     this.watch('albums_', state => state.ambient.albums);
     this.watch('topicSource_', state => state.ambient.topicSource);
     this.updateFromStore();
+  }
+
+  private computeLoading_(): boolean {
+    return this.ambientModeEnabled_ === null || this.albums_ === null ||
+        this.topicSource_ === null;
+  }
+
+  /** Enable ambient mode and navigates to the ambient subpage. */
+  private async onClickAmbientModeButton_(event: Event) {
+    event.stopPropagation();
+    await setAmbientModeEnabled(
+        /*ambientModeEnabled=*/ true, getAmbientProvider(), this.getStore());
+    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
   }
 
   private computePreviewAlbums_(): AmbientModeAlbum[]|null {

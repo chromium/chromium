@@ -14,9 +14,9 @@ import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAc
  */
 
 // Enable or disable ambient mode.
-export function setAmbientModeEnabled(
+export async function setAmbientModeEnabled(
     ambientModeEnabled: boolean, provider: AmbientProviderInterface,
-    store: PersonalizationStore): void {
+    store: PersonalizationStore): Promise<void> {
   provider.setAmbientModeEnabled(ambientModeEnabled);
 
   // Dispatch action to toggle the button to indicate if the ambient mode is

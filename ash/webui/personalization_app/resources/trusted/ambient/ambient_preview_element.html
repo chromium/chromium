@@ -1,14 +1,36 @@
-<style include="common-style">
+<style include="common-style cros-button-style">
   :host([main-page]) #container {
     display: grid;
     grid-template-areas:
-      '. slot           slot  slot    .'
-      '. image          image image   .'
-      '. .              .     .       .'
-      '. mainpage-desc  .     collage .'
-      '. .              .     .       .';
+      '. slot           slot    slot    .'
+      '. image          image   image   .'
+      '. .              .       .       .'
+      '. message        message message .'
+      '. mainpage-desc  .       collage .'
+      '. .              .       .       .';
     grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
-    grid-template-rows: 48px minmax(158px, 220px) 20px 106px 20px;
+    grid-template-rows: 48px minmax(158px, 220px) 20px auto auto 24px;
+  }
+
+  #messageContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    grid-area: message;
+    height: 106px;
+  }
+
+  #messageContainer .text {
+    font: var(--cros-body-1-font);
+    height: 40px;
+    line-height: 1.5;
+    margin-top: 12px;
+    text-align: center;
+    width: 60%;
+  }
+
+  #messageContainer cr-button {
+    margin-top: 20px;
   }
 
   :host(:not([main-page])) #container {
@@ -58,6 +80,7 @@
   :host([main-page]) .album-info-mainpage {
     display: flex;
     grid-area: mainpage-desc;
+    height: 106px;
     justify-content: center;
   }
 
@@ -70,6 +93,10 @@
   #imageContainer,
   #imagePlaceholder {
     grid-area: image;
+  }
+
+  #imageContainer img.disabled {
+    opacity: var(--cros-disabled-opacity);
   }
 
   :host(:not([main-page])) #collageContainer {
@@ -109,7 +136,7 @@
 </style>
 <div class="preview-container" id="container">
   <slot></slot>
-  <template is="dom-if" if="[[!previewAlbums_]]">
+  <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
     <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
       <div class="placeholder currently-set-text"></div>
@@ -117,26 +144,50 @@
       <div class="placeholder"></div>
     </div>
   </template>
-  <template is="dom-if" if="[[previewAlbums_]]">
-    <div id="imageContainer" class="preview-image-container" aria-hidden="true">
-      <img class="preview-image" is="cr-auto-img"
-          auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
-    </div>
-    <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
-      <span id="currentlySet" class="currently-set-text" aria-hidden="true">
-        $i18n{currentlySet}
-      </span>
-      <span id="albumTitle" aria-hidden="true">
-        [[getAlbumTitle_(firstPreviewAlbum_)]]
-      </span>
-      <span id="albumDescription" aria-hidden="true">
-        [[getAlbumDescription_(topicSource_, previewAlbums_)]]
-      </span>
-    </h2>
-    <div id="collageContainer" class$="[[getContainerClass_(previewAlbums_)]]">
-      <template is="dom-repeat" items="[[getCollageItems_(previewAlbums_)]]">
-        <img class="collage-item" is="cr-auto-img"
-            auto-src="[[getPreviewImage_(item)]]" with-cookies>
+  <template is="dom-if" if="[[!loading_]]">
+    <template is="dom-if" if="[[!ambientModeEnabled_]]">
+      <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+        <img class="preview-image disabled" src="//personalization/common/slideshow.png">
+      </div>
+      <div id="messageContainer">
+        <span class="text">$i18n{ambientModeMainPageZeroStateMessage}</span>
+        <cr-button class="primary" on-click="onClickAmbientModeButton_">
+          <div>$i18n{ambientModeTurnOnLabel}</div>
+        </cr-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[ambientModeEnabled_]]">
+      <template is="dom-if" if="[[!previewAlbums_]]">
+        <div id="imagePlaceholder" class="placeholder"></div>
+        <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
+          <div class="placeholder currently-set-text"></div>
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+        </div>
       </template>
-    </div>
+      <template is="dom-if" if="[[previewAlbums_]]">
+        <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+          <img class="preview-image" is="cr-auto-img"
+              auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+        </div>
+        <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
+          <span id="currentlySet" class="currently-set-text" aria-hidden="true">
+            $i18n{currentlySet}
+          </span>
+          <span id="albumTitle" aria-hidden="true">
+            [[getAlbumTitle_(firstPreviewAlbum_)]]
+          </span>
+          <span id="albumDescription" aria-hidden="true">
+            [[getAlbumDescription_(topicSource_, previewAlbums_)]]
+          </span>
+        </h2>
+        <div id="collageContainer" class$="[[getContainerClass_(previewAlbums_)]]">
+          <template is="dom-repeat" items="[[getCollageItems_(previewAlbums_)]]">
+            <img class="collage-item" is="cr-auto-img"
+                auto-src="[[getPreviewImage_(item)]]" with-cookies>
+          </template>
+        </div>
+      </template>
+    </template>
+  </template>
 </div>

@@ -5,6 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {AmbientPreviewTest} from './ambient_preview_element_test.js';
 import {AmbientSubpageTest} from './ambient_subpage_element_test.js';
 import {AvatarCameraTest} from './avatar_camera_element_test.js';
 import {AvatarListTest} from './avatar_list_element_test.js';
@@ -33,6 +34,7 @@ import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
 window.console.warn = () => {};
 
 const testCases = [
+  AmbientPreviewTest,
   AmbientSubpageTest,
   AvatarCameraTest,
   AvatarListTest,

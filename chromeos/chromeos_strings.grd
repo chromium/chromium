@@ -2248,7 +2248,14 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MULTIPLE_ALBUMS_DESC" desc="Album description shown in the Ambient preview when more than 3 albums are selected">
         <ph name="TITLE">$1<ex>Sweden 2020</ex></ph>, +<ph name="NUMBER">$2<ex>2</ex></ph> more albums
-      </message> 
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
+        Turn the feature on to select screensaver options
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
+        Turn on
+      </message>
+
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
         Unknown
