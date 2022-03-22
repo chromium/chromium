@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MOJO_MOJO_H_
 
 #include "mojo/public/cpp/system/core.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -19,10 +21,15 @@ class MojoCreateSharedBufferResult;
 class MojoHandle;
 class ScriptState;
 
-class Mojo final : public ScriptWrappable {
+class CORE_EXPORT Mojo final : public ScriptWrappable,
+                               public Supplementable<Mojo> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  Mojo() = default;
+  Mojo(const Mojo&) = delete;
+  Mojo& operator=(const Mojo&) = delete;
+
   // MojoResult
   static const MojoResult kResultOk = MOJO_RESULT_OK;
   static const MojoResult kResultCancelled = MOJO_RESULT_CANCELLED;
@@ -57,6 +64,11 @@ class Mojo final : public ScriptWrappable {
                             MojoHandle*,
                             const String& scope,
                             ExceptionState& exception_state);
+
+  void Trace(Visitor* visitor) const override {
+    ScriptWrappable::Trace(visitor);
+    Supplementable<Mojo>::Trace(visitor);
+  }
 };
 
 }  // namespace blink
