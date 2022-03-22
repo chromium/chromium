@@ -417,11 +417,13 @@ TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucketWithFree) {
 }
 
 #if !defined(MEMORY_CONSTRAINED)
+#if !BUILDFLAG(IS_LINUX)  // crbug.com/1302681
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucket) {
   auto params = GetParam();
   RunTest(std::get<int>(params), std::get<bool>(params),
           std::get<AllocatorType>(params), MultiBucket, nullptr, "MultiBucket");
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 #endif  // defined(MEMORY_CONSTRAINED)
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFree) {
