@@ -3907,8 +3907,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_MESSAGE" desc="The message shows in the screenshot or screen recording notification.">
         Show in folder
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LOW_DISK_SPACE_MESSAGE" desc="The message shows in the screen recording notification when recording ends due to low disk space.">
-        Recording ended due to critically low disk space
+      <message name="IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE" desc="The message shows in the screen recording notification when recording ends due to low storage space.">
+        Recording ended due to critically low storage space
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT" desc="The edit button label for the screen capture notification.">
         Edit

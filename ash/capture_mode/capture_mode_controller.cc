@@ -1232,7 +1232,7 @@ void CaptureModeController::ShowPreviewNotification(
   const int title_id = for_video ? IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE
                                  : IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE;
   const int message_id = for_video && low_disk_space_threshold_reached_
-                             ? IDS_ASH_SCREEN_CAPTURE_LOW_DISK_SPACE_MESSAGE
+                             ? IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE
                              : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
 
   message_center::RichNotificationData optional_fields;
