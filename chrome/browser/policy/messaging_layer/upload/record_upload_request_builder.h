@@ -44,7 +44,9 @@ namespace reporting {
 //       }
 //     }
 //   ],
-//   "attachEncryptionSettings": true,  // optional field
+//   // optional field, corresponding to |need_encryption_keys| in
+//   // components/reporting/proto/interface.proto
+//   "attachEncryptionSettings": true,
 //   "requestId": "SomeString"
 // }
 // TODO(b/159361496): Periodically add memory and disk space usage.

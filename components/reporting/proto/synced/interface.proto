@@ -85,7 +85,9 @@ message FlushPriorityResponse {
 message UploadEncryptedRecordRequest {
   repeated EncryptedRecord encrypted_record = 1;
 
-  // If true, server should send the encryption keys with the next response.
+  // Must be either true or absent. If true, server should send the server's
+  // public values in the next response. It corresponds to the
+  // "attachEncryptionSettings" field in the payload.
   optional bool need_encryption_keys = 2;
 }
 

@@ -68,7 +68,8 @@ namespace policy {
 // "device" and "browser" are populated by the base class,
 // the rest needs to be provided as |merging_payload|.
 //
-// Details of "encryptedRecord" are documented at note "ERP Encrypted Record".
+// Details other than the "device" and "browser" fields are documented at note
+// "ERP Encrypted Record".
 
 class POLICY_EXPORT EncryptedReportingJobConfiguration
     : public ReportingJobConfigurationBase {
