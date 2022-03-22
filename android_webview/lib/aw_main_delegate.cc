@@ -149,6 +149,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // the document lifecycle.
   cl->AppendSwitch(switches::kDisableBackForwardCache);
 
+  // Deemed that performance benefit is not worth the stability cost.
+  // See crbug.com/1309151.
+  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
+
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
 
