@@ -97,6 +97,8 @@ AppPtr App::Clone() const {
                                               run_on_os_login->is_managed);
   }
 
+  app->shortcuts = CloneShortcuts(shortcuts);
+
   return app;
 }
 

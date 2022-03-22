@@ -250,6 +250,11 @@ void AppUpdate::Merge(App* state, const App* delta) {
     state->run_on_os_login = CloneRunOnOsLogin(delta->run_on_os_login.value());
   }
 
+  if (!delta->shortcuts.empty()) {
+    state->shortcuts.clear();
+    state->shortcuts = CloneShortcuts(delta->shortcuts);
+  }
+
   // When adding new fields to the App type, this function should also be
   // updated.
 }
@@ -973,6 +978,27 @@ bool AppUpdate::RunOnOsLoginChanged() const {
           !mojom_delta_->run_on_os_login.Equals(mojom_state_->run_on_os_login));
 }
 
+apps::Shortcuts AppUpdate::Shortcuts() const {
+  if (ShouldUseNonMojom()) {
+    if (delta_ && !delta_->shortcuts.empty()) {
+      return CloneShortcuts(delta_->shortcuts);
+    } else if (state_ && !state_->shortcuts.empty()) {
+      return CloneShortcuts(state_->shortcuts);
+    }
+  }
+  return std::vector<ShortcutPtr>{};
+}
+
+bool AppUpdate::ShortcutsChanged() const {
+  if (ShouldUseNonMojom()) {
+    return delta_ && !delta_->shortcuts.empty() &&
+           (!state_ || !IsEqual(delta_->shortcuts, state_->shortcuts));
+  }
+
+  // Shortcuts are not implemented in the Mojo interface of the app service.
+  return false;
+}
+
 const ::AccountId& AppUpdate::AccountId() const {
   return account_id_;
 }
@@ -1026,6 +1052,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
       << std::endl;
   out << "HasBadge: " << PRINT_OPTIONAL_VALUE(HasBadge) << std::endl;
   out << "Paused: " << PRINT_OPTIONAL_VALUE(Paused) << std::endl;
+
   out << "IntentFilters: " << std::endl;
   for (const auto& filter : app.IntentFilters()) {
     out << filter << std::endl;
@@ -1036,6 +1063,11 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;
+  }
+
+  out << "Shortcuts: " << std::endl;
+  for (const auto& shortcut : app.Shortcuts()) {
+    out << shortcut->ToString() << std::endl;
   }
 
   return out;

@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -174,6 +175,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
 
   absl::optional<apps::RunOnOsLogin> RunOnOsLogin() const;
   bool RunOnOsLoginChanged() const;
+
+  apps::Shortcuts Shortcuts() const;
+  bool ShortcutsChanged() const;
 
   const ::AccountId& AccountId() const;
 

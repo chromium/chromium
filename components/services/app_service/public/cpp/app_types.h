@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -190,6 +191,14 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   // Whether the app runs on os login in a new window or not.
   absl::optional<RunOnOsLogin> run_on_os_login;
+
+  // Shortcuts help users perform specific actions easily.
+  // This vector must be treated atomically, if there is a shortcut
+  // change, the publisher must send through the entire list of shortcuts.
+  // Should contain no duplicate IDs.
+  // If empty during updates, Subscriber can assume no changes.
+  // There is no guarantee that this is sorted by any criteria.
+  Shortcuts shortcuts;
 
   // When adding new fields to the App type, the `Clone` function and the
   // `AppUpdate` class should also be updated.
