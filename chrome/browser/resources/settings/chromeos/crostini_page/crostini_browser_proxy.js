@@ -99,8 +99,9 @@ export class CrostiniBrowserProxy {
 
   /**
    * Export crostini container.
+   * @param {!ContainerId} containerId container id of container to export.
    */
-  exportCrostiniContainer() {}
+  exportCrostiniContainer(containerId) {}
 
   /**
    * Import crostini container.
@@ -297,8 +298,8 @@ export class CrostiniBrowserProxyImpl {
   }
 
   /** @override */
-  exportCrostiniContainer() {
-    chrome.send('exportCrostiniContainer');
+  exportCrostiniContainer(containerId) {
+    chrome.send('exportCrostiniContainer', [containerId]);
   }
 
   /** @override */

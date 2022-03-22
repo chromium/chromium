@@ -127,8 +127,11 @@ CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
   return NewOperationData(type, ContainerId::GetDefault());
 }
 
-void CrostiniExportImport::ExportContainer(content::WebContents* web_contents) {
-  OpenFileDialog(NewOperationData(ExportImportType::EXPORT), web_contents);
+void CrostiniExportImport::ExportContainer(ContainerId container_id,
+                                           content::WebContents* web_contents) {
+  OpenFileDialog(
+      NewOperationData(ExportImportType::EXPORT, std::move(container_id)),
+      web_contents);
 }
 
 void CrostiniExportImport::ImportContainer(content::WebContents* web_contents) {

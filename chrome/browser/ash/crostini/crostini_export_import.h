@@ -104,8 +104,9 @@ class CrostiniExportImport : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Export the crostini container showing FileDialog.
-  void ExportContainer(content::WebContents* web_contents);
+  // Export the |container_id| showing FileDialog.
+  void ExportContainer(ContainerId container_id,
+                       content::WebContents* web_contents);
   // Import the crostini container showing FileDialog.
   void ImportContainer(content::WebContents* web_contents);
 

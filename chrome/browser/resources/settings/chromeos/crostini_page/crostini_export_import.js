@@ -21,7 +21,7 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -105,7 +105,10 @@ Polymer({
 
   /** @private */
   onExportClick_() {
-    CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer();
+    CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer({
+      vm_name: DEFAULT_CROSTINI_VM,
+      container_name: DEFAULT_CROSTINI_CONTAINER
+    });
   },
 
   /** @private */
