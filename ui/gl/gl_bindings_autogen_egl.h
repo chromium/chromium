@@ -221,6 +221,18 @@ typedef EGLBoolean(GL_BINDING_CALL* eglQueryDisplayAttribEXTProc)(
     EGLDisplay dpy,
     EGLint attribute,
     EGLAttrib* value);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDmaBufFormatsEXTProc)(
+    EGLDisplay dpy,
+    EGLint max_formats,
+    EGLint* formats,
+    EGLint* num_formats);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDmaBufModifiersEXTProc)(
+    EGLDisplay dpy,
+    EGLint format,
+    EGLint max_modifiers,
+    EGLuint64KHR* modifiers,
+    EGLBoolean* external_only,
+    EGLint* num_modifiers);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryStreamKHRProc)(EGLDisplay dpy,
                                                            EGLStreamKHR stream,
                                                            EGLenum attribute,
@@ -319,6 +331,7 @@ struct ExtensionsEGL {
   bool b_EGL_ANGLE_sync_control_rate;
   bool b_EGL_ANGLE_vulkan_image;
   bool b_EGL_CHROMIUM_sync_control;
+  bool b_EGL_EXT_image_dma_buf_import_modifiers;
   bool b_EGL_EXT_image_flush_external;
   bool b_EGL_KHR_fence_sync;
   bool b_EGL_KHR_gl_texture_2D_image;
@@ -395,6 +408,8 @@ struct ProcsEGL {
   eglQueryDeviceStringEXTProc eglQueryDeviceStringEXTFn;
   eglQueryDisplayAttribANGLEProc eglQueryDisplayAttribANGLEFn;
   eglQueryDisplayAttribEXTProc eglQueryDisplayAttribEXTFn;
+  eglQueryDmaBufFormatsEXTProc eglQueryDmaBufFormatsEXTFn;
+  eglQueryDmaBufModifiersEXTProc eglQueryDmaBufModifiersEXTFn;
   eglQueryStreamKHRProc eglQueryStreamKHRFn;
   eglQueryStreamu64KHRProc eglQueryStreamu64KHRFn;
   eglQueryStringProc eglQueryStringFn;
@@ -609,6 +624,16 @@ class GL_EXPORT EGLApi {
   virtual EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
                                                 EGLint attribute,
                                                 EGLAttrib* value) = 0;
+  virtual EGLBoolean eglQueryDmaBufFormatsEXTFn(EGLDisplay dpy,
+                                                EGLint max_formats,
+                                                EGLint* formats,
+                                                EGLint* num_formats) = 0;
+  virtual EGLBoolean eglQueryDmaBufModifiersEXTFn(EGLDisplay dpy,
+                                                  EGLint format,
+                                                  EGLint max_modifiers,
+                                                  EGLuint64KHR* modifiers,
+                                                  EGLBoolean* external_only,
+                                                  EGLint* num_modifiers) = 0;
   virtual EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                          EGLStreamKHR stream,
                                          EGLenum attribute,
@@ -761,6 +786,10 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglQueryDisplayAttribANGLEFn
 #define eglQueryDisplayAttribEXT \
   ::gl::g_current_egl_context->eglQueryDisplayAttribEXTFn
+#define eglQueryDmaBufFormatsEXT \
+  ::gl::g_current_egl_context->eglQueryDmaBufFormatsEXTFn
+#define eglQueryDmaBufModifiersEXT \
+  ::gl::g_current_egl_context->eglQueryDmaBufModifiersEXTFn
 #define eglQueryStreamKHR ::gl::g_current_egl_context->eglQueryStreamKHRFn
 #define eglQueryStreamu64KHR ::gl::g_current_egl_context->eglQueryStreamu64KHRFn
 #define eglQueryString ::gl::g_current_egl_context->eglQueryStringFn

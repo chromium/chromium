@@ -2664,6 +2664,23 @@ EGL_FUNCTIONS = [
   'versions': [{ 'name': 'eglQueryDisplayAttribEXT',
                  'client_extensions': ['EGL_EXT_device_query'], }],
   'arguments': 'EGLDisplay dpy, EGLint attribute, EGLAttrib* value' },
+{
+  'return_type': 'EGLBoolean',
+  'versions': [{ 'name': 'eglQueryDmaBufFormatsEXT',
+                 'extensions':
+                     ['EGL_EXT_image_dma_buf_import_modifiers'], }],
+  'arguments':
+      'EGLDisplay dpy, EGLint max_formats, '
+      'EGLint* formats, EGLint* num_formats' },
+{
+  'return_type': 'EGLBoolean',
+  'versions': [{ 'name': 'eglQueryDmaBufModifiersEXT',
+                 'extensions':
+                     ['EGL_EXT_image_dma_buf_import_modifiers'], }],
+  'arguments':
+      'EGLDisplay dpy, EGLint format, EGLint max_modifiers, '
+      'EGLuint64KHR* modifiers, EGLBoolean* external_only, '
+      'EGLint* num_modifiers' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglQueryStreamKHR',
                  'extensions': ['EGL_KHR_stream'] }],

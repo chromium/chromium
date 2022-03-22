@@ -179,6 +179,16 @@ EGLBoolean eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
 EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
                                       EGLint attribute,
                                       EGLAttrib* value) override;
+EGLBoolean eglQueryDmaBufFormatsEXTFn(EGLDisplay dpy,
+                                      EGLint max_formats,
+                                      EGLint* formats,
+                                      EGLint* num_formats) override;
+EGLBoolean eglQueryDmaBufModifiersEXTFn(EGLDisplay dpy,
+                                        EGLint format,
+                                        EGLint max_modifiers,
+                                        EGLuint64KHR* modifiers,
+                                        EGLBoolean* external_only,
+                                        EGLint* num_modifiers) override;
 EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                EGLStreamKHR stream,
                                EGLenum attribute,

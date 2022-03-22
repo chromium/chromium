@@ -476,6 +476,28 @@ MockEGLInterface::Mock_eglQueryDisplayAttribEXT(EGLDisplay dpy,
 }
 
 EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDmaBufFormatsEXT(EGLDisplay dpy,
+                                                EGLint max_formats,
+                                                EGLint* formats,
+                                                EGLint* num_formats) {
+  MakeEglMockFunctionUnique("eglQueryDmaBufFormatsEXT");
+  return interface_->QueryDmaBufFormatsEXT(dpy, max_formats, formats,
+                                           num_formats);
+}
+
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDmaBufModifiersEXT(EGLDisplay dpy,
+                                                  EGLint format,
+                                                  EGLint max_modifiers,
+                                                  EGLuint64KHR* modifiers,
+                                                  EGLBoolean* external_only,
+                                                  EGLint* num_modifiers) {
+  MakeEglMockFunctionUnique("eglQueryDmaBufModifiersEXT");
+  return interface_->QueryDmaBufModifiersEXT(
+      dpy, format, max_modifiers, modifiers, external_only, num_modifiers);
+}
+
+EGLBoolean GL_BINDING_CALL
 MockEGLInterface::Mock_eglQueryStreamKHR(EGLDisplay dpy,
                                          EGLStreamKHR stream,
                                          EGLenum attribute,
@@ -806,6 +828,12 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglQueryDisplayAttribEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDisplayAttribEXT);
+  if (strcmp(name, "eglQueryDmaBufFormatsEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDmaBufFormatsEXT);
+  if (strcmp(name, "eglQueryDmaBufModifiersEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDmaBufModifiersEXT);
   if (strcmp(name, "eglQueryStreamKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamKHR);
   if (strcmp(name, "eglQueryStreamu64KHR") == 0)

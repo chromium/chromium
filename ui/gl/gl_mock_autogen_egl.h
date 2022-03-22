@@ -199,6 +199,18 @@ MOCK_METHOD3(QueryDisplayAttribANGLE,
              EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
 MOCK_METHOD3(QueryDisplayAttribEXT,
              EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
+MOCK_METHOD4(QueryDmaBufFormatsEXT,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLint max_formats,
+                        EGLint* formats,
+                        EGLint* num_formats));
+MOCK_METHOD6(QueryDmaBufModifiersEXT,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLint format,
+                        EGLint max_modifiers,
+                        EGLuint64KHR* modifiers,
+                        EGLBoolean* external_only,
+                        EGLint* num_modifiers));
 MOCK_METHOD4(QueryStreamKHR,
              EGLBoolean(EGLDisplay dpy,
                         EGLStreamKHR stream,

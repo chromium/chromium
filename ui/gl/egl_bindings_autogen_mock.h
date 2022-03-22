@@ -208,6 +208,18 @@ static EGLBoolean GL_BINDING_CALL
 Mock_eglQueryDisplayAttribEXT(EGLDisplay dpy,
                               EGLint attribute,
                               EGLAttrib* value);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglQueryDmaBufFormatsEXT(EGLDisplay dpy,
+                              EGLint max_formats,
+                              EGLint* formats,
+                              EGLint* num_formats);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglQueryDmaBufModifiersEXT(EGLDisplay dpy,
+                                EGLint format,
+                                EGLint max_modifiers,
+                                EGLuint64KHR* modifiers,
+                                EGLBoolean* external_only,
+                                EGLint* num_modifiers);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryStreamKHR(EGLDisplay dpy,
                                                          EGLStreamKHR stream,
                                                          EGLenum attribute,
