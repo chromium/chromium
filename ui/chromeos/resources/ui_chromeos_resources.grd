@@ -111,10 +111,6 @@
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_96" file="default_user_images/material_design/avatar_person_in_snow.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_97" file="default_user_images/material_design/avatar_person_with_megaphone.png" />
 
-      <!-- Print Job Notification images. -->
-      <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />
-      <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_HELP" file="print_notification/help.png" />
-
       <!-- Kerberos. -->
       <structure type="chrome_scaled_image" name="IDR_KERBEROS_ICON_KEY" file="kerberos/vpn_key_grey600_24dp.png" />
 
