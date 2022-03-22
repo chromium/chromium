@@ -1567,6 +1567,10 @@
       name: "MojoJS",
       status: "test",
     },
+    {
+      name: "MojoJSFileSystemAccess",
+      status: "test",
+    },
     // MojoJSTest is used exclusively in testing environments, whereas MojoJS
     // may also be used elsewhere.
     {
