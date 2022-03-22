@@ -414,12 +414,9 @@ TEST_P(CompositingTest, PaintPropertiesWhenCompositingSVG) {
   EXPECT_EQ(svg_root_effect_node->parent_id, ancestor_effect_node->id);
 
   auto* rect = CcLayerByDOMElementId("rect");
-  const auto* rect_filter_node =
-      GetPropertyTrees()->effect_tree().Node(rect->effect_tree_index());
-  EXPECT_EQ(rect_filter_node->opacity, 1);
-
   const auto* rect_effect_node =
-      GetPropertyTrees()->effect_tree().Node(rect_filter_node->parent_id);
+      GetPropertyTrees()->effect_tree().Node(rect->effect_tree_index());
+
   EXPECT_EQ(rect_effect_node->opacity, 0.7f);
   EXPECT_EQ(rect_effect_node->parent_id, svg_root_effect_node->id);
 }
@@ -1145,7 +1142,7 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
         #inner {
           width: 100px;
           height: 100px;
-          will-change: transform;
+          will-change: transform, filter;
           background: lightblue;
         }
       </style>

@@ -10,12 +10,6 @@
       "name": "LayoutTableRow TR",
       "position": [8, 8],
       "bounds": [74, 24],
-      "contentsOpaqueForText": true
-    },
-    {
-      "name": "LayoutTableRow TR",
-      "position": [8, 8],
-      "bounds": [74, 24],
       "invalidations": [
         [0, 0, 37, 23]
       ]
