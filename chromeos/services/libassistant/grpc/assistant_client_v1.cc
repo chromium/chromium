@@ -245,6 +245,71 @@ class AssistantClientV1::MediaManagerListener
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// AssistantClientV1::AssistantManagerDelegateImpl
+////////////////////////////////////////////////////////////////////////////////
+
+// Implementation of |AssistantManagerDelegate| that will forward all calls
+// to the correct observers.
+// It also keeps track of the last text query that was started, so we can
+// pass its metadata to |OnConversationTurnStarted|.
+class AssistantClientV1::AssistantManagerDelegateImpl
+    : public assistant_client::AssistantManagerDelegate {
+ public:
+  explicit AssistantManagerDelegateImpl(AssistantClientV1* assistant_client)
+      : assistant_client_(assistant_client),
+        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  AssistantManagerDelegateImpl(const AssistantManagerDelegateImpl&) = delete;
+  AssistantManagerDelegateImpl& operator=(const AssistantManagerDelegateImpl&) =
+      delete;
+  ~AssistantManagerDelegateImpl() override = default;
+
+  // assistant_client::AssistantManagerDelegate overrides:
+  void OnConversationTurnStartedInternal(
+      const assistant_client::ConversationTurnMetadata& metadata) override {
+    ENSURE_CALLING_SEQUENCE(
+        &AssistantManagerDelegateImpl::OnConversationTurnStartedInternal,
+        metadata);
+
+    OnConversationStateEventRequest request;
+    auto* turn_started = request.mutable_event()->mutable_on_turn_started();
+    turn_started->set_turn_id(metadata.id);
+    turn_started->set_is_mic_open(metadata.is_mic_open);
+    assistant_client_->NotifyConversationStateEvent(request);
+  }
+
+  void OnNotificationRemoved(const std::string& grouping_key) override {
+    ENSURE_CALLING_SEQUENCE(
+        &AssistantManagerDelegateImpl::OnNotificationRemoved, grouping_key);
+
+    OnDeviceStateEventRequest request;
+    auto* notification_removed =
+        request.mutable_event()->mutable_on_notification_removed();
+    notification_removed->set_grouping_id(grouping_key);
+    assistant_client_->NotifyDeviceStateEvent(request);
+  }
+
+  void OnCommunicationError(int error_code) override {
+    ENSURE_CALLING_SEQUENCE(&AssistantManagerDelegateImpl::OnCommunicationError,
+                            error_code);
+
+    if (assistant::IsAuthError(error_code)) {
+      OnDeviceStateEventRequest request;
+      auto* communication_error =
+          request.mutable_event()->mutable_on_communication_error();
+      communication_error->set_error_code(
+          ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
+              AUTH_TOKEN_FAIL);
+      assistant_client_->NotifyDeviceStateEvent(request);
+    }
+  }
+
+ private:
+  AssistantClientV1* assistant_client_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<AssistantManagerDelegateImpl> weak_factory_{this};
+};
+
+////////////////////////////////////////////////////////////////////////////////
 //   AssistantClientV1
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -254,7 +319,9 @@ AssistantClientV1::AssistantClientV1(
     : AssistantClient(std::move(manager), assistant_manager_internal),
       device_state_listener_(std::make_unique<DeviceStateListener>(this)),
       display_connection_(std::make_unique<DisplayConnectionImpl>()),
-      media_manager_listener_(std::make_unique<MediaManagerListener>(this)) {
+      media_manager_listener_(std::make_unique<MediaManagerListener>(this)),
+      assistant_manager_delegate_(
+          std::make_unique<AssistantManagerDelegateImpl>(this)) {
   assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
 }
 
@@ -409,6 +476,13 @@ void AssistantClientV1::StopAssistantInteraction(bool cancel_conversation) {
       cancel_conversation);
 }
 
+void AssistantClientV1::AddConversationStateEventObserver(
+    GrpcServicesObserver<OnConversationStateEventRequest>* observer) {
+  conversation_state_event_observer_list_.AddObserver(observer);
+  assistant_manager_internal()->SetAssistantManagerDelegate(
+      assistant_manager_delegate_.get());
+}
+
 void AssistantClientV1::SetAuthenticationInfo(const AuthTokens& tokens) {
   assistant_manager()->SetAuthTokens(tokens);
 }
@@ -460,6 +534,13 @@ void AssistantClientV1::GetAssistantSettings(
 void AssistantClientV1::AddMediaManagerListener() {
   assistant_manager()->GetMediaManager()->AddListener(
       media_manager_listener_.get());
+}
+
+void AssistantClientV1::NotifyConversationStateEvent(
+    const OnConversationStateEventRequest& request) {
+  for (auto& observer : conversation_state_event_observer_list_) {
+    observer.OnGrpcMessage(request);
+  }
 }
 
 void AssistantClientV1::NotifyDeviceStateEvent(

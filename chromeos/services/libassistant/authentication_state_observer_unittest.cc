@@ -81,6 +81,10 @@ class AuthenticationStateObserverTest : public ::testing::Test {
         observer_mock_.BindNewPipeAndPassRemote());
 
     service_tester_.Start();
+
+    service_tester_.service()
+        .conversation_controller()
+        .OnAssistantClientRunning(&service_tester_.assistant_client());
   }
 
   AuthenticationStateObserverMock& observer_mock() { return observer_mock_; }

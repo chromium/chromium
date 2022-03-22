@@ -67,6 +67,8 @@ class FakeAssistantClient : public AssistantClient {
       const std::vector<std::string>& context_protos) override;
   void StartVoiceInteraction() override;
   void StopAssistantInteraction(bool cancel_conversation) override;
+  void AddConversationStateEventObserver(
+      GrpcServicesObserver<OnConversationStateEventRequest>* observer) override;
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
   void SetAuthenticationInfo(const AuthTokens& tokens) override;

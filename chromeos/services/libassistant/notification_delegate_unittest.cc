@@ -86,6 +86,10 @@ class NotificationDelegateTest : public ::testing::Test {
     action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
         static_cast<assistant::action::CrosActionModule*>(
             service_tester_.assistant_manager_internal().action_module()));
+
+    service_tester_.service()
+        .conversation_controller()
+        .OnAssistantClientRunning(&service_tester_.assistant_client());
   }
 
   assistant_client::AssistantManagerDelegate& assistant_manager_delegate() {

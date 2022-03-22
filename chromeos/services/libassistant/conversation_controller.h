@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   }
 
  private:
-  class AssistantManagerDelegateImpl;
+  class GrpcEventsObserver;
 
   void MaybeStopPreviousInteraction();
 
@@ -129,7 +129,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   // Any request that comes in before that is an error and will be DCHECK'ed.
   bool requests_are_allowed_ = false;
 
-  std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
+  std::unique_ptr<GrpcEventsObserver> events_observer_;
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
 
   std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;

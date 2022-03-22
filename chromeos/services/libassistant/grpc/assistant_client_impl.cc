@@ -224,6 +224,11 @@ void AssistantClientImpl::StopAssistantInteraction(bool cancel_conversation) {
       kInteractionDefaultStateConfig);
 }
 
+void AssistantClientImpl::AddConversationStateEventObserver(
+    GrpcServicesObserver<OnConversationStateEventRequest>* observer) {
+  grpc_services_.AddConversationStateEventObserver(observer);
+}
+
 void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
   ::assistant::api::SetAuthInfoRequest request;
   // Each token exists of a [gaia_id, auth_token] tuple.

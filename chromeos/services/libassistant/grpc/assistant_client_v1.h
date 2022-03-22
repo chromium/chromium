@@ -68,6 +68,8 @@ class AssistantClientV1 : public AssistantClient {
       const std::vector<std::string>& context_protos) override;
   void StartVoiceInteraction() override;
   void StopAssistantInteraction(bool cancel_conversation) override;
+  void AddConversationStateEventObserver(
+      GrpcServicesObserver<OnConversationStateEventRequest>* observer) override;
   void SetAuthenticationInfo(const AuthTokens& tokens) override;
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
@@ -103,12 +105,16 @@ class AssistantClientV1 : public AssistantClient {
   class DeviceStateListener;
   class DisplayConnectionImpl;
   class MediaManagerListener;
+  class AssistantManagerDelegateImpl;
 
   void AddMediaManagerListener();
 
-  void NotifyAllServicesReady();
+  void NotifyConversationStateEvent(
+      const OnConversationStateEventRequest& request);
 
   void NotifyDeviceStateEvent(const OnDeviceStateEventRequest& request);
+
+  void NotifyAllServicesReady();
 
   void OnSpeakerIdEnrollmentUpdate(
       const assistant_client::SpeakerIdEnrollmentUpdate& update);
@@ -124,9 +130,13 @@ class AssistantClientV1 : public AssistantClient {
 
   std::unique_ptr<DisplayConnectionImpl> display_connection_;
   std::unique_ptr<MediaManagerListener> media_manager_listener_;
+  std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
 
   base::ObserverList<GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
       speaker_event_observer_list_;
+
+  base::ObserverList<GrpcServicesObserver<OnConversationStateEventRequest>>
+      conversation_state_event_observer_list_;
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;

@@ -21,6 +21,7 @@ class GetAssistantSettingsResponse;
 class Interaction;
 class OnAlarmTimerEventRequest;
 class OnAssistantDisplayEventRequest;
+class OnConversationStateEventRequest;
 class OnDeviceStateEventRequest;
 class OnDisplayRequestRequest;
 class OnSpeakerIdEnrollmentEventRequest;
@@ -77,6 +78,10 @@ class AssistantClient {
   // Media:
   using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
   using OnDeviceStateEventRequest = ::assistant::api::OnDeviceStateEventRequest;
+
+  // Conversation:
+  using OnConversationStateEventRequest =
+      ::assistant::api::OnConversationStateEventRequest;
 
   // Each authentication token exists of a [gaia_id, access_token] tuple.
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
@@ -148,6 +153,8 @@ class AssistantClient {
       const std::vector<std::string>& context_protos) = 0;
   virtual void StartVoiceInteraction() = 0;
   virtual void StopAssistantInteraction(bool cancel_conversation) = 0;
+  virtual void AddConversationStateEventObserver(
+      GrpcServicesObserver<OnConversationStateEventRequest>* observer) = 0;
 
   // Settings-related functionality during bootup:
   virtual void SetAuthenticationInfo(const AuthTokens& tokens) = 0;

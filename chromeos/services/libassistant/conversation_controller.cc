@@ -14,6 +14,7 @@
 #include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
@@ -98,23 +99,19 @@ chromeos::assistant::AssistantNotification ToAssistantNotification(
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// AssistantManagerDelegateImpl
+// GrpcEventsObserver
 ////////////////////////////////////////////////////////////////////////////////
 
-// Implementation of |AssistantManagerDelegate| that will forward all calls
-// to the correct observers.
-// It also keeps track of the last text query that was started, so we can
-// pass its metadata to |OnConversationTurnStarted|.
-class ConversationController::AssistantManagerDelegateImpl
-    : public assistant_client::AssistantManagerDelegate {
+class ConversationController::GrpcEventsObserver
+    : public GrpcServicesObserver<
+          ::assistant::api::OnConversationStateEventRequest>,
+      public GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest> {
  public:
-  explicit AssistantManagerDelegateImpl(ConversationController* parent)
-      : parent_(*parent),
-        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-  AssistantManagerDelegateImpl(const AssistantManagerDelegateImpl&) = delete;
-  AssistantManagerDelegateImpl& operator=(const AssistantManagerDelegateImpl&) =
-      delete;
-  ~AssistantManagerDelegateImpl() override = default;
+  explicit GrpcEventsObserver(ConversationController* parent)
+      : parent_(*parent) {}
+  GrpcEventsObserver(const GrpcEventsObserver&) = delete;
+  GrpcEventsObserver& operator=(const GrpcEventsObserver&) = delete;
+  ~GrpcEventsObserver() override = default;
 
   std::string AddPendingTextInteraction(const std::string& query,
                                         AssistantQuerySource source) {
@@ -122,34 +119,24 @@ class ConversationController::AssistantManagerDelegateImpl
                                  query);
   }
 
-  std::string NewPendingInteraction(AssistantInteractionType interaction_type,
-                                    AssistantQuerySource source,
-                                    const std::string& query) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto id = base::NumberToString(next_interaction_id_++);
-    pending_interactions_.emplace(
-        id, AssistantInteractionMetadata(interaction_type, source, query));
-    return id;
-  }
+  // GrpcServicesObserver:
+  // Invoked when a conversation state event has been received.
+  void OnGrpcMessage(const ::assistant::api::OnConversationStateEventRequest&
+                         request) override {
+    if (!request.event().has_on_turn_started())
+      return;
 
-  // assistant_client::AssistantManagerDelegate overrides:
-  void OnConversationTurnStartedInternal(
-      const assistant_client::ConversationTurnMetadata& metadata) override {
-    ENSURE_MOJOM_THREAD(
-        &AssistantManagerDelegateImpl::OnConversationTurnStartedInternal,
-        metadata);
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+    const auto& turn_started = request.event().on_turn_started();
     // Retrieve the cached interaction metadata associated with this
     // conversation turn or construct a new instance if there's no match in the
     // cache.
     AssistantInteractionMetadata interaction_metadata;
-    auto it = pending_interactions_.find(metadata.id);
+    auto it = pending_interactions_.find(turn_started.turn_id());
     if (it != pending_interactions_.end()) {
       interaction_metadata = it->second;
       pending_interactions_.erase(it);
     } else {
-      interaction_metadata.type = metadata.is_mic_open
+      interaction_metadata.type = turn_started.is_mic_open()
                                       ? AssistantInteractionType::kVoice
                                       : AssistantInteractionType::kText;
       interaction_metadata.source =
@@ -160,52 +147,53 @@ class ConversationController::AssistantManagerDelegateImpl
       observer->OnInteractionStarted(interaction_metadata);
   }
 
-  void OnNotificationRemoved(const std::string& grouping_key) override {
-    ENSURE_MOJOM_THREAD(&AssistantManagerDelegateImpl::OnNotificationRemoved,
-                        grouping_key);
+  // Invoked when a device state event has been received.
+  void OnGrpcMessage(
+      const ::assistant::api::OnDeviceStateEventRequest& request) override {
+    const auto& event = request.event();
+    if (event.has_on_notification_removed()) {
+      const auto& grouping_id =
+          request.event().on_notification_removed().grouping_id();
+      if (grouping_id.empty())
+        RemoveAllNotifications();
+      else
+        RemoveNotification(grouping_id);
+      return;
+    }
 
-    if (grouping_key.empty())
-      RemoveAllNotifications();
-    else
-      RemoveNotification(grouping_key);
-  }
-
-  void OnCommunicationError(int error_code) override {
-    ENSURE_MOJOM_THREAD(&AssistantManagerDelegateImpl::OnCommunicationError,
-                        error_code);
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (assistant::IsAuthError(error_code)) {
-      for (auto& observer : parent_.authentication_state_observers_)
-        observer->OnAuthenticationError();
+    if (event.has_on_communication_error()) {
+      if (event.on_communication_error().error_code() ==
+          ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
+              AUTH_TOKEN_FAIL) {
+        for (auto& observer : parent_.authentication_state_observers_)
+          observer->OnAuthenticationError();
+      }
     }
   }
 
  private:
   void RemoveAllNotifications() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
     parent_.notification_delegate_->RemoveAllNotifications(
         /*from_server=*/true);
   }
 
   void RemoveNotification(const std::string& id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
     parent_.notification_delegate_->RemoveNotificationByGroupingKey(
         id, /*from_server=*/true);
   }
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  std::string NewPendingInteraction(AssistantInteractionType interaction_type,
+                                    AssistantQuerySource source,
+                                    const std::string& query) {
+    auto id = base::NumberToString(next_interaction_id_++);
+    pending_interactions_.emplace(
+        id, AssistantInteractionMetadata(interaction_type, source, query));
+    return id;
+  }
 
-  int next_interaction_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
-  std::map<std::string, AssistantInteractionMetadata> pending_interactions_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  ConversationController& parent_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
-  base::WeakPtrFactory<AssistantManagerDelegateImpl> weak_factory_{this};
+  int next_interaction_id_ = 1;
+  std::map<std::string, AssistantInteractionMetadata> pending_interactions_;
+  ConversationController& parent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,8 +202,7 @@ class ConversationController::AssistantManagerDelegateImpl
 
 ConversationController::ConversationController()
     : receiver_(this),
-      assistant_manager_delegate_(
-          std::make_unique<AssistantManagerDelegateImpl>(this)),
+      events_observer_(std::make_unique<GrpcEventsObserver>(this)),
       action_module_(std::make_unique<assistant::action::CrosActionModule>(
           assistant::features::IsAppSupportEnabled(),
           assistant::features::IsWaitSchedulingEnabled())),
@@ -254,12 +241,6 @@ void ConversationController::OnAssistantClientCreated(
     // started.
     assistant_client->RegisterActionModule(action_module_.get());
   }
-
-// TODO(b/196011844): Migrate `AssistantManagerDelegate` to V2.
-#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-  assistant_client->assistant_manager_internal()->SetAssistantManagerDelegate(
-      assistant_manager_delegate_.get());
-#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 void ConversationController::OnAssistantClientRunning(
@@ -273,6 +254,9 @@ void ConversationController::OnAssistantClientRunning(
     // `action_module_` outlives gRPC services.
     assistant_client->RegisterActionModule(action_module_.get());
   }
+
+  assistant_client_->AddConversationStateEventObserver(events_observer_.get());
+  assistant_client_->AddDeviceStateEventObserver(events_observer_.get());
 }
 
 void ConversationController::OnDestroyingAssistantClient(
@@ -301,7 +285,7 @@ void ConversationController::SendTextQuery(const std::string& query,
   // Remember the interaction metadata, and pass the generated conversation id
   // to LibAssistant.
   options.set_conversation_turn_id(
-      assistant_manager_delegate_->AddPendingTextInteraction(query, source));
+      events_observer_->AddPendingTextInteraction(query, source));
 
   // Builds text interaction.
   auto interaction = CreateTextQueryInteraction(query);

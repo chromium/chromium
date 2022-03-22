@@ -14,6 +14,7 @@ namespace {
 
 constexpr char kAlarmTimerEventName[] = "AlarmTimerEvent";
 constexpr char kAssistantDisplayEventName[] = "AssistantDisplayEvent";
+constexpr char kConversationStateEventName[] = "ConversationStateEvent";
 constexpr char kDeviceStateEventName[] = "DeviceStateEvent";
 constexpr char kHandlerMethodName[] = "OnEventFromLibas";
 
@@ -50,6 +51,17 @@ template <>
   PopulateRequest(assistant_service_address, kAssistantDisplayEventName,
                   &request,
                   request.mutable_assistant_display_events_to_handle());
+  return request;
+}
+
+template <>
+::assistant::api::RegisterEventHandlerRequest CreateRegistrationRequest<
+    ::assistant::api::ConversationStateEventHandlerInterface>(
+    const std::string& assistant_service_address) {
+  ::assistant::api::RegisterEventHandlerRequest request;
+  PopulateRequest(assistant_service_address, kConversationStateEventName,
+                  &request,
+                  request.mutable_conversation_state_events_to_handle());
   return request;
 }
 
