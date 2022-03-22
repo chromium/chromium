@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1209796539517632982">Automatiniai pavadinimų serveriai</translation>
 <translation id="1210831758834677569">Laosiečių k.</translation>
+<translation id="1223825810409523901">„Chrome“ plėtinys</translation>
 <translation id="1243314992276662751">Įkelti</translation>
 <translation id="1249250836236328755">Žanras</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Neleidžiama keisti bendrinamo tinklo konfigūracijos</translation>
 <translation id="1665611772925418501">Nepavyko pakeisti failo.</translation>
 <translation id="1673103856845176271">Failo nepavyko pasiekti dėl saugumo.</translation>
+<translation id="16762847117768727">ISO vaizdas</translation>
 <translation id="169515659049020177">Antrojo lygio klavišas</translation>
 <translation id="1715848075824334077">Važiavimas dviračiu</translation>
 <translation id="1722487484194605434">Archyvuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Sinchronizuojant nenaudoti duomenų mobiliesiems</translation>
 <translation id="7928710562641958568">Išstumti įrenginį</translation>
 <translation id="7943385054491506837">JAV „Colemak“</translation>
+<translation id="7948417415021769876">7z archyvas</translation>
 <translation id="7953739707111622108">Įrenginio negalima atidaryti, nes nepavyko atpažinti jo failų išdėstymo sistemos.</translation>
 <translation id="7969525169268594403">Slovėnija</translation>
 <translation id="7972920761225148017">Prancūzų k. (Šveicarija)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Netinkamas WEP raktas</translation>
 <translation id="8372852072747894550">Graikų k.</translation>
 <translation id="8386903983509584791">Nuskaitymas baigtas</translation>
+<translation id="8387733224523483503">Failas „<ph name="FILE_NAME" />“ išskirtas.</translation>
 <translation id="8395901698320285466">Aspektai</translation>
 <translation id="8408068190360279472">Tinklas: <ph name="NETWORK_TYPE" />, jungiamasi</translation>
 <translation id="8425213833346101688">Keisti</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Elementai iš šiukšliadėžės ištrinami visam laikui po 30 dienų.</translation>
 <translation id="9183302530794969518">„Google“ dokumentai</translation>
 <translation id="9189836632794948435">Kazachų k.</translation>
+<translation id="9200427192836333033">Išskirta elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Diegimas sėkmingai pradėtas.</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219908252191632183">Mėnulyje</translation>

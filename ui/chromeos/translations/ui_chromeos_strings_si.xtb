@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1209796539517632982">ස්වයංක්‍රීය නාම සේවාදායක</translation>
 <translation id="1210831758834677569">ලාඕ</translation>
+<translation id="1223825810409523901">Chrome දිගුව</translation>
 <translation id="1243314992276662751">උඩුගත</translation>
 <translation id="1249250836236328755">ප්‍රහේදය</translation>
 <translation id="1254593899333212300">සෘජු අන්තර්ජාල සබැඳුම</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">බෙදා ගත් ජාල වින්‍යාසයන් වෙනස් කිරීමට ඉඩ ලබා නොදේ</translation>
 <translation id="1665611772925418501">ගොනුව වෙනස් කළ නොහැකි විය.</translation>
 <translation id="1673103856845176271">ආරක්ෂිත හේතූන් මත මෙම ගොනුවට පිවිසිය නොහැක.</translation>
+<translation id="16762847117768727">ISO රූපය</translation>
 <translation id="169515659049020177">SHIFT</translation>
 <translation id="1715848075824334077">බයිසිකල් පැදීම</translation>
 <translation id="1722487484194605434">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සිප් කෙරේ...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">සමමු සඳහා ජංගම දත්ත භාවිතා කරන්න</translation>
 <translation id="7928710562641958568">උපාංගය බැහැර කරන්න</translation>
 <translation id="7943385054491506837">US කෝල්මාක්</translation>
+<translation id="7948417415021769876">7z සංරක්ෂිතය</translation>
 <translation id="7953739707111622108">මෙම උපාංගයේ ගොනු පද්ධතිය හඳුනාගත නොහැකි බැවින් එය විවෘත කළ නොහැක.</translation>
 <translation id="7969525169268594403">ස්ලොවේනියානු</translation>
 <translation id="7972920761225148017">ප්‍රංශ (ස්විට්සර්ලන්තය)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">දූශිත WEP යතුරක්</translation>
 <translation id="8372852072747894550">ග්‍රීක</translation>
 <translation id="8386903983509584791">ස්කෑන් කිරීම සම්පූර්ණයි</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> උපුටා ගන්නා ලදි.</translation>
 <translation id="8395901698320285466">මාන</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ජාලය, සම්බන්ධ කෙරේ</translation>
 <translation id="8425213833346101688">වෙනස් කරන්න</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">කුණු කූඩයේ ඇති අයිතම දින 30කට පසුව සදහටම මැකේ.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">කසක්</translation>
+<translation id="9200427192836333033">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් උපුටා ගන්නා ලදි.</translation>
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>

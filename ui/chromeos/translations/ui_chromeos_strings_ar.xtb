@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1210831758834677569">اللاوية</translation>
+<translation id="1223825810409523901">‏إضافة Chrome</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">لا يُسمح بتغيير عمليات ضبط الشبكة المشتركة.</translation>
 <translation id="1665611772925418501">تعذر تعديل على الملف.</translation>
 <translation id="1673103856845176271">تعذر الدخول إلى الملف لأسباب تتعلق بالأمان.</translation>
+<translation id="16762847117768727">‏نسخة ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">شخص يقود دراجة</translation>
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
@@ -812,6 +814,7 @@
 <translation id="7925686952655276919">عدم استخدام بيانات الجوال للمزامنة</translation>
 <translation id="7928710562641958568">إخراج الجهاز</translation>
 <translation id="7943385054491506837">‏الأمريكية Colemak</translation>
+<translation id="7948417415021769876">‏أرشيف 7z</translation>
 <translation id="7953739707111622108">لا يمكن فتح الجهاز لعدم التعرف على نظام الملفات.</translation>
 <translation id="7969525169268594403">السلوفينية</translation>
 <translation id="7972920761225148017">الفرنسية (سويسرا)</translation>
@@ -861,6 +864,7 @@
 <translation id="8372369524088641025">‏مفتاح WEP غير صالح</translation>
 <translation id="8372852072747894550">اليونانية</translation>
 <translation id="8386903983509584791">اكتملت عملية الفحص.</translation>
+<translation id="8387733224523483503">تم استخراج <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">الأبعاد</translation>
 <translation id="8408068190360279472">شبكة <ph name="NETWORK_TYPE" />، جارٍ الاتصال</translation>
 <translation id="8425213833346101688">تغيير</translation>
@@ -955,6 +959,7 @@
 <translation id="9174050671906956834">يتم حذف العناصر من المهملات نهائيًا بعد 30 يومًا.</translation>
 <translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9189836632794948435">الكازاخية</translation>
+<translation id="9200427192836333033">العناصر المستخرَجة: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>

@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="1478594628797167447">Escàners</translation>
+<translation id="1486019694341708158">Activa el commutador per seleccionar les opcions d'estalvi de pantalla</translation>
 <translation id="1491076385728777984">S'està actualitzant el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">El dispositiu és un comandament de joc.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles</translation>
+<translation id="2138109643290557664">Flota</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Mostra en pantalla completa</translation>
 <translation id="4275799948641988986">Després de la reparació, qui utilitzarà el dispositiu?</translation>
 <translation id="4289540628985791613">Visió general</translation>
+<translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
@@ -539,10 +542,12 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
+<translation id="7191009787982536050">Animació de l'estalvi de pantalla</translation>
 <translation id="7212734716605298123">Actualitzacions de microprogramari per a dispositius externs</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Sent la brisa</translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
 <translation id="7297226631177386107">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc</translation>
 <translation id="7302860742311162920">ICCID</translation>

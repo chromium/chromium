@@ -576,6 +576,7 @@
 <translation id="2666092431469916601">Sus</translation>
 <translation id="2666117266261740852">închide celelalte file sau aplicații;</translation>
 <translation id="2672201172023654893">Browserul tău nu este gestionat.</translation>
+<translation id="2673968385134502798">Jocuri</translation>
 <translation id="2674170444375937751">Sigur doriți să ștergeți aceste pagini din istoric?</translation>
 <translation id="2674804415323431591">Ascunde sugestiile</translation>
 <translation id="2676271551327853224">Roc-8K</translation>
@@ -609,6 +610,7 @@
 <translation id="2775884851269838147">Prima pagină printată</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Conexiunea a fost resetată.</translation>
+<translation id="2791176355335562114">Plătești mai repede data viitoare</translation>
 <translation id="2792012897584536778">Administratorii acestui dispozitiv au configurat certificate de securitate cu care pot vedea conținutul site-urilor pe care le accesezi.</translation>
 <translation id="2799020568854403057">Site-ul pe care urmează să îl accesezi conține aplicații dăunătoare</translation>
 <translation id="2799223571221894425">Repornește</translation>
@@ -1857,6 +1859,7 @@
 <translation id="6825578344716086703">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat semnat folosind un algoritm de semnare slab (cum ar fi SHA-1). Acest lucru înseamnă că este posibil ca datele de conectare de securitate prezentate de server să fie falsificate sau ca serverul să nu fie cel așteptat (este posibil să comunici cu un atacator).</translation>
 <translation id="6826993739343257035">Permiți RA?</translation>
 <translation id="6831043979455480757">Tradu</translation>
+<translation id="6833752742582340615">Salvează-ți cardul și informațiile de facturare în Contul Google ca să finalizezi achizițiile mai rapid și în siguranță</translation>
 <translation id="6839929833149231406">Zonă</translation>
 <translation id="6846340164947227603">Folosește un număr de card virtual…</translation>
 <translation id="6852204201400771460">Reîncarci aplicația?</translation>

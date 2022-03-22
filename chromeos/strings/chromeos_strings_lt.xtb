@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
+<translation id="1486019694341708158">Įjunkite perjungiklį pasirinkdami ekrano užsklandos parinktis.</translation>
 <translation id="1491076385728777984">Atnaujinama įrenginio „<ph name="DEVICE_NAME" />“ programinė aparatinė įranga</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="150962533380566081">Netinkamas PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Įrenginys yra žaidimų valdiklis.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2138109643290557664">Skriek šalin</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Peržiūrėti per visą ekraną</translation>
 <translation id="4275799948641988986">Kas naudos sutaisytą įrenginį?</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
+<translation id="4289849978083912975">Skaidrių demonstracija</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Paspaustas klavišas <ph name="KEY_NAME" /></translation>
@@ -539,10 +542,12 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7175037578838465313">„<ph name="NAME" />“ konfigūravimas</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
+<translation id="7191009787982536050">Ekrano užsklandos animacija</translation>
 <translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Pajusk vėjo dvelksmą</translation>
 <translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>
 <translation id="7297226631177386107">Nepavyko prisijungti per užkardą prie HTTP svetainių</translation>
 <translation id="7302860742311162920">ICCID</translation>

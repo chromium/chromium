@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1209796539517632982">ସ୍ୱଚାଳିତ ନାମ ସର୍ଭର</translation>
 <translation id="1210831758834677569">ଲାଓ</translation>
+<translation id="1223825810409523901">Chrome ଏକ୍ସଟେନସନ</translation>
 <translation id="1243314992276662751">ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1249250836236328755">ଶୈଳୀ</translation>
 <translation id="1254593899333212300">ସିଧାସଳଖ ଇଣ୍ଟର୍ନେ‍ଟ୍ ସଂଯୋଗ</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">ସେୟାର୍ କରାଯାଇଥିବା କନ୍‌ଫିଗରେସନ୍‌କୁ ବଦଳାଇବାର ଅନୁମତି ନାହିଁ</translation>
 <translation id="1665611772925418501">ଫାଇଲ୍‌ଟି ସଂଶୋଧିତ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1673103856845176271">ସୁରକ୍ଷା କାରଣରୁ ଏହି ଫାଇଲ୍‍କୁ ଆକ୍ସେସ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
+<translation id="16762847117768727">ISO ଇମେଜ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">ବାଇକିଂ</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
@@ -805,6 +807,7 @@
 <translation id="7925686952655276919">ସିଙ୍କ୍‍ କରିବା ପାଇଁ ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="7928710562641958568">ଡିଭାଇସ୍‌କୁ ବାହାର କରନ୍ତୁ</translation>
 <translation id="7943385054491506837">US କୋଲ୍‌ମାର୍କ</translation>
+<translation id="7948417415021769876">7z ଆର୍କାଇଭ</translation>
 <translation id="7953739707111622108">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌କୁ ଚିହ୍ନଟ କରାଯାଇପାରିନଥିଲା।</translation>
 <translation id="7969525169268594403">ସ୍ଲୋଭେନିଆନ୍</translation>
 <translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
@@ -854,6 +857,7 @@
 <translation id="8372369524088641025">ଖରାପ WEP କୀ</translation>
 <translation id="8372852072747894550">ଗ୍ରୀକ୍</translation>
 <translation id="8386903983509584791">ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" />କୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହେଉଛି</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -948,6 +952,7 @@
 <translation id="9174050671906956834">ଟ୍ରାସରେ ଥିବା ଆଇଟମଗୁଡ଼ିକ 30 ଦିନ ପରେ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଏ।</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">କାଜାଖ୍</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="9213073329713032541">ସଫଳତାପୂର୍ବକ ଇନ୍‌ଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲା।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ଲୁନାର୍</translation>

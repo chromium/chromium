@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1209796539517632982">Seva za jina otomatiki</translation>
 <translation id="1210831758834677569">Kilao</translation>
+<translation id="1223825810409523901">Kiendelezi cha Chrome</translation>
 <translation id="1243314992276662751">Pakia</translation>
 <translation id="1249250836236328755">Aina</translation>
 <translation id="1254593899333212300">Muunganisho wa Mtandao wa moja kwa moja</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Huruhusiwi kubadilisha mipangilio ya mtandao unaoshirikiwa</translation>
 <translation id="1665611772925418501">Faili isingeweza kurekebishwa.</translation>
 <translation id="1673103856845176271">Faili isingeweza kufikiwa kwa sababu za usalama.</translation>
+<translation id="16762847117768727">Picha ya ISO</translation>
 <translation id="169515659049020177">Hama</translation>
 <translation id="1715848075824334077">Mtu anayeendesha baiskeli</translation>
 <translation id="1722487484194605434">Inabana vipengee <ph name="NUMBER_OF_ITEMS" /> ...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Usitumie data ya simu kwa ulinganishaji</translation>
 <translation id="7928710562641958568">Ondoa kifaa</translation>
 <translation id="7943385054491506837">Colemak ya Marekani</translation>
+<translation id="7948417415021769876">Faili iliyobanwa na 7z</translation>
 <translation id="7953739707111622108">Kifaa hiki hakiwezi kufunguliwa kwa sababu mfumo wake wa faili haukutambuliwa.</translation>
 <translation id="7969525169268594403">Kislovenia</translation>
 <translation id="7972920761225148017">Kifaransa (Uswizi)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Kitufe kibovu cha WEP</translation>
 <translation id="8372852072747894550">Kigiriki</translation>
 <translation id="8386903983509584791">Imemaliza kutafuta</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> imetolewa.</translation>
 <translation id="8395901698320285466">Vipimo</translation>
 <translation id="8408068190360279472">Mtandao wa <ph name="NETWORK_TYPE" />, inaunganisha</translation>
 <translation id="8425213833346101688">Badilisha</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Vipengee katika tupio hufutwa kabisa baada ya siku 30.</translation>
 <translation id="9183302530794969518">Hati za Google</translation>
 <translation id="9189836632794948435">Kikazaki</translation>
+<translation id="9200427192836333033">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimetolewa.</translation>
 <translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219908252191632183">Mandhari ya mwezi mwandamo</translation>

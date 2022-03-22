@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2717722538473713889">Alamat email</translation>
+<translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
 <translation id="2785051990912111074">Pilihan ini akan menghapus cookie untuk <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Situs</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
 <translation id="3797520601150691162">Jangan terapkan tema gelap untuk situs tertentu</translation>
 <translation id="381841723434055211">Nomor telepon</translation>
+<translation id="3826050100957962900">Login pihak ketiga</translation>
 <translation id="3835233591525155343">Penggunaan perangkat Anda</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari maju</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
+<translation id="6722828510648505498">Blokir perintah login dari layanan identitas.</translation>
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6749077623962119521">Reset izin?</translation>
 <translation id="6766622839693428701">Geser ke bawah untuk menutup.</translation>

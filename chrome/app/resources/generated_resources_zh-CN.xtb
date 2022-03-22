@@ -63,6 +63,7 @@
 <translation id="1061130374843955397">欢迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">为此链接创建二维码</translation>
 <translation id="1061904396131502319">快到休息时间了</translation>
+<translation id="1062628064301375934">帮助我们打造私密性更好的网络环境</translation>
 <translation id="1066613507389053689">需要更新 Chrome 操作系统</translation>
 <translation id="1067048845568873861">创建时间</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
@@ -579,6 +580,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
+<translation id="1573632872794824374">我们正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1578558981922970608">强制关闭</translation>
@@ -1363,6 +1365,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
+<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
@@ -1414,6 +1417,7 @@
 <translation id="2349896577940037438">如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。</translation>
 <translation id="2350133097354918058">已重新加载</translation>
 <translation id="2350182423316644347">正在初始化应用…</translation>
+<translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 项内容}other{{NUM_ITEMS} 项内容}}</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
@@ -1493,6 +1497,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
+<translation id="2441719842399509963">重置为默认设置</translation>
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
 <translation id="2442916515643169563">文字阴影</translation>
 <translation id="2443487764245141020">网站可能还需要使用标识符来识别您的设备</translation>
@@ -1628,6 +1633,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />无法连接到<ph name="NETWORK_ID" />。请选择其他网络或重试。</translation>
 <translation id="2553440850688409052">隐藏此插件</translation>
 <translation id="2554553592469060349">所选文件太大（大小上限为3mb）。</translation>
+<translation id="2558569818338050235">您的浏览记录会影响您看到的广告</translation>
 <translation id="2558896001721082624">始终在系统菜单中显示无障碍选项</translation>
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
@@ -1761,6 +1767,7 @@
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新建</translation>
+<translation id="2711073837061989559">试用版</translation>
 <translation id="2712173769900027643">请求批准</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -1954,7 +1961,9 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
+<translation id="2891566119238851894">打开侧边栏中的搜索工具栏。侧边栏中的搜索工具栏未打开。</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
+<translation id="2893013536106749396">挑选能及时为您呈现所需信息的卡片</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
@@ -2068,6 +2077,7 @@
 <translation id="3003623123441819449">CSS 缓存</translation>
 <translation id="3003828226041301643">无法将此设备加入到该网域中。请检查您的帐号以确保您有权添加设备。</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
+<translation id="3005574332301273731">不显示</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3007771295016901659">复制标签</translation>
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上运行 Linux 工具、编辑器和 IDE。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -2124,6 +2134,7 @@
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
+<translation id="3055113921564083271">您移除的兴趣</translation>
 <translation id="3055590424724986000">使用您选择的提供商</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
@@ -2241,6 +2252,7 @@
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
+<translation id="3187472288455401631">广告衡量</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
@@ -2610,6 +2622,7 @@
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
 <translation id="3578594933904494462">此标签页的内容正在共享中。</translation>
+<translation id="3578874072190212775">协助网站打击欺诈行为并将聊天机器人与真人区分开来</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
@@ -2712,6 +2725,7 @@
 <translation id="3677959414150797585">包括应用、网页等。仅当您已选择分享使用情况数据时，才会发送统计信息以完善建议。</translation>
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">当您退出访客模式后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。系统不会保留您下载的文件和创建的书签。</translation>
+<translation id="368019053277764111">打开侧边栏中的搜索工具栏。</translation>
 <translation id="3680683624079082902">文字转语音的语音偏好</translation>
 <translation id="3681311097828166361">感谢您提交反馈。您目前处于离线状态，系统将在您上线后提交您的反馈报告。</translation>
 <translation id="3682824389861648626">鼠标移动阈值</translation>
@@ -3038,7 +3052,6 @@
 <translation id="3958088479270651626">导入书签和设置</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">针对已知危险网站、下载内容和扩展程序提供标准保护</translation>
-<translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3964480518399667971">关闭移动网络</translation>
 <translation id="3965811923470826124">使用</translation>
 <translation id="3965965397408324205">退出<ph name="PROFILE_NAME" /></translation>
@@ -3060,6 +3073,7 @@
 <translation id="3979748722126423326">启用<ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">向附近的设备显示为“<ph name="DEVICE_NAME" />”，剩余时间为 <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">输入的保存类型无效。</translation>
+<translation id="3981902534690264083">广告主可以了解广告取得的效果</translation>
 <translation id="3982375475032951137">只需执行几个简单的步骤，即可完成浏览器设置</translation>
 <translation id="3983400541576569538">某些应用中的数据可能会丢失</translation>
 <translation id="3983586614702900908">来自未知供应商的设备</translation>
@@ -3358,6 +3372,7 @@
 <translation id="4301671483919369635">此页面可修改文件</translation>
 <translation id="4302577930366020750">请重启您的设备，然后即可使用 Steam</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>
+<translation id="4304713468139749426">密码管理器</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="4305817255990598646">切换</translation>
 <translation id="4306119971288449206">应用必须以“<ph name="CONTENT_TYPE" />”这种内容类型提供</translation>
@@ -3459,7 +3474,6 @@
 <translation id="4410545552906060960">使用数字（PIN 码）代替密码来解锁设备。若想在晚些时候设置 PIN 码，请前往“设置”。</translation>
 <translation id="4411578466613447185">代码签名人</translation>
 <translation id="4412698727486357573">帮助中心</translation>
-<translation id="4413088271097062326">您要使用哪个应用？</translation>
 <translation id="44141919652824029">允许“<ph name="APP_NAME" />”获取您所连接的 USB 设备的列表？</translation>
 <translation id="4414232939543644979">打开新的无痕窗口(&amp;I)</translation>
 <translation id="4415213869328311284">您现在可以开始使用 <ph name="DEVICE_TYPE" /> 了。</translation>
@@ -4110,7 +4124,6 @@
 <translation id="5086874064903147617">要恢复默认主页吗？</translation>
 <translation id="5087249366037322692">由第三方添加</translation>
 <translation id="5087580092889165836">添加新卡</translation>
-<translation id="5087748406101774740"><ph name="APP_NAME" />（<ph name="PROFILE_NAME" />）</translation>
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
 <translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -4284,6 +4297,7 @@
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="5266113311903163739">证书授权中心导入错误</translation>
 <translation id="526622169288322445">显示可对“<ph name="ADDRESS_SUMMARY" />”执行的更多操作</translation>
+<translation id="5268373933383932086">网页随心享</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
 <translation id="5275352920323889391">狗</translation>
@@ -4818,6 +4832,7 @@
 <translation id="5799478978078236781">接收与 <ph name="DEVICE_TYPE" />相关的提示、优惠和动态，并分享反馈。</translation>
 <translation id="5799508265798272974">Linux 虚拟机：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">目标文件在上次下载后被截断或删除。</translation>
+<translation id="5800351251499368110">关闭侧边栏中的搜索工具栏。侧边栏中的搜索工具栏处于打开状态。</translation>
 <translation id="5801568494490449797">偏好设置</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
@@ -5096,6 +5111,7 @@
 <translation id="6080689532560039067">检查系统时间</translation>
 <translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
+<translation id="6085457109149794212">在“自定义 Chrome”部分中查看所有卡片选项</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
@@ -5549,6 +5565,7 @@
 <translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
 <translation id="6538098297809675636">检测代码时出错</translation>
 <translation id="653920215766444089">正在搜索指控设备</translation>
+<translation id="653983593749614101">正在恢复…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6540672086173674880">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
@@ -5764,6 +5781,7 @@
 <translation id="6767566652486411142">选择另一种语言…</translation>
 <translation id="6767639283522617719">无法加入到该网域中。请确保这一组织单元的设置正确无误。</translation>
 <translation id="6768034047581882264">不允许显示不安全内容</translation>
+<translation id="6770042910635026163">您访问的可界定您的兴趣的网站</translation>
 <translation id="6770602306803890733">为您和网络上的所有人提供更好的安全保障</translation>
 <translation id="6771503742377376720">是证书授权中心</translation>
 <translation id="6775163072363532304">可用设备将会显示在此处。</translation>
@@ -6322,6 +6340,7 @@
 <translation id="7347943691222276892">点击此按钮即可离开“<ph name="SUBPAGE_TITLE" />”子页面。</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="7349010927677336670">视频流畅性</translation>
+<translation id="7352531447904559593">详细了解基于浏览器的广告个性化</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
@@ -6329,6 +6348,7 @@
 <translation id="7356908624372060336">网络日志</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7358324924540718595">今天已隐藏回忆集锦</translation>
+<translation id="7358338787722390626">关闭侧边栏中的搜索工具栏。</translation>
 <translation id="735994578317267253">在任意 Chrome 操作系统设备上使用您的应用、设置等等</translation>
 <translation id="7360233684753165754">通过“<ph name="PRINTER_NAME" />”打印 <ph name="PAGE_NUMBER" /> 个页面</translation>
 <translation id="7361297102842600584">右键点击即可运行 <ph name="PLUGIN_NAME" /></translation>
@@ -6611,6 +6631,7 @@
 <translation id="7631887513477658702">总是打开此类文件(&amp;A)</translation>
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>
+<translation id="7634280112532283638">垃圾内容和欺诈行为削减</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
 <translation id="7635048370253485243">已被您的管理员固定</translation>
 <translation id="763632859238619983">不允许任何网站安装付款处理程序</translation>
@@ -6962,6 +6983,7 @@
 <translation id="7957074856830851026">查看设备信息，例如设备的序列号或资产 ID</translation>
 <translation id="7957615753207896812">打开键盘设备设置</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
+<translation id="7959157064403954786">体验更透明的广告</translation>
 <translation id="7959665254555683862">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7963001036288347286">触控板加速</translation>
@@ -7649,6 +7671,7 @@
 <translation id="866611985033792019">信任该证书，以便标识电子邮件用户的身份</translation>
 <translation id="8666584013686199826">当网站要访问 USB 设备时询问您</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 现处于全屏模式并已隐藏鼠标指针。</translation>
+<translation id="8667760277771450375">我们正在探索如何既能让网站阻止垃圾广告和欺诈行为，又能限制跨网站跟踪。</translation>
 <translation id="8668052347555487755">颜色模式</translation>
 <translation id="8669284339312441707">暖色调</translation>
 <translation id="8670537393737592796">若要快速返回到这里，请点击安装按钮以安装“<ph name="APP_NAME" />”</translation>
@@ -7898,7 +7921,6 @@
 <translation id="8903263458134414071">请选择要登录的帐号</translation>
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8907701755790961703">请选择国家/地区</translation>
-<translation id="8907787635362884532">发布者：<ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome 可以检查您的计算机上是否存在有害软件</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
@@ -8250,6 +8272,7 @@
 <translation id="968000525894980488">开启 Google Play 服务。</translation>
 <translation id="968037381421390582">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">更改语言</translation>
+<translation id="969573236494556070">限制网站间共享</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="971510864672937292">清除 <ph name="SITE_NAME" /> 及其下属所有网站的网站数据和权限？</translation>
 <translation id="971774202801778802">书签网址</translation>

@@ -56,12 +56,12 @@
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4999538639245140991">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="5039881550736388123">Wenn aktiviert:
-<ph name="BEGIN_INDENT" />  • Sie helfen, Chromium für Nutzer zu optimieren, die es genauso verwenden wie Sie.<ph name="END_INDENT" />
+<ph name="BEGIN_INDENT" />  • Trage dazu bei, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
 
 Wichtige Hinweise:
-<ph name="BEGIN_INDENT" />  • Daten zu Ihrer Chromium-Nutzung werden an Google gesendet, können aber nicht mit Ihnen in Verbindung gebracht werden.
+<ph name="BEGIN_INDENT" />  • Daten zu deiner Chromium-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
   • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
-  • Falls Sie die Synchronisierung aktivieren, können die Messwerte auch Informationen zu den von Ihnen besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
+  • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>

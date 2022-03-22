@@ -1442,6 +1442,7 @@
 <translation id="2349896577940037438">Якщо ввімкнено також запис Історії додатків і веб-пошуку, ці дані можуть зберігатися в обліковому записі Google. На сторінці account.google.com можна переглядати й видаляти дані, а також змінювати налаштування облікового запису.</translation>
 <translation id="2350133097354918058">Оновлено</translation>
 <translation id="2350182423316644347">Ініціалізація програми…</translation>
+<translation id="235028206512346451">Якщо ви відійдете від пристрою, екран автоматично заблокується. Коли ви перебуватимете перед екраном, він довше залишатиметься в активному стані. Якщо ви не використовуєте заблокований екран, ваш пристрій не блокуватиметься, а переходитиме в режим сну.</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 позиція}one{{NUM_ITEMS} позиція}few{{NUM_ITEMS} позиції}many{{NUM_ITEMS} позицій}other{{NUM_ITEMS} позиції}}</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Сповіщення на заблокованому екрані автоматично зберігаються в додатку <ph name="LOCK_SCREEN_APP_NAME" />. Останнє сповіщення залишатиметься на заблокованому екрані.</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2439626940657133600">Завантажується сервіс <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Див. д&amp;жерело</translation>
+<translation id="2441719842399509963">Відновити налаштування за умовчанням</translation>
 <translation id="244231003699905658">Недійсна адреса. Перевірте адресу та повторіть спробу.</translation>
 <translation id="2442916515643169563">Тінь тексту</translation>
 <translation id="2443487764245141020">Щоб розпізнавати ваш пристрій, сайтам, можливо, буде потрібен ідентифікатор</translation>
@@ -1986,6 +1988,7 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">"<ph name="DEVICE" />" і ще <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">Відкрити посилання за допомогою...</translation>
+<translation id="2891566119238851894">Відкрити інструменти пошуку на бічній панелі. Інструменти пошуку закрито на бічній панелі.</translation>
 <translation id="2891922230654533301">Увійти в додаток <ph name="APP_NAME" /> за допомогою пристрою?</translation>
 <translation id="2893013536106749396">Виберіть картки, з яких ви дізнаватиметеся важливі новини</translation>
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
@@ -2749,6 +2752,7 @@
 <translation id="3677959414150797585">Зокрема, додатки, веб-сторінки й інше. Надсилає статистику, щоб покращувати пропозиції, лише якщо ви погодилися ділитися даними про використання.</translation>
 <translation id="3678156199662914018">Розширення: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Сторінки, які ви переглядаєте в цьому вікні, не записуватимуться в історію веб-перегляду, а після вашого виходу не залишать на комп'ютері інших слідів (на зразок файлів cookie). Завантажені вами файли та створені закладки не зберігатимуться.</translation>
+<translation id="368019053277764111">Відкрийте інструменти пошуку на бічній панелі</translation>
 <translation id="3680683624079082902">Голос синтезу мовлення</translation>
 <translation id="3681311097828166361">Дякуємо за відгук. Звіт буде надіслано пізніше, оскільки зараз ви офлайн.</translation>
 <translation id="3682824389861648626">Мінімальна кількість рухів</translation>
@@ -3076,7 +3080,6 @@
 <translation id="3958088479270651626">Імпорт закладок і налаштувань</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">Стандартний захист від відомих небезпечних веб-сайтів, завантажень і розширень</translation>
-<translation id="3963721102035795474">Режим перегляду</translation>
 <translation id="3964480518399667971">Вимкнути мобільну мережу</translation>
 <translation id="3965811923470826124">За допомогою</translation>
 <translation id="3965965397408324205">Вийти з профілю <ph name="PROFILE_NAME" /></translation>
@@ -3397,6 +3400,7 @@
 <translation id="4301671483919369635">Ця сторінка може змінювати файли</translation>
 <translation id="4302577930366020750">Щоб скористатися додатком Steam, перезапустіть пристрій</translation>
 <translation id="4303079906735388947">Налаштуйте новий PIN-код для ключа безпеки</translation>
+<translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4305402730127028764">Копіювати на пристрій <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Перейти</translation>
 <translation id="4306119971288449206">Додатки мають наповнюватися вмістом типу "<ph name="CONTENT_TYPE" />"</translation>
@@ -3500,7 +3504,6 @@
 <translation id="4410545552906060960">Використовуйте для розблокування пристрою число (PIN-код) замість пароля. Щоб установити PIN-код пізніше, перейдіть в налаштування.</translation>
 <translation id="4411578466613447185">Підписувач коду</translation>
 <translation id="4412698727486357573">Довідковий центр</translation>
-<translation id="4413088271097062326">Який додаток використовувати?</translation>
 <translation id="44141919652824029">Дозволити додатку <ph name="APP_NAME" /> отримувати список підключених пристроїв USB?</translation>
 <translation id="4414232939543644979">Нове &amp;анонімне вікно</translation>
 <translation id="4415213869328311284">Тепер ви можете користуватися пристроєм <ph name="DEVICE_TYPE" />.</translation>
@@ -4152,7 +4155,6 @@
 <translation id="5086874064903147617">Відновити головну сторінку за умовчанням?</translation>
 <translation id="5087249366037322692">Додано сторонньою програмою</translation>
 <translation id="5087580092889165836">Додати картку</translation>
-<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 із шифруванням RSA</translation>
 <translation id="5090637338841444533">Заборонено відстежувати положення камери</translation>
 <translation id="5093569275467863761">Додатковий фрейм зворотного кешу в анонімному режимі: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -4861,6 +4863,7 @@
 <translation id="5799478978078236781">Отримуйте поради, пропозиції й оновлення для пристрою <ph name="DEVICE_TYPE" />, а також надсилайте відгуки.</translation>
 <translation id="5799508265798272974">Віртуальна машина Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">З часу останнього завантаження кінцевий файл було скорочено або вилучено.</translation>
+<translation id="5800351251499368110">Закрити інструменти пошуку на бічній панелі. Інструменти пошуку відкрито на бічній панелі.</translation>
 <translation id="5801568494490449797">Налаштування</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5805697420284793859">Диспетчер вікон</translation>
@@ -6376,6 +6379,7 @@
 <translation id="7356908624372060336">Журнали мережі</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
 <translation id="7358324924540718595">На сьогодні спогади приховано</translation>
+<translation id="7358338787722390626">Закрити інструменти пошуку на бічній панелі</translation>
 <translation id="735994578317267253">Перенесіть свої додатки, налаштування тощо на будь-який пристрій з ОС Chrome</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> с. на <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Натисніть праву кнопку миші, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
@@ -7952,7 +7956,6 @@
 <translation id="8903263458134414071">Виберіть обліковий запис для входу</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8907701755790961703">Виберіть країну</translation>
-<translation id="8907787635362884532">Видавець: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може перевірити, чи встановлено на вашому комп'ютері шкідливе програмне забезпечення</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
 <translation id="8909833622202089127">Сайт відстежує місцезнаходження</translation>

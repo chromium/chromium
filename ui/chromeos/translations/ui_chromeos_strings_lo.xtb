@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1209796539517632982">ເຊີບເວີ​ຊື່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1210831758834677569">ພາສາລາວ</translation>
+<translation id="1223825810409523901">ສ່ວນ​ຂະ​ຫຍາຍ Chrome</translation>
 <translation id="1243314992276662751">ອັບ​ໂຫຼດ</translation>
 <translation id="1249250836236328755">ປະເພດ</translation>
 <translation id="1254593899333212300">ການເຊື່ອມຕໍ່ອິນເຕີເນັດໂດຍກົງ</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">ບໍ່ອະນຸຍາດໃຫ້ປ່ຽນການກຳນົດຄ່າເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="1665611772925418501">ບໍ່​ສາ​ມາດ​ດັດແປງໄຟລ​໌​ນີ້ໄດ້​.</translation>
 <translation id="1673103856845176271">ບໍ່ສາມາດເຂົ້າຫາໄຟລ໌ໄດ້ ເພື່ອເຫດຜົນດ້ານຄວາມປອດໄພ</translation>
+<translation id="16762847117768727">ຮູບ ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">ການຖີບລົດ</translation>
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>
 <translation id="7943385054491506837">Colemak ສະຫະລັດ</translation>
+<translation id="7948417415021769876">ແຟ້ມຈັດເກັບ 7z</translation>
 <translation id="7953739707111622108">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຖືກຮັບຮູ້.</translation>
 <translation id="7969525169268594403">ພາສາສະໂລວາເນຍ</translation>
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">ປຸ່ມ WEP ບໍ່ດີ</translation>
 <translation id="8372852072747894550">ພາສາກຣີກ</translation>
 <translation id="8386903983509584791">ສຳເລັດການສະແກນແລ້ວ</translation>
+<translation id="8387733224523483503">ແຕກໄຟລ໌ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="8395901698320285466">ຂະໜາດພາບ</translation>
 <translation id="8408068190360279472">ເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />, ກຳລັງເຊື່ອມຕໍ່</translation>
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">ລາຍການຢູ່ໃນຖັງຂີ້ເຫຍື້ອຈະຖືກລຶບຖາວອນຫຼັງຈາກ 30 ມື້.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ພາສາຄາຊັກ</translation>
+<translation id="9200427192836333033">ແຕກໄຟລ໌ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1209796539517632982">Automatiska namnservrar</translation>
 <translation id="1210831758834677569">laotiska</translation>
+<translation id="1223825810409523901">Chrome-tillägg</translation>
 <translation id="1243314992276662751">Ladda upp</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Du får inte ändra delade nätverkskonfigurationer</translation>
 <translation id="1665611772925418501">Det gick inte att ändra filen.</translation>
 <translation id="1673103856845176271">Det gick inte att öppna filen av säkerhetsskäl.</translation>
+<translation id="16762847117768727">ISO-avbildning</translation>
 <translation id="169515659049020177">Skift</translation>
 <translation id="1715848075824334077">Någon som cyklar</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> objekt komprimeras ...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Använd inte mobildata för synkronisering</translation>
 <translation id="7928710562641958568">Mata ut enhet</translation>
 <translation id="7943385054491506837">USA (colemak)</translation>
+<translation id="7948417415021769876">7z-arkiv</translation>
 <translation id="7953739707111622108">Enheten kan inte öppnas eftersom dess filsystem inte kunde identifieras.</translation>
 <translation id="7969525169268594403">slovenska</translation>
 <translation id="7972920761225148017">franska (Schweiz)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Felaktig WEP-nyckel</translation>
 <translation id="8372852072747894550">grekiska</translation>
 <translation id="8386903983509584791">Sökningen har slutförts</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> har extraherats.</translation>
 <translation id="8395901698320285466">Dimensioner</translation>
 <translation id="8408068190360279472">Nätverkstyp: <ph name="NETWORK_TYPE" />, ansluter</translation>
 <translation id="8425213833346101688">Ändra</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Objekt i papperskorgen raderas permanent efter 30 dagar.</translation>
 <translation id="9183302530794969518">Google Dokument</translation>
 <translation id="9189836632794948435">kazakiska</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> objekt har extraherats</translation>
 <translation id="9213073329713032541">Installationen har påbörjats.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Måne</translation>

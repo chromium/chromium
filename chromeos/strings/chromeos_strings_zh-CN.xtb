@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 负责管理此设备，而且也许能够监控您的活动。</translation>
 <translation id="1478594628797167447">扫描器</translation>
+<translation id="1486019694341708158">将切换开关上的滑块滑至开启位置即可选择屏保选项</translation>
 <translation id="1491076385728777984">正在更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2138109643290557664">一飘而过</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
 <translation id="2157959690810728433">已加入队列</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">全屏查看</translation>
 <translation id="4275799948641988986">修理之后，这部设备将由谁使用？</translation>
 <translation id="4289540628985791613">概述</translation>
+<translation id="4289849978083912975">幻灯片</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
 <translation id="4333390807948134856">已按下<ph name="KEY_NAME" />键</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7180611975245234373">刷新</translation>
+<translation id="7191009787982536050">屏保动画</translation>
 <translation id="7212734716605298123">外部设备的固件更新</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">微风拂面</translation>
 <translation id="7287310195820267359">壁纸集</translation>
 <translation id="7297226631177386107">无法通过防火墙连接到 HTTPS 网站</translation>
 <translation id="7302860742311162920">ICCID</translation>

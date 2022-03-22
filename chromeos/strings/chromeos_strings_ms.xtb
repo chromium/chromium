@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
+<translation id="1486019694341708158">Hidupkan togol untuk memilih pilihan penyelamat skrin</translation>
 <translation id="1491076385728777984">Mengemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Peranti ialah pengawal permainan.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia</translation>
+<translation id="2138109643290557664">Terapung-apung</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
 <translation id="4275799948641988986">Selepas dibaiki, siapa yang akan menggunakan peranti itu?</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
+<translation id="4289849978083912975">Tayangan slaid</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
@@ -539,10 +542,12 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7175037578838465313">Konfigurasikan <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
+<translation id="7191009787982536050">Animasi penyelamat skrin</translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Rasai tiupan anginnya</translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>

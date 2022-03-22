@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Penawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
 <translation id="1478594628797167447">Pemindai</translation>
+<translation id="1486019694341708158">Aktifkan tombol untuk memilih opsi screensaver</translation>
 <translation id="1491076385728777984">Mengupdate firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
 <translation id="150962533380566081">PUK tidak valid.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2138109643290557664">Bergerak mengambang</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Lihat di Layar Penuh</translation>
 <translation id="4275799948641988986">Setelah diperbaiki, siapa yang akan menggunakan perangkat ini?</translation>
 <translation id="4289540628985791613">Ikhtisar</translation>
+<translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
@@ -539,10 +542,12 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7175037578838465313">Konfigurasi <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
+<translation id="7191009787982536050">Animasi screensaver</translation>
 <translation id="7212734716605298123">Update firmware untuk perangkat eksternal</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>

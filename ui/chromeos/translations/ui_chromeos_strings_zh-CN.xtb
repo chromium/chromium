@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1210831758834677569">老挝语</translation>
+<translation id="1223825810409523901">Chrome 扩展程序</translation>
 <translation id="1243314992276662751">上传</translation>
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
 <translation id="1665611772925418501">无法修改该文件。</translation>
 <translation id="1673103856845176271">出于安全原因，无法访问该文件。</translation>
+<translation id="16762847117768727">ISO 映像</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">骑车</translation>
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
@@ -806,6 +808,7 @@
 <translation id="7925686952655276919">不使用移动数据进行同步</translation>
 <translation id="7928710562641958568">卸载设备</translation>
 <translation id="7943385054491506837">美国英语(Colemak)</translation>
+<translation id="7948417415021769876">7z 归档文件</translation>
 <translation id="7953739707111622108">无法识别此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="7969525169268594403">斯洛维尼亚语</translation>
 <translation id="7972920761225148017">法语（瑞士）</translation>
@@ -855,6 +858,7 @@
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8372852072747894550">希腊语</translation>
 <translation id="8386903983509584791">已完成扫描</translation>
+<translation id="8387733224523483503">已提取 <ph name="FILE_NAME" />。</translation>
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
 <translation id="8425213833346101688">更改</translation>
@@ -949,6 +953,7 @@
 <translation id="9174050671906956834">移至回收站 30 天后，所移动的内容将被永久删除。</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="9189836632794948435">哈萨克语</translation>
+<translation id="9200427192836333033">已提取 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="9219908252191632183">月球表面</translation>

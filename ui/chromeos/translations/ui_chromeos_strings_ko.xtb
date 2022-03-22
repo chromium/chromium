@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1209796539517632982">자동 네임서버</translation>
 <translation id="1210831758834677569">라오어</translation>
+<translation id="1223825810409523901">Chrome 확장 프로그램</translation>
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1249250836236328755">장르</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">공유 네트워크 설정 변경은 허용되지 않습니다</translation>
 <translation id="1665611772925418501">파일을 수정하지 못했습니다.</translation>
 <translation id="1673103856845176271">보안 상의 이유로 파일에 액세스하지 못했습니다.</translation>
+<translation id="16762847117768727">ISO 이미지</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">자전거 타는 사람</translation>
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">모바일 데이터를 동기화에 사용하지 않습니다.</translation>
 <translation id="7928710562641958568">기기 꺼내기</translation>
 <translation id="7943385054491506837">영어(미국) 콜마크</translation>
+<translation id="7948417415021769876">7z archive</translation>
 <translation id="7953739707111622108">파일 시스템이 인식되지 않아 이 기기를 열 수 없습니다.</translation>
 <translation id="7969525169268594403">슬로베니아어</translation>
 <translation id="7972920761225148017">프랑스어(스위스)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">잘못된 WEP 키</translation>
 <translation id="8372852072747894550">그리스어</translation>
 <translation id="8386903983509584791">검색 완료</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> 파일이 추출되었습니다.</translation>
 <translation id="8395901698320285466">크기</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
 <translation id="8425213833346101688">변경</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">30일 후 휴지통에 있는 항목이 완전히 삭제됩니다.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">카자흐어</translation>
+<translation id="9200427192836333033">항목 <ph name="NUMBER_OF_ITEMS" />개가 추출되었습니다.</translation>
 <translation id="9213073329713032541">설치가 시작되었습니다.</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219908252191632183">달</translation>

@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">優惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 管理這個裝置，且可能有權監控你的活動。</translation>
 <translation id="1478594628797167447">掃描器</translation>
+<translation id="1486019694341708158">將切換按鈕設為「開啟」即可選取螢幕保護程式選項</translation>
 <translation id="1491076385728777984">正在更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 管理這位使用者，且可從遠端管理設定及監控使用者活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">裝置類型為遊戲控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)</translation>
+<translation id="2138109643290557664">隨興漂浮</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2157959690810728433">已排入佇列</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
 <translation id="4275799948641988986">這部裝置修復後將由誰使用？</translation>
 <translation id="4289540628985791613">總覽</translation>
+<translation id="4289849978083912975">播放投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4333390807948134856">已按下 <ph name="KEY_NAME" /> 鍵</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="7191009787982536050">螢幕保護程式動畫</translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">感受微風徐徐</translation>
 <translation id="7287310195820267359">桌布集錦</translation>
 <translation id="7297226631177386107">無法透過防火牆連線到 HTTPS 網站</translation>
 <translation id="7302860742311162920">ICCID</translation>

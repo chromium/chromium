@@ -1418,6 +1418,7 @@
 <translation id="2349896577940037438">Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер сіздің Google аккаунтыңызға сақталуы мүмкін. Сондай-ақ account.google.com сайтында деректерді көруге, жоюға және параметрлерді өзгертуге болады.</translation>
 <translation id="2350133097354918058">Қайта жүктелді.</translation>
 <translation id="2350182423316644347">Қолданба инициализациясы…</translation>
+<translation id="235028206512346451">Құрылғыдан алыстасаңыз, экран автоматты түрде құлыпталады. Ал құрылғының алдында болсаңыз, ол ұйқы режиміне өтпейді. Құлып экранын пайдаланбасаңыз, құрылғы құлыпталмай, ұйқы режиміне өтеді.</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 элемент}other{{NUM_ITEMS} элемент}}</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Экран құлпы жөніндегі ескертпелері автоматты түрде <ph name="LOCK_SCREEN_APP_NAME" /> қолданбасына сақталған. Ең соңғы ескертпе құлып экранында берілген.</translation>
@@ -1959,6 +1960,7 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> және тағы <ph name="NUMBER_OF_DEVICES" /> құрылғы</translation>
 <translation id="2889064240420137087">Сілтеме ашу әдісі…</translation>
+<translation id="2891566119238851894">Бүйірлік панельде іздеу бетін ашыңыз. Бүйірлік панельде іздеу беті жабық.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> кіру үшін құрылғыңызды пайдаланасыз ба?</translation>
 <translation id="2893168226686371498">Әдепкі браузер</translation>
 <translation id="2893180576842394309">Search және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
@@ -2717,6 +2719,7 @@
 <translation id="3677959414150797585">Оған қолданбалар, веб-беттер және тағы басқалар жатады. Пайдаланылуы туралы деректерді бөлісуді таңдасаңыз, ұсыныстарды жақсарту үшін статистиканы жібереді.</translation>
 <translation id="3678156199662914018">Кеңейтім: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Сіз осы терезеде қарайтын беттер браузерді қолдану тарихында көрсетілмейді және аккаунтыңыздан шыққаннан кейін, олар компьютерде cookie файлдары сияқты іздер қалдырмайды. Сіз жүктеп алған файлдар және жасаған бетбелгілер сақталмайды.</translation>
+<translation id="368019053277764111">Бүйірлік панельде іздеу бетін ашу</translation>
 <translation id="3680683624079082902">Мәтінді дыбыстау дауысы</translation>
 <translation id="3681311097828166361">Пікіріңіз үшін рақмет. Қазір желіге қосылмағансыз, есебіңіз кейінірек жіберіледі.</translation>
 <translation id="3682824389861648626">Қозғалыс шегі</translation>
@@ -3044,7 +3047,6 @@
 <translation id="3958088479270651626">Бетбелгілер мен параметрлерді импорттау</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден стандартты қорғаныс.</translation>
-<translation id="3963721102035795474">Оқу құралы режимі</translation>
 <translation id="3964480518399667971">Ұялы байланыс желісін өшіру</translation>
 <translation id="3965811923470826124">Бекіту құралы</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> профилінен шығу</translation>
@@ -3364,6 +3366,7 @@
 <translation id="4301671483919369635">Бұл бетке файлдарды өңдеуге рұқсат етілген.</translation>
 <translation id="4302577930366020750">Steam қолданбасын пайдалану үшін құрылғыңызды өшіріп қосыңыз.</translation>
 <translation id="4303079906735388947">Қауіпсіздік кілтіңіз үшін жаңа PIN кодын орнатыңыз.</translation>
+<translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> құрылғысына көшіру</translation>
 <translation id="4305817255990598646">Ауысу</translation>
 <translation id="4306119971288449206">Қолданбаларға "<ph name="CONTENT_TYPE" />" мазмұнымен қызмет көрсетілуі керек</translation>
@@ -3467,7 +3470,6 @@
 <translation id="4410545552906060960">Құрылғының құлпын ашу үшін құпия сөздің орнына PIN кодын пайдаланыңыз. PIN кодын кейін орнату үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="4411578466613447185">Код сертификаты</translation>
 <translation id="4412698727486357573">Анықтама орталығы</translation>
-<translation id="4413088271097062326">Қай қолданбаны пайдаланғыңыз келеді?</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" қолданбасына тіркелген USB құрылғыларыңыздың тізімін алуға рұқсат берілсін бе?</translation>
 <translation id="4414232939543644979">Жаңа &amp;инкогнито терезесі</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> құрылғысын пайдалануды бастай беруіңізге болады.</translation>
@@ -4118,7 +4120,6 @@
 <translation id="5086874064903147617">Реттелмелі үлкен курсор қалпына келтірілсін бе?</translation>
 <translation id="5087249366037322692">Үшінші тарап қосқан</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
-<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA шифрлауына ие PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">Камераңыздың орнын қадағалауға рұқсаты жоқтар</translation>
 <translation id="5093569275467863761">Алға-артқа өту кэшінде сақталған инкогнито ішкі жақтауы: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -4826,6 +4827,7 @@
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> құрылғысына қатысты кеңестерді, ұсыныстарды және жаңалықтарды алыңыз және пікірлер қалдырыңыз.</translation>
 <translation id="5799508265798272974">Linux виртуалды машинасы: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Мақсатты файл соңғы жүктеуден кейін қысқартылды немесе жойылды.</translation>
+<translation id="5800351251499368110">Бүйірлік панельде іздеу бетін жабыңыз. Бүйірлік панельде іздеу беті ашық.</translation>
 <translation id="5801568494490449797">Параметрлер</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5805697420284793859">Терезе менеджері</translation>
@@ -6337,6 +6339,7 @@
 <translation id="7356908624372060336">Желі журналдары</translation>
 <translation id="735745346212279324">VPN ажыратылды</translation>
 <translation id="7358324924540718595">Естеліктер бүгінге жасырылған.</translation>
+<translation id="7358338787722390626">Бүйірлік панельде іздеу бетін жабу</translation>
 <translation id="735994578317267253">Қолданбаларыңызды, параметрлеріңізді және т.б. құралдарды кез келген ChromeOS құрылғысында пайдаланыңыз.</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> принтері үшін <ph name="PAGE_NUMBER" /> бет</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> плагинін іске қосу үшін тінтуірдің оң жақ түймесін басыңыз</translation>
@@ -7905,7 +7908,6 @@
 <translation id="8903263458134414071">Кіретін аккаунтты таңдаңыз</translation>
 <translation id="890616557918890486">Дереккөзді өзгерту</translation>
 <translation id="8907701755790961703">Елді таңдаңыз</translation>
-<translation id="8907787635362884532">Жариялаушы: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome компьютерде зиянды бағдарламалық құралдың бар-жоғын тексере алады.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> жойылды.</translation>
 <translation id="8909833622202089127">Сайт орналасқан жеріңізді бақылауда</translation>

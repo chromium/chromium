@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ofa</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> anadhibiti kifaa hiki na anaweza kufuatilia shughuli zako.</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
+<translation id="1486019694341708158">Washa kitufe cha geuza ili uchague taswira ya skrini</translation>
 <translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="150962533380566081">PUK si sahihi.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Kifaa hiki ni kidhibiti cha mchezo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
+<translation id="2138109643290557664">Hali ya kuelea</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">Picha <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Angalia Skrini Nzima</translation>
 <translation id="4275799948641988986">Baada ya kurekebishwa, ni nani atakayetumia kifaa hiki?</translation>
 <translation id="4289540628985791613">Muhtasari</translation>
+<translation id="4289849978083912975">Onyesho la slaidi</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
@@ -538,10 +541,12 @@
 <translation id="7175037578838465313">Weka mipangilio ya <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
+<translation id="7191009787982536050">Uhuishaji wa taswira ya skrini</translation>
 <translation id="7212734716605298123">Masasisho ya programu dhibiti kwa vifaa vya nje</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Hali ya upepo mwanana</translation>
 <translation id="7287310195820267359">Mikusanyiko ya Mandhari</translation>
 <translation id="7297226631177386107">Imeshindwa kuunganisha kwenye tovuti za HTTPS kupitia kinga mtandao</translation>
 <translation id="7302860742311162920">ICCID</translation>

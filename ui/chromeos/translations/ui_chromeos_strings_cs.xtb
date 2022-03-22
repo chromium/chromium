@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Další</translation>
 <translation id="1209796539517632982">Automatické názvové servery</translation>
 <translation id="1210831758834677569">laoština</translation>
+<translation id="1223825810409523901">Rozšíření pro Chrome</translation>
 <translation id="1243314992276662751">Nahrát</translation>
 <translation id="1249250836236328755">Žánr</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Změna konfigurace sdílené sítě není povolena</translation>
 <translation id="1665611772925418501">Soubor se nepodařilo upravit.</translation>
 <translation id="1673103856845176271">Soubor je z bezpečnostních důvodů nedostupný.</translation>
+<translation id="16762847117768727">Obrázek ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cyklista</translation>
 <translation id="1722487484194605434">Komprimace <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Nepoužívat k synchronizaci mobilní datové přenosy</translation>
 <translation id="7928710562641958568">Vysunout zařízení</translation>
 <translation id="7943385054491506837">Americká klávesnice Colemak</translation>
+<translation id="7948417415021769876">Archiv 7z</translation>
 <translation id="7953739707111622108">Toto zařízení nelze otevřít, protože jeho systém souborů nebyl rozpoznán.</translation>
 <translation id="7969525169268594403">slovinština</translation>
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Chybný klíč WEP</translation>
 <translation id="8372852072747894550">řečtina</translation>
 <translation id="8386903983509584791">Vyhledávání je dokončeno</translation>
+<translation id="8387733224523483503">Soubor <ph name="FILE_NAME" /> byl rozbalen.</translation>
 <translation id="8395901698320285466">Rozměry</translation>
 <translation id="8408068190360279472">Síť: <ph name="NETWORK_TYPE" />, připojování</translation>
 <translation id="8425213833346101688">Změnit</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Položky jsou z koše po 30 dnech navždy smazány.</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">kazaština</translation>
+<translation id="9200427192836333033">Počet rozbalených položek: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>

@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
+<translation id="1486019694341708158">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>
 <translation id="1491076385728777984">Mise à jour du micrologiciel de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
+<translation id="2138109643290557664">Vol en images</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Afficher en plein écran</translation>
 <translation id="4275799948641988986">Après la réparation de l'appareil, qui l'utilisera?</translation>
 <translation id="4289540628985791613">Aperçu</translation>
+<translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
@@ -539,10 +542,12 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7191009787982536050">Animation de l'écran de veille</translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Souffle de la brise</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
 <translation id="7297226631177386107">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>

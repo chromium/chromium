@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2717722538473713889">電子郵件地址</translation>
+<translation id="2750481671343847896">網站可以顯示身分識別服務的登入提示。</translation>
 <translation id="2785051990912111074">這會清除 <ph name="WEBSITE" /> 的 Cookie</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
 <translation id="2870560284913253234">網站</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">輕觸兩下影片的左側或右側可跳過 10 秒</translation>
 <translation id="3797520601150691162">不要對特定網站套用深色主題</translation>
 <translation id="381841723434055211">電話號碼</translation>
+<translation id="3826050100957962900">第三方登入</translation>
 <translation id="3835233591525155343">你的裝置使用狀態</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">快轉到特定的播放時間點</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
+<translation id="6722828510648505498">封鎖身分識別服務的登入提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下滑動即可關閉。</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1209796539517632982">Automaattiset nimipalvelimet</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1223825810409523901">Chrome-laajennus</translation>
 <translation id="1243314992276662751">Lähetä</translation>
 <translation id="1249250836236328755">Lajityyppi</translation>
 <translation id="1254593899333212300">Suora internet-yhteys</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Jaettujen verkkojen määritysten muokkaaminen on estetty.</translation>
 <translation id="1665611772925418501">Tiedostoa ei voi muuttaa.</translation>
 <translation id="1673103856845176271">Tiedostoa ei voi käyttää turvallisuussyistä.</translation>
+<translation id="16762847117768727">ISO-kuva</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Pyöräily</translation>
 <translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
 <translation id="7928710562641958568">Poista laite</translation>
 <translation id="7943385054491506837">USA, Colemak</translation>
+<translation id="7948417415021769876">7z-arkisto</translation>
 <translation id="7953739707111622108">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tunnistettu.</translation>
 <translation id="7969525169268594403">sloveeni</translation>
 <translation id="7972920761225148017">ranska (Sveitsi)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Väärä WEP-avain</translation>
 <translation id="8372852072747894550">kreikkalainen</translation>
 <translation id="8386903983509584791">Etsintä valmis</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> noudettu</translation>
 <translation id="8395901698320285466">Mittasuhteet</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> verkko, yhdistetään</translation>
 <translation id="8425213833346101688">Vaihda</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Roskakorin kohteet poistetaan pysyvästi 30 päivän kuluttua.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">kazakki</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> kohdetta noudettu</translation>
 <translation id="9213073329713032541">Asennus käynnistyi.</translation>
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="9219908252191632183">Kuu</translation>

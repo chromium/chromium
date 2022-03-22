@@ -1516,6 +1516,7 @@
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ஐ ஏற்றுகிறது</translation>
 <translation id="2440604414813129000">ஆ&amp;தாரத்தைக் காண்பி</translation>
+<translation id="2441719842399509963">இயல்புநிலைக்கு மீட்டமை</translation>
 <translation id="244231003699905658">தவறான முகவரி. முகவரியைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="2442916515643169563">டெக்ஸ்ட் ஷேடோ</translation>
 <translation id="2443487764245141020">அடையாளங்காட்டியைப் பயன்படுத்தி உங்கள் சாதனத்தைத் தளங்கள் அடையாளங்காண வேண்டியிருக்கும்</translation>
@@ -3066,7 +3067,6 @@
 <translation id="3958088479270651626">புக்மார்க்குகளையும் அமைப்புகளையும் இறக்குமதி செய்</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">ஆபத்தானது என அறியப்படுகின்ற இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக நிலையான பாதுகாப்பை வழங்கும்</translation>
-<translation id="3963721102035795474">படித்தல் பயன்முறை</translation>
 <translation id="3964480518399667971">செல்லுலார் நெட்வொர்க்கை முடக்கு</translation>
 <translation id="3965811923470826124">இதனுடன்</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />ஐ மூடு</translation>
@@ -3386,6 +3386,7 @@
 <translation id="4301671483919369635">ஃபைல்களைத் திருத்த இந்தப் பக்கத்திற்கு அனுமதி உள்ளது</translation>
 <translation id="4302577930366020750">Steam ஆப்ஸைப் பயன்படுத்த உங்கள் சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="4303079906735388947">உங்கள் பாதுகாப்பு விசைக்கு புதிய பின்னை அமைக்கவும்</translation>
+<translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />க்கு நகலெடு</translation>
 <translation id="4305817255990598646">மாறு</translation>
 <translation id="4306119971288449206">ஆப்ஸ் "<ph name="CONTENT_TYPE" />" எனும் உள்ளடக்க வகையுடனேயே வழங்கப்பட வேண்டும்</translation>
@@ -3489,7 +3490,6 @@
 <translation id="4410545552906060960">உங்கள் சாதனத்தை அன்லாக் செய்ய, கடவுச்சொல்லுக்குப் பதிலாக ஓர் எண்ணை (பின்) பயன்படுத்தலாம். இதைப் பிறகு அமைக்க, அமைப்புகளுக்குச் செல்லலாம்.</translation>
 <translation id="4411578466613447185">குறியீடு அங்கீகரிப்பாளர்</translation>
 <translation id="4412698727486357573">உதவி மையம்</translation>
-<translation id="4413088271097062326">எந்த ஆப்ஸைப் பயன்படுத்த விரும்புகிறீர்கள்?</translation>
 <translation id="44141919652824029">உங்கள் இணைத்த USB சாதனங்களின் பட்டியலைப் பெற, "<ph name="APP_NAME" />"ஐ அனுமதிக்க வேண்டுமா?</translation>
 <translation id="4414232939543644979">புதிய &amp;மறைநிலை சாளரம்</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> சாதனத்தைப் பயன்படுத்தத் தயாராகிவிட்டீர்கள்.</translation>
@@ -4141,7 +4141,6 @@
 <translation id="5086874064903147617">இயல்பு முகப்புப்பக்கத்தை மீட்டமைக்கவா?</translation>
 <translation id="5087249366037322692">மூன்றாம் தரப்பு சேர்த்தது</translation>
 <translation id="5087580092889165836">கார்டைச் சேர்</translation>
-<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">உங்கள் கேமராவின் நிலையைக் கண்காணிக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5093569275467863761">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட மறைநிலை உப ஃபிரேம்: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7933,7 +7932,6 @@
 <translation id="8903263458134414071">உள்நுழைவதற்கான கணக்கைத் தேர்வுசெய்யவும்</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>
 <translation id="8907701755790961703">நாட்டைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="8907787635362884532">வெளியீட்டாளர்: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">உங்கள் கம்ப்யூட்டரில் தீங்கிழைக்கும் மென்பொருள் உள்ளதா என Chrome உலாவியால் சரிபார்க்க முடியும்</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ஆப்ஸ் நிறுவல் நீக்கப்பட்டது</translation>
 <translation id="8909833622202089127">தளமானது உங்கள் இருப்பிடத்தைக் கண்காணிக்கிறது</translation>

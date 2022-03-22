@@ -32,6 +32,7 @@
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1209796539517632982">Αυτόματοι διακομιστές ονομάτων</translation>
 <translation id="1210831758834677569">Λάο</translation>
+<translation id="1223825810409523901">Επέκταση Chrome</translation>
 <translation id="1243314992276662751">Μεταφόρτωση</translation>
 <translation id="1249250836236328755">Είδος</translation>
 <translation id="1254593899333212300">Άμεση σύνδεση στο διαδίκτυο</translation>
@@ -81,6 +82,7 @@
 <translation id="166439687370499867">Δεν επιτρέπεται η αλλαγή διαμορφώσεων κοινόχρηστου δικτύου</translation>
 <translation id="1665611772925418501">Δεν ήταν δυνατή η τροποποίηση του αρχείου.</translation>
 <translation id="1673103856845176271">Για λόγους ασφαλείας, η πρόσβαση στο αρχείο δεν ήταν δυνατή.</translation>
+<translation id="16762847117768727">Εικόνα ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Ποδηλασία</translation>
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
@@ -828,6 +830,7 @@
 <translation id="7925686952655276919">Μη χρησιμοποιείτε δεδομένα για κινητά για συγχρονισμό</translation>
 <translation id="7928710562641958568">Εξαγωγή συσκευής</translation>
 <translation id="7943385054491506837">Colemak ΗΠΑ</translation>
+<translation id="7948417415021769876">Αρχείο 7z</translation>
 <translation id="7953739707111622108">Δεν είναι δυνατό το άνοιγμα αυτής της συσκευής επειδή δεν αναγνωρίστηκε το σύστημα αρχείων της.</translation>
 <translation id="7969525169268594403">Σλοβενικά</translation>
 <translation id="7972920761225148017">Γαλλικά (Ελβετία)</translation>
@@ -879,6 +882,7 @@
 <translation id="8372369524088641025">Εσφαλμένο κλειδί WEP</translation>
 <translation id="8372852072747894550">Ελληνικά</translation>
 <translation id="8386903983509584791">Η σάρωση ολοκληρώθηκε</translation>
+<translation id="8387733224523483503">Έγινε εξαγωγή του στοιχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Διαστάσεις</translation>
 <translation id="8408068190360279472">Δίκτυο <ph name="NETWORK_TYPE" />, σύνδεση σε εξέλιξη</translation>
 <translation id="8425213833346101688">Αλλαγή</translation>
@@ -977,6 +981,7 @@
 <translation id="9174050671906956834">Τα στοιχεία στον Κάδο απορριμμάτων διαγράφονται μόνιμα μετά από 30 ημέρες.</translation>
 <translation id="9183302530794969518">Έγγραφα Google</translation>
 <translation id="9189836632794948435">Καζαχστανικά</translation>
+<translation id="9200427192836333033">Έγινε εξαγωγή <ph name="NUMBER_OF_ITEMS" /> στοιχείων.</translation>
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="9219908252191632183">Σεληνιακό τοπίο</translation>

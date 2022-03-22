@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">දීමනා</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර ඔබගේ ක්‍රියාකාරකම නිරීක්‍ෂණ කිරීමට හැකි වීමට ඉඩ ඇත.</translation>
 <translation id="1478594628797167447">ස්කෑනරය</translation>
+<translation id="1486019694341708158">තිර සුරැකුම් විකල්ප තේරීමට ටොගල කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> හි නිත්‍ය මෘදුකාංග යාවත්කාලීන කරමින්.</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> මෙම පරිශීලකයා කළමනාකරණය කරන අතර දුරස්ථව සැකසීම් කළමනාකරණය කිරීමට සහ පරිශීලක ක්‍රියාකාරකම් නිරීක්ෂණය කිරීමට හැකිය.</translation>
 <translation id="150962533380566081">වලංගු නොවන PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />කින් <ph name="AVAILABLE_MEMORY" /> GB ලබා ගත හැකිය</translation>
+<translation id="2138109643290557664">පාවී යන්න</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">ඡායාරූප <ph name="NUMBER" />ක්</translation>
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">පූර්ණ තිරය බලන්න</translation>
 <translation id="4275799948641988986">අලුත්වැඩියා කිරීමෙන් පසු, උපාංගය භාවිත කරන්නේ කවුද?</translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
+<translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313"><ph name="NAME" /> වින්‍යාස කරන්න</translation>
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
+<translation id="7191009787982536050">තිර රූ සජීවිකරණය</translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
 <translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">සුළඟ විඳින්න</translation>
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
 <translation id="7297226631177386107">HTTPS වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>
 <translation id="7302860742311162920">ICCID</translation>

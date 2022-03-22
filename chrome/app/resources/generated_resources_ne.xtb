@@ -3058,7 +3058,6 @@
 <translation id="3958088479270651626">पृष्ठमञ्जूषाहरू र सेटिङहरू आयात गर्नुहोस्</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">खतरनाक मानिने वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट स्तरीय सुरक्षा</translation>
-<translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3964480518399667971">सेलुलर नेटवर्क अफ गर्नुहोस्</translation>
 <translation id="3965811923470826124">यससँग</translation>
 <translation id="3965965397408324205">बाहिरिन निस्कनुहोस् <ph name="PROFILE_NAME" /></translation>
@@ -3379,6 +3378,7 @@
 <translation id="4301671483919369635">यस पृष्ठलाई फाइलहरू सम्पादन गर्ने अनुमति छ</translation>
 <translation id="4302577930366020750">तपाईं Steam प्रयोग गर्न चाहनुहुन्छ भने कृपया आफ्नो डिभाइस रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4303079906735388947">आफ्नो सुरक्षा साँचो प्रयोग गर्नका लागि नयाँ PIN सेटअप गर्नुहोस्</translation>
+<translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
 <translation id="4305402730127028764">प्रतिलिपि गरेर <ph name="DEVICE_NAME" /> मा टाँस्नुहोस्</translation>
 <translation id="4305817255990598646">स्विच</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
@@ -3482,7 +3482,6 @@
 <translation id="4410545552906060960">आफ्नो डिभाइस अनलक गर्न पासवर्डको सट्टा सङ्ख्या (PIN) प्रयोग गर्नुहोस्। पछि आफ्नो PIN सेट गर्न सेटिङहरूमा जानुहोस्</translation>
 <translation id="4411578466613447185">कोड हस्ताक्षरकर्ता</translation>
 <translation id="4412698727486357573">मद्दत केन्द्र</translation>
-<translation id="4413088271097062326">तपाईं कुन एप चलाउन चाहनुहुन्छ?</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" लाई तपाईंको संलग्न USB डिभाइसहरूको सूची प्राप्त गर्न अनुमति दिने हो?</translation>
 <translation id="4414232939543644979">नयाँ &amp;इन्कग्निटो सन्झ्याल</translation>
 <translation id="4415213869328311284">तपाईं आफ्नो <ph name="DEVICE_TYPE" /> प्रयोग गर्न तयार हुनुहुन्छ।</translation>
@@ -4133,7 +4132,6 @@
 <translation id="5086874064903147617">डिफल्ट गृहपृष्ठलाई पुनर्स्थापना गर्ने हो?</translation>
 <translation id="5087249366037322692">तेस्रो-पक्षद्वारा थपिएको</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
-<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5093569275467863761">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7930,7 +7928,6 @@
 <translation id="8903263458134414071">साइन इन गर्न कुनै खाता चयन गर्नुहोस्</translation>
 <translation id="890616557918890486">स्रोत परिवर्तन गर्नुहोस्</translation>
 <translation id="8907701755790961703">कृपया एउटा देश चयन गर्नुह</translation>
-<translation id="8907787635362884532">प्रकाशक: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर छन् कि छैनन् भनी जाँच्न सक्छ</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइन्स्टल गरिएको छ</translation>
 <translation id="8909833622202089127">साइटले तपाईंको स्थान ट्र्याक गर्दैछ</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1209796539517632982">Автоматично избиране на сървъри за имена</translation>
 <translation id="1210831758834677569">Лаоски</translation>
+<translation id="1223825810409523901">Разширение за Chrome</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Промените в конфигурациите за споделени мрежи не са разрешени</translation>
 <translation id="1665611772925418501">Файлът не можа да бъде променен.</translation>
 <translation id="1673103856845176271">От съображения за сигурност не можа да бъде осъществен достъп до файла.</translation>
+<translation id="16762847117768727">ISO образ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Колоездене</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
+<translation id="7948417415021769876">7z архивен файл</translation>
 <translation id="7953739707111622108">Това устройство не може да бъде отворено, защото файловата му система не бе разпозната.</translation>
 <translation id="7969525169268594403">словенски</translation>
 <translation id="7972920761225148017">Френски (Швейцария)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Ключът за WEP е неправилен</translation>
 <translation id="8372852072747894550">Гръцки</translation>
 <translation id="8386903983509584791">Сканирането завърши</translation>
+<translation id="8387733224523483503">Елементът <ph name="FILE_NAME" /> е извлечен.</translation>
 <translation id="8395901698320285466">Размери</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> мрежа – установява се връзка</translation>
 <translation id="8425213833346101688">Промяна</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Елементите в кошчето се изтриват завинаги след 30 дни.</translation>
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахски</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> елемента са извлечени.</translation>
 <translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>

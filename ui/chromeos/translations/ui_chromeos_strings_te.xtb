@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">తరువాత</translation>
 <translation id="1209796539517632982">ఆటోమేటిక్‌ పేరు సర్వర్‌లు</translation>
 <translation id="1210831758834677569">లావో</translation>
+<translation id="1223825810409523901">Chrome ఎక్స్‌టెన్షన్</translation>
 <translation id="1243314992276662751">అప్‌లోడ్ చేయి</translation>
 <translation id="1249250836236328755">కళా ప్రక్రియ</translation>
 <translation id="1254593899333212300">ప్రత్యక్ష ఇంటర్నెట్ కనెక్షన్</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">షేర్ చేసిన నెట్‌వర్క్ కాన్ఫిగరేషన్‌లను మార్చడం అనుమతించబడదు</translation>
 <translation id="1665611772925418501">ఫైల్‌ను సవరించడం సాధ్యపడదు.</translation>
 <translation id="1673103856845176271">భద్రతా కారణాల దృష్ట్యా ఫైల్‌ను యాక్సెస్‌ చేయడం సాధ్యపడదు.</translation>
+<translation id="16762847117768727">ISO ఇమేజ్</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">బైకింగ్</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">సింక్ కోసం మొబైల్ డేటాను ఉపయోగించవద్దు</translation>
 <translation id="7928710562641958568">పరికరాన్ని తీసివేయండి</translation>
 <translation id="7943385054491506837">యుఎస్ కోల్‌మక్</translation>
+<translation id="7948417415021769876">7z ఆర్కైవ్</translation>
 <translation id="7953739707111622108">పరికరం తెరవడం సాధ్యం కాదు. ఎందుకంటే దాని ఫైల్‌సిస్టమ్ గుర్తించబడలేదు.</translation>
 <translation id="7969525169268594403">స్లోవేనియన్</translation>
 <translation id="7972920761225148017">ఫ్రెంచ్ (స్విట్జర్లాండ్)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">తప్పుడు WEP కీ</translation>
 <translation id="8372852072747894550">గ్రీక్</translation>
 <translation id="8386903983509584791">స్కాన్ పూర్తయింది</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> సంగ్రహించబడింది.</translation>
 <translation id="8395901698320285466">కొలతలు</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, కనెక్ట్ చేస్తోంది</translation>
 <translation id="8425213833346101688">మార్చు</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">ట్రాష్‌లోని ఐటెమ్‌లు 30 రోజుల తర్వాత శాశ్వతంగా తొలగించబడతాయి.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">కజక్</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు సంగ్రహించబడ్డాయి.</translation>
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
