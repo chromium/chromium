@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
+
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -10,10 +14,13 @@
 namespace blink {
 
 // static
+const char BlockingAttribute::kRenderToken[] = "render";
+
+// static
 HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
-                          "render",
+                          kRenderToken,
                       }));
 
   return tokens;
@@ -23,6 +30,13 @@ bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
                                            ExceptionState&) const {
   DCHECK(RuntimeEnabledFeatures::BlockingAttributeEnabled());
   return SupportedTokens().Contains(token_value);
+}
+
+void BlockingAttribute::CountTokenUsage() {
+  if (contains(kRenderToken)) {
+    GetElement().GetDocument().CountUse(
+        WebFeature::kBlockingAttributeRenderToken);
+  }
 }
 
 }  // namespace blink

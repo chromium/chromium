@@ -111,6 +111,7 @@ void HTMLLinkElement::ParseAttribute(
   } else if (name == html_names::kBlockingAttr &&
              RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
     blocking_attribute_->DidUpdateAttributeValue(params.old_value, value);
+    blocking_attribute_->CountTokenUsage();
     Process();
   } else if (name == html_names::kHrefAttr) {
     // Log href attribute before logging resource fetching in process().

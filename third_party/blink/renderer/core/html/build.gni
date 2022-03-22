@@ -632,6 +632,7 @@ blink_core_hot_sources_html = [
 blink_core_tests_html = [
   "anchor_element_metrics_sender_test.cc",
   "anchor_element_metrics_test.cc",
+  "blocking_attribute_test.cc",
   "canvas/canvas_async_blob_creator_test.cc",
   "canvas/canvas_font_cache_test.cc",
   "canvas/canvas_rendering_api_ukm_metrics_test.cc",

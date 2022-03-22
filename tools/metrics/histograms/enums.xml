@@ -37577,6 +37577,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4180" label="V8FunctionPrototypeCaller"/>
   <int value="4181" label="BluetoothDeviceForget"/>
   <int value="4182" label="TopicsAPI_BrowsingTopics_Method"/>
+  <int value="4183" label="BlockingAttributeRenderToken"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

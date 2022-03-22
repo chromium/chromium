@@ -58,6 +58,7 @@ void HTMLStyleElement::ParseAttribute(
              RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
     blocking_attribute_->DidUpdateAttributeValue(params.old_value,
                                                  params.new_value);
+    blocking_attribute_->CountTokenUsage();
   } else {
     HTMLElement::ParseAttribute(params);
   }
