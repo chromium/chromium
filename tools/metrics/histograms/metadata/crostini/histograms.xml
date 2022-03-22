@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Backup" enum="CrostiniExportContainerResult"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Result of crostini backup.</summary>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.DiskResize.Result" enum="CrostiniDiskImageStatus"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.FilesystemCorruption" enum="CorruptionStates"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>sidereal@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult" enum="CrostiniResult"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.SetupResult" enum="CrostiniSetupResult"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TimeToInstallCancel" units="ms"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TimeToInstallSuccess" units="ms"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UninstallResult" enum="CrostiniUninstallResult"
-    expires_after="2022-07-17">
+    expires_after="2022-09-18">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

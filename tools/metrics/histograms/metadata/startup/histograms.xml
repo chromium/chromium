@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartAction"
-    enum="MobileSessionStartAction" expires_after="2022-07-17">
+    enum="MobileSessionStartAction" expires_after="2022-09-18">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
