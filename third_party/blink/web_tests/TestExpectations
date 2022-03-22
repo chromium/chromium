@@ -469,7 +469,6 @@ crbug.com/968791 virtual/scalefactor200/css3/filters/filterRegions.html [ Failur
 crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure ]
 crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-002.html [ Failure ]
 crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
-crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-004.html [ Failure ]
 crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/filters-test-brightness-003.html [ Failure ]
 
 crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]

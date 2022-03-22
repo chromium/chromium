@@ -5690,7 +5690,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
         height: 100px;
       }
       #target {
-        will-change: opacity;
+        will-change: transform;
         width: 100px;
         height: 100px;
       }
@@ -6518,7 +6518,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MainFrameDoesntClipContent) {
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPath) {
   SetBodyInnerHTML(R"HTML(
-    <svg id='svg' style='clip-path: circle(); will-change: transform, opacity'></svg>
+    <svg id='svg' style='clip-path: circle(); will-change: transform'></svg>
   )HTML");
 
   const auto* properties = PaintPropertiesForElement("svg");

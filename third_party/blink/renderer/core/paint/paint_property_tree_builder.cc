@@ -702,12 +702,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
     context_.current.transform = properties_->StickyTranslation();
 }
 
-// TODO(dbaron): Remove this function when we can remove the
-// BackfaceVisibilityInteropEnabled() check, and have the caller use
-// CompositingReason::kDirectReasonsForTransformProperty directly.
+// TODO(crbug.com/900241): Remove this function and let the caller use
+// CompositingReason::kDirectReasonForTransformProperty directly.
 static CompositingReasons CompositingReasonsForTransformProperty() {
   CompositingReasons reasons =
       CompositingReason::kDirectReasonsForTransformProperty;
+  reasons |= CompositingReason::kActiveTransformAnimation;
+  // We also need to create a transform node if will-change creates other nodes,
+  // to avoid raster invalidation caused by creating/deleting those nodes when
+  // starting/stopping an animation. See: https://crbug.com/942681.
+  reasons |= CompositingReason::kWillChangeOpacity;
+  reasons |= CompositingReason::kWillChangeFilter;
+  reasons |= CompositingReason::kWillChangeBackdropFilter;
 
   if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled())
     reasons |= CompositingReason::kBackfaceInvisibility3DAncestor;
@@ -962,13 +968,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReasonsForTransformProperty();
-
-      // If a transform node exists, add an additional direct compositing
-      // reason for 3d transforms and will-change to ensure it is composited.
-      state.direct_compositing_reasons |=
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalCompositingTrigger);
-
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       if (object_.HasHiddenBackface()) {
@@ -1056,16 +1055,33 @@ static bool NeedsClipPathClip(const LayoutObject& object,
   return false;
 }
 
+// TODO(crbug.com/900241): When this bug is fixed, we should let NeedsEffect()
+// use CompositingReason::kDirectReasonForEffectProperty directly instead of
+// calling this function. We should still call this function in UpdateEffect().
+static CompositingReasons CompositingReasonsForEffectProperty() {
+  CompositingReasons reasons =
+      CompositingReason::kDirectReasonsForEffectProperty;
+  reasons |= CompositingReason::kActiveOpacityAnimation |
+             CompositingReason::kActiveBackdropFilterAnimation;
+  // We also need to create an effect node if will-change creates other nodes,
+  // to avoid raster invalidation caused by creating/deleting those nodes when
+  // starting/stopping an animation. See: https://crbug.com/942681.
+  // This also avoids decomposition of the effect when the object is forced
+  // compositing with will-change:transform.
+  reasons |= CompositingReason::kWillChangeTransform;
+  reasons |= CompositingReason::kWillChangeFilter;
+  return reasons;
+}
+
 static bool NeedsEffect(const LayoutObject& object,
                         CompositingReasons direct_compositing_reasons) {
   if (object.IsText()) {
-    DCHECK(!(direct_compositing_reasons &
-             CompositingReason::kDirectReasonsForEffectProperty));
+    DCHECK(
+        !(direct_compositing_reasons & CompositingReasonsForEffectProperty()));
     return false;
   }
 
-  if (direct_compositing_reasons &
-      CompositingReason::kDirectReasonsForEffectProperty)
+  if (direct_compositing_reasons & CompositingReasonsForEffectProperty())
     return true;
 
   const ComputedStyle& style = object.StyleRef();
@@ -1231,13 +1247,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForEffectProperty;
+          CompositingReasonsForEffectProperty();
 
       // If an effect node exists, add an additional direct compositing reason
-      // for 3d transforms and will-change to ensure it is composited.
+      // for 3d transforms to ensure it is composited.
+      CompositingReasons additional_transform_compositing_trigger =
+          CompositingReason::k3DTransform |
+          CompositingReason::kTrivial3DTransform;
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalCompositingTrigger);
+           additional_transform_compositing_trigger);
 
       // We may begin to composite our subtree prior to an animation starts, but
       // a compositor element ID is only needed when an animation is current.
@@ -1376,6 +1395,25 @@ static bool IsLinkHighlighted(const LayoutObject& object) {
       object);
 }
 
+// TODO(crbug.com/900241): When this bug is fixed, we should let NeedsFilter()
+// use CompositingReason::kDirectReasonForFilterProperty directly instead of
+// calling this function. We should still call this function in UpdateFilter().
+static CompositingReasons CompositingReasonsForFilterProperty() {
+  CompositingReasons reasons =
+      CompositingReason::kDirectReasonsForFilterProperty;
+  reasons |= CompositingReason::kActiveFilterAnimation;
+
+  // We also need to create a filter node if will-change creates other nodes,
+  // to avoid raster invalidation caused by creating/deleting those nodes when
+  // starting/stopping an animation. See: https://crbug.com/942681.
+  // This also avoids decomposition of the filter when the object is forced
+  // compositing with will-change.
+  reasons |= CompositingReason::kWillChangeTransform |
+             CompositingReason::kWillChangeOpacity |
+             CompositingReason::kWillChangeBackdropFilter;
+  return reasons;
+}
+
 static bool IsClipPathDescendant(const LayoutObject& object) {
   // If the object itself is a resource container (root of a resource subtree)
   // it is not considered a clipPath descendant since it is independent of its
@@ -1396,7 +1434,7 @@ static bool IsClipPathDescendant(const LayoutObject& object) {
 static bool NeedsFilter(const LayoutObject& object,
                         const PaintPropertyTreeBuilderContext& full_context) {
   if (full_context.direct_compositing_reasons &
-      CompositingReason::kDirectReasonsForFilterProperty)
+      CompositingReasonsForFilterProperty())
     return true;
 
   if (object.IsBoxModelObject() &&
@@ -1486,13 +1524,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // current.
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForFilterProperty;
+          CompositingReasonsForFilterProperty();
 
-      // If a filter node exists, add an additional direct compositing reason
-      // for 3d transforms and will-change to ensure it is composited.
+      // If an effect node exists, add an additional direct compositing reason
+      // for 3d transforms to ensure it is composited.
+      CompositingReasons additional_transform_compositing_trigger =
+          CompositingReason::k3DTransform |
+          CompositingReason::kTrivial3DTransform;
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalCompositingTrigger);
+           additional_transform_compositing_trigger);
 
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);

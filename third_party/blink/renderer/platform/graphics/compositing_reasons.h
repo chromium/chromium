@@ -128,16 +128,6 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForBackdropFilter = kBackdropFilter |
                                       kActiveBackdropFilterAnimation |
                                       kWillChangeBackdropFilter,
-
-    // These reasons cause any transform, effect, or filter node that
-    // exists to be composited.  They don't cause creation of a node.
-    // This is because 3D transforms and incorrect use of will-change
-    // are likely indicators that compositing is expected because
-    // certain changes will be made.
-    kAdditionalCompositingTrigger =
-        k3DTransform | kTrivial3DTransform | kWillChangeTransform |
-        kWillChangeOpacity | kWillChangeBackdropFilter | kWillChangeFilter,
-
   };
 };
 
