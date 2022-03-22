@@ -4881,18 +4881,18 @@
   },
   {
     "name": "permission-chip",
-    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "elklm", "bsep", "engedy", "olesiamarukhno@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "permission-chip-gesture",
-    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "elklm", "bsep", "engedy", "olesiamarukhno@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "permission-chip-request-type",
-    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "elklm", "bsep", "engedy", "olesiamarukhno@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "permission-predictions",
@@ -4902,7 +4902,7 @@
   {
     "name": "permission-quiet-chip",
     "owners": [ "elklm", "engedy"],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "persist-share-hub-on-app-switch",
