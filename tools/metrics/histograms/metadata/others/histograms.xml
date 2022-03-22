@@ -9444,7 +9444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen" units="ms"
-    expires_after="M102">
+    expires_after="M105">
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
