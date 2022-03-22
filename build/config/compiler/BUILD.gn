@@ -453,14 +453,7 @@ config("compiler") {
 
   # Linux-specific compiler flags setup.
   # ------------------------------------
-  if ((is_posix || is_fuchsia) && !is_apple && use_lld) {
-    if (current_cpu == "arm64") {
-      # Reduce the page size from 65536 in order to reduce binary size slightly
-      # by shrinking the alignment gap between segments. This also causes all
-      # segments to be mapped adjacently, which breakpad relies on.
-      ldflags += [ "-Wl,-z,max-page-size=4096" ]
-    }
-  } else if (use_gold) {
+  if (use_gold) {
     ldflags += [ "-fuse-ld=gold" ]
     if (!is_android) {
       # On Android, this isn't needed.  gcc in the NDK knows to look next to

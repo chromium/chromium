@@ -48,6 +48,13 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
+    # Reduce the page size from 65536 in order to reduce binary size slightly
+    # by shrinking the alignment gap between segments. This also causes all
+    # segments to be mapped adjacently, which breakpad relies on.
+    ldflags += [ "-Wl,-z,max-page-size=4096" ]
+  }
+
+  if (current_cpu == "arm64") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
     } else if (arm_control_flow_integrity == "pac") {
