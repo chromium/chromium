@@ -108,6 +108,7 @@ class DseImageView : public views::ImageView {
             browser,
             base::BindRepeating(&DseImageView::UpdateIconImage,
                                 base::Unretained(this))) {
+    SetFlipCanvasOnPaintForRTLUI(false);
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets(0, views::LayoutProvider::Get()->GetDistanceMetric(
                            views::DISTANCE_RELATED_CONTROL_VERTICAL))));
