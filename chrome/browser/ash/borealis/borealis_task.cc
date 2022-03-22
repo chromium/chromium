@@ -79,6 +79,22 @@ void CheckAllowed::OnAllowednessChecked(
   Complete(BorealisStartupResult::kDisallowed, ss.str());
 }
 
+GetLaunchOptions::GetLaunchOptions() : BorealisTask("GetLaunchOptions") {}
+GetLaunchOptions::~GetLaunchOptions() = default;
+
+void GetLaunchOptions::RunInternal(BorealisContext* context) {
+  BorealisService::GetForProfile(context->profile())
+      ->LaunchOptions()
+      .Build(base::BindOnce(&GetLaunchOptions::HandleOptions,
+                            weak_factory_.GetWeakPtr(), context));
+}
+
+void GetLaunchOptions::HandleOptions(BorealisContext* context,
+                                     BorealisLaunchOptions::Options options) {
+  context->set_launch_options(options);
+  Complete(BorealisStartupResult::kSuccess, "");
+}
+
 MountDlc::MountDlc() : BorealisTask("MountDlc") {}
 MountDlc::~MountDlc() = default;
 
@@ -170,20 +186,9 @@ void RequestWaylandServer::OnServerRequested(
 
 namespace {
 
-bool GetDeveloperMode() {
-  std::string output;
-  if (!base::GetAppOutput({"/usr/bin/crossystem", "cros_debug"}, &output)) {
-    return false;
-  }
-  return output == "1";
-}
-
-absl::optional<base::File> GetExtraDiskIfInDeveloperMode(
+absl::optional<base::File> MaybeOpenFile(
     absl::optional<base::FilePath> file_path) {
   if (!file_path)
-    return absl::nullopt;
-
-  if (!GetDeveloperMode())
     return absl::nullopt;
 
   base::File file(file_path.value(), base::File::FLAG_OPEN |
@@ -202,13 +207,9 @@ StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
-  absl::optional<base::FilePath> external_disk =
-      borealis::BorealisService::GetForProfile(context->profile())
-          ->LaunchOptions()
-          .GetExtraDisk();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
-      base::BindOnce(&GetExtraDiskIfInDeveloperMode, std::move(external_disk)),
+      base::BindOnce(&MaybeOpenFile, context->launch_options().extra_disk),
       base::BindOnce(&StartBorealisVm::StartBorealisWithExternalDisk,
                      weak_factory_.GetWeakPtr(), context));
 }

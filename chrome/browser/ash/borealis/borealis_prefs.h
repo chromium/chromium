@@ -27,10 +27,9 @@ extern const char kEngagementPrefsPrefix[];
 
 extern const char kBorealisMicAllowed[];
 
-// A string preference for storing additional options to be used during
-// Borealis' launch. String should be a list of switches in the form of
-// "-<switch>=<value>;..."". Switches and what they do are documented in
-// chrome/browser/ash/borealis/borealis_launch_options.h
+// A string pref which records the current value of the BorealisLaunchOptions.
+// The string is formatted as documented in
+// chrome/browser/ash/borealis/borealis_launch_options.h.
 extern const char kExtraLaunchOptions[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

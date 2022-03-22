@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
@@ -57,6 +58,20 @@ class CheckAllowed : public BorealisTask {
   void OnAllowednessChecked(BorealisContext* context,
                             BorealisFeatures::AllowStatus allow_status);
   base::WeakPtrFactory<CheckAllowed> weak_factory_{this};
+};
+
+// Finds the options used for the current borealis launch.
+class GetLaunchOptions : public BorealisTask {
+ public:
+  GetLaunchOptions();
+  ~GetLaunchOptions() override;
+  void RunInternal(BorealisContext* context) override;
+
+ private:
+  void HandleOptions(BorealisContext* context,
+                     BorealisLaunchOptions::Options options);
+
+  base::WeakPtrFactory<GetLaunchOptions> weak_factory_{this};
 };
 
 // Mounts the Borealis DLC.

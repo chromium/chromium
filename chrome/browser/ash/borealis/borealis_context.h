@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 
 class Profile;
 
@@ -37,6 +38,13 @@ class BorealisContext {
       Profile* profile);
 
   Profile* profile() const { return profile_; }
+
+  const BorealisLaunchOptions::Options& launch_options() const {
+    return launch_options_;
+  }
+  void set_launch_options(BorealisLaunchOptions::Options launch_options) {
+    launch_options_ = std::move(launch_options);
+  }
 
   const std::string& vm_name() const { return vm_name_; }
   void set_vm_name(std::string vm_name) { vm_name_ = std::move(vm_name); }
@@ -68,6 +76,7 @@ class BorealisContext {
   explicit BorealisContext(Profile* profile);
 
   Profile* const profile_;
+  BorealisLaunchOptions::Options launch_options_;
   std::string vm_name_;
   std::string container_name_;
   base::FilePath disk_path_;

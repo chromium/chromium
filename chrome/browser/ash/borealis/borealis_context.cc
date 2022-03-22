@@ -64,20 +64,25 @@ class ScopedDelayedCallback {
 class BorealisLifetimeObserver
     : public BorealisWindowManager::AppWindowLifetimeObserver {
  public:
-  explicit BorealisLifetimeObserver(Profile* profile)
-      : profile_(profile), observation_(this), weak_factory_(this) {
+  explicit BorealisLifetimeObserver(BorealisContext* context)
+      : context_(context), observation_(this), weak_factory_(this) {
     observation_.Observe(
-        &BorealisService::GetForProfile(profile_)->WindowManager());
+        &BorealisService::GetForProfile(context_->profile())->WindowManager());
   }
 
   // BorealisWindowManager::AppWindowLifetimeObserver overrides.
   void OnSessionStarted() override {
-    BorealisService::GetForProfile(profile_)
+    if (!context_->launch_options().auto_shutdown)
+      return;
+    BorealisService::GetForProfile(context_->profile())
         ->ShutdownMonitor()
         .CancelDelayedShutdown();
   }
+
   void OnSessionFinished() override {
-    BorealisService::GetForProfile(profile_)
+    if (!context_->launch_options().auto_shutdown)
+      return;
+    BorealisService::GetForProfile(context_->profile())
         ->ShutdownMonitor()
         .ShutdownWithDelay();
   }
@@ -89,9 +94,10 @@ class BorealisLifetimeObserver
   void OnAppFinished(const std::string& app_id,
                      aura::Window* last_window) override {
     // Launch post-game survey.
-    // TODO(b/188745351): Remove this once it's no longer wanted.
+    if (!context_->launch_options().feedback_forms)
+      return;
     FeedbackFormUrl(
-        profile_, app_id, base::UTF16ToUTF8(last_window->GetTitle()),
+        context_->profile(), app_id, base::UTF16ToUTF8(last_window->GetTitle()),
         base::BindOnce(&BorealisLifetimeObserver::OnFeedbackUrlGenerated,
                        weak_factory_.GetWeakPtr(), app_id));
   }
@@ -126,20 +132,20 @@ class BorealisLifetimeObserver
     auto on_click_handler =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating(
-                [](GURL gurl, Profile* profile_) {
+                [](GURL gurl, Profile* profile) {
                   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
                       gurl,
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 
-                  NotificationDisplayService::GetForProfile(profile_)->Close(
+                  NotificationDisplayService::GetForProfile(profile)->Close(
                       NotificationHandler::Type::TRANSIENT,
                       kFeedbackNotificationId);
                 },
-                gurl, profile_));
+                gurl, context_->profile()));
 
     // Close the current notification (if any).
-    NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, kFeedbackNotificationId);
+    NotificationDisplayService::GetForProfile(context_->profile())
+        ->Close(NotificationHandler::Type::TRANSIENT, kFeedbackNotificationId);
 
     // Create the new notification.
     message_center::Notification notification(
@@ -160,12 +166,12 @@ class BorealisLifetimeObserver
         /*delegate*/ on_click_handler);
 
     // Display the new notification.
-    NotificationDisplayService::GetForProfile(profile_)->Display(
-        NotificationHandler::Type::TRANSIENT, notification,
-        /*metadata=*/nullptr);
+    NotificationDisplayService::GetForProfile(context_->profile())
+        ->Display(NotificationHandler::Type::TRANSIENT, notification,
+                  /*metadata=*/nullptr);
   }
 
-  Profile* const profile_;
+  BorealisContext* const context_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       observation_;
@@ -228,7 +234,7 @@ void BorealisContext::NotifyUnexpectedVmShutdown() {
 
 BorealisContext::BorealisContext(Profile* profile)
     : profile_(profile),
-      lifetime_observer_(std::make_unique<BorealisLifetimeObserver>(profile)),
+      lifetime_observer_(std::make_unique<BorealisLifetimeObserver>(this)),
       guest_os_stability_monitor_(
           std::make_unique<guest_os::GuestOsStabilityMonitor>(
               kBorealisStabilityHistogram)),
