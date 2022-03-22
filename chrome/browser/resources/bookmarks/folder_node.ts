@@ -24,15 +24,10 @@ import {hasChildFolders, isShowingSearch} from './util.js';
 
 const BookmarksFolderNodeElementBase = StoreClientMixin(PolymerElement);
 
-// Workaround because TS compiler doesn't know about scrollIntoViewIfNeeded().
-type HTMLDivElementWithScroll = HTMLDivElement&{
-  scrollIntoViewIfNeeded: () => void;
-};
-
 export interface BookmarksFolderNodeElement {
   $: {
-    container: HTMLDivElementWithScroll,
-    descendants: HTMLDivElement,
+    container: HTMLElement,
+    descendants: HTMLElement,
   }
 }
 

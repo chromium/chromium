@@ -44,9 +44,6 @@ export interface SiteEntryElement {
     originList: CrLazyRenderElement<IronCollapseElement>,
     toggleButton: HTMLElement,
   };
-
-  // Declaring here because TypeScript default types seem to lack that method.
-  scrollIntoViewIfNeeded(): void;
 }
 
 const SiteEntryElementBase =

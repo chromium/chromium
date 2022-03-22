@@ -29,12 +29,6 @@ export interface SettingsAddLanguagesDialogElement {
   };
 }
 
-// Workaround for the fact that TypeScript definitions are missing
-// |scrollIntoViewIfNeeded|.
-interface HTMLElementWithScroll extends HTMLElement {
-  scrollIntoViewIfNeeded(): void;
-}
-
 interface Repeaterevent extends Event {
   model: {
     item: chrome.languageSettingsPrivate.Language,
@@ -96,7 +90,7 @@ export class SettingsAddLanguagesDialogElement extends
   override handleFindShortcut(_modalContextOpen: boolean) {
     // Assumes this is the only open modal.
     const searchInput = this.$.search.getSearchInput();
-    (searchInput as unknown as HTMLElementWithScroll).scrollIntoViewIfNeeded();
+    searchInput.scrollIntoViewIfNeeded();
     if (!this.searchInputHasFocus()) {
       searchInput.focus();
     }
@@ -186,8 +180,7 @@ export class SettingsAddLanguagesDialogElement extends
     if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
     } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
-      (this.$.search as unknown as HTMLElementWithScroll)
-          .scrollIntoViewIfNeeded();
+      this.$.search.scrollIntoViewIfNeeded();
     }
   }
 }

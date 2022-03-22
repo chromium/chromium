@@ -14,6 +14,10 @@ interface DocumentOrShadowRoot {
   getSelection(): Selection|null;
 }
 
+interface HTMLElement {
+  scrollIntoViewIfNeeded(): void;
+}
+
 interface HTMLDialogElement {
   close(returnValue?: string): void;
   open: boolean;
