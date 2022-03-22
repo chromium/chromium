@@ -41,6 +41,10 @@
 
     [RaisesException] ElementInternals attachInternals();
 
+    // EditContext
+    // https://w3c.github.io/edit-context/
+    [RuntimeEnabled=EditContext] attribute EditContext? editContext;
+
     // HTMLElement includes ElementContentEditable
     // https://html.spec.whatwg.org/C/#contenteditable
     [CEReactions, RaisesException=Setter] attribute DOMString contentEditable;

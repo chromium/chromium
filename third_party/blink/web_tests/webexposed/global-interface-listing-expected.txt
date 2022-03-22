@@ -2230,7 +2230,6 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
-    getter editContext
     getter elementTiming
     getter firstElementChild
     getter id
@@ -2363,7 +2362,6 @@ interface Element : Node
     setter ariaVirtualContent
     setter classList
     setter className
-    setter editContext
     setter elementTiming
     setter id
     setter innerHTML
@@ -3152,6 +3150,7 @@ interface HTMLElement : Element
     getter dataset
     getter dir
     getter draggable
+    getter editContext
     getter enterKeyHint
     getter hidden
     getter inert
@@ -3283,6 +3282,7 @@ interface HTMLElement : Element
     setter contentEditable
     setter dir
     setter draggable
+    setter editContext
     setter enterKeyHint
     setter hidden
     setter inert
