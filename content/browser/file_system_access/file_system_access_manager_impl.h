@@ -150,6 +150,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       PathType path_type,
       const base::FilePath& directory_path,
       UserAction user_action) override;
+  void ResolveTransferToken(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+          transfer_token,
+      base::OnceCallback<void(absl::optional<storage::FileSystemURL>)> callback)
+      override;
 
   // Creates a new FileSystemAccessFileHandleImpl for a given url. Assumes the
   // passed in URL is valid and represents a file.

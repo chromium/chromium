@@ -36,6 +36,7 @@ grit("webui_test_resources") {
 mojom("web_ui_test_bindings") {
   sources = [
     "webui/mojo/foobar.mojom",
+    "webui/mojo/mojo_file_system_access_test.mojom",
     "webui/web_ui_test.mojom",
   ]
   webui_module_path = "/"
@@ -44,6 +45,7 @@ mojom("web_ui_test_bindings") {
 copy("web_ui_test_mojom_js_module") {
   sources = [
     "$root_gen_dir/mojom-webui/chrome/test/data/webui/mojo/foobar.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/test/data/webui/mojo/mojo_file_system_access_test.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/test/data/webui/web_ui_test.mojom-webui.js",
   ]
   outputs = [ "$target_gen_dir/webui/{{source_file_part}}" ]

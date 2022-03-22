@@ -12,8 +12,10 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "ipc/ipc_message.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -64,6 +66,16 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       PathType path_type,
       const base::FilePath& directory_path,
       UserAction user_action) = 0;
+
+  // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the
+  // callback with a absl::nullopt if the token isn't valid or can't be found
+  // (e.g. a compromised renderer crafts an invalid token).
+  using ResolveTransferTokenCallback =
+      base::OnceCallback<void(absl::optional<storage::FileSystemURL>)>;
+  virtual void ResolveTransferToken(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+          transfer_token,
+      ResolveTransferTokenCallback callback) = 0;
 
  protected:
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;

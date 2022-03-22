@@ -1481,6 +1481,23 @@ void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
   DCHECK_EQ(1u, count_removed);
 }
 
+void FileSystemAccessManagerImpl::ResolveTransferToken(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+        transfer_token,
+    ResolveTransferTokenCallback callback) {
+  ResolveTransferToken(std::move(transfer_token),
+                       base::BindOnce(
+                           [](ResolveTransferTokenCallback callback,
+                              FileSystemAccessTransferTokenImpl* token) {
+                             if (!token) {
+                               std::move(callback).Run(absl::nullopt);
+                               return;
+                             }
+                             std::move(callback).Run(token->url());
+                           },
+                           std::move(callback)));
+}
+
 base::WeakPtr<FileSystemAccessManagerImpl>
 FileSystemAccessManagerImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
