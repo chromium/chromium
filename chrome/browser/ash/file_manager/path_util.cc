@@ -220,8 +220,6 @@ const base::FilePath::CharType kSystemFontsPath[] =
 const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
 
-const char kFuseBox[] = "fusebox";
-
 const char kShareCacheMountPointName[] = "ShareCache";
 
 const url::Origin& GetFilesAppOrigin() {
