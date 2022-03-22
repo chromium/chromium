@@ -604,11 +604,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return FlipForWritingMode(LayoutOverflowRect());
   }
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  gfx::Rect PixelSnappedLayoutOverflowRect() const {
-    NOT_DESTROYED();
-    return ToPixelSnappedRect(LayoutOverflowRect());
-  }
   LayoutSize MaxLayoutOverflow() const {
     NOT_DESTROYED();
     return LayoutSize(LayoutOverflowRect().MaxX(), LayoutOverflowRect().MaxY());
