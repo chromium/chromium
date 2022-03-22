@@ -636,7 +636,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // any baselines, OOFs, etc, are also moved by the appropriate amount).
   void MoveChildrenInBlockDirection(LayoutUnit offset);
 
-  void SetMathItalicCorrection(LayoutUnit italic_correction);
+  void SetMathItalicCorrection(LayoutUnit italic_correction) {
+    math_italic_correction_ = italic_correction;
+  }
 
   void AdjustOffsetsForFragmentainerDescendant(
       NGLogicalOutOfFlowPositionedNode& descendant,
@@ -737,6 +739,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   absl::optional<LayoutUnit> baseline_;
   absl::optional<LayoutUnit> last_baseline_;
+  LayoutUnit math_italic_correction_;
 
   // Table specific types.
   absl::optional<PhysicalRect> table_grid_rect_;
@@ -761,7 +764,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
 
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
-  absl::optional<NGLayoutResult::MathData> math_data_;
 
   const NGBlockBreakToken* previous_break_token_ = nullptr;
 

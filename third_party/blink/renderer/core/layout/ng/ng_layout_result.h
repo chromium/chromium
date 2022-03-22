@@ -104,7 +104,8 @@ class CORE_EXPORT NGLayoutResult final
   LayoutUnit AnnotationBlockOffsetAdjustment() const {
     if (!HasRareData())
       return LayoutUnit();
-    return rare_data_->annotation_block_offset_adjustment;
+    const RareData::LineData* data = rare_data_->GetLineData();
+    return data ? data->annotation_block_offset_adjustment : LayoutUnit();
   }
 
   // How much an annotation box overflow from this box.
@@ -139,7 +140,13 @@ class CORE_EXPORT NGLayoutResult final
 
   // Get the column spanner (if any) that interrupted column layout.
   NGBlockNode ColumnSpanner() const {
-    return HasRareData() ? rare_data_->column_spanner : NGBlockNode(nullptr);
+    if (HasRareData()) {
+      if (const RareData::BlockData* data = rare_data_->GetBlockData()) {
+        if (data->column_spanner)
+          return NGBlockNode(data->column_spanner);
+      }
+    }
+    return NGBlockNode(nullptr);
   }
 
   // True if this result is the parent of a column spanner and is empty (i.e.
@@ -185,7 +192,7 @@ class CORE_EXPORT NGLayoutResult final
 
   const absl::optional<LayoutUnit> BfcBlockOffset() const {
     if (HasRareData())
-      return rare_data_->bfc_block_offset;
+      return rare_data_->BfcBlockOffset();
 
     if (bitfields_.has_oof_positioned_offset) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
@@ -215,8 +222,11 @@ class CORE_EXPORT NGLayoutResult final
     if (Status() != kSuccess || !PhysicalFragment().IsLineBox())
       return absl::nullopt;
 
-    if (HasRareData() && rare_data_->line_box_bfc_block_offset)
-      return rare_data_->line_box_bfc_block_offset;
+    if (HasRareData()) {
+      if (absl::optional<LayoutUnit> offset =
+              rare_data_->LineBoxBfcBlockOffset())
+        return offset;
+    }
 
     return BfcBlockOffset();
   }
@@ -243,7 +253,10 @@ class CORE_EXPORT NGLayoutResult final
   // Return the amount of clearance that we have to add after the fragment. This
   // is used for BR clear elements.
   LayoutUnit ClearanceAfterLine() const {
-    return HasRareData() ? rare_data_->clearance_after_line : LayoutUnit();
+    if (!HasRareData())
+      return LayoutUnit();
+    const RareData::LineData* data = rare_data_->GetLineData();
+    return data ? data->clearance_after_line : LayoutUnit();
   }
 
   LayoutUnit MinimalSpaceShortage() const {
@@ -304,20 +317,31 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   wtf_size_t TableColumnCount() const {
-    return HasRareData() ? rare_data_->table_column_count_ : 0;
+    if (!HasRareData())
+      return 0;
+    const RareData::TableData* data = rare_data_->GetTableData();
+    return data ? data->table_column_count : 0;
   }
 
   const NGGridLayoutData* GridLayoutData() const {
-    return HasRareData() ? rare_data_->grid_layout_data_.get() : nullptr;
+    if (!HasRareData())
+      return nullptr;
+    const RareData::GridData* data = rare_data_->GetGridData();
+    return data ? data->grid_layout_data.get() : nullptr;
   }
+
   const DevtoolsFlexInfo* FlexLayoutData() const {
-    return HasRareData() ? rare_data_->flex_layout_data_.get() : nullptr;
+    if (!HasRareData())
+      return nullptr;
+    const RareData::FlexData* data = rare_data_->GetFlexData();
+    return data ? data->flex_layout_data.get() : nullptr;
   }
 
   LayoutUnit MathItalicCorrection() const {
-    return HasRareData() && rare_data_->math_layout_data_
-               ? rare_data_->math_layout_data_->italic_correction_
-               : LayoutUnit();
+    if (!HasRareData())
+      return LayoutUnit();
+    const RareData::MathData* data = rare_data_->GetMathData();
+    return data ? data->italic_correction : LayoutUnit();
   }
 
   // The break-before value on the first child needs to be propagated to the
@@ -473,11 +497,6 @@ class CORE_EXPORT NGLayoutResult final
 
   void Trace(Visitor*) const;
 
-  // See https://w3c.github.io/mathml-core/#box-model
-  struct MathData {
-    LayoutUnit italic_correction_;
-  };
-
  private:
   friend class MutableForOutOfFlow;
 
@@ -489,13 +508,121 @@ class CORE_EXPORT NGLayoutResult final
 
   struct RareData final : public GarbageCollected<RareData> {
    public:
+    // RareData has fields which are mutually exclusive. They are grouped into
+    // unions.
+    //
+    // NOTE: Make sure that data_union_type has enough bits to express all these
+    // enum values.
+    enum DataUnionType {
+      kNone,
+      kBlockData,
+      kFlexData,
+      kGridData,
+      kLineData,
+      kMathData,
+      kTableData,
+    };
+
+    struct BlockData {
+      GC_PLUGIN_IGNORE("crbug.com/1146383")
+      Member<LayoutBox> column_spanner;
+    };
+
+    struct FlexData {
+      FlexData() = default;
+      FlexData(const FlexData& other) {
+        flex_layout_data =
+            std::make_unique<DevtoolsFlexInfo>(*other.flex_layout_data);
+      }
+
+      std::unique_ptr<const DevtoolsFlexInfo> flex_layout_data;
+    };
+
+    struct GridData {
+      GridData() = default;
+      GridData(const GridData& other) {
+        grid_layout_data =
+            std::make_unique<NGGridLayoutData>(*other.grid_layout_data);
+      }
+
+      std::unique_ptr<const NGGridLayoutData> grid_layout_data;
+    };
+
+    struct LineData {
+      LayoutUnit clearance_after_line;
+      LayoutUnit annotation_block_offset_adjustment;
+    };
+
+    struct MathData {
+      // See https://w3c.github.io/mathml-core/#box-model
+      LayoutUnit italic_correction;
+    };
+
+    struct TableData {
+      wtf_size_t table_column_count = 0;
+    };
+
+    template <typename DataType>
+    DataType* EnsureData(DataType* address, DataUnionType data_type) {
+      DCHECK(data_union_type == kNone || data_union_type == data_type);
+      if (data_union_type != data_type) {
+        data_union_type = data_type;
+        new (address) DataType();
+      }
+      return address;
+    }
+    template <typename DataType>
+    const DataType* GetData(const DataType* address,
+                            DataUnionType data_type) const {
+      return data_union_type == data_type ? address : nullptr;
+    }
+
+    BlockData* EnsureBlockData() {
+      return EnsureData<BlockData>(&block_data, kBlockData);
+    }
+    const BlockData* GetBlockData() const {
+      return GetData<BlockData>(&block_data, kBlockData);
+    }
+    FlexData* EnsureFlexData() {
+      return EnsureData<FlexData>(&flex_data, kFlexData);
+    }
+    const FlexData* GetFlexData() const {
+      return GetData<FlexData>(&flex_data, kFlexData);
+    }
+    GridData* EnsureGridData() {
+      return EnsureData<GridData>(&grid_data, kGridData);
+    }
+    const GridData* GetGridData() const {
+      return GetData<GridData>(&grid_data, kGridData);
+    }
+    LineData* EnsureLineData() {
+      return EnsureData<LineData>(&line_data, kLineData);
+    }
+    const LineData* GetLineData() const {
+      return GetData<LineData>(&line_data, kLineData);
+    }
+    MathData* EnsureMathData() {
+      return EnsureData<MathData>(&math_data, kMathData);
+    }
+    const MathData* GetMathData() const {
+      return GetData<MathData>(&math_data, kMathData);
+    }
+    TableData* EnsureTableData() {
+      return EnsureData<TableData>(&table_data, kTableData);
+    }
+    const TableData* GetTableData() const {
+      return GetData<TableData>(&table_data, kTableData);
+    }
+
     RareData(LayoutUnit bfc_line_offset,
              absl::optional<LayoutUnit> bfc_block_offset)
         : bfc_line_offset(bfc_line_offset),
-          bfc_block_offset(bfc_block_offset) {}
+          line_box_bfc_block_offset_is_set(false),
+          data_union_type(kNone) {
+      SetBfcBlockOffset(bfc_block_offset);
+    }
     RareData(const RareData& rare_data)
         : bfc_line_offset(rare_data.bfc_line_offset),
-          bfc_block_offset(rare_data.bfc_block_offset),
           early_break(rare_data.early_break),
           oof_positioned_offset(rare_data.oof_positioned_offset),
           end_margin_strut(rare_data.end_margin_strut),
@@ -504,30 +631,99 @@ class CORE_EXPORT NGLayoutResult final
               rare_data.tallest_unbreakable_block_size),
           exclusion_space(rare_data.exclusion_space),
           custom_layout_data(rare_data.custom_layout_data),
-          clearance_after_line(rare_data.clearance_after_line),
-          line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
-          annotation_block_offset_adjustment(
-              rare_data.annotation_block_offset_adjustment),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
-          table_column_count_(rare_data.table_column_count_),
-          math_layout_data_(rare_data.math_layout_data_) {
-      if (rare_data.grid_layout_data_) {
-        grid_layout_data_ =
-            std::make_unique<NGGridLayoutData>(*rare_data.grid_layout_data_);
+          bfc_block_offset(rare_data.bfc_block_offset),
+          line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
+          bfc_block_offset_is_set(rare_data.bfc_block_offset_is_set),
+          line_box_bfc_block_offset_is_set(
+              rare_data.line_box_bfc_block_offset_is_set),
+          data_union_type(rare_data.data_union_type) {
+      switch (data_union_type) {
+        case kNone:
+          break;
+        case kBlockData:
+          new (&block_data) BlockData(rare_data.block_data);
+          break;
+        case kFlexData:
+          new (&flex_data) FlexData(rare_data.flex_data);
+          break;
+        case kGridData:
+          new (&grid_data) GridData(rare_data.grid_data);
+          break;
+        case kLineData:
+          new (&line_data) LineData(rare_data.line_data);
+          break;
+        case kMathData:
+          new (&math_data) MathData(rare_data.math_data);
+          break;
+        case kTableData:
+          new (&table_data) TableData(rare_data.table_data);
+          break;
+        default:
+          NOTREACHED();
       }
+    }
+
+    ~RareData() {
+      switch (data_union_type) {
+        case kNone:
+          break;
+        case kBlockData:
+          block_data.~BlockData();
+          break;
+        case kFlexData:
+          flex_data.~FlexData();
+          break;
+        case kGridData:
+          grid_data.~GridData();
+          break;
+        case kLineData:
+          line_data.~LineData();
+          break;
+        case kMathData:
+          math_data.~MathData();
+          break;
+        case kTableData:
+          table_data.~TableData();
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+
+    void SetBfcBlockOffset(absl::optional<LayoutUnit> offset) {
+      if (offset) {
+        bfc_block_offset = *offset;
+        bfc_block_offset_is_set = true;
+      } else {
+        bfc_block_offset_is_set = false;
+      }
+    }
+    absl::optional<LayoutUnit> BfcBlockOffset() const {
+      if (!bfc_block_offset_is_set)
+        return absl::nullopt;
+      return bfc_block_offset;
+    }
+
+    void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
+      line_box_bfc_block_offset = offset;
+      line_box_bfc_block_offset_is_set = true;
+    }
+    absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+      if (!line_box_bfc_block_offset_is_set)
+        return absl::nullopt;
+      return line_box_bfc_block_offset;
     }
 
     void Trace(Visitor* visitor) const;
 
     LayoutUnit bfc_line_offset;
-    absl::optional<LayoutUnit> bfc_block_offset;
 
     Member<const NGEarlyBreak> early_break;
     LogicalOffset oof_positioned_offset;
     NGMarginStrut end_margin_strut;
-    NGBlockNode column_spanner = nullptr;
     union {
       // Only set in the initial column balancing layout pass, when we have no
       // clue what the column block-size is going to be.
@@ -545,16 +741,33 @@ class CORE_EXPORT NGLayoutResult final
     NGExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 
-    LayoutUnit clearance_after_line;
-    absl::optional<LayoutUnit> line_box_bfc_block_offset;
-    LayoutUnit annotation_block_offset_adjustment;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     int lines_until_clamp = 0;
-    wtf_size_t table_column_count_ = 0;
-    std::unique_ptr<const NGGridLayoutData> grid_layout_data_;
-    std::unique_ptr<const DevtoolsFlexInfo> flex_layout_data_;
-    absl::optional<MathData> math_layout_data_;
+
+   private:
+    // Only valid if bfc_block_offset_is_set
+    LayoutUnit bfc_block_offset;
+
+    // Only valid if line_box_bfc_block_offset_is_set
+    LayoutUnit line_box_bfc_block_offset;
+
+    // True if bfc_block_offset is valid.
+    unsigned bfc_block_offset_is_set : 1;
+
+    // True if line_box_bfc_block_offset is valid.
+    unsigned line_box_bfc_block_offset_is_set : 1;
+
+    unsigned data_union_type : 3;  // DataUnionType
+
+    union {
+      BlockData block_data;
+      FlexData flex_data;
+      GridData grid_data;
+      LineData line_data;
+      MathData math_data;
+      TableData table_data;
+    };
   };
   bool HasRareData() const { return rare_data_; }
   RareData* EnsureRareData();
