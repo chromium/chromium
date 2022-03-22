@@ -7,7 +7,7 @@
       "type": "image/png"
     },
     {
-      "src": "96x96-green.png",
+      "src": "96x96-red.png",
       "sizes": "96x96",
       "type": "image/png"
     },
@@ -19,5 +19,5 @@
   ],
   "start_url": "/web_apps/site_a/basic.html",
   "scope": "/web_apps/site_a/",
-  "display": "minimal-ui"
+  "display": "standalone"
 }

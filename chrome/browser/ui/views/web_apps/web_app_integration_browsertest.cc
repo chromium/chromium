@@ -34,6 +34,16 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateScope) {
   helper_.CheckLaunchIconShown();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateIcon) {
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckAppIconSiteA("green");
+  helper_.ManifestUpdateIcon("SiteA");
+  helper_.AcceptAppIdUpdateDialog();
+  helper_.ClosePwa();
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckAppIconSiteA("red");
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateTitle) {
   helper_.InstallMenuOption("SiteA");
   helper_.CheckAppTitleSiteA("Site A");
