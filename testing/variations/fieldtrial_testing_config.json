@@ -2450,21 +2450,6 @@
             ]
         }
     ],
-    "ContextMenuPopupStyleAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextMenuPopupStyle"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAecNsAgc": [
         {
             "platforms": [
@@ -2975,6 +2960,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DownloadVcardFile"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DragAndDropAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_M100",
+                    "enable_features": [
+                        "ContextMenuPopupStyle",
+                        "TouchDragAndContextMenu"
                     ]
                 }
             ]
