@@ -1030,10 +1030,6 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   } else {
     paint_rect.offset = paint_offset;
     paint_rect.size = box_fragment_.Size();
-    if (layout_object.IsTableCell() && !box_fragment_.IsTableNGCell()) {
-      paint_rect.size =
-          PhysicalSize(To<LayoutBox>(layout_object).PixelSnappedSize());
-    }
     background_client = &GetDisplayItemClient();
     visual_rect = VisualRect(paint_offset);
   }

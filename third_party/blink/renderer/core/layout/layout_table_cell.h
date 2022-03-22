@@ -250,6 +250,12 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   LayoutUnit PaddingLeft() const override;
   LayoutUnit PaddingRight() const override;
 
+  // TODO(crbug.com/962299): This is incorrect in some cases.
+  gfx::Size PixelSnappedSize() const {
+    NOT_DESTROYED();
+    return FrameRect().PixelSnappedSize();
+  }
+
   void SetOverrideLogicalHeightFromRowHeight(LayoutUnit);
 
   void ScrollbarsChanged(bool horizontal_scrollbar_changed,

@@ -401,11 +401,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return frame_rect_.Size();
   }
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  gfx::Size PixelSnappedSize() const {
-    NOT_DESTROYED();
-    return frame_rect_.PixelSnappedSize();
-  }
 
   void SetLocation(const LayoutPoint& location) {
     NOT_DESTROYED();
