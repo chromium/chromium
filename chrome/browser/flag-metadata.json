@@ -5212,7 +5212,7 @@
   {
     "name": "scan-app-searchable-pdf",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 112
   },
   {
     "name": "scheduler-configuration",
