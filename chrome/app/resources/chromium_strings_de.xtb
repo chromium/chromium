@@ -46,7 +46,7 @@ Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglic
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
-<translation id="2535480412977113886">Chromium OS konnte Ihre Daten nicht synchronisieren, da die Anmeldedaten Ihres Kontos veraltet sind.</translation>
+<translation id="2535480412977113886">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
@@ -82,7 +82,7 @@ Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglic
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
 <translation id="331951419404882060">Chromium OS konnte Ihre Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
-<translation id="3349211344363550267">Chromium empfiehlt Ihnen, diese Datei nicht herunterzuladen oder zu öffnen</translation>
+<translation id="3349211344363550267">Chromium empfiehlt dir, diese Datei nicht herunterzuladen oder zu öffnen</translation>
 <translation id="3350761136195634146">Ein Chromium-Profil mit diesem Konto ist bereits vorhanden</translation>
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
 <translation id="3430503420100763906">Mit Chromium-Profilen können Sie Ihre Chromium-Inhalte voneinander trennen. Erstellen Sie Profile für Freunde und Familie oder teilen Sie Ihre Inhalte in Arbeit und Freizeit ein.</translation>
@@ -124,7 +124,7 @@ Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglic
 <translation id="459535195905078186">Chromium-Apps</translation>
 <translation id="4621240073146040695">Fast fertig! Starten Sie Chromium neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="4665829708273112819">Achtung: Chromium kann nicht verhindern, dass Ihr Browserverlauf von Erweiterungen protokolliert wird. Sie können diese Erweiterung für den Inkognitomodus deaktivieren, indem Sie die Auswahl für die entsprechende Option aufheben.</translation>
-<translation id="4673151026126227699">Wenn Sie Chromium-Nutzungsberichte teilen, enthalten diese Berichte die von Ihnen aufgerufenen URLs</translation>
+<translation id="4673151026126227699">Wenn du Chromium-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn Sie sicher sind, dass das Profil nicht von anderen Prozessen verwendet wird, können Sie das Profil entsperren und Chromium neu starten.</translation>
 <translation id="469338717132742108">Hilfe für Chromium OS aufrufen</translation>
 <translation id="4708774505295300557">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chromium angemeldet. Erstellen Sie einen neuen Chromium-Nutzer, um Ihre Daten getrennt zu verwenden.</translation>
@@ -248,7 +248,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="7689606757190482937">Chromium wird auf allen Ihren Geräten synchronisiert und personalisiert</translation>
 <translation id="7729447699958282447">Chromium konnte Ihre Daten nicht synchronisieren, da die Synchronisierung für Ihre Domain nicht zur Verfügung steht.</translation>
 <translation id="7745317241717453663">Dadurch werden Ihre Browserdaten von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
-<translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfen Sie, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
+<translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7828947555739565424">Ein Chromium-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="7857220146454061152">Sie benötigen OS X 10.11 oder höher, um zukünftige Chromium-Updates zu erhalten. Dieser Computer verfügt über OS X 10.10.</translation>
@@ -282,8 +282,8 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="8796443464227412154">Sie werden <ph name="BEGIN_BOLD" />auf den meisten Websites abgemeldet<ph name="END_BOLD" />, wenn Sie Chromium schließen. Wenn die Synchronisierung deaktiviert ist, werden Sie auch <ph name="BEGIN_BOLD" />bei Google-Diensten und Chromium abgemeldet<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium benötigt für diese Website die Berechtigung, auf Ihre Kamera und Ihr Mikrofon zuzugreifen</translation>
 <translation id="8803635938069941624">Chromium OS-Nutzungsbedingungen</translation>
-<translation id="8821041990367117597">Chromium konnte Ihre Daten nicht synchronisieren, da die Anmeldedaten Ihres Kontos nicht mehr aktuell sind.</translation>
-<translation id="8862326446509486874">Sie verfügen nicht über die erforderlichen Rechte für eine systemweite Installation. Starten Sie das Installationsprogramm als Administrator.</translation>
+<translation id="8821041990367117597">Chromium konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos nicht mehr aktuell sind.</translation>
+<translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8880203542552872219">Falls ja, ändern Sie Ihr gespeichertes Passwort in Chromium, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="8897323336392112261">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium angezeigt wird oder wenn Sie auf die Schaltfläche "Startseite" klicken.</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>

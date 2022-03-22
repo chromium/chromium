@@ -125,7 +125,7 @@
 <translation id="2037845485764049925">Russisch</translation>
 <translation id="2044023416777079300">Modem nicht registriert</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2070909990982335904">Namen, die mit einem Punkt beginnen, sind für das System reserviert. Wählen Sie einen anderen Namen aus.</translation>
+<translation id="2070909990982335904">Namen, die mit einem Punkt beginnen, sind für das System reserviert. Wähle einen anderen Namen aus.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
@@ -281,7 +281,7 @@
 <translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
 <translation id="3408072735282270043">Aktivieren, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Deutsch (Deutschland) mit Neo 2-Tastatur</translation>
-<translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchten Sie fortfahren?</translation>
+<translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchtest du fortfahren?</translation>
 <translation id="3437801641691368414">Erstellungszeit</translation>
 <translation id="343907260260897561">Sofortbildkamera</translation>
 <translation id="3455931012307786678">Estnisch</translation>
@@ -413,7 +413,7 @@
 <translation id="4656293982926141856">Auf diesem Computer</translation>
 <translation id="4656777537938206294">Dateien offline verfügbar machen</translation>
 <translation id="4658782175094886150">Person im Schnee</translation>
-<translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern Sie diese Dateien nicht mit ihnen teilen.</translation>
+<translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern du diese Dateien nicht mit ihnen teilst.</translation>
 <translation id="4690246192099372265">Schwedisch</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Affe</translation>
@@ -829,7 +829,7 @@
 <translation id="8106045200081704138">Für mich freigegeben</translation>
 <translation id="8116072619078571545">Wasser mit Eis</translation>
 <translation id="8128733386027980860">Englisch (Vereinigtes Königreich) mit Dvorak-Tastatur</translation>
-<translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit Ihnen geteilt. Sie können die Datei nicht löschen, da Sie nicht der Inhaber sind.</translation>
+<translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit dir geteilt. Du kannst die Datei nicht löschen, da du nicht der Inhaber bist.</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154842056504218462">Alle Einträge wurden ausgewählt.</translation>
@@ -954,7 +954,7 @@
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
-<translation id="938470336146445890">Installieren Sie ein Nutzerzertifikat.</translation>
+<translation id="938470336146445890">Installiere ein Nutzerzertifikat.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>
 <translation id="945522503751344254">Feedback geben</translation>
