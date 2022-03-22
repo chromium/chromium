@@ -46,11 +46,17 @@ TEST_F(AppRegistryCacheWrapperTest, OneAccount) {
 
   cache1.AddObserver(this);
 
-  std::vector<apps::mojom::AppPtr> deltas;
-  deltas.push_back(PublisherBase::MakeApp(
+  std::vector<AppPtr> deltas;
+  deltas.push_back(std::make_unique<App>(AppType::kArc, "app_id"));
+  cache1.OnApps(std::move(deltas), AppType::kArc,
+                true /* should_notify_initialized */);
+
+  // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(PublisherBase::MakeApp(
       apps::mojom::AppType::kArc, "app_id", apps::mojom::Readiness::kUnknown,
       "name", apps::mojom::InstallReason::kDefault));
-  cache1.OnApps(std::move(deltas), apps::mojom::AppType::kArc,
+  cache1.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
                 true /* should_notify_initialized */);
 
   VerifyAccountId(account_id_1());
@@ -68,22 +74,35 @@ TEST_F(AppRegistryCacheWrapperTest, MultipleAccounts) {
 
   cache1.AddObserver(this);
 
-  std::vector<apps::mojom::AppPtr> deltas;
-  deltas.push_back(PublisherBase::MakeApp(
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(std::make_unique<App>(AppType::kArc, "app_id1"));
+  cache1.OnApps(std::move(deltas1), AppType::kArc,
+                /*should_notify_initialized=*/true);
+
+  // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(PublisherBase::MakeApp(
       apps::mojom::AppType::kArc, "app_id", apps::mojom::Readiness::kUnknown,
       "name", apps::mojom::InstallReason::kDefault));
-  cache1.OnApps(std::move(deltas), apps::mojom::AppType::kArc,
+  cache1.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
                 true /* should_notify_initialized */);
 
   VerifyAccountId(account_id_1());
   cache1.RemoveObserver(this);
 
   cache2.AddObserver(this);
-  deltas.clear();
-  deltas.push_back(PublisherBase::MakeApp(
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(std::make_unique<App>(AppType::kArc, "app_id2"));
+  cache2.OnApps(std::move(deltas2), AppType::kArc,
+                /*should_notify_initialized=*/true);
+
+  // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+  mojom_deltas.clear();
+  mojom_deltas.push_back(PublisherBase::MakeApp(
       apps::mojom::AppType::kArc, "app_id2", apps::mojom::Readiness::kUnknown,
       "name", apps::mojom::InstallReason::kDefault));
-  cache2.OnApps(std::move(deltas), apps::mojom::AppType::kArc,
+  cache2.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
                 true /* should_notify_initialized */);
 
   VerifyAccountId(account_id_2());
