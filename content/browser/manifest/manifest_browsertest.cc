@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/page.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -63,6 +65,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
                               const std::u16string& message,
                               int32_t line_no,
                               const std::u16string& source_id) override;
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   raw_ptr<WebContents> web_contents_;
@@ -736,6 +741,78 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   EXPECT_TRUE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
+}
+
+class ManifestBrowserPrerenderingTest : public ManifestBrowserTest {
+ public:
+  ManifestBrowserPrerenderingTest()
+      : prerender_helper_(
+            base::BindRepeating(&ManifestBrowserPrerenderingTest::web_contents,
+                                base::Unretained(this))) {}
+
+  ~ManifestBrowserPrerenderingTest() override = default;
+
+ protected:
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that GetManifest() returns an empty manifest if it's requested in
+// prerendering.
+IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
+                       GetManifestInPrerendering) {
+  GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  {
+    base::RunLoop run_loop;
+    web_contents()->GetPrimaryPage().GetManifest(
+        base::BindOnce(base::BindLambdaForTesting(
+            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+              // Get the manifest on a primary page.
+              EXPECT_FALSE(manifest_url.is_empty());
+              EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
+
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/manifest/dummy-manifest.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  {
+    base::RunLoop run_loop;
+    prerender_rfh->GetPage().GetManifest(
+        base::BindOnce(base::BindLambdaForTesting(
+            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+              // Ensure that the manifest is empty in prerendering.
+              EXPECT_TRUE(manifest_url.is_empty());
+              EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
+
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  {
+    base::RunLoop run_loop;
+    prerender_rfh->GetPage().GetManifest(
+        base::BindOnce(base::BindLambdaForTesting(
+            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+              // Ensure that getting the manifest works after prerendering
+              // activation.
+              EXPECT_FALSE(manifest_url.is_empty());
+              EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
 }
 
 } // namespace content

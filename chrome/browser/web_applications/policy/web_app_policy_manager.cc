@@ -444,6 +444,12 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
     blink::mojom::ManifestPtr& manifest) const {
 #if BUILDFLAG(IS_CHROMEOS)
+  // This doesn't override the manifest properly on a non primary page since it
+  // checks the url from PreRedirectionURLObserver that works only on a primary
+  // page.
+  if (!frame_host->IsInPrimaryMainFrame())
+    return;
+
   if (!manifest)
     return;
 

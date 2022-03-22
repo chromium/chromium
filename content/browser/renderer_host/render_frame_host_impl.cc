@@ -8799,7 +8799,7 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
         [](RenderFrameHostImpl* impl,
            mojo::PendingAssociatedReceiver<
                blink::mojom::ManifestUrlChangeObserver> receiver) {
-          ManifestManagerHost::GetOrCreateForCurrentDocument(impl)
+          ManifestManagerHost::GetOrCreateForPage(impl->GetPage())
               ->BindObserver(std::move(receiver));
         },
         base::Unretained(this)));

@@ -16,11 +16,8 @@
 
 namespace content {
 
-ManifestManagerHost::ManifestManagerHost(RenderFrameHost* rfh)
-    : DocumentUserData<ManifestManagerHost>(rfh) {
-  // Check that |rfh| is a main frame.
-  DCHECK(!rfh->GetParent());
-}
+ManifestManagerHost::ManifestManagerHost(Page& page)
+    : PageUserData<ManifestManagerHost>(page) {}
 
 ManifestManagerHost::~ManifestManagerHost() {
   DispatchPendingCallbacks();
@@ -31,12 +28,21 @@ void ManifestManagerHost::BindObserver(
         receiver) {
   manifest_url_change_observer_receiver_.Bind(std::move(receiver));
   manifest_url_change_observer_receiver_.SetFilter(
-      static_cast<RenderFrameHostImpl&>(render_frame_host())
+      static_cast<RenderFrameHostImpl&>(page().GetMainDocument())
           .CreateMessageFilterForAssociatedReceiver(
               blink::mojom::ManifestUrlChangeObserver::Name_));
 }
 
 void ManifestManagerHost::GetManifest(GetManifestCallback callback) {
+  // Do not call into MaybeOverrideManifest in a non primary page since
+  // it checks the url from PreRedirectionURLObserver that works only in
+  // a primary page.
+  // TODO(crbug.com/1296125): Maybe cancel prerendering if it hits this.
+  if (!page().IsPrimary()) {
+    std::move(callback).Run(GURL(), blink::mojom::Manifest::New());
+    return;
+  }
+
   auto& manifest_manager = GetManifestManager();
   int request_id = callbacks_.Add(
       std::make_unique<GetManifestCallback>(std::move(callback)));
@@ -52,7 +58,7 @@ void ManifestManagerHost::RequestManifestDebugInfo(
 
 blink::mojom::ManifestManager& ManifestManagerHost::GetManifestManager() {
   if (!manifest_manager_) {
-    render_frame_host().GetRemoteInterfaces()->GetInterface(
+    page().GetMainDocument().GetRemoteInterfaces()->GetInterface(
         manifest_manager_.BindNewPipeAndPassReceiver());
     manifest_manager_.set_disconnect_handler(base::BindOnce(
         &ManifestManagerHost::OnConnectionError, base::Unretained(this)));
@@ -72,27 +78,24 @@ void ManifestManagerHost::DispatchPendingCallbacks() {
 
 void ManifestManagerHost::OnConnectionError() {
   DispatchPendingCallbacks();
-  if (GetForCurrentDocument(&render_frame_host())) {
-    DeleteForCurrentDocument(&render_frame_host());
-  }
+  if (GetForPage(page()))
+    DeleteForPage(page());
 }
 
 void ManifestManagerHost::OnRequestManifestResponse(
     int request_id,
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
-  GetContentClient()->browser()->MaybeOverrideManifest(&render_frame_host(),
-                                                       manifest);
+  GetContentClient()->browser()->MaybeOverrideManifest(
+      &page().GetMainDocument(), manifest);
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
   std::move(callback).Run(url, std::move(manifest));
 }
 
 void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
-  static_cast<RenderFrameHostImpl&>(render_frame_host())
-      .GetPage()
-      .UpdateManifestUrl(manifest_url);
+  static_cast<PageImpl&>(page()).UpdateManifestUrl(manifest_url);
 }
 
-DOCUMENT_USER_DATA_KEY_IMPL(ManifestManagerHost);
+PAGE_USER_DATA_KEY_IMPL(ManifestManagerHost);
 }  // namespace content

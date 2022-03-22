@@ -126,7 +126,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
     }
 
     web_contents_ = web_content->GetWeakPtr();
-    web_contents_->GetMainFrame()->GetPage().GetManifest(
+    web_contents_->GetPrimaryPage().GetManifest(
         base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::
                            FetchPaymentAppManifestCallback,
                        weak_ptr_factory_.GetWeakPtr()));

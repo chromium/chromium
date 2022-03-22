@@ -1015,7 +1015,7 @@ void PageHandler::GetAppManifest(
   }
   if (!CanExecuteGlobalCommands(host_, callback))
     return;
-  ManifestManagerHost::GetOrCreateForCurrentDocument(host_->GetMainFrame())
+  ManifestManagerHost::GetOrCreateForPage(host_->GetPage())
       ->RequestManifestDebugInfo(base::BindOnce(&PageHandler::GotManifest,
                                                 weak_factory_.GetWeakPtr(),
                                                 std::move(callback)));

@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
@@ -41,7 +42,7 @@ const absl::optional<GURL>& PageImpl::GetManifestUrl() const {
 
 void PageImpl::GetManifest(GetManifestCallback callback) {
   ManifestManagerHost* manifest_manager_host =
-      ManifestManagerHost::GetOrCreateForCurrentDocument(&main_document_);
+      ManifestManagerHost::GetOrCreateForPage(*this);
   manifest_manager_host->GetManifest(std::move(callback));
 }
 
