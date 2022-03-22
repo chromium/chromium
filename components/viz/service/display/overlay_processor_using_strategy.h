@@ -18,6 +18,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
+#include "components/viz/service/display/overlay_combination_cache.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_strategy.h"
 #include "components/viz/service/display/overlay_proposed_candidate.h"
@@ -29,6 +30,7 @@ class DisplayResourceProvider;
 }
 
 namespace viz {
+
 // OverlayProcessor subclass that goes through a list of strategies to determine
 // overlay candidates. THis is used by Android and Ozone platforms.
 class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
@@ -87,6 +89,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   void CheckOverlaySupport(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidate_list);
+
+  // Clears the cache of attempted overlay combinations and their results.
+  void ClearOverlayCombinationCache();
 
   // This should be called during overlay processing to register whether or not
   // there is a candidate that requires an overlay so that the manager can allow
@@ -283,6 +288,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // used by UpdateDamageRect() to update damage properly.
   OverlayStatusMap prev_overlays_;
   OverlayStatusMap curr_overlays_;
+
+  OverlayCombinationCache overlay_combination_cache_;
 };
 
 }  // namespace viz

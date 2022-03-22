@@ -210,11 +210,30 @@ class SingleOverlayProcessor : public DefaultOverlayProcessor {
 class MultiOverlayProcessorBase : public TestOverlayProcessor {
  public:
   MultiOverlayProcessorBase() {
-    prioritization_config_.changing_threshold = false;
-    prioritization_config_.damage_rate_threshold = false;
-    prioritization_config_.power_gain_sort = false;
     // Don't wait for hardware support in these tests.
     max_overlays_considered_ = max_overlays_config_;
+  }
+
+  void ProcessForOverlays(
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_passes,
+      const SkM44& output_color_matrix,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list,
+      OutputSurfaceOverlayPlane* output_surface_plane,
+      CandidateList* overlay_candidates,
+      gfx::Rect* damage_rect,
+      std::vector<gfx::Rect>* content_bounds) override {
+    // Clear the combination cache every frame so results are more predictable
+    // in these tests.
+    ClearOverlayCombinationCache();
+    // Parameters unchanged.
+    OverlayProcessorUsingStrategy::ProcessForOverlays(
+        resource_provider, render_passes, output_color_matrix,
+        render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list, output_surface_plane, overlay_candidates,
+        damage_rect, content_bounds);
   }
 
   void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
@@ -227,6 +246,24 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
                 expected_rects_[i]);
       candidate.overlay_handled = responses_[i];
     }
+  }
+
+  // Sort required overlay candidates first, then just by input order.
+  void SortProposedOverlayCandidatesPrioritized(
+      std::vector<OverlayProposedCandidate>* proposed_candidates) override {
+    // We want the power gains to be assigned for the OverlayCombinationCache.
+    size_t order = proposed_candidates->size();
+    for (auto& proposed_candidate : *proposed_candidates) {
+      proposed_candidate.relative_power_gain = order--;
+    }
+    std::stable_sort(
+        proposed_candidates->begin(), proposed_candidates->end(),
+        [](const auto& a, const auto& b) {
+          if (a.candidate.requires_overlay != b.candidate.requires_overlay) {
+            return a.candidate.requires_overlay > b.candidate.requires_overlay;
+          }
+          return a.relative_power_gain > b.relative_power_gain;
+        });
   }
 
   void AddExpectedRect(const gfx::Rect& rect, bool response) {
@@ -271,10 +308,14 @@ class SizeSortedMultiOverlayProcessor : public MultiOverlayProcessorBase {
   // Sort candidates only by their display_rect area.
   void SortProposedOverlayCandidatesPrioritized(
       std::vector<OverlayProposedCandidate>* proposed_candidates) override {
+    // We want the power gains to be assigned for the OverlayCombinationCache.
+    for (auto& proposed_candidate : *proposed_candidates) {
+      proposed_candidate.relative_power_gain =
+          proposed_candidate.candidate.display_rect.size().GetArea();
+    }
     std::sort(proposed_candidates->begin(), proposed_candidates->end(),
               [](const auto& a, const auto& b) {
-                return a.candidate.display_rect.size().GetArea() >
-                       b.candidate.display_rect.size().GetArea();
+                return a.relative_power_gain > b.relative_power_gain;
               });
   }
 };

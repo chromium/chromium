@@ -304,6 +304,8 @@ viz_component("service") {
 
   if (is_android || use_ozone) {
     sources += [
+      "display/overlay_combination_cache.cc",
+      "display/overlay_combination_cache.h",
       "display/overlay_processor_strategy.cc",
       "display/overlay_processor_strategy.h",
       "display/overlay_processor_using_strategy.cc",
@@ -634,6 +636,7 @@ viz_source_set("unit_tests") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_ozone_unittest.cc",
       "display/overlay_unittest.cc",
       "display_embedder/software_output_device_ozone_unittest.cc",
@@ -667,6 +670,7 @@ viz_source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_surface_control_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",

@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -27,6 +28,7 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/overlay_combination_cache.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -198,6 +200,10 @@ void OverlayProcessorUsingStrategy::CheckOverlaySupport(
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportUs",
       time, kMinTime, kMaxTime, kTimeBuckets);
+}
+
+void OverlayProcessorUsingStrategy::ClearOverlayCombinationCache() {
+  overlay_combination_cache_.ClearCache();
 }
 
 // This local function simply recomputes the root damage from
@@ -674,45 +680,35 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
-  int max_overlays_possible = std::min(
-      max_overlays_considered_, static_cast<int>(sorted_candidates.size()));
+  if (sorted_candidates.empty()) {
+    return false;
+  }
 
-  std::vector<OverlayProposedCandidate> test_candidates;
-  // Reserve max possible overlays so iterators remain stable while we insert
-  // candidates.
-  test_candidates.reserve(max_overlays_possible);
+  OverlayCombinationToTest result =
+      overlay_combination_cache_.GetOverlayCombinationToTest(
+          sorted_candidates, max_overlays_considered_);
+  std::vector<OverlayProposedCandidate> test_candidates =
+      result.candidates_to_test;
+
   bool testing_underlay = false;
   // We'll keep track of the underlays that we're testing so we can assign their
   // `plane_z_order`s based on their order in the QuadList.
   std::vector<std::vector<OverlayProposedCandidate>::iterator> underlay_iters;
-  // Used to prevent testing multiple candidates representing the same DrawQuad.
-  std::set<size_t> used_quad_indices;
 
-  for (auto& cand : sorted_candidates) {
-    // Skip candidates whose quads have already been added to the test list. A
-    // quad could have an on top and an underlay candidate.
-    bool inserted = used_quad_indices.insert(cand.quad_iter.index()).second;
-    if (!inserted) {
-      continue;
-    }
-    test_candidates.push_back(cand);
-
-    switch (cand.strategy->GetUMAEnum()) {
+  for (auto it = test_candidates.begin(); it != test_candidates.end(); ++it) {
+    switch (it->strategy->GetUMAEnum()) {
       case OverlayStrategy::kSingleOnTop:
         // Ordering of on top candidates doesn't matter (they can't overlap), so
         // they can all have z = 1.
-        test_candidates.back().candidate.plane_z_order = 1;
+        it->candidate.plane_z_order = 1;
         break;
       case OverlayStrategy::kUnderlay:
         testing_underlay = true;
-        underlay_iters.push_back(test_candidates.end() - 1);
+        underlay_iters.push_back(it);
         break;
       default:
         // Unsupported strategy type.
         NOTREACHED();
-    }
-    if (test_candidates.size() == static_cast<size_t>(max_overlays_possible)) {
-      break;
     }
   }
 
@@ -738,7 +734,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   auto cand_it = candidates.begin();
   auto test_it = test_candidates.begin();
   while (cand_it != candidates.end()) {
-    // Update the test candidates so we can use EraseIf below.
+    // Update the test candidates so we can use EraseIf below, and so we can
+    // tell the OverlayCombinationCache which ones succeeded/failed.
     test_it->candidate.overlay_handled = cand_it->overlay_handled;
     if (cand_it->overlay_handled && cand_it->plane_z_order < 0) {
       underlay_used = true;
@@ -746,6 +743,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     cand_it++;
     test_it++;
   }
+  overlay_combination_cache_.DeclarePromotedCandidates(test_candidates);
+
   // Remove failed candidates
   base::EraseIf(candidates, [](auto& cand) { return !cand.overlay_handled; });
   base::EraseIf(test_candidates, [](auto& proposed) -> bool {

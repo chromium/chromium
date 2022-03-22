@@ -260,6 +260,10 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
       hardware_capabilities.num_overlay_capable_planes - 1;
   max_overlays_considered_ =
       std::min(max_overlays_supported, max_overlays_config_);
+
+  // Different hardware capabilities may mean a different result for a specific
+  // combination of overlays, so clear this cache.
+  ClearOverlayCombinationCache();
 }
 
 gfx::Rect OverlayProcessorOzone::GetOverlayDamageRectForOutputSurface(
