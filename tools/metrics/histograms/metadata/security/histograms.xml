@@ -277,6 +277,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest"
+    enum="Boolean" expires_after="2022-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    Recorded once per network::URLLoader instantiation. True if the request
+    connected multiple times to different transports (e.g. for a
+    partially-cached range request) and not all the computed IP address spaces
+    were the same.
+  </summary>
+</histogram>
+
 <histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
     expires_after="2022-04-24">
   <owner>jdeblasio@chromium.org</owner>

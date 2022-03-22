@@ -421,6 +421,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Applies Private Network Access checks to the current request.
   //
+  // Sets `response_ip_address_space_` to a value derived from `info`.
+  //
   // Helper for `OnConnected()`.
   PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
       const net::TransportInfo& info);
@@ -567,9 +569,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // The response's address space, as computed using the |net::TransportInfo|
   // argument to the |OnConnected()| callback. This info is only available then,
   // so the computation result is stored for later use in this member.
+  //
+  // Nullopt until |OnConnected()| is called for the first time, then never
+  // nullopt again.
+  //
   // https://wicg.github.io/private-network-access/#response-ip-address-space
-  mojom::IPAddressSpace response_ip_address_space_ =
-      mojom::IPAddressSpace::kUnknown;
+  absl::optional<mojom::IPAddressSpace> response_ip_address_space_;
+
+  // True iff |OnConnected()| was called multiple times and the IP address space
+  // of the transport was not the same each time.
+  bool has_connected_to_mismatched_ip_address_spaces_ = false;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
