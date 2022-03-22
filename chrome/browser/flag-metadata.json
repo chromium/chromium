@@ -2027,6 +2027,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "enable-experimental-accessibility-google-tts-language-packs",
+    "owners": [ "akihiroota", "josiahk", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 106

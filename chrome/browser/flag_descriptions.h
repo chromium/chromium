@@ -2749,6 +2749,9 @@ extern const char kExperimentalAccessibilityDictationHintsDescription[];
 extern const char kExperimentalAccessibilityDictationWithPumpkinName[];
 extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
 
+extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
+extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

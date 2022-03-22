@@ -4788,6 +4788,11 @@ const char kExperimentalAccessibilityDictationWithPumpkinDescription[] =
     "Enables the pumpkin semantic parser for the accessibility dictation "
     "feature.";
 
+const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
+    "Experimental accessibility Google TTS Langauge Packs.";
+const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[] =
+    "Enables downloading Google TTS voices using Langauge Packs.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

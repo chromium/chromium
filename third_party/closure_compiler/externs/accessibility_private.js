@@ -262,6 +262,7 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
   DICTATION_COMMANDS: 'dictationCommands',
   DICTATION_HINTS: 'dictationHints',
+  GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
 };
 
 /**

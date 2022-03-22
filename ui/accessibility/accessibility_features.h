@@ -126,6 +126,14 @@ AX_BASE_EXPORT extern const base::Feature
 // Returns true if dictation with pumpkin is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationWithPumpkinEnabled();
 
+// Enables downloading Google TTS voices using Language Packs.
+AX_BASE_EXPORT extern const base::Feature
+    kExperimentalAccessibilityGoogleTtsLanguagePacks;
+
+// Returns true if using Language Packs to download Google TTS voices is
+// enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
+
 // Enables high-quality, network-based voices in Select-to-speak.
 AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 
