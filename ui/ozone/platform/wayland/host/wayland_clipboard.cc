@@ -4,11 +4,13 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -24,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -69,8 +72,10 @@ template <typename Manager,
           typename DataDevice = typename Manager::DataDevice>
 class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
  public:
-  explicit ClipboardImpl(Manager* manager, ui::ClipboardBuffer buffer)
-      : manager_(manager), buffer_(buffer) {
+  ClipboardImpl(Manager* manager,
+                ui::ClipboardBuffer buffer,
+                ui::WaylandConnection* connection)
+      : manager_(manager), buffer_(buffer), connection_(connection) {
     GetDevice()->set_selection_offer_callback(base::BindRepeating(
         &ClipboardImpl::HandleNewSelectionOffer, weak_factory_.GetWeakPtr()));
   }
@@ -93,6 +98,10 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   // responsible for writing the clipboard contents into the supplied fd. This
   // client can only drop the clipboard contents when it receives a
   // wl_data_source::cancelled event.
+  //
+  // This is supposedly responding to an input event, i.e: there is a valid
+  // corresponding serial number (provided by wl::SerialTracker). Otherwise,
+  // this function will no-op.
   void Write(const ui::PlatformClipboard::DataMap* data) final {
     if (!data || data->empty()) {
       offered_data_.clear();
@@ -102,7 +111,21 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
       source_ = manager_->CreateSource(this);
       source_->Offer(GetOfferedMimeTypes());
     }
-    GetDevice()->SetSelectionSource(source_.get());
+
+    // TODO(nickdiego): This function should just no-op if no serial is found
+    // (ie: no recent input event has been processed yet), though several unit
+    // and browser tests do not satisfy this precondition so would fail [1].
+    // Revisit this once those tests are fixed.
+    //
+    // [1] https://chromium-review.googlesource.com/c/chromium/src/+/3527605/2
+    auto& serial_tracker = connection_->serial_tracker();
+    auto serial = serial_tracker.GetSerial({wl::SerialType::kTouchPress,
+                                            wl::SerialType::kMousePress,
+                                            wl::SerialType::kKeyPress});
+    if (serial.has_value())
+      GetDevice()->SetSelectionSource(source_.get(), serial->value);
+    else
+      LOG(WARNING) << "No serial found for selection.";
 
     if (!clipboard_changed_callback_.is_null())
       clipboard_changed_callback_.Run(buffer_);
@@ -180,6 +203,8 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   // Notifies when clipboard data changes. Can be empty if not set.
   ClipboardDataChangedCallback clipboard_changed_callback_;
 
+  ui::WaylandConnection* const connection_;
+
   base::WeakPtrFactory<ClipboardImpl> weak_factory_{this};
 };
 
@@ -193,7 +218,8 @@ WaylandClipboard::WaylandClipboard(WaylandConnection* connection,
       copypaste_clipboard_(
           std::make_unique<wl::ClipboardImpl<WaylandDataDeviceManager>>(
               manager,
-              ClipboardBuffer::kCopyPaste)) {
+              ClipboardBuffer::kCopyPaste,
+              connection)) {
   DCHECK(manager);
   DCHECK(connection_);
   DCHECK(copypaste_clipboard_);
@@ -257,7 +283,7 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
       if (!primary_selection_clipboard_) {
         primary_selection_clipboard_ = std::make_unique<
             wl::ClipboardImpl<ZwpPrimarySelectionDeviceManager>>(
-            zwp_manager, ClipboardBuffer::kSelection);
+            zwp_manager, ClipboardBuffer::kSelection, connection_);
       }
       return primary_selection_clipboard_.get();
     }
@@ -266,7 +292,7 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
       if (!primary_selection_clipboard_) {
         primary_selection_clipboard_ = std::make_unique<
             wl::ClipboardImpl<GtkPrimarySelectionDeviceManager>>(
-            gtk_manager, ClipboardBuffer::kSelection);
+            gtk_manager, ClipboardBuffer::kSelection, connection_);
       }
       return primary_selection_clipboard_.get();
     }

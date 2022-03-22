@@ -2886,10 +2886,11 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     auto* test_popup = GetTestXdgPopupByWindow(popup.get());
     ASSERT_TRUE(test_popup);
 
-    // Touch events are the exception. We can't use the serial that was sent
-    // before the "up" event. Otherwise, some compositors may dismiss popups.
-    // Thus, no serial must be used.
-    EXPECT_EQ(test_popup->grab_serial(), 0U);
+    // Unless the use-wayland-explicit-grab switch is set, touch events are the
+    // exception, i.e: the serial sent before the "up" event (latest) cannot be
+    // used, otherwise, some compositors may dismiss popups.
+    if (!use_explicit_grab)
+      EXPECT_EQ(test_popup->grab_serial(), 0U);
 
     popup->Hide();
 

@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_PRIMARY_SELECTION_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_PRIMARY_SELECTION_DEVICE_H_
 
+#include <cstdint>
+
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -31,7 +33,7 @@ class ZwpPrimarySelectionDevice : public WaylandDataDeviceBase {
     return data_device_.get();
   }
 
-  void SetSelectionSource(ZwpPrimarySelectionSource* source);
+  void SetSelectionSource(ZwpPrimarySelectionSource* source, uint32_t serial);
 
  private:
   // primary_selection_device_listener callbacks

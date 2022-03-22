@@ -14,7 +14,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
-#include "wayland-client-core.h"
 
 namespace ui {
 
@@ -107,13 +106,6 @@ void WaylandDataDeviceBase::NotifySelectionOffer(
     WaylandDataOfferBase* offer) const {
   if (selection_offer_callback_)
     selection_offer_callback_.Run(offer);
-}
-
-absl::optional<wl::Serial> WaylandDataDeviceBase::GetSerialForSelection()
-    const {
-  return connection_->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
-                                                  wl::SerialType::kMousePress,
-                                                  wl::SerialType::kKeyPress});
 }
 
 }  // namespace ui

@@ -153,6 +153,7 @@ void TestSelectionDevice::SetSelection(struct wl_client* client,
   CHECK(GetUserDataAs<TestSelectionDevice>(resource));
   auto* self = GetUserDataAs<TestSelectionDevice>(resource);
   auto* src = source ? GetUserDataAs<TestSelectionSource>(source) : nullptr;
+  self->selection_serial_ = serial;
   self->delegate_->HandleSetSelection(src, serial);
 }
 
