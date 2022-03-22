@@ -44,3 +44,15 @@ v8-to-istanbul package to convert v8 coverage -> istanbul -> {html,lcov}
 
 Local Modifications:
 (none)
+
+Name: argparse
+Short Name: argparse
+URL: https://www.npmjs.com/package/argparse
+Version: 2.0.1
+License: Python-2.0
+License File: NOT_SHIPPED
+Security Critical: No. Not shipped in Chrome, used to take arguments for JS files run via CLI.
+
+Description:
+Argparse is used to take, validate and parse CLI arguments for JavaScript scripts
+which are run as CLI scripts.
