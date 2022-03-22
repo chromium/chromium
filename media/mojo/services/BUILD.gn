@@ -186,8 +186,7 @@ component("services") {
       "stable_video_decoder_factory_service.h",
     ]
 
-    public_deps +=
-        [ "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources" ]
+    public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
   }
 }
 

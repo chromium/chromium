@@ -82,7 +82,7 @@ source_set("common") {
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
   public_deps = [
     ":fourcc",
-    "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources",
+    "//media/mojo/mojom/stable:stable_video_decoder",
   ]
 
   deps = [
