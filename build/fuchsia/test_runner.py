@@ -7,6 +7,7 @@
 """Deploys and runs a test package on a Fuchsia target."""
 
 import argparse
+import logging
 import os
 import shutil
 import sys
@@ -121,9 +122,13 @@ class CustomArtifactsTestOutputs(TestOutputs):
 
   def GetFile(self, glob, destination):
     """Places all files/directories matched by a glob into a destination."""
-    shutil.copy(
-        os.path.join(self.GetOutputDirectory(), 'artifact-0', 'custom-0', glob),
-        destination)
+    directory = self._ffx_session.get_custom_artifact_directory()
+    if not directory:
+      logger.error(
+          'Failed to parse custom artifact directory from test summary output '
+          'files. Not copying %s from the device', glob)
+      return
+    shutil.copy(os.path.join(directory, glob), destination)
 
   def GetCoverageProfiles(self, destination):
     # Copy all the files in the profile directory.
