@@ -19,6 +19,7 @@
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "url/gurl.h"
 
 using base::AutoLock;

@@ -7,6 +7,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/win/mf_helpers.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {

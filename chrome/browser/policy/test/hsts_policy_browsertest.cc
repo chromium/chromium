@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "url/gurl.h"

@@ -32,6 +32,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"

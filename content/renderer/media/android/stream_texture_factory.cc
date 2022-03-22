@@ -10,6 +10,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {

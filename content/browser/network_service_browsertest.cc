@@ -41,6 +41,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/disk_cache.h"

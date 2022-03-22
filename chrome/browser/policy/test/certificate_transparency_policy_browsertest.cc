@@ -16,6 +16,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_util.h"
 #include "net/http/transport_security_state.h"

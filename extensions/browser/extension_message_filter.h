@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_MESSAGE_FILTER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_MESSAGE_FILTER_H_
 
+#include "base/callback_list.h"
 #include "content/public/browser/browser_message_filter.h"
 
 namespace content {

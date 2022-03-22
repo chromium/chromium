@@ -107,6 +107,7 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"

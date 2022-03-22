@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/network_service.h"

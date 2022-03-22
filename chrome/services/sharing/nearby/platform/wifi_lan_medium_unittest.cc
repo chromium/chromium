@@ -12,6 +12,7 @@
 #include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "chromeos/login/login_state/login_state.h"

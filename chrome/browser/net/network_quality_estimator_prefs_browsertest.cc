@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/filename_util.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"

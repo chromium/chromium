@@ -82,6 +82,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"

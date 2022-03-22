@@ -18,8 +18,6 @@
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
 namespace mojo {
 

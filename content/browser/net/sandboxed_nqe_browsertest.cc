@@ -9,6 +9,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "services/network/public/cpp/network_quality_tracker.h"

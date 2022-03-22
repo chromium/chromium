@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"

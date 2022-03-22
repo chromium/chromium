@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/network_service_test_helper.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp.h"
