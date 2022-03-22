@@ -7815,20 +7815,21 @@
     "WebRtcMetronomeTaskQueue": [
         {
             "platforms": [
-                "windows",
-                "mac",
+                "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
-                "android",
-                "android_weblayer",
-                "android_webview"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V1",
+                    "name": "Enabled",
                     "enable_features": [
-                        "WebRtcMetronomeTaskQueue"
+                        "ThreadWrapperUsesMetronome",
+                        "WebRtcMetronomeTaskQueue",
+                        "WebRtcTimerUsesMetronome"
                     ]
                 }
             ]
