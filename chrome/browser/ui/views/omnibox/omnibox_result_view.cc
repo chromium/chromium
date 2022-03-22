@@ -273,6 +273,11 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
+  views::SetImageFromVectorIconWithColor(
+      remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetColor(OmniboxPart::RESULTS_ICON));
+
   SetBackground(GetPopupCellBackground(this, GetThemeState()));
 
   // Reapply the dim color to account for the highlight state.
@@ -485,10 +490,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void OmniboxResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  views::SetImageFromVectorIconWithColor(
-      remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      GetColor(OmniboxPart::RESULTS_ICON));
   ApplyThemeAndRefreshIcons(true);
 }
 
