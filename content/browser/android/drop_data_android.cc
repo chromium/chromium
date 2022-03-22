@@ -32,8 +32,6 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
     jtext = ConvertUTF16ToJavaString(env, *drop_data.text);
   }
 
-  // TODO(https://crbug.com/1289393): Revisit if drop_data.url is the correct
-  // link for image with links.
   ScopedJavaLocalRef<jobject> jgurl;
   if (!drop_data.url.is_empty()) {
     jgurl = url::GURLAndroid::FromNativeGURL(env, drop_data.url);
@@ -41,7 +39,12 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
   }
 
   // If file_contents is not empty, user is trying to drag image out of the
-  // web contents.
+  // web contents. If the image contains a link, the link URL, represented by
+  // |jgurl|, will be added to the image clip data.
+  // drop_data.file_contents_source_url represents the image source URL;
+  // drop_data.url represents the URL that is linked to the image, which may not
+  // necessarily be the image source URL and is the desired URL to be added to
+  // the image clip data.
   ScopedJavaLocalRef<jbyteArray> jimage_bytes;
   ScopedJavaLocalRef<jstring> jimage_extension;
   if (!drop_data.file_contents.empty()) {

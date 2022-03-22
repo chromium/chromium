@@ -340,7 +340,6 @@ public class EventForwarder {
         }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            // TODO(crbug.com/1289393): support dragging more than text and image.
             return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
         }
 

@@ -10,6 +10,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.VectorDrawable;
+import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 import android.view.DragEvent;
 import android.view.View;
@@ -320,6 +321,19 @@ public class DragAndDropDelegateImplUnitTest {
         String text = DragAndDropDelegateImpl.getTextForLinkData(dropData);
         Assert.assertEquals(
                 "Text should match.", linkTitle + "\n" + JUnitTestGURLs.EXAMPLE_URL, text);
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.O)
+    public void testClipData_ImageWithUrl() {
+        final DropDataAndroid dropData = DropDataAndroid.create("",
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), new byte[] {1, 2, 3, 4}, "png");
+
+        ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
+        Assert.assertEquals(
+                "Image ClipData should include image and URL info.", 2, clipData.getItemCount());
+        Assert.assertEquals("Image URL info should match.", JUnitTestGURLs.EXAMPLE_URL,
+                clipData.getItemAt(1).getText());
     }
 
     private void doTestResizeShadowImage(

@@ -5,11 +5,13 @@
 package org.chromium.ui.base;
 
 import android.content.ClipData;
+import android.content.ClipData.Item;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -31,6 +33,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
 
@@ -160,10 +163,18 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             case DragTargetType.IMAGE:
                 Uri uri = DropDataContentProvider.cache(
                         dropData.imageContent, dropData.imageContentExtension);
-                return ClipData.newUri(
+                ClipData clipData = ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), null, uri);
+                // Add image link URL to the ClipData if present. Since the ClipData MIME types for
+                // the items are different, this will not be supported for O- versions where {@link
+                // ClipData#addItem(ContentResolver, Item)} is not available.
+                if (VERSION.SDK_INT >= VERSION_CODES.O && dropData.hasLink()) {
+                    ApiHelperForO.addItem(clipData,
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            new Item(dropData.gurl.getSpec()));
+                }
+                return clipData;
             case DragTargetType.LINK:
-                // TODO(https://crbug.com/1298308): Handle image link dragging.
                 return ClipData.newPlainText(null, getTextForLinkData(dropData));
             case DragTargetType.INVALID:
                 return null;
