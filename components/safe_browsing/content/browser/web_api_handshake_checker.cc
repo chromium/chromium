@@ -9,6 +9,7 @@
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
 
 namespace safe_browsing {
