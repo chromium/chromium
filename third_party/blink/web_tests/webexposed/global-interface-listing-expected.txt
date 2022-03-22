@@ -2189,6 +2189,7 @@ interface Element : Node
     getter ariaFlowToElements
     getter ariaHasPopup
     getter ariaHidden
+    getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
     getter ariaLabelledByElements
@@ -2332,6 +2333,7 @@ interface Element : Node
     setter ariaFlowToElements
     setter ariaHasPopup
     setter ariaHidden
+    setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
     setter ariaLabelledByElements
@@ -2400,6 +2402,7 @@ interface ElementInternals
     getter ariaFlowToElements
     getter ariaHasPopup
     getter ariaHidden
+    getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
     getter ariaLabelledByElements
@@ -2460,6 +2463,7 @@ interface ElementInternals
     setter ariaFlowToElements
     setter ariaHasPopup
     setter ariaHidden
+    setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
     setter ariaLabelledByElements

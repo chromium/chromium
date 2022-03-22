@@ -49,6 +49,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaFlowToElements
     property ariaHasPopup
     property ariaHidden
+    property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
     property ariaLabelledByElements
@@ -1290,6 +1291,7 @@ namespace http://www.w3.org/2000/svg
     property ariaFlowToElements
     property ariaHasPopup
     property ariaHidden
+    property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
     property ariaLabelledByElements

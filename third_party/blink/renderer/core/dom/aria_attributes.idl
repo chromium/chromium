@@ -21,6 +21,7 @@
     [CEReactions, Reflect=aria_expanded] attribute DOMString? ariaExpanded;
     [CEReactions, Reflect=aria_haspopup] attribute DOMString? ariaHasPopup;
     [CEReactions, Reflect=aria_hidden] attribute DOMString? ariaHidden;
+    [CEReactions, Reflect=aria_invalid] attribute DOMString? ariaInvalid;
     [CEReactions, Reflect=aria_keyshortcuts] attribute DOMString? ariaKeyShortcuts;
     [CEReactions, Reflect=aria_label] attribute DOMString? ariaLabel;
     [CEReactions, Reflect=aria_level] attribute DOMString? ariaLevel;

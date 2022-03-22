@@ -42,6 +42,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaExpanded
     property ariaHasPopup
     property ariaHidden
+    property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
     property ariaLevel
@@ -1219,6 +1220,7 @@ namespace http://www.w3.org/2000/svg
     property ariaExpanded
     property ariaHasPopup
     property ariaHidden
+    property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
     property ariaLevel

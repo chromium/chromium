@@ -1781,6 +1781,7 @@ interface Element : Node
     getter ariaExpanded
     getter ariaHasPopup
     getter ariaHidden
+    getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
     getter ariaLevel
@@ -1911,6 +1912,7 @@ interface Element : Node
     setter ariaExpanded
     setter ariaHasPopup
     setter ariaHidden
+    setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
     setter ariaLevel
@@ -1969,6 +1971,7 @@ interface ElementInternals
     getter ariaExpanded
     getter ariaHasPopup
     getter ariaHidden
+    getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
     getter ariaLevel
@@ -2019,6 +2022,7 @@ interface ElementInternals
     setter ariaExpanded
     setter ariaHasPopup
     setter ariaHidden
+    setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
     setter ariaLevel
