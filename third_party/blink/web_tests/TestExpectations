@@ -7771,7 +7771,7 @@ crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-pannernode-interface/p
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 
 # Sheriff 2022-03-21: More flaky tests.
-crbug.com/1308826 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
-crbug.com/1308826 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1308826 [ Mac ] http/tests/serviceworker/clients-openwindow.html [ Pass Timeout ]
+crbug.com/1277696 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
+crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
+crbug.com/1191990 [ Mac ] http/tests/serviceworker/clients-openwindow.html [ Pass Timeout ]
 crbug.com/1308826 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/show-directory-picker.https.html [ Failure Pass ]
