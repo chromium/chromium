@@ -466,21 +466,91 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
   EXPECT_EQ(callback_calls, 1);
 }
 
-class PopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
+// Test fixture that allows precise control over when the instance gets FPS
+// data. Useful for testing async flows.
+class AsyncPopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
  public:
-  PopulatedFirstPartySetsTest() {
-    const std::string input =
-        R"({"owner": "https://example.test", "members": )"
-        R"(["https://member1.test", "https://member3.test"]}
-        {"owner": "https://foo.test", "members": ["https://member2.test"]})";
-    SetComponentSets(input);
-    // Set required input to be able to receive the merged sets from
-    // FirstPartySetsLoader.
+  AsyncPopulatedFirstPartySetsTest() = default;
+
+ protected:
+  void Populate() {
+    SetComponentSets(R"({"owner": "https://example.test", "members": )"
+                     R"(["https://member1.test", "https://member3.test"]}
+        {"owner": "https://foo.test", "members": ["https://member2.test"]})");
     sets().SetManuallySpecifiedSet("");
 
-    // We don't wait for the sets to be loaded before running the tests, in
-    // order to let the tests provoke raciness if any exists.
+    // We don't wait for the sets to be loaded before returning, in order to let
+    // the tests provoke raciness if any exists.
   }
+};
+
+TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_ComputeMetadata) {
+  net::SchemefulSite member(GURL("https://member1.test"));
+  net::SchemefulSite owner(GURL("https://example.test"));
+
+  net::TestOptionalCompletionCallback<net::FirstPartySetMetadata> callback;
+  EXPECT_FALSE(
+      sets().ComputeMetadata(member, &member, {member}, callback.callback()));
+
+  Populate();
+
+  EXPECT_EQ(callback.WaitForResult().value(),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
+                net::FirstPartySetsContextType::kHomogeneous));
+}
+
+TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwner) {
+  net::TestOptionalCompletionCallback<FirstPartySets::OwnerResult> callback;
+  EXPECT_FALSE(sets().FindOwner(
+      net::SchemefulSite(GURL("https://member1.test")), callback.callback()));
+
+  Populate();
+
+  EXPECT_THAT(
+      callback.WaitForResult().value(),
+      absl::make_optional(net::SchemefulSite(GURL("https://example.test"))));
+}
+
+TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwners) {
+  net::TestOptionalCompletionCallback<FirstPartySets::OwnersResult> callback;
+  EXPECT_FALSE(sets().FindOwners(
+      {
+          net::SchemefulSite(GURL("https://member1.test")),
+          net::SchemefulSite(GURL("https://member2.test")),
+      },
+      callback.callback()));
+
+  Populate();
+
+  EXPECT_THAT(callback.WaitForResult().value(),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
+}
+
+TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_Sets) {
+  net::TestOptionalCompletionCallback<FirstPartySets::SetsByOwner> callback;
+  EXPECT_FALSE(sets().Sets(callback.callback()));
+
+  Populate();
+
+  EXPECT_THAT(
+      callback.WaitForResult().value(),
+      UnorderedElementsAre(
+          Pair(SerializesTo("https://example.test"),
+               UnorderedElementsAre(SerializesTo("https://example.test"),
+                                    SerializesTo("https://member1.test"),
+                                    SerializesTo("https://member3.test"))),
+          Pair(SerializesTo("https://foo.test"),
+               UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                    SerializesTo("https://member2.test")))));
+}
+
+class PopulatedFirstPartySetsTest : public AsyncPopulatedFirstPartySetsTest {
+ public:
+  PopulatedFirstPartySetsTest() { Populate(); }
 };
 
 TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata_EmptyContext) {
