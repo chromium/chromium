@@ -109,6 +109,7 @@ extern const base::Feature kInstantStart;
 extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
 extern const base::Feature kLensCameraAssistedSearch;
+extern const base::Feature kLensOnQuickActionSearchWidget;
 extern const base::Feature kLocationBarModelOptimizations;
 extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kNotificationPermissionVariant;
