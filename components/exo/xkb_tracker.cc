@@ -68,29 +68,13 @@ void XkbTracker::UpdateKeyboardLayoutInternal(const xkb_rule_names* names) {
   xkb_keymap_.reset(xkb_keymap_new_from_names(xkb_context_.get(), names,
                                               XKB_KEYMAP_COMPILE_NO_FLAGS));
   xkb_state_.reset(xkb_state_new(xkb_keymap_.get()));
+  xkb_modifier_converter_ =
+      ui::XkbModifierConverter::CreateFromKeymap(xkb_keymap_.get());
 }
 
 void XkbTracker::UpdateKeyboardModifiersInternal() {
-  constexpr struct {
-    ui::EventFlags flag;
-    const char* xkb_name;
-  } modifiers[] = {
-      {ui::EF_SHIFT_DOWN, XKB_MOD_NAME_SHIFT},
-      {ui::EF_CONTROL_DOWN, XKB_MOD_NAME_CTRL},
-      {ui::EF_ALT_DOWN, XKB_MOD_NAME_ALT},
-      {ui::EF_COMMAND_DOWN, XKB_MOD_NAME_LOGO},
-      {ui::EF_ALTGR_DOWN, "Mod5"},
-      {ui::EF_MOD3_DOWN, "Mod3"},
-      {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM},
-      {ui::EF_CAPS_LOCK_ON, XKB_MOD_NAME_CAPS},
-  };
-  uint32_t xkb_modifiers = 0;
-  for (const auto& modifier : modifiers) {
-    if (modifier_flags_ & modifier.flag) {
-      xkb_modifiers |=
-          1 << xkb_keymap_mod_get_index(xkb_keymap_.get(), modifier.xkb_name);
-    }
-  }
+  xkb_mod_mask_t xkb_modifiers =
+      xkb_modifier_converter_.MaskFromUiFlags(modifier_flags_);
   xkb_state_update_mask(xkb_state_.get(), xkb_modifiers, 0, 0, 0, 0, 0);
 }
 

@@ -45,6 +45,8 @@ component("layout") {
       "xkb/xkb_key_code_converter.h",
       "xkb/xkb_keyboard_layout_engine.cc",
       "xkb/xkb_keyboard_layout_engine.h",
+      "xkb/xkb_modifier_converter.cc",
+      "xkb/xkb_modifier_converter.h",
     ]
 
     deps += [
@@ -62,6 +64,7 @@ source_set("unittests") {
     sources += [
       "keyboard_layout_engine_unittest.cc",
       "xkb/xkb_keyboard_layout_engine_unittest.cc",
+      "xkb/xkb_modifier_converter_unittest.cc",
     ]
     configs += [ ":xkbcommon" ]
   }
@@ -72,6 +75,7 @@ source_set("unittests") {
     "//testing/gtest",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/keycodes:xkb",
   ]
 }
 

@@ -859,37 +859,9 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(
 
 void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
   xkb_state_.reset(xkb_state_new(keymap));
-  // Update flag map.
-  static const struct {
-    int ui_flag;
-    const char* xkb_name;
-  } flags[] = {{ui::EF_SHIFT_DOWN, XKB_MOD_NAME_SHIFT},
-               {ui::EF_CONTROL_DOWN, XKB_MOD_NAME_CTRL},
-               {ui::EF_ALT_DOWN, XKB_MOD_NAME_ALT},
-               {ui::EF_COMMAND_DOWN, XKB_MOD_NAME_LOGO},
-               {ui::EF_ALTGR_DOWN, "Mod5"},
-               {ui::EF_MOD3_DOWN, "Mod3"},
-               {ui::EF_CAPS_LOCK_ON, XKB_MOD_NAME_CAPS},
-               {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM}};
-  xkb_flag_map_.clear();
-  xkb_flag_map_.reserve(std::size(flags));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  xkb_mod_mask_t num_lock_mask = 0;
-#endif
-  for (size_t i = 0; i < std::size(flags); ++i) {
-    xkb_mod_index_t index = xkb_keymap_mod_get_index(keymap, flags[i].xkb_name);
-    if (index == XKB_MOD_INVALID) {
-      DVLOG(3) << "XKB keyboard layout does not contain " << flags[i].xkb_name;
-    } else {
-      xkb_mod_mask_t flag = static_cast<xkb_mod_mask_t>(1) << index;
-      XkbFlagMapEntry e = {flags[i].ui_flag, flag, index};
-      xkb_flag_map_.push_back(e);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (flags[i].ui_flag == EF_NUM_LOCK_ON)
-        num_lock_mask = flag;
-#endif
-    }
-  }
+  xkb_modifier_converter_ = XkbModifierConverter::CreateFromKeymap(keymap);
+  shift_mod_mask_ = xkb_modifier_converter_.MaskFromUiFlags(ui::EF_SHIFT_DOWN);
+  altgr_mod_mask_ = xkb_modifier_converter_.MaskFromUiFlags(ui::EF_ALTGR_DOWN);
 
   // Reconstruct keysym map.
   xkb_keysym_map_.clear();
@@ -915,29 +887,17 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
   }
 
   layout_index_ = 0;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Update num lock mask.
-  num_lock_mod_mask_ = num_lock_mask;
-#endif
-  shift_mod_mask_ = EventFlagsToXkbFlags(ui::EF_SHIFT_DOWN);
-  altgr_mod_mask_ = EventFlagsToXkbFlags(ui::EF_ALTGR_DOWN);
-
   if (keymap_init_closure_for_test_)
     std::move(keymap_init_closure_for_test_).Run();
 }
 
 xkb_mod_mask_t XkbKeyboardLayoutEngine::EventFlagsToXkbFlags(
     int ui_flags) const {
-  xkb_mod_mask_t xkb_flags = 0;
-  for (const auto& entry : xkb_flag_map_) {
-    if (ui_flags & entry.ui_flag)
-      xkb_flags |= entry.xkb_flag;
-  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS NumLock is always on.
-  xkb_flags |= num_lock_mod_mask_;
+  ui_flags |= ui::EF_NUM_LOCK_ON;
 #endif
-  return xkb_flags;
+  return xkb_modifier_converter_.MaskFromUiFlags(ui_flags);
 }
 
 int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
@@ -949,13 +909,15 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
   auto component = static_cast<xkb_state_component>(XKB_STATE_MODS_DEPRESSED |
                                                     XKB_STATE_MODS_LATCHED |
                                                     XKB_STATE_MODS_LOCKED);
-  int ui_flags = 0;
-  for (const auto& entry : xkb_flag_map_) {
-    if (xkb_state_mod_index_is_active(state, entry.xkb_index, component))
-      ui_flags |= entry.ui_flag;
+  xkb_mod_index_t num_mods =
+      xkb_keymap_num_mods(xkb_state_get_keymap(xkb_state_.get()));
+  xkb_mod_mask_t mask = 0;
+  for (xkb_mod_index_t i = 0; i < num_mods; ++i) {
+    if (xkb_state_mod_index_is_active(state, i, component))
+      mask |= (1 << i);
   }
   layout_index_ = group;
-  return ui_flags;
+  return xkb_modifier_converter_.UiFlagsFromMask(mask);
 }
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(uint32_t keysym) const {

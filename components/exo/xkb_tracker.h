@@ -16,6 +16,7 @@
 #include "base/memory/free_deleter.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
+#include "ui/events/ozone/layout/xkb/xkb_modifier_converter.h"
 #endif
 
 namespace exo {
@@ -64,6 +65,7 @@ class XkbTracker {
       xkb_context_new(XKB_CONTEXT_NO_FLAGS)};
   std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap_;
   std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
+  ui::XkbModifierConverter xkb_modifier_converter_{{}};
 
 #endif  // BUILDFLAG(USE_XKBCOMMON)
 };
