@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -246,6 +247,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetDedupKeys({13, 17})
                .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
                    {{"a", {"b", "c"}}}))
+               .SetAggregatableSource(*AttributionAggregatableSource::Create(
+                   AggregatableSourceProtoBuilder()
+                       .AddKey("a", AggregatableKeyProtoBuilder()
+                                        .SetHighBits(0)
+                                        .SetLowBits(1)
+                                        .Build())
+                       .Build()))
                .BuildStored(),
            SourceBuilder(now + base::Hours(2))
                .SetActiveState(StoredSource::ActiveState::
@@ -286,18 +294,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[7].innerText === $2 &&
           table.children[0].children[8].innerText === "{}" &&
           table.children[1].children[8].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[9].innerText === "19" &&
-          table.children[1].children[9].innerText === "" &&
-          table.children[0].children[10].innerText === "" &&
-          table.children[1].children[10].innerText === "13, 17" &&
-          table.children[0].children[11].innerText === "Unattributable: noised" &&
-          table.children[1].children[11].innerText === "Attributable" &&
-          table.children[2].children[11].innerText === "Attributable: reached event-level attribution limit" &&
-          table.children[3].children[11].innerText === "Unattributable: replaced by newer source" &&
-          table.children[4].children[11].innerText === "Rejected: internal error" &&
-          table.children[5].children[11].innerText === "Rejected: insufficient source capacity" &&
-          table.children[6].children[11].innerText === "Rejected: insufficient unique destination capacity" &&
-          table.children[7].children[11].innerText === "Rejected: excessive reporting origins") {
+          table.children[0].children[9].innerText === "{}" &&
+          table.children[1].children[9].innerText === '{\n "a": {\n  "highBits": "0",\n  "lowBits": "1"\n }\n}' &&
+          table.children[0].children[10].innerText === "19" &&
+          table.children[1].children[10].innerText === "" &&
+          table.children[0].children[11].innerText === "" &&
+          table.children[1].children[11].innerText === "13, 17" &&
+          table.children[0].children[12].innerText === "Unattributable: noised" &&
+          table.children[1].children[12].innerText === "Attributable" &&
+          table.children[2].children[12].innerText === "Attributable: reached event-level attribution limit" &&
+          table.children[3].children[12].innerText === "Unattributable: replaced by newer source" &&
+          table.children[4].children[12].innerText === "Rejected: internal error" &&
+          table.children[5].children[12].innerText === "Rejected: insufficient source capacity" &&
+          table.children[6].children[12].innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[7].children[12].innerText === "Rejected: excessive reporting origins") {
         document.title = $3;
       }
     });
@@ -975,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
             table.children[0].children[7].innerText === "Pending" &&
-            table.children[0].children[6].innerText === '[\n {\n  "keyHighBits": "0",\n  "keyLowBits": "1",\n  "value": 2\n }\n]' &&
+            table.children[0].children[6].innerText === '[\n {\n  "key": {\n   "highBits": "0",\n   "lowBits": "1"\n  },\n  "value": 2\n }\n]' &&
             table.children[1].children[7].innerText === "Dropped due to insufficient aggregatable budget" &&
             table.children[2].children[7].innerText === "No report capacity for destination site" &&
             table.children[3].children[7].innerText === "Sent: HTTP 200" &&
