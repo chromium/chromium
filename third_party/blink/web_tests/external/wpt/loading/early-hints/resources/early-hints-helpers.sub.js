@@ -116,3 +116,22 @@ function navigateToContentSecurityPolicyBasicTest(
     const url = "resources/csp-basic-loader.h2.py?" + params.toString();
     window.location.replace(new URL(url, window.location));
 }
+
+/**
+ * Navigate to a test page which sends different Cross-Origin-Embedder-Policy
+ * values in an Early Hints response and the final response.
+ *
+ * @param {string} early_hints_policy - The policy for the Early Hints response
+ * @param {string} final_policy - The policy for the final response
+ */
+function navigateToCrossOriginEmbedderPolicyMismatchTest(
+    early_hints_policy, final_policy) {
+    const params = new URLSearchParams();
+    params.set("resource-url",
+        CROSS_ORIGIN_RESOURCES_URL + "/empty-corp-absent.js?" + token());
+    params.set("early-hints-policy", early_hints_policy);
+    params.set("final-policy", final_policy);
+
+    const url = "resources/coep-mismatch.h2.py?" + params.toString();
+    window.location.replace(new URL(url, window.location));
+}
