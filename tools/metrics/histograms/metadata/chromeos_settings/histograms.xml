@@ -56,10 +56,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
-    enum="BooleanToggled" expires_after="2022-04-24">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="BooleanToggled" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Records when users change the kBluetoothOnOff setting on the Bluetooth page.
   </summary>
@@ -87,9 +86,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2023-01-06">
+    enum="TouchpadSensitivity" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Records when users change the Touchpad Speed on the Device page. The value
     saved is equal to the sensitivity value set on the slider, which ranges from
@@ -150,9 +149,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The amount of time between the render frame host StartProvisionalLoad event
     and the render frame DocumentOnLoadCompleted event for the Chrome OS
@@ -161,9 +160,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The amount of time between the render frame host StartProvisionalLoad and
     DidFinishDocumentLoad events for the Chrome OS settings page.
@@ -181,9 +180,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumCharsOfQueries" units="characters"
-    expires_after="2023-01-06">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The number of characters for queries used to fetch results from the Settings
     Search Mojo API.
@@ -218,9 +217,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
-    expires_after="2023-01-06">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The number of search results fetched each time a successful search request
     is made to the Settings Search Mojo API.
@@ -239,9 +238,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited" enum="WebUISettingsPathHashes"
-    expires_after="2023-04-10">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Paths visited within chrome://os-settings. For evaluating popularity and
     priorities for OS Settings UI.
@@ -249,9 +248,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.People.AddAccountCount" units="accounts"
-    expires_after="2023-02-15">
+    expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Records when users click the Add Account button on the People page. The
     number of the account that would be added is saved, e.g. a sample of 2 means
@@ -284,7 +283,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.SearchRequests"
     enum="OsSettingSearchRequestTypes" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The number of search requests made to the Settings Search Mojo API. For
     search requests that succeeded with a response, the number of search
@@ -297,7 +296,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.SearchRequestsPerSession"
     units="mojo search requests" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The number of search requests made to the Settings Search Mojo API in one
     session of the settings app.
@@ -307,7 +306,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
     enum="OsSettingsSection" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Section search results clicked by user in the OS settings search box.
   </summary>
@@ -316,7 +315,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.SearchResultSettingSelected"
     enum="OsSetting" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Setting search results clicked by user in the OS settings search box.
   </summary>
@@ -325,7 +324,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
     enum="OsSettingsSubpage" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Subpage search results clicked by user in the OS settings search box.
   </summary>
@@ -333,8 +332,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
     enum="OsSettingsSearchResultType" expires_after="2023-04-17">
-  <owner>xiaohuic@google.com</owner>
-  <owner>assistive-eng@chromium.org</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     Type of search results clicked by user in the OS settings search box.
   </summary>
@@ -365,9 +364,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
-    enum="OsSettingSearchBoxUserAction" expires_after="2023-01-06">
+    enum="OsSettingSearchBoxUserAction" expires_after="2023-04-17">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
+  <owner>cros-settings@google.com</owner>
   <summary>
     The user action taken when search results exist and are displayed.
   </summary>
