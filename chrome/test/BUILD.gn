@@ -4244,6 +4244,10 @@ if (!is_android) {
       ]
     }
 
+    if (enable_side_search) {
+      sources += [ "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc" ]
+    }
+
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",

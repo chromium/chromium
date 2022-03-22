@@ -32,31 +32,6 @@ DefaultSearchIconSource::DefaultSearchIconSource(
 DefaultSearchIconSource::~DefaultSearchIconSource() = default;
 
 void DefaultSearchIconSource::OnTemplateURLServiceChanged() {
-  const auto* default_template_url =
-      TemplateURLServiceFactory::GetForProfile(browser_->profile())
-          ->GetDefaultSearchProvider();
-
-  // If there is currently no default search engine set, but there was one set
-  // previously, reset `default_template_url_id_` and notify the client.
-  if (!default_template_url &&
-      default_template_url_id_ != kInvalidTemplateURLID) {
-    default_template_url_id_ = kInvalidTemplateURLID;
-    favicon_url_ = GURL();
-    icon_changed_subscription_.Run();
-    return;
-  }
-
-  // Update the favicon only if the current default search provider or the
-  // favicon url has changed. The favicon url may update without the default
-  // search provider changing.
-  if (!default_template_url ||
-      (default_template_url->id() == default_template_url_id_ &&
-       default_template_url->favicon_url() == favicon_url_)) {
-    return;
-  }
-
-  default_template_url_id_ = default_template_url->id();
-  favicon_url_ = default_template_url->favicon_url();
   icon_changed_subscription_.Run();
 }
 
