@@ -21,6 +21,7 @@ class ProgressBar;
 }  // namespace views
 
 class DownloadShelfContextMenuView;
+class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
@@ -29,7 +30,8 @@ class DownloadBubbleRowView : public views::View,
   METADATA_HEADER(DownloadBubbleRowView);
 
   explicit DownloadBubbleRowView(DownloadUIModel::DownloadUIModelPtr model,
-                                 DownloadBubbleRowListView* row_list_view);
+                                 DownloadBubbleRowListView* row_list_view,
+                                 DownloadBubbleUIController* bubble_controller);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -37,8 +39,8 @@ class DownloadBubbleRowView : public views::View,
   void AddedToWidget() override;
 
   // Overrides DownloadUIModel::Observer:
-  void OnDownloadUpdated() override;
   void OnDownloadOpened() override;
+  void OnDownloadUpdated() override;
   void OnDownloadDestroyed() override;
 
   // Overrides views::ContextMenuController:
@@ -91,6 +93,9 @@ class DownloadBubbleRowView : public views::View,
 
   // Parent row list view.
   raw_ptr<DownloadBubbleRowListView> row_list_view_ = nullptr;
+
+  // Controller for keeping track of downloads.
+  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };

@@ -52,11 +52,14 @@ class DownloadBubbleUIController
   // progress for animation.
   virtual const OfflineItemList& GetOfflineItems();
 
-  // This function makes sure that the offlines items field is
+  // This function makes sure that the offline items field is
   // populated, and then calls the given callback. After this, GetOfflineItems
   // will return a populated list.
   virtual void InitOfflineItems(DownloadDisplayController* display_controller,
                                 base::OnceCallback<void()> callback);
+
+  // Remove the entry from Partial view candidates.
+  void RemoveContentIdFromPartialView(const ContentId& id);
 
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;
@@ -85,18 +88,20 @@ class DownloadBubbleUIController
                      const absl::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
-  void MaybeAddNewOfflineItems(base::OnceCallback<void()> callback,
-                               const OfflineItemList& offline_items);
+  // Try to add the items to the set/list(s) and calling callback on completion.
+  void MaybeAddOfflineItems(base::OnceCallback<void()> callback,
+                            bool is_new,
+                            const OfflineItemList& offline_items);
 
   // Try to add the new item to the list, returning success status.
-  bool MaybeAddNewOfflineItem(const OfflineItem& item);
+  bool MaybeAddOfflineItem(const OfflineItem& item, bool is_new);
 
   // Prune OfflineItems to recent items to in-progress offline items, or
   // downloads started in the last day.
   void PruneOfflineItems();
 
   // Common method for getting main and partial views.
-  std::vector<DownloadUIModelPtr> GetDownloadUIModels();
+  std::vector<DownloadUIModelPtr> GetDownloadUIModels(bool is_main_view);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::DownloadManager> download_manager_;
@@ -113,6 +118,9 @@ class DownloadBubbleUIController
 
   // Pruned list of offline items.
   OfflineItemList offline_items_;
+
+  // set of ids to be shown in partial_view.
+  std::set<ContentId> partial_view_ids_;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };
