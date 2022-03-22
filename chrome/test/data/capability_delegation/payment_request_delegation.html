@@ -14,7 +14,7 @@ found in the LICENSE file.
   let resolve_promise = null;
   window.addEventListener("message", e => resolve_promise(e.data));
 
-  async function sendRequestToSubframe(delegate) {
+  async function sendRequestToSubframe(delegate, paymentMethod) {
       const promise = new Promise(resolve => { resolve_promise = resolve; });
 
       let post_message_options = {};
@@ -22,7 +22,7 @@ found in the LICENSE file.
       if (delegate) {
           post_message_options["delegate"] = "payment";
       }
-      frames[0].postMessage("try", post_message_options);
+      frames[0].postMessage(paymentMethod, post_message_options);
       return promise;
   }
 </script>

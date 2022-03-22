@@ -11,10 +11,9 @@ found in the LICENSE file.
   <title>Payment request delegation child frame</title>
 </head>
 <script>
-  async function tryPaymentRequestAndReport() {
+  async function tryPaymentRequestAndReport(event) {
       const request = new PaymentRequest([{
-          supportedMethods: "basic-card",
-          data: { supportedNetworks: ["visa"] }
+          supportedMethods: event.data,
       }], {
           total: {
               label: "total",

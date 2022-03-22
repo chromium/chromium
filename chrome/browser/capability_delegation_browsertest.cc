@@ -20,7 +20,6 @@ class CapabilityDelegationBrowserTest
   CapabilityDelegationBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kCapabilityDelegationPaymentRequest,
-                              features::kPaymentRequestBasicCard,
                               features::kPaymentRequestRequiresUserActivation},
         /*disabled_features=*/{});
   }
@@ -38,6 +37,8 @@ class CapabilityDelegationBrowserTest
     content::SetupCrossSiteRedirector(https_server());
     https_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/capability_delegation");
+    https_server()->ServeFilesFromSourceDirectory(
+        "components/test/data/payments");
     https_server()->StartAcceptingConnections();
   }
 
@@ -47,6 +48,11 @@ class CapabilityDelegationBrowserTest
 
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                        CrossOriginPaymentRequest) {
+  // Install a payment app that responds to the abortpayment event, which is
+  // used by this test to determine that the app was successfully run.
+  std::string payment_method;
+  InstallPaymentApp("a.com", "abort_responder_app.js", &payment_method);
+
   // Navigate the top frame.
   GURL main_url(
       https_server()->GetURL("a.com", "/payment_request_delegation.html"));
@@ -83,29 +89,45 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("SecurityError",
-            content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(
+      "SecurityError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1)",
+                                         payment_method),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Without user activation but with the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("SecurityError",
-            content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(
+      "SecurityError",
+      content::EvalJs(
+          active_web_contents,
+          content::JsReplace("sendRequestToSubframe(true, $1)", payment_method),
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("SecurityError", content::EvalJs(active_web_contents,
-                                             "sendRequestToSubframe(false)"));
+  EXPECT_EQ(
+      "SecurityError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1)",
+                                         payment_method)));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.
   EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
-                                          "sendRequestToSubframe(true)"));
+                                          content::JsReplace(
+                                              "sendRequestToSubframe(true, $1)",
+                                              payment_method)));
 }
 
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                        SameOriginPaymentRequest) {
+  // Install a payment app that responds to the abortpayment event, which is
+  // used by this test to determine that the app was successfully run.
+  std::string payment_method;
+  InstallPaymentApp("a.com", "abort_responder_app.js", &payment_method);
+
   // Navigate the top frame.
   GURL main_url(
       https_server()->GetURL("a.com", "/payment_request_delegation.html"));
@@ -127,23 +149,34 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("SecurityError",
-            content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(
+      "SecurityError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1)",
+                                         payment_method),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Without user activation but with the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("SecurityError",
-            content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(
+      "SecurityError",
+      content::EvalJs(
+          active_web_contents,
+          content::JsReplace("sendRequestToSubframe(true, $1)", payment_method),
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is shown and then successfully aborted by the script.
-  EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
-                                          "sendRequestToSubframe(false)"));
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1)",
+                                         payment_method)));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.
   EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
-                                          "sendRequestToSubframe(true)"));
+                                          content::JsReplace(
+                                              "sendRequestToSubframe(true, $1)",
+                                              payment_method)));
 }
