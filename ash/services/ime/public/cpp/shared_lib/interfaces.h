@@ -208,9 +208,6 @@ extern "C" {
 __attribute__((visibility("default"))) void ImeDecoderInitOnce(
     ash::ime::ImeCrosPlatform* platform);
 
-// Closes the IME shared lib and releases resources used by it.
-__attribute__((visibility("default"))) void ImeDecoderClose();
-
 // Sets logger for the shared library. Releases the previous logger if there
 // was one. If the new logger is null, then no logger will be used.
 __attribute__((visibility("default"))) void SetImeEngineLogger(

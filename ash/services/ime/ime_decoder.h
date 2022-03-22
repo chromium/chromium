@@ -23,9 +23,6 @@ typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform* platform);
 inline constexpr char kSetImeEngineLoggerFnName[] = "SetImeEngineLogger";
 typedef void (*SetImeEngineLoggerFn)(ChromeLoggerFunc logger_func);
 
-inline constexpr char kImeDecoderCloseFnName[] = "ImeDecoderClose";
-typedef void (*ImeDecoderCloseFn)();
-
 inline constexpr char kImeDecoderSupportsFnName[] = "ImeDecoderSupports";
 typedef bool (*ImeDecoderSupportsFn)(const char* ime_spec);
 
@@ -62,7 +59,6 @@ class ImeDecoder {
   // See ash/services/ime/public/cpp/shared_lib/interfaces.h for API specs.
   struct EntryPoints {
     ImeDecoderInitOnceFn init_once;
-    ImeDecoderCloseFn close;
     ImeDecoderSupportsFn supports;
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;

@@ -83,7 +83,6 @@ ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
 
   ImeDecoder::EntryPoints entry_points = {
       .init_once = [](ImeCrosPlatform* platform) {},
-      .close = []() {},
       .supports = [](const char* ime_spec) { return true; },
       .activate_ime = [](const char* ime_spec,
                          ImeClientDelegate* delegate) { return true; },

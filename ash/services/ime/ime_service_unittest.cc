@@ -112,7 +112,6 @@ class TestImeDecoder : public ImeDecoder {
 
     entry_points_ = {
         .init_once = [](ImeCrosPlatform* platform) {},
-        .close = []() {},
         .supports =
             [](const char* ime_spec) {
               return strcmp(kInvalidImeSpec, ime_spec) != 0;

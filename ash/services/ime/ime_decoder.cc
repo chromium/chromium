@@ -72,8 +72,6 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   EntryPoints entry_points = {
       .init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
           library.GetFunctionPointer(kImeDecoderInitOnceFnName)),
-      .close = reinterpret_cast<ImeDecoderCloseFn>(
-          library.GetFunctionPointer(kImeDecoderCloseFnName)),
       .supports = reinterpret_cast<ImeDecoderSupportsFn>(
           library.GetFunctionPointer(kImeDecoderSupportsFnName)),
       .activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
@@ -92,7 +90,7 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   // Checking if entry_points_ are loaded.
   if (!entry_points.init_once || !entry_points.supports ||
       !entry_points.activate_ime || !entry_points.process ||
-      !entry_points.close || !entry_points.connect_to_input_method ||
+      !entry_points.connect_to_input_method ||
       !entry_points.is_input_method_connected ||
       !entry_points.initialize_connection_factory) {
     return absl::nullopt;
