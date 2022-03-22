@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import { MinimumRoutes,Route, Router} from '../../router.js';
-import {ensureLazyLoaded} from '../ensure_lazy_loaded.m.js';
-// clang-format on
+import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
-  /**
-   * @enum {string}
-   * A categorization of every possible Settings URL, necessary for implementing
-   * a finite state machine.
-   */
+/**
+ * @enum {string}
+ * A categorization of every possible Settings URL, necessary for implementing
+ * a finite state machine.
+ */
 export const RouteState = {
   // Initial state before anything has loaded yet.
   INITIAL: 'initial',

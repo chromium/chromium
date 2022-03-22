@@ -265,7 +265,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_route.js",
     "chromeos/os_page_visibility.js",
     "chromeos/pref_to_setting_metric_converter.js",
-    "chromeos/ensure_lazy_loaded.m.js",
+    "chromeos/ensure_lazy_loaded.js",
     "chromeos/lazy_load.js",
     "chromeos/crostini_page/crostini_browser_proxy.js",
     "chromeos/date_time_page/date_time_types.js",

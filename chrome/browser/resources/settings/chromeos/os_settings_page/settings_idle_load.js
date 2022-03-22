@@ -11,7 +11,7 @@
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ensureLazyLoaded} from '../ensure_lazy_loaded.m.js';
+import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
 Polymer({
   _template: html`{__html_template__}`,
