@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ContextEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2022-04-24">
+    expires_after="2023-03-21">
   <owner>updowndota@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
