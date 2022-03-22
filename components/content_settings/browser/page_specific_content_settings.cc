@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -510,26 +511,31 @@ void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
 }
 }  // namespace
 
-void PageSpecificContentSettings::OnStorageAccessed(StorageType storage_type,
-                                                    const GURL& url,
-                                                    bool blocked_by_policy) {
+void PageSpecificContentSettings::OnStorageAccessed(
+    StorageType storage_type,
+    const GURL& url,
+    bool blocked_by_policy,
+    content::Page* originating_page) {
+  originating_page = originating_page ? originating_page : &page();
   if (blocked_by_policy) {
     AddToContainer(blocked_local_shared_objects_, storage_type, url);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     AddToContainer(allowed_local_shared_objects_, storage_type, url);
     NotifyDelegate(&Delegate::OnStorageAccessAllowed, storage_type,
-                   url::Origin::Create(url));
+                   url::Origin::Create(url), std::ref(*originating_page));
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
-                    storage_type, url, blocked_by_policy);
+                    storage_type, url, blocked_by_policy, originating_page);
   MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnCookiesAccessed(
-    const content::CookieAccessDetails& details) {
+    const content::CookieAccessDetails& details,
+    content::Page* originating_page) {
+  originating_page = originating_page ? originating_page : &page();
   if (details.cookie_list.empty())
     return;
   if (details.blocked_by_policy) {
@@ -538,22 +544,26 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   } else {
     allowed_local_shared_objects_.cookies()->AddCookies(details);
     OnContentAllowed(ContentSettingsType::COOKIES);
-    NotifyDelegate(&Delegate::OnCookieAccessAllowed, details.cookie_list);
+    NotifyDelegate(&Delegate::OnCookieAccessAllowed, details.cookie_list,
+                   std::ref(*originating_page));
   }
 
-  MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details);
+  MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details,
+                    originating_page);
   MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnServiceWorkerAccessed(
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    content::AllowServiceWorkerResult allowed,
+    content::Page* originating_page) {
   DCHECK(scope.is_valid());
+  originating_page = originating_page ? originating_page : &page();
   if (allowed) {
     allowed_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));
     NotifyDelegate(&Delegate::OnServiceWorkerAccessAllowed,
-                   url::Origin::Create(scope));
+                   url::Origin::Create(scope), std::ref(*originating_page));
   } else {
     blocked_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));
@@ -571,7 +581,7 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnServiceWorkerAccessed,
-                    scope, allowed);
+                    scope, allowed, originating_page);
 }
 
 void PageSpecificContentSettings::OnSharedWorkerAccessed(

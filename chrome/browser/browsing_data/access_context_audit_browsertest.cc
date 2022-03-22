@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -656,3 +657,36 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
                                     /* compare_host_only */ true);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class AccessContextAuditFencedFrameBrowserTest
+    : public AccessContextAuditBrowserTest {
+ public:
+  AccessContextAuditFencedFrameBrowserTest() = default;
+  ~AccessContextAuditFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccessContextAuditFencedFrameBrowserTest,
+                       AccessShouldNotBeRecorded) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(), top_level_.GetURL(kTopLevelHost, "/empty.html")));
+  content::RenderFrameHost* ff = fenced_frame_test_helper().CreateFencedFrame(
+      GetWebContents()->GetMainFrame(), embedded_url());
+
+  EXPECT_TRUE(
+      content::EvalJs(ff, "(async () => { return await accessStorage();})()")
+          .value.GetBool());
+
+  auto records = GetAllAccessRecords();
+  EXPECT_EQ(records.size(), 0u);
+}

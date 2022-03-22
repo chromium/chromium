@@ -31,6 +31,8 @@ namespace {
 void RecordOriginStorageAccess(const url::Origin& origin,
                                AccessContextAuditDatabase::StorageAPIType type,
                                content::Page& page) {
+  if (page.GetMainDocument().IsFencedFrameRoot())
+    return;
   auto* access_context_audit_service =
       AccessContextAuditServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
@@ -196,23 +198,27 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
 }
 
 void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
-    const net::CookieList& accessed_cookies) {
+    const net::CookieList& accessed_cookies,
+    content::Page& page) {
+  if (page.GetMainDocument().IsFencedFrameRoot())
+    return;
   if (cookie_access_helper_) {
     cookie_access_helper_->RecordCookieAccess(
-        accessed_cookies, GetPage().GetMainDocument().GetLastCommittedOrigin());
+        accessed_cookies, page.GetMainDocument().GetLastCommittedOrigin());
   }
 }
 
 void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    content::Page& page) {
   RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker,
-      GetPage());
+      origin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker, page);
 }
 
 void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
-    StorageType storage_type,
-    const url::Origin& origin) {
+    content_settings::mojom::ContentSettingsManager::StorageType storage_type,
+    const url::Origin& origin,
+    content::Page& page) {
   AccessContextAuditDatabase::StorageAPIType out_type = ([storage_type]() {
     switch (storage_type) {
       case StorageType::CACHE:
@@ -232,7 +238,7 @@ void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
         return AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
     }
   })();
-  RecordOriginStorageAccess(origin, out_type, GetPage());
+  RecordOriginStorageAccess(origin, out_type, page);
 }
 
 void PageSpecificContentSettingsDelegate::PrimaryPageChanged(

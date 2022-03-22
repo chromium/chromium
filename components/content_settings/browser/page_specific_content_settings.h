@@ -144,15 +144,18 @@ class PageSpecificContentSettings
     // granted in |page|.
     virtual void OnStorageAccessAllowed(
         mojom::ContentSettingsManager::StorageType storage_type,
-        const url::Origin& origin) = 0;
+        const url::Origin& origin,
+        content::Page& page) = 0;
 
-    // Notifies the delegate that access was granted to |accessed_cookies|.
-    virtual void OnCookieAccessAllowed(
-        const net::CookieList& accessed_cookies) = 0;
+    // Notifies the delegate that access was granted to |accessed_cookies| in
+    // |page|.
+    virtual void OnCookieAccessAllowed(const net::CookieList& accessed_cookies,
+                                       content::Page& page) = 0;
 
     // Notifies the delegate that access was granted to service workers for
     // |origin|.
-    virtual void OnServiceWorkerAccessAllowed(const url::Origin& origin) = 0;
+    virtual void OnServiceWorkerAccessAllowed(const url::Origin& origin,
+                                              content::Page& page) = 0;
   };
 
   // Classes that want to be notified about site data events must implement
@@ -315,10 +318,14 @@ class PageSpecificContentSettings
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
 
+  // |originating_page| is non-null when it differs from page(), which happens
+  // when an embedding page's PSCS is notified of an access that happens in an
+  // embedded page (through |MaybeUpdateParent|).
   void OnStorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
       const GURL& url,
-      bool blocked_by_policy);
+      bool blocked_by_policy,
+      content::Page* originating_page = nullptr);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,
                               const blink::StorageKey& storage_key,
@@ -344,9 +351,12 @@ class PageSpecificContentSettings
       const std::string& media_stream_requested_audio_device,
       const std::string& media_stream_requested_video_device);
 
-  void OnCookiesAccessed(const content::CookieAccessDetails& details);
+  // See |OnStorageAccessed| documentation for more info on |originating_page|.
+  void OnCookiesAccessed(const content::CookieAccessDetails& details,
+                         content::Page* originating_page = nullptr);
   void OnServiceWorkerAccessed(const GURL& scope,
-                               content::AllowServiceWorkerResult allowed);
+                               content::AllowServiceWorkerResult allowed,
+                               content::Page* originating_page = nullptr);
 
   // Block all content. Used for testing content setting bubbles.
   void BlockAllContentForTesting();

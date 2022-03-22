@@ -67,12 +67,15 @@ void TestPageSpecificContentSettingsDelegate::OnContentBlocked(
 
 void TestPageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
     content_settings::mojom::ContentSettingsManager::StorageType storage_type,
-    const url::Origin& origin) {}
+    const url::Origin& origin,
+    content::Page& page) {}
 
 void TestPageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
-    const net::CookieList& accessed_cookies) {}
+    const net::CookieList& accessed_cookies,
+    content::Page& page) {}
 
 void TestPageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
-    const url::Origin& origin) {}
+    const url::Origin& origin,
+    content::Page& page) {}
 
 }  // namespace content_settings

@@ -61,8 +61,10 @@ class MockPageSpecificContentSettingsDelegate
   MOCK_METHOD(void, OnContentBlocked, (ContentSettingsType type));
   MOCK_METHOD(void,
               OnCookieAccessAllowed,
-              (const net::CookieList& accessed_cookies));
-  MOCK_METHOD(void, OnStorageAccessAllowed, (StorageType, const url::Origin&));
+              (const net::CookieList& accessed_cookies, content::Page& page));
+  MOCK_METHOD(void,
+              OnStorageAccessAllowed,
+              (StorageType, const url::Origin&, content::Page&));
 };
 
 }  // namespace
@@ -604,15 +606,21 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   pscs->OnStorageAccessed(StorageType::LOCAL_STORAGE, url, blocked_by_policy);
   pscs->OnStorageAccessed(StorageType::DATABASE, url, blocked_by_policy);
 
-  EXPECT_CALL(*mock_delegate, OnCookieAccessAllowed).Times(1);
+  content::Page& prerender_page = prerender_frame->GetPage();
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::INDEXED_DB, origin))
+              OnCookieAccessAllowed(testing::_, testing::Ref(prerender_page)))
       .Times(1);
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::LOCAL_STORAGE, origin))
+              OnStorageAccessAllowed(StorageType::INDEXED_DB, origin,
+                                     testing::Ref(prerender_page)))
       .Times(1);
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::DATABASE, origin))
+              OnStorageAccessAllowed(StorageType::LOCAL_STORAGE, origin,
+                                     testing::Ref(prerender_page)))
+      .Times(1);
+  EXPECT_CALL(*mock_delegate,
+              OnStorageAccessAllowed(StorageType::DATABASE, origin,
+                                     testing::Ref(prerender_page)))
       .Times(1);
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
@@ -756,15 +764,21 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
       PageSpecificContentSettings::GetForFrame(fenced_frame_root);
   ASSERT_NE(ff_pscs, nullptr);
 
-  EXPECT_CALL(*mock_delegate, OnCookieAccessAllowed).Times(1);
+  content::Page& ff_page = fenced_frame_root->GetPage();
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::INDEXED_DB, ff_origin))
+              OnCookieAccessAllowed(testing::_, testing::Ref(ff_page)))
       .Times(1);
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::LOCAL_STORAGE, ff_origin))
+              OnStorageAccessAllowed(StorageType::INDEXED_DB, ff_origin,
+                                     testing::Ref(ff_page)))
       .Times(1);
   EXPECT_CALL(*mock_delegate,
-              OnStorageAccessAllowed(StorageType::DATABASE, ff_origin))
+              OnStorageAccessAllowed(StorageType::LOCAL_STORAGE, ff_origin,
+                                     testing::Ref(ff_page)))
+      .Times(1);
+  EXPECT_CALL(*mock_delegate,
+              OnStorageAccessAllowed(StorageType::DATABASE, ff_origin,
+                                     testing::Ref(ff_page)))
       .Times(1);
 
   const bool blocked_by_policy = false;
