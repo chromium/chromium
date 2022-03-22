@@ -30,10 +30,13 @@ namespace policy {
 //         "encryptionKey": "LocalPublicValue",
 //         "publicKeyId": 1
 //       },
-//       "sequencingInformation": {
+//       "sequenceInformation": {
 //         "sequencingId": 1,
 //         "generationId": 123456789,
 //         "priority": 1
+//       },
+//       "compressionInformation": {
+//         "compressionAlgorithm": 1
 //       }
 //     },
 //     {
@@ -42,10 +45,13 @@ namespace policy {
 //         "encryptionKey": "LocalPublicValue",
 //         "publicKeyId": 2
 //       },
-//       "sequencingInformation": {
+//       "sequenceInformation": {
 //         "sequencingId": 2,
 //         "generationId": 123456789,
 //         "priority": 1
+//       },
+//       "compressionInformation": {
+//         "compressionAlgorithm": 1
 //       }
 //     }
 //   ],

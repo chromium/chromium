@@ -29,6 +29,9 @@ namespace reporting {
 //         "sequencingId": 1,
 //         "generationId": 123456789,
 //         "priority": 1
+//       },
+//       "compressionInformation": {
+//         "compressionAlgorithm": 1
 //       }
 //     },
 //     {
@@ -41,6 +44,9 @@ namespace reporting {
 //         "sequencingId": 2,
 //         "generationId": 123456789,
 //         "priority": 1
+//       },
+//       "compressionInformation": {
+//         "compressionAlgorithm": 1
 //       }
 //     }
 //   ],
