@@ -633,7 +633,7 @@ void CopyRowsToRGB10Buffer(bool is_argb,
                            const VideoFrame* source_frame,
                            uint8_t* output,
                            int dest_stride) {
-  TRACE_EVENT2("media", "CopyRowsToXR30Buffer", "bytes_per_row", width * 2,
+  TRACE_EVENT2("media", "CopyRowsToRGB10Buffer", "bytes_per_row", width * 2,
                "rows", rows);
   if (!output)
     return;
