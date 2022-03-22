@@ -3482,7 +3482,6 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/signed-exchange/subresource/sxg-subre
 crbug.com/626703 [ Mac10.12 ] virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/run-url-selection-operation.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Skip ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
@@ -3493,7 +3492,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/portals/wpt_internal/portals/create-many-p
 crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash ]
 crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-crbug.com/626703 external/wpt/css/css-grid/subgrid/auto-track-sizing-002.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-yes-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Timeout ]
@@ -4643,6 +4641,7 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/abs-pos-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/abs-pos-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/abs-pos-004.html [ Failure ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-002.html [ Failure ]
@@ -4686,6 +4685,7 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-001.html
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-004.html [ Failure ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
 
 crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
 
