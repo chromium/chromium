@@ -171,13 +171,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
 };
 
 // Test payment request methods are not supported by the payment app.
-// Flaky on Linux: http://crbug.com/1296289
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NotSupportedError DISABLED_NotSupportedError
-#else
-#define MAYBE_NotSupportedError NotSupportedError
-#endif
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, MAYBE_NotSupportedError) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, NotSupportedError) {
   InstallAlicePayForMethod("https://frankpay.com");
 
   {
@@ -229,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, MAYBE_NotSupportedError) {
   }
 }
 
-// Test CanMakePayment and payment request can be fullfiled.
+// Test CanMakePayment and payment request can be fulfilled.
 IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithAlicePay) {
   InstallAlicePayForMethod("https://alicepay.com");
 
@@ -283,15 +277,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithAlicePay) {
   }
 }
 
-// Test CanMakePayment and payment request can be fullfiled in incognito mode.
-// The test is flaky https://crbug.com/1306453.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_PayWithAlicePayIncognito DISABLED_PayWithAlicePayIncognito
-#else
-#define MAYBE_PayWithAlicePayIncognito PayWithAlicePayIncognito
-#endif
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
-                       MAYBE_PayWithAlicePayIncognito) {
+// Test CanMakePayment and payment request can be fulfilled in incognito mode.
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithAlicePayIncognito) {
   SetIncognito();
   InstallAlicePayForMethod("https://alicepay.com");
 
@@ -398,12 +385,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, BlockAlicePay) {
   }
 }
 
-// Sheriff 2021-08-10: Disabling due to flakiness.
-// https://crbug.com/1238273
-//
 // Test https://bobpay.com can not be used by https://alicepay.com
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
-                       DISABLED_CanNotPayWithBobPay) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, CanNotPayWithBobPay) {
   InstallAlicePayForMethod("https://bobpay.com");
 
   {

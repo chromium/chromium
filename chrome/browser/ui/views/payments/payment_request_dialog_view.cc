@@ -95,6 +95,9 @@ void PaymentRequestDialogView::OnDialogClosed() {
   RemoveChildViewT(view_stack_.get());
   controller_map_.clear();
   request_->OnUserCancelled();
+
+  if (observer_for_testing_)
+    observer_for_testing_->OnDialogClosed();
 }
 
 bool PaymentRequestDialogView::ShouldShowCloseButton() const {

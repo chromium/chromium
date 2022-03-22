@@ -60,21 +60,6 @@ class PaymentRequestNoShippingTest : public PaymentRequestBrowserTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InactiveBrowserWindow) {
-  NavigateTo("/payment_request_no_shipping_test.html");
-  SetBrowserWindowInactive();
-
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-
-  EXPECT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
-      "(function() { document.getElementById('buy').click(); })();"));
-
-  WaitForObservedEvent();
-
-  ExpectBodyContains({"AbortError"});
-}
-
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, OpenAndNavigateTo404) {
   NavigateTo("/payment_request_no_shipping_test.html");
   InvokePaymentRequestUI();
@@ -131,7 +116,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                            /*wait_for_animation=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, PayWithVisa) {
+// Disabled due to incompatibility with flaky test fix for crbug.com/1306453,
+// and this test is soon to be removed with basic-card.
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, DISABLED_PayWithVisa) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -154,27 +141,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, PayWithVisa) {
        base::UTF16ToUTF8(card.Expiration4DigitYearAsString()).c_str()});
   ExpectBodyContains({"John", "H.", "Doe", "Underworld", "666 Erebus St.",
                       "Apt 8", "Elysium", "CA", "91111", "US", "16502111111"});
-}
-
-IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InvalidSSL) {
-  NavigateTo("/payment_request_no_shipping_test.html");
-  SetInvalidSsl();
-
-  autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
-  AddAutofillProfile(billing_address);
-  autofill::CreditCard card = autofill::test::GetCreditCard();
-  card.set_billing_address_id(billing_address.guid());
-  AddCreditCard(card);  // Visa.
-
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-
-  EXPECT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
-      "(function() { document.getElementById('buy').click(); })();"));
-
-  WaitForObservedEvent();
-
-  ExpectBodyContains({"NotSupportedError"});
 }
 
 // The tests in this class correspond to the tests of the same name in
@@ -252,6 +218,48 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
                            /*wait_for_animation=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       InactiveBrowserWindow) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+  SetBrowserWindowInactive();
+
+  EXPECT_EQ(
+      "Cannot show PaymentRequest UI in a preview page or a background tab.",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+              a_method_name, b_method_name)));
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       InvalidSSL) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+  SetInvalidSsl();
+
+  EXPECT_EQ(
+      "Invalid SSL certificate",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+              a_method_name, b_method_name)));
 }
 
 class PaymentRequestAbortTest : public PaymentRequestBrowserTestBase {

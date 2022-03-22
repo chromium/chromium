@@ -21,10 +21,11 @@ function buy() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI that does not require a shipping address.
  * @param {String} methodData - An array of payment method objects.
+ * @return {string} - The error message, if any.
  */
-function buyWithMethods(methodData) {
+async function buyWithMethods(methodData) {
   try {
-    new PaymentRequest(
+    await new PaymentRequest(
       methodData,
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -46,11 +47,8 @@ function buyWithMethods(methodData) {
               .catch(function(error) {
                 print(error);
               });
-        })
-        .catch(function(error) {
-          print(error);
         });
   } catch (error) {
-    print(error.message);
+    return error.message;
   }
 }

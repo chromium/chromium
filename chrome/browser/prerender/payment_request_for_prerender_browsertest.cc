@@ -162,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserBasicCardDisabledTest,
   EXPECT_TRUE(content::ExecJs(
       prerender_render_frame_host,
       content::JsReplace("buyWithMethods([{supportedMethods:$1}]);", method),
-      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+          content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Run the loop to give the test a chance to fail if is_app_list_ready_fired_
   // is set to true too early.

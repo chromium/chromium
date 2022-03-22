@@ -302,13 +302,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   PaymentRequestDialogView* first_dialog_view = dialog_view();
 
   // Try to show a second request.
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   content::WebContents* web_contents = GetActiveWebContents();
   const std::string click_buy_button_js =
       "(function() { document.getElementById('showSecondRequest').click(); "
       "})();";
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-  WaitForObservedEvent();
 
   // Complete the original Payment Request.
   PayWithCreditCardAndWait(u"123", first_dialog_view);
@@ -486,14 +484,12 @@ IN_PROC_BROWSER_TEST_F(
   PaymentRequestDialogView* first_dialog_view = dialog_view();
 
   // Try to show a second request.
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
       web_contents,
       content::JsReplace("showSecondRequestWithMethods([{supportedMethods:$1}, "
                          "{supportedMethods:$2}]);",
                          a_method_name, b_method_name)));
-  WaitForObservedEvent();
 
   // Complete the original Payment Request.
   ResetEventWaiterForSequence(
@@ -612,13 +608,11 @@ IN_PROC_BROWSER_TEST_F(
   PaymentRequestDialogView* first_dialog_view = dialog_view();
 
   // Try to show a second request.
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   content::WebContents* web_contents = GetActiveWebContents();
   const std::string click_buy_button_js =
       "(function() { document.getElementById('showSecondRequest').click(); "
       "})();";
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-  WaitForObservedEvent();
 
   // Complete the original Payment Request.
   PayWithCreditCardAndWait(u"123", first_dialog_view);

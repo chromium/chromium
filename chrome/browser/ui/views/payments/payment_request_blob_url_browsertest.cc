@@ -14,7 +14,7 @@ class PaymentRequestBlobUrlTest : public PaymentRequestBrowserTestBase {
   PaymentRequestBlobUrlTest() {}
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, ConnectionTerminated) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, Rejected) {
   NavigateTo("/payment_request_blob_url_test.html");
 
   // Trigger the Blob URL load, and wait for it to finish.
@@ -24,12 +24,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, ConnectionTerminated) {
   WaitForLoadStop(GetActiveWebContents());
 
   // Trigger the PaymentRequest, which should be rejected.
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(), "triggerPaymentRequest();"));
-  WaitForObservedEvent();
-
-  ExpectBodyContains({"Rejected: NotSupportedError"});
+  ASSERT_EQ(
+      "NotSupportedError: Only localhost, file://, and cryptographic scheme "
+      "origins allowed.",
+      content::EvalJs(GetActiveWebContents(), "triggerPaymentRequest();"));
 }
 
 }  // namespace payments

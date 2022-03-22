@@ -128,6 +128,7 @@ class PaymentRequestBrowserTestBase
 
   // PaymentRequestDialogView::ObserverForTest:
   void OnDialogOpened() override;
+  void OnDialogClosed() override;
   void OnOrderSummaryOpened() override;
   void OnPaymentMethodOpened() override;
   void OnShippingAddressSectionOpened() override;

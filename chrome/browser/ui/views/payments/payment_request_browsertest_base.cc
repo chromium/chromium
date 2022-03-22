@@ -171,10 +171,7 @@ void PaymentRequestBrowserTestBase::OnNotSupportedError() {
     event_waiter_->OnEvent(DialogEvent::NOT_SUPPORTED_ERROR);
 }
 
-void PaymentRequestBrowserTestBase::OnConnectionTerminated() {
-  if (event_waiter_)
-    event_waiter_->OnEvent(DialogEvent::DIALOG_CLOSED);
-}
+void PaymentRequestBrowserTestBase::OnConnectionTerminated() {}
 
 void PaymentRequestBrowserTestBase::OnAbortCalled() {
   if (event_waiter_)
@@ -184,6 +181,11 @@ void PaymentRequestBrowserTestBase::OnAbortCalled() {
 void PaymentRequestBrowserTestBase::OnDialogOpened() {
   if (event_waiter_)
     event_waiter_->OnEvent(DialogEvent::DIALOG_OPENED);
+}
+
+void PaymentRequestBrowserTestBase::OnDialogClosed() {
+  if (event_waiter_)
+    event_waiter_->OnEvent(DialogEvent::DIALOG_CLOSED);
 }
 
 void PaymentRequestBrowserTestBase::OnOrderSummaryOpened() {

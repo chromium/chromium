@@ -57,6 +57,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
    public:
     virtual void OnDialogOpened() = 0;
 
+    virtual void OnDialogClosed() = 0;
+
     virtual void OnContactInfoOpened() = 0;
 
     virtual void OnOrderSummaryOpened() = 0;
