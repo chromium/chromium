@@ -967,6 +967,17 @@ public class FeedSurfaceMediator
         mCoordinator.getRecyclerView().smoothScrollBy(0, scrollTo - initialScroll);
     }
 
+    /**
+     * Scrolls the page to show the view at the given {@code viewPosition} if not already visible.
+     * @param viewPosition The position of the view that should be visible or scrolled to.
+     */
+    void scrollToViewIfNecessary(int viewPosition) {
+        if (!isScrollViewInitialized()) return;
+        if (!isChildVisibleAtPosition(viewPosition)) {
+            mCoordinator.getRecyclerView().scrollToPosition(viewPosition);
+        }
+    }
+
     @Override
     public void onTemplateURLServiceChanged() {
         updateSectionHeader();

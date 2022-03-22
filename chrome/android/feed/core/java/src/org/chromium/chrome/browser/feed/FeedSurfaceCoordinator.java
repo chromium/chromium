@@ -334,6 +334,9 @@ public class FeedSurfaceCoordinator
 
     private void showDiscoverIph() {
         mHandler.postDelayed(() -> {
+            // The feed header may not be visible for smaller screens or landscape mode. Scroll to
+            // show the header before showing the IPH.
+            mMediator.scrollToViewIfNecessary(1);
             UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
             mSectionHeaderView.showHeaderIph(helper);
         }, DELAY_FEED_HEADER_IPH_MS);
