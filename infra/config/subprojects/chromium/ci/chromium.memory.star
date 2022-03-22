@@ -50,6 +50,9 @@ linux_memory_builder(
     cq_mirrors_console_view = "mirrors",
     os = os.LINUX_BIONIC,
     ssd = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 linux_memory_builder(
@@ -97,7 +100,9 @@ linux_memory_builder(
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 5 * time.hour,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 linux_memory_builder(

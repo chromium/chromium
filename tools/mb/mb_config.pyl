@@ -172,7 +172,7 @@
     },
 
     'chromium.clang': {
-      'CFI Linux CF': 'cfi_full_cfi_icall_cfi_diag_recover_release_static',
+      'CFI Linux CF': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'CFI Linux ToT': 'clang_tot_cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on',
       'CrWinAsan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_tot',
       'CrWinAsan(dll)': 'asan_clang_shared_v8_heap_minimal_symbols_release_tot',
@@ -575,8 +575,8 @@
     },
 
     'chromium.memory': {
-      'Linux ASan LSan Builder': 'asan_lsan_release_trybot',
-      'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
+      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
+      'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot',
       'Linux MSan Builder': 'msan_release_bot_reclient',
@@ -1864,6 +1864,10 @@
       'asan', 'lsan', 'release_trybot_minimal_symbols',
     ],
 
+    'asan_lsan_release_trybot_reclient': [
+      'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
+    ],
+
     'autofill_assistant_release_trybot': [
       'autofill_assistant_api', 'release_trybot',
     ],
@@ -1904,10 +1908,6 @@
 
     'cast_audio_release_trybot': [
       'cast', 'cast_audio', 'release_trybot',
-    ],
-
-    'cfi_full_cfi_icall_cfi_diag_recover_release_static': [
-      'cfi_full', 'cfi_icall', 'cfi_diag', 'cfi_recover', 'thin_lto', 'release', 'static', 'goma',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [

@@ -9,7 +9,8 @@
       "use_cfi_diag": true,
       "use_cfi_icall": true,
       "use_cfi_recover": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },

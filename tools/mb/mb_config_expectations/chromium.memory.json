@@ -8,7 +8,8 @@
       "is_debug": false,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux CFI": {
@@ -20,7 +21,8 @@
       "use_cfi_cast": true,
       "use_cfi_diag": true,
       "use_cfi_icall": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
