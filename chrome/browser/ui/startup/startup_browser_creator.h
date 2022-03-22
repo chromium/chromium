@@ -79,9 +79,10 @@ class StartupBrowserCreator {
   StartupBrowserCreator& operator=(const StartupBrowserCreator&) = delete;
   ~StartupBrowserCreator();
 
-  // Adds a url to be opened during first run. This overrides the standard
+  // Adds urls to be opened during first run. This overrides the standard
   // tabs shown at first run.
-  void AddFirstRunTab(const GURL& url);
+  // Invalid URLs (per `GURL::is_valid()`) are skipped.
+  void AddFirstRunTabs(const std::vector<GURL>& urls);
 
 #if BUILDFLAG(IS_WIN)
   // Configures the instance to include the specified "welcome back" page in a

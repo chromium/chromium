@@ -558,8 +558,11 @@ bool StartupBrowserCreator::was_restarted_read_ = false;
 // static
 bool StartupBrowserCreator::in_synchronous_profile_launch_ = false;
 
-void StartupBrowserCreator::AddFirstRunTab(const GURL& url) {
-  first_run_tabs_.push_back(url);
+void StartupBrowserCreator::AddFirstRunTabs(const std::vector<GURL>& urls) {
+  for (const auto& url : urls) {
+    if (url.is_valid())
+      first_run_tabs_.push_back(url);
+  }
 }
 
 bool StartupBrowserCreator::Start(const base::CommandLine& cmd_line,

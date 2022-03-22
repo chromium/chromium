@@ -349,16 +349,6 @@ void HandleTestParameters(const base::CommandLine& command_line) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
-                        const std::vector<GURL>& new_tabs) {
-  for (const auto& new_tab : new_tabs) {
-    if (new_tab.is_valid())
-      browser_creator->AddFirstRunTab(new_tab);
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Initializes the initial profile, possibly doing some user prompting to pick
 // a fallback profile. Returns either
 // - kBrowserWindow mode with the newly created profile,
@@ -1003,7 +993,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   if (first_run::IsChromeFirstRun()) {
     if (!parsed_command_line().HasSwitch(switches::kApp) &&
         !parsed_command_line().HasSwitch(switches::kAppId)) {
-      AddFirstRunNewTabs(browser_creator_.get(), master_prefs_->new_tabs);
+      browser_creator_->AddFirstRunTabs(master_prefs_->new_tabs);
     }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

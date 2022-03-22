@@ -2999,13 +2999,12 @@ void StartupBrowserCreatorFirstRunTest::SetUpInProcessBrowserTestFixture() {
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTab) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   StartupBrowserCreator browser_creator;
-  browser_creator.AddFirstRunTab(
-      embedded_test_server()->GetURL("/title1.html"));
-  browser_creator.AddFirstRunTab(
-      embedded_test_server()->GetURL("/title2.html"));
+  browser_creator.AddFirstRunTabs(
+      {embedded_test_server()->GetURL("/title1.html"),
+       embedded_test_server()->GetURL("/title2.html")});
 
   // Do a simple non-process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -3107,8 +3106,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // }
   ASSERT_TRUE(embedded_test_server()->Start());
   StartupBrowserCreator browser_creator;
-  browser_creator.AddFirstRunTab(
-      embedded_test_server()->GetURL("/title1.html"));
+  browser_creator.AddFirstRunTabs(
+      {embedded_test_server()->GetURL("/title1.html")});
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kRestoreOnStartup, 1);
 
