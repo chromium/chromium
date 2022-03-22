@@ -261,7 +261,8 @@ TEST_F(PrefetchProxyCanaryCheckerTest, CacheHit) {
   EXPECT_FALSE(checker->IsActive());
 }
 
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX))
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+     BUILDFLAG(IS_ANDROID))
 #define MAYBE_NetworkConnectionShardsCache DISABLED_NetworkConnectionShardsCache
 #else
 #define MAYBE_NetworkConnectionShardsCache NetworkConnectionShardsCache
