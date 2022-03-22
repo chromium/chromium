@@ -1421,18 +1421,40 @@ void VolumeManager::OnRemovableStorageDetached(
     return;
 
   for (const auto& mounted_volume : mounted_volumes_) {
-    if (mounted_volume.second->source_path().value() == info.location()) {
-      DoUnmountEvent(chromeos::MOUNT_ERROR_NONE, *mounted_volume.second.get());
+    if (mounted_volume.second->source_path().value() != info.location())
+      continue;
 
-      const std::string fsid = GetMountPointNameForMediaStorage(info);
-      storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(fsid);
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
-                         base::Unretained(MTPDeviceMapService::GetInstance()),
-                         fsid));
+    // Unmount the MTP storage device in files app.
+    const std::string volume_id = mounted_volume.second->volume_id();
+    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE, *mounted_volume.second.get());
+
+    // Remove the MTP storage device from chrome::storage.
+    const std::string fsid = GetMountPointNameForMediaStorage(info);
+    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+    mount_points->RevokeFileSystem(fsid);
+
+    // Remove the MTP storage device from the MTPDeviceMapService.
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
+                       base::Unretained(MTPDeviceMapService::GetInstance()),
+                       fsid));
+
+    // The fusebox_mounter_ is enabled by a chrome flag.
+    if (!fusebox_mounter_.get())
       return;
-    }
+
+    // Unmount the fusebox MTP storage device in files app.
+    base::WeakPtr<Volume> volume = FindVolumeById("fusebox" + volume_id);
+    if (volume.get())
+      DoUnmountEvent(chromeos::MOUNT_ERROR_NONE, *volume.get());
+
+    // Remove the fusebox MTP storage device from chrome::storage.
+    mount_points->RevokeFileSystem("fusebox" + fsid);
+
+    // Detach the fusebox MTP storage device from the fusebox daemon.
+    fusebox_mounter_->DetachStorage("mtp", base::DoNothing());
+    return;
   }
 }
 
