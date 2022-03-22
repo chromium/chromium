@@ -6,6 +6,7 @@
  * @fileoverview Processes events related to editing text and emits the
  * appropriate spoken and braille feedback.
  */
+import {ChromeVoxEditableTextBase, TextChangeEvent} from '../../common/editable_text_base.js';
 
 import {BrailleBackground} from '../braille_background.js';
 import {Color} from '../color.js';

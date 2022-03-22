@@ -2,16 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('ChromeVoxEditableTextBase');
-goog.provide('TextChangeEvent');
-goog.provide('TypingEcho');
-
-goog.require('AbstractTts');
-goog.require('ChromeVox');
-goog.require('TtsInterface');
-goog.require('goog.i18n.MessageFormat');
-
-
 /**
  * @fileoverview Generalized logic for providing spoken feedback when editing
  * text fields, both single and multiline fields.
@@ -24,12 +14,11 @@ goog.require('goog.i18n.MessageFormat');
  * or to provide other customizations.
  */
 
-
 /**
  * A class containing the information needed to speak
  * a text change event to the user.
  */
-TextChangeEvent = class {
+export class TextChangeEvent {
   /**
    * @param {string} newValue The new string value of the editable text control.
    * @param {number} newStart The new 0-based start cursor/selection index.
@@ -59,7 +48,7 @@ TextChangeEvent = class {
   set value(val) {
     this.value_ = val.replace(/\u00a0/g, ' ');
   }
-};
+}
 
 
 /**
@@ -72,7 +61,7 @@ TextChangeEvent = class {
  * COUNT: The number of possible echo levels.
  * @enum
  */
-TypingEcho = {
+export const TypingEcho = {
   CHARACTER: 0,
   WORD: 1,
   CHARACTER_AND_WORD: 2,
@@ -104,7 +93,7 @@ TypingEcho.shouldSpeakChar = function(typingEcho) {
 /**
  * A class representing an abstracted editable text control.
  */
-ChromeVoxEditableTextBase = class {
+export class ChromeVoxEditableTextBase {
   /**
    * @param {string} value The string value of the editable text control.
    * @param {number} start The 0-based start cursor/selection index.
@@ -692,7 +681,7 @@ ChromeVoxEditableTextBase = class {
   moveCursorToPreviousParagraph() {
     return false;
   }
-};
+}
 
 
 /**

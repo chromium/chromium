@@ -89,6 +89,14 @@ TestBraille.assertContent = function(text, opt_start, opt_end) {
 ChromeVoxEditableTextUnitTest = class extends testing.Test {
   /** @override */
   setUp() {
+    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async () => {
+      await this.setUpDeferred();
+      runTest();
+    })();
+  }
+
+  async setUpDeferred() {
     // TODO: These tests are all assuming we used the IBeam cursor.
     // We need to add coverage for block cursor.
     ChromeVoxEditableTextBase.useIBeamCursor = true;
@@ -116,7 +124,6 @@ ChromeVoxEditableTextUnitTest.prototype.extraLibraries = [
   '../../common/closure_shim.js',
   'abstract_tts.js',
   'chromevox.js',
-  'editable_text_base.js',
   'msgs.js',
   'tts_interface.js',
 ];

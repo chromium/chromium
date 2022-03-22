@@ -24,7 +24,6 @@ goog.require('BrailleKeyEvent');
 goog.require('BrailleKeyEventRewriter');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
-goog.require('ChromeVoxEditableTextBase');
 goog.require('ChromeVoxKbHandler');
 goog.require('ChromeVoxPrefs');
 goog.require('ChromeVoxState');

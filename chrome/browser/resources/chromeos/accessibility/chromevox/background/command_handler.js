@@ -5,6 +5,8 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {TypingEcho} from '../common/editable_text_base.js';
+
 import {BrailleBackground} from './braille_background.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {Color} from './color.js';
