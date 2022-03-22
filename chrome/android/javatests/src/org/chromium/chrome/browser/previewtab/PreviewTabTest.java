@@ -158,7 +158,8 @@ public class PreviewTabTest {
     @Feature({"PreviewTab"})
     public void testSuppressContextualSearch() throws Throwable {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        ContextualSearchManager csManager = activity.getContextualSearchManager();
+        ContextualSearchManager csManager =
+                (ContextualSearchManager) activity.getContextualSearchManagerSupplier().get();
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
 
         TestThreadUtils.runOnUiThreadBlocking(
