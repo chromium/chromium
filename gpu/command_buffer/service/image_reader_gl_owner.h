@@ -10,6 +10,7 @@
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -29,7 +30,8 @@ namespace gpu {
 // decoded media frames. Media frames can update the attached surface handle
 // with image data and this class helps to create an eglImage using that image
 // data present in the surface.
-class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
+class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
+                                            public RefCountedLockHelperDrDc {
  public:
   ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
   ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
@@ -90,7 +92,8 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
   ImageReaderGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
                      Mode secure_mode,
-                     scoped_refptr<SharedContextState> context_state);
+                     scoped_refptr<SharedContextState> context_state,
+                     scoped_refptr<RefCountedLock> drdc_lock = nullptr);
   ~ImageReaderGLOwner() override;
 
   // Registers and releases a ref on the image. Once the ref-count for an image

@@ -4,7 +4,6 @@
 
 #include "media/gpu/android/frame_info_helper.h"
 
-#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/shared_image_video.h"
@@ -32,9 +31,10 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
   FrameInfoHelperImpl(scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
                       SharedImageVideoProvider::GetStubCB get_stub_cb,
                       scoped_refptr<gpu::RefCountedLock> drdc_lock)
-      : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)) {
+      : gpu::RefCountedLockHelperDrDc(drdc_lock) {
     on_gpu_ = base::SequenceBound<OnGpu>(std::move(gpu_task_runner),
-                                         std::move(get_stub_cb));
+                                         std::move(get_stub_cb),
+                                         std::move(drdc_lock));
   }
 
   ~FrameInfoHelperImpl() override = default;
@@ -55,30 +55,38 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     FrameInfoReadyCB callback;
   };
 
-  class OnGpu : public gpu::CommandBufferStub::DestructionObserver {
+  class OnGpu : public gpu::RefCountedLockHelperDrDc {
    public:
-    OnGpu(SharedImageVideoProvider::GetStubCB get_stub_cb) {
-      stub_ = get_stub_cb.Run();
-      if (stub_)
-        stub_->AddDestructionObserver(this);
+    OnGpu(SharedImageVideoProvider::GetStubCB get_stub_cb,
+          scoped_refptr<gpu::RefCountedLock> drdc_lock)
+        : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+          frame_info_helper_holder_(
+              base::MakeRefCounted<FrameInfoHelperHolder>(this)) {
+      auto* stub = get_stub_cb.Run();
+      if (stub) {
+        gpu::ContextResult result;
+        shared_context_ =
+            stub->channel()->gpu_channel_manager()->GetSharedContextState(
+                &result);
+        if (result == gpu::ContextResult::kSuccess) {
+          DCHECK(shared_context_);
+          if (shared_context_->GrContextIsVulkan()) {
+            vulkan_context_provider_ = shared_context_->vk_context_provider();
+          }
+        }
+      }
     }
 
-    ~OnGpu() override {
-      if (stub_)
-        stub_->RemoveDestructionObserver(this);
-    }
-
-    void OnWillDestroyStub(bool have_context) override {
-      DCHECK(stub_);
-      stub_ = nullptr;
+    ~OnGpu() {
+      DCHECK(frame_info_helper_holder_);
+      frame_info_helper_holder_->SetFrameInfoHelperOnGpuToNull();
     }
 
     void GetFrameInfoImpl(
         std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
         base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
-                                absl::optional<FrameInfo>)> cb,
-        std::unique_ptr<base::AutoLockMaybe> scoped_drdc_lock,
-        std::unique_ptr<base::debug::ScopedCrashKeyString> scoped_crash_key) {
+                                absl::optional<FrameInfo>)> cb) {
+      AssertAcquiredDrDcLock();
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
@@ -95,72 +103,86 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
           info.emplace();
           info->coded_size = coded_size;
           info->visible_rect = visible_rect;
-          info->ycbcr_info = GetYCbCrInfo(texture_owner.get());
+          info->ycbcr_info = gpu::SharedImageVideo::GetYcbcrInfo(
+              texture_owner.get(), vulkan_context_provider_);
         }
       }
-      // Release the lock here since we already got the frame info.
-      scoped_drdc_lock.reset();
-      scoped_crash_key.reset();
       std::move(cb).Run(std::move(buffer_renderer), info);
     }
 
     void GetFrameInfo(
         std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
         base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
-                                absl::optional<FrameInfo>)> cb,
-        scoped_refptr<gpu::RefCountedLock> drdc_lock) {
+                                absl::optional<FrameInfo>)> cb) {
       // Note that we need to ensure that no other thread renders another buffer
       // in between while we are getting frame info here. Otherwise we will get
-      // wrong frame info. This is ensured by holding |lock| here until
-      // GetFrameInfoImpl() ends.
-      auto scoped_drdc_lock = std::make_unique<base::AutoLockMaybe>(
-          drdc_lock ? drdc_lock->GetDrDcLockPtr() : nullptr);
-
-      // Adding a ScopedCrashKeyString here which will be released when
-      // scoped_drdc_lock is released. Since this is the only place we hold onto
-      // the drdc_lock for longer time than the current call duration,
-      // ScopedCrashKeyString will help to identify if there are any
-      // issues/deadlocks due to this somewhere and if this lock was still held.
-      static auto* kCrashKey = base::debug::AllocateCrashKeyString(
-          "GetFrameInfo_holding_drdc_lock", base::debug::CrashKeySize::Size32);
-      auto scoped_crash_key =
-          std::make_unique<base::debug::ScopedCrashKeyString>(kCrashKey, "1");
-
+      // wrong frame info. This is ensured by holding |drdc_lock| from all the
+      // places from where GetFrameInfoImpl() call can be triggered. It can be
+      // called from here via |texture_owner->RunWhenBufferIsAvailable()| below
+      // or from |ImageReaderGLOwner::ReleaseRefOnImageLocked()| when the
+      // buffer_vailable_cb is cached and triggered. So we lock here as well as
+      // ensure lock is held during
+      // |ImageReaderGLOwner::ReleaseRefOnImageLocked|.
+      base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
       DCHECK(texture_owner);
 
-      auto buffer_available_cb = base::BindOnce(
-          &OnGpu::GetFrameInfoImpl, weak_factory_.GetWeakPtr(),
-          std::move(buffer_renderer), std::move(cb),
-          std::move(scoped_drdc_lock), std::move(scoped_crash_key));
+      auto buffer_available_cb =
+          base::BindOnce(&FrameInfoHelperHolder::GetFrameInfoImpl,
+                         base::RetainedRef(frame_info_helper_holder_),
+                         std::move(buffer_renderer), std::move(cb));
       texture_owner->RunWhenBufferIsAvailable(std::move(buffer_available_cb));
     }
 
    private:
-    // Gets YCbCrInfo from last rendered frame.
-    absl::optional<gpu::VulkanYCbCrInfo> GetYCbCrInfo(
-        gpu::TextureOwner* texture_owner) {
-      gpu::ContextResult result;
+    // OnGpu::GetFrameInfoImpl can be called from any gpu thread (gpu main or
+    // DrDc), hence we can not use WeakPtr to it in |buffer_available_cb|.
+    // FrameInfoHelperHolder is used instead to mimic this weakPtr behavior of
+    // OnGpu. FrameInfoHelperHolder is RefCountedThreadSafe, and has a pointer
+    // to the OnGpu. OnGpu owns the FrameInfoHelperHolder and sets this pointer
+    // to null in its destructor so that it cant be used once OnGpu is
+    // destroyed. Note that since OnGpu::GetFrameInfoImpl needed to be called
+    // from any gpu thread, we could not use WeakPtr to it.
+    class FrameInfoHelperHolder
+        : public base::RefCountedThreadSafe<FrameInfoHelperHolder> {
+     public:
+      explicit FrameInfoHelperHolder(raw_ptr<OnGpu> frame_info_helper_on_gpu)
+          : frame_info_helper_on_gpu_(frame_info_helper_on_gpu) {
+        DCHECK(frame_info_helper_on_gpu_);
+      }
 
-      if (!stub_)
-        return absl::nullopt;
+      void GetFrameInfoImpl(
+          std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
+          base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
+                                  absl::optional<FrameInfo>)> cb) {
+        base::AutoLock l(lock_);
+        if (frame_info_helper_on_gpu_) {
+          frame_info_helper_on_gpu_->GetFrameInfoImpl(
+              std::move(buffer_renderer), std::move(cb));
+        }
+      }
 
-      auto shared_context =
-          stub_->channel()->gpu_channel_manager()->GetSharedContextState(
-              &result);
-      auto context_provider =
-          (result == gpu::ContextResult::kSuccess) ? shared_context : nullptr;
-      if (!context_provider)
-        return absl::nullopt;
+      void SetFrameInfoHelperOnGpuToNull() {
+        base::AutoLock l(lock_);
+        frame_info_helper_on_gpu_ = nullptr;
+      }
 
-      return gpu::SharedImageVideo::GetYcbcrInfo(texture_owner,
-                                                 context_provider);
-    }
+     private:
+      friend class base::RefCountedThreadSafe<FrameInfoHelperHolder>;
+      ~FrameInfoHelperHolder() = default;
 
-    raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
-    base::WeakPtrFactory<OnGpu> weak_factory_{this};
+      // |lock_| for thread safe access to |frame_info_helper_on_gpu_|.
+      base::Lock lock_;
+      raw_ptr<OnGpu> frame_info_helper_on_gpu_ GUARDED_BY(lock_) = nullptr;
+    };
+
+    // Note that |shared_context_| is to just keep ref on it until
+    // |vulkan_context_provider_| raw_ptr is being used.
+    scoped_refptr<gpu::SharedContextState> shared_context_;
+    raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
+    scoped_refptr<FrameInfoHelperHolder> frame_info_helper_holder_;
   };
 
   FrameInfo GetFrameInfoWithVisibleSize(const gfx::Size& visible_size) {
@@ -224,8 +246,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
                            weak_factory_.GetWeakPtr()));
 
         on_gpu_.AsyncCall(&OnGpu::GetFrameInfo)
-            .WithArgs(std::move(request.buffer_renderer), std::move(cb),
-                      GetDrDcLock());
+            .WithArgs(std::move(request.buffer_renderer), std::move(cb));
         // We didn't complete this request quite yet, so we can't process queue
         // any further.
         break;
