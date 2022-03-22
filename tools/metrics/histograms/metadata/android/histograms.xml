@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="MessageIdentifiers">
+  <variant name=".AboutThisSite"/>
   <variant name=".AddToHomescreenIPH"/>
   <variant name=".AdsBlocked"/>
   <variant name=".ArCoreUpgrade"/>

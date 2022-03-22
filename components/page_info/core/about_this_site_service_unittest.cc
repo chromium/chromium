@@ -10,6 +10,7 @@
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -145,6 +146,26 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kUnknown, 1);
+}
+
+// Tests that banner dismisses are handled.
+TEST_F(AboutThisSiteServiceTest, Banner) {
+  const GURL kExampleFoo("https://example.com/foo");
+  const GURL kExampleBar("https://example.com/foo");
+
+  EXPECT_TRUE(service()->CanShowBanner(kExampleFoo));
+  EXPECT_TRUE(service()->CanShowBanner(kExampleBar));
+
+  // Showing or opening a banner URL does not change whether we can show more
+  // banners.
+  service()->OnBannerURLOpened(kExampleFoo, ukm::SourceId());
+  EXPECT_TRUE(service()->CanShowBanner(kExampleFoo));
+  EXPECT_TRUE(service()->CanShowBanner(kExampleBar));
+
+  // Explicitly dismissing a banner prevents more from being shown.
+  service()->OnBannerDismissed(kExampleFoo, ukm::SourceId());
+  EXPECT_FALSE(service()->CanShowBanner(kExampleFoo));
+  EXPECT_FALSE(service()->CanShowBanner(kExampleBar));
 }
 
 }  // namespace page_info

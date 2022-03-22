@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_CORE_FEATURES_H_
 #define COMPONENTS_PAGE_INFO_CORE_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
@@ -30,6 +31,9 @@ extern const base::Feature kPageInfoAboutThisSite;
 
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;
+
+// Enables the "About this site" banner.
+extern const base::Feature kAboutThisSiteBanner;
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the history section for Page Info on desktop.

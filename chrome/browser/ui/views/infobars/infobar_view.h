@@ -51,12 +51,15 @@ class InfoBarView : public infobars::InfoBar,
  protected:
   using Labels = std::vector<views::Label*>;
 
+  // Creates a title with the appropriate font and color for an infobar.
+  std::unique_ptr<views::Label> CreateTitle(const std::u16string& text) const;
+
   // Creates a label with the appropriate font and color for an infobar.
-  views::Label* CreateLabel(const std::u16string& text) const;
+  std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) const;
 
   // Creates a link with the appropriate font and color for an infobar.
   // NOTE: Subclasses must ignore link clicks if we're unowned.
-  views::Link* CreateLink(const std::u16string& text);
+  std::unique_ptr<views::Link> CreateLink(const std::u16string& text);
 
   // Given |views| and the total |available_width| to display them in, sets
   // each view's size so that the longest view shrinks until it reaches the

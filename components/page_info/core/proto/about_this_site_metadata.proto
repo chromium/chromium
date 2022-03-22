@@ -54,6 +54,7 @@ message Hyperlink {
   optional string url = 2;
 }
 
+// Info that is shown in PageInfo.
 message SiteInfo {
   // First-seen date information related to this host/domain.
   // When Google first indexed this site.
@@ -63,10 +64,23 @@ message SiteInfo {
   optional SiteDescription description = 2;
 }
 
+// Info for a site-specific banner.
+message BannerInfo {
+  // Optional title of a banner.
+  optional string title = 1;
+  // Label of a banner.
+  optional string label = 2;
+  // Source URL of the banner.
+  optional Hyperlink url = 3;
+}
+
 // Optimization metadata associated with SiteInfo.
 //
 // This is only populated for the ABOUT_THIS_SITE optimization type.
 message AboutThisSiteMetadata {
-  // A SiteInfo hint.
+  // A SiteInfo hint that will be shown in PageInfo.
   optional SiteInfo site_info = 1;
+
+  // Info for a site-specific banner.
+  optional BannerInfo banner_info = 2;
 }

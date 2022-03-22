@@ -100,6 +100,7 @@ enum class MessageIdentifier {
   TAILORED_SECURITY_DISABLED = 25,
   AR_CORE_UPGRADE = 26,
   INSTANT_APPS = 27,
+  ABOUT_THIS_SITE = 28,
 
   // Insert new values before this line.
   COUNT

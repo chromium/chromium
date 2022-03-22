@@ -26,6 +26,9 @@ const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
                                                   "ShowSampleContent", false};
 
+const base::Feature kAboutThisSiteBanner{"AboutThisSiteBanner",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature kPageInfoHistoryDesktop{"PageInfoHistoryDesktop",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

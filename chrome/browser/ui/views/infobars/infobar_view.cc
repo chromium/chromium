@@ -41,6 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -246,17 +247,27 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   }
 }
 
-views::Label* InfoBarView::CreateLabel(const std::u16string& text) const {
-  views::Label* label =
-      new views::Label(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  SetLabelDetails(label);
+std::unique_ptr<views::Label> InfoBarView::CreateTitle(
+    const std::u16string& text) const {
+  auto title = std::make_unique<views::Label>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT, STYLE_EMPHASIZED);
+  SetLabelDetails(title.get());
+  return title;
+}
+
+std::unique_ptr<views::Label> InfoBarView::CreateLabel(
+    const std::u16string& text) const {
+  auto label = std::make_unique<views::Label>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT);
+  SetLabelDetails(label.get());
   return label;
 }
 
-views::Link* InfoBarView::CreateLink(const std::u16string& text) {
-  views::Link* link =
-      new views::Link(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  SetLabelDetails(link);
+std::unique_ptr<views::Link> InfoBarView::CreateLink(
+    const std::u16string& text) {
+  auto link = std::make_unique<views::Link>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT);
+  SetLabelDetails(link.get());
   link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
   return link;
@@ -313,7 +324,7 @@ void InfoBarView::PlatformSpecificHide(bool animate) {
 
   // It's possible to be called twice (once with |animate| true and once with it
   // false); in this case the second SetFocusManager() call will silently no-op.
-  SetFocusManager(NULL);
+  SetFocusManager(nullptr);
 
   if (!animate)
     return;

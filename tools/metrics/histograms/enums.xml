@@ -50,6 +50,19 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="LoadEventEnd+LoadEventStart+FinishAllLoads+FinishDoc missing"/>
 </enum>
 
+<enum name="AboutThisSiteBannerInteraction">
+  <int value="0" label="kUrlOpened"/>
+  <int value="1" label="kDismissed"/>
+</enum>
+
+<enum name="AboutThisSiteBannerStatus">
+  <int value="0" label="kNoHints"/>
+  <int value="1" label="kShown"/>
+  <int value="2" label="kInvalidOrMissingBannerInfo"/>
+  <int value="3" label="kNavigatedAway"/>
+  <int value="4" label="kNotAllowedToShow"/>
+</enum>
+
 <enum name="AboutThisSiteStatus">
   <summary>Tracks status of AboutThisSite queries.</summary>
   <int value="0" label="kValid">A valid response.</int>
@@ -73,6 +86,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="12" label="kMissingDescriptionName">Name is missing.</int>
   <int value="13" label="kMissingDescriptionLang">Lang is missing.</int>
   <int value="14" label="kMissingDescriptionSource">Source is missing.</int>
+  <int value="15" label="kMissingBannerInfo">Banner info is missing.</int>
 </enum>
 
 <enum name="AcceleratedFixedRootBackground">
@@ -46581,6 +46595,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="109" label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS"/>
   <int value="110"
       label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="111" label="ABOUT_THIS_SITE_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">
@@ -61004,6 +61019,7 @@ Called by update_use_counter_css.py.-->
   <int value="24" label="VrServicesUpgrade"/>
   <int value="26" label="ArCoreUpgrade"/>
   <int value="27" label="InstantApps"/>
+  <int value="28" label="AboutThisSite"/>
 </enum>
 
 <enum name="MessageLoopProblems">

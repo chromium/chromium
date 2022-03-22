@@ -18,6 +18,19 @@ namespace page_info {
 using AboutThisSiteStatus = about_this_site_validation::AboutThisSiteStatus;
 using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
 
+const char kBannerInteractionHistogram[] =
+    "Privacy.AboutThisSite.BannerInteraction";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with AboutThisSiteBannerInteraction in enums.xml.
+enum class BannerInteraction {
+  kUrlOpened = 0,
+  kDismissed = 1,
+
+  kMaxValue = kDismissed
+};
+
 AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
     : client_(std::move(client)) {}
 
@@ -67,6 +80,27 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   }
 
   return absl::nullopt;
+}
+
+bool AboutThisSiteService::CanShowBanner(GURL url) {
+  return !dismissed_banners_.contains(url::Origin::Create(url));
+}
+
+void AboutThisSiteService::OnBannerDismissed(GURL url,
+                                             ukm::SourceId source_id) {
+  base::UmaHistogramEnumeration(kBannerInteractionHistogram,
+                                BannerInteraction::kDismissed);
+  dismissed_banners_.insert(url::Origin::Create(url));
+}
+
+void AboutThisSiteService::OnBannerURLOpened(GURL url,
+                                             ukm::SourceId source_id) {
+  base::UmaHistogramEnumeration(kBannerInteractionHistogram,
+                                BannerInteraction::kUrlOpened);
+}
+
+base::WeakPtr<AboutThisSiteService> AboutThisSiteService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 AboutThisSiteService::~AboutThisSiteService() = default;

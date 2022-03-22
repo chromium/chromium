@@ -9378,6 +9378,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Privacy.AboutThisSite.BannerInteraction"
+    enum="AboutThisSiteBannerInteraction" expires_after="2022-08-21">
+  <owner>dullweber@chromium.org</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <summary>
+    Recorded when a user interacts with an AboutThisSite banner.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AboutThisSite.BannerStatus"
+    enum="AboutThisSiteBannerStatus" expires_after="2022-08-21">
+  <owner>dullweber@chromium.org</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <summary>Whether an AboutThisSiteBanner was shown on pageload.</summary>
+</histogram>
+
+<histogram name="Privacy.AboutThisSite.BannerValidation"
+    enum="AboutThisSiteStatus" expires_after="2022-08-21">
+  <owner>dullweber@chromium.org</owner>
+  <owner>harrisonsean@chromium.org</owner>
+  <summary>
+    Whether an AboutThisSiteBanner had a valid proto. Recorded when optimization
+    hints are available on pageload.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.AccessContextAudit.CookieDomainCount" units="units"
     expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>

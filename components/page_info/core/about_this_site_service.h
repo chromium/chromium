@@ -7,11 +7,14 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -47,8 +50,17 @@ class AboutThisSiteService : public KeyedService {
       const GURL& url,
       ukm::SourceId source_id) const;
 
+  bool CanShowBanner(GURL url);
+  void OnBannerDismissed(GURL url, ukm::SourceId source_id);
+  void OnBannerURLOpened(GURL url, ukm::SourceId source_id);
+
+  base::WeakPtr<AboutThisSiteService> GetWeakPtr();
+
  private:
   std::unique_ptr<Client> client_;
+  base::flat_set<url::Origin> dismissed_banners_;
+
+  base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
 };
 
 }  // namespace page_info

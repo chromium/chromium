@@ -30,8 +30,9 @@ enum class AboutThisSiteStatus {
   kMissingDescriptionName = 12,
   kMissingDescriptionLang = 13,
   kMissingDescriptionSource = 14,
+  kMissingBannerInfo = 15,
 
-  kMaxValue = kMissingDescriptionSource,
+  kMaxValue = kMissingBannerInfo,
 };
 
 AboutThisSiteStatus ValidateMetadata(
@@ -42,6 +43,7 @@ AboutThisSiteStatus ValidateDescription(
     const proto::SiteDescription& description);
 AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen);
 AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info);
+AboutThisSiteStatus ValidateBannerInfo(const proto::BannerInfo& banner_info);
 
 }  // namespace about_this_site_validation
 }  // namespace page_info
