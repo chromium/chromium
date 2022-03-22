@@ -37,6 +37,13 @@ namespace content {
 
 namespace {
 
+// When this is enabled, the browser will schedule
+// ServiceWorkerStorageControl's response in a kHighest priority
+// queue during startup. After startup, it has a normal priority.
+const base::Feature kServiceWorkerStorageControlResponseQueue{
+    "ServiceWorkerStorageControlResponseQueue",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   switch (status) {
@@ -1537,7 +1544,12 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
 
   if (!remote_storage_control_.is_bound()) {
     context_->wrapper()->BindStorageControl(
-        remote_storage_control_.BindNewPipeAndPassReceiver());
+        remote_storage_control_.BindNewPipeAndPassReceiver(
+            base::FeatureList::IsEnabled(
+                kServiceWorkerStorageControlResponseQueue)
+                ? GetUIThreadTaskRunner(
+                      {BrowserTaskType::kServiceWorkerStorageControlResponse})
+                : base::SequencedTaskRunnerHandle::Get()));
     DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,

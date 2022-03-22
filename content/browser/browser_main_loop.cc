@@ -939,11 +939,8 @@ int BrowserMainLoop::CreateThreads() {
       FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(
           [](BrowserMainLoop* browser_main_loop) {
-            // Enable main thread and thread pool best effort queues. Non-best
-            // effort queues will already have been enabled. This will enable
-            // all queues on all browser threads, so we need to do this after
-            // the threads have been created, i.e. here.
-            content::BrowserTaskExecutor::EnableAllQueues();
+            // Informs BrowserTaskExecutor that startup is complete.
+            content::BrowserTaskExecutor::OnStartupComplete();
             browser_main_loop->scoped_best_effort_execution_fence_.reset();
           },
           // Main thread tasks can't run after BrowserMainLoop destruction.

@@ -50,6 +50,10 @@ enum class BrowserTaskType {
   // TODO(altimin): Make this content-internal.
   kNavigationNetworkResponse,
 
+  // Tasks processing ServiceWorker's storage control's response.
+  // TODO(chikamune): Make this content-internal.
+  kServiceWorkerStorageControlResponse,
+
   // Used to validate values in Java
   kBrowserTaskType_Last
 };

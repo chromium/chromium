@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -67,6 +68,8 @@ const char* GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "ui_user_input_tq";
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
       return "ui_navigation_network_response_tq";
+    case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
+      return "ui_service_worker_storage_control_response_tq";
   }
 }
 
@@ -88,6 +91,8 @@ const char* GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "io_user_input_tq";
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
       return "io_navigation_network_response_tq";
+    case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
+      return "io_service_worker_storage_control_response_tq";
   }
 }
 
@@ -141,9 +146,9 @@ void BrowserTaskQueues::Handle::PostFeatureListInitializationSetup() {
                      base::Unretained(outer_)));
 }
 
-void BrowserTaskQueues::Handle::EnableAllQueues() {
+void BrowserTaskQueues::Handle::OnStartupComplete() {
   control_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BrowserTaskQueues::EnableAllQueues,
+      FROM_HERE, base::BindOnce(&BrowserTaskQueues::OnStartupComplete,
                                 base::Unretained(outer_)));
 }
 
@@ -195,6 +200,9 @@ BrowserTaskQueues::BrowserTaskQueues(
 
   GetBrowserTaskQueue(QueueType::kNavigationNetworkResponse)
       ->SetQueuePriority(QueuePriority::kHighPriority);
+
+  GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
+      ->SetQueuePriority(QueuePriority::kHighestPriority);
 
   // Control queue
   control_queue_ =
@@ -250,10 +258,18 @@ void BrowserTaskQueues::PostFeatureListInitializationSetup() {
       ->SetQueuePriority(preconnect_queue_priority);
 }
 
-void BrowserTaskQueues::EnableAllQueues() {
-  for (size_t i = 0; i < queue_data_.size(); ++i) {
-    queue_data_[i].voter->SetVoteToEnable(true);
+void BrowserTaskQueues::OnStartupComplete() {
+  // Enable all queues
+  for (const auto& queue : queue_data_) {
+    queue.voter->SetVoteToEnable(true);
   }
+
+  // Update ServiceWorker task queue priority.
+  DCHECK_EQ(GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
+                ->GetQueuePriority(),
+            QueuePriority::kHighestPriority);
+  GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
+      ->SetQueuePriority(QueuePriority::kNormalPriority);
 }
 
 void BrowserTaskQueues::EnableAllExceptBestEffortQueues() {

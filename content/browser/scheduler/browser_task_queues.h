@@ -31,7 +31,7 @@ namespace content {
 // underlying SequenceManager and instances are not allowed to outlive this
 // SequenceManager. All methods of this class must be called from the
 // associated thread unless noted otherwise. If you need to perform operations
-// from a different thread use the a Handle instance instead.
+// from a different thread use a Handle instance instead.
 //
 // Attention: All queues are initially disabled, that is, tasks will not be run
 // for them.
@@ -73,7 +73,12 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // network service.
     kNavigationNetworkResponse,
 
-    kMaxValue = kNavigationNetworkResponse
+    // For tasks processing ServiceWorker's storage control's response. This has
+    // the highest priority during startup, and is updated to normal priority
+    // after startup.
+    kServiceWorkerStorageControlResponse,
+
+    kMaxValue = kServiceWorkerStorageControlResponse
   };
 
   static constexpr size_t kNumQueueTypes =
@@ -105,8 +110,8 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // queues are set up).
     void PostFeatureListInitializationSetup();
 
-    // Enables all tasks queues. Can be called multiple times.
-    void EnableAllQueues();
+    // Informs that startup is complete. Can be called multiple times.
+    void OnStartupComplete();
 
     // Enables all task queues except the effort ones. Can be called multiple
     // times.
@@ -166,7 +171,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
       base::ScopedClosureRunner on_pending_task_ran);
   void EndRunAllPendingTasksForTesting(
       base::ScopedClosureRunner on_pending_task_ran);
-  void EnableAllQueues();
+  void OnStartupComplete();
   void EnableAllExceptBestEffortQueues();
   void PostFeatureListInitializationSetup();
 

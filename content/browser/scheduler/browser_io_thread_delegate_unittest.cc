@@ -22,7 +22,7 @@ TEST(BrowserIOThreadDelegateTest, CanPostTasksToThread) {
 
   auto delegate = std::make_unique<BrowserIOThreadDelegate>();
   auto handle = delegate->GetHandle();
-  handle->EnableAllQueues();
+  handle->OnStartupComplete();
 
   base::Thread::Options options;
   options.delegate = std::move(delegate);

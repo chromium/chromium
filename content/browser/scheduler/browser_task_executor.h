@@ -128,9 +128,10 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // BrowserMainLoop::CreateThreads.
   static void InitializeIOThread();
 
-  // Enables all queues on all threads.
+  // Informs BrowserTaskExecutor that startup is complete.
+  // It will communicate that to UI and IO thread BrowserTaskQueues.
   // Can be called multiple times.
-  static void EnableAllQueues();
+  static void OnStartupComplete();
 
   // Helpers to statically call into BaseBrowserTaskExecutor::GetTaskRunner()
   // from browser_thread_impl.cc. Callers should use browser_thread.h's

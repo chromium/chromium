@@ -181,6 +181,9 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
         // Defer to traits.priority() below.
         break;
 
+      case BrowserTaskType::kServiceWorkerStorageControlResponse:
+        return QueueType::kServiceWorkerStorageControlResponse;
+
       case BrowserTaskType::kDefault:
         // Defer to traits.priority() below.
         break;
@@ -342,9 +345,9 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
 }
 
 // static
-void BrowserTaskExecutor::EnableAllQueues() {
-  Get()->browser_ui_thread_handle_->EnableAllQueues();
-  Get()->browser_io_thread_handle_->EnableAllQueues();
+void BrowserTaskExecutor::OnStartupComplete() {
+  Get()->browser_ui_thread_handle_->OnStartupComplete();
+  Get()->browser_io_thread_handle_->OnStartupComplete();
 }
 
 // static

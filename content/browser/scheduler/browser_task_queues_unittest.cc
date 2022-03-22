@@ -61,7 +61,7 @@ TEST_F(BrowserTaskQueuesTest, NoTaskRunsUntilQueuesAreEnabled) {
     run_loop.Run();
   }
 
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
 
   {
     RunLoop run_loop;
@@ -102,7 +102,7 @@ TEST_F(BrowserTaskQueuesTest, TasksRunWhenQueuesAreEnabled) {
     run_loop.Run();
   }
 
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
 
   {
     RunLoop run_loop;
@@ -113,7 +113,7 @@ TEST_F(BrowserTaskQueuesTest, TasksRunWhenQueuesAreEnabled) {
 }
 
 TEST_F(BrowserTaskQueuesTest, SimplePosting) {
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
   scoped_refptr<base::SingleThreadTaskRunner> tq =
       handle_->GetBrowserTaskRunner(QueueType::kDefault);
 
@@ -136,7 +136,7 @@ TEST_F(BrowserTaskQueuesTest, SimplePosting) {
 }
 
 TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTesting) {
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
 
   StrictMockTask task;
   StrictMockTask followup_task;
@@ -166,7 +166,7 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTesting) {
 
 TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingRunsAllTasks) {
   constexpr size_t kTasksPerPriority = 100;
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
 
   StrictMockTask task;
   EXPECT_CALL(task, Run).Times(BrowserTaskQueues::kNumQueueTypes *
@@ -184,7 +184,7 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingRunsAllTasks) {
 }
 
 TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingIsReentrant) {
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
   StrictMockTask task_1;
   StrictMockTask task_2;
   StrictMockTask task_3;
@@ -240,7 +240,7 @@ TEST_F(BrowserTaskQueuesTest,
     // RunAllPendingTasksForTesting() call
     handle_->GetBrowserTaskRunner(QueueType::kBestEffort)
         ->PostTask(FROM_HERE, task_3.Get());
-    handle_->EnableAllQueues();
+    handle_->OnStartupComplete();
   }));
   EXPECT_CALL(task_2, Run);
 
@@ -255,7 +255,7 @@ TEST_F(BrowserTaskQueuesTest,
 }
 
 TEST_F(BrowserTaskQueuesTest, HandleStillWorksWhenQueuesDestroyed) {
-  handle_->EnableAllQueues();
+  handle_->OnStartupComplete();
   StrictMockTask task;
   queues_.reset();
 
