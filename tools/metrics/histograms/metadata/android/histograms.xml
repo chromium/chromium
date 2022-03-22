@@ -2984,6 +2984,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Survey.ShowSurvey" enum="BooleanSuccess"
     expires_after="2022-08-07">
+  <obsolete>
+    Deprecated in March 2022. Data available in Android.Survey.ShowSurveyStatus.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
