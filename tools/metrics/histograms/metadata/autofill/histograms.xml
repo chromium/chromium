@@ -126,6 +126,15 @@ chromium-metrics-reviews@google.com.
                saving the actual card to Google Payments"/>
 </variants>
 
+<variants name="Autofill.VirtualCardEnrollmentLinkType">
+  <variant name="GoogleLegalMessageLink"
+      summary="The user selected the Google Payments terms of service link."/>
+  <variant name="IssuerLegalMessageLink"
+      summary="The user selected the Issuer's terms of service link."/>
+  <variant name="LearnMoreLink"
+      summary="The user selected the learn more about virtual cards link."/>
+</variants>
+
 <variants name="Autofill.VirtualCardEnrollmentSource">
   <variant name="Downstream" summary="credit card unmasking enrollment flow"/>
   <variant name="SettingsPage" summary="the settings page"/>
@@ -3540,6 +3549,20 @@ chromium-metrics-reviews@google.com.
     Google legal message link, and issuer legal message link.
   </summary>
   <token key="Dialog" variants="Autofill.SettingsPage.VirtualCardDialogType"/>
+</histogram>
+
+<histogram
+    name="Autofill.VirtualCardEnroll.LinkClicked.{EnrollmentSource}.{LinkType}"
+    enum="BooleanClicked" expires_after="2023-03-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This metric emits true when a user clicks on virtual card enrollment link
+    from flows that start from {EnrollmentSource}.
+  </summary>
+  <token key="EnrollmentSource"
+      variants="Autofill.VirtualCardEnrollmentSource"/>
+  <token key="LinkType" variants="Autofill.VirtualCardEnrollmentLinkType"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCardEnrollBubble.LatencySinceUpstream"

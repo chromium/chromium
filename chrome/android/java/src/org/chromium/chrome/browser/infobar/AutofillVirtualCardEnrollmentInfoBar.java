@@ -16,6 +16,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
@@ -153,8 +154,9 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
 
     // TODO(vishwasuppoor@): Refactor and use getSpannableStringForLegalMessageLines from
     // AutofillUtils.
-    private void addLegalMessageLines(
-            LinkedList<LegalMessageLine> legalMessageLines, InfoBarControlLayout control) {
+    private void addLegalMessageLines(LinkedList<LegalMessageLine> legalMessageLines,
+            InfoBarControlLayout control,
+            @VirtualCardEnrollmentLinkType int virtualCardEnrollmentLinkType) {
         for (LegalMessageLine line : legalMessageLines) {
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
@@ -163,7 +165,8 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                     public void onClick(View view) {
                         AutofillVirtualCardEnrollmentInfoBarJni.get().onInfobarLinkClicked(
                                 mNativeAutofillVirtualCardEnrollmentInfoBar,
-                                AutofillVirtualCardEnrollmentInfoBar.this, link.url);
+                                AutofillVirtualCardEnrollmentInfoBar.this, link.url,
+                                virtualCardEnrollmentLinkType);
                     }
                 }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
@@ -186,7 +189,8 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                 AutofillVirtualCardEnrollmentInfoBarJni.get().onInfobarLinkClicked(
                         mNativeAutofillVirtualCardEnrollmentInfoBar,
                         AutofillVirtualCardEnrollmentInfoBar.this,
-                        ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL);
+                        ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK);
             }), offset, offset + mLearnMoreLinkText.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             control.addDescription(text);
         }
@@ -206,13 +210,16 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
         control.addIcon(scaledIssuerIcon, 0, formattedCardLabel, null,
                 R.dimen.infobar_descriptive_text_size);
 
-        addLegalMessageLines(mGoogleLegalMessageLines, control);
-        addLegalMessageLines(mIssuerLegalMessageLines, control);
+        addLegalMessageLines(mGoogleLegalMessageLines, control,
+                VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK);
+        addLegalMessageLines(mIssuerLegalMessageLines, control,
+                VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK);
     }
 
     @NativeMethods
     interface Natives {
         void onInfobarLinkClicked(long nativeAutofillVirtualCardEnrollmentInfoBar,
-                AutofillVirtualCardEnrollmentInfoBar caller, String url);
+                AutofillVirtualCardEnrollmentInfoBar caller, String url,
+                @VirtualCardEnrollmentLinkType int virtualCardEnrollmentLinkType);
     }
 }
