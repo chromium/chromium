@@ -281,13 +281,13 @@ void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC* pic_param,
   SPS_TO_PP(sample_adaptive_offset_enabled_flag);
   SPS_TO_PP(pcm_enabled_flag);
 
-  if (sps->sample_adaptive_offset_enabled_flag) {
+  if (sps->pcm_enabled_flag) {
     SPS_TO_PP(pcm_sample_bit_depth_luma_minus1);
     SPS_TO_PP(pcm_sample_bit_depth_chroma_minus1);
     SPS_TO_PP(log2_min_pcm_luma_coding_block_size_minus3);
     SPS_TO_PP(log2_diff_max_min_pcm_luma_coding_block_size);
+    SPS_TO_PP(pcm_loop_filter_disabled_flag);
   }
-  SPS_TO_PP(pcm_loop_filter_disabled_flag);
   SPS_TO_PP(long_term_ref_pics_present_flag);
   SPS_TO_PP(sps_temporal_mvp_enabled_flag);
   SPS_TO_PP(strong_intra_smoothing_enabled_flag);
@@ -323,7 +323,8 @@ void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC* pic_param,
   PPS_TO_PP(tiles_enabled_flag);
   PPS_TO_PP(entropy_coding_sync_enabled_flag);
   PPS_TO_PP(uniform_spacing_flag);
-  PPS_TO_PP(loop_filter_across_tiles_enabled_flag);
+  if (pps->tiles_enabled_flag)
+    PPS_TO_PP(loop_filter_across_tiles_enabled_flag);
   PPS_TO_PP(pps_loop_filter_across_slices_enabled_flag);
   PPS_TO_PP(deblocking_filter_override_enabled_flag);
   PPS_TO_PP(pps_deblocking_filter_disabled_flag);
