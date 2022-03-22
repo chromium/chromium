@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -43,6 +44,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -194,6 +196,34 @@ absl::optional<AttributionSourceType> DeserializeSourceType(int val) {
   }
 }
 
+std::string SerializeDestinationOrReportingOrigin(const url::Origin& origin) {
+  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  return SerializeOrigin(origin);
+}
+
+url::Origin DeserializeDestinationOrReportingOrigin(const std::string& string) {
+  url::Origin origin = DeserializeOrigin(string);
+
+  if (!network::IsOriginPotentiallyTrustworthy(origin))
+    return url::Origin();
+
+  return origin;
+}
+
+std::string SerializeSourceOrigin(const url::Origin& origin) {
+  DCHECK(IsSourceOriginPotentiallyTrustworthy(origin));
+  return SerializeOrigin(origin);
+}
+
+url::Origin DeserializeSourceOrigin(const std::string& string) {
+  url::Origin origin = DeserializeOrigin(string);
+
+  if (!IsSourceOriginPotentiallyTrustworthy(origin))
+    return url::Origin();
+
+  return origin;
+}
+
 absl::optional<StoredSource::ActiveState> GetSourceActiveState(
     bool event_level_active,
     bool aggregatable_active) {
@@ -255,11 +285,11 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   StoredSource::Id source_id(statement.ColumnInt64(col++));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(col++));
   url::Origin impression_origin =
-      DeserializeOrigin(statement.ColumnString(col++));
+      DeserializeSourceOrigin(statement.ColumnString(col++));
   url::Origin conversion_origin =
-      DeserializeOrigin(statement.ColumnString(col++));
+      DeserializeDestinationOrReportingOrigin(statement.ColumnString(col++));
   url::Origin reporting_origin =
-      DeserializeOrigin(statement.ColumnString(col++));
+      DeserializeDestinationOrReportingOrigin(statement.ColumnString(col++));
   base::Time impression_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
   absl::optional<AttributionSourceType> source_type =
@@ -459,7 +489,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   // TODO(csharrison): Thread this failure to the caller and report a console
   // error.
   const std::string serialized_impression_origin =
-      SerializeOrigin(common_info.impression_origin());
+      SerializeSourceOrigin(common_info.impression_origin());
   if (!HasCapacityForStoringSource(serialized_impression_origin)) {
     return StoreSourceResult(
         StorableSource::Result::kInsufficientSourceCapacity);
@@ -491,7 +521,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   const std::string serialized_conversion_destination =
       common_info.ConversionDestination().Serialize();
   const std::string serialized_reporting_origin =
-      SerializeOrigin(common_info.reporting_origin());
+      SerializeDestinationOrReportingOrigin(common_info.reporting_origin());
 
   // In the case where we get a new source for a given <reporting_origin,
   // conversion_destination> we should mark all active, converted impressions
@@ -532,7 +562,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(common_info.source_event_id()));
   statement.BindString(1, serialized_impression_origin);
-  statement.BindString(2, SerializeOrigin(common_info.conversion_origin()));
+  statement.BindString(2, SerializeDestinationOrReportingOrigin(
+                              common_info.conversion_origin()));
   statement.BindString(3, serialized_conversion_destination);
   statement.BindString(4, serialized_reporting_origin);
   statement.BindTime(5, common_info.impression_time());
@@ -953,7 +984,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSql));
   statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
-  statement.BindString(1, SerializeOrigin(reporting_origin));
+  statement.BindString(1,
+                       SerializeDestinationOrReportingOrigin(reporting_origin));
   statement.BindTime(2, base::Time::Now());
 
   // If there are no matching sources, return early.
@@ -1600,6 +1632,9 @@ void AttributionStorageSql::ClearData(
       db_->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
+
+  // TODO(apaseltiner): Consider wrapping `filter` such that it deletes
+  // opaque/untrustworthy origins.
 
   std::vector<StoredSource::Id> source_ids_to_delete;
   int num_reports_deleted = 0;
@@ -2281,8 +2316,8 @@ bool AttributionStorageSql::
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
   statement.BindString(0, source.common_info().ImpressionSite().Serialize());
-  statement.BindString(
-      1, SerializeOrigin(source.common_info().reporting_origin()));
+  statement.BindString(1, SerializeDestinationOrReportingOrigin(
+                              source.common_info().reporting_origin()));
 
   base::flat_set<std::string> destinations;
   while (statement.Step()) {
