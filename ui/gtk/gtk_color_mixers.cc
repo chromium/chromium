@@ -21,6 +21,12 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();
+  const std::string header_selector =
+      key.frame_type == ui::ColorProviderManager::FrameType::kChromium
+          ? "#headerbar.header-bar.titlebar"
+          : "GtkMenuBar#menubar";
+  const std::string header_selector_inactive = header_selector + ":backdrop";
+
   mixer[ui::kColorNativeButtonBackground] = {GetBgColor("GtkButton#button")};
   mixer[ui::kColorNativeButtonBackgroundDisabled] = {
       GetBgColor("GtkButton#button.text-button:disabled")};
@@ -47,8 +53,23 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       {"GtkComboBoxText#combobox GtkWindow#window.background.popup ",
        "GtkTreeMenu#menu(gtk-combobox-popup-menu) ", GtkCssMenuItem(),
        ":hover GtkCellView#cellview"}))};
+  const SkColor frame_color =
+      SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
+  const SkColor frame_color_inactive =
+      SkColorSetA(GetBgColor(header_selector_inactive), SK_AlphaOPAQUE);
+  mixer[ui::kColorNativeFrameActive] = {frame_color};
+  mixer[ui::kColorNativeFrameInactive] = {frame_color_inactive};
   mixer[ui::kColorNativeFrameBorder] = {GetBorderColor(
       GtkCheckVersion(3, 20) ? "GtkFrame#frame #border" : "GtkFrame#frame")};
+  mixer[ui::kColorNativeHeaderButtonBorderActive] = {
+      GetBorderColor(header_selector + " GtkButton#button")};
+  mixer[ui::kColorNativeHeaderButtonBorderInactive] = {
+      GetBorderColor(header_selector + ":backdrop GtkButton#button")};
+  mixer[ui::kColorNativeHeaderSeparatorBorderActive] = {GetBorderColor(
+      header_selector + " GtkSeparator#separator.vertical.titlebutton")};
+  mixer[ui::kColorNativeHeaderSeparatorBorderInactive] = {
+      GetBorderColor(header_selector +
+                     ":backdrop GtkSeparator#separator.vertical.titlebutton")};
   mixer[ui::kColorNativeImageButtonForeground] = {
       GetFgColor("GtkButton#button.image-button")};
   mixer[ui::kColorNativeImageButtonForegroundHovered] = {
@@ -135,6 +156,10 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetBgColor("GtkNotebook#notebook #tab:checked")};
   mixer[ui::kColorNativeTabBackgroundCheckedFocused] = {
       GetBgColor("GtkNotebook#notebook:focus #tab:checked")};
+  mixer[ui::kColorNativeTabForegroundInactiveFrameActive] = {
+      GetFgColor(header_selector + " GtkLabel#label.title")};
+  mixer[ui::kColorNativeTabForegroundInactiveFrameInactive] = {
+      GetFgColor(header_selector_inactive + " GtkLabel#label.title")};
   mixer[ui::kColorNativeTextareaBackground] = {
       GetBgColor(GtkCheckVersion(3, 20) ? "GtkTextView#textview.view"
                                         : "GtkTextView.view")};
@@ -169,6 +194,9 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetBgColor("GtkButton#button.text-button.toggle:checked")};
   mixer[ui::kColorNativeToggleButtonBackgroundUnchecked] = {
       GetBgColor("GtkButton#button.text-button.toggle")};
+  SkColor toolbar_color =
+      color_utils::GetResultingPaintColor(GetBgColor(""), frame_color);
+  mixer[ui::kColorNativeToolbarBackground] = {toolbar_color};
   const auto tooltip_context = AppendCssNodeToStyleContext(
       {}, GtkCheckVersion(3, 20) ? "#tooltip.background"
                                  : "GtkWindow#window.background.tooltip");

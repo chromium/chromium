@@ -198,7 +198,13 @@
   E_CPONLY(kColorNativeComboboxBackgroundHovered) \
   E_CPONLY(kColorNativeComboboxForeground) \
   E_CPONLY(kColorNativeComboboxForegroundHovered) \
+  E_CPONLY(kColorNativeFrameActive) \
+  E_CPONLY(kColorNativeFrameInactive) \
   E_CPONLY(kColorNativeFrameBorder) \
+  E_CPONLY(kColorNativeHeaderButtonBorderActive) \
+  E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
+  E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \
+  E_CPONLY(kColorNativeHeaderSeparatorBorderInactive) \
   E_CPONLY(kColorNativeImageButtonForeground) \
   E_CPONLY(kColorNativeImageButtonForegroundHovered) \
   E_CPONLY(kColorNativeLabelBackgroundSelected) \
@@ -231,6 +237,8 @@
   E_CPONLY(kColorNativeStatusbarBackground) \
   E_CPONLY(kColorNativeTabBackgroundChecked) \
   E_CPONLY(kColorNativeTabBackgroundCheckedFocused) \
+  E_CPONLY(kColorNativeTabForegroundInactiveFrameActive) \
+  E_CPONLY(kColorNativeTabForegroundInactiveFrameInactive) \
   E_CPONLY(kColorNativeTextareaBackground) \
   E_CPONLY(kColorNativeTextareaBackgroundDisabled) \
   E_CPONLY(kColorNativeTextareaBackgroundSelected) \
@@ -242,6 +250,7 @@
   E_CPONLY(kColorNativeTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorNativeToggleButtonBackgroundChecked) \
   E_CPONLY(kColorNativeToggleButtonBackgroundUnchecked) \
+  E_CPONLY(kColorNativeToolbarBackground) \
   E_CPONLY(kColorNativeTooltipBackground) \
   E_CPONLY(kColorNativeTooltipForeground) \
   E_CPONLY(kColorNativeTreeHeaderBackground) \

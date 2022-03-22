@@ -71,6 +71,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorDropdownForeground] = {kColorNativeComboboxForeground};
   mixer[kColorDropdownForegroundSelected] = {
       kColorNativeComboboxForegroundHovered};
+  mixer[kColorFrameActive] = {kColorNativeFrameActive};
+  mixer[kColorFrameInactive] = {kColorNativeFrameInactive};
   mixer[kColorFocusableBorderUnfocused] = {
       kColorNativeTextfieldBorderUnfocused};
   mixer[kColorHelpIconActive] = {kColorNativeImageButtonForegroundHovered};
