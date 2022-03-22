@@ -61,7 +61,6 @@ class User;
 
 namespace ash {
 class AuthStatusConsumer;
-class LoginDisplayHost;
 class OnboardingUserActivityCounter;
 class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
@@ -251,7 +250,7 @@ class UserSessionManager
   // Thin wrapper around StartupBrowserCreator::LaunchBrowser().  Meant to be
   // used in a Task posted to the UI thread.  Once the browser is launched the
   // login host is deleted.
-  void DoBrowserLaunch(Profile* profile, LoginDisplayHost* login_host);
+  void DoBrowserLaunch(Profile* profile);
 
   // Changes browser locale (selects best suitable locale from different
   // user settings). Returns true if callback will be called.
@@ -504,9 +503,7 @@ class UserSessionManager
   // `locale_pref_checked` set to false which will result in postponing browser
   // launch till user locale is applied if needed. After locale check has
   // completed this method is called with `locale_pref_checked` set to true.
-  void DoBrowserLaunchInternal(Profile* profile,
-                               LoginDisplayHost* login_host,
-                               bool locale_pref_checked);
+  void DoBrowserLaunchInternal(Profile* profile, bool locale_pref_checked);
 
   static void RunCallbackOnLocaleLoaded(
       base::OnceClosure callback,
