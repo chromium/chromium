@@ -1455,7 +1455,6 @@ if (!is_ios) {
   }
 
   script_test("blink_python_tests") {
-    run_under_python2 = true
     script = "//testing/scripts/run_isolated_script_test.py"
     args = [ "@WrappedPath(" +
              rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
