@@ -252,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, SkipUI) {
       "PaymentRequest.TransactionAmount.Completed", kMicroTransaction, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, Reject) {
+// Disabled for being flaky. crbug.com/1308950
+IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, DISABLED_Reject) {
   NavigateTo("/show_promise/reject.html");
   InstallEchoPaymentHandler();
   ResetEventWaiterForSequence(
