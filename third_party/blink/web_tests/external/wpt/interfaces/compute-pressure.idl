@@ -3,32 +3,39 @@
 // (https://github.com/w3c/webref)
 // Source: Compute Pressure API (https://wicg.github.io/compute-pressure/)
 
-enum PressureState { "nominal", "fair", "serious", "critical" };
+enum ComputePressureState { "nominal", "fair", "serious", "critical" };
+
+enum ComputePressureFactor { "thermal", "power-supply" };
 
 callback ComputePressureUpdateCallback = undefined (
-  sequence<ComputePressureEntry> entries,
+  sequence<ComputePressureRecord> changes,
   ComputePressureObserver observer
 );
 
-enum ComputePressureTarget { "cpu" };
+enum ComputePressureSource { "cpu" };
 
-[Exposed=Window]
+[Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
 interface ComputePressureObserver {
   constructor(ComputePressureUpdateCallback callback);
 
-  undefined observe(ComputePressureTarget target, optional ComputePressureObserverOptions options = {});
-  undefined unobserve(ComputePressureTarget target);
+  undefined observe(ComputePressureSource source, optional ComputePressureObserverOptions options = {});
+  undefined unobserve(ComputePressureSource source);
   undefined disconnect();
-  sequence<ComputePressureEntry> takeRecords();
+  sequence<ComputePressureRecord> takeRecords();
 
-  [SameObject] static readonly attribute FrozenArray<DOMString> supportedTargetTypes;
+  [SameObject] static readonly attribute FrozenArray<DOMString> supportedSources;
+
+  [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
 
-dictionary ComputePressureEntry {
-  PressureState state;
+dictionary ComputePressureRecord {
+  ComputePressureSource source;
+  ComputePressureState state;
+  sequence<ComputePressureFactor> factors;
+  DOMHighResTimeStamp timestamp;
   ComputePressureObserverOptions options;
 };
 
 dictionary ComputePressureObserverOptions {
-  // For future-proofing - expect things to be added here later.
+  double frequency;
 };

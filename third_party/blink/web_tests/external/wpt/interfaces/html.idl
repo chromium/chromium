@@ -116,6 +116,7 @@ interface HTMLElement : Element {
 
   // user interaction
   [CEReactions] attribute boolean hidden;
+  [CEReactions] attribute boolean inert;
   undefined click();
   [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
@@ -1341,7 +1342,7 @@ interface mixin CanvasTransform {
 interface mixin CanvasCompositing {
   // compositing
   attribute unrestricted double globalAlpha; // (default 1.0)
-  attribute DOMString globalCompositeOperation; // (default source-over)
+  attribute DOMString globalCompositeOperation; // (default "source-over")
 };
 
 interface mixin CanvasImageSmoothing {
@@ -1480,7 +1481,7 @@ interface mixin CanvasPath {
   undefined bezierCurveTo(unrestricted double cp1x, unrestricted double cp1y, unrestricted double cp2x, unrestricted double cp2y, unrestricted double x, unrestricted double y);
   undefined arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius);
   undefined rect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
-  undefined roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, sequence<(unrestricted double or DOMPointInit)> radii);
+  undefined roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>) radii = 0);
   undefined arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean counterclockwise = false);
   undefined ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean counterclockwise = false);
 };
@@ -2206,53 +2207,6 @@ interface EventSource : EventTarget {
 
 dictionary EventSourceInit {
   boolean withCredentials = false;
-};
-
-enum BinaryType { "blob", "arraybuffer" };
-[Exposed=(Window,Worker)]
-interface WebSocket : EventTarget {
-  constructor(USVString url, optional (DOMString or sequence<DOMString>) protocols = []);
-
-  readonly attribute USVString url;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSING = 2;
-  const unsigned short CLOSED = 3;
-  readonly attribute unsigned short readyState;
-  readonly attribute unsigned long long bufferedAmount;
-
-  // networking
-  attribute EventHandler onopen;
-  attribute EventHandler onerror;
-  attribute EventHandler onclose;
-  readonly attribute DOMString extensions;
-  readonly attribute DOMString protocol;
-  undefined close(optional [Clamp] unsigned short code, optional USVString reason);
-
-  // messaging
-  attribute EventHandler onmessage;
-  attribute BinaryType binaryType;
-  undefined send(USVString data);
-  undefined send(Blob data);
-  undefined send(ArrayBuffer data);
-  undefined send(ArrayBufferView data);
-};
-
-[Exposed=(Window,Worker)]
-interface CloseEvent : Event {
-  constructor(DOMString type, optional CloseEventInit eventInitDict = {});
-
-  readonly attribute boolean wasClean;
-  readonly attribute unsigned short code;
-  readonly attribute USVString reason;
-};
-
-dictionary CloseEventInit : EventInit {
-  boolean wasClean = false;
-  unsigned short code = 0;
-  USVString reason = "";
 };
 
 [Exposed=(Window,Worker)]

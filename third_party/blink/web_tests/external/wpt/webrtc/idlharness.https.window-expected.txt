@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 496 tests; 483 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 496 tests; 482 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Test driver for asyncInitCertificate
@@ -433,7 +433,7 @@ PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') mus
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onclose" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "close()" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onmessage" with the proper type
-PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "binaryType" with the proper type
+FAIL RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "binaryType" with the proper type Right-hand side of 'instanceof' is not an object
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "send(USVString)" with the proper type
 PASS RTCDataChannel interface: calling send(USVString) on new RTCPeerConnection().createDataChannel('') with too few arguments must throw TypeError
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "send(Blob)" with the proper type

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 822 tests; 811 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 753 tests; 744 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -316,7 +316,7 @@ PASS Path2D interface: operation quadraticCurveTo(unrestricted double, unrestric
 PASS Path2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-FAIL Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>) assert_equals: property has wrong .length expected 5 but got 4
+PASS Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS Path2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS Path2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS ImageBitmapRenderingContext interface: existence and properties of interface object
@@ -424,7 +424,7 @@ PASS OffscreenCanvasRenderingContext2D interface: operation quadraticCurveTo(unr
 PASS OffscreenCanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-FAIL OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>) assert_equals: property has wrong .length expected 5 but got 4
+PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CustomElementRegistry interface: existence and properties of interface object
@@ -527,75 +527,6 @@ PASS EventSource interface: new EventSource("http://invalid") must inherit prope
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onmessage" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onerror" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "close()" with the proper type
-PASS WebSocket interface: existence and properties of interface object
-PASS WebSocket interface object length
-PASS WebSocket interface object name
-PASS WebSocket interface: existence and properties of interface prototype object
-PASS WebSocket interface: existence and properties of interface prototype object's "constructor" property
-PASS WebSocket interface: existence and properties of interface prototype object's @@unscopables property
-PASS WebSocket interface: attribute url
-PASS WebSocket interface: constant CONNECTING on interface object
-PASS WebSocket interface: constant CONNECTING on interface prototype object
-PASS WebSocket interface: constant OPEN on interface object
-PASS WebSocket interface: constant OPEN on interface prototype object
-PASS WebSocket interface: constant CLOSING on interface object
-PASS WebSocket interface: constant CLOSING on interface prototype object
-PASS WebSocket interface: constant CLOSED on interface object
-PASS WebSocket interface: constant CLOSED on interface prototype object
-PASS WebSocket interface: attribute readyState
-PASS WebSocket interface: attribute bufferedAmount
-PASS WebSocket interface: attribute onopen
-PASS WebSocket interface: attribute onerror
-PASS WebSocket interface: attribute onclose
-PASS WebSocket interface: attribute extensions
-PASS WebSocket interface: attribute protocol
-PASS WebSocket interface: operation close(optional unsigned short, optional USVString)
-PASS WebSocket interface: attribute onmessage
-PASS WebSocket interface: attribute binaryType
-PASS WebSocket interface: operation send(USVString)
-PASS WebSocket interface: operation send(Blob)
-PASS WebSocket interface: operation send(ArrayBuffer)
-PASS WebSocket interface: operation send(ArrayBufferView)
-PASS WebSocket must be primary interface of new WebSocket("ws://invalid")
-PASS Stringification of new WebSocket("ws://invalid")
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "url" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CONNECTING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "OPEN" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSED" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "readyState" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "bufferedAmount" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onopen" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onerror" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onclose" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "extensions" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "protocol" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "close(optional unsigned short, optional USVString)" with the proper type
-PASS WebSocket interface: calling close(optional unsigned short, optional USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onmessage" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "binaryType" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(USVString)" with the proper type
-PASS WebSocket interface: calling send(USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(Blob)" with the proper type
-PASS WebSocket interface: calling send(Blob) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBuffer)" with the proper type
-PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBufferView)" with the proper type
-PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS CloseEvent interface: existence and properties of interface object
-PASS CloseEvent interface object length
-PASS CloseEvent interface object name
-PASS CloseEvent interface: existence and properties of interface prototype object
-PASS CloseEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS CloseEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS CloseEvent interface: attribute wasClean
-PASS CloseEvent interface: attribute code
-PASS CloseEvent interface: attribute reason
-PASS CloseEvent must be primary interface of new CloseEvent("close")
-PASS Stringification of new CloseEvent("close")
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "wasClean" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "code" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "reason" with the proper type
 PASS MessageChannel interface: existence and properties of interface object
 PASS MessageChannel interface object length
 PASS MessageChannel interface object name

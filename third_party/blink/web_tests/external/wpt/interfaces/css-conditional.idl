@@ -9,7 +9,7 @@ partial interface CSSRule {
 
 [Exposed=Window]
 interface CSSConditionRule : CSSGroupingRule {
-    readonly attribute CSSOMString conditionText;
+    attribute CSSOMString conditionText;
 };
 
 [Exposed=Window]

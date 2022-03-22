@@ -84,6 +84,7 @@ interface GPUAdapter {
 dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
     sequence<GPUFeatureName> requiredFeatures = [];
     record<DOMString, GPUSize64> requiredLimits = {};
+    GPUQueueDescriptor defaultQueue = {};
 };
 
 enum GPUFeatureName {
@@ -355,6 +356,7 @@ enum GPUTextureFormat {
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
 interface GPUExternalTexture {
+    readonly attribute boolean expired;
 };
 GPUExternalTexture includes GPUObjectBase;
 
@@ -374,7 +376,7 @@ dictionary GPUSamplerDescriptor : GPUObjectDescriptorBase {
     GPUAddressMode addressModeW = "clamp-to-edge";
     GPUFilterMode magFilter = "nearest";
     GPUFilterMode minFilter = "nearest";
-    GPUFilterMode mipmapFilter = "nearest";
+    GPUMipmapFilterMode mipmapFilter = "nearest";
     float lodMinClamp = 0;
     float lodMaxClamp = 32;
     GPUCompareFunction compare;
@@ -388,6 +390,11 @@ enum GPUAddressMode {
 };
 
 enum GPUFilterMode {
+    "nearest",
+    "linear",
+};
+
+enum GPUMipmapFilterMode {
     "nearest",
     "linear",
 };
@@ -1031,6 +1038,9 @@ GPURenderBundleEncoder includes GPURenderEncoderBase;
 dictionary GPURenderBundleEncoderDescriptor : GPURenderPassLayout {
     boolean depthReadOnly = false;
     boolean stencilReadOnly = false;
+};
+
+dictionary GPUQueueDescriptor : GPUObjectDescriptorBase {
 };
 
 [Exposed=(Window, DedicatedWorker), SecureContext]

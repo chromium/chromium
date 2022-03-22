@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface CSSRule: original interface defined
+PASS Partial interface CSSRule: member names are unique
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: member names are unique
+PASS CSSConditionRule interface: existence and properties of interface object
+PASS CSSConditionRule interface object length
+PASS CSSConditionRule interface object name
+PASS CSSConditionRule interface: existence and properties of interface prototype object
+PASS CSSConditionRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSConditionRule interface: existence and properties of interface prototype object's @@unscopables property
+FAIL CSSConditionRule interface: attribute conditionText assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+PASS CSSMediaRule interface: existence and properties of interface object
+PASS CSSMediaRule interface object length
+PASS CSSMediaRule interface object name
+PASS CSSMediaRule interface: existence and properties of interface prototype object
+PASS CSSMediaRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMediaRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMediaRule interface: attribute media
+PASS CSSMediaRule must be primary interface of cssMediaRule
+PASS Stringification of cssMediaRule
+PASS CSSMediaRule interface: cssMediaRule must inherit property "media" with the proper type
+PASS CSSConditionRule interface: cssMediaRule must inherit property "conditionText" with the proper type
+PASS CSSRule interface: cssMediaRule must inherit property "SUPPORTS_RULE" with the proper type
+PASS CSSSupportsRule interface: existence and properties of interface object
+PASS CSSSupportsRule interface object length
+PASS CSSSupportsRule interface object name
+PASS CSSSupportsRule interface: existence and properties of interface prototype object
+PASS CSSSupportsRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSSupportsRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSSupportsRule must be primary interface of cssSupportsRule
+PASS Stringification of cssSupportsRule
+PASS CSSConditionRule interface: cssSupportsRule must inherit property "conditionText" with the proper type
+PASS CSSRule interface: cssSupportsRule must inherit property "SUPPORTS_RULE" with the proper type
+PASS CSSRule interface: constant SUPPORTS_RULE on interface object
+PASS CSSRule interface: constant SUPPORTS_RULE on interface prototype object
+PASS CSSRule interface: cssRule must inherit property "SUPPORTS_RULE" with the proper type
+PASS CSS namespace: operation escape(CSSOMString)
+PASS CSS namespace: operation supports(CSSOMString, CSSOMString)
+PASS CSS namespace: operation supports(CSSOMString)
+Harness: the test ran to completion.
+
