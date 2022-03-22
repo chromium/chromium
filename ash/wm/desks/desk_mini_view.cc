@@ -223,6 +223,7 @@ void DeskMiniView::OnThemeChanged() {
 }
 
 void DeskMiniView::OnContentChanged() {
+  DCHECK(desk_preview_);
   desk_preview_->RecreateDeskContentsMirrorLayers();
 }
 

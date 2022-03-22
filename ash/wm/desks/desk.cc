@@ -191,6 +191,37 @@ class DeskContainerObserver : public aura::WindowObserver {
     owner_->RemoveWindowFromDesk(removed_window);
   }
 
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    // We need this for desks templates, where new app windows can be created
+    // while in overview. The window may not be visible when `OnWindowAdded` is
+    // called so updating the previews then wouldn't show the new window
+    // preview.
+
+    if (!Shell::Get()->overview_controller()->InOverviewSession())
+      return;
+
+    // `OnWindowVisibilityChanged()` will be run for all windows in the tree of
+    // `container_`. We are only interested in direct children.
+    if (!window->parent() || window->parent() != container_)
+      return;
+
+    // No need to update transient children as the update will handle them.
+    if (wm::GetTransientRoot(window) != window)
+      return;
+
+    // Minimized windows may be force shown to be mirrored. They won't be
+    // visible on the desk preview however, so no need to update.
+    if (!WindowState::Get(window) || WindowState::Get(window)->IsMinimized())
+      return;
+
+    // Do not update windows shown or hidden for overview as they will not be
+    // shown in the desk previews anyways.
+    if (window->GetProperty(kHideInDeskMiniViewKey))
+      return;
+
+    owner_->NotifyContentChanged();
+  }
+
   void OnWindowDestroyed(aura::Window* window) override {
     // We should never get here. We should be notified in
     // `OnRootWindowClosing()` before the child containers of the root window
