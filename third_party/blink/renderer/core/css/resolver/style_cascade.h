@@ -106,6 +106,8 @@ class CORE_EXPORT StyleCascade {
   // the corresponding unvisited properties to be set in the return value.
   std::unique_ptr<CSSBitset> GetImportantSet();
 
+  bool InlineStyleLost() const { return map_.InlineStyleLost(); }
+
   // Resets the cascade to its initial state. Note that this does not undo
   // any changes already applied to the StyleResolverState/ComputedStyle.
   void Reset();

@@ -99,8 +99,21 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
     }
     CascadePriority& top = list.Top(backing_vector_);
     DCHECK(priority.ForLayerComparison() >= top.ForLayerComparison());
-    if (top >= priority)
+    if (top >= priority) {
+      if (priority.IsInlineStyle()) {
+        inline_style_lost_ = true;
+      }
       return;
+    }
+    if (top.IsInlineStyle()) {
+      // Something with a higher priority overrides something from the
+      // inline style, so we need to set the flag. But note that
+      // we _could_ have this layer be negated by “revert”; if so,
+      // this value will be a false positive. But since we only
+      // use it to disable an optimization (incremental inline
+      // style computation), false positives are fine.
+      inline_style_lost_ = true;
+    }
     if (top.ForLayerComparison() < priority.ForLayerComparison())
       list.Push(backing_vector_, priority);
     else
@@ -135,6 +148,7 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
 }
 
 void CascadeMap::Reset() {
+  inline_style_lost_ = false;
   high_priority_ = 0;
   has_important_ = false;
   native_properties_.Bits().Reset();

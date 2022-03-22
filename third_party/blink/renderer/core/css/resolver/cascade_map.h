@@ -50,6 +50,12 @@ class CORE_EXPORT CascadeMap {
   uint64_t HighPriorityBits() const { return high_priority_; }
   // True if any important declaration has been added.
   bool HasImportant() const { return has_important_; }
+  // True if any inline style declaration lost the cascade to something
+  // else. This is rare, but if it happens, we need to turn off incremental
+  // style calculation (see CanApplyInlineStyleIncrementally() and related
+  // functions). This information is propagated up to ComputedStyle after
+  // the cascade and stored there.
+  bool InlineStyleLost() const { return inline_style_lost_; }
   const CSSBitset& NativeBitset() const { return native_properties_.Bits(); }
   // Remove all properties (both native and custom) from the CascadeMap.
   void Reset();
@@ -145,6 +151,7 @@ class CORE_EXPORT CascadeMap {
  private:
   uint64_t high_priority_ = 0;
   bool has_important_ = false;
+  bool inline_style_lost_ = false;
   NativeMap native_properties_;
   CustomMap custom_properties_;
   CascadePriorityList::BackingVector backing_vector_;

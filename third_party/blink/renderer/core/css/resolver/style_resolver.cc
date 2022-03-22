@@ -870,8 +870,10 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   // computed style optimization happens.
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
 
-  if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties())
+  if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties()) {
+    DCHECK(!cascade.InlineStyleLost());
     return state.TakeStyle();
+  }
 
   if (ApplyAnimatedStyle(state, cascade)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
@@ -925,6 +927,8 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   if (state.Style()->HasGlyphRelativeUnits())
     UseCounter::Count(GetDocument(), WebFeature::kHasGlyphRelativeUnits);
+
+  state.Style()->SetInlineStyleLostCascade(cascade.InlineStyleLost());
 
   state.LoadPendingResources();
 

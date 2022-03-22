@@ -1093,5 +1093,13 @@
       default_value: "false",
       field_group: "*",
     },
+    {
+      name: "InlineStyleLostCascade",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      custom_compare: true,
+    },
   ],
 }
