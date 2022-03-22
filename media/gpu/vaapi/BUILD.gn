@@ -26,7 +26,10 @@ generate_stubs("libva_stubs") {
   sigs += [ "va_drm.sigs" ]
 
   output_name = "va_stubs"
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//media/gpu:buildflags",
+  ]
 }
 
 source_set("vaapi") {
