@@ -56,27 +56,15 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
-// TODO(b/214577469): Remove response fields used to determine photo URL via
-// item ID once API change hits prod.
 constexpr char kGooglePhotosAlbumsFullResponse[] =
     "{"
     "   \"collection\": [ {"
     "      \"collectionId\": {"
     "         \"mediaKey\": \"albumId\""
     "      },"
-    "      \"coverItemId\": {"
-    "         \"mediaKey\": \"coverPhotoId\""
-    "      },"
+    "      \"coverItemServingUrl\": \"https://www.google.com/\","
     "      \"name\": \"title\","
     "      \"numPhotos\": \"1\""
-    "   } ],"
-    "   \"item\": [ {"
-    "      \"itemId\": {"
-    "         \"mediaKey\": \"coverPhotoId\""
-    "      },"
-    "      \"photo\": {"
-    "         \"servingUrl\": \"https://www.google.com/\""
-    "      }"
     "   } ],"
     "   \"resumeToken\": \"token\""
     "}";
@@ -610,7 +598,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Parse one-album responses where one of the album's fields is missing.
   for (const auto* const path :
-       {"collectionId.mediaKey", "name", "numPhotos", "coverItemId.mediaKey"}) {
+       {"collectionId.mediaKey", "name", "numPhotos", "coverItemServingUrl"}) {
     auto response = JsonToDict(kGooglePhotosAlbumsFullResponse);
     auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
     album->RemoveByDottedPath(path);
@@ -625,9 +613,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       {"numPhotos", ""},
       {"numPhotos", "NaN"},
       {"numPhotos", "-1"},
-      {"numPhotos", "0"},
-      {"coverItemId.mediaKey", "bogusCoverPhotoId"}};
-  EXPECT_CALL(*google_photos_albums_fetcher, ParseResponse).Times(5);
+      {"numPhotos", "0"}};
+  EXPECT_CALL(*google_photos_albums_fetcher, ParseResponse).Times(4);
   for (const auto& kv : invalid_field_test_cases) {
     auto response = JsonToDict(kGooglePhotosAlbumsFullResponse);
     auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
@@ -658,22 +645,6 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       "albumId", "title", 1, GURL("https://www.google.com/")));
   auto result = FetchGooglePhotosAlbumsResponse::New(
       mojo::Clone(valid_albums_vector), kResumeToken);
-  EXPECT_EQ(google_photos_albums_fetcher->ParseResponse(&response), result);
-  EXPECT_EQ(google_photos_albums_fetcher->GetResultCount(result),
-            absl::make_optional<size_t>(valid_albums_vector.size()));
-
-  // Parse a response whose album cover photo URL can be determined directly or
-  // by looking up a cover photo item ID.
-  auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
-  album->Set("coverItemServingUrl", "https://www.google.com/");
-  EXPECT_EQ(google_photos_albums_fetcher->ParseResponse(&response), result);
-  EXPECT_EQ(google_photos_albums_fetcher->GetResultCount(result),
-            absl::make_optional<size_t>(valid_albums_vector.size()));
-
-  // Parse a response whose album cover photo URL is directly specified but not
-  // determinable via a cover photo item ID.
-  album->Remove("coverItemId");
-  response.Remove("item");
   EXPECT_EQ(google_photos_albums_fetcher->ParseResponse(&response), result);
   EXPECT_EQ(google_photos_albums_fetcher->GetResultCount(result),
             absl::make_optional<size_t>(valid_albums_vector.size()));

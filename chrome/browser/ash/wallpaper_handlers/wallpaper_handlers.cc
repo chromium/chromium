@@ -717,24 +717,6 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
   if (resume_token && !resume_token->empty())
     parsed_response->resume_token = *resume_token;
 
-  // TODO(b/214577469): Remove code path to determine photo URL via item ID once
-  // API change hits prod. The photos listed under "item", if present, are the
-  // albums' cover photos.
-  std::map<std::string, std::string> cover_photo_urls_by_id;
-  const auto* response_photos = response->FindList("item");
-  if (response_photos) {
-    // Populate the ID -> URL mapping for the each album's cover photo.
-    for (const auto& untyped_response_photo : *response_photos) {
-      DCHECK(untyped_response_photo.is_dict());
-      const auto& response_photo = untyped_response_photo.GetDict();
-      const auto* id = response_photo.FindStringByDottedPath("itemId.mediaKey");
-      const auto* url =
-          response_photo.FindStringByDottedPath("photo.servingUrl");
-      if (id && url)
-        cover_photo_urls_by_id.emplace(*id, *url);
-    }
-  }
-
   const auto* response_albums = response->FindList("collection");
   if (!response_albums)
     return parsed_response;
@@ -748,34 +730,21 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
         response_album.FindStringByDottedPath("collectionId.mediaKey");
     const auto* title = response_album.FindString("name");
     const auto* num_photos_string = response_album.FindString("numPhotos");
-
-    // TODO(b/214577469): Remove code path to determine photo URL via item ID
-    // once API change hits prod.
-    const auto* cover_photo_id =
-        response_album.FindStringByDottedPath("coverItemId.mediaKey");
-    auto cover_photo_url_iter =
-        cover_photo_id ? cover_photo_urls_by_id.find(*cover_photo_id)
-                       : cover_photo_urls_by_id.end();
-    const auto* cover_photo_url_ptr =
+    const auto* cover_photo_url =
         response_album.FindString("coverItemServingUrl");
 
     int64_t num_photos;
     if (!album_id || !title || !num_photos_string ||
         !base::StringToInt64(*num_photos_string, &num_photos) ||
-        num_photos < 1 ||
-        (cover_photo_url_iter == cover_photo_urls_by_id.end() &&
-         !cover_photo_url_ptr)) {
+        num_photos < 1 || !cover_photo_url) {
       LOG(ERROR) << "Failed to parse item in Google Photos albums response.";
       continue;
     }
 
-    auto cover_photo_url_string = cover_photo_url_ptr
-                                      ? *cover_photo_url_ptr
-                                      : cover_photo_url_iter->second;
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
             *album_id, *title, base::saturated_cast<int>(num_photos),
-            GURL(cover_photo_url_string)));
+            GURL(*cover_photo_url)));
   }
   return parsed_response;
 }
