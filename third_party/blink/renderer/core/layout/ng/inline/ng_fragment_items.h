@@ -96,6 +96,14 @@ class CORE_EXPORT NGFragmentItems final {
   // Mark items dirty from |LayoutObject::NeedsLayout| flags.
   static void DirtyLinesFromNeedsLayout(const LayoutBlockFlow& block_flow);
 
+  // Search for |old_fragment| among the fragment items inside
+  // |containing_fragment|, and replace it with |new_fragment| if found. Return
+  // true if found and replaced, otherwise false.
+  static bool ReplaceBoxFragment(
+      const NGPhysicalBoxFragment& old_fragment,
+      const NGPhysicalBoxFragment& new_fragment,
+      const NGPhysicalBoxFragment& containing_fragment);
+
   // The byte size of this instance.
   constexpr static wtf_size_t ByteSizeFor(wtf_size_t count) {
     return sizeof(NGFragmentItems) + count * sizeof(NGFragmentItem);

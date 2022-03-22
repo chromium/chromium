@@ -462,6 +462,22 @@ void NGFragmentItems::DirtyLinesFromNeedsLayout(
 }
 
 // static
+bool NGFragmentItems::ReplaceBoxFragment(
+    const NGPhysicalBoxFragment& old_fragment,
+    const NGPhysicalBoxFragment& new_fragment,
+    const NGPhysicalBoxFragment& containing_fragment) {
+  for (NGInlineCursor cursor(containing_fragment); cursor;
+       cursor.MoveToNext()) {
+    const NGFragmentItem* item = cursor.Current().Item();
+    if (item->BoxFragment() != &old_fragment)
+      continue;
+    item->GetMutableForOOFFragmentation().ReplaceBoxFragment(new_fragment);
+    return true;
+  }
+  return false;
+}
+
+// static
 void NGFragmentItems::LayoutObjectWillBeMoved(
     const LayoutObject& layout_object) {
   NGInlineCursor cursor;

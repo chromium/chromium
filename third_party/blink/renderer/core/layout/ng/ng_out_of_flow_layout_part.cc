@@ -2004,9 +2004,20 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
   };
 
   if (!containing_block->IsFragmentationContextRoot()) {
-    // Simply search inside child fragments of the containing block.
     DCHECK_NE(containing_block, container_builder_->GetLayoutObject());
     for (const auto& parent_fragment : containing_block->PhysicalFragments()) {
+      if (parent_fragment.HasItems()) {
+        // Look inside the inline formatting context to find and replace the
+        // fragment generated for the nested multicol container. This happens
+        // when we have a floated "inline-level" nested multicol container with
+        // an OOF inside.
+        if (NGFragmentItems::ReplaceBoxFragment(
+                old_fragment,
+                To<NGPhysicalBoxFragment>(new_result->PhysicalFragment()),
+                parent_fragment))
+          return;
+      }
+      // Search inside child fragments of the containing block.
       if (ReplaceChild(parent_fragment))
         return;
     }
