@@ -362,6 +362,7 @@ void TestControllerAsh::OnGetContextMenuForShelfItem(
     GetContextMenuForShelfItemCallback callback,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   std::vector<std::string> items;
+  items.reserve(model->GetItemCount());
   for (int i = 0; i < model->GetItemCount(); ++i) {
     items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
   }

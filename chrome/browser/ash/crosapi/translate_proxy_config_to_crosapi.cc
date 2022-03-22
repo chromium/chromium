@@ -114,7 +114,7 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
           crosapi::mojom::ProxySettingsWpad::New();
       // WPAD with DHCP has a higher priority than DNS.
       if (dhcp_wpad_url.is_valid()) {
-        wpad->pac_url = dhcp_wpad_url;
+        wpad->pac_url = std::move(dhcp_wpad_url);
       } else {
         // Fallback to WPAD via DNS.
         wpad->pac_url = GURL("http://wpad/wpad.dat");

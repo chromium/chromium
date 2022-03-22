@@ -429,7 +429,7 @@ void KeystoreServiceAsh::SelectClientCertificates(
   std::vector<std::string> cert_authorities_str;
   cert_authorities_str.reserve(certificate_authorities.size());
   for (const std::vector<uint8_t>& ca : certificate_authorities) {
-    cert_authorities_str.push_back(std::string(ca.begin(), ca.end()));
+    cert_authorities_str.emplace_back(ca.begin(), ca.end());
   }
 
   GetPlatformKeys()->SelectClientCertificates(

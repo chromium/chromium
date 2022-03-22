@@ -636,7 +636,7 @@ void RecordDataVer(PrefService* local_state,
 bool IsDataWipeRequired(const std::string& user_id_hash) {
   base::Version data_version =
       GetDataVer(g_browser_process->local_state(), user_id_hash);
-  base::Version current_version = version_info::GetVersion();
+  const base::Version& current_version = version_info::GetVersion();
   base::Version required_version =
       base::Version(base::StringPiece(kRequiredDataVersion));
 

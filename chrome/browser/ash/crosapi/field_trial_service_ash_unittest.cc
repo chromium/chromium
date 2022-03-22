@@ -39,7 +39,9 @@ class TestFieldTrialObserver : public mojom::FieldTrialObserver {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void set_on_activate(OnActivateCallback callback) { callback_ = callback; }
+  void set_on_activate(OnActivateCallback callback) {
+    callback_ = std::move(callback);
+  }
 
   mojo::Receiver<mojom::FieldTrialObserver> receiver_{this};
 

@@ -87,7 +87,7 @@ void ArcAsh::MaybeSetProfile(Profile* profile) {
     return;
   }
 
-  profile_ = std::move(profile);
+  profile_ = profile;
   auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (bridge)
     bridge->AddObserver(this);
@@ -145,6 +145,7 @@ void ArcAsh::RequestActivityIcons(
   // Convert activities to arc::mojom::ActivityNamePtr from
   // crosapi::mojom::ActivityNamePtr.
   std::vector<arc::mojom::ActivityNamePtr> converted_activities;
+  converted_activities.reserve(activities.size());
   for (const auto& activity : activities) {
     converted_activities.push_back(arc::mojom::ActivityName::New(
         activity->package_name, activity->activity_name));
@@ -161,6 +162,7 @@ void ArcAsh::ConvertActivityIcons(
   // Convert icons to crosapi::mojom::ActivityIconPtr from
   // arc::mojom::ActivityIconPtr.
   std::vector<mojom::ActivityIconPtr> converted_icons;
+  converted_icons.reserve(icons.size());
   for (const auto& icon : icons) {
     converted_icons.push_back(mojom::ActivityIcon::New(
         mojom::ActivityName::New(icon->activity->package_name,

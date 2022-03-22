@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
@@ -28,7 +27,6 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
 using gfx::test::AreBitmapsEqual;
 using gfx::test::AreImagesEqual;
 

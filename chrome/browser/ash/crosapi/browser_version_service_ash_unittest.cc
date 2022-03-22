@@ -58,10 +58,10 @@ TEST_F(BrowserVersionServiceAshTest,
       browser_util::kLacrosDogfoodDevInfo.crx_id;
   std::string sample_browser_version_str = "95.0.0.0";
   std::vector<ComponentInfo> sample_components;
-  sample_components.push_back(
-      ComponentInfo(sample_browser_component_id, "",
-                    base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
-                    base::Version(sample_browser_version_str)));
+  sample_components.emplace_back(
+      sample_browser_component_id, "",
+      base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
+      base::Version(sample_browser_version_str));
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 
@@ -89,10 +89,10 @@ TEST_F(BrowserVersionServiceAshTest, GetInstalledBrowserVersion) {
       browser_util::kLacrosDogfoodDevInfo.crx_id;
   std::string sample_browser_version_str = "95.0.0.0";
   std::vector<ComponentInfo> sample_components;
-  sample_components.push_back(
-      ComponentInfo(sample_browser_component_id, "",
-                    base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
-                    base::Version(sample_browser_version_str)));
+  sample_components.emplace_back(
+      sample_browser_component_id, "",
+      base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
+      base::Version(sample_browser_version_str));
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 

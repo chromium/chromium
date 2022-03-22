@@ -521,10 +521,14 @@ void LocalPrinterAsh::AddPrintJobObserver(
     mojo::PendingRemote<mojom::PrintJobObserver> remote,
     mojom::PrintJobSource source,
     AddPrintJobObserverCallback callback) {
-  if (source == mojom::PrintJobSource::kExtension)
-    extension_print_job_remotes_.Add(std::move(remote));
-  if (source == mojom::PrintJobSource::kAny)
-    print_job_remotes_.Add(std::move(remote));
+  switch (source) {
+    case mojom::PrintJobSource::kExtension:
+      extension_print_job_remotes_.Add(std::move(remote));
+      break;
+    case mojom::PrintJobSource::kAny:
+      print_job_remotes_.Add(std::move(remote));
+      break;
+  }
   std::move(callback).Run();
 }
 

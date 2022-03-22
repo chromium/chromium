@@ -46,7 +46,7 @@ mojom::SessionState ToMojo(session_manager::SessionState state) {
 
 }  // namespace
 
-LoginStateAsh::LoginStateAsh() : session_state_(mojom::SessionState::kUnknown) {
+LoginStateAsh::LoginStateAsh() {
   // SessionManager may be unset in tests.
   if (session_manager::SessionManager::Get()) {
     session_state_ =

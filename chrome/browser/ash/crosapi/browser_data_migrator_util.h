@@ -286,7 +286,7 @@ struct TargetItems {
 
   std::vector<TargetItem> items;
   // The sum of the sizes of `TargetItem`s in `items`.
-  int64_t total_size;
+  int64_t total_size = 0;
 };
 
 // Specifies the type of `TargetItem`
@@ -301,18 +301,18 @@ enum class ItemType {
 // `type`. E.g. `GetTargetItems(path, ItemType::kLacros)` will get all items
 // that should be moved to lacros.
 TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
-                           const ItemType type);
+                           ItemType type);
 
 // Checks if there is enough disk space to migration to be carried out safely.
 // that needs to be copied.
-bool HasEnoughDiskSpace(const int64_t total_copy_size,
+bool HasEnoughDiskSpace(int64_t total_copy_size,
                         const base::FilePath& original_profile_dir);
 
 // Returns extra bytes that has to be freed for the migration to be carried out
 // if there are `total_copy_size` bytes of copying to be done. Returns 0 if no
 // extra space needs to be freed.
 uint64_t ExtraBytesRequiredToBeFreed(
-    const int64_t total_copy_size,
+    int64_t total_copy_size,
     const base::FilePath& original_profile_dir);
 
 // Injects the bytes to be returned by ExtraBytesRequiredToBeFreed above

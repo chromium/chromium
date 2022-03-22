@@ -144,14 +144,16 @@ CancelFlag::CancelFlag() : cancelled_(false) {}
 CancelFlag::~CancelFlag() = default;
 
 TargetItem::TargetItem(base::FilePath path, int64_t size, ItemType item_type)
-    : path(path), size(size), is_directory(item_type == ItemType::kDirectory) {}
+    : path(std::move(path)),
+      size(size),
+      is_directory(item_type == ItemType::kDirectory) {}
 
 bool TargetItem::operator==(const TargetItem& rhs) const {
   return this->path == rhs.path && this->size == rhs.size &&
          this->is_directory == rhs.is_directory;
 }
 
-TargetItems::TargetItems() : total_size(0) {}
+TargetItems::TargetItems() = default;
 TargetItems::TargetItems(TargetItems&&) = default;
 TargetItems::~TargetItems() = default;
 

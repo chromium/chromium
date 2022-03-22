@@ -54,9 +54,6 @@
 #include "base/notreached.h"
 #endif
 
-using ::ash::CupsPrintersManager;
-using ::ash::PrinterSetupCallback;
-using ::ash::PrinterSetupResult;
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 using ::chromeos::PrinterConfigurer;
@@ -187,7 +184,7 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
     return std::make_unique<ash::TestPrinterConfigurer>(manager_);
   }
 
-  ash::TestCupsPrintersManager* manager_;
+  ash::TestCupsPrintersManager* const manager_;
 };
 
 // Base testing class for `LocalPrinterAsh`.  Contains the base
@@ -348,7 +345,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
-  ash::TestCupsPrintersManager* printers_manager_;
+  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 
@@ -942,8 +939,7 @@ TEST(LocalPrinterAsh, ConfigToMojom) {
   ash::PrintServersConfig config;
   config.fetching_mode = crosapi::mojom::PrintServersConfig::
       ServerPrintersFetchingMode::kSingleServerOnly;
-  config.print_servers.push_back(
-      ash::PrintServer("id", GURL("http://localhost"), "name"));
+  config.print_servers.emplace_back("id", GURL("http://localhost"), "name");
   crosapi::mojom::PrintServersConfigPtr mojom =
       crosapi::LocalPrinterAsh::ConfigToMojom(config);
   ASSERT_TRUE(mojom);

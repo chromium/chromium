@@ -1096,7 +1096,8 @@ crosapi::mojom::PermissionValueDataView::Tag UnionTraits<
     apps::PermissionValuePtr>::GetTag(const apps::PermissionValuePtr& r) {
   if (r->bool_value.has_value()) {
     return crosapi::mojom::PermissionValueDataView::Tag::BOOL_VALUE;
-  } else if (r->tristate_value.has_value()) {
+  }
+  if (r->tristate_value.has_value()) {
     return crosapi::mojom::PermissionValueDataView::Tag::TRISTATE_VALUE;
   }
   NOTREACHED();

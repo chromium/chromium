@@ -51,7 +51,7 @@ class LoginStateAsh : public mojom::LoginState,
       session_manager_observation_{this};
 
   // The cached session state value.
-  mojom::SessionState session_state_;
+  mojom::SessionState session_state_ = mojom::SessionState::kUnknown;
 };
 
 }  // namespace crosapi

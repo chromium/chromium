@@ -78,7 +78,7 @@ class NetworkingAttributesAshTest : public testing::Test {
       : public chromeos::ShillPropertyChangedObserver {
    public:
     MockPropertyChangeObserver() = default;
-    ~MockPropertyChangeObserver() = default;
+    ~MockPropertyChangeObserver() override = default;
     MOCK_METHOD2(OnPropertyChanged,
                  void(const std::string& name, const base::Value& value));
   };

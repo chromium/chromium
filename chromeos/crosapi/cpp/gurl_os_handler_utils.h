@@ -47,7 +47,7 @@ GURL GetTargetURLFromLacrosURL(const GURL& url);
 // Note furthermore that the passed |list| is expected to be lower case for
 // os:// scheme links.
 COMPONENT_EXPORT(CROSAPI)
-bool IsUrlInList(const GURL& url, const std::vector<GURL> list);
+bool IsUrlInList(const GURL& url, const std::vector<GURL>& list);
 
 // Returns true when the URL is an internal os:// url. Note that we do need
 // This support only for OpenURL Lacros to Ash and as such

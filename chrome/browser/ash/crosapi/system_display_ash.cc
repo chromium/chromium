@@ -52,6 +52,7 @@ void SystemDisplayAsh::OnDisplayInfoResult(
     GetDisplayUnitInfoListCallback callback,
     std::vector<DisplayUnitInfo> src_info_list) {
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> dst_info_list;
+  dst_info_list.reserve(src_info_list.size());
   for (const auto& src_info : src_info_list) {
     dst_info_list.emplace_back(
         extensions::api::system_display::SerializeDisplayUnitInfo(src_info));

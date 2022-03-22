@@ -21,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Return;
-using update_client::UpdateClient;
 
 namespace crosapi {
 namespace {

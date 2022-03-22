@@ -24,7 +24,7 @@ drive::DriveIntegrationService* GetDriveService() {
                       : nullptr;
 }
 
-const base::FilePath GetMountPoint() {
+base::FilePath GetMountPoint() {
   return GetDriveService() && GetDriveService()->IsMounted()
              ? GetDriveService()->GetMountPointPath().Append(
                    drive::util::kDriveMyDriveRootDirName)

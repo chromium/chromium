@@ -409,8 +409,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   // Pass the accepted internal urls to lacros. Only accepted urls are allowed
   // to be passed via OpenURL from Lacros to Ash.
   params->accepted_internal_ash_urls =
-      std::move(ChromeWebUIControllerFactory::GetInstance())
-          ->GetListOfAcceptableURLs();
+      ChromeWebUIControllerFactory::GetInstance()->GetListOfAcceptableURLs();
 
   // Pass holding space feature flag state to lacros.
   params->is_holding_space_incognito_profile_integration_enabled = true;

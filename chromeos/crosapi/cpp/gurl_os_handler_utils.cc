@@ -27,7 +27,8 @@ const char kTerminatingCharacters[] = "/\\? #.%$&*<>+";
 
 // Note that GURL can't operate on the "os://" scheme as it is intentionally
 // not a registered scheme.
-std::string GetValidHostAndSubhostFromOsUrl(GURL url, bool include_path) {
+std::string GetValidHostAndSubhostFromOsUrl(const GURL& url,
+                                            bool include_path) {
   // Only keep the scheme, host and sub-host. Everything else gets cut off.
   const std::string& url_spec = base::ToLowerASCII(url.spec());
 
@@ -62,7 +63,7 @@ GURL GetValidHostAndSubhostFromGURL(GURL gurl, bool include_path) {
   if (!gurl.has_ref() && !gurl.has_username() && !gurl.has_password() &&
       !gurl.has_query() && !gurl.has_port() &&
       (include_path || !gurl.has_path())) {
-    return GURL(gurl);
+    return gurl;
   }
 
   GURL::Replacements replacements;
@@ -109,7 +110,7 @@ GURL GetTargetURLFromLacrosURL(const GURL& url) {
   return target_url.ReplaceComponents(replacements);
 }
 
-bool IsUrlInList(const GURL& test_url, std::vector<GURL> list) {
+bool IsUrlInList(const GURL& test_url, const std::vector<GURL>& list) {
   // It is assumed that the provided URL is sanitized as requested by
   // security at this point.
   DCHECK(SanitizeAshURL(test_url) == test_url);

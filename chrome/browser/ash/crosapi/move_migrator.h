@@ -135,7 +135,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // Sets `kMoveMigrationResumeStepPref` in `Local State` for `user_id_hash`.
   static void SetResumeStep(PrefService* local_state,
                             const std::string& user_id_hash,
-                            const ResumeStep step);
+                            ResumeStep step);
 
   // Returns true if `resume_step` indicates that the migration had been left
   // unfinished in the previous attempt and that it must be resumed before user
@@ -218,7 +218,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
 
   // Local state prefs, not owned.
-  PrefService* local_state_;
+  PrefService* const local_state_;
 
   // `finished_callback_` should be called once migration is completed/failed.
   // Call this on UI thread.

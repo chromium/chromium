@@ -10,10 +10,7 @@
 namespace ash {
 MigrationProgressTrackerImpl::MigrationProgressTrackerImpl(
     const ProgressCallback& callback)
-    : progress_(0),
-      size_copied_(0),
-      total_size_to_copy_(-1),
-      progress_callback_(callback) {}
+    : progress_callback_(callback) {}
 
 MigrationProgressTrackerImpl::~MigrationProgressTrackerImpl() = default;
 

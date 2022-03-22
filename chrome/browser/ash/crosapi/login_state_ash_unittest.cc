@@ -36,7 +36,7 @@ class LoginStateAshTest : public testing::Test {
       : public mojom::SessionStateChangedEventObserver {
    public:
     MockSessionStateChangedEventObserver() = default;
-    ~MockSessionStateChangedEventObserver() = default;
+    ~MockSessionStateChangedEventObserver() override = default;
     MOCK_METHOD1(OnSessionStateChanged, void(mojom::SessionState state));
     mojo::Receiver<mojom::SessionStateChangedEventObserver> receiver_{this};
   };

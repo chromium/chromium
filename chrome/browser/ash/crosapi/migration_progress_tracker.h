@@ -41,11 +41,11 @@ class MigrationProgressTrackerImpl : public MigrationProgressTracker {
  private:
   // % of migration that is done. Equivalent to size_copied_ * 100 /
   // total_size_to_copy_.
-  int progress_;
+  int progress_ = 0;
   // Data copied so far in bytes.
-  int64_t size_copied_;
+  int64_t size_copied_ = 0;
   // The total size of data that has to be copied in bytes.
-  int64_t total_size_to_copy_;
+  int64_t total_size_to_copy_ = -1;
   // A callback passe
   ProgressCallback progress_callback_;
 };
