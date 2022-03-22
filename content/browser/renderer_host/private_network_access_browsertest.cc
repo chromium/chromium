@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
@@ -28,6 +30,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -122,6 +125,45 @@ class ContentBrowserClientRegistration {
   const raw_ptr<ContentBrowserClient> old_client_;
 };
 
+// An embedded test server connection listener that simply counts connections.
+// Thread-safe.
+class ConnectionCounter
+    : public net::test_server::EmbeddedTestServerConnectionListener {
+ public:
+  ConnectionCounter() = default;
+
+  // Instances of this class are neither copyable nor movable.
+  ConnectionCounter(const ConnectionCounter&) = delete;
+  ConnectionCounter& operator=(const ConnectionCounter&) = delete;
+  ConnectionCounter(ConnectionCounter&&) = delete;
+  ConnectionCounter& operator=(ConnectionCounter&&) = delete;
+
+  // Returns the number of sockets accepted by the servers we are listening to.
+  int count() const {
+    base::AutoLock guard(lock_);
+    return count_;
+  }
+
+ private:
+  // EmbeddedTestServerConnectionListener implementation.
+
+  std::unique_ptr<net::StreamSocket> AcceptedSocket(
+      std::unique_ptr<net::StreamSocket> socket) override {
+    {
+      base::AutoLock guard(lock_);
+      count_++;
+    }
+    return socket;
+  }
+
+  void ReadFromSocket(const net::StreamSocket& socket, int rv) override {}
+
+  // `count_` is incremented on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  int count_ GUARDED_BY(lock_) = 0;
+};
+
 // A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
 //
 // NOTE(titouan): The IP address space overrides CLI switch is copied to utility
@@ -132,12 +174,15 @@ class ContentBrowserClientRegistration {
 class FakeAddressSpaceServer {
  public:
   FakeAddressSpaceServer(net::EmbeddedTestServer::Type type,
+                         net::test_server::HttpConnection::Protocol protocol,
                          network::mojom::IPAddressSpace ip_address_space,
                          const base::FilePath& test_data_path)
-      : server_(type) {
+      : server_(type, protocol) {
     // Use a certificate valid for multiple domains, which we can use to
     // distinguish `local`, `private` and `public` address spaces.
     server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    server_.SetConnectionListener(&connection_counter_);
 
     server_.AddDefaultHandlers(test_data_path);
     StartServer(server_);
@@ -163,7 +208,11 @@ class FakeAddressSpaceServer {
                                    switch_str);
   }
 
+  // Returns the underlying test server.
   net::EmbeddedTestServer& Get() { return server_; }
+
+  // Returns the total number of sockets accepted by this server.
+  int ConnectionCount() const { return connection_counter_.count(); }
 
  private:
   // Constructor helper.
@@ -187,6 +236,7 @@ class FakeAddressSpaceServer {
     }
   }
 
+  ConnectionCounter connection_counter_;
   net::EmbeddedTestServer server_;
 };
 
@@ -227,24 +277,35 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
   explicit PrivateNetworkAccessBrowserTestBase(
       const std::vector<base::Feature>& enabled_features,
       const std::vector<base::Feature>& disabled_features)
-      : insecure_local_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                               network::mojom::IPAddressSpace::kLocal,
-                               GetTestDataFilePath()),
-        insecure_private_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                                 network::mojom::IPAddressSpace::kPrivate,
-                                 GetTestDataFilePath()),
-        insecure_public_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                                network::mojom::IPAddressSpace::kPublic,
-                                GetTestDataFilePath()),
+      : insecure_local_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kLocal,
+            GetTestDataFilePath()),
+        insecure_private_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPrivate,
+            GetTestDataFilePath()),
+        insecure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()),
         secure_local_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                             net::test_server::HttpConnection::Protocol::kHttp1,
                              network::mojom::IPAddressSpace::kLocal,
                              GetTestDataFilePath()),
-        secure_private_server_(net::EmbeddedTestServer::TYPE_HTTPS,
-                               network::mojom::IPAddressSpace::kPrivate,
-                               GetTestDataFilePath()),
-        secure_public_server_(net::EmbeddedTestServer::TYPE_HTTPS,
-                              network::mojom::IPAddressSpace::kPublic,
-                              GetTestDataFilePath()) {
+        secure_private_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPrivate,
+            GetTestDataFilePath()),
+        secure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()) {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -255,6 +316,30 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     host_resolver()->AddRule(kLocalHost, "127.0.0.1");
     host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
     host_resolver()->AddRule(kPublicHost, "127.0.0.1");
+  }
+
+  const FakeAddressSpaceServer& InsecureLocalServer() const {
+    return insecure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecurePrivateServer() const {
+    return insecure_private_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecurePublicServer() const {
+    return insecure_public_server_;
+  }
+
+  const FakeAddressSpaceServer& SecureLocalServer() const {
+    return secure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& SecurePrivateServer() const {
+    return secure_private_server_;
+  }
+
+  const FakeAddressSpaceServer& SecurePublicServer() const {
+    return secure_public_server_;
   }
 
   GURL InsecureLocalURL(const std::string& path) {
@@ -284,8 +369,6 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  // All servers are started on demand. Most tests require the use of one or
-  // two servers, never six at the same time.
   FakeAddressSpaceServer insecure_local_server_;
   FakeAddressSpaceServer insecure_private_server_;
   FakeAddressSpaceServer insecure_public_server_;
@@ -2817,6 +2900,45 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   // origin to avoid running afoul of mixed content restrictions.
   EXPECT_EQ(true, EvalJs(root_frame_host(),
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       PreflightConnectionReusedHttp1) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kPnaPath))));
+
+  // Expect 3 connections:
+  //
+  // 1. For the request that was cancelled when the private network request was
+  //    detected.
+  // 2. For the preflight request.
+  // 3. For the actual request (the server does not handle keep-alives).
+  //
+  // TODO(https://crbug.com/1292967): Expect 2 connections once the first
+  // connection is no longer closed by Chrome. Instead it should be reused by
+  // the preflight request.
+  EXPECT_EQ(SecureLocalServer().ConnectionCount(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       PreflightConnectionReusedHttp2) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  ConnectionCounter counter;
+  net::EmbeddedTestServer http2_server(
+      net::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2);
+  http2_server.SetConnectionListener(&counter);
+  http2_server.AddDefaultHandlers(GetTestDataFilePath());
+  ASSERT_TRUE(http2_server.Start());
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(http2_server.GetURL(kPnaPath))));
+
+  EXPECT_EQ(counter.count(), 1);
 }
 
 // This test verifies that when the right feature is enabled but the content
