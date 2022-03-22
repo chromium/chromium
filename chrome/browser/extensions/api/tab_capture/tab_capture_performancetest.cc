@@ -291,6 +291,9 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 #elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1295824): Flaky on Linux ASAN
 #define MAYBE_Performance DISABLED_Performance
+#elif BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1306912): Failing consistently on Linux
+#define MAYBE_Performance DISABLED_Performance
 #else
 #define MAYBE_Performance Performance
 #endif
