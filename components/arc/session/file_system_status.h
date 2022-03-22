@@ -30,10 +30,7 @@ class FileSystemStatus {
     return is_system_image_ext_format_;
   }
   bool has_adbd_json() const { return has_adbd_json_; }
-  const base::FilePath& system_image_path() const { return system_image_path_; }
   const base::FilePath& vendor_image_path() const { return vendor_image_path_; }
-  const base::FilePath& guest_kernel_path() const { return guest_kernel_path_; }
-  const base::FilePath& fstab_path() const { return fstab_path_; }
 
   // Setters for testing.
   void set_host_rootfs_writable_for_testing(bool is_host_rootfs_writable) {
@@ -43,20 +40,9 @@ class FileSystemStatus {
       bool is_system_image_ext_format) {
     is_system_image_ext_format_ = is_system_image_ext_format;
   }
-  void set_system_image_path_for_testing(
-      const base::FilePath& system_image_path) {
-    system_image_path_ = system_image_path;
-  }
   void set_vendor_image_path_for_testing(
       const base::FilePath& vendor_image_path) {
     vendor_image_path_ = vendor_image_path;
-  }
-  void set_guest_kernel_path_for_testing(
-      const base::FilePath& guest_kernel_path) {
-    guest_kernel_path_ = guest_kernel_path;
-  }
-  void set_fstab_path_for_testing(const base::FilePath& fstab_path) {
-    fstab_path_ = fstab_path;
   }
 
   static bool IsSystemImageExtFormatForTesting(const base::FilePath& path) {
@@ -74,10 +60,7 @@ class FileSystemStatus {
   static bool IsSystemImageExtFormat(const base::FilePath& path);
 
   bool is_host_rootfs_writable_;
-  base::FilePath system_image_path_;
   base::FilePath vendor_image_path_;
-  base::FilePath guest_kernel_path_;
-  base::FilePath fstab_path_;
   bool is_system_image_ext_format_;
   bool has_adbd_json_;
 };

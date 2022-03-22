@@ -1414,9 +1414,6 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmParams) {
   const auto& params = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_EQ("arcvm", params.name());
   EXPECT_LT(0u, params.cpus());
-  EXPECT_FALSE(params.vm().kernel().empty());
-  // Make sure system.raw.img is passed.
-  EXPECT_FALSE(params.vm().rootfs().empty());
   // Make sure vendor.raw.img is passed.
   EXPECT_LE(1, params.disks_size());
   EXPECT_LT(0, params.params_size());

@@ -20,8 +20,6 @@ namespace {
 
 constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
 constexpr const char kBuiltinPath[] = "/opt/google/vms/android";
-constexpr const char kFstabPath[] = "/run/arcvm/host_generated/fstab";
-constexpr const char kKernel[] = "vmlinux";
 constexpr const char kRootFs[] = "system.raw.img";
 constexpr const char kVendorImage[] = "vendor.raw.img";
 
@@ -34,11 +32,9 @@ FileSystemStatus& FileSystemStatus::operator=(FileSystemStatus&& other) =
 
 FileSystemStatus::FileSystemStatus()
     : is_host_rootfs_writable_(IsHostRootfsWritable()),
-      system_image_path_(base::FilePath(kBuiltinPath).Append(kRootFs)),
       vendor_image_path_(base::FilePath(kBuiltinPath).Append(kVendorImage)),
-      guest_kernel_path_(base::FilePath(kBuiltinPath).Append(kKernel)),
-      fstab_path_(kFstabPath),
-      is_system_image_ext_format_(IsSystemImageExtFormat(system_image_path_)),
+      is_system_image_ext_format_(
+          IsSystemImageExtFormat(base::FilePath(kBuiltinPath).Append(kRootFs))),
       has_adbd_json_(base::PathExists(base::FilePath(kAdbdJson))) {}
 
 // static
