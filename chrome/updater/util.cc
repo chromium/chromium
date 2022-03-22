@@ -304,17 +304,18 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
 #endif  // BUILDFLAG(IS_WIN)
 
 absl::optional<base::FilePath> WriteInstallerDataToTempFile(
+    const base::FilePath& directory,
     const std::string& installer_data) {
-  VLOG(2) << __func__ << ": " << installer_data;
+  VLOG(2) << __func__ << ": " << directory << ": " << installer_data;
+
+  if (!base::DirectoryExists(directory))
+    return absl::nullopt;
+
   if (installer_data.empty())
     return absl::nullopt;
 
-  base::FilePath module_dir;
-  if (!base::PathService::Get(base::DIR_MODULE, &module_dir))
-    return absl::nullopt;
-
   base::FilePath path;
-  base::File file = base::CreateAndOpenTemporaryFileInDir(module_dir, &path);
+  base::File file = base::CreateAndOpenTemporaryFileInDir(directory, &path);
   if (!file.IsValid())
     return absl::nullopt;
 

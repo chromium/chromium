@@ -166,7 +166,8 @@ Installer::Result Installer::InstallHelper(
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
       application_installer, install_params->arguments,
-      WriteInstallerDataToTempFile(install_params->server_install_data),
+      WriteInstallerDataToTempFile(application_installer.DirName(),
+                                   install_params->server_install_data),
       std::move(progress_callback));
 }
 

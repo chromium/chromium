@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/updater/constants.h"
@@ -42,12 +43,19 @@ TEST(Util, AppArgsAndAP) {
 }
 
 TEST(Util, WriteInstallerDataToTempFile) {
-  EXPECT_FALSE(WriteInstallerDataToTempFile(""));
+  base::FilePath directory;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &directory));
+
+  EXPECT_FALSE(WriteInstallerDataToTempFile(directory, ""));
 
   const std::string kInstallerData =
       R"({"distribution":{"msi":true,"allow_downgrade":false}})";
+  EXPECT_FALSE(WriteInstallerDataToTempFile(
+      directory.Append(FILE_PATH_LITERAL("NonExistentDirectory")),
+      kInstallerData));
+
   const absl::optional<base::FilePath> installer_data_file =
-      WriteInstallerDataToTempFile(kInstallerData);
+      WriteInstallerDataToTempFile(directory, kInstallerData);
   ASSERT_TRUE(installer_data_file);
 
   std::string contents;

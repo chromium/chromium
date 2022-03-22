@@ -196,9 +196,9 @@ std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
 #endif  // BUILDFLAG(IS_WIN)
 
 // Writes the provided string prefixed with the UTF8 byte order mark to a
-// temporary file. The temporary file is created in the same directory as the
-// current exe.
+// temporary file. The temporary file is created in the specified `directory`.
 absl::optional<base::FilePath> WriteInstallerDataToTempFile(
+    const base::FilePath& directory,
     const std::string& installer_data);
 
 }  // namespace updater
