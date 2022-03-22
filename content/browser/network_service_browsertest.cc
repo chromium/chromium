@@ -809,10 +809,24 @@ static const base::FilePath::CharType kCookieDatabaseName[] =
 static const base::FilePath::CharType kNetworkSubpath[] =
     FILE_PATH_LITERAL("Network");
 
+// Disable the following data migration tests on Android because the data
+// migration logic is disabled and compiled out on this platform.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NetworkServiceDataMigrationBrowserTest \
+  DISABLED_NetworkServiceDataMigrationBrowserTest
+#define MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures \
+  DISABLED_NetworkServiceDataMigrationBrowserTestWithFailures
+#else
+#define MAYBE_NetworkServiceDataMigrationBrowserTest \
+  NetworkServiceDataMigrationBrowserTest
+#define MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures \
+  NetworkServiceDataMigrationBrowserTestWithFailures
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // A class to test various behavior of network context data migration.
-class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
+class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  public:
-  NetworkServiceDataMigrationBrowserTest() {
+  MAYBE_NetworkServiceDataMigrationBrowserTest() {
     // Migration only supports non-WAL sqlite databases. If this feature is
     // switched on by default before migration has been completed then the code
     // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
@@ -840,11 +854,11 @@ class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
 // A parameterized test fixture that can simulate various failures in the
 // migration step, and can also be run with either in-process or out-of-process
 // network service.
-class NetworkServiceDataMigrationBrowserTestWithFailures
-    : public NetworkServiceDataMigrationBrowserTest,
+class MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures
+    : public MAYBE_NetworkServiceDataMigrationBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, FailureType>> {
  public:
-  NetworkServiceDataMigrationBrowserTestWithFailures() {
+  MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures() {
     if (IsNetworkServiceRunningInProcess())
       network_service_in_process_feature_.InitAndEnableFeature(
           features::kNetworkServiceInProcess);
@@ -1122,7 +1136,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkServiceDataMigrationBrowserTestWithFailures,
+IN_PROC_BROWSER_TEST_P(MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
                        MigrateDataTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1141,7 +1155,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceDataMigrationBrowserTestWithFailures,
 // a third directory to verify that if a migration is triggered and then later
 // not triggered, then the data is still read from the new directory and not the
 // old one.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        MigrateThenNoMigrate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1212,7 +1226,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 // This test verifies that a new un-used data path will be initialized correctly
 // if `unsandboxed_data_path` is set. The Cookie file should be placed into the
 // `data_directory` and not `unsandboxed_data_path`.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1259,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 // A test where a caller specifies both `data_directory` and
 // `unsandboxed_data_path` but does not wish migration to occur. The data should
 // be in `unsandboxed_data_path` in this case.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithNoMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1310,7 +1324,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 // A test where a caller specifies `data_directory` but does not specify
 // anything else, including `unsandboxed_data_path`. This verifies that existing
 // behavior remains the same for call-sites that do not update anything.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
+                       LegacyDataDir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath tempdir;
@@ -1355,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
 // the previous code without the checkpoint file, and then later takes place
 // using the new code, then the data is still read from the correct directory
 // despite there not being a checkpoint file prior to the migration.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        MigratedPreviouslyAndMigrateAgain) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1435,14 +1450,24 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_TRUE(base::PathExists(checkpoint_file));
 }
 
+// Disable instantiation of parametrized tests for disk access sandboxing on
+// Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InProcess DISABLED_InProcess
+#define MAYBE_OutOfProcess DISABLED_OutOfProcess
+#else
+#define MAYBE_InProcess InProcess
+#define MAYBE_OutOfProcess OutOfProcess
+#endif  // BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(
-    InProcess,
-    NetworkServiceDataMigrationBrowserTestWithFailures,
+    MAYBE_InProcess,
+    MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(kFailureTypes)));
 INSTANTIATE_TEST_SUITE_P(
-    OutOfProcess,
-    NetworkServiceDataMigrationBrowserTestWithFailures,
+    MAYBE_OutOfProcess,
+    MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
     ::testing::Combine(::testing::Values(false),
                        ::testing::ValuesIn(kFailureTypes)));
 

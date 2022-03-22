@@ -1283,6 +1283,7 @@ source_set("browser") {
     "net/reporting_service_proxy.h",
     "network_context_client_base_impl.cc",
     "network_context_client_base_impl.h",
+    "network_sandbox_grant_result.h",
     "network_service_client.cc",
     "network_service_client.h",
     "network_service_instance_impl.cc",
@@ -2503,6 +2504,11 @@ source_set("browser") {
       # this produces for other feature/platform pairs.
       "media/capture/crop_id_web_contents_helper.cc",
       "media/capture/crop_id_web_contents_helper.h",
+
+      # Support for restricting NetworkService disk access to a certain path.
+      # Not available on Android.
+      "network_sandbox.cc",
+      "network_sandbox.h",
     ]
   }
 
