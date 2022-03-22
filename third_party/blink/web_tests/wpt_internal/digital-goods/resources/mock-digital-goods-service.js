@@ -5,6 +5,7 @@ import {
   DigitalGoodsFactoryReceiver,
   DigitalGoodsReceiver,
   DigitalGoodsRemote,
+  ItemType,
 } from '/gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.m.js';
 
 class MockDigitalGoods {
@@ -48,6 +49,9 @@ class MockDigitalGoods {
       itemDetails.introductoryPrice.currency = 'JPY';
       itemDetails.introductoryPrice.value = 2*num + '';
       itemDetails.introductoryPricePeriod = 'P' + num + 'D';
+      itemDetails.introductoryPriceCycles = 3*num;
+      itemDetails.type = Math.floor(num / 2) % 2 ? ItemType.kProduct : ItemType.kSubscription;
+      itemDetails.iconUrls = [{url: 'https://example.com/icon.png'}];
     }
     return itemDetails;
   }

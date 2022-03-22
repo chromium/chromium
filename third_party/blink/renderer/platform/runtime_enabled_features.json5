@@ -897,6 +897,12 @@
       },
     },
     {
+      name: "DigitalGoodsV2_1",
+      // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
+      // so enable the API on all platforms for testing.
+      status: "test",
+    },
+    {
       name: "DirectSockets",
       status: "test",
     },

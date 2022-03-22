@@ -7,11 +7,22 @@ dictionary ItemDetails {
   required DOMString itemId;
   required DOMString title;
   required PaymentCurrencyAmount price;
+  [RuntimeEnabled=DigitalGoodsV2_1]
+  ItemType type;
   DOMString description;
+  [RuntimeEnabled=DigitalGoodsV2_1]
+  sequence<DOMString> iconURLs;
   // Periods are specified as ISO 8601 durations.
   // https://en.wikipedia.org/wiki/ISO_8601#Durations
   DOMString subscriptionPeriod;
   DOMString freeTrialPeriod;
   PaymentCurrencyAmount introductoryPrice;
   DOMString introductoryPricePeriod;
+  [EnforceRange, RuntimeEnabled=DigitalGoodsV2_1]
+  unsigned long long introductoryPriceCycles;
+};
+
+enum ItemType {
+  "product",
+  "subscription",
 };

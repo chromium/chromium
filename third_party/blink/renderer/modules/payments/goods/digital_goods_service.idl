@@ -13,6 +13,9 @@
   [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchases]
   Promise<sequence<PurchaseDetails>> listPurchases();
 
+  [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchaseHistory, RuntimeEnabled=DigitalGoodsV2_1]
+  Promise<sequence<PurchaseDetails>> listPurchaseHistory();
+
   [CallWith=ScriptState, MeasureAs=DigitalGoodsConsume]
   Promise<void> consume(DOMString purchaseToken);
 };

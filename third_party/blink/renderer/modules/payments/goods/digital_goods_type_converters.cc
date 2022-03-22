@@ -4,14 +4,22 @@
 
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
 
+#include <utility>
+
+#include "base/notreached.h"
+#include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
 #include "third_party/blink/renderer/modules/payments/payment_event_data_conversion.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace mojo {
 
 using payments::mojom::blink::BillingResponseCode;
 using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 using payments::mojom::blink::ItemDetailsPtr;
+using payments::mojom::blink::ItemType;
 using payments::mojom::blink::PurchaseReferencePtr;
 
 WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
@@ -53,6 +61,26 @@ blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
       !input->introductory_price_period.IsEmpty()) {
     output->setIntroductoryPricePeriod(input->introductory_price_period);
   }
+  if (input->introductory_price_cycles > 0)
+    output->setIntroductoryPriceCycles(input->introductory_price_cycles);
+  switch (input->type) {
+    case ItemType::kUnknown:
+      // Omit setting ItemType on output.
+      break;
+    case ItemType::kProduct:
+      output->setType("product");
+      break;
+    case ItemType::kSubscription:
+      output->setType("subscription");
+      break;
+  }
+  WTF::Vector<WTF::String> icon_urls;
+  if (input->icon_urls.has_value()) {
+    for (const blink::KURL& icon_url : input->icon_urls.value()) {
+      icon_urls.push_back(icon_url.GetString());
+    }
+  }
+  output->setIconURLs(std::move(icon_urls));
   return output;
 }
 
