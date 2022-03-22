@@ -86,6 +86,7 @@ group("gn_all") {
     "//codelabs",
     "//components:components_unittests",
     "//components/gwp_asan:gwp_asan_unittests",
+    "//infra/orchestrator:orchestrator_all",
     "//net:net_unittests",
     "//services:services_unittests",
     "//services/service_manager/public/cpp",

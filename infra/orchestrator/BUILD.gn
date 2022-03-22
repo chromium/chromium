@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/coverage/coverage.gni")
+import("//build/config/python.gni")
+
+group("orchestrator_all") {
+  data_deps = [
+    # blink merge scripts the Orchestrator needs to merge blink test results
+    ":blink_merge_web_test_results_py",
+    ":blinkpy_merge_results_py",
+
+    # merge scripts the Orchestrator needs to merge test results and coverage
+    # profile information
+    ":code_coverage_merge_results_py",
+    ":code_coverage_merge_steps_py",
+    ":standard_gtest_merge_py",
+    ":standard_isolated_script_merge_py",
+  ]
+
+  # Test specs the Orchestrator needs to trigger swarming tests
+  data = [ "//testing/buildbot/*.json" ]
+
+  # coverage tool for the Orchestrator to merge and output coverage data
+  if (use_clang_coverage) {
+    data += [
+      "//third_party/llvm-build/Release+Asserts/bin/llvm-cov",
+      "//third_party/llvm-build/Release+Asserts/bin/llvm-profdata",
+      "//third_party/llvm-build/Release+Asserts/lib",
+    ]
+  }
+  write_runtime_deps =
+      "$root_out_dir/orchestrator_all.runtime_deps"
+}
+
+# blink merge scripts pydeps files for the Orchestrator
+python_library("blink_merge_web_test_results_py") {
+  pydeps_file = "//third_party/blink/tools/merge_web_test_results.pydeps"
+}
+
+python_library("blinkpy_merge_results_py") {
+  pydeps_file =
+      "//third_party/blink/tools/blinkpy/web_tests/merge_results.pydeps"
+}
+
+# pydeps files for merge scripts needed by the Orchestrator
+python_library("standard_isolated_script_merge_py") {
+  pydeps_file = "//testing/merge_scripts/standard_isolated_script_merge.pydeps"
+}
+
+python_library("standard_gtest_merge_py") {
+  pydeps_file = "//testing/merge_scripts/standard_gtest_merge.pydeps"
+}
+
+python_library("code_coverage_merge_results_py") {
+  pydeps_file = "//testing/merge_scripts/code_coverage/merge_results.pydeps"
+}
+
+python_library("code_coverage_merge_steps_py") {
+  pydeps_file = "//testing/merge_scripts/code_coverage/merge_steps.pydeps"
+}
