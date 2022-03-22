@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.graphics.Rect;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
@@ -41,6 +43,8 @@ public class AutocompleteEditText
     private AutocompleteEditTextModelBase mModel;
     private boolean mIgnoreTextChangesForAutocomplete = true;
     private boolean mLastEditWasPaste;
+    private boolean mOnSanitizing;
+    private boolean mNativeInitialized;
 
     /**
      * Whether default TextView scrolling should be disabled because autocomplete has been added.
@@ -57,6 +61,49 @@ public class AutocompleteEditText
         super(context, attrs);
         mAccessibilityManager =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        addTextWatcherForPaste();
+    }
+
+    /**
+     * Add a watcher to sanitize the text if the text is pasted. The normal pasted text will be
+     * sanitized by {@link UrlBarMediator#sanitizeTextForPaste}, but some IME may paste the text as
+     * user's typing, so we need to handle this case as well.
+     */
+    private void addTextWatcherForPaste() {
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (wasLastEditPaste()) {
+                    mOnSanitizing = true;
+                    String text = editable.toString();
+                    String sanitizedText = sanitizeTextForPaste(text);
+                    if (!text.equals(sanitizedText)) {
+                        editable.replace(
+                                0, editable.length(), sanitizedText, 0, sanitizedText.length());
+                    }
+                    mOnSanitizing = false;
+                }
+            }
+        });
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public String sanitizeTextForPaste(String s) {
+        return mNativeInitialized ? OmniboxViewUtil.sanitizeTextForPaste(s) : s;
+    }
+
+    /**
+     *  Signals that's it safe to call code that requires native to be loaded.
+     */
+    public void onFinishNativeInitialization() {
+        mNativeInitialized = true;
     }
 
     @VisibleForTesting
@@ -193,7 +240,11 @@ public class AutocompleteEditText
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
-        mLastEditWasPaste = false;
+        // If AutocompleteEditText receives a series of keystrokes(more than 1) from the beginning,
+        // the input will be considered as paste. We do this because some IME may paste the text as
+        // a series of keystrokes, not from the system copy/paste method.
+        mLastEditWasPaste = (start == 0 && lengthAfter > 1 && !mOnSanitizing);
+
         if (mModel != null) mModel.onTextChanged(text, start, lengthBefore, lengthAfter);
     }
 

@@ -270,4 +270,9 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         }
         mFocusChangeCallback.onResult(hasFocus);
     }
+
+    /** Signals that's it safe to call code that requires native to be loaded. */
+    public void onFinishNativeInitialization() {
+        mUrlBar.onFinishNativeInitialization();
+    }
 }

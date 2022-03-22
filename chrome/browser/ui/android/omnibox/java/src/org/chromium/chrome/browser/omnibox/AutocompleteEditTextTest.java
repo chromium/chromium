@@ -158,6 +158,8 @@ public class AutocompleteEditTextTest {
     }
 
     private class TestAutocompleteEditText extends AutocompleteEditText {
+        private static final String JAVASCRIPT_SCHEME = "javascript:";
+
         private AtomicInteger mVerifierCallCount = new AtomicInteger();
         private AtomicInteger mAccessibilityVerifierCallCount = new AtomicInteger();
         private AtomicReference<String> mKeyboardPackageName = new AtomicReference<>("dummy.ime");
@@ -221,6 +223,14 @@ public class AutocompleteEditTextTest {
 
         public void setKeyboardPackageName(String packageName) {
             mKeyboardPackageName.set(packageName);
+        }
+
+        @Override
+        public String sanitizeTextForPaste(String s) {
+            if (s.startsWith(JAVASCRIPT_SCHEME)) {
+                s = s.substring(JAVASCRIPT_SCHEME.length());
+            }
+            return s;
         }
     }
 
@@ -1414,5 +1424,20 @@ public class AutocompleteEditTextTest {
         assertLastBatchEdit(mInputConnection.endBatchEdit());
         // Additional endBatchEdit() must continue returning false.
         assertFalse(mInputConnection.endBatchEdit());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
+    public void testJavascriptSchemeShouldBeRemovedWhenPaste() {
+        assertTrue(mInputConnection.commitText("javascript:alert(\"Test\")", 1));
+        assertEquals("alert(\"Test\")", mAutocomplete.getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
+    public void testJavascriptSchemeShouldNotBeRemovedWhenPatialPaste() {
+        assertTrue(mInputConnection.commitText("j", 1));
+        assertTrue(mInputConnection.commitText("avascript:alert(\"Test\")", 1));
+        assertEquals("javascript:alert(\"Test\")", mAutocomplete.getText().toString());
     }
 }

@@ -287,6 +287,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
         mTemplateUrlServiceSupplier.set(TemplateUrlServiceFactory.get());
         mLocationBarMediator.onFinishNativeInitialization();
+        mUrlCoordinator.onFinishNativeInitialization();
         mAutocompleteCoordinator.onNativeInitialized();
         mStatusCoordinator.onNativeInitialized();
         mNativeInitialized = true;
