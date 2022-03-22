@@ -40,6 +40,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/fake_frame_widget.h"
+#include "content/public/test/test_utils.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/load_flags.h"
@@ -2227,6 +2228,39 @@ class DidFinishNavigationObserver : public WebContentsObserver {
 
  private:
   base::RepeatingCallback<void(NavigationHandle*)> callback_;
+};
+
+// Wait for a new WebContents to be created, and for it to finish navigation.
+// It will detect WebContents creation after construction, even if it's before
+// Wait() is called.  The intended pattern is:
+//
+// CreateAndLoadWebContentsObserver observer;
+// ...Do something that creates one WebContents and causes it to navigate...
+// observer.Wait();
+//
+// This is not intended to be used if multiple WebContents might be created
+// before Wait() completes.  The behavior is undefined in this case, but it will
+// fail the test if it happens to notice.
+class CreateAndLoadWebContentsObserver {
+ public:
+  CreateAndLoadWebContentsObserver();
+  ~CreateAndLoadWebContentsObserver();
+
+  WebContents* Wait();
+
+ private:
+  void OnWebContentsCreated(WebContents* web_contents);
+
+  // Unregister for WebContents creation callbacks if we are registered.  May
+  // be called multiple times.
+  void UnregisterIfNeeded();
+
+  absl::optional<LoadStopObserver> load_stop_observer_;
+  base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
+
+  raw_ptr<WebContents> web_contents_ = nullptr;
+  base::OnceClosure quit_closure_;
+  bool failed_ = false;
 };
 
 // Functions to traverse history and wait until the traversal completes. These

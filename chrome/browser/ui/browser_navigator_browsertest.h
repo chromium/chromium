@@ -43,10 +43,21 @@ class BrowserNavigatorTest : public InProcessBrowserTest {
                                                 bool is_browser_initiated,
                                                 std::u16string* title);
 
-  Browser* NavigateHelper(const GURL& url,
-                          Browser* browser,
-                          WindowOpenDisposition disposition,
-                          bool wait_for_navigation);
+  // Navigate `browser` to `url`.  If `wait_for_navigation` is true, then this
+  // will also wait for the WebContents to signal that loading has stopped.  It
+  // is up to the test to tell us, in this case, which WebContents should be
+  // the one that is navigated.  If `expected_web_contents` is not null, then
+  // that is the WebContents that the test expects to load.  If it's null, then
+  // the behavior depends on the window disposition.  In almost all cases, it
+  // indicates that a new WebContents will be created and navigated.  However,
+  // for `CURRENT_TAB`, we'll assume that the active WebContents is the right
+  // one as a convenience, since it's always the intended case anyway.
+  Browser* NavigateHelper(
+      const GURL& url,
+      Browser* browser,
+      WindowOpenDisposition disposition,
+      bool wait_for_navigation,
+      content::WebContents* expected_web_contents = nullptr);
 
   size_t created_tab_contents_count_;
 };

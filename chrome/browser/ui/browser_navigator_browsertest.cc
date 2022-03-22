@@ -251,10 +251,22 @@ class TestNavigationUIDataObserver : public content::TestNavigationObserver {
 Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
                                               Browser* browser,
                                               WindowOpenDisposition disposition,
-                                              bool wait_for_navigation) {
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+                                              bool wait_for_navigation,
+                                              WebContents* expected_contents) {
+  // If this should navigate the current tab, than assume that the WebContents
+  // will be the same one.  This is a convenience for the common case.
+  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    EXPECT_FALSE(expected_contents);
+    expected_contents = browser->tab_strip_model()->GetActiveWebContents();
+  }
+  absl::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
+  absl::optional<content::LoadStopObserver> load_stop_observer;
+  if (wait_for_navigation) {
+    if (expected_contents)
+      load_stop_observer.emplace(expected_contents);
+    else
+      new_tab_observer.emplace();
+  }
 
   NavigateParams params(MakeNavigateParams(browser));
   params.disposition = disposition;
@@ -262,8 +274,10 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
   params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&params);
 
-  if (wait_for_navigation)
-    observer.Wait();
+  if (load_stop_observer)
+    load_stop_observer->Wait();
+  if (new_tab_observer)
+    new_tab_observer->Wait();
 
   return params.browser;
 }
@@ -656,12 +670,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, OutOfOrderTabSwitchTest) {
 
   NavigateHelper(singleton_url, browser(),
                  WindowOpenDisposition::NEW_FOREGROUND_TAB, true);
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
 
   NavigateHelper(singleton_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
-                 false);
+                 false, new_tab);
 }
 
 // This test verifies the two cases of attempting to switch to a tab that no
@@ -670,16 +685,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, OutOfOrderTabSwitchTest) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateOnTabSwitchLostTest) {
   const GURL singleton_url("chrome://dino");
 
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateHelper(singleton_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
-                 true);
+                 true, tab);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   NavigateHelper(GURL("chrome://about"), browser(),
                  WindowOpenDisposition::NEW_FOREGROUND_TAB, true);
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabStripModel::CLOSE_NONE);
+  // This expects a new WebContents, since we just closed the tab.
   NavigateHelper(singleton_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
-                 true);
+                 true, nullptr /* expected_contents */);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
@@ -1312,9 +1329,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     Navigate(&params);
     observer.Wait();
   }
@@ -1387,9 +1402,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromDefaultToOptionsInSameTab) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1413,9 +1427,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ui_test_utils::NavigateToURL(&params);
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1445,9 +1458,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                 ->GetLastCommittedURL());
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1466,9 +1478,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1480,9 +1490,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromNTPToOptionsSingleton) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1492,9 +1501,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1515,9 +1523,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        MAYBE_NavigateFromNTPToOptionsPageInSameTab) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::ShowSettingsSubPageInTabbedBrowser(
         browser(), chrome::kClearBrowserDataSubPage);
     observer.Wait();
@@ -1530,9 +1537,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::ShowSettingsSubPageInTabbedBrowser(
         browser(), chrome::kClearBrowserDataSubPage);
     observer.Wait();
@@ -1545,16 +1551,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromOtherTabToSingletonOptions) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_LINK);
     observer.Wait();
@@ -1571,16 +1574,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromNoTabStripWindowToOptions) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_LINK);
     observer.Wait();
@@ -1603,9 +1603,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
   for (int i = 0; i < 2; ++i) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_TYPED);
     observer.Wait();
@@ -1615,9 +1613,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
       0, {TabStripModel::GestureType::kOther});
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     ShowSettings(browser());
     observer.Wait();
   }
@@ -1630,9 +1627,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromDefaultToHistoryInSameTab) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::ShowHistory(browser());
     observer.Wait();
   }
@@ -1652,9 +1648,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        MAYBE_NavigateFromDefaultToBookmarksInSameTab) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::ShowBookmarkManager(browser());
     observer.Wait();
   }
@@ -1667,9 +1662,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromDefaultToDownloadsInSameTab) {
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::ShowDownloads(browser());
     observer.Wait();
   }

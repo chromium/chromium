@@ -26,7 +26,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -188,9 +187,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
   // kPrefValueLastAndURLs which enforce a restore.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kRestoredURLs[0])));
   for (size_t i = 1; i < std::size(kRestoredURLs); ++i) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver observer;
     chrome::AddSelectedTabWithURL(browser(), GURL(kRestoredURLs[i]),
                                   ui::PAGE_TRANSITION_LINK);
     observer.Wait();

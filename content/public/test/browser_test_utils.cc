@@ -4163,4 +4163,64 @@ bool HistoryGoForward(WebContents* wc) {
   return WaitForLoadStop(wc);
 }
 
+CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver()
+    : web_contents_created_callback_(base::BindRepeating(
+          &CreateAndLoadWebContentsObserver::OnWebContentsCreated,
+          base::Unretained(this))) {
+  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
+      web_contents_created_callback_);
+}
+
+CreateAndLoadWebContentsObserver::~CreateAndLoadWebContentsObserver() {
+  UnregisterIfNeeded();
+}
+
+void CreateAndLoadWebContentsObserver::OnWebContentsCreated(
+    WebContents* web_contents) {
+  // If there is already a WebContents, then this will fail the test later.
+  if (web_contents_) {
+    failed_ = true;
+    // If we're called before Wait(), then `quit_closure_` has not been set.  If
+    // we're called after, then we'll clear this the first time through and it
+    // won't be set again.
+    DCHECK(!quit_closure_);
+    return;
+  }
+
+  web_contents_ = web_contents;
+  load_stop_observer_.emplace(web_contents_);
+
+  if (quit_closure_)
+    std::move(quit_closure_).Run();
+}
+
+void CreateAndLoadWebContentsObserver::UnregisterIfNeeded() {
+  if (!web_contents_created_callback_)
+    return;
+
+  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
+      web_contents_created_callback_);
+  web_contents_created_callback_.Reset();
+}
+
+WebContents* CreateAndLoadWebContentsObserver::Wait() {
+  // Wait for a new WebContents if we haven't gotten one yet.
+  if (!load_stop_observer_) {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  load_stop_observer_->Wait();
+
+  // Do this after waiting for load to complete, since exactly one WebContents
+  // should be created before Wait() returns.  If a second one is created while
+  // the first is loading, then it's still broken.
+  UnregisterIfNeeded();
+
+  EXPECT_FALSE(failed_);
+
+  return web_contents_;
+}
+
 }  // namespace content

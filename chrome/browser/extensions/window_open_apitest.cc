@@ -310,17 +310,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   // test.html is not web-accessible and should not be loaded.
   GURL extension_url(extension->GetResourceURL("test.html"));
-  content::WindowedNotificationObserver windowed_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver windowed_observer;
   ASSERT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.open('" + extension_url.spec() + "');"));
-  windowed_observer.Wait();
-  content::NavigationController* controller =
-      content::Source<content::NavigationController>(windowed_observer.source())
-          .ptr();
-  content::WebContents* newtab = controller->DeprecatedGetWebContents();
+  content::WebContents* newtab = windowed_observer.Wait();
   ASSERT_TRUE(newtab);
 
   EXPECT_EQ(content::PAGE_TYPE_ERROR,

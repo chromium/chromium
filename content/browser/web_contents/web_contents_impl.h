@@ -2316,6 +2316,7 @@ class CONTENT_EXPORT WebContentsImpl::FriendWrapper {
   friend class TestNavigationObserver;
   friend class WebContentsAddedObserver;
   friend class ContentBrowserConsistencyChecker;
+  friend class CreateAndLoadWebContentsObserver;
 
   FriendWrapper();  // Not instantiable.
 
