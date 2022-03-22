@@ -1888,13 +1888,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.NetworkChangeNotifier.GetConnectionCost"
-    enum="NetworkConnectionCost" expires_after="2022-05-11">
+<histogram name="Net.NetworkChangeNotifier.NewConnectionCost"
+    enum="NetworkConnectionCost" expires_after="2022-08-21">
   <owner>fbeaufort@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Records, every time the device's active network changes, the most likely
-    cost for the default network connection.
+    The new network connection cost any time a change to the device's active
+    default network is observed.
   </summary>
 </histogram>
 

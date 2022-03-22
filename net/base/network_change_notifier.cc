@@ -98,9 +98,11 @@ const NetworkChangeNotifier::NetworkHandle
 NetworkChangeNotifier::NetworkChangeCalculatorParams::
     NetworkChangeCalculatorParams() = default;
 
-// Calculates NetworkChange signal from IPAddress and ConnectionType signals.
+// Calculates NetworkChange signal from IPAddress, ConnectionCost, and
+// ConnectionType signals.
 class NetworkChangeNotifier::NetworkChangeCalculator
     : public ConnectionTypeObserver,
+      public ConnectionCostObserver,
       public IPAddressObserver {
  public:
   explicit NetworkChangeCalculator(const NetworkChangeCalculatorParams& params)
@@ -110,6 +112,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
         pending_connection_type_(CONNECTION_NONE) {
     DCHECK(g_network_change_notifier);
     AddConnectionTypeObserver(this);
+    AddConnectionCostObserver(this);
     AddIPAddressObserver(this);
   }
 
@@ -119,6 +122,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   ~NetworkChangeCalculator() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     RemoveConnectionTypeObserver(this);
+    RemoveConnectionCostObserver(this);
     RemoveIPAddressObserver(this);
   }
 
@@ -141,6 +145,12 @@ class NetworkChangeNotifier::NetworkChangeCalculator
         : params_.connection_type_online_delay_;
     // Cancels any previous timer.
     timer_.Start(FROM_HERE, delay, this, &NetworkChangeCalculator::Notify);
+  }
+
+  // NetworkChangeNotifier::ConnectionCostObserver implementation.
+  void OnConnectionCostChanged(ConnectionCost cost) override {
+    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.NewConnectionCost",
+                                  cost, CONNECTION_COST_LAST);
   }
 
  private:
@@ -980,11 +990,8 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChange() {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
-    NetworkChangeNotifier::ConnectionCost connection_cost = GetConnectionCost();
-    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.GetConnectionCost",
-                                  connection_cost, CONNECTION_COST_LAST);
     g_network_change_notifier->NotifyObserversOfConnectionCostChangeImpl(
-        connection_cost);
+        GetConnectionCost());
   }
 }
 
