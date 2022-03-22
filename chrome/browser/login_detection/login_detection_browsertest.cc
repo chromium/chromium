@@ -20,6 +20,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -210,6 +211,46 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPrerenderBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
   // Login detection metric should be recorded after activating.
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin, 1);
+}
+
+class LoginDetectionFencedFrameBrowserTest : public LoginDetectionBrowserTest {
+ public:
+  LoginDetectionFencedFrameBrowserTest() = default;
+  ~LoginDetectionFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    LoginDetectionBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionFencedFrameBrowserTest,
+                       FencedFrameShouldNotRecordLoginDetectionMetrics) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ResetHistogramTester();
+
+  // Create a fenced frame to ensure that it doesn't record the login detection
+  // metrics.
+  GURL fenced_frame_url(
+      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin, 0);
 }
 
 }  // namespace login_detection
