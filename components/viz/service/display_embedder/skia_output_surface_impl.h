@@ -350,6 +350,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // True if raw draw is being used.
   const bool is_using_raw_draw_;
 
+  // True if raw draw is using MSAA output surface.
+  const bool is_raw_draw_using_msaa_;
+
   // The display transform relative to the hardware natural orientation,
   // applied to the frame content. The transform can be rotations in 90 degree
   // increments or flips.

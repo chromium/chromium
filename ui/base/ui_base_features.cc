@@ -359,12 +359,18 @@ const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<double> kRawDrawTileSizeFactor{&kRawDraw,
                                                         "TileSizeFactor", 1};
 
+const base::FeatureParam<bool> kIsRawDrawUsingMSAA{&kRawDraw, "IsUsingMSAA",
+                                                   false};
 bool IsUsingRawDraw() {
   return base::FeatureList::IsEnabled(kRawDraw);
 }
 
 double RawDrawTileSizeFactor() {
   return kRawDrawTileSizeFactor.Get();
+}
+
+bool IsRawDrawUsingMSAA() {
+  return kIsRawDrawUsingMSAA.Get();
 }
 
 const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers{

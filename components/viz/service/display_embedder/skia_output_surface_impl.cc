@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -185,7 +186,8 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
       debug_settings_(debug_settings),
       display_compositor_controller_(display_controller),
       gpu_task_scheduler_(display_compositor_controller_->gpu_task_scheduler()),
-      is_using_raw_draw_(features::IsUsingRawDraw()) {
+      is_using_raw_draw_(features::IsUsingRawDraw()),
+      is_raw_draw_using_msaa_(features::IsRawDrawUsingMSAA()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_using_raw_draw_) {
     auto* manager = dependency_->GetSharedImageManager();
@@ -302,8 +304,16 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
     frame_buffer_damage_tracker_->FrameBuffersChanged(size);
   }
 
-  // TODO(penghuang): set sample count accordingly for RawDraw.
-  sample_count_ = 1;
+  if (is_using_raw_draw_ && is_raw_draw_using_msaa_) {
+    if (base::SysInfo::IsLowEndDevice()) {
+      // On "low-end" devices use 4 samples per pixel to save memory.
+      sample_count_ = 4;
+    } else {
+      sample_count_ = device_scale_factor >= 2.0f ? 4 : 8;
+    }
+  } else {
+    sample_count_ = 1;
+  }
 
   const auto format_index = static_cast<int>(format);
   const auto& color_type = capabilities_.sk_color_types[format_index];
