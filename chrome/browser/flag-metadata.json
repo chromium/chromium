@@ -5202,7 +5202,7 @@
   {
     "name": "scan-app-multi-page-scan",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 112
   },
   {
     "name": "scan-app-searchable-pdf",
