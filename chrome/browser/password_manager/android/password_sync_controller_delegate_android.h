@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,6 +25,7 @@ namespace password_manager {
 
 class PasswordSyncControllerDelegateAndroid
     : public syncer::ModelTypeControllerDelegate,
+      public syncer::SyncServiceObserver,
       public PasswordSyncControllerDelegateBridge::Consumer {
  public:
   PasswordSyncControllerDelegateAndroid(
@@ -49,16 +51,13 @@ class PasswordSyncControllerDelegateAndroid
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
+  // syncer::SyncServiceObserver implementation.
+  void OnStateChanged(syncer::SyncService* sync) override;
+
   // PasswordStoreAndroidBackendBridge::Consumer implementation.
   void OnCredentialManagerNotified() override;
   void OnCredentialManagerError(const AndroidBackendError& error,
                                 int api_error_code) override;
-
-  // Notifies CredentialManager to use syncing account.
-  void NotifyCredentialManagerWhenSyncing();
-
-  // Notifies CredentialManager that passwords are not synced.
-  void NotifyCredentialManagerWhenNotSyncing();
 
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateProxyModelControllerDelegate();
@@ -84,6 +83,9 @@ class PasswordSyncControllerDelegateAndroid
 
   // Current syncing account if one exist.
   absl::optional<std::string> syncing_account_;
+
+  // Last sync status set in CredentialManager.
+  absl::optional<IsSyncEnabled> credential_manager_sync_setting_;
 
   base::WeakPtrFactory<PasswordSyncControllerDelegateAndroid> weak_ptr_factory_{
       this};

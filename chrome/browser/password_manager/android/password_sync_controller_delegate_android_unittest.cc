@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,27 +90,74 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncStarting) {
-  syncer::DataTypeActivationRequest test_request;
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnSyncStatusChangedToEnabledAfterStartup) {
+  syncer::TestSyncService sync_service;
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
-  sync_controller_delegate()->OnSyncStarting(test_request, base::DoNothing());
+  sync_controller_delegate()->OnStateChanged(&sync_service);
 
-  RunUntilIdle();
+  // Check that observing the same event again will not trigger another
+  // notification.
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing).Times(0);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
 }
 
-TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncStoppingTemporary) {
-  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing).Times(0);
-  sync_controller_delegate()->OnSyncStopping(syncer::KEEP_METADATA);
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnSyncStatusChangedToEnabledExcludingPasswords) {
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                   /*types=*/{});
 
-  RunUntilIdle();
-}
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncStoppingPermanently) {
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing).Times(0);
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
-  sync_controller_delegate()->OnSyncStopping(syncer::CLEAR_METADATA);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+}
 
-  RunUntilIdle();
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnSyncStatusChangedToEnabledFromDisabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+
+  // Set empty disable reasons set to imitate sync enabling.
+  sync_service.SetDisableReasons({});
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnSyncStatusChangedToDisabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+
+  // Check that observing the same event again will not trigger another
+  // notification.
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing).Times(0);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnSyncStatusChangedToDisabledFromEnabled) {
+  syncer::TestSyncService sync_service;
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
+
+  // Set disable reasons to imitate sync disabling.
+  sync_service.SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
+  sync_controller_delegate()->OnStateChanged(&sync_service);
 }
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,

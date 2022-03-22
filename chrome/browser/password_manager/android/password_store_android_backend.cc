@@ -537,11 +537,7 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
 
 void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  if (!sync_service->IsSyncFeatureEnabled() ||
-      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords)) {
-    sync_controller_delegate_->NotifyCredentialManagerWhenNotSyncing();
-  }
+  sync_service->AddObserver(sync_controller_delegate_.get());
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(

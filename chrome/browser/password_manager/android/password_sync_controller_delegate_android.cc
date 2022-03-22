@@ -7,6 +7,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/android_backend_error.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -20,6 +23,12 @@ std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
   return "PasswordManager.SyncControllerDelegateNotifiesCredentialManager." +
          suffix;
+}
+
+bool IsPasswordSyncEnabled(syncer::SyncService* sync_service) {
+  return sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
 }
 
 }  // namespace
@@ -73,8 +82,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
   is_sync_enabled_ = IsSyncEnabled(true);
   syncing_account_ = sync_delegate_->GetSyncingAccount();
 
-  NotifyCredentialManagerWhenSyncing();
-
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't depend on the built-in SyncEngine to communicate changes
   // to/from the Sync server. Instead, Android specific functionality is
@@ -92,7 +99,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // Sync got temporarily paused. Just ignore.
       break;
     case syncer::CLEAR_METADATA:
-      NotifyCredentialManagerWhenNotSyncing();
       // The user (or something equivalent like an enterprise policy)
       // permanently disrabled sync, either fully or specifically for passwords.
       // This also includes more advanced cases like the user having cleared all
@@ -106,16 +112,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       syncing_account_ = absl::nullopt;
       break;
   }
-}
-
-void PasswordSyncControllerDelegateAndroid::
-    NotifyCredentialManagerWhenSyncing() {
-  bridge_->NotifyCredentialManagerWhenSyncing();
-}
-
-void PasswordSyncControllerDelegateAndroid::
-    NotifyCredentialManagerWhenNotSyncing() {
-  bridge_->NotifyCredentialManagerWhenNotSyncing();
 }
 
 void PasswordSyncControllerDelegateAndroid::GetAllNodesForDebugging(
@@ -138,6 +134,24 @@ void PasswordSyncControllerDelegateAndroid::
   // This is not implemented because it's not worth the hassle. Password sync
   // module on Android doesn't hold any password. Instead passwords are
   // requested on demand from the GMS Core.
+}
+
+void PasswordSyncControllerDelegateAndroid::OnStateChanged(
+    syncer::SyncService* sync) {
+  // Notify credential manager about current account on startup or if
+  // password sync setting has changed.
+  if (IsPasswordSyncEnabled(sync) &&
+      (!credential_manager_sync_setting_.has_value() ||
+       credential_manager_sync_setting_ == IsSyncEnabled(false))) {
+    bridge_->NotifyCredentialManagerWhenSyncing();
+    credential_manager_sync_setting_ = IsSyncEnabled(true);
+  }
+  if (!IsPasswordSyncEnabled(sync) &&
+      (!credential_manager_sync_setting_.has_value() ||
+       credential_manager_sync_setting_ == IsSyncEnabled(true))) {
+    bridge_->NotifyCredentialManagerWhenNotSyncing();
+    credential_manager_sync_setting_ = IsSyncEnabled(false);
+  }
 }
 
 void PasswordSyncControllerDelegateAndroid::OnCredentialManagerNotified() {

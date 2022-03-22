@@ -13,9 +13,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -156,7 +157,6 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   ~PasswordStoreAndroidBackendTest() override {
     lifecycle_helper_ = nullptr;
     testing::Mock::VerifyAndClearExpectations(bridge_);
-    testing::Mock::VerifyAndClearExpectations(sync_controller_delegate_bridge_);
   }
 
   PasswordStoreBackend& backend() { return *backend_; }
@@ -164,8 +164,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   MockPasswordStoreAndroidBackendBridge* bridge() { return bridge_; }
   FakeLifecycleHelper* lifecycle_helper() { return lifecycle_helper_; }
   MockSyncDelegate* sync_delegate() { return sync_delegate_; }
-  MockPasswordSyncControllerDelegateBridge* sync_controller_delegate_bridge() {
-    return sync_controller_delegate_bridge_;
+  PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
+    return sync_controller_delegate_;
   }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -210,19 +210,18 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
 
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
   CreatePasswordSyncControllerDelegate() {
-    auto unique_delegate_bridge = std::make_unique<
-        StrictMock<MockPasswordSyncControllerDelegateBridge>>();
-    sync_controller_delegate_bridge_ = unique_delegate_bridge.get();
-    EXPECT_CALL(*sync_controller_delegate_bridge_, SetConsumer);
-    return std::make_unique<PasswordSyncControllerDelegateAndroid>(
-        std::move(unique_delegate_bridge), sync_delegate_);
+    auto unique_delegate =
+        std::make_unique<PasswordSyncControllerDelegateAndroid>(
+            std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
+            sync_delegate_);
+    sync_controller_delegate_ = unique_delegate.get();
+    return unique_delegate;
   }
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
   raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
   raw_ptr<FakeLifecycleHelper> lifecycle_helper_;
-  raw_ptr<StrictMock<MockPasswordSyncControllerDelegateBridge>>
-      sync_controller_delegate_bridge_;
+  raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   raw_ptr<MockSyncDelegate> sync_delegate_;
 };
 
@@ -764,49 +763,14 @@ TEST_F(PasswordStoreAndroidBackendTest, NotifyStoreOnForegroundSessionStart) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
-       CallsSyncDelegateOnSyncServiceInitializedSyncDisabled) {
+       AttachesObserverOnSyncServiceInitialized) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
   syncer::TestSyncService sync_service;
-  sync_service.SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
-
-  EXPECT_CALL(*sync_controller_delegate_bridge(),
-              NotifyCredentialManagerWhenNotSyncing);
   backend().OnSyncServiceInitialized(&sync_service);
 
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       CallsSyncDelegateOnSyncServiceInitializedSyncEnabledExcludingPasswords) {
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                   /*types=*/{});
-
-  EXPECT_CALL(*sync_controller_delegate_bridge(),
-              NotifyCredentialManagerWhenNotSyncing);
-  backend().OnSyncServiceInitialized(&sync_service);
-
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       DoesNotCallSyncDelegateOnSyncServiceInitializedSyncEnabled) {
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-
-  syncer::TestSyncService sync_service;
-  EXPECT_CALL(*sync_controller_delegate_bridge(),
-              NotifyCredentialManagerWhenNotSyncing)
-      .Times(0);
-  backend().OnSyncServiceInitialized(&sync_service);
-
-  RunUntilIdle();
+  EXPECT_TRUE(sync_service.HasObserver(sync_controller_delegate()));
 }
 
 class PasswordStoreAndroidBackendTestForMetrics
