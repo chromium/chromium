@@ -52,6 +52,9 @@ namespace {
 // that directly map to a single preference.
 // clang-format off
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+  { policy::key::kAllowChromeDataInBackups,
+    prefs::kAllowChromeDataInBackups,
+    base::Value::Type::BOOLEAN },
   { policy::key::kChromeVariations,
     variations::prefs::kVariationsRestrictionsByPolicy,
     base::Value::Type::INTEGER },

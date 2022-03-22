@@ -89,7 +89,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
                      weak_factory_.GetWeakPtr()));
 
   browser_prefs_change_observer_.Add(
-      prefs::kBackupDisallowedPolicy,
+      prefs::kAllowChromeDataInBackups,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,
           base::Unretained(this)));
@@ -152,21 +152,21 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
 }
 
 void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
-  bool backup_disallowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
-      prefs::kBackupDisallowedPolicy);
+  bool backup_allowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
+      prefs::kAllowChromeDataInBackups);
   // TODO(crbug.com/1303652): If multiple profiles are supported on iOS, update
   // this logic to work with multiple profiles having possibly-possibly
   // conflicting preference values.
   base::FilePath storage_dir = base::mac::GetUserLibraryPath();
-  if (backup_disallowed) {
+  if (backup_allowed) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::SetBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::mac::ClearBackupExclusion),
                        std::move(storage_dir)));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::ClearBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::mac::SetBackupExclusion),
                        std::move(storage_dir)));
   }
 }

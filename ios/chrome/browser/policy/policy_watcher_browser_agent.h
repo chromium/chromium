@@ -55,9 +55,9 @@ class PolicyWatcherBrowserAgent
   // sends a command to the handler to show a prompt.
   void ShowSyncDisabledPromptIfNeeded();
 
-  // Handler for changes to kBackupDisallowedPolicy. Exclude the entire app
-  // container from iCloud backup when the pref changes to |true|, and removes
-  // this exclusion when the pref changs to |false|.
+  // Handler for changes to kAllowChromeDataInBackups. Excludes the entire app
+  // container from iCloud backup when the pref changes to |false|, and removes
+  // this exclusion when the pref changs to |true|.
   void UpdateAppContainerBackupExclusion();
 
   // Callback called when the sign out is complete.

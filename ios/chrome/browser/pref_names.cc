@@ -155,8 +155,8 @@ const char kIncognitoAuthenticationSetting[] =
 // in ios/chrome/browser/policy/policy_util.h.
 const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 
-// Bool that represents whether iCloud backups are disallowed by policy.
-const char kBackupDisallowedPolicy[] = "ios.backup_disallowed_policy";
+// Bool that represents whether iCloud backups are allowed by policy.
+const char kAllowChromeDataInBackups[] = "ios.allow_chrome_data_in_backups";
 
 // Preference that holds the string value indicating the NTP URL to use for the
 // NTP Location policy.

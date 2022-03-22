@@ -30352,6 +30352,34 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           This is a temporary policy that is planned be removed in Chrome 105. This deadline may be extended if there is a need for it among enterprises.
           ''',
     },
+    {
+      'name': 'AllowChromeDataInBackups',
+      'owners': ['ajuma@chromium.org', 'file://ios/chrome/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['ios'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data to be included in backups',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data from being included in backups',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 968,
+      'caption': '''Allow backup of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data''',
+      'tags': [],
+      'desc': '''If this policy is set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data, including cookies and website local storage, will be excluded from iCloud and local backups on iOS.
+          If this policy is set to True or unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may be included in backups.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31348,6 +31376,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 967,
+  'highest_id_currently_used': 968,
   'highest_atomic_group_id_currently_used': 42
 }

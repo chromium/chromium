@@ -450,8 +450,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   }
 }
 
-// Tests that enabling the backup prevention preference marks the app container
-// as excluded from backup, and disabling the preference clears this exclusion.
+// Tests that disabling the backup-allowed preference marks the app container
+// as excluded from backup, and enabling the preference clears this exclusion.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
@@ -460,30 +460,30 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
   // Ensure that backups are allowed initially.
   ASSERT_TRUE(base::mac::ClearBackupExclusion(storage_dir));
 
-  // Enable backup prevention.
+  // Disallow backups.
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kBackupDisallowedPolicy, true);
+      prefs::kAllowChromeDataInBackups, false);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(base::mac::GetBackupExclusion(storage_dir));
 
-  // Disable backup prevention.
+  // Allow backups.
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kBackupDisallowedPolicy, false);
+      prefs::kAllowChromeDataInBackups, true);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(base::mac::GetBackupExclusion(storage_dir));
 }
 
-// Tests that enabling the backup prevention preference marks the app container
+// Tests that disabling the backup-allowed preference marks the app container
 // as excluded from backup at startup.
-TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionEnabledAtColdStart) {
+TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
   base::FilePath storage_dir = base::mac::GetUserLibraryPath();
 
   // Ensure that backups are allowed initially.
   ASSERT_TRUE(base::mac::ClearBackupExclusion(storage_dir));
 
-  // Enable backup prevention.
+  // Disallow backups
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kBackupDisallowedPolicy, true);
+      prefs::kAllowChromeDataInBackups, false);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
@@ -491,17 +491,17 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionEnabledAtColdStart) {
   EXPECT_TRUE(base::mac::GetBackupExclusion(storage_dir));
 }
 
-// Tests that disabling the backup prevention preference marks the app container
+// Tests that enabling the backup-allowed preference marks the app container
 // as no longer excluded from backup at startup.
-TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionDisabledAtColdStart) {
+TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
   base::FilePath storage_dir = base::mac::GetUserLibraryPath();
 
   // Ensure that backups are disallowed initially.
   ASSERT_TRUE(base::mac::SetBackupExclusion(storage_dir));
 
-  // Disable backup prevention.
+  // Allow backups
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kBackupDisallowedPolicy, false);
+      prefs::kAllowChromeDataInBackups, true);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);

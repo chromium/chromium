@@ -28991,6 +28991,7 @@ Called by update_document_policy_enum.py.-->
   <int value="965" label="WebAuthenticationRemoteProxiedRequestsAllowed"/>
   <int value="966" label="WebSQLAccess"/>
   <int value="967" label="SetTimeoutWithout1MsClampEnabled"/>
+  <int value="968" label="AllowChromeDataInBackups"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
