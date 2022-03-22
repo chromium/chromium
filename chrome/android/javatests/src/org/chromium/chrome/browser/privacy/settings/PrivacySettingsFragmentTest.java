@@ -8,7 +8,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
@@ -84,9 +86,10 @@ public class PrivacySettingsFragmentTest {
     private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
         String incognito_lock_title = mSettingsActivityTestRule.getActivity().getString(
                 R.string.settings_incognito_tab_lock_title);
-        RecyclerViewActions.scrollTo(withText(incognito_lock_title));
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText(incognito_lock_title))));
         onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
-
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
             View view = privacySettings.getListView().getChildAt(i);
             String title = ((TextView) view.findViewById(android.R.id.title)).getText().toString();
