@@ -591,6 +591,9 @@ class FormStructure {
   GURL target_url_;
 
   // The origin of the main frame of this form.
+  // |main_frame_origin| represents the main frame (not necessarily primary
+  // main frame) of the form's frame tree as described by MPArch nested frame
+  // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin_;
 
   // The number of fields able to be auto-filled.
