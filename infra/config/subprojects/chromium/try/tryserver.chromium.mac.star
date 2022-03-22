@@ -4,6 +4,7 @@
 """Definitions of builders in the tryserver.chromium.mac builder group."""
 
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -43,11 +44,23 @@ try_.builder(
 
 try_.builder(
     name = "mac-osxbeta-rel",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/mac-osxbeta-rel",
+    ],
     os = os.MAC_DEFAULT,
 )
 
+# This trybot mirrors the trybot mac-rel
 try_.builder(
     name = "mac-inverse-fieldtrials-fyi-rel",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac11 Tests",
+        "ci/GPU Mac Builder",
+        "ci/Mac Release (Intel)",
+        "ci/Mac Retina Release (AMD)",
+    ],
     os = os.MAC_DEFAULT,
 )
 
@@ -62,19 +75,31 @@ try_.builder(
     os = os.MAC_12,
 )
 
-try_.orchestrator_builder(
-    name = "mac-rel",
-    compilator = "mac-rel-compilator",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    main_list_view = "try",
-    use_clang_coverage = True,
-    tryjob = try_.job(),
-)
-
 try_.builder(
     name = "mac-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,
+)
+
+try_.orchestrator_builder(
+    name = "mac-rel",
+    compilator = "mac-rel-compilator",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac11 Tests",
+        "ci/GPU Mac Builder",
+        "ci/Mac Release (Intel)",
+        "ci/Mac Retina Release (AMD)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    main_list_view = "try",
+    use_clang_coverage = True,
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
@@ -106,26 +131,50 @@ try_.compilator_builder(
 # The 10.xx version translates to which bots will run isolated tests.
 try_.builder(
     name = "mac_chromium_10.11_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac10.11 Tests",
+    ],
 )
 
 try_.builder(
     name = "mac_chromium_10.12_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac10.12 Tests",
+    ],
 )
 
 try_.builder(
     name = "mac_chromium_10.13_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac10.13 Tests",
+    ],
 )
 
 try_.builder(
     name = "mac_chromium_10.14_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac10.14 Tests",
+    ],
 )
 
 try_.builder(
     name = "mac_chromium_10.15_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac10.15 Tests",
+    ],
 )
 
 try_.builder(
     name = "mac_chromium_11.0_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac11 Tests",
+    ],
     builderless = False,
 )
 
@@ -149,6 +198,13 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_compile_rel_ng",
+    mirrors = [
+        "ci/Mac Builder",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
 )
 
 try_.builder(
