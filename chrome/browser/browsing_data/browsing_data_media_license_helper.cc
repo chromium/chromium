@@ -132,7 +132,8 @@ void BrowsingDataMediaLicenseHelperImpl::
   // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
   // file system will be partitioned and use the appropriate StorageKey.
   quota_util->DeleteStorageKeyDataOnFileTaskRunner(
-      filesystem_context_.get(), filesystem_context_->quota_manager_proxy(),
+      filesystem_context_.get(),
+      filesystem_context_->quota_manager_proxy().get(),
       blink::StorageKey(origin), kType);
 }
 

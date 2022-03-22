@@ -164,8 +164,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       const blink::StorageKey& storage_key,
       FileSystemType type);
 
-  QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
   // Discards inflight operations in the operation runner.

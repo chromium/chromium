@@ -409,7 +409,7 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
     const FileSystemURL& url,
     base::OnceClosure task,
     base::OnceClosure error_callback) {
-  QuotaManagerProxy* quota_manager_proxy =
+  const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
       file_system_context()->quota_manager_proxy();
   if (!quota_manager_proxy ||
       !file_system_context()->GetQuotaUtil(url.type())) {

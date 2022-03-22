@@ -70,7 +70,7 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
   }
 
  private:
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
     return manager_->context()->quota_manager_proxy();
   }
 

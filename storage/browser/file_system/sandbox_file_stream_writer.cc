@@ -167,7 +167,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
         file_system_context_->default_file_task_runner(), platform_path,
         initial_offset_, FileStreamWriter::OPEN_EXISTING_FILE);
   }
-  QuotaManagerProxy* quota_manager_proxy =
+  const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   if (!quota_manager_proxy) {
     // If we don't have the quota manager or the requested filesystem type
@@ -227,7 +227,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
   if (write_response <= 0) {
     // TODO(crbug.com/1091792): Consider listening explicitly for out
     // of space errors instead of surfacing all write errors to quota.
-    QuotaManagerProxy* quota_manager_proxy =
+    const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
       quota_manager_proxy->NotifyWriteFailed(url_.storage_key());

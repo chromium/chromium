@@ -297,7 +297,7 @@ bool FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
     if (!backend->GetQuotaUtil())
       continue;
     if (backend->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
-            this, quota_manager_proxy(), storage_key,
+            this, quota_manager_proxy().get(), storage_key,
             type_backend_pair.first) != base::File::FILE_OK) {
       // Continue the loop, but record the failure.
       success = false;
@@ -558,7 +558,7 @@ void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
       base::BindOnce(
           &FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,
           base::Unretained(backend->GetQuotaUtil()), base::RetainedRef(this),
-          base::Unretained(quota_manager_proxy()), storage_key, type),
+          base::Unretained(quota_manager_proxy().get()), storage_key, type),
       std::move(callback));
 }
 

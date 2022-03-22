@@ -102,7 +102,7 @@ blink::mojom::QuotaStatusCode DeleteStorageKeyOnFileTaskRunner(
     return blink::mojom::QuotaStatusCode::kErrorNotSupported;
   base::File::Error result =
       provider->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
-          context, context->quota_manager_proxy(), storage_key, type);
+          context, context->quota_manager_proxy().get(), storage_key, type);
   if (result == base::File::FILE_OK)
     return blink::mojom::QuotaStatusCode::kOk;
   return blink::mojom::QuotaStatusCode::kErrorInvalidModification;
@@ -114,7 +114,7 @@ void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
   if (!provider || !provider->GetQuotaUtil())
     return;
   provider->GetQuotaUtil()->PerformStorageCleanupOnFileTaskRunner(
-      context, context->quota_manager_proxy(), type);
+      context, context->quota_manager_proxy().get(), type);
 }
 
 }  // namespace
