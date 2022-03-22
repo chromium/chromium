@@ -364,7 +364,7 @@ AppState::AppState(web_app::AppId app_id,
                    apps::RunOnOsLoginMode run_on_os_login_mode,
                    blink::mojom::DisplayMode effective_display_mode,
                    blink::mojom::DisplayMode user_display_mode,
-                   std::string manifest_install_icon,
+                   std::string manifest_launcher_icon_filename,
                    bool installed_locally,
                    bool shortcut_created)
     : id(std::move(app_id)),
@@ -374,7 +374,8 @@ AppState::AppState(web_app::AppId app_id,
       run_on_os_login_mode(run_on_os_login_mode),
       effective_display_mode(effective_display_mode),
       user_display_mode(user_display_mode),
-      manifest_install_icon(std::move(manifest_install_icon)),
+      manifest_launcher_icon_filename(
+          std::move(manifest_launcher_icon_filename)),
       is_installed_locally(installed_locally),
       is_shortcut_created(shortcut_created) {}
 AppState::~AppState() = default;
@@ -385,7 +386,8 @@ bool AppState::operator==(const AppState& other) const {
          run_on_os_login_mode == other.run_on_os_login_mode &&
          effective_display_mode == other.effective_display_mode &&
          user_display_mode == other.user_display_mode &&
-         manifest_install_icon == other.manifest_install_icon &&
+         manifest_launcher_icon_filename ==
+             other.manifest_launcher_icon_filename &&
          is_installed_locally == other.is_installed_locally &&
          is_shortcut_created == other.is_shortcut_created;
 }
@@ -455,8 +457,8 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
                           static_cast<int>(app.effective_display_mode));
       app_value.SetIntKey("user_display_mode",
                           static_cast<int>(app.effective_display_mode));
-      app_value.SetStringKey("manifest_install_icon",
-                             app.manifest_install_icon);
+      app_value.SetStringKey("manifest_launcher_icon_filename",
+                             app.manifest_launcher_icon_filename);
       app_value.SetBoolKey("is_installed_locally", app.is_installed_locally);
       app_value.SetBoolKey("is_shortcut_created", app.is_shortcut_created);
 
@@ -1003,8 +1005,13 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(
       g_site_mode_to_relative_scope_url.find(site_mode)->second;
   std::string str_template =
       "/web_apps/%s/basic.html?manifest=manifest_icon_%u.json";
+  // The kLauncherIcon size is used here, as it is guaranteed to be written to
+  // the shortcut on all platforms, as opposed to kInstallIconSize, for example,
+  // which, on ChromeOS, is not written to the shortcut because it is not within
+  // the intersection between `kDesiredIconSizesForShortcut` (which is platform-
+  // dependent) and `SizesToGenerate()` (which is fixed on all platforms).
   GURL url = embedded_test_server()->GetURL(base::StringPrintf(
-      str_template.c_str(), scope_url_path.c_str(), kInstallIconSize));
+      str_template.c_str(), scope_url_path.c_str(), kLauncherIconSize));
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -1469,10 +1476,45 @@ void WebAppIntegrationTestDriver::CheckAppIconSiteA(const std::string& color) {
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), "SiteA");
   ASSERT_TRUE(app_state);
-  // TODO(finnur): Implement checking the actual icon data.
-  EXPECT_EQ(app_state->manifest_install_icon,
-            base::StringPrintf("%ux%u-%s.png", kInstallIconSize,
-                               kInstallIconSize, color.c_str()));
+  EXPECT_EQ(app_state->manifest_launcher_icon_filename,
+            base::StringPrintf("%ux%u-%s.png", kLauncherIconSize,
+                               kLauncherIconSize, color.c_str()));
+
+  // A mapping of image sizes to shortcut colors. Note that the top left
+  // pixel color for each size is used as the representation color for that
+  // size, even if the image is multi-colored.
+  std::map<int, SkColor> shortcut_colors;
+
+  base::RunLoop shortcut_run_loop;
+  provider()->os_integration_manager().GetShortcutInfoForApp(
+      active_app_id_,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ShortcutInfo> shortcut_info) {
+            if (shortcut_info) {
+              gfx::ImageFamily::const_iterator it;
+              for (it = shortcut_info->favicon.begin();
+                   it != shortcut_info->favicon.end(); ++it) {
+                shortcut_colors[it->Size().width()] =
+                    it->AsBitmap().getColor(0, 0);
+              }
+            }
+
+            shortcut_run_loop.Quit();
+          }));
+  shortcut_run_loop.Run();
+
+  SkColor launcher_icon_color = shortcut_colors[kLauncherIconSize];
+  SkColor expected_color = SK_ColorTRANSPARENT;
+  if (color == "green")
+    expected_color = SK_ColorGREEN;
+  else if (color == "red")
+    expected_color = SK_ColorRED;
+  else
+    NOTREACHED();  // Add more color mappings if needed.
+  EXPECT_EQ(expected_color, launcher_icon_color)
+      << "Size " << kLauncherIconSize << ": Expecting ARGB " << std::hex
+      << expected_color << " but found " << std::hex << launcher_icon_color;
+
   AfterStateCheckAction();
 }
 
@@ -1878,13 +1920,13 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                                                    apps::AppType::kWeb,
                                                    /*delegate=*/nullptr, true);
     for (const auto& app_id : app_ids) {
-      std::string manifest_install_icon;
+      std::string manifest_launcher_icon_filename;
       std::vector<apps::IconInfo> icon_infos =
           provider()->registrar().GetAppIconInfos(app_id);
       for (const auto& info : icon_infos) {
         int icon_size = info.square_size_px.value_or(-1);
-        if (icon_size == kInstallIconSize) {
-          manifest_install_icon = info.url.ExtractFileName();
+        if (icon_size == kLauncherIconSize) {
+          manifest_launcher_icon_filename = info.url.ExtractFileName();
         }
       }
 
@@ -1898,7 +1940,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                        registrar.GetAppRunOnOsLoginMode(app_id).value),
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
-                   manifest_install_icon, registrar.IsLocallyInstalled(app_id),
+                   manifest_launcher_icon_filename,
+                   registrar.IsLocallyInstalled(app_id),
                    IsShortcutAndIconCreated(
                        profile, registrar.GetAppShortName(app_id), app_id)));
     }

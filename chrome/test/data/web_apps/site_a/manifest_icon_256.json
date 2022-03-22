@@ -7,13 +7,13 @@
       "type": "image/png"
     },
     {
-      "src": "96x96-red.png",
-      "sizes": "96x96",
+      "src": "192x192-green.png",
+      "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "192x192-green.png",
-      "sizes": "192x192",
+      "src": "256x256-red.png",
+      "sizes": "256x256",
       "type": "image/png"
     }
   ],

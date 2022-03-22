@@ -77,7 +77,7 @@ struct AppState {
            apps::RunOnOsLoginMode run_on_os_login_mode,
            blink::mojom::DisplayMode effective_display_mode,
            blink::mojom::DisplayMode user_display_mode,
-           std::string manifest_install_icon,
+           std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
            bool is_shortcut_created);
   ~AppState();
@@ -91,7 +91,7 @@ struct AppState {
   apps::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
   blink::mojom::DisplayMode user_display_mode;
-  std::string manifest_install_icon;
+  std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
 };

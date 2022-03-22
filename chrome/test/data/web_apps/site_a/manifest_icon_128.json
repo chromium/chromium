@@ -1,5 +1,5 @@
 {
-  "name": "Site A - Updated name",
+  "name": "Site A",
   "icons": [
     {
       "src": "48x48-green.png",
@@ -7,7 +7,7 @@
       "type": "image/png"
     },
     {
-      "src": "128x128-green.png",
+      "src": "128x128-red.png",
       "sizes": "128x128",
       "type": "image/png"
     },

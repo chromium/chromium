@@ -2,7 +2,7 @@
   "name": "Site A Bar",
   "icons": [
     {
-      "src": "basic-48.png",
+      "src": "48x48-green.png",
       "sizes": "48x48",
       "type": "image/png"
     },
