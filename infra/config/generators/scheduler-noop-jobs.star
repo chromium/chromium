@@ -18,11 +18,6 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 _NON_BRANCHED_TESTERS = {
-    # This tester is triggered by 'Mac Builder', but it is an FYI builder and
-    # not mirrored by any branched try builders, so we do not need to run it on
-    # the branches
-    "mac-osxbeta-rel": branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-
     # This tester is triggered by 'Win x64 Builder', but it is an FYI builder
     # and not mirrored by any branched try builders, so we do not need to run it
     # on the branches

@@ -5,6 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -53,6 +54,24 @@ def ios_builder(*, name, **kwargs):
 ci.builder(
     name = "Mac Builder",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -109,6 +128,22 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.11 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "11",
@@ -120,6 +155,22 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.12 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "12",
@@ -131,6 +182,25 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.13 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "13",
@@ -142,6 +212,22 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.14 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "14",
@@ -153,6 +239,22 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.15 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "15",
@@ -164,6 +266,21 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac11 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "11",
