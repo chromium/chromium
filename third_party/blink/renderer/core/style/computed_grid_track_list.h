@@ -28,8 +28,8 @@ struct CORE_EXPORT ComputedGridTrackList {
            ordered_named_grid_lines == other.ordered_named_grid_lines &&
            auto_repeat_ordered_named_grid_lines ==
                other.auto_repeat_ordered_named_grid_lines &&
-           auto_repeat_type == other.auto_repeat_type &&
            auto_repeat_insertion_point == other.auto_repeat_insertion_point &&
+           auto_repeat_type == other.auto_repeat_type &&
            axis_type == other.axis_type;
   }
 
@@ -37,16 +37,23 @@ struct CORE_EXPORT ComputedGridTrackList {
     return !(*this == other);
   }
 
+  bool IsSubgriddedAxis() const {
+    return axis_type == GridAxisType::kSubgriddedAxis;
+  }
+
+  const NGGridTrackList& TrackList() const { return track_sizes.NGTrackList(); }
+
   GridTrackList track_sizes;
   Vector<GridTrackSize, 1> auto_repeat_track_sizes;
+
   NamedGridLinesMap named_grid_lines;
   NamedGridLinesMap auto_repeat_named_grid_lines;
   OrderedNamedGridLines ordered_named_grid_lines;
   OrderedNamedGridLines auto_repeat_ordered_named_grid_lines;
 
-  GridAxisType axis_type = GridAxisType::kStandaloneAxis;
-  AutoRepeatType auto_repeat_type = AutoRepeatType::kNoAutoRepeat;
-  wtf_size_t auto_repeat_insertion_point = 0;
+  wtf_size_t auto_repeat_insertion_point{0};
+  AutoRepeatType auto_repeat_type{AutoRepeatType::kNoAutoRepeat};
+  GridAxisType axis_type{GridAxisType::kStandaloneAxis};
 };
 
 }  // namespace blink

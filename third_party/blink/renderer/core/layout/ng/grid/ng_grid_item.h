@@ -94,6 +94,15 @@ struct CORE_EXPORT GridItemData {
     return resolved_position.SpanSize(track_direction);
   }
 
+  bool HasSubgriddedAxis(const GridTrackSizingDirection track_direction) const {
+    if (node.IsGrid()) {
+      return (track_direction == kForColumns)
+                 ? node.Style().GridTemplateColumns().IsSubgriddedAxis()
+                 : node.Style().GridTemplateRows().IsSubgriddedAxis();
+    }
+    return false;
+  }
+
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
 
@@ -154,8 +163,8 @@ struct CORE_EXPORT GridItemData {
   NGAutoBehavior inline_auto_behavior;
   NGAutoBehavior block_auto_behavior;
 
-  BaselineType row_baseline_type;
   BaselineType column_baseline_type;
+  BaselineType row_baseline_type;
 
   TrackSpanProperties column_span_properties;
   TrackSpanProperties row_span_properties;

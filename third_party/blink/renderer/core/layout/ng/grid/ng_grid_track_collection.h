@@ -59,7 +59,7 @@ class CORE_EXPORT TrackSpanProperties {
   inline void Reset() { bitmask_ = kNone; }
 
  private:
-  uint16_t bitmask_{kNone};
+  wtf_size_t bitmask_{kNone};
 };
 
 class CORE_EXPORT NGGridBlockTrackCollection
@@ -174,6 +174,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   virtual ~NGGridLayoutTrackCollection() = default;
 
+  bool operator==(const NGGridLayoutTrackCollection& other) const;
+
   // NGGridTrackCollectionBase overrides.
   wtf_size_t RangeCount() const override { return ranges_.size(); }
   wtf_size_t RangeStartLine(wtf_size_t range_index) const override;
@@ -209,6 +211,12 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   // Returns the total size of all sets with index in the range [begin, end).
   LayoutUnit ComputeSetSpanSize(wtf_size_t begin_set_index,
                                 wtf_size_t end_set_index) const;
+
+  // Creates a track collection containing every |Range| with index in the range
+  // [begin, end], including their respective |SetGeometry| and baselines.
+  NGGridLayoutTrackCollection CreateSubgridCollection(
+      wtf_size_t begin_range_index,
+      wtf_size_t end_range_index) const;
 
   LayoutUnit GutterSize() const { return gutter_size_; }
   const Vector<Range>& Ranges() const { return ranges_; }

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_constraint_space_data.h"
@@ -805,7 +806,8 @@ class CORE_EXPORT NGConstraintSpace final {
       kTableRowData,      // A table-row (display: table-row).
       kTableSectionData,  // A table-section (display: table-section).
       kCustomData,        // A custom layout (display: layout(foo)).
-      kStretchData        // The target inline/block stretch sizes for MathML.
+      kStretchData,       // The target inline/block stretch sizes for MathML.
+      kSubgridData        // A nested grid with subgridded columns/rows.
     };
 
     explicit RareData(const NGBfcOffset bfc_offset)
@@ -869,6 +871,9 @@ class CORE_EXPORT NGConstraintSpace final {
         case kStretchData:
           new (&stretch_data_) StretchData(other.stretch_data_);
           break;
+        case kSubgridData:
+          new (&subgrid_data_) SubgridData(other.subgrid_data_);
+          break;
         default:
           NOTREACHED();
       }
@@ -894,6 +899,9 @@ class CORE_EXPORT NGConstraintSpace final {
           break;
         case kStretchData:
           stretch_data_.~StretchData();
+          break;
+        case kSubgridData:
+          subgrid_data_.~SubgridData();
           break;
         default:
           NOTREACHED();
@@ -931,6 +939,8 @@ class CORE_EXPORT NGConstraintSpace final {
           return custom_data_.MaySkipLayout(other.custom_data_);
         case kStretchData:
           return stretch_data_.MaySkipLayout(other.stretch_data_);
+        case kSubgridData:
+          return subgrid_data_.MaySkipLayout(other.subgrid_data_);
       }
       NOTREACHED();
       return false;
@@ -962,6 +972,8 @@ class CORE_EXPORT NGConstraintSpace final {
           return custom_data_.IsInitialForMaySkipLayout();
         case kStretchData:
           return stretch_data_.IsInitialForMaySkipLayout();
+        case kSubgridData:
+          return subgrid_data_.IsInitialForMaySkipLayout();
       }
       NOTREACHED();
       return false;
@@ -1149,6 +1161,27 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_block_sizes;
     }
 
+    const NGGridLayoutTrackCollection* SubgriddedColumns() {
+      return data_union_type == kSubgridData
+                 ? subgrid_data_.layout_data.columns.get()
+                 : nullptr;
+    }
+
+    void SetSubgriddedColumns(
+        std::unique_ptr<NGGridLayoutTrackCollection> columns) {
+      EnsureSubgridData()->layout_data.columns = std::move(columns);
+    }
+
+    const NGGridLayoutTrackCollection* SubgriddedRows() {
+      return data_union_type == kSubgridData
+                 ? subgrid_data_.layout_data.rows.get()
+                 : nullptr;
+    }
+
+    void SetSubgriddedRows(std::unique_ptr<NGGridLayoutTrackCollection> rows) {
+      EnsureSubgridData()->layout_data.rows = std::move(rows);
+    }
+
     LogicalSize percentage_resolution_size;
     LayoutUnit replaced_percentage_resolution_block_size;
     LayoutUnit block_start_annotation_space;
@@ -1272,6 +1305,28 @@ class CORE_EXPORT NGConstraintSpace final {
       absl::optional<MathTargetStretchBlockSizes> target_stretch_block_sizes;
     };
 
+    struct SubgridData {
+      bool MaySkipLayout(const SubgridData& other) const {
+        const bool other_has_same_column_geometry =
+            (layout_data.columns && other.layout_data.columns)
+                ? *layout_data.Columns() == *other.layout_data.Columns()
+                : !layout_data.columns && !other.layout_data.columns;
+
+        const bool other_has_same_row_geometry =
+            (layout_data.rows && other.layout_data.rows)
+                ? *layout_data.Rows() == *other.layout_data.Rows()
+                : !layout_data.rows && !other.layout_data.rows;
+
+        return other_has_same_column_geometry && other_has_same_row_geometry;
+      }
+
+      bool IsInitialForMaySkipLayout() const {
+        return !layout_data.columns && !layout_data.rows;
+      }
+
+      NGGridLayoutData layout_data;
+    };
+
     BlockData* EnsureBlockData() {
       DCHECK(data_union_type == kNone || data_union_type == kBlockData);
       if (data_union_type != kBlockData) {
@@ -1326,6 +1381,15 @@ class CORE_EXPORT NGConstraintSpace final {
       return &stretch_data_;
     }
 
+    SubgridData* EnsureSubgridData() {
+      DCHECK(data_union_type == kNone || data_union_type == kSubgridData);
+      if (data_union_type != kSubgridData) {
+        data_union_type = kSubgridData;
+        new (&subgrid_data_) SubgridData();
+      }
+      return &subgrid_data_;
+    }
+
     union {
       BlockData block_data_;
       TableCellData table_cell_data_;
@@ -1333,6 +1397,7 @@ class CORE_EXPORT NGConstraintSpace final {
       TableSectionData table_section_data_;
       CustomData custom_data_;
       StretchData stretch_data_;
+      SubgridData subgrid_data_;
     };
   };
 
