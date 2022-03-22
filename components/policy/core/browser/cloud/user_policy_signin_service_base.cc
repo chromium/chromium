@@ -13,11 +13,26 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace em = enterprise_management;
+
+namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
+    em::DeviceRegisterRequest::ANDROID_BROWSER;
+#else
+const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
+    em::DeviceRegisterRequest::BROWSER;
+#endif
+
+}  // namespace
 
 namespace policy {
 
@@ -31,8 +46,7 @@ UserPolicySigninServiceBase::UserPolicySigninServiceBase(
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
-      system_url_loader_factory_(system_url_loader_factory),
-      consent_level_(signin::ConsentLevel::kSignin) {}
+      system_url_loader_factory_(system_url_loader_factory) {}
 
 UserPolicySigninServiceBase::~UserPolicySigninServiceBase() {}
 
@@ -62,13 +76,6 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
 
   // Now initiate a policy fetch.
   manager->core()->service()->RefreshPolicy(std::move(callback));
-}
-
-void UserPolicySigninServiceBase::
-    OnCloudPolicyServiceInitializationCompleted() {
-  // This is meant to be overridden by subclasses. Starting and stopping to
-  // observe the CloudPolicyService from this base class avoids the need for
-  // more virtuals.
 }
 
 void UserPolicySigninServiceBase::OnPolicyFetched(CloudPolicyClient* client) {}
@@ -104,6 +111,7 @@ void UserPolicySigninServiceBase::Shutdown() {
 }
 
 void UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown() {
+  registration_helper_.reset();
   UserCloudPolicyManager* manager = policy_manager();
   if (manager && manager->core()->client())
     manager->core()->client()->RemoveObserver(this);
@@ -193,6 +201,143 @@ void UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager() {
   UserCloudPolicyManager* manager = policy_manager();
   if (manager)
     manager->DisconnectAndRemovePolicy();
+}
+
+void UserPolicySigninServiceBase::CancelPendingRegistration() {
+  weak_factory_for_registration_.InvalidateWeakPtrs();
+  registration_helper_.reset();
+}
+
+void UserPolicySigninServiceBase::CallPolicyRegistrationCallback(
+    std::unique_ptr<CloudPolicyClient> client,
+    PolicyRegistrationCallback callback) {
+  registration_helper_.reset();
+  std::move(callback).Run(client->dm_token(), client->client_id());
+}
+
+void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
+    const std::string& username,
+    const CoreAccountId& account_id,
+    PolicyRegistrationCallback callback) {
+  DCHECK(!account_id.empty());
+
+  if (policy_manager() && policy_manager()->IsClientRegistered()) {
+    // Reuse the already fetched DM token if the client of the manager is
+    // already registered.
+    std::move(callback).Run(policy_manager()->core()->client()->dm_token(),
+                            policy_manager()->core()->client()->client_id());
+    return;
+  }
+
+  // Create a new CloudPolicyClient for fetching the DMToken. This is a
+  // different client from the one used by the manager.
+  std::unique_ptr<CloudPolicyClient> policy_client =
+      CreateClientForRegistrationOnly(username);
+  if (!policy_client) {
+    std::move(callback).Run(std::string(), std::string());
+    return;
+  }
+
+  CancelPendingRegistration();
+
+  // Fire off the registration process. Callback owns and keeps the
+  // CloudPolicyClient alive for the length of the registration process.
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_client.get(), kCloudPolicyRegistrationType);
+
+  // Using a raw pointer to |this| is okay, because the service owns
+  // |registration_helper_|.
+  auto registration_callback = base::BindOnce(
+      &UserPolicySigninServiceBase::CallPolicyRegistrationCallback,
+      base::Unretained(this), std::move(policy_client), std::move(callback));
+  registration_helper_->StartRegistration(identity_manager(), account_id,
+                                          std::move(registration_callback));
+}
+
+void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
+  DCHECK(
+      identity_manager()->HasPrimaryAccount(GetConsentLevelForRegistration()));
+  DCHECK(policy_manager()->core()->client());
+  DCHECK(!policy_manager()->IsClientRegistered());
+
+  DVLOG(1) << "Fetching new DM Token";
+
+  // Do nothing if already starting the registration process in which case there
+  // will be an instance of |registration_helper_|.
+  if (registration_helper_)
+    return;
+
+  UpdateLastPolicyCheckTime();
+
+  // Start the process of registering the CloudPolicyClient. Once it completes,
+  // policy fetch will automatically happen.
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
+  registration_helper_->StartRegistration(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(GetConsentLevelForRegistration()),
+      base::BindOnce(&UserPolicySigninServiceBase::OnRegistrationComplete,
+                     base::Unretained(this)));
+}
+
+void UserPolicySigninServiceBase::OnRegistrationComplete() {
+  ProhibitSignoutIfNeeded();
+  registration_helper_.reset();
+}
+
+base::TimeDelta UserPolicySigninServiceBase::GetTryRegistrationDelay() {
+  return base::TimeDelta();
+}
+
+void UserPolicySigninServiceBase::
+    OnCloudPolicyServiceInitializationCompleted() {
+  UserCloudPolicyManager* manager = policy_manager();
+  DCHECK(manager->core()->service()->IsInitializationComplete());
+  // The service is now initialized - if the client is not yet registered, then
+  // it means that there is no cached policy and so we need to initiate a new
+  // client registration.
+  if (manager->IsClientRegistered()) {
+    DVLOG(1) << "Client already registered - not fetching DMToken";
+    ProhibitSignoutIfNeeded();
+    return;
+  }
+
+  if (!CanApplyPolicies(/*check_for_refresh_token=*/true)) {
+    // No token yet. This can only happen on Desktop platforms which should
+    // listen to OnRefreshTokenUpdatedForAccount() and will re-attempt
+    // registration once the token is available.
+    DLOG(WARNING) << "No OAuth Refresh Token - delaying policy download";
+    return;
+  }
+
+  base::TimeDelta try_registration_delay = GetTryRegistrationDelay();
+  if (try_registration_delay.is_zero()) {
+    // If the try registration delay is 0, register the cloud policy service
+    // immediately without queueing a task. This is the case for Desktop.
+    RegisterCloudPolicyService();
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&UserPolicySigninServiceBase::RegisterCloudPolicyService,
+                       weak_factory_for_registration_.GetWeakPtr()),
+        try_registration_delay);
+  }
+
+  ProhibitSignoutIfNeeded();
+}
+
+void UserPolicySigninServiceBase::ProhibitSignoutIfNeeded() {}
+
+bool UserPolicySigninServiceBase::CanApplyPolicies(
+    bool check_for_refresh_token) {
+  return false;
+}
+
+void UserPolicySigninServiceBase::UpdateLastPolicyCheckTime() {}
+
+signin::ConsentLevel
+UserPolicySigninServiceBase::GetConsentLevelForRegistration() {
+  return signin::ConsentLevel::kSignin;
 }
 
 }  // namespace policy

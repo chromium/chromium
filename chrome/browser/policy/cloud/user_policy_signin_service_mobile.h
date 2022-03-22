@@ -48,17 +48,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
   ~UserPolicySigninService() override;
 
-  // Registers a CloudPolicyClient for fetching policy for |username|.
-  // This requests an OAuth2 token for the services involved, and contacts
-  // the policy service if the account has management enabled.
-  // |account_id| is the obfuscated identitifcation of |username| to get OAuth2
-  // token services.
-  // |callback| is invoked once we have registered this device to fetch policy,
-  // or once it is determined that |username| is not a managed account.
-  void RegisterForPolicyWithAccountId(const std::string& username,
-                                      const CoreAccountId& account_id,
-                                      PolicyRegistrationCallback callback);
-
   // Overridden from UserPolicySigninServiceForProfile to cancel the pending
   // delayed registration.
   void ShutdownUserCloudPolicyManager() override;
@@ -75,32 +64,20 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   }
 
  private:
-  void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
-                                      PolicyRegistrationCallback callback);
-
   // KeyedService implementation:
   void Shutdown() override;
 
-  // CloudPolicyService::Observer implementation:
-  void OnCloudPolicyServiceInitializationCompleted() override;
-
-  // Registers for cloud policy for an already signed-in user.
-  void RegisterCloudPolicyService();
-
-  // Cancels a pending cloud policy registration attempt.
-  void CancelPendingRegistration();
-
-  void OnRegistrationDone();
+  // UserPolicySigninServiceBase implementation:
+  base::TimeDelta GetTryRegistrationDelay() override;
+  void UpdateLastPolicyCheckTime() override;
+  signin::ConsentLevel GetConsentLevelForRegistration() override;
+  bool CanApplyPolicies(bool check_for_refresh_token) override;
 
   // Initializes the UserPolicySigninService once its owning Profile becomes
   // ready. If the Profile has a signed-in account associated with it at startup
   // then this initializes the cloud policy manager by calling
   // InitializeForSignedInUser(); otherwise it clears any stored policies.
   void InitializeOnProfileReady(Profile* profile);
-
-  // Returns true when policies can be applied for the profile. The profile has
-  // to be at least tied to an account.
-  bool CanApplyPolicies(bool check_for_refresh_token);
 
   // True when the profile can be managed for testing purpose. Has to be set
   // from the test fixture. This is used to bypass the check on the profile

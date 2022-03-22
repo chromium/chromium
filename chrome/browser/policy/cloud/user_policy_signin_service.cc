@@ -97,47 +97,6 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }
 
-void UserPolicySigninService::RegisterForPolicyWithAccountId(
-    const std::string& username,
-    const CoreAccountId& account_id,
-    PolicyRegistrationCallback callback) {
-  DCHECK(!account_id.empty());
-
-  if (policy_manager() && policy_manager()->IsClientRegistered()) {
-    std::move(callback).Run(policy_manager()->core()->client()->dm_token(),
-                            policy_manager()->core()->client()->client_id());
-    return;
-  }
-  // Create a new CloudPolicyClient for fetching the DMToken.
-  std::unique_ptr<CloudPolicyClient> policy_client =
-      CreateClientForRegistrationOnly(username);
-  if (!policy_client) {
-    std::move(callback).Run(std::string(), std::string());
-    return;
-  }
-
-  // Fire off the registration process. Callback keeps the CloudPolicyClient
-  // alive for the length of the registration process. Use the system
-  // request context because the user is not signed in to this profile yet
-  // (we are just doing a test registration to see if policy is supported for
-  // this user).
-  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_client.get(),
-      enterprise_management::DeviceRegisterRequest::BROWSER);
-  registration_helper_->StartRegistration(
-      identity_manager(), account_id,
-      base::BindOnce(&UserPolicySigninService::CallPolicyRegistrationCallback,
-                     base::Unretained(this), std::move(policy_client),
-                     std::move(callback)));
-}
-
-void UserPolicySigninService::CallPolicyRegistrationCallback(
-    std::unique_ptr<CloudPolicyClient> client,
-    PolicyRegistrationCallback callback) {
-  registration_helper_.reset();
-  std::move(callback).Run(client->dm_token(), client->client_id());
-}
-
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -220,51 +179,6 @@ void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
   if (CanApplyPolicies(/*check_for_refresh_token=*/true))
     TryInitializeForSignedInUser();
-}
-
-void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
-  UserCloudPolicyManager* manager = policy_manager();
-  DCHECK(manager->core()->service()->IsInitializationComplete());
-  // The service is now initialized - if the client is not yet registered, then
-  // it means that there is no cached policy and so we need to initiate a new
-  // client registration.
-  DVLOG_IF(1, manager->IsClientRegistered())
-      << "Client already registered - not fetching DMToken";
-  if (!manager->IsClientRegistered()) {
-    if (!CanApplyPolicies(/*check_for_refresh_token=*/true)) {
-      // No token yet - this class listens for OnRefreshTokenUpdatedForAccount()
-      // and will re-attempt registration once the token is available.
-      DLOG(WARNING) << "No OAuth Refresh Token - delaying policy download";
-      return;
-    }
-    RegisterCloudPolicyService();
-  }
-  // If client is registered now, prohibit signout.
-  ProhibitSignoutIfNeeded();
-}
-
-void UserPolicySigninService::RegisterCloudPolicyService() {
-  DCHECK(!policy_manager()->IsClientRegistered());
-  DVLOG(1) << "Fetching new DM Token";
-  // Do nothing if already starting the registration process.
-  if (registration_helper_)
-    return;
-
-  // Start the process of registering the CloudPolicyClient. Once it completes,
-  // policy fetch will automatically happen.
-  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_manager()->core()->client(),
-      enterprise_management::DeviceRegisterRequest::BROWSER);
-  registration_helper_->StartRegistration(
-      identity_manager(),
-      identity_manager()->GetPrimaryAccountId(consent_level()),
-      base::BindOnce(&UserPolicySigninService::OnRegistrationComplete,
-                     base::Unretained(this)));
-}
-
-void UserPolicySigninService::OnRegistrationComplete() {
-  ProhibitSignoutIfNeeded();
-  registration_helper_.reset();
 }
 
 void UserPolicySigninService::ProhibitSignoutIfNeeded() {

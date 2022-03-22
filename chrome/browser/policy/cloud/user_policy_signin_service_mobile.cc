@@ -42,17 +42,6 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::ANDROID_BROWSER;
-#else
-#error "This file can be built only on OS_ANDROID."
-#endif
-
-}  // namespace
-
 UserPolicySigninService::UserPolicySigninService(
     Profile* profile,
     PrefService* local_state,
@@ -78,41 +67,6 @@ void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
   UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
 }
 
-void UserPolicySigninService::RegisterForPolicyWithAccountId(
-    const std::string& username,
-    const CoreAccountId& account_id,
-    PolicyRegistrationCallback callback) {
-  // Create a new CloudPolicyClient for fetching the DMToken.
-  std::unique_ptr<CloudPolicyClient> policy_client =
-      CreateClientForRegistrationOnly(username);
-  if (!policy_client) {
-    std::move(callback).Run(std::string(), std::string());
-    return;
-  }
-
-  CancelPendingRegistration();
-
-  // Fire off the registration process. Callback keeps the CloudPolicyClient
-  // alive for the length of the registration process.
-  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_client.get(), kCloudPolicyRegistrationType);
-
-  // Using a raw pointer to |this| is okay, because we own the
-  // |registration_helper_|.
-  auto registration_callback = base::BindOnce(
-      &UserPolicySigninService::CallPolicyRegistrationCallback,
-      base::Unretained(this), std::move(policy_client), std::move(callback));
-  registration_helper_->StartRegistration(identity_manager(), account_id,
-                                          std::move(registration_callback));
-}
-
-void UserPolicySigninService::CallPolicyRegistrationCallback(
-    std::unique_ptr<CloudPolicyClient> client,
-    PolicyRegistrationCallback callback) {
-  registration_helper_.reset();
-  std::move(callback).Run(client->dm_token(), client->client_id());
-}
-
 void UserPolicySigninService::Shutdown() {
   // Don't handle ProfileManager when testing because it is null.
   if (g_browser_process->profile_manager())
@@ -121,74 +75,6 @@ void UserPolicySigninService::Shutdown() {
     identity_manager()->RemoveObserver(this);
   CancelPendingRegistration();
   UserPolicySigninServiceBase::Shutdown();
-}
-
-void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
-  UserCloudPolicyManager* manager = policy_manager();
-  DCHECK(manager->core()->service()->IsInitializationComplete());
-  // The service is now initialized - if the client is not yet registered, then
-  // it means that there is no cached policy and so we need to initiate a new
-  // client registration.
-  if (manager->IsClientRegistered()) {
-    DVLOG(1) << "Client already registered - not fetching DMToken";
-    return;
-  }
-
-  net::NetworkChangeNotifier::ConnectionType connection_type =
-      net::NetworkChangeNotifier::GetConnectionType();
-  base::TimeDelta retry_delay = base::Days(3);
-  if (connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
-      connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
-    retry_delay = base::Days(1);
-  }
-
-  base::Time last_check_time = base::Time::FromInternalValue(
-      profile_prefs_->GetInt64(prefs::kLastPolicyCheckTime));
-  base::Time now = base::Time::Now();
-  base::Time next_check_time = last_check_time + retry_delay;
-
-  // Check immediately if no check was ever done before (last_check_time == 0),
-  // or if the last check was in the future (?), or if we're already past the
-  // next check time. Otherwise, delay checking until the next check time.
-  base::TimeDelta try_registration_delay = base::Seconds(5);
-  if (now > last_check_time && now < next_check_time)
-    try_registration_delay = next_check_time - now;
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&UserPolicySigninService::RegisterCloudPolicyService,
-                     weak_factory_.GetWeakPtr()),
-      try_registration_delay);
-}
-
-void UserPolicySigninService::RegisterCloudPolicyService() {
-  // If the user signed-out while this task was waiting then Shutdown() would
-  // have been called, which would have invalidated this task. Since we're here
-  // then the user must still be signed-in.
-  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  DCHECK(!policy_manager()->IsClientRegistered());
-  DCHECK(policy_manager()->core()->client());
-
-  // Persist the current time as the last policy registration attempt time.
-  profile_prefs_->SetInt64(prefs::kLastPolicyCheckTime,
-                           base::Time::Now().ToInternalValue());
-
-  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
-  registration_helper_->StartRegistration(
-      identity_manager(),
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-      base::BindOnce(&UserPolicySigninService::OnRegistrationDone,
-                     base::Unretained(this)));
-}
-
-void UserPolicySigninService::CancelPendingRegistration() {
-  weak_factory_.InvalidateWeakPtrs();
-  registration_helper_.reset();
-}
-
-void UserPolicySigninService::OnRegistrationDone() {
-  registration_helper_.reset();
 }
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
@@ -242,6 +128,40 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
 
   return (profile_can_be_managed_for_testing_ ||
           chrome::enterprise_util::ProfileCanBeManaged(profile_));
+}
+
+base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
+  net::NetworkChangeNotifier::ConnectionType connection_type =
+      net::NetworkChangeNotifier::GetConnectionType();
+  base::TimeDelta retry_delay = base::Days(3);
+  if (connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
+      connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
+    retry_delay = base::Days(1);
+  }
+
+  base::Time last_check_time = base::Time::FromInternalValue(
+      profile_prefs_->GetInt64(prefs::kLastPolicyCheckTime));
+  base::Time next_check_time = last_check_time + retry_delay;
+
+  // Check immediately if no check was ever done before (last_check_time == 0),
+  // or if the last check was in the future (?), or if we're already past the
+  // next check time. Otherwise, delay checking until the next check time.
+  base::Time now = base::Time::Now();
+  base::TimeDelta try_registration_delay = base::Seconds(5);
+  if (now > last_check_time && now < next_check_time)
+    try_registration_delay = next_check_time - now;
+
+  return try_registration_delay;
+}
+
+void UserPolicySigninService::UpdateLastPolicyCheckTime() {
+  // Persist the current time as the last policy registration attempt time.
+  profile_->GetPrefs()->SetInt64(prefs::kLastPolicyCheckTime,
+                                 base::Time::Now().ToInternalValue());
+}
+
+signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
+  return signin::ConsentLevel::kSync;
 }
 
 }  // namespace policy

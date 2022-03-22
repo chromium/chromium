@@ -66,27 +66,13 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
   ~UserPolicySigninService() override;
 
-  // Registers a CloudPolicyClient for fetching policy for a user. |username| is
-  // explicitly passed because the user is not yet authenticated, but the token
-  // service has a refresh token available for |account_id|.
-  // Virtual for testing.
-  virtual void RegisterForPolicyWithAccountId(
-      const std::string& username,
-      const CoreAccountId& account_id,
-      PolicyRegistrationCallback callback);
-
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-  // CloudPolicyService::Observer implementation:
-  void OnCloudPolicyServiceInitializationCompleted() override;
-
-  // The signin flow may be interrupted after the policy manager was
-  // initialized, but before the account is set as primary account. In this case
-  // the manager must be shutdown manually.
+  // UserPolicySigninServiceBase implementation:
   void ShutdownUserCloudPolicyManager() override;
 
   void OnProfileUserManagementAcceptanceChanged(
@@ -99,30 +85,17 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
     profile_can_be_managed_for_testing_ = can_be_managed;
   }
 
- protected:
-  // UserPolicySigninServiceBase implementation:
-  void InitializeUserCloudPolicyManager(
-      const AccountId& account_id,
-      std::unique_ptr<CloudPolicyClient> client) override;
-
-  void PrepareForUserCloudPolicyManagerShutdown() override;
-
  private:
   // KeyedService implementation:
   void Shutdown() override;
 
-  // Fetches an OAuth token to allow the cloud policy service to register with
-  // the cloud policy server. |oauth_login_token| should contain an OAuth login
-  // refresh token that can be downscoped to get an access token for the
-  // device_management service.
-  void RegisterCloudPolicyService();
-
-  // Callback invoked when policy registration has finished.
-  void OnRegistrationComplete();
-
-  // Helper routine which prohibits user signout if the user is registered for
-  // cloud policy.
-  void ProhibitSignoutIfNeeded();
+  // UserPolicySigninServiceBase implementation:
+  void InitializeUserCloudPolicyManager(
+      const AccountId& account_id,
+      std::unique_ptr<CloudPolicyClient> client) override;
+  void PrepareForUserCloudPolicyManagerShutdown() override;
+  void ProhibitSignoutIfNeeded() override;
+  bool CanApplyPolicies(bool check_for_refresh_token) override;
 
   // Helper method that attempts calls |InitializeForSignedInUser| only if
   // |policy_manager| is not-nul. Expects that there is a refresh token for
@@ -138,10 +111,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // then this initializes the cloud policy manager by calling
   // InitializeForSignedInUser(); otherwise it clears any stored policies.
   void InitializeOnProfileReady(Profile* profile);
-
-  // Returns true when policies can be applied for the profile. The profile has
-  // to be at least tied to an account.
-  bool CanApplyPolicies(bool check_for_refresh_token);
 
   // True when the profile can be managed for testing purpose. Has to be set
   // from the test fixture. This is used to bypass the check on the profile

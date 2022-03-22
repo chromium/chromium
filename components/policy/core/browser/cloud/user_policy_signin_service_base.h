@@ -12,10 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/core_account_id.h"
 
 class AccountId;
 class PrefService;
@@ -28,6 +30,8 @@ namespace policy {
 
 class DeviceManagementService;
 class UserCloudPolicyManager;
+class CloudPolicyClientRegistrationHelper;
+class CloudPolicyClient;
 
 // The UserPolicySigninService is responsible for interacting with the policy
 // infrastructure (mainly UserCloudPolicyManager) to load policy for the signed
@@ -92,17 +96,24 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // KeyedService implementation:
   void Shutdown() override;
 
+  // Registers to DM Server to get a DM token to fetch user policies for that
+  // account.
+  //
+  // Registration goes through the following steps:
+  //   1) Request an OAuth2 access token to let the account access the service.
+  //   2) Fetch the user info tied to the access token.
+  //   3) Register the account to DMServer using the access token and user info
+  //      to get a DM token that allows fetching user policies for the
+  //      registered account.
+  //   4) Invoke |callback| when the DM token is available. Will pass an empty
+  //      token when the account isn't managed OR there is an error during the
+  //      registration.
+  virtual void RegisterForPolicyWithAccountId(
+      const std::string& username,
+      const CoreAccountId& account_id,
+      PolicyRegistrationCallback callback);
+
  protected:
-  // Returns a CloudPolicyClient to perform a registration with the DM server,
-  // or NULL if |username| shouldn't register for policy management.
-  std::unique_ptr<CloudPolicyClient> CreateClientForRegistrationOnly(
-      const std::string& username);
-
-  // Returns false if cloud policy is disabled or if the passed |email_address|
-  // is definitely not from a hosted domain (according to the list in
-  // BrowserPolicyConnector::IsNonEnterpriseUser()).
-  bool ShouldLoadPolicyForUser(const std::string& email_address);
-
   // Invoked to initialize the cloud policy service for |account_id|, which is
   // the account associated with the Profile that owns this service. This is
   // invoked from InitializeOnProfileReady() if the Profile already has a
@@ -128,6 +139,28 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // out) and deletes any cached policy.
   virtual void ShutdownUserCloudPolicyManager();
 
+  // Updates the timestamp of the last policy check. Implemented on mobile
+  // platforms for network efficiency.
+  virtual void UpdateLastPolicyCheckTime();
+
+  // Gets the sign-in consent level required to perform registration.
+  virtual signin::ConsentLevel GetConsentLevelForRegistration();
+
+  // Gets the delay before the next registration.
+  virtual base::TimeDelta GetTryRegistrationDelay();
+
+  // Prohibits signout if needed when the account is registered for cloud policy
+  // . Might be no-op for some platforms (eg., iOS and Android).
+  virtual void ProhibitSignoutIfNeeded();
+
+  // Returns true when policies can be applied for the profile. The profile has
+  // to be at least tied to an account.
+  virtual bool CanApplyPolicies(bool check_for_refresh_token);
+
+  // Cancels the pending task that does registration. This invalidates the
+  // |weak_factory_for_registration_| weak pointers used for registration.
+  void CancelPendingRegistration();
+
   // Convenience helpers to get the associated UserCloudPolicyManager and
   // IdentityManager.
   UserCloudPolicyManager* policy_manager() { return policy_manager_; }
@@ -136,6 +169,30 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   signin::ConsentLevel consent_level() const { return consent_level_; }
 
  private:
+  // Returns a CloudPolicyClient to perform a registration with the DM server,
+  // or NULL if |username| shouldn't register for policy management.
+  std::unique_ptr<CloudPolicyClient> CreateClientForRegistrationOnly(
+      const std::string& username);
+
+  // Returns false if cloud policy is disabled or if the passed |email_address|
+  // is definitely not from a hosted domain (according to the list in
+  // BrowserPolicyConnector::IsNonEnterpriseUser()).
+  bool ShouldLoadPolicyForUser(const std::string& email_address);
+
+  // Handler to call the policy registration callback that provides the DM
+  // token.
+  void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
+                                      PolicyRegistrationCallback callback);
+
+  // Fetches an OAuth token to allow the cloud policy service to register with
+  // the cloud policy server. |oauth_login_token| should contain an OAuth login
+  // refresh token that can be downscoped to get an access token for the
+  // device_management service.
+  void RegisterCloudPolicyService();
+
+  // Callback invoked when policy registration has finished.
+  void OnRegistrationComplete();
+
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
   raw_ptr<UserCloudPolicyManager> policy_manager_;
@@ -145,8 +202,18 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
-  signin::ConsentLevel consent_level_;
+  signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
+
+  // Helper for registering the client to DMServer to get a DM token using a
+  // cloud policy client. When there is an instance of |registration_helper_|,
+  // it means that registration is ongoing. There is no registration when null.
+  std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
+
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
+
+  // Weak pointer factory used for registration.
+  base::WeakPtrFactory<UserPolicySigninServiceBase>
+      weak_factory_for_registration_{this};
 };
 
 }  // namespace policy
