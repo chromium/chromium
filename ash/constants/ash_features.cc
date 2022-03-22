@@ -1063,7 +1063,7 @@ const base::Feature kPerDeskShelf{"PerDeskShelf",
 // Allows tablet mode split screen to resize by moving windows instead of
 // resizing. This reduces jank on low end devices.
 const base::Feature kPerformantSplitViewResizing{
-    "PerformantSplitViewResizing", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PerformantSplitViewResizing", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Provides a UI for users to customize their wallpapers, screensaver and
 // avatars.
