@@ -429,13 +429,8 @@ ScriptPromise GPUDevice::popErrorScope(ScriptState* script_state) {
       BindDawnOnceCallback(&GPUDevice::OnPopErrorScopeCallback,
                            WrapPersistent(this), WrapPersistent(resolver));
 
-  if (!GetProcs().devicePopErrorScope(GetHandle(), callback->UnboundCallback(),
-                                      callback->AsUserdata())) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "No error scopes to pop."));
-    delete callback;
-    return promise;
-  }
+  GetProcs().devicePopErrorScope(GetHandle(), callback->UnboundCallback(),
+                                 callback->AsUserdata());
 
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.
