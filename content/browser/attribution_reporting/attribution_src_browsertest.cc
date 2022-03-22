@@ -160,17 +160,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values("createAttributionSrcImg($1);",
                       "window.attributionReporting.registerSource($1);"));
 
-// TODO(crbug.com/1307363): Consistently failing on Linux MSAN and Linux
-//                          ChromiumOS MSAN.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AttributionSrcAnchor_SourceRegistered \
-  DISABLED_AttributionSrcAnchor_SourceRegistered
-#else
-#define MAYBE_AttributionSrcAnchor_SourceRegistered \
-  AttributionSrcAnchor_SourceRegistered
-#endif
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       MAYBE_AttributionSrcAnchor_SourceRegistered) {
+                       AttributionSrcAnchor_SourceRegistered) {
   SourceObserver source_observer(web_contents());
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
