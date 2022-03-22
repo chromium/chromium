@@ -282,12 +282,14 @@ void FakeConciergeClient::GetVmEnterpriseReportingInfo(
                                 get_vm_enterprise_reporting_info_response_));
 }
 
-void FakeConciergeClient::MakeRtVcpu(
-    const vm_tools::concierge::MakeRtVcpuRequest& request,
-    DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse> callback) {
-  make_rt_vcpu_call_count_++;
+void FakeConciergeClient::ArcVmCompleteBoot(
+    const vm_tools::concierge::ArcVmCompleteBootRequest& request,
+    DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
+        callback) {
+  arcvm_complete_boot_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), make_rt_vcpu_response_));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), arcvm_complete_boot_response_));
 }
 
 void FakeConciergeClient::SetVmCpuRestriction(
@@ -435,8 +437,9 @@ void FakeConciergeClient::InitializeProtoResponses() {
 
   get_vm_enterprise_reporting_info_response_.emplace();
 
-  make_rt_vcpu_response_.emplace();
-  make_rt_vcpu_response_->set_success(true);
+  arcvm_complete_boot_response_.emplace();
+  arcvm_complete_boot_response_->set_result(
+      vm_tools::concierge::ArcVmCompleteBootResult::SUCCESS);
 
   set_vm_cpu_restriction_response_.emplace();
 

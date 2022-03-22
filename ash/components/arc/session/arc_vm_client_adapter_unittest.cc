@@ -2285,7 +2285,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmNoBlockApexDisk) {
                               [](const auto& p) { return p.path(); }));
 }
 
-// Tests that OnConnectionReady() calls the MakeRtVcpu call D-Bus method.
+// Tests that OnConnectionReady() calls the ArcVmCompleteBoot call D-Bus method.
 TEST_F(ArcVmClientAdapterTest, OnConnectionReady) {
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
@@ -2296,45 +2296,46 @@ TEST_F(ArcVmClientAdapterTest, OnConnectionReady) {
   arc_bridge_service()->app()->SetInstance(app_instance());
   WaitForInstanceReady(arc_bridge_service()->app());
 
-  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
+  EXPECT_EQ(1, GetTestConciergeClient()->arcvm_complete_boot_call_count());
 }
 
-// Tests that MakeRtVcpu failure won't crash the adapter.
-TEST_F(ArcVmClientAdapterTest, OnConnectionReady_MakeRtVcpuFailure) {
+// Tests that ArcVmCompleteBoot failure won't crash the adapter.
+TEST_F(ArcVmClientAdapterTest, OnConnectionReady_ArcVmCompleteBootFailure) {
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   UpgradeArc(true);
 
   // Inject the failure.
-  absl::optional<vm_tools::concierge::MakeRtVcpuResponse> response;
+  absl::optional<vm_tools::concierge::ArcVmCompleteBootResponse> response;
   response.emplace();
-  response->set_success(false);
-  response->set_failure_reason("unknown failure");
-  GetTestConciergeClient()->set_make_rt_vcpu_response(response);
+  response->set_result(
+      vm_tools::concierge::ArcVmCompleteBootResult::BAD_REQUEST);
+  GetTestConciergeClient()->set_arcvm_complete_boot_response(response);
 
   // This calls ArcVmClientAdapter::OnConnectionReady().
   arc_bridge_service()->app()->SetInstance(app_instance());
   WaitForInstanceReady(arc_bridge_service()->app());
 
-  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
+  EXPECT_EQ(1, GetTestConciergeClient()->arcvm_complete_boot_call_count());
 }
 
-// Tests that null MakeRtVcpu reply won't crash the adapter.
-TEST_F(ArcVmClientAdapterTest, OnConnectionReady_MakeRtVcpuFailureNullReply) {
+// Tests that null ArcVmCompleteBoot reply won't crash the adapter.
+TEST_F(ArcVmClientAdapterTest,
+       OnConnectionReady_ArcVmCompleteBootFailureNullReply) {
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   UpgradeArc(true);
 
   // Inject the failure.
-  GetTestConciergeClient()->set_make_rt_vcpu_response(absl::nullopt);
+  GetTestConciergeClient()->set_arcvm_complete_boot_response(absl::nullopt);
 
   // This calls ArcVmClientAdapter::OnConnectionReady().
   arc_bridge_service()->app()->SetInstance(app_instance());
   WaitForInstanceReady(arc_bridge_service()->app());
 
-  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
+  EXPECT_EQ(1, GetTestConciergeClient()->arcvm_complete_boot_call_count());
 }
 
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Default) {

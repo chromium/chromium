@@ -806,18 +806,18 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   // ConnectionObserver<arc::mojom::AppInstance> overrides:
   void OnConnectionReady() override {
-    VLOG(2) << "Enabling VM's RT vCPU";
+    VLOG(2) << "Sending ArcVmCompleteBoot Request";
 
     auto* arc_service_manager = arc::ArcServiceManager::Get();
     DCHECK(arc_service_manager);
     arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
 
-    vm_tools::concierge::MakeRtVcpuRequest request;
-    request.set_name(kArcVmName);
+    vm_tools::concierge::ArcVmCompleteBootRequest request;
     DCHECK(!user_id_hash_.empty());
     request.set_owner_id(user_id_hash_);
-    GetConciergeClient()->MakeRtVcpu(
-        request, base::BindOnce(&ArcVmClientAdapter::OnMakeRtVcpu));
+    GetConciergeClient()->ArcVmCompleteBoot(
+        request,
+        base::BindOnce(&ArcVmClientAdapter::OnArcVmCompleteBootResponse));
   }
 
   void set_delegate_for_testing(  // IN-TEST
@@ -1302,23 +1302,16 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     std::move(callback).Run(success, failure_reason);
   }
 
-  static void OnMakeRtVcpu(
-      absl::optional<vm_tools::concierge::MakeRtVcpuResponse> reply) {
-    bool success = false;
-    std::string failure_reason;
+  static void OnArcVmCompleteBootResponse(
+      absl::optional<vm_tools::concierge::ArcVmCompleteBootResponse> reply) {
+    vm_tools::concierge::ArcVmCompleteBootResult result =
+        reply.has_value()
+            ? reply.value().result()
+            : vm_tools::concierge::ArcVmCompleteBootResult::BAD_REQUEST;
 
-    if (!reply.has_value()) {
-      failure_reason = "Empty response";
-    } else {
-      const vm_tools::concierge::MakeRtVcpuResponse& response = reply.value();
-      success = response.success();
-      if (!success)
-        failure_reason = response.failure_reason();
-    }
-
-    VLOG(2) << "Enabling VM's RT vCPU: result=" << success;
-    if (!success)
-      LOG(WARNING) << "Failed to enable RT vCPU: reason=" << failure_reason;
+    VLOG(2) << "ArcVmCompleteBoot: result=" << result;
+    if (result != vm_tools::concierge::ArcVmCompleteBootResult::SUCCESS)
+      LOG(WARNING) << "Failed ArcVmCompleteBoot: result=" << result;
   }
 
   std::unique_ptr<ArcVmClientAdapterDelegate> delegate_;

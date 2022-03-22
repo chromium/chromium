@@ -211,11 +211,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
           vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
           callback) = 0;
 
-  // Make real-time vCPU for the VM.
+  // Performs necessary operations to complete the boot of ARCVM.
   // |callback| is called after the method call finishes.
-  virtual void MakeRtVcpu(
-      const vm_tools::concierge::MakeRtVcpuRequest& request,
-      DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse> callback) = 0;
+  virtual void ArcVmCompleteBoot(
+      const vm_tools::concierge::ArcVmCompleteBootRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
+          callback) = 0;
 
   // Set VM's CPU restriction state.
   // |callback| is called after the method call finishes.

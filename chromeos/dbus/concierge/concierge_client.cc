@@ -185,10 +185,12 @@ class ConciergeClientImpl : public ConciergeClient {
                std::move(callback));
   }
 
-  void MakeRtVcpu(const vm_tools::concierge::MakeRtVcpuRequest& request,
-                  DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse>
-                      callback) override {
-    CallMethod(concierge::kMakeRtVcpuMethod, request, std::move(callback));
+  void ArcVmCompleteBoot(
+      const vm_tools::concierge::ArcVmCompleteBootRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
+          callback) override {
+    CallMethod(concierge::kArcVmCompleteBootMethod, request,
+               std::move(callback));
   }
 
   void SetVmCpuRestriction(
