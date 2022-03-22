@@ -335,9 +335,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private updateStateFromQueryParameters_() {
     assert(Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE);
     const step = Router.getInstance().getQueryParameters().get('step');
-    // TODO(crbug/1215630): If the parameter is welcome but the user has opted
-    // to skip the welcome card in a previous flow, then navigate to the first
-    // settings card instead
+
     if (Object.values(PrivacyGuideStep).includes(step as PrivacyGuideStep)) {
       this.navigateToCard_(step as PrivacyGuideStep, false, true);
     } else {
