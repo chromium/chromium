@@ -46,7 +46,6 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/url_util.h"
@@ -1466,8 +1465,13 @@ void ServiceWorkerContextWrapper::BindStorageControl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (storage_control_binder_for_test_) {
     storage_control_binder_for_test_.Run(std::move(receiver));
-  } else if (base::FeatureList::IsEnabled(
-                 features::kStorageServiceOutOfProcess)) {
+  } else {
+    // The storage service always runs out of process on Desktop platforms.
+    // TODO(crbug.com/1055677): ServiceWorkerStorageControlImpl instance
+    // should live in the storage service. Currently,
+    // ServiceWorkerStorageControlImpl runs on UI thread to keep the previous
+    // behavior.
+
     // TODO(crbug.com/1055677): Use storage_partition() to bind the control when
     // ServiceWorkerStorageControl is sandboxed in the Storage Service.
     DCHECK(!storage_control_);
@@ -1484,14 +1488,6 @@ void ServiceWorkerContextWrapper::BindStorageControl(
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
             user_data_directory_, std::move(database_task_runner),
             std::move(receiver));
-  } else {
-    // Drop `receiver` when the browser is shutting down.
-    if (!storage_partition())
-      return;
-    DCHECK(storage_partition()->GetStorageServicePartition());
-    storage_partition()
-        ->GetStorageServicePartition()
-        ->BindServiceWorkerStorageControl(std::move(receiver));
   }
 }
 

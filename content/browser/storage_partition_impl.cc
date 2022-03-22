@@ -204,10 +204,9 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
     const bool single_process_mode =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kSingleProcess);
-    const bool oop_storage_enabled =
-        base::FeatureList::IsEnabled(features::kStorageServiceOutOfProcess) &&
-        !sandboxed_data_dir.empty() && !single_process_mode &&
-        !g_force_in_process_storage_service;
+    const bool oop_storage_enabled = !sandboxed_data_dir.empty() &&
+                                     !single_process_mode &&
+                                     !g_force_in_process_storage_service;
     if (oop_storage_enabled) {
       DCHECK(sandboxed_data_dir.IsAbsolute())
           << "Storage Service data directory must be an absolute path, but \""

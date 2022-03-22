@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -16,7 +15,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -28,10 +26,7 @@ namespace {
 
 class StorageServiceRestartBrowserTest : public ContentBrowserTest {
  public:
-  StorageServiceRestartBrowserTest() {
-    // These tests only make sense when the service is running out-of-process.
-    feature_list_.InitAndEnableFeature(features::kStorageServiceOutOfProcess);
-  }
+  StorageServiceRestartBrowserTest() = default;
 
   DOMStorageContextWrapper* dom_storage() {
     auto* partition =
@@ -95,7 +90,6 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<storage::mojom::TestApi> test_api_;
 };
 

@@ -4279,16 +4279,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// StorageServiceOutOfProcess is not implemented on Android. Also as commented
-// below, test_api->CrashNow() won't work on x86 and x86_64 Android.
+// The out-of-process StorageService is not implemented on Android. Also as
+// commented below, test_api->CrashNow() won't work on x86 and x86_64 Android.
 
 class PrerenderRestartStorageServiceBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderRestartStorageServiceBrowserTest() {
-    // These tests only make sense when the service is running
-    // out-of-process.
-    feature_list_.InitAndEnableFeature(features::kStorageServiceOutOfProcess);
-  }
+  PrerenderRestartStorageServiceBrowserTest() = default;
 
  protected:
   void CrashStorageServiceAndWaitForRestart() {
@@ -4307,9 +4303,6 @@ class PrerenderRestartStorageServiceBrowserTest : public PrerenderBrowserTest {
     test_api->CrashNow();
     loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderRestartStorageServiceBrowserTest,

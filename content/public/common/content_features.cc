@@ -926,10 +926,6 @@ const base::Feature kSpareRendererForSitePerProcess{
 const base::Feature kStopVideoCaptureOnScreenLock{
     "StopVideoCaptureOnScreenLock", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the out-of-process Storage Service.
-const base::Feature kStorageServiceOutOfProcess{
-    "StorageServiceOutOfProcess", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether site isolation should use origins instead of scheme and
 // eTLD+1.
 const base::Feature kStrictOriginIsolation{"StrictOriginIsolation",
