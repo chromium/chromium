@@ -88,9 +88,14 @@ std::unordered_set<uint64_t> ProcessStack(
       write_render_pass(pass.get());
       seen_render_pass_ids.insert(pass->id.GetUnsafeValue());
 
-      frame.indent += 2;
-      write_indent(frame.indent);
-      write_sqs(*frame.sqs_iter);
+      if (const auto* sqs = *frame.sqs_iter) {
+        frame.indent += 2;
+        write_indent(frame.indent);
+        write_sqs(sqs);
+      } else {
+        stack.pop_back();
+        continue;
+      }
 
       frame.indent += 2;
     } else {
