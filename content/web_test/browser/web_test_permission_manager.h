@@ -56,6 +56,9 @@ class WebTestPermissionManager
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host) override;
   SubscriptionId SubscribePermissionStatusChange(
       PermissionType permission,
       RenderFrameHost* render_frame_host,

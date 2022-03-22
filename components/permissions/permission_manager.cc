@@ -575,6 +575,14 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
   return ContentSettingToPermissionStatus(result.content_setting);
 }
 
+PermissionStatus PermissionManager::GetPermissionStatusForCurrentDocument(
+    PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return GetPermissionStatusForFrame(
+      permission, render_frame_host,
+      render_frame_host->GetLastCommittedOrigin().GetURL());
+}
+
 bool PermissionManager::IsPermissionOverridableByDevTools(
     content::PermissionType permission,
     const absl::optional<url::Origin>& origin) {

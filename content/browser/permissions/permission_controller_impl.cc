@@ -100,7 +100,7 @@ void MergeOverriddenAndDelegatedResults(
   full_results.reserve(overridden_results.size());
   auto delegated_it = delegated_results.begin();
   for (auto& status : overridden_results) {
-    if (!status.has_value()) {
+    if (!status) {
       CHECK(delegated_it != delegated_results.end());
       status.emplace(*delegated_it++);
     }
@@ -350,7 +350,7 @@ PermissionControllerImpl::DeprecatedGetPermissionStatus(
   absl::optional<blink::mojom::PermissionStatus> status =
       devtools_permission_overrides_.Get(url::Origin::Create(requesting_origin),
                                          permission);
-  if (status.has_value())
+  if (status)
     return *status;
 
   PermissionControllerDelegate* delegate =
@@ -374,9 +374,18 @@ blink::mojom::PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
     RenderFrameHost* render_frame_host) {
-  return GetPermissionStatusForFrame(
-      permission, render_frame_host,
-      render_frame_host->GetLastCommittedOrigin().GetURL());
+  absl::optional<blink::mojom::PermissionStatus> status =
+      devtools_permission_overrides_.Get(
+          render_frame_host->GetLastCommittedOrigin(), permission);
+  if (status)
+    return *status;
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate)
+    return blink::mojom::PermissionStatus::DENIED;
+  return delegate->GetPermissionStatusForCurrentDocument(permission,
+                                                         render_frame_host);
 }
 
 blink::mojom::PermissionStatus
@@ -395,7 +404,7 @@ PermissionControllerImpl::GetPermissionStatusForFrame(
   absl::optional<blink::mojom::PermissionStatus> status =
       devtools_permission_overrides_.Get(url::Origin::Create(requesting_origin),
                                          permission);
-  if (status.has_value())
+  if (status)
     return *status;
 
   PermissionControllerDelegate* delegate =

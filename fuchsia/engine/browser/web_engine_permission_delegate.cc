@@ -81,6 +81,16 @@ WebEnginePermissionDelegate::GetPermissionStatusForFrame(
       permission, url::Origin::Create(requesting_origin));
 }
 
+blink::mojom::PermissionStatus
+WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
+    content::PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
+  DCHECK(frame);
+  return frame->permission_controller()->GetPermissionState(
+      permission, render_frame_host->GetLastCommittedOrigin());
+}
+
 WebEnginePermissionDelegate::SubscriptionId
 WebEnginePermissionDelegate::SubscribePermissionStatusChange(
     content::PermissionType permission,

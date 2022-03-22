@@ -467,6 +467,15 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForFrame(
           render_frame_host));
 }
 
+PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
+    PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return GetPermissionStatus(
+      permission, render_frame_host->GetLastCommittedOrigin().GetURL(),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host));
+}
+
 AwPermissionManager::SubscriptionId
 AwPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,

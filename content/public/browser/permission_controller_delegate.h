@@ -64,10 +64,20 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // TODO(raymes): Currently we still pass the |requesting_origin| as a separate
   // parameter because we can't yet guarantee that it matches the last committed
   // origin of the RenderFrameHost. See https://crbug.com/698985.
+  // Deprecated. Use `GetPermissionStatusForCurrentDocument` instead.
   virtual blink::mojom::PermissionStatus GetPermissionStatusForFrame(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) = 0;
+
+  // Returns the permission status for the current document in the given
+  // RenderFrameHost. Use this over `GetPermissionStatusForFrame` and
+  // `GetPermissionStatus` whenever possible as this API takes into account the
+  // lifecycle state of a given document (i.e. whether it's in back-forward
+  // cache or being prerendered) in addition to its origin.
+  virtual blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) = 0;
 
   // Sets the permission back to its default for the requesting_origin/
   // embedding_origin tuple.

@@ -28,4 +28,11 @@ TestFontAccessPermissionManager::GetPermissionStatusForFrame(
   return permission_status_for_frame_;
 }
 
+blink::mojom::PermissionStatus
+TestFontAccessPermissionManager::GetPermissionStatusForCurrentDocument(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host) {
+  return permission_status_for_frame_;
+}
+
 }  // namespace content

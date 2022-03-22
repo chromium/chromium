@@ -69,6 +69,13 @@ HeadlessPermissionManager::GetPermissionStatusForFrame(
   return blink::mojom::PermissionStatus::ASK;
 }
 
+blink::mojom::PermissionStatus
+HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
+    content::PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return blink::mojom::PermissionStatus::ASK;
+}
+
 HeadlessPermissionManager::SubscriptionId
 HeadlessPermissionManager::SubscribePermissionStatusChange(
     content::PermissionType permission,

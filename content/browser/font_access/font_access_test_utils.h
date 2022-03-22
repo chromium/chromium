@@ -34,6 +34,10 @@ class TestFontAccessPermissionManager : public MockPermissionManager {
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
 
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
+
   void SetRequestCallback(
       base::RepeatingCallback<void(PermissionCallback)> request_callback) {
     request_callback_ = std::move(request_callback);

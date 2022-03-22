@@ -142,6 +142,9 @@ class PermissionManager : public KeyedService,
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host) override;
   bool IsPermissionOverridableByDevTools(
       content::PermissionType permission,
       const absl::optional<url::Origin>& origin) override;

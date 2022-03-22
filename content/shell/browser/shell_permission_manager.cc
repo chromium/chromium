@@ -145,6 +145,18 @@ ShellPermissionManager::GetPermissionStatusForFrame(
           content::WebContents::FromRenderFrameHost(render_frame_host)));
 }
 
+blink::mojom::PermissionStatus
+ShellPermissionManager::GetPermissionStatusForCurrentDocument(
+    PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsNestedWithinFencedFrame())
+    return blink::mojom::PermissionStatus::DENIED;
+  return GetPermissionStatus(
+      permission, render_frame_host->GetLastCommittedOrigin().GetURL(),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host));
+}
+
 ShellPermissionManager::SubscriptionId
 ShellPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,

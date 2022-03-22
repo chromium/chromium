@@ -109,8 +109,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
-            GetPermissionStatusForFrame(PermissionType::IDLE_DETECTION,
-                                        main_rfh(), url_))
+            GetPermissionStatusForCurrentDocument(
+                PermissionType::IDLE_DETECTION, main_rfh()))
         .WillByDefault(Return(permission_status));
   }
 

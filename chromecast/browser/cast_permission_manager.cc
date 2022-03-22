@@ -168,6 +168,15 @@ CastPermissionManager::GetPermissionStatusForFrame(
                                      requesting_origin);
 }
 
+blink::mojom::PermissionStatus
+CastPermissionManager::GetPermissionStatusForCurrentDocument(
+    content::PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return GetPermissionStatusInternal(
+      permission, render_frame_host,
+      render_frame_host->GetLastCommittedOrigin().GetURL());
+}
+
 CastPermissionManager::SubscriptionId
 CastPermissionManager::SubscribePermissionStatusChange(
     content::PermissionType permission,
