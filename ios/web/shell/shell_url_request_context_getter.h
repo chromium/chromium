@@ -15,7 +15,6 @@
 
 namespace net {
 class ProxyConfigService;
-class TransportSecurityPersister;
 class URLRequestContext;
 class SystemCookieStore;
 }  // namespace net
@@ -48,8 +47,6 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
-  std::unique_ptr<net::TransportSecurityPersister>
-      transport_security_persister_;
   // SystemCookieStore must be created on UI thread in
   // ShellURLRequestContextGetter's constructor. Later the ownership is passed
   // to net::URLRequestContextStorage on IO thread. |system_cookie_store_| is
