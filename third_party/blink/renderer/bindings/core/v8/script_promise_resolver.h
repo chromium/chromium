@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -65,6 +66,30 @@ class CORE_EXPORT ScriptPromiseResolver
 
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
   void Reject() { Reject(ToV8UndefinedGenerator()); }
+
+  // Returns a callback that will run |callback| with the Entry realm
+  // and the Current realm set to the resolver's ScriptState. Note |callback|
+  // will only be run if the execution context and V8 context are capable
+  // to run. This situation occurs when the resolver's execution context
+  // or V8 context have started their destruction. See
+  // `IsInParallelAlgorithmRunnable` for details.
+  template <class ScriptPromiseResolver, typename... Args>
+  base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
+      base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback) {
+    return WTF::Bind(
+        [](ScriptPromiseResolver* resolver,
+           base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback,
+           Args... args) {
+          ScriptState* script_state = resolver->GetScriptState();
+          if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                             script_state)) {
+            return;
+          }
+          ScriptState::Scope script_state_scope(script_state);
+          std::move(callback).Run(resolver, std::move(args)...);
+        },
+        WrapPersistent(this), std::move(callback));
+  }
 
   // Reject with a given exception.
   void Reject(ExceptionState&);
