@@ -5296,6 +5296,9 @@ static_library("browser") {
       "//components/arc/common",
       "//ui/platform_window",
     ]
+
+    # component builds are not compatible on device.
+    assert(!is_chromeos_device || !is_component_build)
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
