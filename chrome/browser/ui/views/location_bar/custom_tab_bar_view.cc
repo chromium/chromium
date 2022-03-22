@@ -290,9 +290,7 @@ gfx::Size CustomTabBarView::CalculatePreferredSize() const {
 void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
   views::View::OnPaintBackground(canvas);
 
-  SkColor separator_color =
-      color_utils::IsDark(background_color_) ? SK_ColorWHITE : SK_ColorBLACK;
-  constexpr float kSeparatorOpacity = 0.15f;
+  auto* color_provider = GetColorProvider();
 
   gfx::Rect bounds = GetLocalBounds();
   const gfx::Size separator_size = gfx::Size(bounds.width(), 1);
@@ -303,8 +301,7 @@ void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Custom tab/content separator (bottom border).
   canvas->FillRect(gfx::Rect(bounds.bottom_left(), separator_size),
-                   color_utils::AlphaBlend(separator_color, background_color_,
-                                           kSeparatorOpacity));
+                   color_provider->GetColor(kColorPwaTabBarBottomSeparator));
 
   // Don't render the separator if there is already sufficient contrast between
   // the custom tab bar and the title bar.
@@ -316,8 +313,7 @@ void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Frame/Custom tab separator (top border).
   canvas->FillRect(gfx::Rect(bounds.origin(), separator_size),
-                   color_utils::AlphaBlend(separator_color, title_bar_color_,
-                                           kSeparatorOpacity));
+                   color_provider->GetColor(kColorPwaTabBarTopSeparator));
 }
 
 void CustomTabBarView::ChildPreferredSizeChanged(views::View* child) {

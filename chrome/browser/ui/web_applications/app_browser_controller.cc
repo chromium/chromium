@@ -396,6 +396,7 @@ bool AppBrowserController::ShouldUseCustomFrame() const {
 void AppBrowserController::AddColorMixers(
     ui::ColorProvider* provider,
     const ui::ColorProviderManager::Key& key) const {
+  constexpr float kSeparatorOpacity = 0.15f;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // This color is the same as the default active frame color.
   const absl::optional<SkColor> theme_color = GetThemeColor();
@@ -422,6 +423,12 @@ void AppBrowserController::AddColorMixers(
       ui::kColorDisabledForeground};
   mixer[kColorPwaSecurityChipForegroundSecure] = {
       kColorPwaSecurityChipForeground};
+  auto separator_color =
+      ui::GetColorWithMaxContrast(kColorPwaToolbarBackground);
+  mixer[kColorPwaTabBarBottomSeparator] = ui::AlphaBlend(
+      separator_color, kColorPwaToolbarBackground, kSeparatorOpacity);
+  mixer[kColorPwaTabBarTopSeparator] =
+      ui::AlphaBlend(separator_color, kColorPwaTheme, kSeparatorOpacity);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash system frames differ from ChromeOS browser frames.
   mixer[kColorPwaTheme] = {chromeos::kDefaultFrameColor};

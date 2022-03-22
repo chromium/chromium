@@ -185,6 +185,8 @@
   E_CPONLY(kColorPwaSecurityChipForegroundDangerous) \
   E_CPONLY(kColorPwaSecurityChipForegroundPolicyCert) \
   E_CPONLY(kColorPwaSecurityChipForegroundSecure) \
+  E_CPONLY(kColorPwaTabBarBottomSeparator) \
+  E_CPONLY(kColorPwaTabBarTopSeparator) \
   E_CPONLY(kColorPwaTheme) \
   E_CPONLY(kColorPwaToolbarBackground) \
   E_CPONLY(kColorPwaToolbarForeground) \
