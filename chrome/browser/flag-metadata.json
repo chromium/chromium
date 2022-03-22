@@ -1185,7 +1185,7 @@
   {
     "name": "diagnostics-app-navigation",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 112
   },
   {
     "name": "disable-accelerated-2d-canvas",
