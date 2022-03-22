@@ -2720,7 +2720,12 @@ base::SafeRef<NavigationHandle> NavigationRequest::GetSafeRef() {
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
-  if (!IsOptInIsolationRequested())
+  // Check whether an origin-keyed agent cluster is either explicitly requested
+  // or implied (i.e., on by default), before attempting to isolate it. If
+  // requested or implied, then we must check if the origin has been previously
+  // encountered in order to remain consistent within the isolation context
+  // (BrowserContext).
+  if (!IsOptInIsolationRequested() && !IsIsolationImplied())
     return;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2751,13 +2756,24 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
 void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
     const IsolationContext& isolation_context,
     const GURL& url) {
-  // If site isolation isn't disabled and OriginAgentCluster is allowed to use
-  // process isolation, then no need to add the opt-in here; it will be handled
-  // when the origin's SiteInstance is created.
-  if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() ||
-      !IsOptInIsolationRequested()) {
-    return;
+  bool should_isolate_origin = false;
+  if (IsIsolationImplied()) {
+    // If OAC-by-default is enabled, then we can have origin-keyed agent
+    // clusters with site-keyed processes (when no header is present)
+    // alongside origin-keyed agent clusters with origin-keyed processes (when
+    // a header is present). For this case when the header is absent, try to
+    // register the origin in a site-keyed process below.
+    should_isolate_origin = true;
+  } else if (IsOptInIsolationRequested()) {
+    // If OAC-by-default is disabled and the origin requests isolation, we
+    // should only register it in a site-keyed process below if Site Isolation
+    // is disabled for OAC. Otherwise it will be handled when the origin's
+    // SiteInstance is created.
+    should_isolate_origin =
+        !SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
   }
+  if (!should_isolate_origin)
+    return;
 
   // Since site isolation is disabled, we can't rely on the newly created
   // SiteInstance to add the origin as OAC, so we do it manually here.
