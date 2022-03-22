@@ -8,6 +8,7 @@
       "third_party/blink/renderer/core/core_probe_sink.h",
       "third_party/blink/renderer/core/dom/character_data.h",
       "third_party/blink/renderer/core/dom/pseudo_element.h",
+      "third_party/blink/renderer/core/frame/csp/content_security_policy.h",
       "third_party/blink/renderer/core/html/html_slot_element.h",
       "third_party/blink/renderer/core/loader/frame_loader_types.h",
       "third_party/blink/renderer/core/page/chrome_client.h",
