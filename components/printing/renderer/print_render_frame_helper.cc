@@ -986,6 +986,9 @@ void PrepareFrameAndViewForPrint::CopySelection(
                                /*fit_to_page=*/false);
   RestoreSize();
 
+  // Save the URL before `frame_` gets reset below.
+  GURL original_url = frame()->GetDocument().Url();
+
   // Create a new WebView with the same settings as the current display one.
   // Except that we disable javascript (don't want any active content running
   // on the page).
@@ -1037,7 +1040,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
   // When loading is done this will call didStopLoading() and that will do the
   // actual printing.
   auto params = std::make_unique<blink::WebNavigationParams>();
-  params->url = GURL(url::kAboutBlankURL);
+  // Use the original URL, so relative links can stay as such.
+  params->url = original_url;
   blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
                                                  "UTF-8", std::move(html));
   navigation_control_->CommitNavigation(std::move(params),
