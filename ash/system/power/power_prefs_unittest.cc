@@ -15,7 +15,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
-#include "ash/system/hps/hps_configuration.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -23,6 +22,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chromeos/components/hps/hps_configuration.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -574,17 +574,17 @@ TEST_F(PowerPrefsTest, SetQuickDimParams) {
 
   const auto policy = power_manager_client()->policy();
   EXPECT_EQ(policy.ac_delays().quick_dim_ms(),
-            ash::GetQuickDimDelay().InMilliseconds());
+            hps::GetQuickDimDelay().InMilliseconds());
   EXPECT_EQ(policy.battery_delays().quick_dim_ms(),
-            ash::GetQuickDimDelay().InMilliseconds());
+            hps::GetQuickDimDelay().InMilliseconds());
 
   EXPECT_EQ(policy.ac_delays().quick_lock_ms(),
-            ash::GetQuickLockDelay().InMilliseconds());
+            hps::GetQuickLockDelay().InMilliseconds());
   EXPECT_EQ(policy.battery_delays().quick_lock_ms(),
-            ash::GetQuickLockDelay().InMilliseconds());
+            hps::GetQuickLockDelay().InMilliseconds());
 
   EXPECT_EQ(policy.send_feedback_if_undimmed(),
-            ash::GetQuickDimFeedbackEnabled());
+            hps::GetQuickDimFeedbackEnabled());
 
   // EnableHpsSense should be called when kPowerQuickDimEnabled becomes true.
   base::RunLoop().RunUntilIdle();

@@ -4,8 +4,8 @@
 
 #include "ash/system/power/hps_sense_controller.h"
 
-#include "ash/system/hps/hps_configuration.h"
 #include "base/bind.h"
+#include "chromeos/components/hps/hps_configuration.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -14,7 +14,7 @@ namespace {
 
 // Helper for EnableHpsSense.
 void EnableHpsSenseViaDBus() {
-  const auto config = ash::GetEnableHpsSenseConfig();
+  const auto config = hps::GetEnableHpsSenseConfig();
   if (config.has_value()) {
     chromeos::HpsDBusClient::Get()->EnableHpsSense(config.value());
   }

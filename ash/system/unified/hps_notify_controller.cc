@@ -10,7 +10,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/hps/hps_configuration.h"
 #include "ash/system/hps/hps_notify_notification_blocker.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -18,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/components/hps/hps_configuration.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -34,7 +34,7 @@ HpsNotifyController::HpsNotifyController()
     : notification_blocker_(std::make_unique<HpsNotifyNotificationBlocker>(
           message_center::MessageCenter::Get(),
           this)),
-      pos_window_(GetSnoopingProtectionPositiveWindow()) {
+      pos_window_(hps::GetSnoopingProtectionPositiveWindow()) {
   // When the controller is initialized, we are never in an active user session
   // and we never have any user preferences active. Hence, our default state
   // values are correct.
@@ -226,7 +226,7 @@ void HpsNotifyController::ReconfigureHps(State* new_state) {
     // Configure the snooping started/stopped signals that the service will
     // emit.
     const absl::optional<hps::FeatureConfig> config =
-        GetEnableHpsNotifyConfig();
+        hps::GetEnableHpsNotifyConfig();
     if (!config.has_value()) {
       LOG(ERROR) << "Couldn't parse notify configuration";
       return;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/hps/hps_configuration.h"
+#include "chromeos/components/hps/hps_configuration.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
@@ -13,7 +13,7 @@
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace hps {
 namespace {
 
 // Default minimum amount of time for which a positive snooper presence will be
@@ -188,39 +188,39 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
 
 absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig() {
   return ConstructHpsFilterConfigFromFeatureParams(
-      features::kQuickDim, GetDefaultHpsSenseFeatureConfig());
+      ash::features::kQuickDim, GetDefaultHpsSenseFeatureConfig());
 }
 
 absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig() {
   return ConstructHpsFilterConfigFromFeatureParams(
-      features::kSnoopingProtection, GetDefaultHpsNotifyFeatureConfig());
+      ash::features::kSnoopingProtection, GetDefaultHpsNotifyFeatureConfig());
 }
 
 base::TimeDelta GetQuickDimDelay() {
   const int quick_dim_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kQuickDim, "QuickDim_quick_dim_ms",
+      ash::features::kQuickDim, "QuickDim_quick_dim_ms",
       kQuickDimDelayDefault.InMilliseconds());
   return base::Milliseconds(quick_dim_ms);
 }
 
 base::TimeDelta GetQuickLockDelay() {
   const int quick_lock_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kQuickDim, "QuickDim_quick_lock_ms",
+      ash::features::kQuickDim, "QuickDim_quick_lock_ms",
       kQuickLockDelayDefault.InMilliseconds());
   return base::Milliseconds(quick_lock_ms);
 }
 
 bool GetQuickDimFeedbackEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kQuickDim, "QuickDim_send_feedback_if_undimmed",
+      ash::features::kQuickDim, "QuickDim_send_feedback_if_undimmed",
       kShouldSendFeedbackIfUndimmed);
 }
 
 base::TimeDelta GetSnoopingProtectionPositiveWindow() {
   const int pos_window_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kSnoopingProtection, "SnoopingProtection_pos_window_ms",
+      ash::features::kSnoopingProtection, "SnoopingProtection_pos_window_ms",
       kSnoopingProtectionPositiveWindowDefault.InMilliseconds());
   return base::Milliseconds(pos_window_ms);
 }
 
-}  // namespace ash
+}  // namespace hps

@@ -3052,6 +3052,7 @@ static_library("ui") {
       "//chrome/browser/web_applications",
       "//chrome/services/file_util/public/cpp",
       "//chromeos/assistant:buildflags",
+      "//chromeos/components/hps",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/onc",

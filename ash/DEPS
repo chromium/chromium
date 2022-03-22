@@ -58,6 +58,7 @@ include_rules = [
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
   "+chromeos/components/feature_usage",
+  "+chromeos/components/hps",
   "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
   "+chromeos/constants",

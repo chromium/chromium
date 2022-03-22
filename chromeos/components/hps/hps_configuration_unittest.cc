@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/hps/hps_configuration.h"
+#include "chromeos/components/hps/hps_configuration.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace hps {
 
 // Expect two protos to be equal if they are serialized into the same strings.
 MATCHER_P(ProtoEquals, expected_message, "") {
@@ -24,7 +24,7 @@ MATCHER_P(ProtoEquals, expected_message, "") {
 TEST(HpsFeatureConfigTest, EmptyParamsValid) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kQuickDim, features::kSnoopingProtection},
+      {ash::features::kQuickDim, ash::features::kSnoopingProtection},
       {} /* disabled_features */);
 
   EXPECT_EQ(GetEnableHpsSenseConfig()->filter_config_case(),
@@ -36,8 +36,8 @@ TEST(HpsFeatureConfigTest, EmptyParamsValid) {
 TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizableHpsSense) {
   const base::FieldTrialParams params = {{"QuickDim_filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({{features::kQuickDim, params}},
-                                             {});
+  feature_list.InitWithFeaturesAndParameters(
+      {{ash::features::kQuickDim, params}}, {});
 
   EXPECT_FALSE(GetEnableHpsSenseConfig().has_value());
 }
@@ -47,7 +47,7 @@ TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizableHpsNotify) {
       {"SnoopingProtection_filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kSnoopingProtection, params}}, {});
+      {{ash::features::kSnoopingProtection, params}}, {});
 
   EXPECT_FALSE(GetEnableHpsNotifyConfig().has_value());
 }
@@ -56,8 +56,8 @@ TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsSense) {
   const std::map<std::string, std::string> params = {
       {"QuickDim_filter_config_case", "1"}};
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({{features::kQuickDim, params}},
-                                             {});
+  feature_list.InitWithFeaturesAndParameters(
+      {{ash::features::kQuickDim, params}}, {});
 
   hps::FeatureConfig expected_config;
   expected_config.mutable_basic_filter_config();
@@ -70,7 +70,7 @@ TEST(HpsFeatureConfigTest, VerifyBasicFilterConfigHpsNotify) {
       {"SnoopingProtection_filter_config_case", "1"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kSnoopingProtection, params}}, {});
+      {{ash::features::kSnoopingProtection, params}}, {});
 
   hps::FeatureConfig expected_config;
   expected_config.mutable_basic_filter_config();
@@ -88,8 +88,8 @@ TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsSense) {
       {"QuickDim_negative_score_threshold", "6"},
   };
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({{features::kQuickDim, params}},
-                                             {});
+  feature_list.InitWithFeaturesAndParameters(
+      {{ash::features::kQuickDim, params}}, {});
 
   hps::FeatureConfig expected_config;
   auto& consecutive_results_filter_config =
@@ -115,7 +115,7 @@ TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfigHpsNotify) {
   };
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kSnoopingProtection, params}}, {});
+      {{ash::features::kSnoopingProtection, params}}, {});
 
   hps::FeatureConfig expected_config;
   auto& consecutive_results_filter_config =
@@ -138,8 +138,8 @@ TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsSense) {
       {"QuickDim_negative_score_threshold", "6"},
       {"QuickDim_default_uncertain_score", "7"}};
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({{features::kQuickDim, params}},
-                                             {});
+  feature_list.InitWithFeaturesAndParameters(
+      {{ash::features::kQuickDim, params}}, {});
 
   hps::FeatureConfig expected_config;
   auto& average_filter_config =
@@ -162,7 +162,7 @@ TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsNotify) {
       {"SnoopingProtection_default_uncertain_score", "7"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kSnoopingProtection, params}}, {});
+      {{ash::features::kSnoopingProtection, params}}, {});
 
   hps::FeatureConfig expected_config;
   auto& average_filter_config =
@@ -176,4 +176,4 @@ TEST(HpsFeatureConfigTest, VerifyAverageFilterConfigHpsNotify) {
   EXPECT_THAT(*hps_notify_config, ProtoEquals(expected_config));
 }
 
-}  // namespace ash
+}  // namespace hps

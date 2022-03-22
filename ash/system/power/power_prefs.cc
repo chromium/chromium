@@ -11,12 +11,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/hps/hps_configuration.h"
 #include "ash/system/power/hps_sense_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
+#include "chromeos/components/hps/hps_configuration.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -313,14 +313,14 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   if (hps_sense_controller_) {
     if (prefs->GetBoolean(prefs::kPowerQuickDimEnabled)) {
       values.battery_quick_dim_delay_ms =
-          ash::GetQuickDimDelay().InMilliseconds();
-      values.ac_quick_dim_delay_ms = ash::GetQuickDimDelay().InMilliseconds();
+          hps::GetQuickDimDelay().InMilliseconds();
+      values.ac_quick_dim_delay_ms = hps::GetQuickDimDelay().InMilliseconds();
 
       values.battery_quick_lock_delay_ms =
-          ash::GetQuickLockDelay().InMilliseconds();
-      values.ac_quick_lock_delay_ms = ash::GetQuickLockDelay().InMilliseconds();
+          hps::GetQuickLockDelay().InMilliseconds();
+      values.ac_quick_lock_delay_ms = hps::GetQuickLockDelay().InMilliseconds();
 
-      values.send_feedback_if_undimmed = ash::GetQuickDimFeedbackEnabled();
+      values.send_feedback_if_undimmed = hps::GetQuickDimFeedbackEnabled();
 
       hps_sense_controller_->EnableHpsSense();
     } else {
