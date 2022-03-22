@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 
-#include "base/base64.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
@@ -14,8 +13,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 
 namespace borealis {
-
-const char kBorealisUninstallPrefix[] = "Oi8vdW5pbnN0YWxsLw==";
 
 BorealisAppUninstaller::BorealisAppUninstaller(Profile* profile)
     : profile_(profile) {}
@@ -53,7 +50,6 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     std::move(callback).Run(UninstallResult::kError);
     return;
   }
-  // TODO(174282035): Changeup string usage and finish tests.
   absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
           ->GetRegistration(kClientAppId);
@@ -62,14 +58,8 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     std::move(callback).Run(UninstallResult::kError);
     return;
   }
-  std::string prefix;
-  if (!base::Base64Decode(kBorealisUninstallPrefix, &prefix)) {
-    LOG(ERROR) << "Couldn't decode the Borealis uninstall prefix";
-    std::move(callback).Run(UninstallResult::kError);
-    return;
-  }
-  std::string uninstall_string = main_app->DesktopFileId() + prefix +
-                                 base::NumberToString(*uninstall_app_id);
+  std::string uninstall_string =
+      "steam://uninstall/" + base::NumberToString(*uninstall_app_id);
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
       kClientAppId, {uninstall_string},
       base::BindOnce(

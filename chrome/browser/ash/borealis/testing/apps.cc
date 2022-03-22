@@ -36,9 +36,7 @@ std::string FakeAppId(std::string desktop_file_id) {
 }
 
 void CreateFakeMainApp(Profile* profile) {
-  std::string desktop_file_id;
-  ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
-  CreateFakeApp(profile, std::move(desktop_file_id), {});
+  CreateFakeApp(profile, "steam", {});
 }
 
 }  // namespace borealis

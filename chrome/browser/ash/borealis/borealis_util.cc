@@ -29,11 +29,9 @@ const char kInstallerAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
 const char kClientAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
 const char kIgnoredAppIdPrefix[] = "org.chromium.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
-const char kAllowedScheme[] = "c3RlYW0=";
-const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
-// TODO(b/174282035): Potentially update regex when other strings
-// are updated.
-const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
+const char kAllowedScheme[] = "steam";
+const base::StringPiece kURLAllowlist[] = {"//store/", "//run/"};
+const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
 const char kProtonVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 
@@ -169,21 +167,11 @@ void FeedbackFormUrl(Profile* const profile,
 }
 
 bool IsExternalURLAllowed(const GURL& url) {
-  std::string decoded_scheme;
-  if (!base::Base64Decode(kAllowedScheme, &decoded_scheme)) {
-    LOG(ERROR) << "Failed to decode allowed scheme (" << kAllowedScheme << ")";
-    return false;
-  }
-  if (url.scheme() != decoded_scheme) {
+  if (url.scheme() != kAllowedScheme) {
     return false;
   }
   for (auto& allowed_url : kURLAllowlist) {
-    std::string decoded_url;
-    if (!base::Base64Decode(allowed_url, &decoded_url)) {
-      LOG(ERROR) << "Failed to decode allowed url (" << allowed_url << ")";
-      continue;
-    }
-    if (base::StartsWith(url.GetContent(), decoded_url)) {
+    if (base::StartsWith(url.GetContent(), allowed_url)) {
       return true;
     }
   }
@@ -266,7 +254,6 @@ void OnGetDlcState(base::OnceCallback<void(const std::string& path)> callback,
     LOG(ERROR) << "Borealis dlc is not installed";
     return;
   }
-  // std::string path = dlc_state.root_path().get*;
   std::move(callback).Run(dlc_state.root_path());
 }
 

@@ -47,10 +47,7 @@ class BorealisWindowManagerTest : public ChromeAshTestBase {
   }
 
   std::string GetBorealisClientId() {
-    std::string borealis_client_suffix;
-    EXPECT_TRUE(
-        base::Base64Decode(kBorealisClientSuffix, &borealis_client_suffix));
-    return std::string(kBorealisWindowPrefix) + borealis_client_suffix;
+    return std::string(kBorealisWindowPrefix) + kBorealisClientSuffix;
   }
 
  private:
@@ -74,7 +71,7 @@ TEST_F(BorealisWindowManagerTest, BorealisWindowHasCorrectId) {
   BorealisWindowManager window_manager(profile());
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.xprop.456789");
-  CreateFakeApp(profile(), "some_app", "borealis/456789");
+  CreateFakeApp(profile(), "some_app", "steam://rungameid/456789");
   EXPECT_EQ(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
 }
 
@@ -82,7 +79,7 @@ TEST_F(BorealisWindowManagerTest, MismatchedWindowHasDifferentId) {
   BorealisWindowManager window_manager(profile());
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.xprop.2468");
-  CreateFakeApp(profile(), "some_app", "borealis/456789");
+  CreateFakeApp(profile(), "some_app", "steam://rungameid/456789");
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
 }
 
@@ -261,11 +258,8 @@ TEST_F(BorealisWindowManagerTest, DontMinimizeWhenActiveWindowIsNotFullscreen) {
 
 TEST_F(BorealisWindowManagerTest,
        DontMinimizeWhenActiveWindowIsBorealisClient) {
-  std::string fullscreen_client_id;
-  EXPECT_TRUE(
-      base::Base64Decode(kFullscreenClientShellId, &fullscreen_client_id));
   std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest(fullscreen_client_id);
+      SetupMinimizeTest(kFullscreenClientShellId);
 
   std::string new_window_id = GetBorealisClientId();
 

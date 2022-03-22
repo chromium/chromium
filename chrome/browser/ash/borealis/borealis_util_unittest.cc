@@ -42,7 +42,7 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
-  EXPECT_EQ(GetBorealisAppId("borealis/123").value(), 123);
+  EXPECT_EQ(GetBorealisAppId("steam://rungameid/123").value(), 123);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {

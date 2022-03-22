@@ -152,11 +152,8 @@ TEST_F(BorealisContextTest, ChunneldFailure) {
 
 TEST_F(BorealisContextTest, MainAppHasSelfActivationPermission) {
   CreateFakeMainApp(profile_.get());
-  std::string window_name;
-  ASSERT_TRUE(base::Base64Decode(
-      "b3JnLmNocm9taXVtLmJvcmVhbGlzLndtY2xhc3MuU3RlYW0=", &window_name));
-  std::unique_ptr<ScopedTestWindow> window =
-      MakeAndTrackWindow(window_name, borealis_window_manager_.get());
+  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
+      "org.chromium.borealis.wmclass.Steam", borealis_window_manager_.get());
   EXPECT_TRUE(exo::HasPermissionToActivate(window->window()));
 }
 

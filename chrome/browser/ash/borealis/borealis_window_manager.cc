@@ -28,9 +28,8 @@
 namespace borealis {
 
 const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
-const char kFullscreenClientShellId[] =
-    "b3JnLmNocm9taXVtLmJvcmVhbGlzLndtY2xhc3Muc3RlYW0=";
-const char kBorealisClientSuffix[] = "d21jbGFzcy5TdGVhbQ==";
+const char kFullscreenClientShellId[] = "org.chromium.borealis.wmclass.steam";
+const char kBorealisClientSuffix[] = "wmclass.Steam";
 
 namespace {
 // Anonymous apps do not have a CrOS-standard app_id (i.e. one registered with
@@ -114,10 +113,8 @@ bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
 bool BorealisWindowManager::ShouldNewWindowBeMinimized(
     const std::string& window_id) {
   // Only borealis client windows should be minimized.
-  std::string client_suffix;
-  if (!base::Base64Decode(borealis::kBorealisClientSuffix, &client_suffix))
-    return false;
-  if (!base::EndsWith(window_id, client_suffix, base::CompareCase::SENSITIVE)) {
+  if (!base::EndsWith(window_id, borealis::kBorealisClientSuffix,
+                      base::CompareCase::SENSITIVE)) {
     return false;
   }
 
@@ -137,12 +134,7 @@ bool BorealisWindowManager::ShouldNewWindowBeMinimized(
 
   // If the fullscreen window is the borealis client, then we allow windows to
   // take focus.
-  std::string fullscreen_client_id;
-  if (!base::Base64Decode(borealis::kFullscreenClientShellId,
-                          &fullscreen_client_id))
-    return false;
-
-  if (*active_window_id == fullscreen_client_id)
+  if (*active_window_id == borealis::kFullscreenClientShellId)
     return false;
 
   return true;

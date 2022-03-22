@@ -241,7 +241,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
            true /* should_notify_initialized */);
 
     borealis::CreateFakeApp(testing_profile_.get(), "borealistest",
-                            "borealis/123");
+                            "steam://rungameid/123");
     std::string borealis_app(borealis::FakeAppId("borealistest"));
     AddApp(cache, /*app_id=*/borealis_app.c_str(), AppType::kBorealis, "",
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,

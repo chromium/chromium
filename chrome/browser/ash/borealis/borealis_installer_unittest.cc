@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"

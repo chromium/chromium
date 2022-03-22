@@ -95,21 +95,15 @@ class GuestOsExternalProtocolHandlerBorealisTest
 
     allow_borealis_ = std::make_unique<borealis::ScopedAllowBorealis>(
         profile(), /*also_enable=*/true);
-    SetupBorealisApp(&borealis_scheme_, &borealis_url_);
+    SetupBorealisApp();
   }
 
  protected:
-  void SetupBorealisApp(std::string* borealis_scheme_output,
-                        std::string* borealis_url_output) {
+  void SetupBorealisApp() {
     app_list().set_vm_type(vm_tools::apps::ApplicationList::BOREALIS);
-    CHECK(base::Base64Decode(borealis::kAllowedScheme, borealis_scheme_output));
-    CHECK(base::Base64Decode(borealis::kURLAllowlist[0], borealis_url_output));
-    AddApp("id", "x-scheme-handler/" + *borealis_scheme_output);
+    AddApp("id", std::string("x-scheme-handler/") + borealis::kAllowedScheme);
     GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
   }
-
-  std::string borealis_scheme_;
-  std::string borealis_url_;
 
  private:
   std::unique_ptr<borealis::ScopedAllowBorealis> allow_borealis_;
@@ -117,13 +111,17 @@ class GuestOsExternalProtocolHandlerBorealisTest
 
 TEST_F(GuestOsExternalProtocolHandlerBorealisTest, AllowedURL) {
   EXPECT_TRUE(guest_os::GetHandler(
-      profile(), GURL(borealis_scheme_ + ":" + borealis_url_ + "9001")));
+      profile(),
+      GURL(borealis::kAllowedScheme + std::string(":") +
+           std::string(borealis::kURLAllowlist[0]) + std::string("9001"))));
 }
 
 TEST_F(GuestOsExternalProtocolHandlerBorealisTest, DisallowedURL) {
   EXPECT_FALSE(guest_os::GetHandler(
-      profile(), GURL("notborealisscheme:" + borealis_url_)));
+      profile(), GURL(std::string("notborealisscheme:") +
+                      std::string(borealis::kURLAllowlist[0]))));
   EXPECT_FALSE(guest_os::GetHandler(
-      profile(), GURL(borealis_scheme_ + ":notborealis/url")));
+      profile(),
+      GURL(borealis::kAllowedScheme + std::string(":notborealis/url"))));
 }
 }  // namespace guest_os
