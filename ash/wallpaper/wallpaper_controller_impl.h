@@ -111,6 +111,11 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kOnlineWallpaperTypeNodeName[];
   static const char kOnlineWallpaperUrlNodeName[];
 
+  static std::unique_ptr<WallpaperControllerImpl> Create(
+      PrefService* local_state);
+
+  // Prefer to use to obtain an new instance unless injecting non-production
+  // members i.e. in tests.
   explicit WallpaperControllerImpl(PrefService* local_state);
 
   WallpaperControllerImpl(const WallpaperControllerImpl&) = delete;

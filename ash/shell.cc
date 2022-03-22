@@ -1046,8 +1046,7 @@ void Shell::Init(
   // Shelf, and WallPaper could be created by the factory.
   views::FocusManagerFactory::Install(new AshFocusManagerFactory);
 
-  wallpaper_controller_ =
-      std::make_unique<WallpaperControllerImpl>(local_state_);
+  wallpaper_controller_ = WallpaperControllerImpl::Create(local_state_);
 
   window_positioner_ = std::make_unique<WindowPositioner>();
 

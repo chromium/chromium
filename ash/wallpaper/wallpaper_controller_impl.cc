@@ -718,6 +718,12 @@ const char WallpaperControllerImpl::kOnlineWallpaperTypeNodeName[] =
     "online_image_type";
 const char WallpaperControllerImpl::kOnlineWallpaperUrlNodeName[] = "url";
 
+// static
+std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
+    PrefService* local_state) {
+  return std::make_unique<WallpaperControllerImpl>(local_state);
+}
+
 WallpaperControllerImpl::WallpaperControllerImpl(PrefService* local_state)
     : color_profiles_(GetProminentColorProfiles()),
       wallpaper_reload_delay_(kWallpaperReloadDelay),
