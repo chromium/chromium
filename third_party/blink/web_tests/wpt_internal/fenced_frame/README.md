@@ -92,6 +92,10 @@ Some tips to keep in mind while writing tests using remote execution:
     ```
     attachIFrameContext({attributes: [["csp", "frame-src 'self'"]]})
     ```
+  * Origin of the url to allow cross-origin test. For example:
+    ```
+    attachIFrameContext({origin:get_host_info().HTTPS_REMOTE_ORIGIN})
+    ```
 * There is also a helper `attachIFrameContext()`, which does the same thing
   but for iframes instead of fencedframes.
 * Make sure to `await` the result of an `execute` call, even if it doesn't
