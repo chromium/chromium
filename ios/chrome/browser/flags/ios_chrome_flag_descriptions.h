@@ -72,6 +72,11 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag to enable the rich iph experiment on
+// bubble views.
+extern const char kBubbleRichIPHName[];
+extern const char kBubbleRichIPHDescription[];
+
 // Title and description for the flag that moves the Content Suggestions header
 // to the Discover feed ScrollView.
 extern const char kContentSuggestionsHeaderMigrationName[];

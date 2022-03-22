@@ -84,6 +84,11 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
+extern const char kBubbleRichIPHName[] = "Bubble rich IPH";
+extern const char kBubbleRichIPHDescription[] =
+    "When enabled, displays a rich description (ex: title, image, etc..) of "
+    "the feature presented in the bubble view.";
+
 const char kContentSuggestionsHeaderMigrationName[] =
     "Content Suggestions header migration";
 const char kContentSuggestionsHeaderMigrationDescription[] =

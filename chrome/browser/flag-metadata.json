@@ -648,6 +648,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "bubble-rich-iph",
+    "owners": ["christianxu", "lpromero", "bling-flags@google.com"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 95
