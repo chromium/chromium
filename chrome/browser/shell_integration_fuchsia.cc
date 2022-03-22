@@ -31,12 +31,14 @@ std::u16string GetApplicationNameForProtocol(const GURL& url) {
 }
 
 DefaultWebClientState GetDefaultBrowser() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return DefaultWebClientState::UNKNOWN_DEFAULT;
+  // TODO(crbug.com/1226243): Chromium is effectively the default until Fuchsia
+  // implements a picker.
+  return DefaultWebClientState::IS_DEFAULT;
 }
 
 bool IsFirefoxDefaultBrowser() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // TODO(crbug.com/1226243): Chromium is effectively the default until Fuchsia
+  // implements a picker.
   return false;
 }
 
