@@ -889,7 +889,9 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 
 // Test that the certificateProvider events are delivered correctly in the
 // scenario when the event listener is in a lazy background page that gets idle.
-IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
+// Disabled due to flakiness - https://crbug.com/1279724
+IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest,
+                       DISABLED_LazyBackgroundPage) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   // Make extension background pages idle immediately.
   extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
