@@ -131,7 +131,8 @@ class DTraceParser:
       if not line_content:
         continue
       if next_line.strip():
-        if re.search('\+0x', line_content):
+        if re.search('\+0x', line_content) and len(
+            line_content.split('`')) == 2:
           module, line_content = line_content.split('`', 1)
           [function, offset] = line_content.split('+0x')
         else:
