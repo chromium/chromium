@@ -5,14 +5,14 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleRegistry, ModulesElement, ModuleWrapperElement} from 'chrome://new-tab-page/lazy_load.js';
-import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
-import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../test_support.js';
+import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
   let handler: TestBrowserProxy;
@@ -93,10 +93,39 @@ suite('NewTabPageModulesModulesTest', () => {
     });
   });
 
+  suite('modules first run experience', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesFirstRunExperienceEnabled: true,
+      });
+    });
+
+    test(`clicking customize chrome link sends event`, async () => {
+      // Arrange.
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+      const modulesElement = await createModulesElement([
+        {
+          descriptor: fooDescriptor,
+          element: createElement(),
+        },
+      ]);
+      const customizeModule = capture(modulesElement, 'customize-module');
+      render(modulesElement);
+
+      // Act
+      $$<HTMLElement>(modulesElement, '#customizeChromeLink')!.click();
+
+      // Assert.
+      assertTrue(customizeModule.received);
+    });
+  });
+
   suite('modules redesigned layout', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesRedesignedLayoutEnabled: true,
+        modulesFirstRunExperienceEnabled: false,
       });
     });
 
@@ -466,6 +495,7 @@ suite('NewTabPageModulesModulesTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesDragAndDropEnabled: true,
+        modulesFirstRunExperienceEnabled: false,
       });
     });
 

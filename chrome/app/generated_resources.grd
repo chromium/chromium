@@ -6427,7 +6427,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Pick cards that keep you updated on things that matter to you
       </message>
       <message name="IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_2" desc="Line 2 of Modular NTP Desktop v1 First Run Experience's body.">
-        See all card options in Customize Chrome
+        See all card options in <ph name="BEGIN_LINK">&lt;a is="action-link" id="customizeChromeLink" on-click="onCustomizeModuleFre_"&gt;</ph>Customize Chrome<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_IN_BUTTON" desc="Opt in button for Modular NTP Desktop v1 First Run Experience.">
         Got it

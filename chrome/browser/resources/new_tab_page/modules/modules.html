@@ -47,6 +47,11 @@
     line-height: 20px;
   }
 
+  #customizeChromeLink {
+    color: var(--cr-link-color);
+    cursor: pointer;
+  }
+
   .action-button {
     margin-inline-end: 8px;
     margin-top: 18px;
@@ -101,7 +106,7 @@
         $i18n{modulesFirstRunExperienceBodyLine1}
       </div>
       <div class="first-run-experience-body">
-        $i18n{modulesFirstRunExperienceBodyLine2}
+        $i18nRaw{modulesFirstRunExperienceBodyLine2}
       </div>
       <cr-button class="action-button">
         $i18n{modulesFirstRunOptInButton}

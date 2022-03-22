@@ -5,19 +5,10 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ModuleHeaderElement} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, DomIf} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-function render(element: HTMLElement) {
-  element.shadowRoot!.querySelectorAll<DomIf>('dom-if').forEach(
-      tmpl => tmpl.render());
-}
-
-function capture(target: HTMLElement, event: string): {received: boolean} {
-  const capture = {received: false};
-  target.addEventListener(event, () => capture.received = true);
-  return capture;
-}
+import {capture, render} from '../test_support.js';
 
 suite('NewTabPageModulesModuleHeaderTest', () => {
   let moduleHeader: ModuleHeaderElement;

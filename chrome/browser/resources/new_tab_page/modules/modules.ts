@@ -364,6 +364,11 @@ export class ModulesElement extends PolymerElement {
     this.appendModuleContainers_(moduleContainers);
   }
 
+  private onCustomizeModuleFre_() {
+    this.dispatchEvent(
+        new Event('customize-module', {bubbles: true, composed: true}));
+  }
+
   /**
    * Module is dragged by updating the module position based on the
    * position of the pointer.
