@@ -9,7 +9,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {recordSettingChange} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.js';
-import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';

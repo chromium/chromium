@@ -14,7 +14,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {routes} from '../os_route.js';
-import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.js';
 
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
 

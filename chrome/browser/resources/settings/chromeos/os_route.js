@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {Route, Router} from '../router.js';
 
-import {OsSettingsRoutes} from './os_settings_routes.m.js';
+import {OsSettingsRoutes} from './os_settings_routes.js';
 
 /**
  * @param {!Route} parent

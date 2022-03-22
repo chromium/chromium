@@ -259,7 +259,7 @@ preprocess_if_expr("preprocess_v3") {
   in_files = [
     "chromeos/deep_linking_behavior.js",
     "chromeos/metrics_recorder.m.js",
-    "chromeos/os_settings_routes.m.js",
+    "chromeos/os_settings_routes.js",
     "chromeos/route_origin_behavior.js",
     "chromeos/search_handler.js",
     "chromeos/os_route.js",
@@ -733,7 +733,6 @@ js_library("os_settings_icons_css") {
 }
 
 js_library("os_settings_routes") {
-  sources = [ "os_settings_routes.m.js" ]
   deps = [
     "..:router",
     "//ui/webui/resources/js:load_time_data.m",

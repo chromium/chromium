@@ -15,7 +15,7 @@ import {Route} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.js';
-import {OsSettingsRoutes} from '../os_settings_routes.m.js';
+import {OsSettingsRoutes} from '../os_settings_routes.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
