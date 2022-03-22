@@ -114,6 +114,10 @@ EcheTray::~EcheTray() {
     bubble_->bubble_view()->ResetDelegate();
 }
 
+bool EcheTray::IsInitialized() const {
+  return GetBubbleWidget() != nullptr;
+}
+
 void EcheTray::ClickedOutsideBubble() {
   //  Do nothing
 }
@@ -207,8 +211,8 @@ void EcheTray::OnLockStateChanged(bool locked) {
 }
 
 void EcheTray::SetUrl(const GURL& url) {
-  if (url_ != url)
-    PurgeAndClose();
+  if (web_view_ && url_ != url)
+    web_view_->Navigate(url);
   url_ = url;
 }
 

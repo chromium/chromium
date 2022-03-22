@@ -102,14 +102,26 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
 
 TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const int64_t user_id = 1;
-  const char16_t visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
+  const char16_t visible_name_1[] = u"Fake App 1";
+  const char package_name_1[] = "com.fakeapp1";
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, gfx::Image());
+      GetProfile(), /*notification_id=*/absl::nullopt, package_name_1,
+      visible_name_1, user_id, gfx::Image());
+  // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche tray should be visible after launch.
   EXPECT_TRUE(eche_tray()->is_active());
+
+  // Launch different application should not recreate widget
+  views::Widget* widget = eche_tray()->GetBubbleWidget();
+  const char16_t visible_name_2[] = u"Fake App 2";
+  const char package_name_2[] = "com.fakeapp2";
+  EcheAppManagerFactory::LaunchEcheApp(
+      GetProfile(), /*notification_id=*/absl::nullopt, package_name_2,
+      visible_name_2, user_id, gfx::Image());
+  // Wait for Eche Tray to load Eche Web to complete
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(widget, eche_tray()->GetBubbleWidget());
 }
 
 TEST_F(EcheAppManagerFactoryTest, CloseEche) {
@@ -120,8 +132,9 @@ TEST_F(EcheAppManagerFactoryTest, CloseEche) {
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
       visible_name, user_id, gfx::Image());
   EcheAppManagerFactory::CloseEche(GetProfile());
+  // Wait for Eche Web to close
   base::RunLoop().RunUntilIdle();
-  // Eche tray should be visible after close.
+  // Eche tray should not be visible after close.
   EXPECT_FALSE(eche_tray()->is_active());
 }
 
@@ -136,12 +149,14 @@ TEST_F(EcheAppManagerFactoryTest, OnStreamStateChanged) {
   // Eche tray should be visible when streaming is active
   EcheAppManagerFactory::OnStreamStateChanged(
       GetProfile(), mojom::StreamStatus::kStreamStatusStarted);
+  // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(eche_tray()->is_active());
 
   // Eche tray should not be visible when streaming is finished
   EcheAppManagerFactory::OnStreamStateChanged(
       GetProfile(), mojom::StreamStatus::kStreamStatusStopped);
+  // Wait for Eche Web to close
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(eche_tray()->is_active());
 }
@@ -153,6 +168,7 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
       visible_name, user_id, gfx::Image());
+  // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche tray should be visible when streaming is active, not ative when
   // launch.
@@ -170,12 +186,14 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, OnStreamStateChanged) {
   // Eche tray should be visible when streaming is active
   EcheAppManagerFactory::OnStreamStateChanged(
       GetProfile(), mojom::StreamStatus::kStreamStatusStarted);
+  // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(eche_tray()->is_active());
 
   // Eche tray should not be visible when streaming is finished
   EcheAppManagerFactory::OnStreamStateChanged(
       GetProfile(), mojom::StreamStatus::kStreamStatusStopped);
+  // Wait for Eche Web to close
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(eche_tray()->is_active());
 }

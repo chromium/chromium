@@ -75,18 +75,16 @@ enum class NotificationInteraction {
 void LaunchBubble(const GURL& url, const gfx::Image& icon) {
   auto* eche_tray = GetEcheTray();
   DCHECK(eche_tray);
-  if (eche_tray) {
-    eche_tray->SetUrl(url);
-    eche_tray->SetIcon(icon);
-    eche_tray->SetVisiblePreferred(true);
-    if (!features::IsEcheSWAInBackgroundEnabled()) {
-      eche_tray->ShowBubble();
-    } else {
-      eche_tray->InitBubble();
+  eche_tray->SetUrl(url);
+  eche_tray->SetIcon(icon);
+  eche_tray->SetVisiblePreferred(true);
+  if (!features::IsEcheSWAInBackgroundEnabled() || eche_tray->IsInitialized()) {
+    eche_tray->ShowBubble();
+  } else {
+    eche_tray->InitBubble();
 
-      // Hide bubble first until the streaming is ready.
-      eche_tray->HideBubble();
-    }
+    // Hide bubble first until the streaming is ready.
+    eche_tray->HideBubble();
   }
 }
 

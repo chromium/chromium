@@ -52,6 +52,8 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   EcheTray& operator=(const EcheTray&) = delete;
   ~EcheTray() override;
 
+  bool IsInitialized() const;
+
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   std::u16string GetAccessibleNameForTray() override;
