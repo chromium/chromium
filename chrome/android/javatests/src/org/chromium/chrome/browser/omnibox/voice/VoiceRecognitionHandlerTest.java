@@ -671,6 +671,7 @@ public class VoiceRecognitionHandlerTest {
             setAudioCapturePref(true);
             mHandler.removeObserver(mObserver);
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
+            mHandler.setIsVoiceSearchEnabledCacheForTesting(null);
             mWindowAndroid.destroy();
         });
     }

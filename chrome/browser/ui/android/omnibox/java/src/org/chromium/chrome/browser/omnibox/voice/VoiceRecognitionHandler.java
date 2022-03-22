@@ -17,6 +17,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CallbackController;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
@@ -157,6 +159,8 @@ public class VoiceRecognitionHandler {
     private final Runnable mLaunchAssistanceSettingsAction;
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Profile> mProfileSupplier;
+    private Boolean mIsVoiceSearchEnabledCached;
+    private boolean mRegisteredActivityStateListener;
 
     /**
      * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
@@ -1013,8 +1017,27 @@ public class VoiceRecognitionHandler {
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
         if (windowAndroid == null) return false;
         if (windowAndroid.getActivity().get() == null) return false;
-        if (!VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid)) return false;
-        return true;
+        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(false)) return false;
+
+        if (mIsVoiceSearchEnabledCached == null) {
+            mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid);
+
+            // isVoiceSearchEnabled depends on whether or not the user gives permissions to
+            // record audio. This permission can be changed either when we display a UI prompt
+            // to request permissions, or when the permissions are changed in Android settings.
+            // In both scenarios, the state of the application will change to being paused before
+            // the permission is changed, so we invalidate the cache here.
+            if (!mRegisteredActivityStateListener) {
+                ApplicationStatus.registerApplicationStateListener(newState -> {
+                    if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
+                        mIsVoiceSearchEnabledCached = null;
+                    }
+                });
+                mRegisteredActivityStateListener = true;
+            }
+        }
+
+        return mIsVoiceSearchEnabledCached;
     }
 
     /** Start tracking query duration by capturing when it started */
@@ -1256,6 +1279,11 @@ public class VoiceRecognitionHandler {
     /*package*/ static void setIsRecognitionIntentPresentForTesting(
             Boolean isRecognitionIntentPresent) {
         sIsRecognitionIntentPresentForTesting = isRecognitionIntentPresent;
+    }
+
+    @VisibleForTesting
+    protected void setIsVoiceSearchEnabledCacheForTesting(Boolean value) {
+        mIsVoiceSearchEnabledCached = value;
     }
 
     /** Sets the start time for testing. */
