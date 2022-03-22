@@ -1458,6 +1458,18 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     infobar_container_->ChangeInfoBarManager(nullptr);
     app_banner_manager_observation_.Reset();
     UpdateDevToolsForContents(nullptr, true);
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    // We must ensure that we propagate an update to the side search controller
+    // so that it removes the now detached tab WebContents from the side panel's
+    // WebView. This is necessary as BrowserView::OnActiveTabChanged() will fire
+    // for the destination window before the source window is destroyed during a
+    // tab dragging operation which could lead to the dragged WebContents being
+    // added to the destination panel's WebView before it is removed from the
+    // source panel's WebView. Failing to so so can lead to visual artifacts
+    // (see crbug.com/1306793).
+    if (side_search_controller_)
+      side_search_controller_->UpdateSidePanelForContents(contents, nullptr);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
   }
 }
 
