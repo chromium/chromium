@@ -21,6 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -249,6 +251,12 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     private static void setWidgetComponentEnabled(
             @NonNull Class<? extends QuickActionSearchWidgetProvider> component,
             boolean shouldEnableWidgetComponent) {
+        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
+            // Make the Widget available to all Chrome users who participated in an experiment in
+            // the past. This can trigger disk access. Unfortunately, we need to keep it for a
+            // little bit longer -- see: https://crbug.com/1309116
+            setWidgetEnabled(true, true);
+        });
         // The initialization must be performed on a background thread because the following logic
         // can trigger disk access. The PostTask in ProcessInitializationHandler can be removed once
         // the experimentation phase is over.
