@@ -35,7 +35,100 @@ constexpr const char* kBatteryDischargeModeHistogramName =
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 
+// A trace event is emitted when CPU usage exceeds the 95th percentile.
+// Canary 7 day aggregation ending on March 15th 2022 from "PerformanceMonitor
+// .ResourceCoalition.CPUTime2_10sec.*"
+const PowerMetricsReporter::ScenarioParams kVideoCaptureParams = {
+    .histogram_suffix = ".VideoCapture",
+    .short_interval_cpu_threshold = 1.8949,
+    .trace_event_title = "High CPU - Video Capture",
+};
+
+const PowerMetricsReporter::ScenarioParams kFullscreenVideoParams = {
+    .histogram_suffix = ".FullscreenVideo",
+    .short_interval_cpu_threshold = 1.4513,
+    .trace_event_title = "High CPU - Fullscreen Video",
+};
+
+const PowerMetricsReporter::ScenarioParams kEmbeddedVideoNoNavigationParams = {
+    .histogram_suffix = ".EmbeddedVideo_NoNavigation",
+    .short_interval_cpu_threshold = 1.5436,
+    .trace_event_title = "High CPU - Embedded Video No Navigation",
+};
+
+const PowerMetricsReporter::ScenarioParams kEmbeddedVideoWithNavigationParams =
+    {
+        .histogram_suffix = ".EmbeddedVideo_WithNavigation",
+        .short_interval_cpu_threshold = 1.9999,
+        .trace_event_title = "High CPU - Embedded Video With Navigation",
+};
+
+const PowerMetricsReporter::ScenarioParams kAudioParams = {
+    .histogram_suffix = ".Audio",
+    .short_interval_cpu_threshold = 1.5110,
+    .trace_event_title = "High CPU - Audio",
+};
+
+const PowerMetricsReporter::ScenarioParams kNavigationParams = {
+    .histogram_suffix = ".Navigation",
+    .short_interval_cpu_threshold = 1.9999,
+    .trace_event_title = "High CPU - Navigation",
+};
+
+const PowerMetricsReporter::ScenarioParams kInteractionParams = {
+    .histogram_suffix = ".Interaction",
+    .short_interval_cpu_threshold = 1.2221,
+    .trace_event_title = "High CPU - Interaction",
+};
+
+const PowerMetricsReporter::ScenarioParams kPassiveParams = {
+    .histogram_suffix = ".Passive",
+    .short_interval_cpu_threshold = 0.4736,
+    .trace_event_title = "High CPU - Passive",
+};
+
 #if BUILDFLAG(IS_MAC)
+const PowerMetricsReporter::ScenarioParams
+    kAllTabsHiddenNoVideoCaptureOrAudioParams = {
+        .histogram_suffix = ".AllTabsHidden_NoVideoCaptureOrAudio",
+        .short_interval_cpu_threshold = 0.2095,
+        .trace_event_title =
+            "High CPU - All Tabs Hidden, No Video Capture or Audio",
+};
+
+const PowerMetricsReporter::ScenarioParams
+    kAllTabsHiddenNoVideoCaptureOrAudioRecentParams = {
+        .histogram_suffix = ".AllTabsHidden_NoVideoCaptureOrAudio_Recent",
+        .short_interval_cpu_threshold = 0.3302,
+        .trace_event_title =
+            "High CPU - All Tabs Hidden, No Video Capture or Audio (Recent)",
+};
+
+const PowerMetricsReporter::ScenarioParams kAllTabsHiddenNoAudioParams = {
+    .histogram_suffix = ".AllTabsHidden_Audio",
+    .short_interval_cpu_threshold = 0.7036,
+    .trace_event_title = "High CPU - All Tabs Hidden, No Audio",
+};
+
+const PowerMetricsReporter::ScenarioParams kAllTabsHiddenNoVideoCapture = {
+    .histogram_suffix = ".AllTabsHidden_VideoCapture",
+    .short_interval_cpu_threshold = 0.8679,
+    .trace_event_title = "High CPU - All Tabs Hidden, Video Capture",
+};
+
+const PowerMetricsReporter::ScenarioParams kAllTabsHiddenZeroWindowParams = {
+    .histogram_suffix = ".ZeroWindow",
+    .short_interval_cpu_threshold = 0.0500,
+    .trace_event_title = "High CPU - Zero Window",
+};
+
+const PowerMetricsReporter::ScenarioParams
+    kAllTabsHiddenZeroWindowRecentParams = {
+        .histogram_suffix = ".ZeroWindow_Recent",
+        .short_interval_cpu_threshold = 0.0745,
+        .trace_event_title = "High CPU - Zero Window (Recent)",
+};
+
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
 // `proportion` is 0.5 if half a CPU core or half total GPU time is used. It can
 // be above 1.0 if more than 1 CPU core is used. CPU and GPU usage is often
@@ -79,32 +172,32 @@ int64_t GetBucketForSample(base::TimeDelta value) {
       kOverflowBucket);
 }
 
-const char* GetScenarioSuffixWithVisibleWindows(
+const PowerMetricsReporter::ScenarioParams& GetScenarioParamsWithVisibleWindow(
     const UsageScenarioDataStore::IntervalData& interval_data) {
   // The order of the conditions is important. See the full description of each
   // scenario in the histograms.xml file.
   DCHECK_GT(interval_data.max_visible_window_count, 0);
 
   if (!interval_data.time_capturing_video.is_zero())
-    return ".VideoCapture";
+    return kVideoCaptureParams;
   if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
-    return ".FullscreenVideo";
+    return kFullscreenVideoParams;
   if (!interval_data.time_playing_video_in_visible_tab.is_zero()) {
     // Note: UKM data reveals that navigations are infrequent when a video is
     // playing in fullscreen, when video is captured or when audio is playing.
     // For that reason, there is no distinct suffix for navigation vs. no
     // navigation in these cases.
     if (interval_data.top_level_navigation_count == 0)
-      return ".EmbeddedVideo_NoNavigation";
-    return ".EmbeddedVideo_WithNavigation";
+      return kEmbeddedVideoNoNavigationParams;
+    return kEmbeddedVideoWithNavigationParams;
   }
   if (!interval_data.time_playing_audio.is_zero())
-    return ".Audio";
+    return kAudioParams;
   if (interval_data.top_level_navigation_count > 0)
-    return ".Navigation";
+    return kNavigationParams;
   if (interval_data.user_interaction_count > 0)
-    return ".Interaction";
-  return ".Passive";
+    return kInteractionParams;
+  return kPassiveParams;
 }
 
 // Helper function for GetLongIntervalSuffixes().
@@ -121,7 +214,7 @@ const char* GetLongIntervalScenarioSuffix(
       return ".AllTabsHidden_Audio";
     return ".AllTabsHidden_NoVideoCaptureOrAudio";
   }
-  return GetScenarioSuffixWithVisibleWindows(interval_data);
+  return GetScenarioParamsWithVisibleWindow(interval_data).histogram_suffix;
 }
 
 // Returns suffixes to use for histograms related to a long interval described
@@ -133,55 +226,36 @@ std::vector<const char*> GetLongIntervalSuffixes(
   return {"", GetLongIntervalScenarioSuffix(interval_data)};
 }
 
+}  // namespace
+
 #if BUILDFLAG(IS_MAC)
-// Helper function for GetShortIntervalSuffixes (). See comment on that function
-// for why both `short_interval_data` and `long_interval_data` are required.
-const char* GetShortIntervalScenarioSuffix(
+const PowerMetricsReporter::ScenarioParams&
+PowerMetricsReporter::GetShortIntervalScenarioParams(
     const UsageScenarioDataStore::IntervalData& short_interval_data,
     const UsageScenarioDataStore::IntervalData& pre_interval_data) {
   // The order of the conditions is important. See the full description of each
   // scenario in the histograms.xml file.
   if (short_interval_data.max_tab_count == 0) {
     if (pre_interval_data.max_tab_count != 0)
-      return ".ZeroWindow_Recent";
-    return ".ZeroWindow";
+      return kAllTabsHiddenZeroWindowRecentParams;
+    return kAllTabsHiddenZeroWindowParams;
   }
   if (short_interval_data.max_visible_window_count == 0) {
     if (!short_interval_data.time_capturing_video.is_zero())
-      return ".AllTabsHidden_VideoCapture";
+      return kAllTabsHiddenNoVideoCapture;
     if (!short_interval_data.time_playing_audio.is_zero())
-      return ".AllTabsHidden_Audio";
+      return kAllTabsHiddenNoAudioParams;
     if (pre_interval_data.max_visible_window_count != 0 ||
         !pre_interval_data.time_capturing_video.is_zero() ||
         !pre_interval_data.time_playing_audio.is_zero()) {
-      return ".AllTabsHidden_NoVideoCaptureOrAudio_Recent";
+      return kAllTabsHiddenNoVideoCaptureOrAudioRecentParams;
     }
-    return ".AllTabsHidden_NoVideoCaptureOrAudio";
+    return kAllTabsHiddenNoVideoCaptureOrAudioParams;
   }
 
-  return GetScenarioSuffixWithVisibleWindows(short_interval_data);
-}
-
-// Returns suffixes to use for histograms related to a short interval described
-// by `interval_data`. `pre_interval_data` describes a long interval ending
-// simultaneously with the short interval.
-//
-// `pre_interval_data` is required to decide whether "_Recent" is appended to
-// the ".ZeroWindow" or ".AllTabsHidden_NoVideoCaptureOrAudio" suffixes.
-// Appending "_Recent" is useful  to isolate cases where the scenario changed
-// recently (e.g. CPU usage in a short interval with zero window might be
-// affected by cleanup tasks from recently closed tabs).
-std::vector<const char*> GetShortIntervalSuffixes(
-    const UsageScenarioDataStore::IntervalData& short_interval_data,
-    const UsageScenarioDataStore::IntervalData& pre_interval_data) {
-  // Histograms are recorded without a suffix and with a scenario-specific
-  // suffix.
-  return {"", GetShortIntervalScenarioSuffix(short_interval_data,
-                                             pre_interval_data)};
+  return GetScenarioParamsWithVisibleWindow(short_interval_data);
 }
 #endif  // BUILDFLAG(IS_MAC)
-
-}  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
     UsageScenarioDataStore* short_usage_scenario_data_store,
@@ -302,16 +376,12 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
 
 #if BUILDFLAG(IS_MAC)
 void PowerMetricsReporter::ReportShortIntervalHistograms(
-    const UsageScenarioDataStore::IntervalData& short_interval_data,
-    const UsageScenarioDataStore::IntervalData& long_interval_data,
+    const char* scenario_suffix,
     absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
   if (!coalition_resource_usage_rate.has_value())
     return;
 
-  const auto suffixes =
-      GetShortIntervalSuffixes(/* short_interval_data=*/short_interval_data,
-                               /* pre_interval_data=*/long_interval_data);
-  for (const char* suffix : suffixes) {
+  for (const char* suffix : {"", scenario_suffix}) {
     UsageTimeHistogram(
         base::StrCat(
             {"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", suffix}),
@@ -320,32 +390,21 @@ void PowerMetricsReporter::ReportShortIntervalHistograms(
 }
 
 void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
-    const UsageScenarioDataStore::IntervalData& short_interval_data,
+    const PowerMetricsReporter::ScenarioParams& short_interval_scenario_params,
     absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
   if (!coalition_resource_usage_rate.has_value())
     return;
-  // A trace event is emitted when CPU usage exceeds the 95th percentile.
-  // 7 day aggregation ending on February 22nd 2022 from "PerformanceMonitor
-  // .ResourceCoalition.CPUTime2_10sec.AllTabsHidden_NoVideoCaptureOrAudio"
-  constexpr double kHighCPUUsageThreshold_AllTabsHidden = 0.1433;
 
-  // This matches the conditions for scenario
-  // ".AllTabsHidden_NoVideoCaptureOrAudio";
-  if (short_interval_data.max_visible_window_count == 0 &&
-      short_interval_data.max_tab_count > 0 &&
-      short_interval_data.time_playing_audio.is_zero() &&
-      short_interval_data.time_capturing_video.is_zero() &&
-      coalition_resource_usage_rate->cpu_time_per_second >=
-          kHighCPUUsageThreshold_AllTabsHidden) {
+  if (coalition_resource_usage_rate->cpu_time_per_second >=
+      short_interval_scenario_params.short_interval_cpu_threshold) {
     const base::TimeTicks now = base::TimeTicks::Now();
-    constexpr char kEventTitle[] =
-        "High CPU - All Tabs Hidden, No Video Capture or Audio";
 
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "browser", kEventTitle, TRACE_ID_LOCAL(this),
-        short_interval_begin_time_);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("browser", kEventTitle,
-                                                   TRACE_ID_LOCAL(this), now);
+        "browser", short_interval_scenario_params.trace_event_title,
+        TRACE_ID_LOCAL(this), short_interval_begin_time_);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "browser", short_interval_scenario_params.trace_event_title,
+        TRACE_ID_LOCAL(this), now);
   }
   short_interval_begin_time_ = base::TimeTicks();
 }
@@ -449,9 +508,12 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
 #if BUILDFLAG(IS_MAC)
   auto short_interval_data =
       short_usage_scenario_data_store_->ResetIntervalData();
-  ReportShortIntervalHistograms(short_interval_data, long_interval_data,
+  const PowerMetricsReporter::ScenarioParams short_interval_scenario_params =
+      GetShortIntervalScenarioParams(short_interval_data, long_interval_data);
+
+  ReportShortIntervalHistograms(short_interval_scenario_params.histogram_suffix,
                                 short_interval_resource_usage_rate);
-  MaybeEmitHighCPUTraceEvent(short_interval_data,
+  MaybeEmitHighCPUTraceEvent(short_interval_scenario_params,
                              short_interval_resource_usage_rate);
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -95,6 +95,31 @@ class PowerMetricsReporter
   static std::vector<const char*> GetLongIntervalSuffixesForTesting(
       const UsageScenarioDataStore::IntervalData& interval_data);
 
+  // Contains data to determine when and how to generate histograms and trace
+  // events for a usage scenario.
+  struct ScenarioParams {
+    const char* histogram_suffix;
+    // CPU usage threshold to emit a "high CPU" trace event.
+    double short_interval_cpu_threshold;
+    const char* trace_event_title;
+  };
+
+#if BUILDFLAG(IS_MAC)
+  // Returns params to use for histograms and trace events related to a short
+  // interval described by `short_interval_data`. `pre_interval_data` describes
+  // a long interval ending simultaneously with the short interval.
+  //
+  // `pre_interval_data` is required to decide whether "_Recent" is appended to
+  // the ".ZeroWindow" or ".AllTabsHidden_NoVideoCaptureOrAudio" suffixes.
+  // Appending "_Recent" is useful  to isolate cases where the scenario changed
+  // recently (e.g. CPU usage in a short interval with zero window might be
+  // affected by cleanup tasks from recently closed tabs).
+  static const PowerMetricsReporter::ScenarioParams&
+  GetShortIntervalScenarioParams(
+      const UsageScenarioDataStore::IntervalData& short_interval_data,
+      const UsageScenarioDataStore::IntervalData& pre_interval_data);
+#endif  // BUILDFLAG(IS_MAC)
+
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
   // and ukm.xml
@@ -130,13 +155,12 @@ class PowerMetricsReporter
 
 #if BUILDFLAG(IS_MAC)
   static void ReportShortIntervalHistograms(
-      const UsageScenarioDataStore::IntervalData& short_interval_data,
-      const UsageScenarioDataStore::IntervalData& long_interval_data,
+      const char* scenario_suffix,
       absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
 
   // Emit trace event when CPU usage is high for 10 secondes or more.
   void MaybeEmitHighCPUTraceEvent(
-      const UsageScenarioDataStore::IntervalData& short_interval_data,
+      const ScenarioParams& short_interval_scenario_params,
       absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
 #endif  // BUILDFLAG(IS_MAC)
 

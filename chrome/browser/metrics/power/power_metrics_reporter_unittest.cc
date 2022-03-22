@@ -1223,41 +1223,50 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
       "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_ZeroWindow) {
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Emitted) {
+  const char* kScenarioSuffix = ".AllTabsHidden_Audio";
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      kScenarioSuffix, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", kScenarioSuffix});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       GetShortIntervalScenarioParams_ZeroWindow) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 0;
 
   UsageScenarioDataStore::IntervalData long_interval_data;
   long_interval_data.max_tab_count = 0;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".ZeroWindow"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".ZeroWindow");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_ZeroWindow_Recent) {
+       GetShortIntervalScenarioParams_ZeroWindow_Recent) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 0;
 
   UsageScenarioDataStore::IntervalData long_interval_data;
   long_interval_data.max_tab_count = 1;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".ZeroWindow_Recent"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".ZeroWindow_Recent");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_AllTabsHidden_VideoCapture) {
+       GetShortIntervalScenarioParams_AllTabsHidden_VideoCapture) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 0;
@@ -1273,17 +1282,15 @@ TEST_F(PowerMetricsReporterUnitTest,
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
   long_interval_data.max_visible_window_count = 1;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".AllTabsHidden_VideoCapture"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".AllTabsHidden_VideoCapture");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_AllTabsHidden_Audio) {
+       GetShortIntervalScenarioParams_AllTabsHidden_Audio) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 0;
@@ -1299,17 +1306,15 @@ TEST_F(PowerMetricsReporterUnitTest,
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
   long_interval_data.max_visible_window_count = 1;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".AllTabsHidden_Audio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".AllTabsHidden_Audio");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_AllTabsHidden_NoVideoCaptureOrAudio) {
+       GetShortIntervalScenarioParams_AllTabsHidden_NoVideoCaptureOrAudio) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 0;
@@ -1324,18 +1329,17 @@ TEST_F(PowerMetricsReporterUnitTest,
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes(
-      {"", ".AllTabsHidden_NoVideoCaptureOrAudio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix,
+               ".AllTabsHidden_NoVideoCaptureOrAudio");
 }
 
-TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_AllTabsHidden_NoVideoCaptureOrAudio_Recent) {
+TEST_F(
+    PowerMetricsReporterUnitTest,
+    GetShortIntervalScenarioParams_AllTabsHidden_NoVideoCaptureOrAudio_Recent) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 0;
@@ -1351,17 +1355,16 @@ TEST_F(PowerMetricsReporterUnitTest,
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
   long_interval_data.max_visible_window_count = 1;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes(
-      {"", ".AllTabsHidden_NoVideoCaptureOrAudio_Recent"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix,
+               ".AllTabsHidden_NoVideoCaptureOrAudio_Recent");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_VideoCapture) {
+TEST_F(PowerMetricsReporterUnitTest,
+       GetShortIntervalScenarioParams_VideoCapture) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1376,16 +1379,15 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_VideoCapture) {
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".VideoCapture"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".VideoCapture");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_FullscreenVideo) {
+TEST_F(PowerMetricsReporterUnitTest,
+       GetShortIntervalScenarioParams_FullscreenVideo) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1400,17 +1402,15 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_FullscreenVideo) {
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".FullscreenVideo"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".FullscreenVideo");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_EmbeddedVideo_NoNavigation) {
+       GetShortIntervalScenarioParams_EmbeddedVideo_NoNavigation) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1425,17 +1425,15 @@ TEST_F(PowerMetricsReporterUnitTest,
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".EmbeddedVideo_NoNavigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".EmbeddedVideo_NoNavigation");
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       ShortIntervalHistograms_EmbeddedVideo_WithNavigation) {
+       GetShortIntervalScenarioParams_EmbeddedVideo_WithNavigation) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1450,17 +1448,15 @@ TEST_F(PowerMetricsReporterUnitTest,
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes(
-      {"", ".EmbeddedVideo_WithNavigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix,
+               ".EmbeddedVideo_WithNavigation");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Audio) {
+TEST_F(PowerMetricsReporterUnitTest, GetShortIntervalScenarioParams_Audio) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1475,16 +1471,15 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Audio) {
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".Audio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".Audio");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Navigation) {
+TEST_F(PowerMetricsReporterUnitTest,
+       GetShortIntervalScenarioParams_Navigation) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1499,16 +1494,15 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Navigation) {
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  const std::vector<const char*> suffixes({"", ".Navigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".Navigation");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Interaction) {
+TEST_F(PowerMetricsReporterUnitTest,
+       GetShortIntervalScenarioParams_Interaction) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1522,17 +1516,14 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Interaction) {
   // Values below should be ignored.
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
-
-  const std::vector<const char*> suffixes({"", ".Interaction"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".Interaction");
 }
 
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Passive) {
+TEST_F(PowerMetricsReporterUnitTest, GetShortIntervalScenarioParams_Passive) {
   UsageScenarioDataStore::IntervalData short_interval_data;
   short_interval_data.max_tab_count = 1;
   short_interval_data.max_visible_window_count = 1;
@@ -1546,14 +1537,11 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Passive) {
   // Values below should be ignored.
 
   UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+  const PowerMetricsReporter::ScenarioParams scenario_params =
+      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
+          short_interval_data, long_interval_data);
 
-  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
-      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
-
-  const std::vector<const char*> suffixes({"", ".Passive"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+  EXPECT_STREQ(scenario_params.histogram_suffix, ".Passive");
 }
 
 TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
