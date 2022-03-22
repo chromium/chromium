@@ -26,8 +26,6 @@ extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
 
 extern const base::Feature kU2FSecurityKeyAPI;
 
-extern const base::Feature kAllowWasmInMV3;
-
 extern const base::Feature kStructuredCloningForMV3Messaging;
 
 extern const base::Feature kRestrictDeveloperModeAPIs;

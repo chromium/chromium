@@ -706,19 +706,10 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
         directive_values.begin(), directive_values.end(),
         [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
-          if (source_lower == kSelfSource || source_lower == kNoneSource ||
-              IsLocalHostSource(source_lower)) {
-            return true;
-          }
 
-          if ((source_lower == kWasmEvalSource ||
-               source_lower == kWasmUnsafeEvalSource) &&
-              base::FeatureList::IsEnabled(
-                  extensions_features::kAllowWasmInMV3)) {
-            return true;
-          }
-
-          return false;
+          return source_lower == kSelfSource || source_lower == kNoneSource ||
+                 IsLocalHostSource(source_lower) ||
+                 source_lower == kWasmUnsafeEvalSource;
         });
 
     if (it == directive_values.end())

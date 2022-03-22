@@ -3,6 +3,6 @@
   "version": "0.1",
   "manifest_version": 3,
   "content_security_policy": {
-    "extension_pages" : "worker-src 'self' 'wasm-eval'; default-src 'self'"
+    "extension_pages" : "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"
   }
 }

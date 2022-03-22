@@ -3,17 +3,10 @@
 // found in the LICENSE file.
 
 export async function runTests() {
-  let config = await chrome.test.getConfig();
-  let expectWasmAllowed = config.customArg === 'expect-wasm-allowed';
 
   chrome.test.runTests([
     // Attempts to fetch and instantiate a simple Wasm module.
     async function instantiateFetch() {
-      chrome.test.assertTrue(
-          config.customArg === 'expect-wasm-allowed' ||
-              config.customArg === 'expect-wasm-disallowed',
-          config.customArg);
-
       const response = await fetch('empty.wasm');
 
       let wasmAllowed;
@@ -23,7 +16,7 @@ export async function runTests() {
       } catch (e) {
         wasmAllowed = false;
       }
-      chrome.test.assertEq(expectWasmAllowed, wasmAllowed);
+      chrome.test.assertTrue(wasmAllowed);
       chrome.test.succeed();
     },
 
@@ -41,7 +34,7 @@ export async function runTests() {
         wasmAllowed = false;
       }
 
-      chrome.test.assertEq(expectWasmAllowed, wasmAllowed);
+      chrome.test.assertTrue(wasmAllowed);
       chrome.test.succeed();
     }
   ]);

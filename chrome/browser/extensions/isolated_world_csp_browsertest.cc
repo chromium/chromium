@@ -64,7 +64,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
       "Refused to run the JavaScript URL because it violates the following "
-      "Content Security Policy directive: \"script-src 'self'\".*");
+      "Content Security Policy directive: \"script-src 'self' "
+      "'wasm-unsafe-eval'\".*");
 
   GURL url = embedded_test_server()->GetURL("js-url.com",
                                             "/page_with_script_src_csp.html");

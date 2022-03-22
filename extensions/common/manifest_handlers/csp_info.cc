@@ -38,6 +38,10 @@ const char kDefaultSandboxedPageContentSecurityPolicy[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 
+// The default CSP to be used in order to prevent remote scripts.
+static const char kDefaultMV3CSP[] =
+    "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
+
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
 // clang-format off
@@ -58,22 +62,8 @@ const char kDefaultPlatformAppContentSecurityPolicy[] =
     //    streaming or partial buffering.
     " media-src * data: blob: filesystem:;"
     // Scripts are allowed to use WebAssembly
-    " script-src 'self' blob: filesystem: 'wasm-eval';";
+    " script-src 'self' blob: filesystem: 'wasm-unsafe-eval';";
 // clang-format on
-
-const char* GetDefaultMV3CSP(absl::optional<bool> allow_wasm = absl::nullopt) {
-  // The default CSP to be used in order to prevent remote scripts.
-  static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
-
-  // Same as `kDefaultMV3CSP` but allows web assembly usage.
-  static const char kDefaultMV3CSPWithWasmAllowed[] =
-      "script-src 'self' 'wasm-eval'; object-src 'self';";
-
-  return allow_wasm.value_or(
-             base::FeatureList::IsEnabled(extensions_features::kAllowWasmInMV3))
-             ? kDefaultMV3CSPWithWasmAllowed
-             : kDefaultMV3CSP;
-}
 
 int GetValidatorOptions(Extension* extension) {
   int options = csp_validator::OPTIONS_NONE;
@@ -106,7 +96,7 @@ const base::Value* GetManifestPath(const Extension* extension,
 
 const char* GetDefaultExtensionPagesCSP(Extension* extension) {
   if (extension->manifest_version() >= 3)
-    return GetDefaultMV3CSP();
+    return kDefaultMV3CSP;
 
   if (extension->GetType() == Manifest::TYPE_PLATFORM_APP)
     return kDefaultPlatformAppContentSecurityPolicy;
@@ -149,7 +139,7 @@ const std::string* CSPInfo::GetDefaultCSPToAppend(
   // additionally helps protect against bugs in our CSP parsing code which may
   // cause the parsed CSP to not be as strong as the default one. For example,
   // see crbug.com/1042963.
-  static const base::NoDestructor<std::string> default_csp(GetDefaultMV3CSP());
+  static const base::NoDestructor<std::string> default_csp(kDefaultMV3CSP);
   return default_csp.get();
 }
 
@@ -159,7 +149,7 @@ const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
     // The isolated world will use its own CSP which blocks remotely hosted
     // code.
     static const base::NoDestructor<std::string> default_isolated_world_csp(
-        GetDefaultMV3CSP(false /* allow_wasm */));
+        kDefaultMV3CSP);
     return default_isolated_world_csp.get();
   }
 
