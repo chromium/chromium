@@ -248,8 +248,8 @@ void ScanningHandler::HandleEnsureValidFilePath(const base::ListValue* args) {
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, file_path),
-      base::BindOnce(&ScanningHandler::OnPathExists, base::Unretained(this),
-                     file_path, callback));
+      base::BindOnce(&ScanningHandler::OnPathExists,
+                     weak_ptr_factory_.GetWeakPtr(), file_path, callback));
 }
 
 void ScanningHandler::OnPathExists(const base::FilePath& file_path,
