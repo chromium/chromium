@@ -13,6 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
 const STATUS_TEXT_KEY_MAP = {
@@ -114,10 +115,11 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
         this.status_ === UpdateRoFirmwareStatus.kFileNotFound;
 
     const disabled = this.status_ != UpdateRoFirmwareStatus.kComplete;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: disabled},
-        ));
+    if (disabled) {
+      disableNextButton(this);
+    } else {
+      enableNextButton(this);
+    }
   }
 
   /** @return {!Promise<!StateResult>} */

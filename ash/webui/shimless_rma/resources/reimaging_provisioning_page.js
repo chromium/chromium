@@ -14,6 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /** @type {!Object<!ProvisioningStatus, string>} */
 const provisioningStatusTextKeys = {
@@ -134,10 +135,11 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
     this.progress_ = progress;
     const disabled = this.status_ != ProvisioningStatus.kComplete &&
         this.status_ != ProvisioningStatus.kFailedNonBlocking;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: disabled},
-        ));
+    if (disabled) {
+      disableNextButton(this);
+    } else {
+      enableNextButton(this);
+    }
     this.shouldShowSpinner_ = this.status_ === ProvisioningStatus.kInProgress;
     this.shouldShowRetryButton_ =
         this.status_ === ProvisioningStatus.kFailedBlocking ||

@@ -14,6 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -101,10 +102,7 @@ export class ReimagingCalibrationRunPage extends
         this.calibrationStatusMessage_ =
             this.i18n('runCalibrationCompleteText');
         this.calibrationComplete_ = true;
-        this.dispatchEvent(new CustomEvent(
-            'disable-next-button',
-            {bubbles: true, composed: true, detail: false},
-            ));
+        enableNextButton(this);
         break;
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:

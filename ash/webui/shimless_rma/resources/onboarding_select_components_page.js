@@ -13,6 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @typedef {{
@@ -81,10 +82,7 @@ export class OnboardingSelectComponentsPageElement extends
     super.ready();
     this.setReworkFlowLink_();
     this.getComponents_();
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: false},
-        ));
+    enableNextButton(this);
   }
 
   /** @private */

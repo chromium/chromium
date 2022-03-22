@@ -10,6 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -73,10 +74,11 @@ export class OnboardingWaitForManualWpDisablePage extends
 
     if(!this.hidden) {
       // TODO(gavindodd): Should this automatically progress to the next state?
-      this.dispatchEvent(new CustomEvent(
-          'disable-next-button',
-          {bubbles: true, composed: true, detail: this.hwwpEnabled_},
-          ));
+      if (this.hwwpEnabled_) {
+        disableNextButton(this);
+      } else {
+        enableNextButton(this);
+      }
     }
   }
 

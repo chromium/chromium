@@ -11,6 +11,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
 const finalizationStatusTextKeys = {
@@ -96,10 +97,12 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
     this.finalizationComplete_ = status === FinalizationStatus.kComplete ||
         status === FinalizationStatus.kFailedNonBlocking;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: !this.finalizationComplete_},
-        ));
+
+    if (this.finalizationComplete_) {
+      enableNextButton(this);
+    } else {
+      disableNextButton(this);
+    }
     this.shouldShowSpinner_ = status === FinalizationStatus.kInProgress;
     this.shouldShowRetryButton_ =
         status === FinalizationStatus.kFailedBlocking ||

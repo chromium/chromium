@@ -63,6 +63,7 @@ generate_grd("build_grd") {
     "illustrations/update_os.svg",
     "png/diagnostics_app_icon_192.png",
     "shimless_rma_types.js",
+    "shimless_rma_util.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -106,6 +107,7 @@ js_type_check("closure_compile_module") {
     ":repair_component_chip",
     ":shimless_rma",
     ":shimless_rma_types",
+    ":shimless_rma_util",
     ":splash_screen",
     ":wrapup_finalize_page",
     ":wrapup_repair_complete_page",
@@ -442,6 +444,12 @@ js_library("shimless_rma_types") {
   deps = [
     "//ash/webui/shimless_rma/mojom:mojom_js_library_for_compile",
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+js_library("shimless_rma_util") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

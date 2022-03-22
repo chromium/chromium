@@ -10,6 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -68,10 +69,11 @@ export class OnboardingChooseWpDisableMethodPage extends
   onHwwpDisableMethodSelectionChanged_(event) {
     this.hwwpMethod_ = event.detail.value;
     const disabled = !this.hwwpMethod_;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: disabled},
-        ));
+    if (disabled) {
+      disableNextButton(this);
+    } else {
+      enableNextButton(this);
+    }
   }
 
   /** @return {!Promise<!StateResult>} */

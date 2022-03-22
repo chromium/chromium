@@ -14,6 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -58,10 +59,7 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   /** @override */
   ready() {
     super.ready();
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: false},
-        ));
+    enableNextButton(this);
   }
 
   /** @protected */

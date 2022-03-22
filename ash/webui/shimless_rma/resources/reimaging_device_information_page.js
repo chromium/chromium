@@ -14,6 +14,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -195,10 +196,11 @@ export class ReimagingDeviceInformationPage extends
   /** @private */
   updateNextButtonDisabledState_() {
     const disabled = !this.allInformationIsValid_();
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: disabled},
-        ));
+    if (disabled) {
+      disableNextButton(this);
+    } else {
+      enableNextButton(this);
+    }
   }
 
   /** @private */

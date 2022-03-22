@@ -14,6 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {enableNextButton} from './shimless_rma_util.js';
 
 /** @type {!Object<!CalibrationSetupInstruction, string>} */
 const INSRUCTION_MESSAGE_KEY_MAP = {
@@ -78,10 +79,7 @@ export class ReimagingCalibrationSetupPage extends
         (result) => {
           this.calibrationSetupInstruction_ = result.instructions;
         });
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: false},
-        ));
+    enableNextButton(this);
   }
 
   /** @return {!Promise<StateResult>} */
