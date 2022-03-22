@@ -24,6 +24,7 @@
           android:id="@+id/action_bar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
+          style="@style/ManagementActivityNoActionBar"
           app:title="@string/ntp_manage_feed" />
   </com.google.android.material.appbar.AppBarLayout>
 

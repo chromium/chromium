@@ -47,4 +47,8 @@
         <item name="android:textColor">@color/header_title_text_color_list</item>
     </style>
 
+    <style name="ManagementActivityNoActionBar">
+        <item name="windowActionBar">false</item>
+    </style>
+
 </resources>

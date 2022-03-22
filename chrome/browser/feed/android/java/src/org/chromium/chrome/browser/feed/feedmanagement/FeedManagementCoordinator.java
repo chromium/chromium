@@ -47,8 +47,7 @@ public class FeedManagementCoordinator {
 
         // Set up the toolbar and back button.
         Toolbar toolbar = (Toolbar) mView.findViewById(R.id.action_bar);
-        mActivity.setSupportActionBar(toolbar);
-        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.back_arrow);
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FeedManagementMediator(mActivity, listItems, followManagementLauncher,

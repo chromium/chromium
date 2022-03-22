@@ -24,6 +24,7 @@
           android:id="@+id/action_bar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
+          style="@style/ManagementActivityNoActionBar"
           app:title="@string/follow_manage_following" />
   </com.google.android.material.appbar.AppBarLayout>
 
@@ -32,9 +33,5 @@
       android:id="@+id/follow_management_list"
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
-
-  <!-- TODO(petewil) - After UXR, show all button -->
-
-  <!-- TODO(petewil) - After UXR, "Updates Unavailable" section. -->
 
 </LinearLayout>
