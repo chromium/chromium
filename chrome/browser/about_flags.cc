@@ -1487,6 +1487,15 @@ const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpInline[] = {
     {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "2"}};
 const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpDialog[] = {
     {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "3"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kDiscountConsentOnCartAndCheckoutPage[] = {
+        {commerce::kContextualConsentShowOnCartAndCheckoutPageParam, "true"}};
+const flags_ui::FeatureEntry::FeatureParam kDiscountConsentOnSRP[] = {
+    {commerce::kContextualConsentShowOnSRPParam, "true"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kDiscountConsentOnNTPDialogAndCartCheckout[] = {
+        {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "3"},
+        {commerce::kContextualConsentShowOnCartAndCheckoutPageParam, "true"}};
 const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
     {"Changing string", kDiscountConsentNtpStringChange,
      std::size(kDiscountConsentNtpStringChange), nullptr},
@@ -1494,6 +1503,13 @@ const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
      std::size(kDiscountConsentNtpInline), nullptr},
     {"Dialog Consent", kDiscountConsentNtpDialog,
      std::size(kDiscountConsentNtpDialog), nullptr},
+    {"Cart and Checkout Consent", kDiscountConsentOnCartAndCheckoutPage,
+     std::size(kDiscountConsentOnCartAndCheckoutPage), nullptr},
+    {"SRP Consent", kDiscountConsentOnSRP, std::size(kDiscountConsentOnSRP),
+     nullptr},
+    {"Cart, Checkout, and Dialog Consent",
+     kDiscountConsentOnNTPDialogAndCartCheckout,
+     std::size(kDiscountConsentOnNTPDialogAndCartCheckout), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {

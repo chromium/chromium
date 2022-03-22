@@ -179,6 +179,15 @@ extern const char
     kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam[];
 extern const base::FeatureParam<std::string>
     kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle;
+// Feature params for showing the contextual discount consent on the cart and
+// checkout page.
+extern const char kContextualConsentShowOnCartAndCheckoutPageParam[];
+extern const base::FeatureParam<bool>
+    kContextualConsentShowOnCartAndCheckoutPage;
+// Feature params for showing the contextual discount consent on the search
+// result page.
+extern const char kContextualConsentShowOnSRPParam[];
+extern const base::FeatureParam<bool> kContextualConsentShowOnSRP;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);
