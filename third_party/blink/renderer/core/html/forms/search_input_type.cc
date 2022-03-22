@@ -84,7 +84,7 @@ void SearchInputType::HandleKeydownEvent(KeyboardEvent& event) {
     return;
   }
 
-  if (event.key() == "Escape") {
+  if (event.key() == "Escape" && GetElement().InnerEditorValue().length()) {
     GetElement().SetValueForUser("");
     GetElement().OnSearch();
     event.SetDefaultHandled();
