@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppInstalledReason" enum="InstallationCounterReasonEnum"
-    expires_after="2022-04-24">
+    expires_after="2022-10-31">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppUninstallReason" enum="UninstallCounterReasonEnum"
-    expires_after="2022-04-24">
+    expires_after="2022-10-31">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>

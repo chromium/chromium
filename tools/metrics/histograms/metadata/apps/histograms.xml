@@ -1080,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
-    enum="ZeroStateResultType" expires_after="2022-04-24">
+    enum="ZeroStateResultType" expires_after="2022-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1305,7 +1305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2022-04-24">
+    units="characters" expires_after="2022-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListLauncherIssuedSearchQueryLength"
-    units="characters" expires_after="2022-04-17">
+    units="characters" expires_after="2022-10-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
