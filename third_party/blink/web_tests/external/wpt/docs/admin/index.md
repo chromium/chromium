@@ -44,8 +44,10 @@ explicitly-managed secret.
 - (unknown registrar): http://testthewebforward.org
   - web-human@w3.org
 - [Google Domains](https://domains.google/): https://wpt.fyi
-  - smcgruer@google.com
+  - danielrsmith@google.com
   - foolip@google.com
+  - kyleju@google.com
+  - pastithas@google.com
 - (Google internal): https://wpt.live
   - smcgruer@google.com
   - foolip@google.com
@@ -60,8 +62,10 @@ explicitly-managed secret.
   - [@plehegar](https://github.com/plehegar)
   - [@sideshowbarker](https://github.com/sideshowbarker)
 - [Google Cloud Platform](https://cloud.google.com/): wptdashboard{-staging}
-  - smcgruer@google.com
+  - danielrsmith@google.com
   - foolip@google.com
+  - kyleju@google.com
+  - pastithas@google.com
 - [Google Cloud Platform](https://cloud.google.com/): wpt-live
   - smcgruer@google.com
 - [Google Cloud Platform](https://cloud.google.com/): wpt-pr-bot
