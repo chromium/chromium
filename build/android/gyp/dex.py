@@ -195,14 +195,23 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
 
   stderr_filter = CreateStderrFilter(show_desugar_default_interface_warnings)
 
-  with tempfile.NamedTemporaryFile(mode='w') as flag_file:
+  is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
+
+  # Avoid deleting the flag file when DEX_DEBUG is set in case the flag file
+  # needs to be examined after the build.
+  with tempfile.NamedTemporaryFile(mode='w', delete=not is_debug) as flag_file:
     # Chosen arbitrarily. Needed to avoid command-line length limits.
     MAX_ARGS = 50
     if len(dex_cmd) > MAX_ARGS:
-      flag_file.write('\n'.join(dex_cmd[MAX_ARGS:]))
-      flag_file.flush()
-      dex_cmd = dex_cmd[:MAX_ARGS]
-      dex_cmd.append('@' + flag_file.name)
+      # Add all flags to D8 (anything after the first --) as well as all
+      # positional args at the end to the flag file.
+      for idx, cmd in enumerate(dex_cmd):
+        if cmd.startswith('--'):
+          flag_file.write('\n'.join(dex_cmd[idx:]))
+          flag_file.flush()
+          dex_cmd = dex_cmd[:idx]
+          dex_cmd.append('@' + flag_file.name)
+          break
 
     # stdout sometimes spams with things like:
     # Stripped invalid locals information from 1 method.
