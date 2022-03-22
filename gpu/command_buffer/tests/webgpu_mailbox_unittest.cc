@@ -60,6 +60,9 @@ std::ostream& operator<<(std::ostream& os,
     case viz::ResourceFormat::BGRA_8888:
       os << "BGRA_8888";
       break;
+    case viz::ResourceFormat::RGBA_F16:
+      os << "RGBA_F16";
+      break;
     default:
       NOTREACHED();
   }
@@ -93,7 +96,7 @@ class WebGPUMailboxTest
 #if !BUILDFLAG(IS_MAC)
            viz::ResourceFormat::RGBA_8888,
 #endif  // !BUILDFLAG(IS_MAC)
-               viz::ResourceFormat::BGRA_8888,
+               viz::ResourceFormat::BGRA_8888, viz::ResourceFormat::RGBA_F16,
          }) {
       WebGPUMailboxTestParams o = options;
       o.format = format;
@@ -403,7 +406,10 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
     return;
   }
-
+  if (GetParam().format == viz::ResourceFormat::RGBA_F16) {
+    LOG(ERROR) << "Test skipped because RGBA_F16 isn't supported.";
+    return;
+  }
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -700,6 +706,9 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
       break;
     case viz::ResourceFormat::BGRA_8888:
       dst_desc.format = wgpu::TextureFormat::BGRA8Unorm;
+      break;
+    case viz::ResourceFormat::RGBA_F16:
+      dst_desc.format = wgpu::TextureFormat::RGBA16Float;
       break;
     default:
       NOTREACHED();

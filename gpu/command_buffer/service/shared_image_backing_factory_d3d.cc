@@ -330,6 +330,11 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
   desc.SampleDesc.Quality = 0;
   desc.Usage = D3D11_USAGE_DEFAULT;
   desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
+  if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) &&
+      (format == viz::RGBA_8888 || format == viz::RGBA_F16)) {
+    desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+  }
   desc.CPUAccessFlags = 0;
   desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
                    D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;

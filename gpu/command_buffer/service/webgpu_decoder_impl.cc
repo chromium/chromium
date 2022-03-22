@@ -66,10 +66,10 @@ constexpr size_t kDawnReturnCmdsOffset =
 
 static_assert(kDawnReturnCmdsOffset < kMaxWireBufferSize, "");
 
-// TODO(crbug.com/1266549): Support Storage usage
 static constexpr uint32_t kAllowedWritableMailboxTextureUsages =
     static_cast<uint32_t>(WGPUTextureUsage_CopyDst |
-                          WGPUTextureUsage_RenderAttachment);
+                          WGPUTextureUsage_RenderAttachment |
+                          WGPUTextureUsage_StorageBinding);
 
 static constexpr uint32_t kAllowedReadableMailboxTextureUsages =
     static_cast<uint32_t>(WGPUTextureUsage_CopySrc |
@@ -530,6 +530,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         case viz::ResourceFormat::RGBA_8888:
 #endif  // !BUILDFLAG(IS_MAC)
         case viz::ResourceFormat::BGRA_8888:
+        case viz::ResourceFormat::RGBA_F16:
           break;
         default:
           return nullptr;
@@ -1636,6 +1637,14 @@ WebGPUDecoderImpl::AssociateMailboxDawn(const Mailbox& mailbox,
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
     return nullptr;
   }
+
+#if !BUILDFLAG(IS_WIN)
+  if (usage & WGPUTextureUsage_StorageBinding) {
+    DLOG(ERROR) << "AssociateMailbox: WGPUTextureUsage_StorageBinding is NOT "
+                   "supported yet.";
+    return nullptr;
+  }
+#endif
 
   if (flags & WEBGPU_MAILBOX_DISCARD) {
     // Set contents to uncleared.

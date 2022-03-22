@@ -168,7 +168,8 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
       bool is_back_buffer = false);
 
-  uint32_t GetAllowedDawnUsages() const;
+  WGPUTextureUsageFlags GetAllowedDawnUsages(
+      const WGPUTextureFormat wgpu_format) const;
 
   gl::GLImage* GetGLImage() const;
 
