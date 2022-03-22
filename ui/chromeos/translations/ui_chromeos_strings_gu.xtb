@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1209796539517632982">સ્વયંચાલિત નામ સર્વર્સ</translation>
 <translation id="1210831758834677569">લાઓ</translation>
+<translation id="1223825810409523901">Chrome એક્સ્ટેન્શન</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
 <translation id="1249250836236328755">શૈલી</translation>
 <translation id="1254593899333212300">ડાયરેક્ટ ઇન્ટરનેટ કનેક્શન</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">શેર કરેલ નેટવર્કની ગોઠવણીમાં ફેરફાર કરવાની મંજૂરી નથી</translation>
 <translation id="1665611772925418501">ફાઇલ સંશોધિત કરી શકાઈ નથી.</translation>
 <translation id="1673103856845176271">સુરક્ષા કારણોસર ફાઇલ ઍક્સેસ કરી શકાઈ નથી.</translation>
+<translation id="16762847117768727">ISO છબી</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">બાઇકિંગ</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> આઇટમને ઝિપ કરી રહ્યું છે...</translation>
@@ -809,6 +811,7 @@
 <translation id="7925686952655276919">સમન્વયન માટે ડેટા માહિતીની ઉપયોગ કરશો નહીં</translation>
 <translation id="7928710562641958568">ઉપકરણ હટાવો</translation>
 <translation id="7943385054491506837">યુએસ કોલમેક</translation>
+<translation id="7948417415021769876">7z આર્કાઇવ</translation>
 <translation id="7953739707111622108">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમ ઓળખાઈ ન હતી.</translation>
 <translation id="7969525169268594403">સ્લોવેનિયન</translation>
 <translation id="7972920761225148017">ફ્રેન્ચ (સ્વિટ્ઝર્લૅન્ડ)</translation>
@@ -858,6 +861,7 @@
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> મેળવી છે.</translation>
 <translation id="8395901698320285466">પરિમાણો</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> નેટવર્ક, કનેક્ટ કરી રહ્યું છે</translation>
 <translation id="8425213833346101688">બદલો</translation>
@@ -952,6 +956,7 @@
 <translation id="9174050671906956834">30 દિવસ પછી ટ્રેશમાંની આઇટમ કાયમ માટે ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">કઝાક</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> આઇટમ મેળવી છે.</translation>
 <translation id="9213073329713032541">ઇન્સ્ટૉલેશન સફળતાપૂર્વક શરૂ થયું.</translation>
 <translation id="9219103736887031265">છબીઓ</translation>
 <translation id="9219908252191632183">ચંદ્ર</translation>

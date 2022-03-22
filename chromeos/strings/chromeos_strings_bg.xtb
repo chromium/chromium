@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1486019694341708158">Включете превключвателя, за да изберете опциите за скрийнсейвъра</translation>
 <translation id="1491076385728777984">Фърмуерът на <ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Устройството е контролер за игри.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
+<translation id="2138109643290557664">По течението</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Преглед на цял екран</translation>
 <translation id="4275799948641988986">След ремонта кой ще използва това устройство?</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
+<translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
 <translation id="4333390807948134856">Клавишът <ph name="KEY_NAME" /> е натиснат</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">Конфигуриране на „<ph name="NAME" />“</translation>
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7180611975245234373">Опресняване</translation>
+<translation id="7191009787982536050">Анимация за скрийнсейвъра</translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Лек полъх</translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>
 <translation id="7297226631177386107">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>

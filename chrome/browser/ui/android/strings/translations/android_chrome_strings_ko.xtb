@@ -10,6 +10,7 @@
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
+<translation id="1062628064301375934">웹의 개인 정보 보호 개선에 동참해 주세요</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
@@ -106,7 +107,13 @@
 <translation id="1554532453982918912">더 나은 사용자 환경을 위한 Chrome 개선에 동참할 수 있습니다.</translation>
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="1571304935088121812">사용자 이름 복사</translation>
+<translation id="1573632872794824374">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="1592864538817356322">표준 보호 모드:</translation>
+<translation id="161647866166517041">스팸 및 사기 근절은 신뢰 토큰을 사용해 사이트에서 사기를 근절하고 사용자와 봇을 구별할 수 있도록 돕습니다.
+
+사이트에서는 사용자의 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 내 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 내가 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있음을 확인하면 이러한 사이트에서도 나를 봇이 아닌 사용자로 여길 가능성이 높습니다.
+
+신뢰 토큰은 웹의 개인 정보 보호를 강화해 주지만 특정 사용자를 식별하는 데는 사용할 수 없습니다.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="1633659023549081553">Chrome 홈페이지에서 새로운 콘텐츠를 발견하세요.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
@@ -167,6 +174,7 @@
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
+<translation id="2019145049163614359">관심분야를 삭제하시겠습니까?</translation>
 <translation id="2020309681647789787">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
@@ -203,6 +211,7 @@
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2176767904800337188">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">공유</translation>
+<translation id="2189903024544168260">관심분야 삭제됨</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2200113223741723867">사용 데이터 공유 관리</translation>
 <translation id="2218567645332692482">탐색을 HTTPS로 업그레이드하고 지원되지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
@@ -266,6 +275,7 @@
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2549516196460093976">이 태블릿을 사용하여 이 QR 코드를 표시하는 컴퓨터에 로그인할 수 있습니다.</translation>
+<translation id="2558569818338050235">사용자의 방문 기록에 맞춘 광고가 표시됩니다.</translation>
 <translation id="2561519700418191927">동영상 미리보기</translation>
 <translation id="2567385386134582609">이미지</translation>
 <translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
@@ -277,6 +287,7 @@
 <translation id="2604446170045642109">설정에서 사이트의 어두운 테마를 사용 중지할 수 있습니다.</translation>
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
+<translation id="2642087927315268160">로그인 하단 시트가 닫혔습니다.</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 연결로 인해 다운로드가 느려질 수 있습니다</translation>
 <translation id="2647434099613338025">언어 추가</translation>
 <translation id="2649068648233607930">내 브라우저는 <ph name="DOMAIN" />에서 관리합니다</translation>
@@ -289,11 +300,13 @@
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
 <translation id="271033894570825754">New</translation>
+<translation id="2711073837061989559">무료 체험</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2732063072010454421">더 나은 음성 검색 환경을 경험해 보세요</translation>
 <translation id="2739256783402597439">2G</translation>
+<translation id="2746842245914314523">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되었습니다.</translation>
@@ -362,6 +375,7 @@
 <translation id="3037177537145227281">가격 추적 중</translation>
 <translation id="3037517125981011456">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="3046945242843292318">다음번에 이 사이트로 빠르게 이동합니다.</translation>
+<translation id="3055113921564083271">삭제한 관심분야</translation>
 <translation id="3055259925215945098">북마크 이동됨</translation>
 <translation id="3055841435094910999">Chrome 사용에 관한 정보가 Google로 전송되지만 사용자와 연결되지 않습니다.\n\nChrome이 다운된 경우 관련 정보에 일부 개인 정보가 포함될 수 있습니다.\n\n동기화를 사용 설정하면 측정항목에 방문한 URL에 관한 정보도 포함될 수 있습니다.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
@@ -378,6 +392,7 @@
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3187472288455401631">광고 측정</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> 삭제됨</translation>
@@ -408,6 +423,7 @@
 <translation id="3290991969712132877">신속하게 여기를 방문하려면 '옵션 더보기' 버튼을 눌러 이 페이지를 홈 화면에 추가하세요.</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
+<translation id="3321367458490630980">관심분야 추가됨</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
@@ -429,8 +445,10 @@
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{다운로드 1개 예약됨}other{다운로드 #개 예약됨}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
+<translation id="3475207952017699209">개인 맞춤 광고 정보</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3502647154914451322">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
@@ -449,6 +467,7 @@
 <translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
+<translation id="3578874072190212775">사이트에서 사기를 근절하고 사용자와 봇을 구별할 수 있도록 도움을 주세요.</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
 <translation id="3602290021589620013">미리보기</translation>
@@ -490,6 +509,7 @@
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3861633093716975811">인기 동영상</translation>
+<translation id="3862592757180800623">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3899682235662194879">모든 시크릿 탭 닫기</translation>
@@ -498,6 +518,7 @@
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
+<translation id="3932390316856284148">로그인 하단 시트가 전체 높이로 열렸습니다.</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">사용 가능한 음성 검색이 없습니다.</translation>
 <translation id="395377504920307820">계정 없이 사용</translation>
@@ -509,6 +530,7 @@
 <translation id="3969863827134279083">위로 이동</translation>
 <translation id="397583555483684758">동기화가 중지되었습니다.</translation>
 <translation id="3976396876660209797">이 바로가기 삭제하고 다시 만들기</translation>
+<translation id="3981902534690264083">광고주가 특정 광고의 성과를 파악할 수 있습니다.</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> 파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="4000212216660919741">오프라인 홈</translation>
@@ -526,6 +548,7 @@
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
 <translation id="410351446219883937">자동재생</translation>
+<translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
 <translation id="4108314971463891922">팔로우</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
@@ -546,6 +569,7 @@
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
+<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome으로 방문한 사이트 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="4263656433980196874">어시스턴트 음성 검색 동의 UI가 전체 높이로 열림</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
 <translation id="4290281343757112331">대신 나중에 다운로드하시겠습니까?</translation>
@@ -556,6 +580,7 @@
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="4321739720395210191">카메라를 열 수 없습니다. 기기를 다시 시작한 후 시도해 보세요.</translation>
+<translation id="4324158606177867698">삭제한 관심분야가 여기에 표시됩니다.</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
@@ -643,6 +668,7 @@
 <translation id="4807098396393229769">카드 명의</translation>
 <translation id="481574578487123132">연결된 기기</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" />에서 디지털 애셋 링크 확인에 실패함</translation>
+<translation id="4826163340425232009">로그인 하단 시트입니다.</translation>
 <translation id="4831037795716408498">콘텐츠 다운로드하기</translation>
 <translation id="4834007576107377210">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
@@ -697,6 +723,7 @@
 <translation id="5091199029769593641">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="5091249083535528968">확장된 사용 데이터</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
+<translation id="5098190077610408701">관심분야를 추가하시겠습니까?</translation>
 <translation id="5102401324271069229">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
@@ -776,6 +803,7 @@
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="5590372121997663538">이 컴퓨터 기억하기</translation>
+<translation id="559871659088672663">현재 개발 중인 기능입니다.</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
 <translation id="5599941490345670218">Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="5620163320393916465">저장된 비밀번호 없음</translation>
@@ -870,6 +898,7 @@
 <translation id="6069177176307973611">개인 정보 보호 및 보안 설정 검토</translation>
 <translation id="6070730414166672373">은행 연결 중\u2026</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
+<translation id="6091413777268123602">개인 정보 보호 샌드박스 무료 체험 기간 동안에는 사이트에서 사용자의 데이터를 더 적게 사용하면서도 동일한 탐색 환경을 제공할 수 있습니다. 즉, 사용자의 개인 정보가 보다 안전하게 보호되며 크로스 사이트 추적도 줄어듭니다. 테스트 준비를 마친 사이트가 늘어나면 새로운 체험 프로그램이 추가될 예정입니다.</translation>
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>
 <translation id="6095578583683628124">Google이 기본 검색엔진이면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
@@ -996,11 +1025,13 @@
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
 <translation id="6715020873764921614">그래도 <ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다운로드하시겠습니까?</translation>
 <translation id="6719634564325948108">QR 코드로 연결하시겠습니까?</translation>
+<translation id="6737612727720318154">특정 항목과 관련된 광고가 유용할 것이라 생각된다면 관심분야나 사이트를 허용하세요.</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6756507620369789050">의견 공유</translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
+<translation id="6770042910635026163">방문한 사이트 중 관심분야를 정의하는 사이트</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6783942555455976443">나중에 읽을 수 있게 페이지를 저장하여 알림을 받으세요.</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
@@ -1061,6 +1092,7 @@
 <translation id="7093803425429738190">이모티콘 추가</translation>
 <translation id="7105047059074518658">로그인하여 여러 기기에서 쉽게 인터넷을 사용하세요</translation>
 <translation id="7106762743910369165">조직에서 관리하는 브라우저입니다.</translation>
+<translation id="7130504491556983216">웹을 탐색하면 여기에 내 관심분야 목록이 표시됩니다.</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7143462160780459030">스크린샷을 찍을 수 없습니다. 다시 시도하세요.</translation>
 <translation id="7146622961999026732">다음 사이트와 앱은 중요할 수도 있습니다.</translation>
@@ -1095,6 +1127,7 @@
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
+<translation id="7352531447904559593">브라우저 기반 광고 개인 최적화 자세히 알아보기</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7352939065658542140">동영상</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{선택한 1개 항목 공유}other{선택한 #개 항목 공유}}</translation>
@@ -1150,6 +1183,7 @@
 <translation id="7619072057915878432">네트워크에 문제가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7630202231528827509">제공업체 URL</translation>
+<translation id="7634280112532283638">스팸 및 사기 근절</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
@@ -1209,6 +1243,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
+<translation id="7959157064403954786">더욱 투명하게 제공되는 광고 사용</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7963646190083259054">공급업체:</translation>
@@ -1288,6 +1323,7 @@
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>
 <translation id="8368001212524806591">가격 추적</translation>
+<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Google의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome은 관심분야를 예측할 수 있습니다. 방문하는 사이트에서 광고 개인 최적화를 위해 내 관심분야를 보여달라고 Chrome에 요청할 수 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
@@ -1325,6 +1361,7 @@
 <translation id="8505766168025405649">알림에서 다운로드 상태를 확인하세요.</translation>
 <translation id="8514477925623180633">Chrome으로 저장한 비밀번호 내보내기</translation>
 <translation id="8516012719330875537">이미지 편집기</translation>
+<translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>
 <translation id="8523928698583292556">저장된 암호 삭제</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
@@ -1356,6 +1393,7 @@
 <translation id="8659579665266920523">Chrome으로 검색하는 방법</translation>
 <translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
+<translation id="8667760277771450375">Chrome은 크로스 사이트 추적을 제한하면서도 사이트에서 광고 스팸과 사기를 근절할 수 있도록 도움을 줄 수 있는 방안을 모색하고 있습니다.</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8683039184091909753">이미지</translation>
@@ -1464,6 +1502,7 @@
 <translation id="962979164594783469">앱 설치</translation>
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="968900484120156207">방문한 페이지가 여기에 표시됩니다.</translation>
+<translation id="969573236494556070">사이트 간 공유 제한</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>

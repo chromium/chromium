@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ponudbe</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja to napravo in morda nadzira vašo dejavnost.</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
+<translation id="1486019694341708158">Vklopite preklop, če želite izbrati možnosti ohranjevalnika zaslona.</translation>
 <translation id="1491076385728777984">Posodabljanje vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
 <translation id="150962533380566081">Neveljavna koda PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Naprava je krmilnik za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Na voljo je <ph name="AVAILABLE_MEMORY" /> GB od skupno <ph name="TOTAL_MEMORY" /> GB.</translation>
+<translation id="2138109643290557664">Lebdite mimo</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059">Št. fotografij: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">NA ČAKANJU</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Ogled v celozaslonskem načinu</translation>
 <translation id="4275799948641988986">Kdo bo po popravilu uporabljal napravo?</translation>
 <translation id="4289540628985791613">Pregled</translation>
+<translation id="4289849978083912975">Diaprojekcija</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Tipka <ph name="KEY_NAME" /> je bila pritisnjena.</translation>
@@ -539,10 +542,12 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7175037578838465313">Konfiguriranje omrežja <ph name="NAME" /></translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7191009787982536050">Animacija ohranjevalnika zaslona.</translation>
 <translation id="7212734716605298123">Posodobitve vdelane programske opreme za zunanje naprave</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Začutite vetrič</translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
 <translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7302860742311162920">ICCID</translation>

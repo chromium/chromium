@@ -388,7 +388,6 @@ Realiza los siguientes pasos:</translation>
 <translation id="4536418791685807335">Intenta volver a acceder.</translation>
 <translation id="4540780316273593836">Se produjo un error</translation>
 <translation id="457386861538956877">Más...</translation>
-<translation id="458449952965618888">Acceso al micrófono permitido</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Búsqueda con Google</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
@@ -409,7 +408,6 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="4689564913179979534">Administrar formas de pago…</translation>
 <translation id="4697071790493980729">No se encontraron resultados</translation>
 <translation id="470966556546083668">No activar la sincronización</translation>
-<translation id="4727245048156789470">Acceso a la cámara y al micrófono permitido</translation>
 <translation id="4737560986434232178">Buscar pestañas recientes</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay. Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -825,7 +823,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
-<translation id="8304831996890817401">Acceso a la cámara permitido</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén presionado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>

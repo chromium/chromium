@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1209796539517632982">Servere de nume automate</translation>
 <translation id="1210831758834677569">Laoțiană</translation>
+<translation id="1223825810409523901">Extensie Chrome</translation>
 <translation id="1243314992276662751">Încărcați</translation>
 <translation id="1249250836236328755">Gen</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Nu se permite modificarea configurațiilor de rețea cu acces comun</translation>
 <translation id="1665611772925418501">Fișierul nu a putut fi modificat.</translation>
 <translation id="1673103856845176271">Fișierul nu a putut fi accesat din motive de securitate.</translation>
+<translation id="16762847117768727">Imagine ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cu bicicleta</translation>
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Nu utilizați date mobile pentru sincronizare</translation>
 <translation id="7928710562641958568">Scoateți dispozitivul</translation>
 <translation id="7943385054491506837">S.U.A. Colemak</translation>
+<translation id="7948417415021769876">Arhivă 7z</translation>
 <translation id="7953739707111622108">Acest dispozitiv nu poate fi deschis deoarece sistemul său de fișiere nu a fost recunoscut.</translation>
 <translation id="7969525169268594403">Slovenă</translation>
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Cheie WEP greșită</translation>
 <translation id="8372852072747894550">Greacă</translation>
 <translation id="8386903983509584791">Scanarea s-a finalizat</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> a fost extras.</translation>
 <translation id="8395901698320285466">Dimensiuni</translation>
 <translation id="8408068190360279472">Rețea <ph name="NETWORK_TYPE" />, se stabilește conexiunea</translation>
 <translation id="8425213833346101688">Modificați</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Elementele din coșul de gunoi sunt șterse definitiv după 30 de zile.</translation>
 <translation id="9183302530794969518">Documente Google</translation>
 <translation id="9189836632794948435">Kazahă</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elemente extrase.</translation>
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219908252191632183">Peisaj lunar</translation>

@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1220509181886849806">Kaydedilen şifre kullanılsın mı?</translation>
 <translation id="1717486229951421299">Dokunarak doldurulacak kimlik bilgisi listesi ekranın yarısında açıldı.</translation>
 <translation id="207576718733492531">Dokunarak doldurulacak kimlik bilgisi listesi kapatıldı.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2410754283952462441">Bir hesap seçin</translation>
 <translation id="3399357656427473483">Dokunarak doldurulacak kimlik bilgisi listesi.</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> sitesinde oturum açacaksınız</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="5441504010984421144">Dokunarak doldurulacak kimlik bilgisi listesi tam ekranda açıldı.</translation>
 <translation id="5624120631404540903">Şifreleri yönet</translation>

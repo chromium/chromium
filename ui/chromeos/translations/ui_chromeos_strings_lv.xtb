@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
+<translation id="1223825810409523901">Chrome paplašinājums</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1249250836236328755">Žanrs</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Nav atļauts mainīt koplietota tīkla konfigurāciju.</translation>
 <translation id="1665611772925418501">Failu nevarēja pārveidot.</translation>
 <translation id="1673103856845176271">Failam nevar piekļūt drošības apsvērumu dēļ.</translation>
+<translation id="16762847117768727">ISO attēls</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Riteņbraukšana</translation>
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Nelietot mobilos datus sinhronizācijai</translation>
 <translation id="7928710562641958568">Ierīces atvienošana</translation>
 <translation id="7943385054491506837">ASV Colemak</translation>
+<translation id="7948417415021769876">7z arhīvs</translation>
 <translation id="7953739707111622108">Šo ierīci nevar atvērt, jo tās failu sistēma netika atpazīta.</translation>
 <translation id="7969525169268594403">Slovēņu valoda</translation>
 <translation id="7972920761225148017">Franču (Šveice)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Neatbilstoša WEP atslēga</translation>
 <translation id="8372852072747894550">Grieķu</translation>
 <translation id="8386903983509584791">Meklēšana ir pabeigta</translation>
+<translation id="8387733224523483503">Vienums <ph name="FILE_NAME" /> ir izvilkts.</translation>
 <translation id="8395901698320285466">Izmēri</translation>
 <translation id="8408068190360279472">Tīkls: <ph name="NETWORK_TYPE" />, notiek savienojuma izveide</translation>
 <translation id="8425213833346101688">Mainīt</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Atkritnē esošie vienumi tiek neatgriezeniski dzēsti pēc 30 dienām.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">Kazahu</translation>
+<translation id="9200427192836333033">Izvilkto vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="9219908252191632183">Mēness</translation>

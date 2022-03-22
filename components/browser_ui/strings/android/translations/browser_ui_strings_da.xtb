@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
+<translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="2785051990912111074">Denne handling rydder cookies for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Website</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="3797520601150691162">Anvend ikke Mørkt tema på et bestemt website</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
+<translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
+<translation id="6722828510648505498">Bloker loginmeddelelser fra identitetstjenester</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
 <translation id="6766622839693428701">Stryg ned for at lukke.</translation>

@@ -125,8 +125,10 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1677507110654891115">A funcionalidade <ph name="FEATURE_NAME" /> não está ligada.</translation>
+<translation id="1677582821739292812">Alguém está a olhar para o seu ecrã</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Endereço IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">Janela ativa ancorada à esquerda.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
 <translation id="1715293566947629045">A desativar o perfil. Aguarde alguns minutos.</translation>
@@ -264,6 +266,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2665788051462227163">A app <ph name="UNAVAILABLE_APPS_ONE" /> e a app <ph name="UNAVAILABLE_APPS_TWO" /> não se encontram neste dispositivo.</translation>
+<translation id="2673968385134502798">Jogos</translation>
 <translation id="2678852583403169292">Menu da funcionalidade Selecionar para falar</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
@@ -277,6 +280,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Eliminar"</translation>
+<translation id="2750941250130734256">Janela ativa desancorada.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerido por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sair do modo de captura</translation>
 <translation id="2791421900609674576">Verá recomendações para poder continuar onde parou. Pode tocar sem soltar para remover recomendações.</translation>
@@ -669,6 +673,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="5106223312672646208">Personalizar</translation>
+<translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mês seguinte</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
@@ -790,6 +795,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
+<translation id="5924838240953214369">Modo de captura, a predefinição é <ph name="SOURCE" /> <ph name="TYPE" />. Entrada da câmara definida como <ph name="CAMERA_NAME" />, pré-visualização ativada. Prima Tab para a navegação do teclado.</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
@@ -1048,6 +1054,7 @@ Nova instalação</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7569983096843329377">Preto</translation>
+<translation id="7573585051776738856">Janela ativa ancorada à direita.</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>
 <translation id="7590883480672980941">Definições de introdução</translation>
 <translation id="7593891976182323525">Pesquisar ou Shift</translation>

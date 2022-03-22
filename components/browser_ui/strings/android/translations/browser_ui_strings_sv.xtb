@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="2704606927547763573">Kopierat</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
+<translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="2785051990912111074">Detta rensar cookies för <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Vill du återställa alla webbplatsbehörigheter för <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Webbplats</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Hoppa över 10 s genom att trycka två gånger till vänster/höger på videon</translation>
 <translation id="3797520601150691162">Använd inte mörkt tema för en viss webbplats</translation>
 <translation id="381841723434055211">Telefonnummer</translation>
+<translation id="3826050100957962900">Inloggning hos tredje part</translation>
 <translation id="3835233591525155343">Enhetsanvändning</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3859306556332390985">Sök framåt</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6689172468748959065">Profilfoton</translation>
 <translation id="6697925417670533197">Pågående nedladdningar</translation>
+<translation id="6722828510648505498">Blockera inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="6746124502594467657">Flytta ned</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
 <translation id="6766622839693428701">Svep nedåt när du vill stänga.</translation>

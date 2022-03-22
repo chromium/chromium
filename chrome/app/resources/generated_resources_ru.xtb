@@ -884,6 +884,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">&amp;Уменьшить</translation>
 <translation id="1830550083491357902">Вход не выполнен</translation>
+<translation id="1832459821645506983">ОК</translation>
 <translation id="1832511806131704864">Сведения о телефоне обновлены</translation>
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1834503245783133039">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
@@ -5780,7 +5781,6 @@
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
-<translation id="6785518634832172390">PIN-код должен быть не длиннее 12 символов.</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787097042755590313">Другая вкладка</translation>
 <translation id="6787839852456839824">Быстрые клавиши</translation>
@@ -6686,7 +6686,6 @@
 <translation id="7691077781194517083">Не удалось сбросить настройки электронного ключа. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691163173018300413">Окей, Google</translation>
 <translation id="7691698019618282776">Обновить Crostini</translation>
-<translation id="769375405463525957">Когда вы отходите от своего устройства, его экран автоматически блокируется. Если вы перед экраном, он остается включенным.</translation>
 <translation id="7694246789328885917">Инструмент "Маркер"</translation>
 <translation id="7696063401938172191">На устройстве <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>

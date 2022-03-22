@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nomes automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
+<translation id="1223825810409523901">Extensión de Chrome</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1249250836236328755">Xénero</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Non se permite cambiar a configuración da rede compartida</translation>
 <translation id="1665611772925418501">Non se puido modificar o ficheiro.</translation>
 <translation id="1673103856845176271">Non se puido acceder ao ficheiro por motivos de seguranza.</translation>
+<translation id="16762847117768727">Imaxe ISO</translation>
 <translation id="169515659049020177">Maiús</translation>
 <translation id="1715848075824334077">En bicicleta</translation>
 <translation id="1722487484194605434">Comprimindo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Non utilizar datos móbiles para a sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>
 <translation id="7943385054491506837">Colemak para EUA</translation>
+<translation id="7948417415021769876">Ficheiro 7z</translation>
 <translation id="7953739707111622108">Non se pode abrir este dispositivo porque non se recoñeceu o seu sistema de ficheiros.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francés (Suíza)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
 <translation id="8386903983509584791">Finalizou a busca</translation>
+<translation id="8387733224523483503">Extraeuse <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensións</translation>
 <translation id="8408068190360279472">Rede de tipo <ph name="NETWORK_TYPE" />, conectando</translation>
 <translation id="8425213833346101688">Cambiar</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Os elementos da papeleira elimínanse para sempre ao cabo de 30 días.</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
+<translation id="9200427192836333033">Extraéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
 <translation id="9213073329713032541">Iniciouse correctamente a instalación.</translation>
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="9219908252191632183">Paisaxe lunar</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1209796539517632982">Servidors de noms automàtics</translation>
 <translation id="1210831758834677569">Laosià</translation>
+<translation id="1223825810409523901">Extensió de Chrome</translation>
 <translation id="1243314992276662751">Penja</translation>
 <translation id="1249250836236328755">Gènere</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">No es pot canviar la configuració de la xarxa compartida</translation>
 <translation id="1665611772925418501">El fitxer no s'ha pogut modificar.</translation>
 <translation id="1673103856845176271">No s'ha pogut accedir al fitxer per qüestions de seguretat.</translation>
+<translation id="16762847117768727">Imatge ISO</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1715848075824334077">Persona en bicicleta</translation>
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
 <translation id="7928710562641958568">Expulsa el dispositiu</translation>
 <translation id="7943385054491506837">Colemak nord-americà</translation>
+<translation id="7948417415021769876">Arxiu 7z</translation>
 <translation id="7953739707111622108">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no s'ha reconegut.</translation>
 <translation id="7969525169268594403">Eslovè</translation>
 <translation id="7972920761225148017">Francès (Suïssa)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Clau WEP no vàlida</translation>
 <translation id="8372852072747894550">Grec</translation>
 <translation id="8386903983509584791">S'ha completat la cerca</translation>
+<translation id="8387733224523483503">S'ha extret <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8408068190360279472">Xarxa <ph name="NETWORK_TYPE" /> (connectant)</translation>
 <translation id="8425213833346101688">Canvia</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Els elements de la paperera se suprimeixen definitivament al cap de 30 dies.</translation>
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="9189836632794948435">Kazakh</translation>
+<translation id="9200427192836333033">S'han extret <ph name="NUMBER_OF_ITEMS" /> elements.</translation>
 <translation id="9213073329713032541">La instal·lació s'ha iniciat.</translation>
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219908252191632183">Paisatge lunar</translation>

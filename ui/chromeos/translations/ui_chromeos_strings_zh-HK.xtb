@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1210831758834677569">老撾文</translation>
+<translation id="1223825810409523901">Chrome 擴充功能</translation>
 <translation id="1243314992276662751">上載</translation>
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">不允許變更共用網絡設定</translation>
 <translation id="1665611772925418501">無法修改檔案。</translation>
 <translation id="1673103856845176271">基於安全理由，您無法存取檔案。</translation>
+<translation id="16762847117768727">ISO 映像</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">踏單車</translation>
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">請勿使用流動數據進行同步處理</translation>
 <translation id="7928710562641958568">退出裝置</translation>
 <translation id="7943385054491506837">Colemak 美式鍵盤</translation>
+<translation id="7948417415021769876">7z 封存檔案</translation>
 <translation id="7953739707111622108">這部裝置所用的檔案系統無法識別，因此系統無法開啟這部裝置。</translation>
 <translation id="7969525169268594403">斯洛維尼亞文</translation>
 <translation id="7972920761225148017">法文 (瑞士)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
 <translation id="8386903983509584791">掃瞄完成</translation>
+<translation id="8387733224523483503">已解壓縮 <ph name="FILE_NAME" />。</translation>
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網絡，正在連線</translation>
 <translation id="8425213833346101688">變更</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">垃圾桶中的項目會在 30 天後永久刪除。</translation>
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="9189836632794948435">哈薩克文</translation>
+<translation id="9200427192836333033">已解壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
 <translation id="9213073329713032541">已成功啟動安裝程序。</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="9219908252191632183">月球表面</translation>

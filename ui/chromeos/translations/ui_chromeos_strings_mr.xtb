@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1209796539517632982">स्वयंचलित नाव सर्व्हर</translation>
 <translation id="1210831758834677569">लाओ</translation>
+<translation id="1223825810409523901">Chrome एक्स्टेंशन</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">शेअर केलेल्या नेटवर्कची कॉंफिगरेशन बदलण्याची परवानगी नाही</translation>
 <translation id="1665611772925418501">फाइल सुधारली जाऊ शकली नाही.</translation>
 <translation id="1673103856845176271">फाइलमध्ये सुरक्षिततेच्या कारणांमुळे प्रवेश करता येऊ शकला नाही.</translation>
+<translation id="16762847117768727">ISO इमेज</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">सायकल चालवणे</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आयटम झिप करत आहे...</translation>
@@ -811,6 +813,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7925686952655276919">समक्रमणासाठी मोबाइल डेटा वापरु नका</translation>
 <translation id="7928710562641958568">डिव्हाइस काढून टाका</translation>
 <translation id="7943385054491506837">यूएस कोलमॅक</translation>
+<translation id="7948417415021769876">7z संग्रहण</translation>
 <translation id="7953739707111622108">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम ओळखीचे नाही.</translation>
 <translation id="7969525169268594403">स्लोव्हेनियन</translation>
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
@@ -860,6 +863,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
 <translation id="8386903983509584791">स्कॅन पूर्ण झाले</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> काढली आहे.</translation>
 <translation id="8395901698320285466">परिमाण</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट करत आहे</translation>
 <translation id="8425213833346101688">बदल करा</translation>
@@ -954,6 +958,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9174050671906956834">ट्रॅशमधील आयटम ३० दिवसांनंतर कायमचे हटवले जातात.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कझाख</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> आयटम काढले आहेत.</translation>
 <translation id="9213073329713032541">इंस्टॉलेशनला यशस्वीरीत्या सुरुवात झाली.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लुनार</translation>

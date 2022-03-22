@@ -128,6 +128,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1677582821739292812">Keegi vaatab teie ekraanikuva</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taimer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-aadress: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">Aktiivne aken dokiti vasakule.</translation>
 <translation id="1708345662127501511">Töölaud: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Võrguseaded</translation>
 <translation id="1715293566947629045">Profiili keelamine. Oodake mõni minut.</translation>
@@ -265,6 +266,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2658778018866295321">Klõpsamine ja lohistamine</translation>
 <translation id="2665788051462227163">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" /> ja <ph name="UNAVAILABLE_APPS_TWO" /> pole selles seadmes.</translation>
+<translation id="2673968385134502798">Mängud</translation>
 <translation id="2678852583403169292">Funktsiooni Vali ja kuula menüü</translation>
 <translation id="2689613560355655046">Töölaud 8</translation>
 <translation id="2700493154570097719">Valige klaviatuur</translation>
@@ -278,6 +280,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Kustuta“</translation>
+<translation id="2750941250130734256">Aktiivne aken dokiti lahti.</translation>
 <translation id="2778650143428714839">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Välju jäädvustusrežiimist</translation>
 <translation id="2791421900609674576">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite pikalt puudutada.</translation>
@@ -671,6 +674,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="5106223312672646208">Isikupärastamine</translation>
+<translation id="5107522548814527560">Veeb</translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5147567197700016471">Avatud</translation>
@@ -792,6 +796,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
+<translation id="5924838240953214369">Jäädvustusrežiim, vaikeseade on <ph name="SOURCE" /> <ph name="TYPE" />. Kaamerasisendiks määrati <ph name="CAMERA_NAME" />, eelvaade on sisse lülitatud. Klaviatuuriga navigeerimiseks vajutage tabulaatorit.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
@@ -1050,6 +1055,7 @@ Uus installimine</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7569983096843329377">Must</translation>
+<translation id="7573585051776738856">Aktiivne aken dokiti paremale.</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
 <translation id="7593891976182323525">Otsinguklahv või tõstuklahv</translation>

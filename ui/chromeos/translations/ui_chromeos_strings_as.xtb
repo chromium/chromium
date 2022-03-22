@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1209796539517632982">স্বয়ংক্ৰিয় নাম ছার্ভাৰ</translation>
 <translation id="1210831758834677569">লাও</translation>
+<translation id="1223825810409523901">Chromeৰ এক্সটেনশ্বন</translation>
 <translation id="1243314992276662751">আপল’ড কৰক</translation>
 <translation id="1249250836236328755">শৈলী</translation>
 <translation id="1254593899333212300">পোনপটীয়া ইণ্টাৰনেট সংযোগ</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">শ্বেয়াৰ কৰা নেটৱর্কৰ কনফিগাৰেশ্বন সলনি কৰাৰ অনুমতি দিয়া নহয়</translation>
 <translation id="1665611772925418501">ফাইলটো সংশোধন কৰিব পৰা নগ’ল।</translation>
 <translation id="1673103856845176271">নিৰপত্তাজনিত কাৰণত ফাইলটো এক্সেছ কৰিব পৰা নগ'ল।</translation>
+<translation id="16762847117768727">ISO ইমে’জ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">বাইকিং</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">ছিংক কৰিবলৈ ম'বাইল ডেটা ব্যৱহাৰ নকৰিব</translation>
 <translation id="7928710562641958568">ডিভাইচ এৰুৱাওক</translation>
 <translation id="7943385054491506837">ইউ.এছ. ক’লমাক</translation>
+<translation id="7948417415021769876">7z আৰ্কাইভ</translation>
 <translation id="7953739707111622108">এই ডিভাইচটো খুলিব পৰা নাযায় কাৰণ ইয়াৰ ফাইলছিষ্টেমটো চিনাক্ত কৰিব পৰা নাই।</translation>
 <translation id="7969525169268594403">শ্ল'ভেনিয়ান</translation>
 <translation id="7972920761225148017">ফৰাচী (ছুইজাৰলেণ্ড)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">বেয়া WEP কী</translation>
 <translation id="8372852072747894550">গ্ৰীক</translation>
 <translation id="8386903983509584791">স্কেন সম্পূর্ণ হ’ল</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> আহৰণ কৰা হ’ল।</translation>
 <translation id="8395901698320285466">দীঘ-প্ৰস্থ</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, সংযোগ কৰি থকা হৈছে</translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">ট্ৰেশ্বত থকা বস্তু ৩০ দিনৰ পাছত চিৰদিনৰ বাবে মচা হয়।</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু আহৰণ কৰা হ’ল।</translation>
 <translation id="9213073329713032541">ইনষ্টলেশ্বন সফলতাৰে আৰম্ভ কৰা হ’ল৷</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">চান্দ্ৰ</translation>

@@ -7,22 +7,17 @@
 <translation id="2077832278056815832">يُرجى إغلاق أيّ فقاعات محادثات أو تراكبات من التطبيقات الأخرى، ثم إعادة المحاولة مرة أخرى.</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2416359993254398973">‏يحتاج Chrome إلى إذن لاستخدام الكاميرا للموقع الإلكتروني هذا.</translation>
 <translation id="2987449669841041897">يتعذّر على الموقع الإلكتروني هذا طلب الإذن</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />تفعيل البلوتوث<ph name="END_LINK" /> للسماح بالإقران</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /> أثناء البحث عن الأجهزة…</translation>
 <translation id="5230560987958996918">يريد <ph name="SITE" /> البحث عن أجهزة البلوتوث المجاورة. وتم العثور على الأجهزة التالية:</translation>
 <translation id="5527082711130173040">‏يحتاج Chrome للوصول إلى الموقع للبحث عن الأجهزة. <ph name="BEGIN_LINK1" />تحديث الأذونات<ph name="END_LINK1" />. الوصول إلى الموقع <ph name="BEGIN_LINK2" />غير مفعّل لهذا الجهاز<ph name="END_LINK2" /> أيضًا.</translation>
-<translation id="557283862590186398">‏يحتاج Chrome إلى إذن لاستخدام الميكروفون للموقع الإلكتروني هذا.</translation>
 <translation id="5817918615728894473">إقران</translation>
 <translation id="5858741533101922242">‏يتعذر على Chrome تشغيل محوّل البلوتوث</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="6092062101542170135">‏للمواصلة، عليك تفعيل ميزة NFC في إعدادات Android.</translation>
-<translation id="6393863479814692971">‏يحتاج Chrome إلى إذن لاستخدام الكاميرا والميكروفون للموقع الإلكتروني هذا.</translation>
 <translation id="6656545060687952787">‏يحتاج Chrome للوصول إلى المواقع للبحث عن الأجهزة. <ph name="BEGIN_LINK" />تحديث الأذونات<ph name="END_LINK" />.</translation>
-<translation id="6697947395630195233">‏يحتاج Chrome إلى الوصول إلى موقعك الجغرافي لمشاركة موقعك الجغرافي مع الموقع الإلكتروني هذا.</translation>
-<translation id="7134415045456331657">‏يحتاج متصفِّح Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />الحصول على مساعدة<ph name="END_LINK1" /> أو <ph name="BEGIN_LINK2" />إعادة الفحص<ph name="END_LINK2" /></translation>
 <translation id="7884346424584885269">‏يحتاج Chrome إلى إذن للبحث عن الأجهزة المجاورة. <ph name="BEGIN_LINK" />تعديل الأذونات<ph name="END_LINK" /></translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>

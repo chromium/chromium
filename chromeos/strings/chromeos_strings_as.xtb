@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">অ'ফাৰসমূহ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে তথা আপোনাৰ কাৰ্যকলাপো নিৰীক্ষণ কৰিব পাৰে।</translation>
 <translation id="1478594628797167447">স্কেনাৰ</translation>
+<translation id="1486019694341708158">স্ক্ৰীন ছেভাৰৰ বিকল্প বাছনি কৰিবলৈ ট’গল অন কৰক</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কাৰ্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="150962533380566081">অমান্য PUK।</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">ডিভাইচটো এটা গে’ম নিয়ন্ত্ৰক।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে</translation>
+<translation id="2138109643290557664">ভাসমান</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">পূৰ্ণ স্ক্ৰীনত চাওক</translation>
 <translation id="4275799948641988986">মেৰামতি কৰাৰ পাছত ডিভাইচটো কোনে ব্যৱহাৰ কৰিব?</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
+<translation id="4289849978083912975">শ্লাইড শ্ব’</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কীটো টিপিছে</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগাৰ কৰক</translation>
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="7191009787982536050">স্ক্ৰীন ছেভাৰৰ এনিমেশ্বন</translation>
 <translation id="7212734716605298123">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰৰ আপডে’ট</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">মলয়া বতাহৰ আমেজ</translation>
 <translation id="7287310195820267359">ৱালপেপাৰৰ সংগ্ৰহ</translation>
 <translation id="7297226631177386107">ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="7302860742311162920">ICCID</translation>

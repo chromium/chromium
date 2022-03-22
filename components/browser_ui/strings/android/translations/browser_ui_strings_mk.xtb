@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2717722538473713889">Адреси за е-пошта</translation>
+<translation id="2750481671343847896">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација.</translation>
 <translation id="2785051990912111074">Изборов ќе ги избрише колачињата за <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Локација</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
 <translation id="3797520601150691162">Не применувај темна тема за конкретен сајт</translation>
 <translation id="381841723434055211">Телефонски броеви</translation>
+<translation id="3826050100957962900">Најавување на трети страни</translation>
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
+<translation id="6722828510648505498">Блокирајте prompt за најавување од услуги за идентификација.</translation>
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>

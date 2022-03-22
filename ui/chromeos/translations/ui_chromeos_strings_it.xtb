@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1209796539517632982">Assegnazione automatica nomi ai server</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1223825810409523901">Estensione di Chrome</translation>
 <translation id="1243314992276662751">Carica</translation>
 <translation id="1249250836236328755">Genere</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">La modifica delle configurazioni di rete condivise non è consentita</translation>
 <translation id="1665611772925418501">Impossibile modificare il file.</translation>
 <translation id="1673103856845176271">Impossibile accedere al file per motivi di sicurezza.</translation>
+<translation id="16762847117768727">Immagine ISO</translation>
 <translation id="169515659049020177">Maiusc</translation>
 <translation id="1715848075824334077">In bicicletta</translation>
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Non utilizzare dati mobili per la sincronizzazione</translation>
 <translation id="7928710562641958568">Espelli dispositivo</translation>
 <translation id="7943385054491506837">Colemak USA</translation>
+<translation id="7948417415021769876">Archivio 7z</translation>
 <translation id="7953739707111622108">Impossibile aprire il dispositivo perché il suo filesystem non è stato riconosciuto.</translation>
 <translation id="7969525169268594403">Sloveno</translation>
 <translation id="7972920761225148017">Francese (Svizzera)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8372852072747894550">Greco</translation>
 <translation id="8386903983509584791">Scansione completata</translation>
+<translation id="8387733224523483503">Elemento "<ph name="FILE_NAME" />" estratto.</translation>
 <translation id="8395901698320285466">Dimensioni</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
 <translation id="8425213833346101688">Cambia</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Gli elementi nel cestino vengono eliminati definitivamente dopo 30 giorni.</translation>
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementi estratti.</translation>
 <translation id="9213073329713032541">Installazione eseguita correttamente.</translation>
 <translation id="9219103736887031265">Immagini</translation>
 <translation id="9219908252191632183">Lunare</translation>

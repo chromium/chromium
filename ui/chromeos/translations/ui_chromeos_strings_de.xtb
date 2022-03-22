@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1209796539517632982">Automatische Wahl des Nameservers</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1223825810409523901">Chrome-Erweiterung</translation>
 <translation id="1243314992276662751">Hochladen</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Freigegebene Netzwerkkonfigurationen dürfen nicht geändert werden</translation>
 <translation id="1665611772925418501">Die Datei konnte nicht geändert werden.</translation>
 <translation id="1673103856845176271">Auf die Datei konnte aus Sicherheitsgründen nicht zugegriffen werden.</translation>
+<translation id="16762847117768727">ISO-Bild</translation>
 <translation id="169515659049020177">Umschalttaste</translation>
 <translation id="1715848075824334077">Person auf einem Rad</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gezippt...</translation>
@@ -125,7 +127,7 @@
 <translation id="2037845485764049925">Russisch</translation>
 <translation id="2044023416777079300">Modem nicht registriert</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2070909990982335904">Namen, die mit einem Punkt beginnen, sind für das System reserviert. Wählen Sie einen anderen Namen aus.</translation>
+<translation id="2070909990982335904">Namen, die mit einem Punkt beginnen, sind für das System reserviert. Wähle einen anderen Namen aus.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
@@ -278,7 +280,7 @@
 <translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
 <translation id="3408072735282270043">Aktivieren, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Deutsch (Deutschland) mit Neo 2-Tastatur</translation>
-<translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchten Sie fortfahren?</translation>
+<translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchtest du fortfahren?</translation>
 <translation id="3437801641691368414">Erstellungszeit</translation>
 <translation id="343907260260897561">Sofortbildkamera</translation>
 <translation id="3455931012307786678">Estnisch</translation>
@@ -411,7 +413,7 @@
 <translation id="4656293982926141856">Auf diesem Computer</translation>
 <translation id="4656777537938206294">Dateien offline verfügbar machen</translation>
 <translation id="4658782175094886150">Person im Schnee</translation>
-<translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern Sie diese Dateien nicht mit ihnen teilen.</translation>
+<translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern du diese Dateien nicht mit ihnen teilst.</translation>
 <translation id="467809019005607715">Google Präsentationen</translation>
 <translation id="4690246192099372265">Schwedisch</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Keine mobilen Daten für die Synchronisierung verwenden</translation>
 <translation id="7928710562641958568">Gerät auswerfen</translation>
 <translation id="7943385054491506837">USA – Colemak</translation>
+<translation id="7948417415021769876">7z-Archiv</translation>
 <translation id="7953739707111622108">Dieses Gerät kann nicht geöffnet werden, da das Dateisystem nicht erkannt wurde.</translation>
 <translation id="7969525169268594403">Slowenisch</translation>
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
@@ -831,7 +834,7 @@
 <translation id="8106045200081704138">Für mich freigegeben</translation>
 <translation id="8116072619078571545">Wasser mit Eis</translation>
 <translation id="8128733386027980860">Englisch (Vereinigtes Königreich) mit Dvorak-Tastatur</translation>
-<translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit Ihnen geteilt. Sie können die Datei nicht löschen, da Sie nicht der Inhaber sind.</translation>
+<translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit dir geteilt. Du kannst die Datei nicht löschen, da du nicht der Inhaber bist.</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154842056504218462">Alle Einträge wurden ausgewählt.</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8372852072747894550">Griechisch</translation>
 <translation id="8386903983509584791">Suche abgeschlossen</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> extrahiert.</translation>
 <translation id="8395901698320285466">Abmessungen</translation>
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>
 <translation id="8425213833346101688">Ändern</translation>
@@ -954,10 +958,11 @@
 <translation id="9174050671906956834">Elemente im Papierkorb werden nach 30 Tagen endgültig gelöscht.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasachisch</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> Elemente extrahiert.</translation>
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
-<translation id="938470336146445890">Installieren Sie ein Nutzerzertifikat.</translation>
+<translation id="938470336146445890">Installiere ein Nutzerzertifikat.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>
 <translation id="945522503751344254">Feedback geben</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
+<translation id="1223825810409523901">Extension Chrome</translation>
 <translation id="1243314992276662751">Importer</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">La modification de la configuration d'un réseau partagé n'est pas autorisée</translation>
 <translation id="1665611772925418501">Impossible de modifier le fichier.</translation>
 <translation id="1673103856845176271">Impossible d'accéder au fichier pour des raisons de sécurité.</translation>
+<translation id="16762847117768727">Image ISO</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1715848075824334077">Vélo</translation>
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter le périphérique</translation>
 <translation id="7943385054491506837">Colemak américain</translation>
+<translation id="7948417415021769876">Archive 7z</translation>
 <translation id="7953739707111622108">Impossible d'ouvrir ce périphérique, car son système de fichiers n'est pas reconnu.</translation>
 <translation id="7969525169268594403">Slovène</translation>
 <translation id="7972920761225148017">Français (Suisse)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> extrait.</translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" /> : connexion…</translation>
 <translation id="8425213833346101688">Modifier</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Les éléments dans la corbeille sont définitivement supprimés au bout de 30 jours.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> éléments extraits.</translation>
 <translation id="9213073329713032541">Installation démarrée avec succès.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Paysage lunaire</translation>

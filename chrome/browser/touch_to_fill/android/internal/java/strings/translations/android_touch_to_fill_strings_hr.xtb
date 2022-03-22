@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1220509181886849806">Upotrijebiti spremljenu zaporku?</translation>
 <translation id="1717486229951421299">Popis vjerodajnica za unos dodirom otvoren je na pola visine.</translation>
 <translation id="207576718733492531">Popis vjerodajnica za unos dodirom zatvoren je.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2410754283952462441">Odabir računa</translation>
 <translation id="3399357656427473483">Popis vjerodajnica za unos dodirom.</translation>
+<translation id="3653689374478248324">Prijavit ćete se na <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="5441504010984421144">Popis vjerodajnica za unos dodirom otvoren je preko cijelog zaslona.</translation>
 <translation id="5624120631404540903">Upravljanje zaporkama</translation>

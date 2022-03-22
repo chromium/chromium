@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1209796539517632982">Automatikus névszerverek</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1223825810409523901">Chrome-bővítmény</translation>
 <translation id="1243314992276662751">Feltöltés</translation>
 <translation id="1249250836236328755">Műfaj</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">A megosztott hálózati konfigurációk módosítása nem engedélyezett</translation>
 <translation id="1665611772925418501">A fájlt nem lehet módosítani.</translation>
 <translation id="1673103856845176271">A fájl biztonsági okokból nem érhető el.</translation>
+<translation id="16762847117768727">ISO-lemezkép</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Kerékpározás</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elem tömörítése…</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Ne használjon mobiladatokat a szinkronizáláshoz</translation>
 <translation id="7928710562641958568">Eszköz kiadása</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
+<translation id="7948417415021769876">7z-archívum</translation>
 <translation id="7953739707111622108">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszer nem ismerhető fel.</translation>
 <translation id="7969525169268594403">szlovén</translation>
 <translation id="7972920761225148017">francia (Svájc)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Hibás WEP kulcs</translation>
 <translation id="8372852072747894550">görög</translation>
 <translation id="8386903983509584791">Keresés befejezve</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> kinyerve.</translation>
 <translation id="8395901698320285466">Méret</translation>
 <translation id="8408068190360279472">Hálózat: <ph name="NETWORK_TYPE" />. Csatlakozás…</translation>
 <translation id="8425213833346101688">Módosítás</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">A kukában lévő elemek 30 nap elteltével végleg törlődnek.</translation>
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9189836632794948435">kazah</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elem kinyerve.</translation>
 <translation id="9213073329713032541">Telepítés sikeresen megkezdve.</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219908252191632183">Hold</translation>

@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1220509181886849806">Koristiti sačuvanu lozinku?</translation>
 <translation id="1717486229951421299">Lista akreditiva za popunjavanje dodirom je otvorena na pola visine.</translation>
 <translation id="207576718733492531">Lista akreditiva za popunjavanje dodirom je zatvorena.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2410754283952462441">Odaberite račun</translation>
 <translation id="3399357656427473483">Lista akreditiva za popunjavanje dodirom.</translation>
+<translation id="3653689374478248324">Prijavljujete se na <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="5441504010984421144">Lista akreditiva za popunjavanje dodirom je otvorena na cijelom ekranu.</translation>
 <translation id="5624120631404540903">Upravljajte lozinkama</translation>

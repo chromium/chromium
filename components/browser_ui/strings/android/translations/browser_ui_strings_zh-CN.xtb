@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
+<translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
 <translation id="2785051990912111074">此选项会清除 <ph name="WEBSITE" /> 的 Cookie</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2870560284913253234">网站</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="3797520601150691162">不对特定网站应用深色主题</translation>
 <translation id="381841723434055211">电话号码</translation>
+<translation id="3826050100957962900">第三方登录</translation>
 <translation id="3835233591525155343">您的设备使用情况</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">个人资料照片</translation>
 <translation id="6697925417670533197">正在下载内容</translation>
+<translation id="6722828510648505498">屏蔽来自身份服务的登录提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">重置权限？</translation>
 <translation id="6766622839693428701">向下滑动即可关闭。</translation>

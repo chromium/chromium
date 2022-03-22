@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1209796539517632982">Automatyczny wybór serwerów nazw</translation>
 <translation id="1210831758834677569">Laotański</translation>
+<translation id="1223825810409523901">Rozszerzenie do Chrome</translation>
 <translation id="1243314992276662751">Prześlij</translation>
 <translation id="1249250836236328755">Gatunek</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Wprowadzanie zmian w konfiguracjach sieci współdzielonych jest niedozwolone.</translation>
 <translation id="1665611772925418501">Nie można zmodyfikować pliku.</translation>
 <translation id="1673103856845176271">Nie można uzyskać dostępu do pliku ze względów bezpieczeństwa.</translation>
+<translation id="16762847117768727">Obraz ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Jazda na rowerze</translation>
 <translation id="1722487484194605434">Pakuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Nie synchronizuj przez połączenie komórkowe</translation>
 <translation id="7928710562641958568">Odłącz urządzenie</translation>
 <translation id="7943385054491506837">amerykańska klawiatura Colemak</translation>
+<translation id="7948417415021769876">Archiwum 7z</translation>
 <translation id="7953739707111622108">Nie można otworzyć urządzenia, ponieważ jego system plików nie został rozpoznany.</translation>
 <translation id="7969525169268594403">Słoweński</translation>
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8372852072747894550">Grecki</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
+<translation id="8387733224523483503">Element <ph name="FILE_NAME" /> został wyodrębniony.</translation>
 <translation id="8395901698320285466">Wymiary</translation>
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>
 <translation id="8425213833346101688">Zmień</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Elementy umieszczone w koszu są usuwane na zawsze po 30 dniach.</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">Kazachski</translation>
+<translation id="9200427192836333033">Wyodrębnione elementy: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Instalacja rozpoczęła się.</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219908252191632183">Księżycowy</translation>

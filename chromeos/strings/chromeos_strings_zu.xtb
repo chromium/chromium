@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ukunikezwa</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> iphatha le divayisi futhi ingakwazi ukwengamela umsebenzi wakho.</translation>
 <translation id="1478594628797167447">Iskena</translation>
+<translation id="1486019694341708158">Vula ukuguqula ukuze ukhethe izinketho zesigcini sesikrini</translation>
 <translation id="1491076385728777984">Ibuyekeza i-firmware ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">I-<ph name="MANAGER" /> iphatha lo msebenzisi futhi ingaphatha amasethingi isekudeni futhi iqaphe umsebenzi womsebenzisi.</translation>
 <translation id="150962533380566081">I-PUK engavumelekile.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Idivayisi iyisilawuli segeyimu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, uhlobo lwe-<ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Kuno-<ph name="AVAILABLE_MEMORY" /> GB kokungu-<ph name="TOTAL_MEMORY" /> GB otholakalayo</translation>
+<translation id="2138109643290557664">Ntanta nge-</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">izithombe ezingu-<ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">KUSEMUGQENI</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Buka Isikrini Esigcwele</translation>
 <translation id="4275799948641988986">Ngemva kokulungiswa, ubani ozobe esebenzisa idivayisi?</translation>
 <translation id="4289540628985791613">Ukubuka konke</translation>
+<translation id="4289849978083912975">Umbukiso wesilayidi</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
 <translation id="4300073214558989">Izithombe <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Ukhiye we-<ph name="KEY_NAME" /> ucindezelwe</translation>
@@ -539,10 +542,12 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7175037578838465313">Lungisa i-<ph name="NAME" /></translation>
 <translation id="7177485034254901881">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
+<translation id="7191009787982536050">Isigcini sesikrini sikapopayi</translation>
 <translation id="7212734716605298123">Izibuyekezo ze-Firmware zamadivayisi angaphandle</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
 <translation id="7271040990581020067">Iskena sisasetshenziswa okwamanje. Zama futhi emuva kwesikhathi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Izwa umoya</translation>
 <translation id="7287310195820267359">Amaqoqo Wesithombe Sangemuva</translation>
 <translation id="7297226631177386107">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTPS</translation>
 <translation id="7302860742311162920">I-ICCID</translation>

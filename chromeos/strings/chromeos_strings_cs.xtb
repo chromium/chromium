@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Nabídky</translation>
 <translation id="1476467821656042872">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která také může sledovat vaši aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1486019694341708158">Zapnutím přepínače vyberete možnosti spořiče obrazovky</translation>
 <translation id="1491076385728777984">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Tohoto uživatele spravuje doména <ph name="MANAGER" />, která také může vzdáleně spravovat nastavení a sledovat jeho aktivitu.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">K dispozici je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2138109643290557664">Album</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059">Počet fotek: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">VE FRONTĚ</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Zobrazit na celé obrazovce</translation>
 <translation id="4275799948641988986">Kdo toto zařízení po opravě bude používat?</translation>
 <translation id="4289540628985791613">Přehled</translation>
+<translation id="4289849978083912975">Prezentace</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
@@ -539,10 +542,12 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
+<translation id="7191009787982536050">Animace spořiče obrazovky</translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Šňůra</translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>

@@ -1389,6 +1389,7 @@
 <translation id="8881973373982641723">יתבצע ניקוי של ההיסטוריה, כולל זו שבתיבת החיפוש.</translation>
 <translation id="889338405075704026">‏כניסה להגדרות Chrome</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
+<translation id="8906502871739599113">התגובה שוכפלה</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8920114477895755567">בהמתנה לפרטי ההורים.</translation>
@@ -1408,6 +1409,7 @@
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>
 <translation id="8987641763863173640">ניהול הגדרות התצוגה המקדימה של סרטונים</translation>
+<translation id="898854820045159673">נוספה תגובה</translation>
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
@@ -1442,6 +1444,7 @@
 <translation id="9158770349521403363">שיתוף התוכן בלבד</translation>
 <translation id="916446198114569890">‏כתובות ה-URL שעברת אליהן נשמרות בחשבון Google שלך.</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
+<translation id="9187955620966010988">התגובה נערכה</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{התבצעה בדיקה לפני דקה אחת}two{התבצעה בדיקה לפני # דקות}many{התבצעה בדיקה לפני # דקות}other{התבצעה בדיקה לפני # דקות}}</translation>
 <translation id="9204836675896933765">נותר קובץ אחד</translation>
 <translation id="9205933215779845960">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לחפש ב-<ph name="SEARCH_ENGINE" />.</translation>

@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2717722538473713889">이메일 주소</translation>
+<translation id="2750481671343847896">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있습니다.</translation>
 <translation id="2785051990912111074"><ph name="WEBSITE" />의 쿠키가 삭제됩니다.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />의 모든 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="2870560284913253234">사이트</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="3797520601150691162">특정 사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="381841723434055211">전화번호</translation>
+<translation id="3826050100957962900">서드 파티 로그인</translation>
 <translation id="3835233591525155343">기기 사용 여부</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3859306556332390985">앞으로 탐색</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6689172468748959065">프로필 사진</translation>
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
+<translation id="6722828510648505498">ID 서비스의 로그인 메시지를 차단합니다.</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
 <translation id="6766622839693428701">닫으려면 아래로 스와이프하세요.</translation>

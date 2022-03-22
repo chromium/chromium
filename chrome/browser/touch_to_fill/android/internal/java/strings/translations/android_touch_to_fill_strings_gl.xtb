@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1220509181886849806">Queres usar o contrasinal gardado?</translation>
 <translation id="1717486229951421299">A lista de credenciais que se completarán ao tocar está aberta ata a metade da pantalla.</translation>
 <translation id="207576718733492531">A lista de credenciais que se completarán ao tocar está pechada.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
 <translation id="3399357656427473483">A lista de credenciais que se completarán ao tocar.</translation>
+<translation id="3653689374478248324">Iniciarás sesión en <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="5441504010984421144">A lista de credenciais que se completarán ao tocar está aberta a pantalla completa.</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>

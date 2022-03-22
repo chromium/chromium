@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1209796539517632982">အလိုအလျောက် အမည် ဆာဗာများ</translation>
 <translation id="1210831758834677569">လာအို</translation>
+<translation id="1223825810409523901">Chrome ပရိုဂရမ်အဆက်</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
 <translation id="1249250836236328755">သီချင်းအမျိုးအစား</translation>
 <translation id="1254593899333212300">တိုက်ရိုက် အင်တာနက် ချိတ်ဆက်မှု</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">မျှဝေထားသော ကွန်ရက်စီစဉ်သတ်မှတ်မှုများကို ပြောင်းခွင့်မပြုပါ</translation>
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="1673103856845176271">လုံခြုံရေးအချက်လက်များကြောင့် ဤဖိုင်အား အသုံးပြု၍ မရပါ။</translation>
+<translation id="16762847117768727">ISO ပုံ</translation>
 <translation id="169515659049020177">Shift ကီး</translation>
 <translation id="1715848075824334077">စက်ဘီးစီးခြင်း</translation>
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">စင့်ခ်လုပ်ရန် အတွက် မိုဘိုင်းဒေတာကို မသုံးပါနှင့်</translation>
 <translation id="7928710562641958568">ကိရိယာကို ထုတ်ပစ်ရန်</translation>
 <translation id="7943385054491506837">US Colemak</translation>
+<translation id="7948417415021769876">7z မှတ်တမ်း</translation>
 <translation id="7953739707111622108">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မသိသောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="7969525169268594403">ဆလိုဗင်နီးယား</translation>
 <translation id="7972920761225148017">ပြင်သစ် (ဆွစ်ဇာလန်)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">WEP သော့ မကောင်းပါ</translation>
 <translation id="8372852072747894550">ဂရိ</translation>
 <translation id="8386903983509584791">ရှာဖွေပြီးပါပြီ</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> ထုတ်ယူပြီးပြီ။</translation>
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ချိတ်ဆက်နေသည်</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">အမှိုက်ပုံးရှိ ဖိုင်များကို ရက် ၃၀ ကြာပြီးနောက် အပြီးဖျက်သည်။</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ကာဇာခ်</translation>
+<translation id="9200427192836333033">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူပြီးပြီ။</translation>
 <translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="9219908252191632183">လ</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्भरहरू</translation>
 <translation id="1210831758834677569">लाओ</translation>
+<translation id="1223825810409523901">Chrome एक्सटेन्सन</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1249250836236328755">विधा</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">साझा गरिएको नेटवर्कको कन्फिगरेसनहरू परिवर्तन गर्न अनुमति छैन</translation>
 <translation id="1665611772925418501">फाइल परिमार्जन गर्न सकिएन।</translation>
 <translation id="1673103856845176271">सुरक्षाको कारणले यो फाइल पहुँच गर्न सकिएन।</translation>
+<translation id="16762847117768727">ISO इमेज</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
 <translation id="1715848075824334077">बाइक चलाइरहेका व्यक्ति</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">समक्रमणको लागि मोबाइल डाटा प्रयोग नगर्नुहोस्</translation>
 <translation id="7928710562641958568">यन्त्र निकाल्नुहोस्</translation>
 <translation id="7943385054491506837">युएस कोलमाक</translation>
+<translation id="7948417415021769876">7z अभिलेख</translation>
 <translation id="7953739707111622108">यो डिभाइस खोलिन सकिँदैन किनभने त्यसको फाइलप्रणाली पहिचान गर्न सकिएन।</translation>
 <translation id="7969525169268594403">स्लोभेनियन</translation>
 <translation id="7972920761225148017">फ्रान्सेली (स्विजरल्यान्ड)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> एक्स्ट्रयाक्ट गरियो।</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">ट्र्यासमा रहेका वस्तुहरू ३० दिनपछि सदाका लागि मेटाइन्छन्।</translation>
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9189836632794948435">काजाख</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>

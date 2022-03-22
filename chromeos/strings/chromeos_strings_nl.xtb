@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1486019694341708158">Gebruik de schakelaar om de screensaveropties te selecteren</translation>
 <translation id="1491076385728777984">Firmware op <ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar</translation>
+<translation id="2138109643290557664">Voorbijzweven</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
 <translation id="4275799948641988986">Door wie wordt het apparaat na reparatie gebruikt?</translation>
 <translation id="4289540628985791613">Overzicht</translation>
+<translation id="4289849978083912975">Diavoorstelling</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
 <translation id="4333390807948134856">Er is op de toets <ph name="KEY_NAME" /> gedrukt</translation>
@@ -539,10 +542,12 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> configureren</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
+<translation id="7191009787982536050">Screensaveranimatie</translation>
 <translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Een koel briesje</translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>

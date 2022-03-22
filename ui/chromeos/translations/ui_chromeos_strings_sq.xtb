@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Para</translation>
 <translation id="1209796539517632982">Serverët automatikë të emrave</translation>
 <translation id="1210831758834677569">Laosisht</translation>
+<translation id="1223825810409523901">Shtesa e Chrome</translation>
 <translation id="1243314992276662751">Ngarko</translation>
 <translation id="1249250836236328755">Zhanri</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Nuk lejohet ndryshimi i konfigurimeve të rrjetit</translation>
 <translation id="1665611772925418501">Ky skedar nuk mund të modifikohej.</translation>
 <translation id="1673103856845176271">Qasja te skedari ishte e pamundur për arsye sigurie.</translation>
+<translation id="16762847117768727">Imazh ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Me biçikletë</translation>
 <translation id="1722487484194605434">Po ngjesh <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Mos përdor të dhëna celulare për sinkronizim</translation>
 <translation id="7928710562641958568">Nxirr pajisjen</translation>
 <translation id="7943385054491506837">Colemak amerikane</translation>
+<translation id="7948417415021769876">Arkiva 7z</translation>
 <translation id="7953739707111622108">Kjo pajisje nuk mund të hapet, sepse sistemi i saj i skedarëve nuk u njoh.</translation>
 <translation id="7969525169268594403">Sllovenisht</translation>
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8372852072747894550">Greqisht</translation>
 <translation id="8386903983509584791">Skanimi përfundoi</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> u nxor.</translation>
 <translation id="8395901698320285466">Përmasat</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>
 <translation id="8425213833346101688">Ndrysho</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Artikujt te "Koshi" fshihen përgjithmonë pas 30 ditësh.</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="9189836632794948435">Kazakisht</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> artikuj të nxjerrë.</translation>
 <translation id="9213073329713032541">Instalimi filloi me sukses.</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219908252191632183">Hënor</translation>

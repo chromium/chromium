@@ -3,7 +3,7 @@
 <translationbundle lang="de">
 <translation id="1088086359088493902">Sekunden</translation>
 <translation id="1142001580032786438">Wochenauswahl anzeigen</translation>
-<translation id="1171774979989969504">Geben Sie eine E-Mail-Adresse ein.</translation>
+<translation id="1171774979989969504">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1306460908038601864">Aus</translation>
 <translation id="1311894908970423688">Der Wert muss <ph name="VALUE_DATE_OR_TIME" /> sein.</translation>
@@ -27,7 +27,7 @@
 <translation id="2031987842108996681">Rotkanal</translation>
 <translation id="2060505056492490888">Das Punktzeichen "<ph name="DOT" />" steht in "<ph name="INVALIDDOMAIN" />" an einer falschen Stelle.</translation>
 <translation id="2148716181193084225">Heute</translation>
-<translation id="2226276347425096477">Kürzen Sie diesen Text auf max. <ph name="MAX_CHARACTERS" /> Zeichen. Zurzeit verwenden Sie <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
+<translation id="2226276347425096477">Kürze diesen Text auf max. <ph name="MAX_CHARACTERS" /> Zeichen. Zurzeit verwendest du <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
 <translation id="2246498165605549352">Lokale Datei</translation>
 <translation id="2247351761944213033">Woche <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Titel <ph name="NUMBER" /></translation>
@@ -36,7 +36,7 @@
 <translation id="2398813069815436052">Dialogfeld geöffnet.</translation>
 <translation id="245932805758469625">verbleibende Videozeit in Sekunden</translation>
 <translation id="248395913932153421">Tag</translation>
-<translation id="2507943997699731163">Füllen Sie dieses Feld aus.</translation>
+<translation id="2507943997699731163">Fülle dieses Feld aus.</translation>
 <translation id="2530182415807757784">Mehrfachauswahl, nichts ausgewählt.</translation>
 <translation id="2561842179657104141">weitere Mediensteuerelemente anzeigen</translation>
 <translation id="2572483411312390101">Wiedergeben</translation>
@@ -45,11 +45,11 @@
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2746543609216772311">Verwenden Sie <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
-<translation id="2761667185364618470">Klicken Sie dieses Kästchen an, wenn Sie fortfahren möchten.</translation>
-<translation id="2908441821576996758">Geben Sie eine durch Kommas getrennte Liste der E-Mail-Adressen ein.</translation>
+<translation id="2761667185364618470">Klicke dieses Kästchen an, wenn du fortfahren möchtest.</translation>
+<translation id="2908441821576996758">Gib eine durch Kommas getrennte Liste der E-Mail-Adressen ein.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Geben Sie einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
-<translation id="310520048233152454">Geben Sie eine URL ein.</translation>
+<translation id="310520048233152454">Gib eine URL ein.</translation>
 <translation id="3220661731597678625">aktueller Schritt</translation>
 <translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
 <translation id="3329013043687509092">Sättigung</translation>
@@ -90,7 +90,7 @@
 <translation id="537648784377940524">Das Mindestdatum (<ph name="MIN_DATE_OR_TIME" />) muss vor dem Maximaldatum (<ph name="MAX_DATE_OR_TIME" />) liegen.</translation>
 <translation id="5378437566635403538">maximiert, Dialogfeld geöffnet.</translation>
 <translation id="5425179576310518467">aktuelles Datum</translation>
-<translation id="5466621249238537318">Wählen Sie eine oder mehrere Dateien aus.</translation>
+<translation id="5466621249238537318">Wähle eine oder mehrere Dateien aus.</translation>
 <translation id="5468998798572797635">Vollbildmodus beenden</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Streamen</translation>
@@ -135,7 +135,7 @@
 <translation id="6989848892321993519">Verlängern Sie diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwenden Sie 1 Zeichen.</translation>
 <translation id="709897737746224366">Ihre Eingabe muss mit dem geforderten Format übereinstimmen.</translation>
 <translation id="7102274145889307184">aktueller Standort</translation>
-<translation id="7263440858009898357">Wählen Sie ein Element in der Liste aus.</translation>
+<translation id="7263440858009898357">Wähle ein Element in der Liste aus.</translation>
 <translation id="7320576522385648310">Wird zwischengespeichert</translation>
 <translation id="7341556277900466204">Farbrad</translation>
 <translation id="7364796246159120393">Datei auswählen</translation>
@@ -160,14 +160,14 @@
 <translation id="839593075537728968">Der Wert muss zwischen <ph name="MINIMUM_TIME" /> und <ph name="MAXIMUM_TIME" /> liegen.</translation>
 <translation id="8403857369060869934">verstrichene Zeit: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> Dateien</translation>
-<translation id="8451268428117625855">Wählen Sie eine Datei aus.</translation>
+<translation id="8451268428117625855">Wähle eine Datei aus.</translation>
 <translation id="8534579021159131403">Minuten</translation>
 <translation id="8541249477527128034">Mediensteuerung</translation>
 <translation id="8613126697340063924">Remote-Wiedergabe steuern</translation>
 <translation id="8634971699417195529">Monatsauswahl anzeigen</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zeilenumbruch</translation>
-<translation id="8750798805984357768">Wählen Sie eine dieser Optionen aus.</translation>
+<translation id="8750798805984357768">Wähle eine dieser Optionen aus.</translation>
 <translation id="8845239796550121995">Wird gerade auf Ihren Fernseher gestreamt</translation>
 <translation id="8875657656876809964">Videowiedergabefehler</translation>
 <translation id="8889402386540077796">Farbton</translation>

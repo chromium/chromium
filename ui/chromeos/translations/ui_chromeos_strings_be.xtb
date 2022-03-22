@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
+<translation id="1223825810409523901">Пашырэнне Chrome</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Забаронена змяняць налады агульнай сеткі</translation>
 <translation id="1665611772925418501">Не ўдалося мадыфікаваць файл.</translation>
 <translation id="1673103856845176271">Атрымаць доступ да файла не ўдалося ў мэтах бяспекі.</translation>
+<translation id="16762847117768727">Вобраз ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">На веласіпедзе</translation>
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Не выкарыстоўваць мабільную перадачу даных для сінхранізацыі</translation>
 <translation id="7928710562641958568">Адключыць прыладу</translation>
 <translation id="7943385054491506837">ЗША (Colemak)</translation>
+<translation id="7948417415021769876">7z-архіў</translation>
 <translation id="7953739707111622108">Не ўдалося адкрыць прыладу: файлавая сістэма не распазнана.</translation>
 <translation id="7969525169268594403">Славенская</translation>
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Няправільны ключ WEP</translation>
 <translation id="8372852072747894550">Грэчаская</translation>
 <translation id="8386903983509584791">Пошук завершаны</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" />: выманне завершана.</translation>
 <translation id="8395901698320285466">Памеры</translation>
 <translation id="8408068190360279472">Тып сеткі – <ph name="NETWORK_TYPE" />, ідзе падключэнне</translation>
 <translation id="8425213833346101688">Змяніць</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Элементы выдаляюцца са сметніцы назаўсёды праз 30 дзён.</translation>
 <translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9189836632794948435">Казахская</translation>
+<translation id="9200427192836333033">Вынята элементаў: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Пачалося ўсталяванне.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="9219908252191632183">Месячны ландшафт</translation>

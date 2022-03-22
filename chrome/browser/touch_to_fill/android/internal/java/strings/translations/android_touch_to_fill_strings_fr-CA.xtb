@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1220509181886849806">Utiliser le mot de passe enregistré?</translation>
 <translation id="1717486229951421299">La liste d'authentifiants à remplir au toucher est ouverte à la mi-hauteur.</translation>
 <translation id="207576718733492531">La liste d'authentifiants à remplir au toucher est fermée.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="3399357656427473483">Liste d'authentifiants à remplir au toucher.</translation>
+<translation id="3653689374478248324">Vous serez connecté à <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="5441504010984421144">La liste d'authentifiants à remplir au toucher est ouverte à la pleine hauteur.</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>

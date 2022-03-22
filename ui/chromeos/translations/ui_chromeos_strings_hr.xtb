@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1209796539517632982">Automatski poslužitelji naziva</translation>
 <translation id="1210831758834677569">laoski</translation>
+<translation id="1223825810409523901">Chromeovo proširenje</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Promjena zajedničkih konfiguracija mreže nije dopuštena</translation>
 <translation id="1665611772925418501">Nije bilo moguće mijenjati datoteku.</translation>
 <translation id="1673103856845176271">Nije bilo moguće pristupiti datoteci zbog sigurnosnih razloga.</translation>
+<translation id="16762847117768727">ISO slika</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Vožnja biciklom</translation>
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Ne upotrebljavaj mobilne podatke za sinkronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
 <translation id="7943385054491506837">američka (SAD Colemak)</translation>
+<translation id="7948417415021769876">7z arhiva</translation>
 <translation id="7953739707111622108">Nije moguće otvoriti ovaj uređaj jer nije prepoznat njegov datotečni sustav.</translation>
 <translation id="7969525169268594403">Slovenski</translation>
 <translation id="7972920761225148017">francuski (Švicarska)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Neispravan WEP ključ</translation>
 <translation id="8372852072747894550">grčki</translation>
 <translation id="8386903983509584791">Traženje je dovršeno</translation>
+<translation id="8387733224523483503">Izdvojena je datoteka <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimenzije</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> mreža, povezivanje</translation>
 <translation id="8425213833346101688">Promijeni</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Stavke iz otpada trajno se brišu nakon 30 dana.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">kazaški</translation>
+<translation id="9200427192836333033">Izdvojeno stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Instalacija je uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Površina Mjeseca</translation>

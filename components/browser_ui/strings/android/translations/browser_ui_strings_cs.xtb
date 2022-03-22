@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="2704606927547763573">Zkopírováno</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
+<translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="2785051990912111074">Výběrem této možnosti vymažete soubory cookie webu <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Stránky</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
 <translation id="3797520601150691162">Nepoužívat tmavý motiv pro konkrétní web</translation>
 <translation id="381841723434055211">Telefonní čísla</translation>
+<translation id="3826050100957962900">Externí přihlašování</translation>
 <translation id="3835233591525155343">Využití vašeho zařízení</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3859306556332390985">Přetočit dopředu</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Aktivní stahování</translation>
+<translation id="6722828510648505498">Blokovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="6749077623962119521">Resetovat oprávnění?</translation>
 <translation id="6766622839693428701">Zavřete přejetím prstem dolů.</translation>

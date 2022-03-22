@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्वर</translation>
 <translation id="1210831758834677569">लाओ</translation>
+<translation id="1223825810409523901">Chrome एक्सटेंशन</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">शेयर किए गए नेटवर्क कॉन्फ़िगरेशन बदलने की अनुमति नहीं है</translation>
 <translation id="1665611772925418501">फ़ाइल को संशोधित नहीं किया जा सका.</translation>
 <translation id="1673103856845176271">सुरक्षा कारणों से फ़ाइल तक नहीं पहुंचा जा सका.</translation>
+<translation id="16762847117768727">ISO इमेज</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">व्यक्ति साइकल चला रहा है</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आइटम ज़िप किए जा रहे हैं...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">समन्‍वयन के लिए मोबाइल डेटा का उपयोग न करें</translation>
 <translation id="7928710562641958568">डिवाइस निकालें</translation>
 <translation id="7943385054491506837">यूएस कोलमैक</translation>
+<translation id="7948417415021769876">7z आर्काइव</translation>
 <translation id="7953739707111622108">यह डिवाइस खोला नहीं जा सकता क्‍योंकि इसका फ़ाइलसिस्‍टम पहचाना नहीं गया था.</translation>
 <translation id="7969525169268594403">स्लोवेनियाई</translation>
 <translation id="7972920761225148017">फ़्रेंच (स्विट्ज़रलैंड)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">ख़राब WEP कुंजी</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
 <translation id="8386903983509584791">स्कैन पूरा हुआ</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> मिली</translation>
 <translation id="8395901698320285466">आयाम</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट हो रहा है</translation>
 <translation id="8425213833346101688">बदलें</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">ट्रैश में मौजूद आइटम, 30 दिनों के बाद हमेशा के लिए मिटा दिए जाते हैं.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कज़ाक़</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> आइटम मिले.</translation>
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">लूनर</translation>

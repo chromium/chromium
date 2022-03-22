@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Понуде</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1486019694341708158">Укључите прекидач да бисте изабрали опције чувара екрана</translation>
 <translation id="1491076385728777984">Ажурира се фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="150962533380566081">Неважећи PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Уређај је контролер за игре.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2138109643290557664">Наставите да плутате</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">Слика: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Прикажи преко целог екрана</translation>
 <translation id="4275799948641988986">Ко ће користити уређај после поправке?</translation>
 <translation id="4289540628985791613">Преглед</translation>
+<translation id="4289849978083912975">Пројекција слајдова</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
 <translation id="4333390807948134856">Тастер <ph name="KEY_NAME" /> је притиснут</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">Конфигуришите <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
+<translation id="7191009787982536050">Анимација чувара екрана</translation>
 <translation id="7212734716605298123">Ажурирања фирмвера за екстерне уређаје</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Осетите поветарац</translation>
 <translation id="7287310195820267359">Колекције позадина</translation>
 <translation id="7297226631177386107">Не можете да се повежете са HTTPS веб-сајтовима кроз заштитни зид</translation>
 <translation id="7302860742311162920">ICCID</translation>

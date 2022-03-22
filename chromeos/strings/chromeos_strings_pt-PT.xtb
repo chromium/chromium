@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1486019694341708158">Ative o botão para selecionar as opções de proteção de ecrã</translation>
 <translation id="1491076385728777984">A atualizar o firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">O dispositivo é um comando de jogos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
+<translation id="2138109643290557664">A flutuar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Ver ecrã inteiro</translation>
 <translation id="4275799948641988986">Após a reparação, quem irá utilizar o dispositivo?</translation>
 <translation id="4289540628985791613">Vista geral</translation>
+<translation id="4289849978083912975">Apresentação de diapositivos</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
@@ -539,10 +542,12 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
+<translation id="7191009787982536050">Animação de proteção de ecrã</translation>
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Sentir a brisa</translation>
 <translation id="7287310195820267359">Coleções de imagens de fundo</translation>
 <translation id="7297226631177386107">Não é possível estabelecer ligação através da firewall a Websites HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
