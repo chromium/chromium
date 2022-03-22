@@ -829,7 +829,7 @@
       "sreejakshetty@chromium.org",
       "tobias.soppa@code.berlin"
     ],
-    "expiry_milestone": 99
+    "expiry_milestone": 110
   },
   {
     "name": "color-provider-redirection-for-theme-provider",
