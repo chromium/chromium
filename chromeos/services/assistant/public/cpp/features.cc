@@ -102,16 +102,15 @@ bool IsLibAssistantSandboxEnabled() {
 }
 
 bool IsLibAssistantV2Enabled() {
-  const bool enabled_v2 = base::FeatureList::IsEnabled(kEnableLibAssistantV2);
 // Enforce V2 when using the prebuilt library.
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #if BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   return true;
 #else
-  return enabled_v2;
+  return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
 #endif  // BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 #else
-  return enabled_v2;
+  return false;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 }
 

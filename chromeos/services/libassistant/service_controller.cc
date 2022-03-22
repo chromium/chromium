@@ -282,6 +282,22 @@ void ServiceController::OnAllServicesReady() {
 void ServiceController::OnServicesBootingUp() {
   DVLOG(1) << "Started Libassistant service";
 
+  // The Libassistant BootupState goes to `RUNNING` right after
+  // `SETTING_UP_ESSENTIAL_SERVICES` if AssistantManager::Start() is called
+  // right after the AssistantManager is created. And Libassistant emits signals
+  // of `ESSENTIAL_SERVICES_AVAILABLE` and `ALL_SERVICES_AVAILABLE` almost the
+  // same time. However, unary gRPC does not guarantee order. ChromeOS could
+  // receive these signals out of order.
+  // We call AssistantManager::Start() here, ServicesBootingUp(), which is
+  // triggered by `ESSENTIAL_SERVICES_AVAILABLE`. After the AssistantManager is
+  // started, it will trigger `ALL_SERVICES_AVAILABLE`. Therefore these two
+  // signals are generated in order.
+  // For V1, a fake `ESSENTIAL_SERVICES_AVAILABLE` signal is sent in
+  // AssistantClientV1::StartServices(). An equivalent signal of
+  // `ALL_SERVICES_AVAILABLE`, DeviceState::StartupState::finished, is sent
+  // in AssistantManagerImpl::OnBootupCheckinDone().
+  assistant_client_->assistant_manager()->Start();
+
   // Notify observer on Libassistant services started.
   SetStateAndInformObservers(ServiceState::kStarted);
 

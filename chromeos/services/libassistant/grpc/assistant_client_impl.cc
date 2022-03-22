@@ -97,8 +97,6 @@ void AssistantClientImpl::StartServices(
       services_status_observer);
 
   StartGrpcServices();
-
-  AssistantClientV1::StartServices(services_status_observer);
 }
 
 bool AssistantClientImpl::StartGrpcServices() {

@@ -270,8 +270,6 @@ void AssistantClientV1::StartServices(
   DCHECK(services_status_observer);
   services_status_observer_ = services_status_observer;
 
-  assistant_manager()->Start();
-
   // Instead we will be checking the heartbeat signal sent back from Libassisant
   // in v2.
   if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
