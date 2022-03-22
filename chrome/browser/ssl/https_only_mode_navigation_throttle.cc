@@ -13,10 +13,13 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
+
+using security_interstitials::https_only_mode::Event;
 
 namespace {
 
@@ -26,9 +29,9 @@ base::TimeDelta g_fallback_delay = base::Seconds(3);
 
 // Helper to record an HTTPS-First Mode navigation event.
 void RecordHttpsFirstModeNavigation(
-    HttpsOnlyModeNavigationThrottle::Event event) {
-  base::UmaHistogramEnumeration("Security.HttpsFirstMode.NavigationEvent",
-                                event);
+    security_interstitials::https_only_mode::Event event) {
+  base::UmaHistogramEnumeration(
+      security_interstitials::https_only_mode::kEventHistogram, event);
 }
 
 }  // namespace

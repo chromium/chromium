@@ -14,6 +14,8 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
+    "https_only_mode_metrics.cc",
+    "https_only_mode_metrics.h",
     "https_only_mode_ui_util.cc",
     "https_only_mode_ui_util.h",
     "metrics_helper.cc",

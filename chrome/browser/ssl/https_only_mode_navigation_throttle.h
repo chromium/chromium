@@ -28,32 +28,6 @@ class PrefService;
 // channel between these classes.)
 class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Event {
-    // Navigation was upgraded from HTTP to HTTPS at some point (either the
-    // initial request or after a redirect).
-    kUpgradeAttempted = 0,
-
-    // Navigation succeeded after being upgraded to HTTPS.
-    kUpgradeSucceeded = 1,
-    // Navigation failed after being upgraded to HTTPS.
-    kUpgradeFailed = 2,
-
-    // kUpgradeCertError, kUpgradeNetError, and kUpgradeTimedOut are subsets of
-    // kUpgradeFailed. kUpgradeFailed should also be recorded whenever these
-    // events are recorded.
-
-    // Navigation failed due to a cert error.
-    kUpgradeCertError = 3,
-    // Navigation failed due to a net error.
-    kUpgradeNetError = 4,
-    // Navigation failed due to timing out.
-    kUpgradeTimedOut = 5,
-
-    kMaxValue = kUpgradeTimedOut,
-  };
-
   static std::unique_ptr<HttpsOnlyModeNavigationThrottle>
   MaybeCreateThrottleFor(
       content::NavigationHandle* handle,
