@@ -7634,8 +7634,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kSamePartyCookiesConsideredFirstParty)},
 
     {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
-     flag_descriptions::kPartitionedCookiesDescription, kOsDesktop | kOsAndroid,
+     flag_descriptions::kPartitionedCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
+    // TODO(crbug.com/1296161): Remove this flag when the CHIPS OT ends.
+    {"partitioned-cookies-bypass-origin-trial",
+     flag_descriptions::kPartitionedCookiesBypassOriginTrialName,
+     flag_descriptions::kPartitionedCookiesBypassOriginTrialDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kPartitionedCookiesBypassOriginTrial)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
@@ -152,7 +153,10 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   absl::optional<net::CookiePartitionKey> cookie_partition_key = absl::nullopt;
-  if (options->partitioned() && partitioned_cookies_runtime_feature_enabled) {
+  if (options->partitioned() &&
+      (partitioned_cookies_runtime_feature_enabled ||
+       base::FeatureList::IsEnabled(
+           net::features::kPartitionedCookiesBypassOriginTrial))) {
     // We don't trust the renderer to determine the cookie partition key, so we
     // use this factory to indicate we are using a temporary value here.
     cookie_partition_key = net::CookiePartitionKey::FromScript();

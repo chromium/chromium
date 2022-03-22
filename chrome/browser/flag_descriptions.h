@@ -1272,6 +1272,9 @@ extern const char kSamePartyCookiesConsideredFirstPartyDescription[];
 
 extern const char kPartitionedCookiesName[];
 extern const char kPartitionedCookiesDescription[];
+// TODO(crbug.com/1296161): Remove this when the CHIPS OT ends.
+extern const char kPartitionedCookiesBypassOriginTrialName[];
+extern const char kPartitionedCookiesBypassOriginTrialDescription[];
 
 extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];

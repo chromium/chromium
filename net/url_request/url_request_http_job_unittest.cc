@@ -2090,4 +2090,65 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, PrivacyMode) {
   }
 }
 
+// TODO(crbug.com/1296161): Remove this code when the partitioned cookies
+// Origin Trial is over.
+TEST_P(PartitionedCookiesURLRequestHttpJobTest,
+       AddsSecCHPartitionedCookiesHeader) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  TestURLRequestContext context;
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
+  context.set_cookie_store(&cookie_monster);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  const url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+  const IsolationInfo kTestIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  req->set_isolation_info(kTestIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {  // Test request from the same top-level site.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?sec-ch-partitioned-cookies"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ("?0", delegate.data_received());
+    } else {
+      EXPECT_EQ("None", delegate.data_received());
+    }
+  }
+
+  {  // Test request from a different top-level site.
+    const url::Origin kOtherTopFrameOrigin =
+        url::Origin::Create(GURL("https://www.anothertoplevelsite.com"));
+    const IsolationInfo kOtherTestIsolationInfo =
+        IsolationInfo::CreateForInternalRequest(kOtherTopFrameOrigin);
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?sec-ch-partitioned-cookies"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOtherTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("None", delegate.data_received());
+  }
+}
+
 }  // namespace net

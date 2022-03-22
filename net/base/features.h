@@ -370,6 +370,11 @@ NET_EXPORT extern const base::Feature kSamePartyCookiesConsideredFirstParty;
 // be sent when the browser is on the same top-level site that it was on when
 // the cookie was set.
 NET_EXPORT extern const base::Feature kPartitionedCookies;
+// Flag to bypass the origin trial opt-in to use Partitioned cookies. This
+// allows developers to test Partitioned cookies manually in development
+// environments.
+// TODO(crbug.com/1296161): Remove this feature when the CHIPS OT ends.
+NET_EXPORT extern const base::Feature kPartitionedCookiesBypassOriginTrial;
 
 // When enabled, additional cookie-related APIs will perform cookie field size
 // and character set validation to enforce stricter conformance with RFC6265bis.

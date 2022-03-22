@@ -454,4 +454,8 @@ interface CookieManager {
   // the caller with a callback when settings have been updated.
   SetStorageAccessGrantSettings(
       array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
+
+  // TODO(crbug.com/1296161): Delete this method when the partitioned cookies
+  // Origin Trial is over.
+  ConvertPartitionedCookiesToUnpartitioned(url.mojom.Url url);
 };
