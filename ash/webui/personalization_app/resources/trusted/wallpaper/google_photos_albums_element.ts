@@ -54,7 +54,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
       albumsForDisplay_: Array,
       albumsLoading_: Boolean,
 
-      albumsResumeToken_: {
+      albumsResumeToken: {
         type: String,
         observer: 'onAlbumsResumeTokenChanged_',
       },

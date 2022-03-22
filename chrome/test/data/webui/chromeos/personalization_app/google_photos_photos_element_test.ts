@@ -313,7 +313,8 @@ export function GooglePhotosPhotosTest() {
     assertEquals(photoEls[1]!.selected, false);
   });
 
-  test('incrementally loads photos', async () => {
+  // TODO(dmblack): Re-enable after branch.
+  test.skip('incrementally loads photos', async () => {
     // Set photos count returned by |wallpaperProvider|.
     const photosCount = 200;
     wallpaperProvider.setGooglePhotosCount(photosCount);
