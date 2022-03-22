@@ -77,6 +77,9 @@ export function allInputsDisabledTest() {
     service.setGetCalibrationSetupInstructionsResult(
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceBaseOnFlatSurface);
+
+    // kConfigureNetwork
+    service.setCheckForOsUpdatesResult('fake version');
   }
 
   // Test that the set of inputs specified in |INPUT_TYPES| are disabled on each

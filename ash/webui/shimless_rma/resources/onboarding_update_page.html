@@ -12,11 +12,10 @@
       <div>[[i18n('osUpdateUnqualifiedComponentsBottomText')]]</div>
     </div>
     <div hidden$="[[!isCompliant_]]" class="instructions">
-      [[updateNoticeMessage_]]
+      [[i18n('osUpdateOutOfDateDescriptionText')]]
     </div>
     <div id="versionInfo">
-      <iron-icon id="updateIcon" class="small-icon"
-          icon="[[getUpdateNoticeIcon_(updateAvailable_)]]">
+      <iron-icon id="updateIcon" class="small-icon" icon="shimless-icon:info">
       </iron-icon>
       <span class="instructions">[[currentVersionText_]]</span>
     </div>
@@ -28,10 +27,9 @@
     <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       [[i18n('onboardingUpdateConnectToInternet')]]
     </p>
-    <cr-button id="performUpdateButton"
-        disabled="[[allButtonsDisabled]]" hidden$="[[!updateAvailable_]]"
+    <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
         on-click="onUpdateButtonClicked_">
-        [[updateVersionText_]]
+        [[updateVersionButtonLabel_]]
       <iron-icon id="restartIcon" icon="shimless-icon:update"
           class="small-icon">
       </iron-icon>

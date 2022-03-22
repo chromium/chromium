@@ -81,13 +81,6 @@ export class FakeShimlessRmaService {
     this.automaticallyTriggerPowerCableStateObservation_ = false;
 
     /**
-     * The fake result of calling UpdatesOs, used to determine if fake
-     * observations should be triggered.
-     * @private {boolean}
-     */
-    this.osCanUpdate_ = false;
-
-    /**
      * Both abortRma and forward state transitions can have significant delays
      * that are useful to fake for manual testing.
      * Defaults to no delay for unit tests.
@@ -219,20 +212,17 @@ export class FakeShimlessRmaService {
     return this.methods_.resolveMethod('checkForOsUpdates');
   }
 
-  /**
-   * @param {boolean} available
-   * @param {string} version
-   */
-  setCheckForOsUpdatesResult(available, version) {
+  /** @param {string} version */
+  setCheckForOsUpdatesResult(version) {
     this.methods_.setResult(
-        'checkForOsUpdates', {updateAvailable: available, version: version});
+        'checkForOsUpdates', {updateAvailable: true, version});
   }
 
   /**
    * @return {!Promise<!{updateStarted: boolean}>}
    */
   updateOs() {
-    if (this.osCanUpdate_ && this.automaticallyTriggerOsUpdateObservation_) {
+    if (this.automaticallyTriggerOsUpdateObservation_) {
       this.triggerOsUpdateObserver(
           OsUpdateOperation.kCheckingForUpdate, 0.1, 500);
       this.triggerOsUpdateObserver(
@@ -250,7 +240,6 @@ export class FakeShimlessRmaService {
    * @param {boolean} started
    */
   setUpdateOsResult(started) {
-    this.osCanUpdate_ = started;
     this.methods_.setResult('updateOs', {updateStarted: started});
   }
 

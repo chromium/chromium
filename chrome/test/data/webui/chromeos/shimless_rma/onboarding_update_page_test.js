@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -35,16 +36,15 @@ export function onboardingUpdatePageTest() {
 
   /**
    * @param {string} version
-   * @param {boolean} updateAvailable
    * @return {!Promise}
    */
-  function initializeUpdatePage(version, updateAvailable) {
+  function initializeUpdatePage(version) {
     assertFalse(!!component);
 
     // Initialize the fake data.
     service.setGetCurrentOsVersionResult(version);
-    service.setCheckForOsUpdatesResult(updateAvailable, 'fake version');
-    service.setUpdateOsResult(updateAvailable);
+    service.setCheckForOsUpdatesResult('fake version');
+    service.setUpdateOsResult(true);
 
     component = /** @type {!OnboardingUpdatePageElement} */ (
         document.createElement('onboarding-update-page'));
@@ -66,107 +66,43 @@ export function onboardingUpdatePageTest() {
 
   test('UpdatePageInitializes', () => {
     const version = '90.1.2.3';
-    const update = false;
-
-    return initializeUpdatePage(version, update).then(() => {
+    return initializeUpdatePage(version).then(() => {
       const versionComponent =
           component.shadowRoot.querySelector('#versionInfo');
       const updateButton =
           component.shadowRoot.querySelector('#performUpdateButton');
       assertTrue(versionComponent.textContent.trim().indexOf(version) !== -1);
-      assertTrue(updateButton.hidden);
     });
-  });
-
-  test('UpdatePageNoNetwork', () => {
-    const version = '90.1.2.3';
-    const update = false;
-
-    return initializeUpdatePage(version, update)
-        .then(() => {
-          component.networkAvailable = false;
-          return flushTasks();
-        })
-        .then(() => {
-          const networkUnavailable =
-              component.shadowRoot.querySelector('#networkUnavailable');
-          const updateButton =
-              component.shadowRoot.querySelector('#performUpdateButton');
-
-          assertFalse(networkUnavailable.hidden);
-          assertTrue(updateButton.hidden);
-        });
-  });
-
-  test('UpdatePageNoUpdates', () => {
-    const version = '90.1.2.3';
-    const update = false;
-
-    return initializeUpdatePage(version, update)
-        .then(() => {
-          component.networkAvailable = true;
-          return flushTasks();
-        })
-        .then(() => {
-          const versionComponent =
-              component.shadowRoot.querySelector('#versionInfo');
-          // TODO(joonbug): update with i18n string
-          const uptoDateMsg = 'is up to date';
-          assertTrue(
-              versionComponent.textContent.trim().indexOf(uptoDateMsg) !== -1);
-        });
   });
 
   test('UpdatePageUpdatesAvailable', () => {
     const version = '90.1.2.3';
-    const update = true;
-
-    return initializeUpdatePage(version, update)
-        .then(() => {
-          component.networkAvailable = true;
-          return flushTasks();
-        })
-        .then(() => {
-          const versionComponent =
-              component.shadowRoot.querySelector('#versionInfo');
-          // TODO(gavindodd): update with i18n string
-          const uptoDateMsg = 'is out of date';
-          assertTrue(
-              versionComponent.textContent.trim().indexOf(uptoDateMsg) !== -1);
-        })
-        .then(() => {
-          const updateButton =
-              component.shadowRoot.querySelector('#performUpdateButton');
-          assertFalse(updateButton.hidden);
-        });
+    return initializeUpdatePage(version).then(() => {
+      const versionComponent =
+          component.shadowRoot.querySelector('#versionInfo');
+      assertEquals(
+          loadTimeData.getStringF('currentVersionOutOfDateText', version),
+          versionComponent.textContent.trim());
+      const updateButton =
+          component.shadowRoot.querySelector('#performUpdateButton');
+      assertFalse(updateButton.hidden);
+    });
   });
 
   test('UpdatePageUpdateStarts', () => {
     const version = '90.1.2.3';
-    const update = true;
 
-    return initializeUpdatePage(version, update)
+    return initializeUpdatePage(version)
         .then(() => {
           component.addEventListener('disable-all-buttons', (e) => {
             component.allButtonsDisabled = e.detail;
           });
 
-          component.networkAvailable = true;
           return flushTasks();
         })
         .then(() => {
-          const versionComponent =
-              component.shadowRoot.querySelector('#versionInfo');
-          // TODO(gavindodd): update with i18n string
-          const uptoDateMsg = 'is out of date';
-          assertTrue(
-              versionComponent.textContent.trim().indexOf(uptoDateMsg) !== -1);
-          const updateButton =
-              component.shadowRoot.querySelector('#performUpdateButton');
-          assertFalse(updateButton.disabled);
-          assertFalse(updateButton.hidden);
+          clickPerformUpdateButton();
         })
-        .then(() => clickPerformUpdateButton())
         .then(() => {
           // A successfully started update should disable the update button.
           const updateButton =
@@ -177,8 +113,7 @@ export function onboardingUpdatePageTest() {
 
   test('UpdatePageShowsUpdateProgress', async () => {
     const version = '90.1.2.3';
-    const update = true;
-    await initializeUpdatePage(version, update);
+    await initializeUpdatePage(version);
 
     const progressComponent =
         component.shadowRoot.querySelector('#progressMessage');
@@ -193,42 +128,10 @@ export function onboardingUpdatePageTest() {
         'OS update progress received '));
   });
 
-  test('UpdatePageSetSkipButton', async () => {
+  test('UpdatePageShowHideUnqualifiedComponentsLink', () => {
     const version = '90.1.2.3';
-    const update = false;
 
-    service.setGetCurrentOsVersionResult(version);
-    service.setCheckForOsUpdatesResult(update, 'fake version');
-    service.setUpdateOsResult(update);
-
-    component = /** @type {!OnboardingUpdatePageElement} */ (
-        document.createElement('onboarding-update-page'));
-    let buttonLabelKey;
-    component.addEventListener('set-next-button-label', (e) => {
-      buttonLabelKey = e.detail;
-    });
-
-    document.body.appendChild(component);
-    await flushTasks();
-    assertEquals('nextButtonLabel', buttonLabelKey);
-
-    service.setCheckForOsUpdatesResult(true, 'fake version');
-    component = /** @type {!OnboardingUpdatePageElement} */ (
-        document.createElement('onboarding-update-page'));
-    component.addEventListener('set-next-button-label', (e) => {
-      buttonLabelKey = e.detail;
-    });
-
-    document.body.appendChild(component);
-    await flushTasks();
-    assertEquals('skipButtonLabel', buttonLabelKey);
-  });
-
-  test('UpdatePageShowHideLinkWithoutError', () => {
-    const version = '90.1.2.3';
-    const update = true;
-
-    return initializeUpdatePage(version, update)
+    return initializeUpdatePage(version)
         .then(() => {
           service.triggerHardwareVerificationStatusObserver(true, '', 0);
           return flushTasks();
@@ -241,10 +144,9 @@ export function onboardingUpdatePageTest() {
 
   test('UpdatePageShowLinkOpenDialogOnError', () => {
     const version = '90.1.2.3';
-    const update = true;
     const failedComponent = 'Keyboard';
 
-    return initializeUpdatePage(version, update)
+    return initializeUpdatePage(version)
         .then(() => {
           service.triggerHardwareVerificationStatusObserver(
               false, failedComponent, 0);
@@ -268,16 +170,13 @@ export function onboardingUpdatePageTest() {
 
   test('UpdatePageUpdateFailedToStartButtonsEnabled', () => {
     const version = '90.1.2.3';
-    const update = true;
 
     const resolver = new PromiseResolver();
     service.updateOs = () => {
       return resolver.promise;
     };
 
-    return initializeUpdatePage(version, update).then(() => {
-      component.networkAvailable = true;
-
+    return initializeUpdatePage(version).then(() => {
       let allButtonsDisabled = false;
       component.addEventListener('disable-all-buttons', (e) => {
         allButtonsDisabled = e.detail;

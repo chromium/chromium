@@ -88,6 +88,7 @@ export const StateComponentMapping = {
     componentIs: 'onboarding-update-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
+    buttonNextLabelKey: 'skipButtonLabel',
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },

@@ -57,6 +57,7 @@ export function shimlessRMAAppTest() {
     // Initialize the fake data.
     service.setStates(states);
     service.setGetCurrentOsVersionResult(chromeVersion);
+    service.setCheckForOsUpdatesResult('fake version');
 
     component =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
