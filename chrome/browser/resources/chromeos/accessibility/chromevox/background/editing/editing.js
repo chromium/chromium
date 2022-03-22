@@ -7,6 +7,7 @@
  * appropriate spoken and braille feedback.
  */
 
+import {BrailleBackground} from '../braille_background.js';
 import {Color} from '../color.js';
 import {IntentHandler} from './intent_handler.js';
 

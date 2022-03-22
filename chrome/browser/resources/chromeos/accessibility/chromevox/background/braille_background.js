@@ -6,21 +6,10 @@
  * @fileoverview Sends Braille commands to the Braille API.
  */
 
-goog.provide('BrailleBackground');
-
-goog.require('BrailleKeyEventRewriter');
-goog.require('ChromeVoxState');
-goog.require('LogStore');
-goog.require('BrailleDisplayManager');
-goog.require('BrailleInputHandler');
-goog.require('BrailleInterface');
-goog.require('BrailleKeyEvent');
-goog.require('BrailleTranslatorManager');
-
 /**
  * @implements {BrailleInterface}
  */
-BrailleBackground = class {
+export class BrailleBackground {
   /**
    * @param {BrailleDisplayManager=} opt_displayManagerForTest
    *        Display manager (for mocking in tests).
@@ -69,6 +58,15 @@ BrailleBackground = class {
     /** @private {BrailleKeyEventRewriter} */
     this.keyEventRewriter_ = new BrailleKeyEventRewriter();
   }
+
+  /** @return {!BrailleBackground} */
+  static getInstance() {
+    if (!BrailleBackground.instance_) {
+      BrailleBackground.instance_ = new BrailleBackground();
+    }
+    return BrailleBackground.instance_;
+  }
+
 
   /** @override */
   write(params) {
@@ -167,5 +165,16 @@ BrailleBackground = class {
       return;
     }
   }
-};
-goog.addSingletonGetter(BrailleBackground);
+}
+
+/** @type {?BrailleBackground} */
+BrailleBackground.instance_ = null;
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.target === 'BrailleBackground' &&
+      message.action === 'getDefaultTranslator') {
+    sendResponse(BrailleBackground.getInstance()
+                     .getTranslatorManager()
+                     .getDefaultTranslator());
+  }
+});

@@ -8,6 +8,6 @@
 
 goog.require('KbExplorer');
 
-document.addEventListener('DOMContentLoaded', function() {
-  KbExplorer.init();
+document.addEventListener('DOMContentLoaded', async function() {
+  await KbExplorer.init();
 }, false);

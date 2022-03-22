@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {BrailleBackground} from './braille_background.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {Color} from './color.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';

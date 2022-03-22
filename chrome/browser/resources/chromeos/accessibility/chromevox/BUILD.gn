@@ -32,7 +32,6 @@ chromevox_modules = [
   "background/auto_scroll_handler.js",
   "background/automation_object_constructor_installer.js",
   "background/base_automation_handler.js",
-  "background/braille_background.js",
   "background/braille_captions_background.js",
   "background/braille_command_data.js",
   "background/chromevox_state.js",
@@ -100,6 +99,7 @@ chromevox_modules = [
 chromevox_es6_modules = [
   "../common/instance_checker.js",
   "background/background.js",
+  "background/braille_background.js",
   "background/braille_command_handler.js",
   "background/color.js",
   "background/classic_background.js",

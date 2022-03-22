@@ -8,6 +8,7 @@
 
 import {TtsBackground} from '../common/tts_background.js';
 
+import {BrailleBackground} from './braille_background.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';
 
 /**

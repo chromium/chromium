@@ -11,6 +11,7 @@ goog.provide('BrailleDisplayManager');
 
 goog.require('BrailleCaptionsBackground');
 goog.require('BrailleDisplayState');
+goog.require('BrailleTranslatorManager');
 goog.require('ExpandingBrailleTranslator');
 goog.require('LibLouis');
 goog.require('NavBraille');

@@ -30,7 +30,7 @@ KbExplorer = class {
   /**
    * Initialize keyboard explorer.
    */
-  static init() {
+  static async init() {
     // Export global objects from the background page context into this one.
     window.backgroundWindow = chrome.extension.getBackgroundPage();
     window.ChromeVox = window.backgroundWindow['ChromeVox'];
@@ -53,9 +53,10 @@ KbExplorer = class {
     ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
     /** @type {LibLouis.Translator} */
-    KbExplorer.currentBrailleTranslator_ =
-        window
-            .backgroundWindow['BrailleBackground']['getInstance']()['getTranslatorManager']()['getDefaultTranslator']();
+    KbExplorer.currentBrailleTranslator_ = await new Promise(
+        resolve => chrome.runtime.sendMessage(
+            {target: 'BrailleBackground', action: 'getDefaultTranslator'},
+            resolve));
 
     ChromeVoxKbHandler.commandHandler = KbExplorer.onCommand;
 

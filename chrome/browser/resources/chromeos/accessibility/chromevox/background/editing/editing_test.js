@@ -19,6 +19,8 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
+        'BrailleBackground', '/chromevox/background/braille_background.js');
+    await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
     await importModule(
