@@ -57,6 +57,12 @@
           'quickrun_shards': 3,
         },
       },
+      'android-marshmallow-x86-fyi-rel-reviver': {
+        'swarming': {
+          'shards': 2,
+          'quickrun_shards': 6,
+        },
+      },
       'android-marshmallow-x86-rel': {
         'swarming': {
           'shards': 2,
@@ -970,6 +976,13 @@
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
+      'android-marshmallow-x86-fyi-rel-reviver': {
+        'swarming': {
+          # TODO(crbug.com/1127110): Revisit shards and machine_type if there
+          # are n2 machines available in the test pool.
+          'shards': 25,
+        },
+      },
       'android-marshmallow-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
@@ -1001,6 +1014,7 @@
   'chrome_public_test_apk_with_playstore': {
     'remove_from': [
       # Android Emulator does not ship playstore image on Marshmallow.
+      'android-marshmallow-x86-fyi-rel-reviver',
       'android-marshmallow-x86-rel',
     ],
     'modifications': {
@@ -1455,6 +1469,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter',
         ],
+      },
+      'android-marshmallow-x86-fyi-rel-reviver': {
+        'swarming': {
+          'quickrun_shards': 8,
+        },
       },
       'android-marshmallow-x86-rel': {
         'args': [
@@ -3670,6 +3689,11 @@
           # crbug.com/1292197
           '--gtest_filter=-org.chromium.android_webview.test.devui.HomeFragmentTest.testLongPressCopy*',
         ],
+      },
+      'android-marshmallow-x86-fyi-rel-reviver': {
+        'swarming': {
+          'shards': 9,
+        },
       },
       'android-marshmallow-x86-rel': {
         'swarming': {
