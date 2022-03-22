@@ -469,6 +469,28 @@ ci.builder(
 )
 
 ci.builder(
+    name = "ios-fieldtrial-rel",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+    ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    cores = None,
+    os = os.MAC_DEFAULT,
+    xcode = xcode.x13main,
+)
+
+ci.builder(
     name = "linux-lacros-builder-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "linux",

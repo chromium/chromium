@@ -12179,6 +12179,438 @@
       "all"
     ]
   },
+  "ios-fieldtrial-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--platform",
+          "iPad Air 2",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_integration_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_integration_eg2tests_module_iPad Air 2 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 6s",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_integration_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Air 2",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_signin_eg2tests_module_iPad Air 2 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 6s",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Air 2",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_ui_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_ui_eg2tests_module_iPad Air 2 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 6s",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_chrome_ui_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Air 2",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_web_shell_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_web_shell_eg2tests_module_iPad Air 2 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 6s",
+          "--version",
+          "15.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13c100",
+          "--xctest",
+          "--xcode-parallelization",
+          "--extra-app-args=--disable-field-trial-config"
+        ],
+        "isolate_name": "ios_web_shell_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_web_shell_eg2tests_module_iPhone 6s 15.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-11"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13c100",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_2",
+              "path": "Runtime-ios-15.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
+      }
+    ]
+  },
   "ios-simulator": {
     "additional_compile_targets": [
       "all"

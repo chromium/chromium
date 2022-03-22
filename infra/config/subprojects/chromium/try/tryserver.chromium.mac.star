@@ -190,6 +190,11 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-fieldtrial-fyi-rel",
+    mirrors = ["ci/ios-fieldtrial-rel"],
+)
+
+ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,

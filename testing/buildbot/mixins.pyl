@@ -357,6 +357,13 @@
       ],
     },
   },
+  'disable_field_trial_config_for_earl_grey': {
+    '$mixin_append': {
+      'args': [
+        '--extra-app-args=--disable-field-trial-config',
+      ],
+    },
+  },
   'docker': {
     'swarming': {
       'dimensions': {

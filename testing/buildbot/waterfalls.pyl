@@ -5274,6 +5274,19 @@
           'all',
         ],
       },
+      'ios-fieldtrial-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'fieldtrial_ios_simulator_tests',
+        }
+      },
       'ios-simulator': {
         'additional_compile_targets': [
           'all',
