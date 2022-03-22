@@ -13,16 +13,16 @@
 namespace ash {
 namespace ime {
 
-SystemEngine::SystemEngine(ImeCrosPlatform* platform,
-                           absl::optional<ImeDecoder::EntryPoints> entry_points)
-    : platform_(platform) {
+SystemEngine::SystemEngine(
+    ImeCrosPlatform* platform,
+    absl::optional<ImeDecoder::EntryPoints> entry_points) {
   if (!entry_points) {
     LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
     return;
   }
 
   decoder_entry_points_ = *entry_points;
-  decoder_entry_points_->init_once(platform_);
+  decoder_entry_points_->init_once(platform);
 }
 
 SystemEngine::~SystemEngine() {}

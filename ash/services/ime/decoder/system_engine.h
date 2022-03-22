@@ -47,7 +47,6 @@ class SystemEngine : public InputEngine {
   bool IsConnected() override;
 
  private:
-  ImeCrosPlatform* platform_ = nullptr;
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 };
 

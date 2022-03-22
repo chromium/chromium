@@ -45,7 +45,6 @@ class DecoderEngine : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  ImeCrosPlatform* platform_ = nullptr;
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 };
