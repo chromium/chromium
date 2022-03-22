@@ -39,7 +39,9 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date2));
 }
 
-TEST_F(CalendarUtilsUnittest, DateFormatter) {
+// Failed locally on the devices whose initial timezone is not GMT.
+// See https://crbug.com/1309205.
+TEST_F(CalendarUtilsUnittest, DISABLED_DateFormatter) {
   // Create a date: Aug,1st 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
