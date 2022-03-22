@@ -44,8 +44,11 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   if (bubble_shown_)
     return;
 
-  bubble_shown_ = true;
   Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  if (!browser || !browser->window())
+    return;
+
+  bubble_shown_ = true;
   qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(
       &GetWebContents(), this, url, show_back_button);
 
