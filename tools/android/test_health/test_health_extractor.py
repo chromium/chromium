@@ -23,12 +23,7 @@ _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 _IGNORED_DIRS = ('out', 'third_party', 'clank', 'build/linux', 'native_client',
                  'tools/android/test_health/testdata')
 
-_IGNORED_FILES = {
-    # WebApkUpdateManagerUnitTest uses a method reference on an array, which
-    # is erroneously reported as a syntax error by javalang; ignoring for now.
-    'chrome/android/junit/src/org/chromium/chrome/browser/webapps/'
-    'WebApkUpdateManagerUnitTest.java'
-}
+_IGNORED_FILES = set()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -62,9 +57,9 @@ class TestHealthInfo:
     """Information about the Git repository being sampled."""
 
 
-def get_repo_test_health(git_repo: pathlib.Path = None,
+def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
                          *,
-                         test_dir: Union[str, pathlib.Path] = None,
+                         test_dir: Union[str, pathlib.Path, None] = None,
                          ignored_dirs: Tuple[str, ...] = _IGNORED_DIRS,
                          ignored_files: Set[str] = _IGNORED_FILES
                          ) -> List[TestHealthInfo]:
