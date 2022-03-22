@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -61,7 +62,8 @@ class VirtualCardEnrollBubbleController {
   // Virtual card enroll button takes card information to enroll into a VCN.
   virtual void OnAcceptButton() = 0;
   virtual void OnDeclineButton() = 0;
-  virtual void OnLinkClicked(const GURL& url) = 0;
+  virtual void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
+                             const GURL& url) = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
   // Returns whether the omnibox icon should be visible.

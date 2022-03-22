@@ -30,21 +30,6 @@ const char* GetVirtualCardEnrollmentRequestType(
 
 }  // namespace
 
-// Converts the VirtualCardEnrollmentSource to string to be used in histograms.
-const std::string VirtualCardEnrollmentSourceToMetricSuffix(
-    VirtualCardEnrollmentSource source) {
-  switch (source) {
-    case VirtualCardEnrollmentSource::kUpstream:
-      return "Upstream";
-    case VirtualCardEnrollmentSource::kDownstream:
-      return "Downstream";
-    case VirtualCardEnrollmentSource::kSettingsPage:
-      return "SettingsPage";
-    case VirtualCardEnrollmentSource::kNone:
-      return "Unknown";
-  }
-}
-
 void LogVirtualCardEnrollmentBubbleShownMetric(
     VirtualCardEnrollmentBubbleSource source,
     bool is_reshow) {
@@ -104,6 +89,22 @@ void LogUpdateVirtualCardEnrollmentRequestResult(
       succeeded);
 }
 
+void LogVirtualCardEnrollmentLinkClickedMetric(
+    VirtualCardEnrollmentLinkType link_type,
+    VirtualCardEnrollmentBubbleSource source) {
+  base::UmaHistogramBoolean(
+      "Autofill.VirtualCardEnroll.LinkClicked." +
+          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) + "." +
+          VirtualCardEnrollmentLinkTypeToMetricSuffix(link_type),
+      true);
+}
+
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(
+    const base::TimeDelta& latency) {
+  base::UmaHistogramTimes(
+      "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
+}
+
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source) {
   switch (source) {
@@ -119,6 +120,33 @@ std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     case VirtualCardEnrollmentBubbleSource::
         VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE:
       return "SettingsPage";
+  }
+}
+
+const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
+    VirtualCardEnrollmentLinkType link_type) {
+  switch (link_type) {
+    case VirtualCardEnrollmentLinkType::
+        VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK:
+      return "GoogleLegalMessageLink";
+    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK:
+      return "IssuerLegalMessageLink";
+    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK:
+      return "LearnMoreLink";
+  }
+}
+
+const std::string VirtualCardEnrollmentSourceToMetricSuffix(
+    VirtualCardEnrollmentSource source) {
+  switch (source) {
+    case VirtualCardEnrollmentSource::kUpstream:
+      return "Upstream";
+    case VirtualCardEnrollmentSource::kDownstream:
+      return "Downstream";
+    case VirtualCardEnrollmentSource::kSettingsPage:
+      return "SettingsPage";
+    case VirtualCardEnrollmentSource::kNone:
+      return "Unknown";
   }
 }
 
