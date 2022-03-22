@@ -108,6 +108,7 @@ struct PreresolveJob {
   raw_ptr<PreresolveInfo> info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
+  base::TimeTicks creation_time;
 };
 
 // PreconnectManager is responsible for preresolving and preconnecting to
