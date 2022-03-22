@@ -12,6 +12,7 @@
 #import "autocomplete_result_consumer.h"
 #import "autocomplete_suggestion.h"
 #import "omnibox_icon.h"
+#import "omnibox_pedal.h"
 #import "omnibox_suggestion_commands.h"
 #import "popup_mediator.h"
 

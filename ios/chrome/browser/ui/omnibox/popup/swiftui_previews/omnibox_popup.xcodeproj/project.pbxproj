@@ -133,6 +133,7 @@
 		93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popup_mediator.m; sourceTree = "<group>"; };
 		93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = fake_omnibox_icon.swift; path = ../../shared/fake_omnibox_icon.swift; sourceTree = "<group>"; };
 		93BCA08627E2A53C00CE8602 /* blurred_background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = blurred_background.swift; path = ../../shared/blurred_background.swift; sourceTree = "<group>"; };
+		93DA936027EA4C7F007C704F /* omnibox_pedal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = omnibox_pedal.h; path = ../../omnibox_pedal.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +166,7 @@
 		59C4A9B927BFF0450080C045 /* shared */ = {
 			isa = PBXGroup;
 			children = (
+				93DA936027EA4C7F007C704F /* omnibox_pedal.h */,
 				876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */,
 				593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */,
 				593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */,

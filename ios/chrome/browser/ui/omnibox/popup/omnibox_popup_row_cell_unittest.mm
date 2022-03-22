@@ -27,6 +27,7 @@
 @property(nonatomic, strong) id<OmniboxIcon> icon;
 @property(nonatomic, assign) BOOL isTailSuggestion;
 @property(nonatomic, assign) NSString* commonPrefix;
+@property(nonatomic, assign) id<OmniboxPedal> pedal;
 @end
 
 @implementation FakeAutocompleteMatch

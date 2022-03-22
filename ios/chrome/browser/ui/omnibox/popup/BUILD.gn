@@ -40,6 +40,8 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
+    "omnibox_pedal_annotator.h",
+    "omnibox_pedal_annotator.mm",
     "omnibox_popup_container_view.h",
     "omnibox_popup_container_view.mm",
     "omnibox_popup_coordinator.h",
@@ -156,6 +158,7 @@ source_set("popup_internal") {
     "omnibox_icon_formatter.mm",
   ]
   deps = [
+    ":popup_swift",
     ":popup_ui",
     ":popup_ui_protocols",
     "//base",
@@ -178,6 +181,7 @@ source_set("popup_ui_protocols") {
     "autocomplete_suggestion.h",
     "content_providing.h",
     "omnibox_icon.h",
+    "omnibox_pedal.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -185,7 +189,10 @@ source_set("popup_ui_protocols") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "omnibox_popup_row_cell_unittest.mm" ]
+  sources = [
+    "omnibox_pedal_annotator_unittest.mm",
+    "omnibox_popup_row_cell_unittest.mm",
+  ]
   deps = [
     ":popup",
     ":popup_internal",

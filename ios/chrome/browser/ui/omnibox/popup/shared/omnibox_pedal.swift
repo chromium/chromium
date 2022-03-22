@@ -4,10 +4,12 @@
 
 import Foundation
 
-@objcMembers public class Pedal: NSObject {
-  let title: String
+@objcMembers public class OmniboxPedalData: NSObject, OmniboxPedal {
+  public let hint: String
+  public let action: () -> Void
 
-  public init(title: String) {
-    self.title = title
+  public init(hint: String, action: @escaping () -> Void) {
+    self.hint = hint
+    self.action = action
   }
 }

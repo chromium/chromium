@@ -13,11 +13,13 @@
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
@@ -99,6 +101,11 @@
         startDispatchingToTarget:self.model
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
     self.mediator.consumer = self.model;
+
+    OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
+    annotator.pedalsEndpoint = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    self.mediator.pedalAnnotator = annotator;
   } else {
     OmniboxPopupViewController* popupViewController =
         [[OmniboxPopupViewController alloc] init];

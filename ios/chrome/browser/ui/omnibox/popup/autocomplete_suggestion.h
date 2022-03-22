@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol OmniboxIcon;
+@protocol OmniboxPedal;
 
 // Represents an autocomplete suggestion in UI.
 @protocol AutocompleteSuggestion <NSObject>
@@ -32,6 +33,8 @@
 @property(nonatomic, readonly) NSInteger numberOfLines;
 
 @property(nonatomic, readonly) id<OmniboxIcon> icon;
+
+@property(nonatomic, readonly) id<OmniboxPedal> pedal;
 
 #pragma mark tail suggest
 

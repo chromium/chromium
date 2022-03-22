@@ -28,18 +28,17 @@ struct PopupMatchRowActionButton: View {
   static let font: UIFont =
     .init(name: "SFProText-Medium", size: 13) ?? .systemFont(ofSize: 13)
 
-  let pedal: Pedal
-  let action: () -> Void = {}
+  let pedal: OmniboxPedal
 
   var body: some View {
-    Button(action: action) {
+    Button(action: pedal.action) {
       HStack(spacing: Dimensions.horizontalSpacing) {
         Image(systemName: "clock.arrow.circlepath")
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: Dimensions.iconWidth)
           .padding(Dimensions.iconPadding)
-        Text(pedal.title)
+        Text(pedal.hint)
           .font(.init(PopupMatchRowActionButton.font))
           .kerning(Constants.textKerning)
 

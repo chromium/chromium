@@ -32,15 +32,17 @@ import Foundation
     return suggestion.supportsDeletion
   }
 
+  /// The pedal for this suggestion.
+  var pedal: OmniboxPedal? {
+    return suggestion.pedal
+  }
+
   /// The image shown on the leading edge of the row (an icon, a favicon,
   /// etc.).
   lazy var image = suggestion.icon.map { icon in PopupImage(icon: icon) }
 
-  let pedal: Pedal?
-
-  public init(suggestion: AutocompleteSuggestion, pedal: Pedal? = nil) {
+  public init(suggestion: AutocompleteSuggestion) {
     self.suggestion = suggestion
-    self.pedal = pedal
   }
 
   public var id: String {
@@ -56,6 +58,7 @@ extension PopupMatch {
     let isTabMatch: Bool
     let supportsDeletion: Bool
     let icon: OmniboxIcon?
+    let pedal: OmniboxPedal?
 
     let hasAnswer = false
     let isURL = false
@@ -65,7 +68,7 @@ extension PopupMatch {
 
     init(
       text: String, detailText: String? = nil, isAppendable: Bool = false, isTabMatch: Bool = false,
-      supportsDeletion: Bool = false, icon: OmniboxIcon? = nil
+      supportsDeletion: Bool = false, icon: OmniboxIcon? = nil, pedal: OmniboxPedalData? = nil
     ) {
       self.text = NSAttributedString(string: text, attributes: [:])
       self.detailText = detailText.flatMap { string in
@@ -75,6 +78,7 @@ extension PopupMatch {
       self.isTabMatch = isTabMatch
       self.supportsDeletion = supportsDeletion
       self.icon = icon
+      self.pedal = pedal
     }
   }
 
@@ -90,8 +94,8 @@ extension PopupMatch {
       icon: FakeOmniboxIcon.favicon))
   static let pedal = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
-      text: "clear browsing data"),
-    pedal: Pedal(title: "Click here"))
+      text: "clear browsing data",
+      pedal: OmniboxPedalData(hint: "Click here", action: {})))
   static let appendable = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "is appendable",
@@ -103,8 +107,8 @@ extension PopupMatch {
       isTabMatch: true))
   static let added = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
-      text: "New Match"),
-    pedal: Pedal(title: "Click here"))
+      text: "New Match",
+      pedal: OmniboxPedalData(hint: "Click here", action: {})))
   static let supportsDeletion = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "supports deletion",

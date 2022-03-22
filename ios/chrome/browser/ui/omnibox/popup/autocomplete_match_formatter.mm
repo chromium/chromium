@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -209,6 +210,10 @@ UIColor* DimColorIncognito() {
 
 - (BOOL)isTabMatch {
   return _match.has_tab_match.value_or(false);
+}
+
+- (id<OmniboxPedal>)pedal {
+  return self.pedalData;
 }
 
 #pragma mark tail suggest

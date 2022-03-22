@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 
 struct AutocompleteMatch;
+@class OmniboxPedalData;
 
 @interface AutocompleteMatchFormatter : NSObject <AutocompleteSuggestion>
 
@@ -18,6 +19,9 @@ struct AutocompleteMatch;
 // Whether the default search engine is Google impacts which icon is used in
 // some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
+
+// The pedal data for the underlying match.
+@property(nonatomic) OmniboxPedalData* pedalData;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;

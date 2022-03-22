@@ -42,7 +42,7 @@ import UIKit
     self.sections = matchGroups.map { group in
       PopupMatchSection(
         header: group.title ?? String(),
-        matches: group.suggestions.map { match in PopupMatch(suggestion: match, pedal: nil) }
+        matches: group.suggestions.map { match in PopupMatch(suggestion: match) }
       )
     }
 

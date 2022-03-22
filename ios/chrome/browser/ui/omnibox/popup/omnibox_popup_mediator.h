@@ -15,8 +15,10 @@
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #include "ui/base/window_open_disposition.h"
 
+@protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class DefaultBrowserPromoNonModalScheduler;
+@class OmniboxPedalAnnotator;
 @class OmniboxPopupPresenter;
 @class PopupModel;
 class FaviconLoader;
@@ -77,6 +79,8 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 // The model for this mediator, if one exists.
 @property(nonatomic, weak) PopupModel* model;
+// The annotator to create pedals for ths mediator.
+@property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
 
 // Designated initializer. Takes ownership of |imageFetcher|.
 - (instancetype)initWithFetcher:
