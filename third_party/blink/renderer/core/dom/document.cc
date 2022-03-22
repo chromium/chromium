@@ -1503,20 +1503,6 @@ AtomicString Document::contentType() const {
   return AtomicString("application/xml");
 }
 
-Element* Document::ElementFromPoint(double x, double y) const {
-  if (!GetLayoutView())
-    return nullptr;
-
-  return TreeScope::ElementFromPoint(x, y);
-}
-
-HeapVector<Member<Element>> Document::ElementsFromPoint(double x,
-                                                        double y) const {
-  if (!GetLayoutView())
-    return HeapVector<Member<Element>>();
-  return TreeScope::ElementsFromPoint(x, y);
-}
-
 Range* Document::caretRangeFromPoint(int x, int y) {
   if (!GetLayoutView())
     return nullptr;
