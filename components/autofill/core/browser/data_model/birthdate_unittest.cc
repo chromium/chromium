@@ -67,8 +67,7 @@ TEST(BirthdateTest, Validation) {
 
 // Tests that empty values clear the corresponding fields.
 TEST(BirthdateTest, Clear) {
-  for (const ServerFieldType component :
-       {BIRTHDATE_DAY, BIRTHDATE_MONTH, BIRTHDATE_YEAR_4_DIGITS}) {
+  for (const ServerFieldType component : Birthdate::GetRawComponents()) {
     SetFieldAndExpectEmpty(component, u"");
   }
 }

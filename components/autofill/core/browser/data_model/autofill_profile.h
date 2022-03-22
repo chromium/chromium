@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/birthdate.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -288,9 +289,9 @@ class AutofillProfile : public AutofillDataModel {
 
   // Utilities for listing and lookup of the data members that constitute
   // user-visible profile information.
-  std::array<const FormGroup*, 5> FormGroups() const {
+  std::array<const FormGroup*, 6> FormGroups() const {
     // Adjust the return type size as necessary.
-    return {&name_, &email_, &company_, &phone_number_, &address_};
+    return {&name_, &email_, &company_, &phone_number_, &address_, &birthdate_};
   }
 
   const FormGroup* FormGroupForType(const AutofillType& type) const;
@@ -305,6 +306,7 @@ class AutofillProfile : public AutofillDataModel {
   CompanyInfo company_;
   PhoneNumber phone_number_;
   Address address_;
+  Birthdate birthdate_;
 
   // The label is chosen by the user and can contain an arbitrary value.
   // However, there are two labels that play a special role to indicate that an

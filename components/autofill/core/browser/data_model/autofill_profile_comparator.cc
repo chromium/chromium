@@ -984,6 +984,25 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
   return true;
 }
 
+bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
+                                                const AutofillProfile& p2,
+                                                Birthdate& birthdate) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    return true;
+  }
+  DCHECK(HaveMergeableBirthdates(p1, p2));
+
+  for (ServerFieldType component : Birthdate::GetRawComponents()) {
+    const std::u16string& component1 = p1.GetInfo(component, app_locale_);
+    const std::u16string& component2 = p2.GetInfo(component, app_locale_);
+    birthdate.SetInfo(component, component1.empty() ? component2 : component1,
+                      app_locale_);
+  }
+
+  return true;
+}
+
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const AutofillProfile& p1,
     const AutofillProfile& p2) {
@@ -1427,6 +1446,22 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
   }
 
   return true;
+}
+
+bool AutofillProfileComparator::HaveMergeableBirthdates(
+    const AutofillProfile& p1,
+    const AutofillProfile& p2) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
+    return true;
+  }
+  return base::ranges::all_of(
+      Birthdate::GetRawComponents(), [&](ServerFieldType component) {
+        const std::u16string& component1 = p1.GetInfo(component, app_locale_);
+        const std::u16string& component2 = p2.GetInfo(component, app_locale_);
+        return component1.empty() || component2.empty() ||
+               component1 == component2;
+      });
 }
 
 }  // namespace autofill
