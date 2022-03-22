@@ -48,7 +48,6 @@ class AttributionTriggerDisabledBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
-    SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -57,7 +56,6 @@ class AttributionTriggerDisabledBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
-    SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
   }
 

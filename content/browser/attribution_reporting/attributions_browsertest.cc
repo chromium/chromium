@@ -172,7 +172,6 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
-    SetupCrossSiteRedirector(https_server_.get());
   }
 
   void TearDownOnMainThread() override {

@@ -52,7 +52,6 @@ class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -62,7 +61,6 @@ class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
-    SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
   }
 

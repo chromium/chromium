@@ -86,7 +86,6 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
-    SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
   }
 
@@ -364,7 +363,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -626,7 +624,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -724,7 +721,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -912,7 +908,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -972,7 +967,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1043,7 +1037,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1121,7 +1114,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
   https_server->ServeFilesFromSourceDirectory(
       "content/test/data/attribution_reporting");
   https_server->ServeFilesFromSourceDirectory("content/test/data");
-  SetupCrossSiteRedirector(https_server.get());
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
