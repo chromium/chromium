@@ -1297,17 +1297,12 @@ void NGBoxFragmentPainter::PaintColumnRules(
 
     PhysicalRect rule;
     BoxSide box_side;
-    if (previous_column.Y() == current_column.Y() ||
-        previous_column.Bottom() == current_column.Bottom()) {
-      // Horizontal writing-mode.
-      DCHECK(style.IsHorizontalWritingMode());
+    if (style.IsHorizontalWritingMode()) {
       LayoutUnit center;
-      if (previous_column.X() < current_column.X()) {
-        // Left to right.
+      if (style.IsLeftToRightDirection()) {
         center = (previous_column.X() + current_column.Right()) / 2;
         box_side = BoxSide::kLeft;
       } else {
-        // Right to left.
         center = (current_column.X() + previous_column.Right()) / 2;
         box_side = BoxSide::kRight;
       }
@@ -1320,7 +1315,7 @@ void NGBoxFragmentPainter::PaintColumnRules(
     } else {
       // Vertical writing-mode.
       LayoutUnit center;
-      if (previous_column.Y() < current_column.Y()) {
+      if (style.IsLeftToRightDirection()) {
         // Top to bottom.
         center = (previous_column.Y() + current_column.Bottom()) / 2;
         box_side = BoxSide::kTop;
