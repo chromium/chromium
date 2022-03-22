@@ -49,8 +49,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2022-04-17">
-  <owner>rharrison@chromium.org</owner>
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2023-03-21">
+  <owner>dhoss@chromium.org</owner>
+  <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks what types of forms are present in PDF document, logged when the
