@@ -1160,17 +1160,18 @@ void inspector_mark_load_event::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
 }
 
+void inspector_pre_paint_event::Data(perfetto::TracedValue context,
+                                     LocalFrame* frame) {
+  auto dict = std::move(context).WriteDictionary();
+  FrameEventData(dict, frame);
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+}
+
 void inspector_scroll_layer_event::Data(perfetto::TracedValue context,
                                         LayoutObject* layout_object) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
   SetGeneratingNodeInfo(dict, layout_object, "nodeId");
-}
-
-void inspector_update_layer_tree_event::Data(perfetto::TracedValue context,
-                                             LocalFrame* frame) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("frame", IdentifiersFactory::FrameId(frame));
 }
 
 namespace {

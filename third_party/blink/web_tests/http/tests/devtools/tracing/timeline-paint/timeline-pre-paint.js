@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Tests the instrumentation of UpdateLayerTree event\n`);
+  TestRunner.addResult(`Tests the instrumentation of PrePaint event\n`);
   await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
@@ -12,7 +12,8 @@
           position: absolute;
           width: 20px;
           height: 20px;
-          transform: translateZ(10px);
+          background: green;
+          will-change: transform;
       }
       </style>
       <div id="parent-layer"></div>
@@ -33,8 +34,8 @@
     var events = PerformanceTestRunner.timelineModel().inspectedTargetEvents();
     for (var i = 0; i < events.length; ++i) {
       var event = events[i];
-      if (events[i].name === TimelineModel.TimelineModel.RecordType.UpdateLayerTree) {
-        TestRunner.addResult('Got UpdateLayerTree event, phase: ' + events[i].phase);
+      if (events[i].name === TimelineModel.TimelineModel.RecordType.PrePaint) {
+        TestRunner.addResult('Got PrePaint event, phase: ' + events[i].phase);
         break;
       }
     }

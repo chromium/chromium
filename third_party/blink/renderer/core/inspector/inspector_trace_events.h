@@ -470,7 +470,7 @@ namespace inspector_scroll_layer_event {
 void Data(perfetto::TracedValue context, LayoutObject*);
 }
 
-namespace inspector_update_layer_tree_event {
+namespace inspector_pre_paint_event {
 void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
