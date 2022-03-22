@@ -277,7 +277,7 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 71 : 61), 1);
+              (::features::IsImpulseScrollAnimationEnabled() ? 171 : 61), 1);
   ASSERT_EQ(container1->scrollTop(), 0);  // container1 should not scroll.
 
   Compositor().BeginFrame(1);
