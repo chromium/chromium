@@ -18,7 +18,7 @@ def GetChromiumSrcDir():
                                       os.pardir))
 
 def GetDefaultBuildDir():
-  return os.path.join(GetChromiumSrcDir(), 'out', 'Release-iphonesimulator')
+  return GetChromiumSrcDir()
 
 def StartServer(port, build_dir):
   cwt_chromedriver_path = os.path.join(os.path.dirname(__file__),
