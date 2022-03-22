@@ -19,7 +19,7 @@ promise_test(async t => {
   // https://html.spec.whatwg.org/#prompt-to-unload-a-document, no prompt is
   // shown and the navigation will proceed.
   i.contentWindow.onbeforeunload = t.step_func(() => {
-    assertionPromise = assertBothRejectDOM(t, i.contentWindow.navigation.reload({ state: document.body }), "InvalidStateError", i.contentWindow);
+    assertionPromise = assertBothRejectDOM(t, i.contentWindow.navigation.reload({ state: document.body }), "DataCloneError", i.contentWindow);
   });
   i.contentWindow.navigation.navigate("?1");
 
@@ -27,5 +27,5 @@ promise_test(async t => {
   await assertionPromise;
 
   assert_equals(navigateEventCount, 1);
-}, `reload() with an unserializable state inside onbeforeunload throws "InvalidStateError", not "DataCloneError"`);
+}, `reload() with an unserializable state inside onbeforeunload throws "DataCloneError", not "InvalidStateError"`);
 </script>

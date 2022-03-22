@@ -15,6 +15,6 @@ promise_test(async t => {
 
   iWindow.navigation.onnavigate = t.unreached_func("onnavigate");
 
-  await assertBothRejectDOM(t, iWindow.navigation.reload({ state: document.body }), "InvalidStateError", iWindow, iDOMException);
-}, `reload() with unserializable state in a detached iframe throws "InvalidStateError", not "DataCloneError"`);
+  await assertBothRejectDOM(t, iWindow.navigation.reload({ state: document.body }), "DataCloneError", iWindow, iDOMException);
+}, `reload() with unserializable state in a detached iframe throws "DataCloneError", not "InvalidStateError"`);
 </script>

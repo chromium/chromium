@@ -16,12 +16,17 @@ promise_test(async t => {
 
   i.contentWindow.navigation.navigate("?1");
 
+  let assertionPromise;
   await new Promise(resolve => {
-    i.contentWindow.onunload = t.step_func(async () => {
-      await assertBothRejectDOM(t, i.contentWindow.navigation.reload({ state: document.body }), "InvalidStateError", i.contentWindow);
+    i.contentWindow.onunload = t.step_func(() => {
+      assertionPromise = assertBothRejectDOM(t, i.contentWindow.navigation.reload({ state: document.body }), "DataCloneError", i.contentWindow);
       assert_equals(navigateEventCount, 1);
       resolve();
     });
   });
-}, `reload() with an unserializable state inside onunload throws "InvalidStateError", not "DataCloneError"`);
+
+  assert_not_equals(assertionPromise, undefined);
+  await assertionPromise;
+
+}, `reload() with an unserializable state inside onunload throws "DataCloneError", not "InvalidStateError"`);
 </script>

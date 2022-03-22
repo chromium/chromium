@@ -460,9 +460,6 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
                             "Invalid URL '" + completed_url.GetString() + "'.");
   }
 
-  if (DOMException* maybe_ex = PerformSharedNavigationChecks("navigate()"))
-    return EarlyErrorResult(script_state, maybe_ex);
-
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
@@ -491,9 +488,6 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
 
 NavigationResult* NavigationApi::reload(ScriptState* script_state,
                                         NavigationReloadOptions* options) {
-  if (DOMException* maybe_ex = PerformSharedNavigationChecks("reload()"))
-    return EarlyErrorResult(script_state, maybe_ex);
-
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
@@ -526,6 +520,12 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
   DCHECK(frame_load_type == WebFrameLoadType::kReplaceCurrentItem ||
          frame_load_type == WebFrameLoadType::kReload ||
          frame_load_type == WebFrameLoadType::kStandard);
+
+  String method_name_for_error_message(
+      frame_load_type == WebFrameLoadType::kReload ? "reload()" : "navigate()");
+  if (DOMException* maybe_ex =
+          PerformSharedNavigationChecks(method_name_for_error_message))
+    return EarlyErrorResult(script_state, maybe_ex);
 
   NavigationApiNavigation* navigation =
       MakeGarbageCollected<NavigationApiNavigation>(
