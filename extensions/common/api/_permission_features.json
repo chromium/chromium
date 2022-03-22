@@ -619,6 +619,12 @@
       "channel": "stable",
       "extension_types": ["hosted_app"],
       "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
+    },
+    {
+      "channel": "dev",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos", "lacros"],
+      "session_types": ["kiosk"]
     }
   ],
   "system.storage": [
