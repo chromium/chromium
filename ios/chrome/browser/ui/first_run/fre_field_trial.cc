@@ -76,6 +76,7 @@ namespace {
 // String local state preference with the name of the assigned trial group.
 // Empty if no group has been assigned yet.
 const char kTrialGroupPrefName[] = "fre_refactoring.trial_group";
+const char kTrialGroupV3PrefName[] = "fre_refactoringV3.trial_group";
 
 // Group names for the default browser promo trial.
 const char kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup[] =
@@ -470,34 +471,37 @@ int CreateNewMobileIdentityConsistencyFRETrial(
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrialGroupPrefName, kDefaultPrefValue);
+  registry->RegisterIntegerPref(kTrialGroupV3PrefName, kDefaultPrefValue);
 }
 
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
-  int trial_group = local_state->GetInteger(kTrialGroupPrefName);
-  if (trial_group != kDefaultPrefValue || !FirstRun::IsChromeFirstRun()) {
-    // Do not bucket existing users that have not been already been grouped. The
-    // experiment wants to only add users who have not seen the First Run
-    // Experience yet.
-    return;
-  }
   // Don't create the trial if it was already created for testing. This is only
   // expected when the browser is used for development purpose. The trial
   // created when the about flag is set will have the same name as the feature.
   // This condition is to avoid having multiple trials overriding the same
   // feature. A trial might have also been created with the commandline
   // arugments.
-  if (!base::FieldTrialList::TrialExists(kFREThirdUITrialName) &&
-      !base::FieldTrialList::TrialExists(kEnableFREUIModuleIOS.name) &&
-      !base::FieldTrialList::TrialExists(
+  if (base::FieldTrialList::TrialExists(kFREThirdUITrialName) ||
+      base::FieldTrialList::TrialExists(kEnableFREUIModuleIOS.name) ||
+      base::FieldTrialList::TrialExists(
           signin::kNewMobileIdentityConsistencyFRE.name)) {
+    return;
+  }
+
+  if (FirstRun::IsChromeFirstRun()) {
     // Create trial and group user for the first time, or tag users again to
     // ensure the experiment can be used to filter UMA metrics.
-    trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+    int trial_group =
+        CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+    // Persist the assigned group for subsequent runs.
+    local_state->SetInteger(kTrialGroupV3PrefName, trial_group);
+  } else if (local_state->GetInteger(kTrialGroupV3PrefName) !=
+             kDefaultPrefValue) {
+    // The user was assigned to a group in a previous run.
+    CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
   }
-  // Persist the assigned group for subsequent runs.
-  local_state->SetInteger(kTrialGroupPrefName, trial_group);
 }
 
 }  // namespace fre_field_trial
