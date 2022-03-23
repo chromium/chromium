@@ -395,7 +395,9 @@ void cover_support(void)
     mem_setup(&strm);
     strm.avail_in = 0;
     strm.next_in = Z_NULL;
-    ret = inflateInit_(&strm, ZLIB_VERSION - 1, (int)sizeof(z_stream));
+    char versioncpy[] = ZLIB_VERSION;
+    versioncpy[0] -= 1;
+    ret = inflateInit_(&strm, versioncpy, (int)sizeof(z_stream));
                                                 assert(ret == Z_VERSION_ERROR);
     mem_done(&strm, "wrong version");
 
