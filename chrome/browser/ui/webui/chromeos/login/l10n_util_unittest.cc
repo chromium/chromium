@@ -28,7 +28,7 @@ void VerifyOnlyUILanguages(const base::ListValue& list) {
   for (const base::Value& value : list.GetListDeprecated()) {
     ASSERT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    const std::string* code = dict.FindStringKey("code");
+    const std::string* code = dict.GetDict().FindString("code");
     ASSERT_TRUE(code);
     EXPECT_NE("ga", *code)
         << "Irish is an example language which has input method "
@@ -42,7 +42,7 @@ void VerifyLanguageCode(const base::ListValue& list,
   const base::Value& value = list.GetListDeprecated()[index];
   ASSERT_TRUE(value.is_dict());
   const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-  const std::string* actual_code = dict.FindStringKey("code");
+  const std::string* actual_code = dict.GetDict().FindString("code");
   ASSERT_TRUE(actual_code);
   EXPECT_EQ(expected_code, *actual_code)
       << "Wrong language code at index " << index << ".";
@@ -108,13 +108,13 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
 TEST_F(L10nUtilTest, FindMostRelevantLocale) {
   base::ListValue available_locales;
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetStringKey("value", "de");
+  dict->GetDict().Set("value", "de");
   available_locales.Append(std::move(dict));
   dict = std::make_unique<base::DictionaryValue>();
-  dict->SetStringKey("value", "fr");
+  dict->GetDict().Set("value", "fr");
   available_locales.Append(std::move(dict));
   dict = std::make_unique<base::DictionaryValue>();
-  dict->SetStringKey("value", "en-GB");
+  dict->GetDict().Set("value", "en-GB");
   available_locales.Append(std::move(dict));
 
   std::vector<std::string> most_relevant_language_codes;
