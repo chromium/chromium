@@ -14,9 +14,11 @@ import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
+import * as newFeatureToast from '../../new_feature_toast.js';
 import * as state from '../../state.js';
 import {Facing, Mode, Resolution, ViewName} from '../../type.js';
 import * as util from '../../util.js';
+import {PTZPanelOptions} from '../view.js';
 
 /**
  * All supported constant fps options of video recording.
@@ -32,6 +34,8 @@ export class Options implements CameraUI {
   private readonly toggleMirror = dom.get('#toggle-mirror', HTMLInputElement);
 
   private readonly toggleFps = dom.get('#toggle-fps', HTMLInputElement);
+
+  private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
 
   private readonly switchDeviceButton =
       dom.get('#switch-device', HTMLButtonElement);
@@ -73,6 +77,8 @@ export class Options implements CameraUI {
     this.toggleMic.addEventListener('click', () => this.updateAudioByMic());
     this.toggleMirror.addEventListener('click', () => this.saveMirroring());
 
+    this.initOpenPTZPanel();
+
     util.bindElementAriaLabelWithState({
       element: dom.get('#toggle-timer', Element),
       state: state.State.TIMER_3SEC,
@@ -112,6 +118,47 @@ export class Options implements CameraUI {
         const hasError = !await reconfiguring;
         state.set(state.State.MODE_SWITCHING, false, {hasError});
       })();
+    });
+  }
+
+  private initOpenPTZPanel() {
+    this.openPTZPanel.addEventListener('click', () => {
+      nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
+                 stream: this.cameraManager.getPreviewVideo().getStream(),
+                 vidPid: this.cameraManager.getVidPid(),
+                 resetPTZ: () => this.cameraManager.resetPTZ(),
+               }));
+      highlight(false);
+    });
+
+    // Highlight effect for PTZ button.
+    let toastShown = false;
+    const highlight = (enabled: boolean) => {
+      if (!enabled) {
+        if (toastShown) {
+          newFeatureToast.hide();
+          toastShown = false;
+        }
+        return;
+      }
+      toastShown = true;
+      newFeatureToast.show(this.openPTZPanel);
+      newFeatureToast.focus();
+    };
+
+    this.cameraManager.registerCameraUI({
+      onUpdateConfig: () => {
+        const ptzToastKey = 'isPTZToastShown';
+        if (!state.get(state.State.ENABLE_PTZ) ||
+            state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
+            localStorage.getBool(ptzToastKey)) {
+          highlight(false);
+          return;
+        }
+        localStorage.set(ptzToastKey, true);
+        state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
+        highlight(true);
+      },
     });
   }
 

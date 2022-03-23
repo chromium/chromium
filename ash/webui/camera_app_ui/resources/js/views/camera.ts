@@ -64,7 +64,7 @@ import {Dialog} from './dialog.js';
 import {PTZPanel} from './ptz_panel.js';
 import * as review from './review.js';
 import {PrimarySettings} from './settings.js';
-import {PTZPanelOptions, View} from './view.js';
+import {View} from './view.js';
 import {WarningType} from './warning.js';
 
 /**
@@ -115,8 +115,6 @@ export class Camera extends View implements CameraViewUI {
    * Promise for the current take of photo or recording.
    */
   private take: Promise<void>|null = null;
-
-  private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
 
   private readonly modesGroup = dom.get('#modes-group', HTMLElement);
 
@@ -256,8 +254,6 @@ export class Camera extends View implements CameraViewUI {
         }
       });
     }
-
-    this.initOpenPTZPanel();
   }
 
   /**
@@ -296,47 +292,6 @@ export class Camera extends View implements CameraViewUI {
       left: scrollLeft,
       top: 0,
       behavior: 'smooth',
-    });
-  }
-
-  private initOpenPTZPanel() {
-    this.openPTZPanel.addEventListener('click', () => {
-      nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
-                 stream: this.cameraManager.getPreviewVideo().getStream(),
-                 vidPid: this.cameraManager.getVidPid(),
-                 resetPTZ: () => this.cameraManager.resetPTZ(),
-               }));
-      highlight(false);
-    });
-
-    // Highlight effect for PTZ button.
-    let toastShown = false;
-    const highlight = (enabled: boolean) => {
-      if (!enabled) {
-        if (toastShown) {
-          newFeatureToast.hide();
-          toastShown = false;
-        }
-        return;
-      }
-      toastShown = true;
-      newFeatureToast.show(this.openPTZPanel);
-      newFeatureToast.focus();
-    };
-
-    this.cameraManager.registerCameraUI({
-      onUpdateConfig: () => {
-        const ptzToastKey = 'isPTZToastShown';
-        if (!state.get(state.State.ENABLE_PTZ) ||
-            state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
-            localStorage.getBool(ptzToastKey)) {
-          highlight(false);
-          return;
-        }
-        localStorage.set(ptzToastKey, true);
-        state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
-        highlight(true);
-      },
     });
   }
 
