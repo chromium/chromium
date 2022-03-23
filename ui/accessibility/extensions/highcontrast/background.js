@@ -111,5 +111,9 @@ class Background {
   }
 }
 
-Storage.initialize();
-const background = new Background();
+self.addEventListener('install', () => {
+  importScripts('common.js');
+  importScripts('storage.js');
+  Storage.initialize();
+  const background = new Background();
+});
