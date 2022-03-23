@@ -72,13 +72,17 @@ public class FileAccessPermissionHelper {
             return;
         }
 
-        AndroidPermissionRequester.showMissingPermissionDialog(windowAndroid,
-                context.getString(org.chromium.chrome.R.string
-                                          .missing_storage_permission_download_education_text),
-                ()
-                        -> permissionDelegate.requestPermissions(
-                                new String[] {permission.WRITE_EXTERNAL_STORAGE},
-                                permissionCallback),
-                callback.bind(Pair.create(false, null)));
+        Runnable requestPermissions = ()
+                -> permissionDelegate.requestPermissions(
+                        new String[] {permission.WRITE_EXTERNAL_STORAGE}, permissionCallback);
+        if (windowAndroid.getModalDialogManager() != null) {
+            AndroidPermissionRequester.showMissingPermissionDialog(windowAndroid,
+                    context.getString(org.chromium.chrome.R.string
+                                              .missing_storage_permission_download_education_text),
+                    requestPermissions, callback.bind(Pair.create(false, null)));
+        } else {
+            // If there is no modal dialog manager, we will request permissions directly.
+            requestPermissions.run();
+        }
     }
 }
