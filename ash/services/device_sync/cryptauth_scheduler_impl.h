@@ -187,4 +187,9 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::CryptAuthSchedulerImpl;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_SCHEDULER_IMPL_H_

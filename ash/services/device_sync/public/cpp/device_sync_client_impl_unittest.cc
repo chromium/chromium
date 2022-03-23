@@ -35,14 +35,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 const char kTestEmail[] = "example@gmail.com";
 const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
@@ -880,4 +877,4 @@ TEST_F(DeviceSyncClientImplTest, TestGetDebugInfo) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

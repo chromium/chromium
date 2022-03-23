@@ -17,7 +17,7 @@
 #include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 namespace device_sync {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -40,4 +40,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 }  // namespace device_sync
-}  // namespace chromeos
+}  // namespace ash

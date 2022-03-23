@@ -7,7 +7,7 @@
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -28,13 +28,11 @@ class GcmDeviceInfoProvider {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::GcmDeviceInfoProvider;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::GcmDeviceInfoProvider;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_

@@ -7,16 +7,17 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+class GcmDeviceInfoProvider;
+}  // namespace device_sync
 
 namespace multidevice_setup {
 

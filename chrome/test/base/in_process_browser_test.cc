@@ -151,10 +151,8 @@ class FakeDeviceSyncImplFactory
       signin::IdentityManager* identity_manager,
       gcm::GCMDriver* gcm_driver,
       PrefService* profile_prefs,
-      const chromeos::device_sync::GcmDeviceInfoProvider*
-          gcm_device_info_provider,
-      chromeos::device_sync::ClientAppMetadataProvider*
-          client_app_metadata_provider,
+      const ash::device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      ash::device_sync::ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<base::OneShotTimer> timer) override {
     return std::make_unique<chromeos::device_sync::FakeDeviceSync>();

@@ -9,8 +9,6 @@
 
 #include "ash/components/tether/tether_component.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -36,6 +34,10 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+}
 
 namespace tether {
 

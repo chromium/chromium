@@ -59,13 +59,13 @@ class TetherService
       public device::BluetoothAdapter::Observer,
       public chromeos::NetworkStateHandlerObserver,
       public TetherComponent::Observer,
-      public chromeos::device_sync::DeviceSyncClient::Observer,
+      public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   TetherService(
       Profile* profile,
       chromeos::PowerManagerClient* power_manager_client,
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
+      device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       chromeos::NetworkStateHandler* network_state_handler,
@@ -267,7 +267,7 @@ class TetherService
 
   Profile* profile_;
   chromeos::PowerManagerClient* power_manager_client_;
-  chromeos::device_sync::DeviceSyncClient* device_sync_client_;
+  device_sync::DeviceSyncClient* device_sync_client_;
   secure_channel::SecureChannelClient* secure_channel_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;

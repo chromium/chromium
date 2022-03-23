@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/public/cpp/gcm_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -14,4 +14,4 @@ const char kCryptAuthV2EnrollmentAuthorizedEntity[] = "16502139086";
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -116,7 +116,7 @@ const ClientAppMetadata& GetClientAppMetadataForTest() {
     ApplicationSpecificMetadata app_specific_metadata;
     app_specific_metadata.set_gcm_registration_id(kTestGcmRegistrationId);
     app_specific_metadata.set_device_software_package(
-        chromeos::device_sync::kCryptAuthGcmAppId);
+        ash::device_sync::kCryptAuthGcmAppId);
 
     BetterTogetherFeatureMetadata beto_metadata;
     beto_metadata.add_supported_features(

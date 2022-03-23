@@ -8,8 +8,6 @@
 #include <memory>
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
@@ -18,6 +16,10 @@
 #include "base/timer/timer.h"
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+}
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;

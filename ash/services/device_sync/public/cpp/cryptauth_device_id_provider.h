@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -29,6 +29,6 @@ class CryptAuthDeviceIdProvider {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CRYPTAUTH_DEVICE_ID_PROVIDER_H_

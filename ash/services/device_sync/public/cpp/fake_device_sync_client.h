@@ -19,7 +19,7 @@
 #include "base/containers/circular_deque.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -32,8 +32,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
         multidevice::SoftwareFeature software_feature,
         bool enabled,
         bool is_exclusive,
-        ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
-            callback);
+        mojom::DeviceSync::SetSoftwareFeatureStateCallback callback);
     SetSoftwareFeatureStateInputs(SetSoftwareFeatureStateInputs&&);
     ~SetSoftwareFeatureStateInputs();
 
@@ -41,8 +40,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
     const multidevice::SoftwareFeature software_feature;
     const bool enabled;
     const bool is_exclusive;
-    ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
-        callback;
+    mojom::DeviceSync::SetSoftwareFeatureStateCallback callback;
   };
 
   struct SetFeatureStatusInputs {
@@ -50,14 +48,14 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
         const std::string& device_instance_id,
         multidevice::SoftwareFeature feature,
         FeatureStatusChange status_change,
-        ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback callback);
+        mojom::DeviceSync::SetFeatureStatusCallback callback);
     SetFeatureStatusInputs(SetFeatureStatusInputs&&);
     ~SetFeatureStatusInputs();
 
     const std::string device_instance_id;
     const multidevice::SoftwareFeature feature;
     const FeatureStatusChange status_change;
-    ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback callback;
+    mojom::DeviceSync::SetFeatureStatusCallback callback;
   };
 
   struct FindEligibleDevicesInputs {
@@ -71,18 +69,17 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   };
 
   struct NotifyDevicesInputs {
-    NotifyDevicesInputs(
-        const std::vector<std::string>& device_instance_ids,
-        cryptauthv2::TargetService target_service,
-        multidevice::SoftwareFeature feature,
-        ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback callback);
+    NotifyDevicesInputs(const std::vector<std::string>& device_instance_ids,
+                        cryptauthv2::TargetService target_service,
+                        multidevice::SoftwareFeature feature,
+                        mojom::DeviceSync::NotifyDevicesCallback callback);
     NotifyDevicesInputs(NotifyDevicesInputs&&);
     ~NotifyDevicesInputs();
 
     const std::vector<std::string> device_instance_ids;
     const cryptauthv2::TargetService target_service;
     const multidevice::SoftwareFeature feature;
-    ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback callback;
+    mojom::DeviceSync::NotifyDevicesCallback callback;
   };
 
   FakeDeviceSyncClient();
@@ -123,22 +120,20 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   void InvokePendingForceEnrollmentNowCallback(bool success);
   void InvokePendingForceSyncNowCallback(bool success);
   void InvokePendingSetSoftwareFeatureStateCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingSetFeatureStatusCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingFindEligibleDevicesCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code,
+      mojom::NetworkRequestResult result_code,
       multidevice::RemoteDeviceRefList eligible_devices,
       multidevice::RemoteDeviceRefList ineligible_devices);
   void InvokePendingNotifyDevicesCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code,
-      absl::optional<
-          std::vector<ash::device_sync::mojom::DeviceActivityStatusPtr>>
+      mojom::NetworkRequestResult result_code,
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           device_activity_status);
-  void InvokePendingGetDebugInfoCallback(
-      ash::device_sync::mojom::DebugInfoPtr debug_info_ptr);
+  void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
   void set_synced_devices(multidevice::RemoteDeviceRefList synced_devices) {
     synced_devices_ = synced_devices;
@@ -156,10 +151,8 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
  private:
   // DeviceSyncClient:
   void ForceEnrollmentNow(
-      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback callback)
-      override;
-  void ForceSyncNow(ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback
-                        callback) override;
+      mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
+  void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
   absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
@@ -168,35 +161,29 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       multidevice::SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive,
-      ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
-          callback) override;
+      mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) override;
   void SetFeatureStatus(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature feature,
       FeatureStatusChange status_change,
-      ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback callback)
-      override;
+      mojom::DeviceSync::SetFeatureStatusCallback callback) override;
   void FindEligibleDevices(multidevice::SoftwareFeature software_feature,
                            FindEligibleDevicesCallback callback) override;
-  void NotifyDevices(const std::vector<std::string>& device_instance_ids,
-                     cryptauthv2::TargetService target_service,
-                     multidevice::SoftwareFeature feature,
-                     ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback
-                         callback) override;
+  void NotifyDevices(
+      const std::vector<std::string>& device_instance_ids,
+      cryptauthv2::TargetService target_service,
+      multidevice::SoftwareFeature feature,
+      mojom::DeviceSync::NotifyDevicesCallback callback) override;
   void GetDevicesActivityStatus(
-      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback
-          callback) override;
-  void GetDebugInfo(ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback
-                        callback) override;
+      mojom::DeviceSync::GetDevicesActivityStatusCallback callback) override;
+  void GetDebugInfo(mojom::DeviceSync::GetDebugInfoCallback callback) override;
 
   multidevice::RemoteDeviceRefList synced_devices_;
   absl::optional<multidevice::RemoteDeviceRef> local_device_metadata_;
 
-  base::circular_deque<
-      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback>
+  base::circular_deque<mojom::DeviceSync::ForceEnrollmentNowCallback>
       force_enrollment_now_callback_queue_;
-  base::circular_deque<
-      ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback>
+  base::circular_deque<mojom::DeviceSync::ForceSyncNowCallback>
       force_sync_now_callback_queue_;
   base::circular_deque<SetSoftwareFeatureStateInputs>
       set_software_feature_state_inputs_queue_;
@@ -204,24 +191,14 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   base::circular_deque<FindEligibleDevicesInputs>
       find_eligible_devices_inputs_queue_;
   base::circular_deque<NotifyDevicesInputs> notify_devices_inputs_queue_;
-  base::circular_deque<
-      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback>
+  base::circular_deque<mojom::DeviceSync::GetDevicesActivityStatusCallback>
       get_devices_activity_status_callback_queue_;
-  base::circular_deque<
-      ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback>
+  base::circular_deque<mojom::DeviceSync::GetDebugInfoCallback>
       get_debug_info_callback_queue_;
 };
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::FakeDeviceSyncClient;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_

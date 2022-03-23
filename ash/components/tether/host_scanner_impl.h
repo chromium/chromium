@@ -14,8 +14,6 @@
 #include "ash/components/tether/host_scanner_operation.h"
 #include "ash/components/tether/notification_presenter.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +27,10 @@ class SessionManager;
 }  // namespace session_manager
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+}
 
 namespace tether {
 

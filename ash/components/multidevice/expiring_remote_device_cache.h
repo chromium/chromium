@@ -74,4 +74,9 @@ class ExpiringRemoteDeviceCache {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::multidevice {
+using ::chromeos::multidevice::ExpiringRemoteDeviceCache;
+}
+
 #endif  // ASH_COMPONENTS_MULTIDEVICE_EXPIRING_REMOTE_DEVICE_CACHE_H_

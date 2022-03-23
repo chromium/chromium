@@ -24,7 +24,7 @@ namespace base {
 class TaskRunner;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -48,7 +48,7 @@ class DeviceSyncClient {
   };
 
   using FindEligibleDevicesCallback =
-      base::OnceCallback<void(ash::device_sync::mojom::NetworkRequestResult,
+      base::OnceCallback<void(mojom::NetworkRequestResult,
                               multidevice::RemoteDeviceRefList,
                               multidevice::RemoteDeviceRefList)>;
 
@@ -64,8 +64,7 @@ class DeviceSyncClient {
   virtual void Initialize(scoped_refptr<base::TaskRunner> task_runner) {}
 
   // Returns the DeviceSync mojo remote.
-  virtual mojo::Remote<ash::device_sync::mojom::DeviceSync>*
-  GetDeviceSyncRemote();
+  virtual mojo::Remote<mojom::DeviceSync>* GetDeviceSyncRemote();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -76,10 +75,9 @@ class DeviceSyncClient {
   bool is_ready() { return is_ready_; }
 
   virtual void ForceEnrollmentNow(
-      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback
-          callback) = 0;
+      mojom::DeviceSync::ForceEnrollmentNowCallback callback) = 0;
   virtual void ForceSyncNow(
-      ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
+      mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
   virtual absl::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;
@@ -92,14 +90,12 @@ class DeviceSyncClient {
       multidevice::SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive,
-      ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
-          callback) = 0;
+      mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) = 0;
   virtual void SetFeatureStatus(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature feature,
       FeatureStatusChange status_change,
-      ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback
-          callback) = 0;
+      mojom::DeviceSync::SetFeatureStatusCallback callback) = 0;
   virtual void FindEligibleDevices(
       multidevice::SoftwareFeature software_feature,
       FindEligibleDevicesCallback callback) = 0;
@@ -107,12 +103,11 @@ class DeviceSyncClient {
       const std::vector<std::string>& device_instance_ids,
       cryptauthv2::TargetService target_service,
       multidevice::SoftwareFeature feature,
-      ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback callback) = 0;
+      mojom::DeviceSync::NotifyDevicesCallback callback) = 0;
   virtual void GetDevicesActivityStatus(
-      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback
-          callback) = 0;
+      mojom::DeviceSync::GetDevicesActivityStatusCallback callback) = 0;
   virtual void GetDebugInfo(
-      ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback callback) = 0;
+      mojom::DeviceSync::GetDebugInfoCallback callback) = 0;
 
  protected:
   void NotifyReady();
@@ -126,14 +121,6 @@ class DeviceSyncClient {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::DeviceSyncClient;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_H_

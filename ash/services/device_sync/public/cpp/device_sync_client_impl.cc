@@ -17,14 +17,11 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 bool IsValidInstanceId(const std::string& instance_id) {
   if (instance_id.empty()) {
@@ -355,4 +352,4 @@ void DeviceSyncClientImpl::FlushForTesting() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

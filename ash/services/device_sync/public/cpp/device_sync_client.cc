@@ -6,12 +6,9 @@
 
 #include "ash/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 DeviceSyncClient::DeviceSyncClient() = default;
 
@@ -49,4 +46,4 @@ void DeviceSyncClient::NotifyNewDevicesSynced() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

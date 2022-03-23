@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -31,4 +31,4 @@ void FakeClientAppMetadataProvider::GetClientAppMetadata(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

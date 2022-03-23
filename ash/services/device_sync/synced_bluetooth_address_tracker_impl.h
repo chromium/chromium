@@ -86,4 +86,9 @@ class SyncedBluetoothAddressTrackerImpl
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::SyncedBluetoothAddressTrackerImpl;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_SYNCED_BLUETOOTH_ADDRESS_TRACKER_IMPL_H_

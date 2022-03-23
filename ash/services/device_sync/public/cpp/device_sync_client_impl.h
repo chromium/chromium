@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/expiring_remote_device_cache.h"
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/feature_status_change.h"
@@ -27,18 +29,13 @@ namespace base {
 class TaskRunner;
 }  // namespace base
 
-namespace chromeos {
-
-namespace multidevice {
-class ExpiringRemoteDeviceCache;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
 // Concrete implementation of DeviceSyncClient.
-class DeviceSyncClientImpl
-    : public DeviceSyncClient,
-      public ash::device_sync::mojom::DeviceSyncObserver {
+class DeviceSyncClientImpl : public DeviceSyncClient,
+                             public mojom::DeviceSyncObserver {
  public:
   class Factory {
    public:
@@ -61,15 +58,12 @@ class DeviceSyncClientImpl
   ~DeviceSyncClientImpl() override;
 
   void Initialize(scoped_refptr<base::TaskRunner> task_runner) override;
-  mojo::Remote<ash::device_sync::mojom::DeviceSync>* GetDeviceSyncRemote()
-      override;
+  mojo::Remote<mojom::DeviceSync>* GetDeviceSyncRemote() override;
 
   // DeviceSyncClient:
   void ForceEnrollmentNow(
-      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback callback)
-      override;
-  void ForceSyncNow(ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback
-                        callback) override;
+      mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
+  void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
   absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
@@ -78,28 +72,24 @@ class DeviceSyncClientImpl
       multidevice::SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive,
-      ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
-          callback) override;
+      mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) override;
   void SetFeatureStatus(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature feature,
       FeatureStatusChange status_change,
-      ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback callback)
-      override;
+      mojom::DeviceSync::SetFeatureStatusCallback callback) override;
   void FindEligibleDevices(multidevice::SoftwareFeature software_feature,
                            FindEligibleDevicesCallback callback) override;
-  void NotifyDevices(const std::vector<std::string>& device_instance_ids,
-                     cryptauthv2::TargetService target_service,
-                     multidevice::SoftwareFeature feature,
-                     ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback
-                         callback) override;
+  void NotifyDevices(
+      const std::vector<std::string>& device_instance_ids,
+      cryptauthv2::TargetService target_service,
+      multidevice::SoftwareFeature feature,
+      mojom::DeviceSync::NotifyDevicesCallback callback) override;
   void GetDevicesActivityStatus(
-      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback
-          callback) override;
-  void GetDebugInfo(ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback
-                        callback) override;
+      mojom::DeviceSync::GetDevicesActivityStatusCallback callback) override;
+  void GetDebugInfo(mojom::DeviceSync::GetDebugInfoCallback callback) override;
 
-  // ash::device_sync::mojom::DeviceSyncObserver:
+  // device_sync::mojom::DeviceSyncObserver:
   void OnEnrollmentFinished() override;
   void OnNewDevicesSynced() override;
 
@@ -118,17 +108,15 @@ class DeviceSyncClientImpl
       const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
   void OnFindEligibleDevicesCompleted(
       FindEligibleDevicesCallback callback,
-      ash::device_sync::mojom::NetworkRequestResult result_code,
-      ash::device_sync::mojom::FindEligibleDevicesResponsePtr response);
+      mojom::NetworkRequestResult result_code,
+      mojom::FindEligibleDevicesResponsePtr response);
 
-  mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
 
   void FlushForTesting();
 
-  mojo::Remote<ash::device_sync::mojom::DeviceSync> device_sync_;
-  mojo::Receiver<ash::device_sync::mojom::DeviceSyncObserver>
-      observer_receiver_{this};
+  mojo::Remote<mojom::DeviceSync> device_sync_;
+  mojo::Receiver<mojom::DeviceSyncObserver> observer_receiver_{this};
   std::unique_ptr<multidevice::ExpiringRemoteDeviceCache>
       expiring_device_cache_;
 
@@ -154,13 +142,6 @@ class DeviceSyncClientImpl
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::DeviceSyncClientImpl;
-}
 }  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_IMPL_H_

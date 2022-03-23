@@ -67,4 +67,9 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::CryptAuthDeviceRegistryImpl;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_REGISTRY_IMPL_H_

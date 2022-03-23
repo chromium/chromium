@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -21,4 +21,4 @@ const cryptauth::GcmDeviceInfo& FakeGcmDeviceInfoProvider::GetGcmDeviceInfo()
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

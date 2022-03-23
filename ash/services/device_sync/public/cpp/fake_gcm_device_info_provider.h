@@ -8,7 +8,7 @@
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -33,11 +33,11 @@ class FakeGcmDeviceInfoProvider : public GcmDeviceInfoProvider {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::FakeGcmDeviceInfoProvider;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::FakeGcmDeviceInfoProvider;
 }
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_

@@ -7,10 +7,7 @@
 #include "ash/components/multidevice/remote_device.h"
 #include "ash/components/multidevice/remote_device_cache.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
+namespace ash {
 
 namespace device_sync {
 FakeDeviceSyncClient::SetSoftwareFeatureStateInputs::
@@ -235,4 +232,4 @@ void FakeDeviceSyncClient::InvokePendingGetDebugInfoCallback(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

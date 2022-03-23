@@ -17,7 +17,7 @@ namespace ash {
 // Concrete CryptAuthDeviceIdProvider implementation which stores the device ID
 // in the browser process' local state PrefStore.
 class CryptAuthDeviceIdProviderImpl
-    : public chromeos::device_sync::CryptAuthDeviceIdProvider {
+    : public device_sync::CryptAuthDeviceIdProvider {
  public:
   // Registers the prefs used by this class. |registry| must be associated
   // with browser local storage, not an individual profile.

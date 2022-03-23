@@ -10,12 +10,14 @@
 #include "ash/components/tether/disconnect_tethering_operation.h"
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+}
 
 namespace tether {
 
