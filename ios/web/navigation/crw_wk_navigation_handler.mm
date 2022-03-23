@@ -884,6 +884,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
     NSError* error = context->GetError();
     if (error) {
       if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
+        context->SetHasCommitted(true);
         self.webStateImpl->OnNavigationFinished(context);
 
         [self.delegate navigationHandler:self
