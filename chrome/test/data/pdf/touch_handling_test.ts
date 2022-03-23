@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function sendTouchStart(touches) {
+import {Point} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
+const viewer = document.body.querySelector('pdf-viewer')!;
+
+function sendTouchStart(touches: Point[]) {
   let id = 0;
-  const touchList = touches.map(function(xy) {
+  const touchList = touches.map(function(xy: Point) {
     const touchInit = {
       identifier: id++,
-      target: viewer.plugin_,
+      target: viewer.shadowRoot!.querySelector('embed')!,
       clientX: xy.x,
       clientY: xy.y,
     };
@@ -15,13 +19,13 @@ function sendTouchStart(touches) {
     return new window.Touch(touchInit);
   });
 
-  const target = viewer.shadowRoot.querySelector('#content');
+  const target = viewer.shadowRoot!.querySelector('#content')!;
   target.dispatchEvent(new TouchEvent('touchstart', {
     bubbles: true,
     composed: true,
     touches: touchList,
     targetTouches: touchList,
-    changedtouches: touchList
+    changedTouches: touchList,
   }));
 }
 

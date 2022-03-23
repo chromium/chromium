@@ -19,7 +19,7 @@ export type ViewportRect = {
   height: number
 };
 
-type DocumentDimensions = {
+export type DocumentDimensions = {
   width: number,
   height: number,
   pageDimensions: ViewportRect[],

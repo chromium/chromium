@@ -4,7 +4,6 @@
 
 import './viewer-thumbnail.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -14,6 +13,12 @@ import {PluginController, PluginControllerEventType} from '../controller.js';
 
 import {getTemplate} from './viewer-thumbnail-bar.html.js';
 import {ViewerThumbnailElement} from './viewer-thumbnail.js';
+
+export interface ViewerThumbnailBarElement {
+  $: {
+    thumbnails: HTMLElement,
+  },
+}
 
 export class ViewerThumbnailBarElement extends PolymerElement {
   static get is() {
@@ -74,8 +79,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     this.addEventListener('focus', this.onFocus_);
     this.addEventListener('keydown', this.onKeydown_);
 
-    const thumbnailsDiv = this.shadowRoot!.querySelector('#thumbnails');
-    assert(thumbnailsDiv);
+    const thumbnailsDiv = this.$.thumbnails;
 
     this.intersectionObserver_ =
         new IntersectionObserver((entries: IntersectionObserverEntry[]) => {

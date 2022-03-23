@@ -14,3 +14,7 @@ declare class InputDeviceCapabilities {
   constructor(param: {firesTouchEvents: boolean});
   readonly firesTouchEvents: boolean;
 }
+
+interface UIEventInit {
+  sourceCapabilities?: InputDeviceCapabilities|null;
+}

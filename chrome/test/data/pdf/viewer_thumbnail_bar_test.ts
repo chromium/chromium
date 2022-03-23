@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise, waitAfterNextRender, whenAttributeIs} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
 import {PAINTED_ATTRIBUTE, PluginController, ViewerThumbnailBarElement, ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, waitAfterNextRender, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
-/** @return {!ViewerThumbnailBarElement} */
-function createThumbnailBar() {
+function createThumbnailBar(): ViewerThumbnailBarElement {
   document.body.innerHTML = '';
-  const thumbnailBar = /** @type {!ViewerThumbnailBarElement} */ (
-      document.createElement('viewer-thumbnail-bar'));
+  const thumbnailBar = document.createElement('viewer-thumbnail-bar');
   thumbnailBar.inTest = true;
   document.body.appendChild(thumbnailBar);
   return thumbnailBar;
 }
 
-/** @return {number} */
-function getTestThumbnailBarHeight() {
+function getTestThumbnailBarHeight(): number {
   // Create a viewer-thumbnail element to get the standard height.
   document.body.innerHTML = '';
   const sizerThumbnail = document.createElement('viewer-thumbnail');
@@ -30,27 +27,17 @@ function getTestThumbnailBarHeight() {
   return thumbnailBarHeight;
 }
 
-/**
- * @param {!HTMLElement} element
- * @param {string} key
- */
-function keydown(element, key) {
+function keydown(element: HTMLElement, key: string) {
   keyDownOn(element, 0, [], key);
 }
 
-/**
- * @param {!ViewerThumbnailElement} thumbnail
- * @return {!Promise}
- */
-function whenThumbnailPainted(thumbnail) {
+function whenThumbnailPainted(thumbnail: ViewerThumbnailElement):
+    Promise<void> {
   return whenAttributeIs(thumbnail, PAINTED_ATTRIBUTE, '');
 }
 
-/**
- * @param {!ViewerThumbnailElement} thumbnail
- * @return {!Promise}
- */
-function whenThumbnailCleared(thumbnail) {
+function whenThumbnailCleared(thumbnail: ViewerThumbnailElement):
+    Promise<void> {
   return whenAttributeIs(thumbnail, PAINTED_ATTRIBUTE, null);
 }
 
@@ -67,16 +54,12 @@ const tests = [
 
     // Test that the correct number of viewer-thumbnail elements was created.
     const thumbnails =
-        /** @type {!NodeList<!ViewerThumbnailElement>} */ (
-            thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
+        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
     chrome.test.assertEq(testDocLength, thumbnails.length);
 
-    /**
-     * @param {!ViewerThumbnailElement} thumbnail
-     * @param {number} expectedPageIndex
-     * @return {!Promise}
-     */
-    function testNavigateThumbnail(thumbnail, expectedPageIndex) {
+    function testNavigateThumbnail(
+        thumbnail: ViewerThumbnailElement,
+        expectedPageIndex: number): Promise<void> {
       const whenChanged = eventToPromise('change-page', thumbnailBar);
       thumbnail.getClickTarget().click();
       return whenChanged.then(e => {
@@ -88,7 +71,7 @@ const tests = [
     // Test that each thumbnail has the correct page number and navigates to
     // the corresponding page.
     for (let i = 0; i < thumbnails.length; i++) {
-      const thumbnail = thumbnails[i];
+      const thumbnail = thumbnails[i]!;
       chrome.test.assertEq(i + 1, thumbnail.pageNumber);
       await testNavigateThumbnail(thumbnail, i);
     }
@@ -108,25 +91,24 @@ const tests = [
     thumbnailBar.style.display = 'block';
 
     // Remove any padding from the scroller.
-    const scroller = thumbnailBar.shadowRoot.querySelector('#thumbnails');
+    const scroller = thumbnailBar.$.thumbnails!;
     scroller.style.padding = '';
 
     flush();
 
     const thumbnails =
-        /** @type {!NodeList<!ViewerThumbnailElement>} */ (
-            thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
+        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
 
     // Only two thumbnails should be "painted" upon load.
     const whenRequestedPaintingFirst = [
-      whenThumbnailPainted(thumbnails[0]),
-      whenThumbnailPainted(thumbnails[1]),
+      whenThumbnailPainted(thumbnails[0]!),
+      whenThumbnailPainted(thumbnails[1]!),
     ];
     await Promise.all(whenRequestedPaintingFirst);
 
     chrome.test.assertEq(testDocLength, thumbnails.length);
     for (let i = 0; i < thumbnails.length; i++) {
-      chrome.test.assertEq(i < 2, thumbnails[i].isPainted());
+      chrome.test.assertEq(i < 2, thumbnails[i]!.isPainted());
     }
 
     // Test that scrolling to the sixth thumbnail triggers 'paint-thumbnail'
@@ -135,30 +117,30 @@ const tests = [
     // of the 500% top and 100% bottom root margins.
     const whenRequestedPaintingNext = [];
     for (let i = 2; i < 7; i++) {
-      whenRequestedPaintingNext.push(whenThumbnailPainted(thumbnails[i]));
+      whenRequestedPaintingNext.push(whenThumbnailPainted(thumbnails[i]!));
     }
     scroller.scrollTop = 5 * thumbnailBarHeight;
     await Promise.all(whenRequestedPaintingNext);
 
     // First seven thumbnails should be painted.
     for (let i = 0; i < thumbnails.length; i++) {
-      chrome.test.assertEq(i < 7, thumbnails[i].isPainted());
+      chrome.test.assertEq(i < 7, thumbnails[i]!.isPainted());
     }
 
     // Test that scrolling down to the eighth thumbnail will clear the
     // thumbnails outside the root margin, namely the first two. A paint
     // should also be triggered for the eighth thumbnail.
     const whenRequestedPaintingLast = [
-      whenThumbnailPainted(thumbnails[7]),
-      whenThumbnailCleared(thumbnails[0]),
-      whenThumbnailCleared(thumbnails[1]),
+      whenThumbnailPainted(thumbnails[7]!),
+      whenThumbnailCleared(thumbnails[0]!),
+      whenThumbnailCleared(thumbnails[1]!),
     ];
     scroller.scrollTop = 7 * thumbnailBarHeight;
     await Promise.all(whenRequestedPaintingLast);
 
     // Only first two thumbnails should not be painted.
     for (let i = 0; i < thumbnails.length; i++) {
-      chrome.test.assertEq(i > 1, thumbnails[i].isPainted());
+      chrome.test.assertEq(i > 1, thumbnails[i]!.isPainted());
     }
     chrome.test.succeed();
   },
@@ -169,16 +151,11 @@ const tests = [
 
     flush();
 
-    /**
-     * @param {number} pageNumber
-     * @return {!Promise}
-     */
-    function waitForwardFocus(pageNumber) {
+    function waitForwardFocus(pageNumber: number): Promise<void> {
       // Reset focus.
       thumbnailBar.blur();
 
-      const toThumbnail = /** @type {!ViewerThumbnailElement} */ (
-          thumbnailBar.getThumbnailForPage(pageNumber));
+      const toThumbnail = thumbnailBar.getThumbnailForPage(pageNumber)!;
       const whenActiveThumbnailFocused = eventToPromise('focus', toThumbnail);
 
       // Calling focus() on `thumbnailBar` in this test doesn't trigger the
@@ -209,15 +186,11 @@ const tests = [
 
     flush();
 
-    /**
-     * @param {!ViewerThumbnailElement} fromThumbnail
-     * @param {boolean} up
-     */
-    async function pressUpDownArrow(fromThumbnail, up) {
+    async function pressUpDownArrow(
+        fromThumbnail: ViewerThumbnailElement, up: boolean) {
       const fromPageNumber = fromThumbnail.pageNumber;
       const toPageNumber = up ? fromPageNumber - 1 : fromPageNumber + 1;
-      const toThumbnail = /** @type {!ViewerThumbnailElement} */ (
-          thumbnailBar.getThumbnailForPage(toPageNumber));
+      const toThumbnail = thumbnailBar.getThumbnailForPage(toPageNumber)!;
 
       const whenToThumbnailFocused = eventToPromise('focus', toThumbnail);
       keydown(fromThumbnail, up ? 'ArrowUp' : 'ArrowDown');
@@ -225,35 +198,35 @@ const tests = [
     }
 
     const thumbnails =
-        /** @type {!NodeList<!ViewerThumbnailElement>} */ (
-            thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
+        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
 
     // Start focus on the second of three thumbnails.
     // Simulate this focus by mouse so `ViewerThumbnailElement.onFocus_()`
     // doesn't forward the focus.
     FocusOutlineManager.forDocument(document).visible = false;
     let focusedIndex = 1;
-    thumbnails[focusedIndex].focus();
+    thumbnails[focusedIndex]!.focus();
 
-    await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ true);
+    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ true);
     focusedIndex -= 1;
-    chrome.test.assertEq(
-        thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
 
-    await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ false);
+    function getActiveThumbnail(): ViewerThumbnailElement {
+      return thumbnailBar.shadowRoot!.activeElement as ViewerThumbnailElement;
+    }
+
+    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
+
+    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ false);
     focusedIndex += 1;
-    chrome.test.assertEq(
-        thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
 
-    await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ false);
+    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ false);
     focusedIndex += 1;
-    chrome.test.assertEq(
-        thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
 
-    await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ true);
+    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ true);
     focusedIndex -= 1;
-    chrome.test.assertEq(
-        thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
     chrome.test.succeed();
   },
   async function testThumbnailLeftRightSelect() {
@@ -291,12 +264,11 @@ const tests = [
 
     flush();
 
-    const scroller = thumbnailBar.shadowRoot.querySelector('#thumbnails');
+    const scroller = thumbnailBar.$.thumbnails;
     chrome.test.assertTrue(scroller.hidden);
 
     const thumbnail =
-        /** @type {!ViewerThumbnailElement} */ (
-            thumbnailBar.shadowRoot.querySelector('viewer-thumbnail'));
+        thumbnailBar.shadowRoot!.querySelector('viewer-thumbnail')!;
 
     const whenPaintTriggered = whenThumbnailPainted(thumbnail).then(() => {
       // The thumbnail shouldn't paint when the controller is inactive.
