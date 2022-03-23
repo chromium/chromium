@@ -37,16 +37,13 @@ class JavaScriptContentWorld {
   // content world shared by the webpage's JavaScript.
   explicit JavaScriptContentWorld(BrowserState* browser_state);
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // Creates a content world for features which will interact with the given
   // |content_world|.
   JavaScriptContentWorld(BrowserState* browser_state,
-                         WKContentWorld* content_world)
-      API_AVAILABLE(ios(14.0));
+                         WKContentWorld* content_world);
 
   // Returns the associated WKContentWorld.
-  WKContentWorld* GetWKContentWorld() API_AVAILABLE(ios(14.0));
-#endif  // defined(__IPHONE14_0)
+  WKContentWorld* GetWKContentWorld();
 
   // Adds |feature| by configuring the feature scripts and communication
   // callbacks.
@@ -76,12 +73,10 @@ class JavaScriptContentWorld {
            std::unique_ptr<ScopedWKScriptMessageHandler>>
       script_message_handlers_;
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // The associated WKContentWorld. May be null which represents the main world
   // which the page content itself uses. (The same content world can also be
   // represented by [WKContentWorld pageWorld] on iOS 14 and later.)
-  WKContentWorld* content_world_ API_AVAILABLE(ios(14.0)) = nullptr;
-#endif  // defined(__IPHONE14_0)
+  WKContentWorld* content_world_ = nullptr;
 
   base::WeakPtrFactory<JavaScriptContentWorld> weak_factory_;
 };

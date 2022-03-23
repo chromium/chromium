@@ -36,12 +36,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
       JavaScriptFeature::ContentWorld::kAnyContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    EXPECT_FALSE(world.GetWKContentWorld());
-  }
-#endif  // defined(__IPHONE14_0)
+  EXPECT_FALSE(world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
   ASSERT_GT(scripts_count, initial_scripts_count);
@@ -49,75 +44,63 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
 
 // Tests adding a JavaScriptFeature to a specific JavaScriptContentWorld.
 TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    WKWebViewConfigurationProvider& configuration_provider =
-        WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-    WKUserContentController* user_content_controller =
-        configuration_provider.GetWebViewConfiguration().userContentController;
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+  WKUserContentController* user_content_controller =
+      configuration_provider.GetWebViewConfiguration().userContentController;
 
-    unsigned long initial_scripts_count =
-        [[user_content_controller userScripts] count];
-    ASSERT_GT(initial_scripts_count, 0ul);
+  unsigned long initial_scripts_count =
+      [[user_content_controller userScripts] count];
+  ASSERT_GT(initial_scripts_count, 0ul);
 
-    web::JavaScriptContentWorld world(GetBrowserState(),
-                                      [WKContentWorld defaultClientWorld]);
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    [WKContentWorld defaultClientWorld]);
 
-    FakeJavaScriptFeature feature(
-        JavaScriptFeature::ContentWorld::kAnyContentWorld);
-    world.AddFeature(&feature);
-    EXPECT_TRUE(world.HasFeature(&feature));
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+  world.AddFeature(&feature);
+  EXPECT_TRUE(world.HasFeature(&feature));
 
-    EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
+  EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
 
-    unsigned long scripts_count = [[user_content_controller userScripts] count];
-    ASSERT_GT(scripts_count, initial_scripts_count);
-  }
-#endif  // defined(__IPHONE14_0)
+  unsigned long scripts_count = [[user_content_controller userScripts] count];
+  ASSERT_GT(scripts_count, initial_scripts_count);
 }
 
 // Tests adding a JavaScriptFeature to an isolated world only.
 TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    WKWebViewConfigurationProvider& configuration_provider =
-        WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-    WKUserContentController* user_content_controller =
-        configuration_provider.GetWebViewConfiguration().userContentController;
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+  WKUserContentController* user_content_controller =
+      configuration_provider.GetWebViewConfiguration().userContentController;
 
-    unsigned long initial_scripts_count =
-        [[user_content_controller userScripts] count];
-    ASSERT_GT(initial_scripts_count, 0ul);
+  unsigned long initial_scripts_count =
+      [[user_content_controller userScripts] count];
+  ASSERT_GT(initial_scripts_count, 0ul);
 
-    web::JavaScriptContentWorld world(GetBrowserState(),
-                                      [WKContentWorld defaultClientWorld]);
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    [WKContentWorld defaultClientWorld]);
 
-    FakeJavaScriptFeature feature(
-        JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
-    world.AddFeature(&feature);
-    EXPECT_TRUE(world.HasFeature(&feature));
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
+  world.AddFeature(&feature);
+  EXPECT_TRUE(world.HasFeature(&feature));
 
-    EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
+  EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
 
-    unsigned long scripts_count = [[user_content_controller userScripts] count];
-    ASSERT_GT(scripts_count, initial_scripts_count);
-  }
-#endif  // defined(__IPHONE14_0)
+  unsigned long scripts_count = [[user_content_controller userScripts] count];
+  ASSERT_GT(scripts_count, initial_scripts_count);
 }
 
 // Tests that adding an isolated-world-only JavaScriptFeature to the page
 // content world triggers a DCHECK.
 TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeatureToPageWorld) {
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    web::JavaScriptContentWorld world(GetBrowserState(),
-                                      [WKContentWorld pageWorld]);
-    FakeJavaScriptFeature feature(
-        JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    [WKContentWorld pageWorld]);
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
 
-    EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
-  }
-#endif  // defined(__IPHONE14_0)
+  EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
 }
 
 }  // namespace web
