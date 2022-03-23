@@ -38,6 +38,25 @@ PhysicalRect ToPhysicalRect(const DOMRectReadOnly& rect) {
                       LayoutUnit::FromDoubleRound(rect.height()));
 }
 
+mojom::blink::FencedFrameMode GetModeAttributeValue(const String& value) {
+  // Keep this in sync with the values in the `FencedFrameMode` enum.
+  if (EqualIgnoringASCIICase(value, "opaque-ads"))
+    return mojom::blink::FencedFrameMode::kOpaqueAds;
+  return mojom::blink::FencedFrameMode::kDefault;
+}
+
+String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
+  switch (mode) {
+    case mojom::blink::FencedFrameMode::kDefault:
+      return "default";
+    case mojom::blink::FencedFrameMode::kOpaqueAds:
+      return "opaque-ads";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
@@ -103,6 +122,49 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     return nullptr;
   }
 
+  // We know we're not in a detached frame because of the other checks in
+  // `DidNotifySubtreeInsertionsToDocument()`.
+  DCHECK(outer_element->GetDocument().GetFrame());
+  if (Frame* ancestor = outer_element->GetDocument().GetFrame()) {
+    mojom::blink::FencedFrameMode current_mode = outer_element->GetMode();
+    // This loop is only relevant for fenced frames based on ShadowDOM, since it
+    // has to do with the `FramePolicy::is_fenced` bit. We have to keep
+    // traversing up the tree to see if we ever come across a fenced frame of
+    // another mode. In that case, we stop `this` frame from being fully
+    // created, since nested fenced frames of differing modes are not allowed.
+    while (ancestor && ancestor->Owner()) {
+      bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
+      // Note that this variable is only meaningful if `is_ancestor_fenced`
+      // above is true.
+      mojom::blink::FencedFrameMode ancestor_mode =
+          ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
+
+      if (is_ancestor_fenced && ancestor_mode != current_mode) {
+        outer_element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "Cannot create a fenced frame with mode '" +
+                    FencedFrameModeToString(current_mode) +
+                    "' nested in a fenced frame with mode '" +
+                    FencedFrameModeToString(ancestor_mode) + "'."));
+        return nullptr;
+      }
+
+      // If this loop found a fenced ancestor whose mode is compatible with
+      // `current_mode`, it is not necessary to look further up the ancestor
+      // chain. This is because this loop already ran during the creation of
+      // the compatible fenced ancestor, so it is guaranteed that the rest of
+      // the ancestor chain has already been checked and approved for
+      // compatibility.
+      if (is_ancestor_fenced && ancestor_mode == current_mode) {
+        break;
+      }
+
+      ancestor = ancestor->Tree().Parent();
+    }
+  }
+
   if (features::kFencedFramesImplementationTypeParam.Get() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     return MakeGarbageCollected<FencedFrameShadowDOMDelegate>(outer_element);
@@ -160,7 +222,20 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
+  if (params.name == html_names::kModeAttr) {
+    mojom::blink::FencedFrameMode new_mode =
+        GetModeAttributeValue(params.new_value);
+    if (new_mode != mode_ && freeze_mode_attribute_) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Changing the `mode` attribute on a fenced frame has no effect after "
+          "it has already been frozen due to the first navigation."));
+      return;
+    }
+
+    mode_ = new_mode;
+  } else if (params.name == html_names::kSrcAttr) {
     Navigate();
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);
@@ -216,6 +291,10 @@ void HTMLFencedFrameElement::Navigate() {
   }
 
   frame_delegate_->Navigate(url);
+
+  // Freeze the `mode` attribute to its current value even if it has never been
+  // explicitly set before, so that it cannot change after the first navigation.
+  freeze_mode_attribute_ = true;
 
   if (!frozen_frame_size_)
     FreezeFrameSize();

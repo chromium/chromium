@@ -272,7 +272,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual WebRemoteFrame* CreateFencedFrame(
       const WebElement& fenced_frame_element,
       CrossVariantMojoAssociatedReceiver<
-          mojom::FencedFrameOwnerHostInterfaceBase> receiver) {
+          mojom::FencedFrameOwnerHostInterfaceBase> receiver,
+      blink::mojom::FencedFrameMode mode) {
     return nullptr;
   }
 

@@ -193,6 +193,7 @@ function attachFencedFrame(url) {
       'The HTMLFencedFrameElement should be exposed on the window object');
 
   const fenced_frame = document.createElement('fencedframe');
+  assert_true('mode' in fenced_frame);
   fenced_frame.src = url;
   document.body.append(fenced_frame);
   return fenced_frame;

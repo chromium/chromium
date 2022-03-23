@@ -518,7 +518,8 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::WebRemoteFrame* CreateFencedFrame(
       const blink::WebElement& fenced_frame_element,
       blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver) override;
+          blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver,
+      blink::mojom::FencedFrameMode mode) override;
   blink::WebFrame* FindFrame(const blink::WebString& name) override;
   void WillDetach() override;
   void FrameDetached() override;

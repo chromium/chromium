@@ -95,5 +95,10 @@
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardPolicy/explainer.md
     "auto",
     "manual",
+
+    // mode attribute
+    // https://github.com/WICG/fenced-frame
+    "default",
+    "opaque-ads",
   ],
 }

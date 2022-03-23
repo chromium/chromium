@@ -410,13 +410,17 @@ void FrameTreeNode::SetFrameTree(FrameTree& frame_tree) {
 }
 
 void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
-  // The |is_fenced| bit should never be able to transition from what its
-  // initial value was. Since we never expect to be in a position where it can
-  // even be updated to new value, if we catch this happening we have to kill
-  // the renderer and refuse to accept any other frame policy changes here.
-  if (pending_frame_policy_.is_fenced != frame_policy.is_fenced) {
+  // The `is_fenced` and `fenced_frame_mode` bits should never be able to
+  // transition from their initial values. Since we never expect to be in a
+  // position where it can even be updated to new value, if we catch this
+  // happening we have to kill the renderer and refuse to accept any other frame
+  // policy changes here.
+  if (pending_frame_policy_.is_fenced != frame_policy.is_fenced ||
+      pending_frame_policy_.fenced_frame_mode !=
+          frame_policy.fenced_frame_mode) {
     mojo::ReportBadMessage(
-        "The `is_fenced` FramePolicy bit is const and should never be changed");
+        "FramePolicy properties dealing with fenced frames are considered "
+        "immutable, and therefore should never be changed by the renderer.");
     return;
   }
 

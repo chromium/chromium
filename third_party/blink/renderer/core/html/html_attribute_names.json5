@@ -146,6 +146,7 @@
     "method",
     "min",
     "minlength",
+    "mode",
     "multiple",
     "muted",
     "name",

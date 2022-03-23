@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame_policy.mojom-shared.h"
 
 namespace mojo {
@@ -18,6 +19,11 @@ class BLINK_COMMON_EXPORT
  public:
   static bool is_fenced(const blink::FramePolicy& frame_policy) {
     return frame_policy.is_fenced;
+  }
+
+  static blink::mojom::FencedFrameMode fenced_frame_mode(
+      const blink::FramePolicy& frame_policy) {
+    return frame_policy.fenced_frame_mode;
   }
 
   static const std::vector<blink::ParsedPermissionsPolicyDeclaration>&

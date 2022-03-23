@@ -2204,9 +2204,10 @@ RemoteFrame* WebLocalFrameImpl::AdoptPortal(HTMLPortalElement* portal) {
 RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
     HTMLFencedFrameElement* fenced_frame,
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>
-        receiver) {
+        receiver,
+    mojom::blink::FencedFrameMode mode) {
   WebRemoteFrame* frame =
-      client_->CreateFencedFrame(fenced_frame, std::move(receiver));
+      client_->CreateFencedFrame(fenced_frame, std::move(receiver), mode);
   return To<WebRemoteFrameImpl>(frame)->GetFrame();
 }
 

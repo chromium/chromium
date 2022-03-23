@@ -76,31 +76,105 @@ class FencedFrameShadowDOMDelegateTest : private ScopedFencedFramesForTest,
 };
 
 TEST_F(FencedFrameShadowDOMDelegateTest, CreateRaw) {
-  HTMLFencedFrameElement* fenced_frame =
-      MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
+  {
+    HTMLFencedFrameElement* fenced_frame =
+        MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
 
-  EXPECT_FALSE(fenced_frame->isConnected());
-  // The ShadowRoot isn't created until the element is connected.
-  EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_FALSE(fenced_frame->isConnected());
+    // The ShadowRoot isn't created until the element is connected.
+    EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
 
-  GetDocument().body()->AppendChild(fenced_frame);
-  EXPECT_TRUE(fenced_frame->isConnected());
-  EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
-  EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(*fenced_frame));
-  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
-  EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
-  EXPECT_FALSE(fenced_frame->FrozenFrameSize());
+    GetDocument().body()->AppendChild(fenced_frame);
+    EXPECT_TRUE(fenced_frame->isConnected());
+    EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(*fenced_frame));
+    EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+    EXPECT_EQ(ShadowIFrame().GetFramePolicy().fenced_frame_mode,
+              mojom::blink::FencedFrameMode::kDefault);
+    EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+    EXPECT_FALSE(fenced_frame->FrozenFrameSize());
+    GetDocument().body()->RemoveChild(fenced_frame);
+  }
+
+  {
+    HTMLFencedFrameElement* fenced_frame =
+        MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
+    fenced_frame->setAttribute(html_names::kModeAttr, "opaque-ads");
+
+    EXPECT_FALSE(fenced_frame->isConnected());
+    EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_EQ("", fenced_frame->UserAgentShadowRoot()->innerHTML());
+
+    GetDocument().body()->AppendChild(fenced_frame);
+    EXPECT_TRUE(fenced_frame->isConnected());
+    EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(*fenced_frame));
+    EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+    EXPECT_EQ(ShadowIFrame().GetFramePolicy().fenced_frame_mode,
+              mojom::blink::FencedFrameMode::kOpaqueAds);
+    EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+    EXPECT_FALSE(fenced_frame->FrozenFrameSize());
+    GetDocument().body()->RemoveChild(fenced_frame);
+  }
+
+  // Fenced frames only support a single explicit mode attribute mutation after
+  // the first navigation, but multiple before the first navigation.
+  {
+    HTMLFencedFrameElement* fenced_frame =
+        MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
+    fenced_frame->setAttribute(html_names::kModeAttr, "default");
+    fenced_frame->setAttribute(html_names::kModeAttr, "opaque-ads");
+
+    EXPECT_FALSE(fenced_frame->isConnected());
+    EXPECT_EQ(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_EQ("", fenced_frame->UserAgentShadowRoot()->innerHTML());
+
+    GetDocument().body()->AppendChild(fenced_frame);
+    EXPECT_TRUE(fenced_frame->isConnected());
+    EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
+    EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(*fenced_frame));
+    EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+    EXPECT_EQ(ShadowIFrame().GetFramePolicy().fenced_frame_mode,
+              mojom::blink::FencedFrameMode::kOpaqueAds);
+    EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+    EXPECT_FALSE(fenced_frame->FrozenFrameSize());
+    GetDocument().body()->RemoveChild(fenced_frame);
+  }
 }
 
-TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
-  GetDocument().body()->setInnerHTML("<fencedframe></fencedframe>");
-  HTMLFencedFrameElement& fenced_frame = FencedFrame();
-  EXPECT_TRUE(fenced_frame.isConnected());
-  EXPECT_NE(nullptr, fenced_frame.UserAgentShadowRoot());
-  EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(fenced_frame));
-  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
-  EXPECT_FALSE(fenced_frame.ShouldFreezeFrameSizeOnNextLayoutForTesting());
-  EXPECT_FALSE(fenced_frame.FrozenFrameSize());
+TEST_F(FencedFrameShadowDOMDelegateTest, CreateViaSetInnerHTML) {
+  {
+    GetDocument().body()->setInnerHTML("<fencedframe></fencedframe>");
+    HTMLFencedFrameElement& fenced_frame = FencedFrame();
+
+    EXPECT_TRUE(fenced_frame.isConnected());
+    // The ShadowRoot isn't created until the element is connected.
+    EXPECT_NE(nullptr, fenced_frame.UserAgentShadowRoot());
+    EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(fenced_frame));
+    EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+    EXPECT_EQ(ShadowIFrame().GetFramePolicy().fenced_frame_mode,
+              mojom::blink::FencedFrameMode::kDefault);
+    EXPECT_FALSE(fenced_frame.ShouldFreezeFrameSizeOnNextLayoutForTesting());
+    EXPECT_FALSE(fenced_frame.FrozenFrameSize());
+    GetDocument().body()->RemoveChild(&fenced_frame);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(
+        "<fencedframe mode=opaque-ads></fencedframe>");
+    HTMLFencedFrameElement& fenced_frame = FencedFrame();
+    // Since the element has already been inserted, this has no effect.
+    fenced_frame.setAttribute(html_names::kModeAttr, "default");
+
+    EXPECT_TRUE(fenced_frame.isConnected());
+    EXPECT_NE(nullptr, fenced_frame.UserAgentShadowRoot());
+    EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(fenced_frame));
+    EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+    EXPECT_EQ(ShadowIFrame().GetFramePolicy().fenced_frame_mode,
+              mojom::blink::FencedFrameMode::kOpaqueAds);
+    EXPECT_FALSE(fenced_frame.ShouldFreezeFrameSizeOnNextLayoutForTesting());
+    EXPECT_FALSE(fenced_frame.FrozenFrameSize());
+  }
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {

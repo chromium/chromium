@@ -15,7 +15,8 @@ bool StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy>::Read(
   // required_document_policy.
   return in.ReadSandboxFlags(&out->sandbox_flags) &&
          in.ReadContainerPolicy(&out->container_policy) &&
-         in.ReadRequiredDocumentPolicy(&out->required_document_policy);
+         in.ReadRequiredDocumentPolicy(&out->required_document_policy) &&
+         in.ReadFencedFrameMode(&out->fenced_frame_mode);
 }
 
 }  // namespace mojo

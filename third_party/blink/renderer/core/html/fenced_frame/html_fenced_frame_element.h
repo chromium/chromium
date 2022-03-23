@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_HTML_FENCED_FRAME_ELEMENT_H_
 
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -77,6 +78,9 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
 
+  // See the documentation above `mode_`.
+  mojom::blink::FencedFrameMode GetMode() const { return mode_; }
+
   // TODO(kojii): Currently followings members are valid only when non-MPArch.
   // They may better be moved to |FencedFrameDelegate| once how to achieve the
   // desired layout behavior on MPArch has been determined.
@@ -145,6 +149,13 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   absl::optional<PhysicalRect> content_rect_;
   bool should_freeze_frame_size_on_next_layout_ = false;
   bool collapsed_by_client_ = false;
+  // This represents the element's `mode` attribute. We store it here instead of
+  // always reading it off of the element, because after the first navigation it
+  // is effectively frozen. Like the frozen size of the frame, it survives
+  // element reattachments too. We maintain the `freeze_mode_attribute_`
+  // variable below so we can know when to reject updates to `mode_`.
+  mojom::blink::FencedFrameMode mode_ = mojom::blink::FencedFrameMode::kDefault;
+  bool freeze_mode_attribute_ = false;
 
   friend class ResizeObserverDelegate;
 };

@@ -167,6 +167,8 @@ bool BrowsingContextState::CommitFramePolicy(
       replication_state_->frame_policy.required_document_policy;
   DCHECK_EQ(new_frame_policy.is_fenced,
             replication_state_->frame_policy.is_fenced);
+  DCHECK_EQ(new_frame_policy.fenced_frame_mode,
+            replication_state_->frame_policy.fenced_frame_mode);
 
   if (did_change_flags) {
     replication_state_->frame_policy.sandbox_flags =

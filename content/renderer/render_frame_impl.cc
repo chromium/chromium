@@ -3568,7 +3568,8 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
 blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
     const blink::WebElement& fenced_frame,
     blink::CrossVariantMojoAssociatedReceiver<
-        blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver) {
+        blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver,
+    blink::mojom::FencedFrameMode) {
   int proxy_routing_id = MSG_ROUTING_NONE;
   blink::mojom::FrameReplicationStatePtr initial_replicated_state =
       blink::mojom::FrameReplicationState::New();

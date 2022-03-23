@@ -614,7 +614,18 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit.
   if (ContainingShadowRoot() && ContainingShadowRoot()->IsUserAgent() &&
       IsA<HTMLFencedFrameElement>(ContainingShadowRoot()->host())) {
+    // Note that if a fenced frame's `is_fenced` status or `mode` attribute ever
+    // changes, the browser process will bad-message the renderer since this
+    // should never happen. Therefore it is safe to just naively always set it
+    // here because:
+    //   - A fenced frame always has `is_fenced = true`
+    //   - A fenced frame's mode is only settable once, enforced by
+    //     `HTMLFencedFrameElement::ParseAttribute()` as well as the browser
+    //     process
     frame_policy_.is_fenced = true;
+    frame_policy_.fenced_frame_mode =
+        DynamicTo<HTMLFencedFrameElement>(ContainingShadowRoot()->host())
+            ->GetMode();
   }
 
   // Update the |should_lazy_load_children_| value according to the "loading"

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
@@ -19,10 +20,12 @@ struct FramePolicy {
   array<blink.mojom.ParsedPermissionsPolicyDeclaration> container_policy;
   map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue> required_document_policy;
 
-  // IMPORTANT NOTE: This is a temporary member that does not align with the
-  // long-term architecture, and will be removed after the <fencedframe>
-  // ShadowDOM-based origin trial, please do not use this for anything else. See
+  // IMPORTANT NOTE: The fenced frame members below are temporary members that
+  // do not align with the long-term architecture, and will be removed after
+  // the <fencedframe> ShadowDOM-based origin trial, please do not use this for
+  // anything else. See
   // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit
   // and crbug.com/1123606.
   bool is_fenced = false;
+  blink.mojom.FencedFrameMode fenced_frame_mode;
 };

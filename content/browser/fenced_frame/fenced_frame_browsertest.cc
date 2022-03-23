@@ -783,6 +783,103 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, LoadProgressChanged) {
                                                fenced_frame_url);
 }
 
+// Tests that NavigationHandle::GetNavigatingFrameType() returns the correct
+// type.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationHandleFrameType) {
+  ASSERT_TRUE(https_server()->Start());
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    FrameType::kPrimaryMainFrame);
+        }));
+    EXPECT_TRUE(NavigateToURL(
+        shell(), https_server()->GetURL("c.test", "/title1.html")));
+  }
+
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_FALSE(navigation_handle->IsInMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    FrameType::kSubframe);
+        }));
+    EXPECT_TRUE(
+        ExecJs(primary_main_frame_host(),
+               JsReplace(kAddIframeScript,
+                         https_server()->GetURL("c.test", "/empty.html"))));
+  }
+  {
+    const GURL fenced_frame_url =
+        https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+    RenderFrameHostImplWrapper fenced_frame_rfh(
+        fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                     fenced_frame_url));
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(
+              navigation_handle->GetRenderFrameHost()->IsFencedFrameRoot());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    FrameType::kFencedFrameRoot);
+        }));
+    fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+        fenced_frame_rfh.get(), fenced_frame_url);
+  }
+}
+
+// Tests that an unload/beforeunload event handler won't be set from
+// fenced frames.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UnloadHandler) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("c.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   main_url));
+
+  const char kConsolePattern[] =
+      "unload/beforeunload handlers are prohibited in fenced frames.";
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.addEventListener('beforeunload', (e) => {});"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.addEventListener('unload', (e) => {});"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                       "window.onbeforeunload = function(e){};"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    EXPECT_TRUE(
+        ExecJs(fenced_frame_rfh.get(), "window.onunload = function(e){};"));
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+  }
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {
@@ -978,107 +1075,174 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedFrameBrowserTest,
   EXPECT_EQ(IsInFencedFrameTest(), rfh->IsNestedWithinFencedFrame());
 }
 
-// Tests that NavigationHandle::GetNavigatingFrameType() returns the correct
-// type.
-IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationHandleFrameType) {
-  ASSERT_TRUE(https_server()->Start());
-  {
-    DidFinishNavigationObserver observer(
-        web_contents(),
-        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
-          EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kPrimaryMainFrame);
-        }));
-    EXPECT_TRUE(NavigateToURL(
-        shell(), https_server()->GetURL("c.test", "/title1.html")));
-  }
-
-  {
-    DidFinishNavigationObserver observer(
-        web_contents(),
-        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
-          EXPECT_FALSE(navigation_handle->IsInMainFrame());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kSubframe);
-        }));
-    EXPECT_TRUE(
-        ExecJs(primary_main_frame_host(),
-               JsReplace(kAddIframeScript,
-                         https_server()->GetURL("c.test", "/empty.html"))));
-  }
-  {
-    const GURL fenced_frame_url =
-        https_server()->GetURL("c.test", "/fenced_frames/title1.html");
-    RenderFrameHostImplWrapper fenced_frame_rfh(
-        fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
-                                                     fenced_frame_url));
-    DidFinishNavigationObserver observer(
-        web_contents(),
-        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
-          EXPECT_TRUE(
-              navigation_handle->GetRenderFrameHost()->IsFencedFrameRoot());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kFencedFrameRoot);
-        }));
-    fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-        fenced_frame_rfh.get(), fenced_frame_url);
-  }
-}
-
-// Tests that an unload/beforeunload event handler won't be set from
-// fenced frames.
-IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UnloadHandler) {
-  ASSERT_TRUE(https_server()->Start());
-  const GURL main_url =
-      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
-  EXPECT_TRUE(
-      NavigateToURL(shell(), https_server()->GetURL("c.test", "/title1.html")));
-  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
-  RenderFrameHostImplWrapper fenced_frame_rfh(
-      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
-                                                   main_url));
-
-  const char* kConsolePattern =
-      "unload/beforeunload handlers are prohibited in fenced frames.";
-  {
-    WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsolePattern);
-    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
-                       "window.addEventListener('beforeunload', (e) => {});"));
-    console_observer.Wait();
-    EXPECT_EQ(1u, console_observer.messages().size());
-  }
-  {
-    WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsolePattern);
-    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
-                       "window.addEventListener('unload', (e) => {});"));
-    console_observer.Wait();
-    EXPECT_EQ(1u, console_observer.messages().size());
-  }
-  {
-    WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsolePattern);
-    EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
-                       "window.onbeforeunload = function(e){};"));
-    console_observer.Wait();
-    EXPECT_EQ(1u, console_observer.messages().size());
-  }
-  {
-    WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsolePattern);
-    EXPECT_TRUE(
-        ExecJs(fenced_frame_rfh.get(), "window.onunload = function(e){};"));
-    console_observer.Wait();
-    EXPECT_EQ(1u, console_observer.messages().size());
-  }
-}
-
 INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,
                          FencedFrameNestedFrameBrowserTest,
                          testing::Combine(testing::ValuesIn(kTestParameters),
                                           testing::Bool()),
                          TestParamToString);
+
+namespace {
+
+static std::string ModeTestParamToString(
+    ::testing::TestParamInfo<std::tuple<blink::mojom::FencedFrameMode,
+                                        blink::mojom::FencedFrameMode,
+                                        bool /* shadow_dom_fenced_frame */>>
+        param_info) {
+  std::string out = "ParentMode";
+  switch (std::get<0>(param_info.param)) {
+    case blink::mojom::FencedFrameMode::kDefault:
+      out += "Default";
+      break;
+    case blink::mojom::FencedFrameMode::kOpaqueAds:
+      out += "OpaqueAds";
+      break;
+  }
+
+  out += "_ChildMode";
+
+  switch (std::get<1>(param_info.param)) {
+    case blink::mojom::FencedFrameMode::kDefault:
+      out += "Default";
+      break;
+    case blink::mojom::FencedFrameMode::kOpaqueAds:
+      out += "OpaqueAds";
+      break;
+  }
+
+  out += "_Arch";
+
+  if (std::get<2>(param_info.param)) {
+    out += "ShadowDOM";
+  } else {
+    out += "MPArch";
+  }
+
+  return out;
+}
+
+}  // namespace
+
+class FencedFrameNestedModesTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<blink::mojom::FencedFrameMode,
+                     blink::mojom::FencedFrameMode,
+                     bool /*shadow_dom_fenced_frame*/>> {
+ protected:
+  FencedFrameNestedModesTest() {
+    if (std::get<2>(GetParam())) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}});
+    } else {
+      fenced_frame_test_helper_ =
+          std::make_unique<test::FencedFrameTestHelper>();
+    }
+  }
+
+  std::string GetParentMode() { return ModeToString(std::get<0>(GetParam())); }
+  std::string GetChildMode() { return ModeToString(std::get<1>(GetParam())); }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ContentBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* primary_main_frame_host() {
+    return web_contents()->GetMainFrame();
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return *fenced_frame_test_helper_.get();
+  }
+
+ private:
+  std::string ModeToString(blink::mojom::FencedFrameMode mode) {
+    switch (mode) {
+      case blink::mojom::FencedFrameMode::kDefault:
+        return "default";
+      case blink::mojom::FencedFrameMode::kOpaqueAds:
+        return "opaque-ads";
+    }
+
+    NOTREACHED();
+    return "";
+  }
+
+  // This is a unique ptr because in some test cases we don't want to use it,
+  // and it automatically enables MPArch fenced frames when created.
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test runs the following steps:
+//   1.) Creates a "parent" fenced frame with a particular mode
+//   2.) Creates a nested/child fenced frame with a particular mode
+//   3.) Asserts that creation of the child fenced frame either failed or
+//       succeeded depending on its mode.
+IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
+  // TODO(lbrady): Don't skip this test for the MPArch implementation, once the
+  // `mode` attribute restrictions are implemented for MPArch.
+  if (std::get<2>(GetParam()) == false) {
+    return;
+  }
+
+  const GURL main_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // 1.) Create the parent fenced frame.
+  constexpr char kAddFencedFrameScript[] = R"({
+      const fenced_frame = document.createElement('fencedframe');
+      fenced_frame.mode = $1;
+      document.body.appendChild(fenced_frame);
+    })";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     JsReplace(kAddFencedFrameScript, GetParentMode())));
+
+  // Get the fenced frame's RFH.
+  ASSERT_EQ(1u, primary_main_frame_host()->child_count());
+  RenderFrameHostImpl* parent_fenced_frame_rfh =
+      primary_main_frame_host()->child_at(0)->current_frame_host();
+  if (blink::features::IsFencedFramesMPArchBased()) {
+    int inner_node_id =
+        parent_fenced_frame_rfh->inner_tree_main_frame_tree_node_id();
+    parent_fenced_frame_rfh =
+        FrameTreeNode::GloballyFindByID(inner_node_id)->current_frame_host();
+  }
+  ASSERT_TRUE(parent_fenced_frame_rfh);
+
+  // 2.) Attempt to create the child fenced frame.
+  EXPECT_TRUE(ExecJs(parent_fenced_frame_rfh,
+                     JsReplace(kAddFencedFrameScript, GetChildMode())));
+
+  // 3.) Assert that the child fenced frame was created or not created depending
+  //     on the test parameters.
+  if (GetParentMode() != GetChildMode()) {
+    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
+    // Child fenced frame creation should have failed based on its mode.
+  } else {
+    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
+    // Child fenced frame creation should have succeeded because its mode is the
+    // same as its parent.
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FencedFrameNestedModesTest,
+    FencedFrameNestedModesTest,
+    testing::Combine(/*parent mode=*/testing::Values(
+                         blink::mojom::FencedFrameMode::kDefault,
+                         blink::mojom::FencedFrameMode::kOpaqueAds),
+                     /*child mode=*/
+                     testing::Values(blink::mojom::FencedFrameMode::kDefault,
+                                     blink::mojom::FencedFrameMode::kOpaqueAds),
+                     /*is_shadowdom=*/testing::Bool()),
+    ModeTestParamToString);
 
 }  // namespace content

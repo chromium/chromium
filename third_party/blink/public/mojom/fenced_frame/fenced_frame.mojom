@@ -8,6 +8,14 @@ import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// These values represent the `mode` attribute of the fenced frame element. Keep
+// this values in sync with the conditions in `GetModeAttributeValue()` in
+// `html_fenced_frame_element.cc`.
+enum FencedFrameMode {
+  kDefault = 0,
+  kOpaqueAds = 1,
+};
+
 // The `FencedFrameOwnerHost` interface is used by the HTMLFencedFrameElement in
 // the renderer process that hosts the "outer" frame tree. It is used to
 // interact with the backing `content::FencedFrame` in the browser process which
