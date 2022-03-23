@@ -15,6 +15,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/display/types/display_snapshot.h"
@@ -44,6 +45,44 @@ std::unique_ptr<gfx::GpuFence> TakeGpuFence(std::vector<gfx::GpuFence> fences) {
   return fences.empty() ? nullptr
                         : std::make_unique<gfx::GpuFence>(std::move(fences[0]));
 }
+
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+// Helper function for getting a fence from the access. If it's a shared image
+// created for raster && scanout with DelegatedCompositing enabled, the access
+// mustn't have a fence, and we have to create a fence here and store it as
+// |current_frame_fence|. The |current_frame_fence| must be the same for the set
+// of overlays. Then, it will be dupped and returned for each overlay backed by
+// a raster image.
+// TODO(crbug.com/1254033): this code block shall be removed after cc is able to
+// set a single (duplicated) fence for bunch of tiles.
+std::unique_ptr<gfx::GpuFence> TakeGpuFenceForOverlay(
+    SkiaOutputSurfaceDependency* dep,
+    gpu::SharedImageRepresentationOverlay::ScopedReadAccess* access,
+    std::unique_ptr<gl::GLFence>& current_frame_fence) {
+  auto fence = access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr;
+#if defined(USE_OZONE)
+  if (gl::GLFence::IsGpuFenceSupported() && dep && access &&
+      (access->representation()->usage() &
+       gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING)) {
+    DCHECK(!fence);
+    DCHECK(features::IsDelegatedCompositingEnabled());
+    DCHECK_EQ(gpu::GrContextType::kGL, dep->gr_context_type());
+    // Create a single fence that will be duplicated and inserted into each
+    // overlay plane data. This avoids unnecessary cost as creating multiple
+    // number of fences at the end of each raster task at the ShareImage
+    // level is costly. Thus, at this point, the gpu tasks have been
+    // dispatched and it's safe to create just a single fence.
+    if (!current_frame_fence)
+      current_frame_fence = gl::GLFence::CreateForGpuFence();
+
+    // Dup the fence - it must be inserted into each shared image before
+    // ScopedReadAccess is created.
+    fence = current_frame_fence->GetGpuFence();
+  }
+#endif
+  return fence;
+}
+#endif  // BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
 
 class PresenterImageGL : public OutputPresenter::Image {
  public:
@@ -410,6 +449,16 @@ void OutputPresenterGL::ScheduleOverlays(
     std::vector<ScopedOverlayAccess*> accesses) {
   DCHECK_EQ(overlays.size(), accesses.size());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+  // The fence that will be created for current ScheduleOverlays. This fence is
+  // required and passed with overlay data iff DelegatedCompositing is enabled
+  // and the overlay's shared image backing is created for raster op. Given
+  // rasterization tasks create fences when gpu operations are issued, we end up
+  // having multiple number of fences, which creation is costly. Instead, a
+  // single fence is created during overlays' scheduling, which is dupped and
+  // inserted into each OverlayPlaneData if the underlying shared image was
+  // created for rasterization.
+  std::unique_ptr<gl::GLFence> current_frame_fence;
+
   // Note while reading through this for-loop that |overlay| has different
   // types on different platforms. On Android and Ozone it is an
   // OverlayCandidate, on Windows it is a DCLayerOverlay, and on macOS it is
@@ -431,8 +480,7 @@ void OutputPresenterGL::ScheduleOverlays(
       DCHECK(!overlay.gpu_fence_id);
       gl_surface_->ScheduleOverlayPlane(
           gl_image,
-          accesses[i] ? TakeGpuFence(accesses[i]->TakeAcquireFences())
-                      : nullptr,
+          TakeGpuFenceForOverlay(dependency_, accesses[i], current_frame_fence),
           gfx::OverlayPlaneData(
               overlay.plane_z_order, overlay.transform, overlay.display_rect,
               overlay.uv_rect, !overlay.is_opaque,

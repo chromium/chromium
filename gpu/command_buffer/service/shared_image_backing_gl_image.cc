@@ -729,10 +729,23 @@ void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess(
     }
   }
 #else
+
   // If the image will be used for an overlay, we insert a fence that can be
   // used by OutputPresenter to synchronize image writes with presentation.
   if (!readonly && usage() & SHARED_IMAGE_USAGE_SCANOUT &&
       gl::GLFence::IsGpuFenceSupported()) {
+    // If the image will be used for delegated compositing, no need to put
+    // fences at this moment as there are many raster tasks in the CPU gl
+    // context that end up creating a big number of fences, which may have some
+    // performance overhead depending on the gpu. Instead, when these images
+    // will be scheduled as overlays, a single fence will be created.
+    // TODO(crbug.com/1254033): this block of code shall be removed after cc is
+    // able to set a single (duplicated) fence for bunch of tiles instead of
+    // having the SI framework creating fences for each single message when
+    // write access ends.
+    if (usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING)
+      return;
+
     last_write_gl_fence_ = gl::GLFence::CreateForGpuFence();
     DCHECK(last_write_gl_fence_);
   }

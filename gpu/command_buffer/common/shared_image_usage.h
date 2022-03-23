@@ -54,6 +54,11 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 14,
   // Image will be used in RasterInterface with RawDraw.
   SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 15,
+  // Image will be used in RasterInterface for DelegatedCompositing.
+  // TODO(crbug.com/1254033): this usage shall be removed after cc is able to
+  // set a single (duplicated) fence for bunch of tiles instead of having the SI
+  // framework creating fences for each single message when write access ends.
+  SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 16,
 };
 
 // Create a string to label SharedImageUsage.
