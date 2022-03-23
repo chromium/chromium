@@ -358,6 +358,22 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,re
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24unorm-stencil8";compute=false;* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth32float-stencil8";compute=false;* [ Failure ]
 
+crbug.com/tint/1476 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,validation,tokens:identifiers:ident="enable" [ Failure ]
+crbug.com/tint/1477 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,validation,tokens:null_characters:contains_null=true;placement="comment" [ Failure ]
+crbug.com/tint/1477 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,validation,tokens:null_characters:contains_null=true;placement="eol" [ Failure ]
+
+# Timeouts - should be resolved by new test infra that will split these tests.
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_arithmetic:addition:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_arithmetic:division:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_arithmetic:multiplication:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_arithmetic:subtraction:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:equals:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:greater_equals:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:greater_than:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:less_equals:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:less_than:* [ Timeout ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,binary,f32_logical:not_equals:* [ Timeout ]
+
 ###
 ### Mac (Metal) specific
 ###

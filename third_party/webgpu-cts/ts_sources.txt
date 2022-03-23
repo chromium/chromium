@@ -137,6 +137,7 @@ src/webgpu/api/operation/command_buffer/render/state_tracking.spec.ts
 src/webgpu/api/operation/compute/basic.spec.ts
 src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
+src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
 src/webgpu/api/operation/memory_sync/buffer/rw_and_wr.spec.ts
 src/webgpu/api/operation/memory_sync/buffer/ww.spec.ts
@@ -258,6 +259,7 @@ src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_arithmetic.spec.ts
+src/webgpu/shader/execution/expression/binary/f32_logical.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/builtin.ts
 src/webgpu/shader/execution/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/all.spec.ts
@@ -299,6 +301,7 @@ src/webgpu/shader/execution/sampling/gradients_in_varying_loop.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
+src/webgpu/shader/validation/tokens.spec.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
