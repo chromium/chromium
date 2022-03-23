@@ -24,7 +24,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(SVGContainerPainterTest);
 TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #container, #before, #after { will-change: transform; }
+      #container, #before, #after { will-change: filter; }
     </style>
     <svg id="svg" width="40" height="40">
       <g id="container">
