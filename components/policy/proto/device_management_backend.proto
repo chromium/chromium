@@ -15,7 +15,7 @@ import "private_membership_rlwe.proto";
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 
-// DEPRECATED: This enum needs to be shared between DeviceRegisterRequest and
+// This enum needs to be shared between DeviceRegisterRequest and
 // LicenseAvailability protos. With java_api_version 1, this means that enum
 // needs to be wrapped into a message.
 message LicenseType {
@@ -23,15 +23,16 @@ message LicenseType {
   enum LicenseTypeEnum {
     // Unknown/undefined
     UNDEFINED = 0;
-    // Chrome Device Management Perpetual
+    // Chrome Device Management Perpetual, unused as 1 & 2 are in the same
+    // license pool.
     CDM_PERPETUAL = 1;
-    // Chrome Device Management Annual
+    // Chrome Device Management Annual, unused
     CDM_ANNUAL = 2;
     // Chrome Kiosk
     KIOSK = 3;
   }
 
-  optional LicenseTypeEnum license_type_deprecated = 1 [deprecated = true];
+  optional LicenseTypeEnum license_type = 1;
 }
 
 // Data along with a cryptographic signature verifying their authenticity.
