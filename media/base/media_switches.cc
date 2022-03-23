@@ -782,6 +782,10 @@ const base::Feature kIncludeIRCamerasInDeviceEnumeration{
 const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
     "MediaFoundationAV1Encoding", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables H.264 CBP encode acceleration for Windows.
+const base::Feature MEDIA_EXPORT kMediaFoundationH264CbpEncoding{
+    "MediaFoundationH264CbpEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables MediaFoundation based video capture
 const base::Feature kMediaFoundationVideoCapture{
     "MediaFoundationVideoCapture", base::FEATURE_ENABLED_BY_DEFAULT};
