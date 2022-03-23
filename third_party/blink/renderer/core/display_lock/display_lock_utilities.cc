@@ -62,7 +62,9 @@ Element* NearestLockedExclusiveAncestor(const Node& node) {
     if (!ancestor_element)
       continue;
     if (auto* context = ancestor_element->GetDisplayLockContext()) {
-      if (context->IsLocked())
+      if (context->IsLocked() &&
+          (!ancestor_element->GetLayoutObject() ||
+           !ancestor_element->GetLayoutObject()->IsShapingDeferred()))
         return ancestor_element;
     }
   }
@@ -81,7 +83,9 @@ const Element* NearestLockedInclusiveAncestor(const Node& node) {
     return nullptr;
   }
   if (auto* context = element->GetDisplayLockContext()) {
-    if (context->IsLocked())
+    if (context->IsLocked() &&
+        (!element->GetLayoutObject() ||
+         !element->GetLayoutObject()->IsShapingDeferred()))
       return element;
   }
   return NearestLockedExclusiveAncestor(node);

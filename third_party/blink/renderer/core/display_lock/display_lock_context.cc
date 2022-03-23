@@ -636,8 +636,10 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       // to mark its ancestors as dirty here so that it will be traversed to on
       // the next layout.
       layout_object->MarkContainerChainForLayout();
-      if (layout_object->IsShapingDeferred())
+      if (layout_object->IsShapingDeferred()) {
+        layout_object->SetIntrinsicLogicalWidthsDirty();
         layout_object->SetChildNeedsLayout();
+      }
     }
     return true;
   }

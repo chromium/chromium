@@ -195,6 +195,30 @@ TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
   EXPECT_TRUE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, UnlockNestedDeferred) {
+  // 'M' is used here because it is typically wider than ' '.
+  SetBodyInnerHTML(
+      uR"HTML(<div  style="font-family:Times; font-size:50px;">
+<p>IFC<ruby>b<rt id="ref2">MMMMMMM MMMMMMM MMMMMMM</rt></ruby></p>
+<div style="height:1800px"></div>
+<p id="target">IFC<ruby>b<rt id="target2">MMMMMMM MMMMMMM MMMMMMM</rt></ruby>
+</p></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+  EXPECT_TRUE(IsDefer("target2"));
+  EXPECT_TRUE(IsLocked("target2"));
+
+  ScrollAndWaitForIntersectionCheck(1800);
+  // Nested deferred IFCs are unlocked together.
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+  EXPECT_FALSE(IsDefer("target2"));
+  EXPECT_FALSE(IsLocked("target2"));
+  EXPECT_EQ(GetElementById("ref2")->clientWidth(),
+            GetElementById("target2")->clientWidth());
+}
+
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>
