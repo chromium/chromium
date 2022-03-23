@@ -14,7 +14,7 @@
 namespace blink {
 
 WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
-                                   WakeLockType type,
+                                   V8WakeLockType::Enum type,
                                    WakeLockManager* manager)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       manager_(manager),
@@ -35,15 +35,10 @@ bool WakeLockSentinel::released() const {
   return released_;
 }
 
-String WakeLockSentinel::type() const {
+V8WakeLockType WakeLockSentinel::type() const {
   // https://w3c.github.io/screen-wake-lock/#dom-wakelocksentinel-type
   // The type attribute corresponds to the WakeLockSentinel's wake lock type.
-  switch (type_) {
-    case WakeLockType::kScreen:
-      return "screen";
-    case WakeLockType::kSystem:
-      return "system";
-  }
+  return V8WakeLockType(type_);
 }
 
 ExecutionContext* WakeLockSentinel::GetExecutionContext() const {

@@ -16,7 +16,7 @@
 namespace blink {
 
 WakeLockManager::WakeLockManager(ExecutionContext* execution_context,
-                                 WakeLockType type)
+                                 V8WakeLockType::Enum type)
     : wake_lock_(execution_context),
       wake_lock_type_(type),
       execution_context_(execution_context) {

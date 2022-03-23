@@ -53,15 +53,14 @@ class ClosureRunnerCallable final : public ScriptFunction::Callable {
   base::OnceClosure callback_;
 };
 
-WakeLockType ToBlinkWakeLockType(device::mojom::blink::WakeLockType type) {
+V8WakeLockType::Enum ToBlinkWakeLockType(
+    device::mojom::blink::WakeLockType type) {
   switch (type) {
     case device::mojom::blink::WakeLockType::kPreventDisplaySleep:
-      return WakeLockType::kScreen;
+    case device::mojom::blink::WakeLockType::kPreventDisplaySleepAllowDimming:
+      return V8WakeLockType::Enum::kScreen;
     case device::mojom::blink::WakeLockType::kPreventAppSuspension:
-      return WakeLockType::kSystem;
-    default:
-      NOTREACHED();
-      return WakeLockType::kMaxValue;
+      return V8WakeLockType::Enum::kSystem;
   }
 }
 
@@ -137,7 +136,7 @@ void MockWakeLockService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
                            std::move(handle)));
 }
 
-MockWakeLock& MockWakeLockService::get_wake_lock(WakeLockType type) {
+MockWakeLock& MockWakeLockService::get_wake_lock(V8WakeLockType::Enum type) {
   size_t pos = static_cast<size_t>(type);
   return mock_wake_lock_[pos];
 }
@@ -164,7 +163,7 @@ void MockPermissionService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
       &MockPermissionService::OnConnectionError, WTF::Unretained(this)));
 }
 
-void MockPermissionService::SetPermissionResponse(WakeLockType type,
+void MockPermissionService::SetPermissionResponse(V8WakeLockType::Enum type,
                                                   PermissionStatus status) {
   DCHECK(status == PermissionStatus::GRANTED ||
          status == PermissionStatus::DENIED);
@@ -177,19 +176,20 @@ void MockPermissionService::OnConnectionError() {
 
 bool MockPermissionService::GetWakeLockTypeFromDescriptor(
     const PermissionDescriptorPtr& descriptor,
-    WakeLockType* output) {
+    V8WakeLockType::Enum* output) {
   if (descriptor->name == mojom::blink::PermissionName::SCREEN_WAKE_LOCK) {
-    *output = WakeLockType::kScreen;
+    *output = V8WakeLockType::Enum::kScreen;
     return true;
   }
   if (descriptor->name == mojom::blink::PermissionName::SYSTEM_WAKE_LOCK) {
-    *output = WakeLockType::kSystem;
+    *output = V8WakeLockType::Enum::kSystem;
     return true;
   }
   return false;
 }
 
-void MockPermissionService::WaitForPermissionRequest(WakeLockType type) {
+void MockPermissionService::WaitForPermissionRequest(
+    V8WakeLockType::Enum type) {
   size_t pos = static_cast<size_t>(type);
   DCHECK(!request_permission_callbacks_[pos]);
   base::RunLoop run_loop;
@@ -199,7 +199,7 @@ void MockPermissionService::WaitForPermissionRequest(WakeLockType type) {
 
 void MockPermissionService::HasPermission(PermissionDescriptorPtr permission,
                                           HasPermissionCallback callback) {
-  WakeLockType type;
+  V8WakeLockType::Enum type;
   if (!GetWakeLockTypeFromDescriptor(permission, &type)) {
     std::move(callback).Run(PermissionStatus::DENIED);
     return;
@@ -214,7 +214,7 @@ void MockPermissionService::RequestPermission(
     PermissionDescriptorPtr permission,
     bool user_gesture,
     RequestPermissionCallback callback) {
-  WakeLockType type;
+  V8WakeLockType::Enum type;
   if (!GetWakeLockTypeFromDescriptor(permission, &type)) {
     std::move(callback).Run(PermissionStatus::DENIED);
     return;

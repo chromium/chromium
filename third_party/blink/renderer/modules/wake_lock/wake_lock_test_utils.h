@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/device/public/mojom/wake_lock.mojom-blink-forward.h"
+#include "services/device/public/mojom/wake_lock.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -76,7 +77,7 @@ class MockWakeLockService : public mojom::blink::WakeLockService {
 
   void BindRequest(mojo::ScopedMessagePipeHandle handle);
 
-  MockWakeLock& get_wake_lock(WakeLockType type);
+  MockWakeLock& get_wake_lock(V8WakeLockType::Enum type);
 
  private:
   // mojom::blink::WakeLockService implementation
@@ -100,14 +101,15 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   void BindRequest(mojo::ScopedMessagePipeHandle handle);
 
-  void SetPermissionResponse(WakeLockType, mojom::blink::PermissionStatus);
+  void SetPermissionResponse(V8WakeLockType::Enum,
+                             mojom::blink::PermissionStatus);
 
-  void WaitForPermissionRequest(WakeLockType);
+  void WaitForPermissionRequest(V8WakeLockType::Enum);
 
  private:
   bool GetWakeLockTypeFromDescriptor(
       const mojom::blink::PermissionDescriptorPtr& descriptor,
-      WakeLockType* output);
+      V8WakeLockType::Enum* output);
 
   // mojom::blink::PermissionService implementation
   void HasPermission(mojom::blink::PermissionDescriptorPtr permission,

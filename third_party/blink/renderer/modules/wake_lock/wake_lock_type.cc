@@ -5,33 +5,18 @@
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "services/device/public/mojom/wake_lock.mojom-blink.h"
 
 namespace blink {
 
-device::mojom::blink::WakeLockType ToMojomWakeLockType(WakeLockType type) {
+device::mojom::blink::WakeLockType ToMojomWakeLockType(
+    V8WakeLockType::Enum type) {
   switch (type) {
-    case WakeLockType::kScreen:
+    case V8WakeLockType::Enum::kScreen:
       return device::mojom::blink::WakeLockType::kPreventDisplaySleep;
-    case WakeLockType::kSystem:
+    case V8WakeLockType::Enum::kSystem:
       return device::mojom::blink::WakeLockType::kPreventAppSuspension;
-    default:
-      NOTREACHED();
-      return device::mojom::blink::WakeLockType::kMaxValue;
   }
-}
-
-WakeLockType ToWakeLockType(const String& type) {
-  WakeLockType wake_lock_type;
-  if (type == "screen") {
-    wake_lock_type = WakeLockType::kScreen;
-  } else if (type == "system") {
-    wake_lock_type = WakeLockType::kSystem;
-  } else {
-    NOTREACHED();
-    wake_lock_type = WakeLockType::kMaxValue;
-  }
-  return wake_lock_type;
 }
 
 }  // namespace blink

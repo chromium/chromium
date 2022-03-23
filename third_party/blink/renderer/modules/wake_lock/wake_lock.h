@@ -9,6 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -18,12 +19,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-
-namespace WTF {
-
-class String;
-
-}  // namespace WTF
 
 namespace blink {
 
@@ -48,7 +43,7 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   explicit WakeLock(NavigatorBase&);
 
   ScriptPromise request(ScriptState*,
-                        const WTF::String& type,
+                        V8WakeLockType type,
                         ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
@@ -57,9 +52,9 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   // While this could be part of request() itself, having it as a separate
   // function makes testing (which uses a custom ScriptPromiseResolver) a lot
   // easier.
-  void DoRequest(WakeLockType, ScriptPromiseResolver*);
+  void DoRequest(V8WakeLockType::Enum, ScriptPromiseResolver*);
 
-  void DidReceivePermissionResponse(WakeLockType,
+  void DidReceivePermissionResponse(V8WakeLockType::Enum,
                                     ScriptPromiseResolver*,
                                     mojom::blink::PermissionStatus);
 

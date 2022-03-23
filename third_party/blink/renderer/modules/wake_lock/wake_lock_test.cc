@@ -23,20 +23,20 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
   WakeLockTestingContext context(&wake_lock_service);
 
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kScreen, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
 
   auto* screen_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise screen_promise = screen_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
-  wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
 
   MockWakeLock& screen_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kScreen);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   MockPermissionService& permission_service = context.GetPermissionService();
 
-  permission_service.WaitForPermissionRequest(WakeLockType::kScreen);
+  permission_service.WaitForPermissionRequest(V8WakeLockType::Enum::kScreen);
   screen_lock.WaitForRequest();
   context.WaitForPromiseFulfillment(screen_promise);
 
@@ -50,20 +50,20 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   WakeLockTestingContext context(&wake_lock_service);
 
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kSystem, mojom::blink::PermissionStatus::DENIED);
+      V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::DENIED);
 
   auto* system_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
-  wake_lock->DoRequest(WakeLockType::kSystem, system_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kSystem, system_resolver);
 
   MockWakeLock& system_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kSystem);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   MockPermissionService& permission_service = context.GetPermissionService();
 
-  permission_service.WaitForPermissionRequest(WakeLockType::kSystem);
+  permission_service.WaitForPermissionRequest(V8WakeLockType::Enum::kSystem);
   context.WaitForPromiseRejection(system_promise);
 
   EXPECT_EQ(v8::Promise::kRejected,
@@ -84,13 +84,13 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
   WakeLockTestingContext context(&wake_lock_service);
 
   MockWakeLock& screen_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kScreen);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   MockWakeLock& system_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kSystem);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kScreen, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kSystem, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::GRANTED);
 
   // First, acquire a handful of locks of different types.
   auto* screen_resolver1 =
@@ -104,10 +104,10 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
   system_resolver1->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
-  wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver1);
-  wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver2);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver1);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver2);
   screen_lock.WaitForRequest();
-  wake_lock->DoRequest(WakeLockType::kSystem, system_resolver1);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kSystem, system_resolver1);
   system_lock.WaitForRequest();
 
   // Now shut down our Document and make sure all [[ActiveLocks]] slots have
@@ -128,26 +128,26 @@ TEST(WakeLockTest, PageVisibilityHidden) {
   WakeLockTestingContext context(&wake_lock_service);
 
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kScreen, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kSystem, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::GRANTED);
 
   MockWakeLock& screen_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kScreen);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kSystem);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
-  wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
   screen_lock.WaitForRequest();
-  wake_lock->DoRequest(WakeLockType::kSystem, system_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kSystem, system_resolver);
   system_lock.WaitForRequest();
 
   context.WaitForPromiseFulfillment(screen_promise);
@@ -167,7 +167,7 @@ TEST(WakeLockTest, PageVisibilityHidden) {
   auto* other_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise other_promise = other_resolver->Promise();
-  wake_lock->DoRequest(WakeLockType::kScreen, other_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, other_resolver);
   screen_lock.WaitForRequest();
   context.WaitForPromiseFulfillment(other_promise);
   EXPECT_TRUE(screen_lock.is_acquired());
@@ -179,25 +179,25 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   WakeLockTestingContext context(&wake_lock_service);
 
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kScreen, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
   context.GetPermissionService().SetPermissionResponse(
-      WakeLockType::kSystem, mojom::blink::PermissionStatus::GRANTED);
+      V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::GRANTED);
 
   MockWakeLock& screen_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kScreen);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
-      wake_lock_service.get_wake_lock(WakeLockType::kSystem);
+      wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
-  wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver);
-  wake_lock->DoRequest(WakeLockType::kSystem, system_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
+  wake_lock->DoRequest(V8WakeLockType::Enum::kSystem, system_resolver);
   context.Frame()->GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kHidden, false);
 
