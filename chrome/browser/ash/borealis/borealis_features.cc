@@ -169,10 +169,7 @@ TokenAuthority GetAuthorityForToken(const std::string& board,
                ? TokenAuthority::kAllowedOverridesHardwareChecks
                : TokenAuthority::kRejected;
   } else if (board == "volteer") {
-    return H(hash_of_current_token, "F9sOMmgrk9%C$poxLT.Eg") ==
-                   "Gn5gDfMLbMrBI10zrVba6q/1QEGJilyEyUeNiOID0X8="
-               ? TokenAuthority::kAllowedRequiresHardwareChecks
-               : TokenAuthority::kRejected;
+    return TokenAuthority::kAllowedRequiresHardwareChecks;
   } else if (board == "brya") {
     return H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
                    "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U="
