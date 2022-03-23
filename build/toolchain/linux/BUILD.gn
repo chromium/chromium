@@ -290,6 +290,15 @@ gcc_toolchain("mips64el") {
   }
 }
 
+clang_toolchain("clang_riscv64") {
+  enable_linker_map = true
+  toolchain_args = {
+    current_cpu = "riscv64"
+    current_os = "linux"
+    is_clang = true
+  }
+}
+
 gcc_toolchain("riscv64") {
   toolprefix = "riscv64-linux-gnu"
 
