@@ -76,8 +76,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // TODO(crbug.com/983359): Sort these by country name in the current locale
   // instead of using this hard-coded US-centric order.
   static constexpr char kSupportedCountries[][3] = {
-      "US", "BE", "CA", "DK", "FI", "FR", "DE", "IE",
-      "IT", "JP", "LU", "NL", "NO", "ES", "SE", "GB"};
+      "US", "AU", "BE", "CA", "DK", "FI", "FR", "DE", "IN", "IE", "IT",
+      "JP", "LU", "MX", "NL", "NO", "PL", "ZA", "ES", "SE", "GB"};
 
   static constexpr char kCountryNotSelectedId[] = "N/A";
 
