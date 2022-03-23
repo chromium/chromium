@@ -126,11 +126,20 @@ public class PasswordManagerHelper {
     }
 
     public static boolean usesUnifiedPasswordManagerUI() {
-        return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                           UNIFIED_PASSWORD_MANAGER_ANDROID, UPM_VARIATION_FEATURE_PARAM,
-                           UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS)
-                != UpmExperimentVariation.SHADOW_SYNCING_USERS;
+        if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return false;
+        @UpmExperimentVariation
+        int variation = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                UNIFIED_PASSWORD_MANAGER_ANDROID, UPM_VARIATION_FEATURE_PARAM,
+                UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS);
+        switch (variation) {
+            case UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS:
+                return true;
+            case UpmExperimentVariation.SHADOW_SYNCING_USERS:
+            case UpmExperimentVariation.ENABLE_ONLY_BACKEND_FOR_SYNCING_USERS:
+                return false;
+        }
+        assert false : "Whether to use UI is undefined for variation: " + variation;
+        return false;
     }
 
     private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,

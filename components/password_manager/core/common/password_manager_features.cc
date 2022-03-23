@@ -284,18 +284,22 @@ bool UsesUnifiedPasswordManagerUi() {
     case UpmExperimentVariation::kEnableForSyncingUsers:
       return true;
     case UpmExperimentVariation::kShadowSyncingUsers:
+    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return false;
   }
   NOTREACHED() << "Define explicitly whether UI is required!";
   return false;
 }
+#endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_ANDROID)
 bool RequiresInitialMigrationForUnifiedPasswordManager() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
     return false;
   UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
   switch (variation) {
     case UpmExperimentVariation::kEnableForSyncingUsers:
+    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return true;
     case UpmExperimentVariation::kShadowSyncingUsers:
       return false;
@@ -303,7 +307,9 @@ bool RequiresInitialMigrationForUnifiedPasswordManager() {
   NOTREACHED() << "Define explicitly whether migration is required!";
   return false;
 }
+#endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_ANDROID)
 bool ManagesLocalPasswordsInUnifiedPasswordManager() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
     return false;
@@ -311,6 +317,7 @@ bool ManagesLocalPasswordsInUnifiedPasswordManager() {
   switch (variation) {
     case UpmExperimentVariation::kEnableForSyncingUsers:
     case UpmExperimentVariation::kShadowSyncingUsers:
+    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return false;
   }
   NOTREACHED()

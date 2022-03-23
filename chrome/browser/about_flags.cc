@@ -2864,12 +2864,17 @@ const FeatureEntry::FeatureVariation kTabStripImprovementsTabWidthVariations[] =
 const FeatureEntry::FeatureParam kUpmAndroidShadowSyncingUsers[] = {
     {password_manager::features::kUpmExperimentVariationParam.name,
      password_manager::features::kUpmExperimentVariationOption[1].name}};
+const FeatureEntry::FeatureParam kUpmAndroidEnableWithLegacyUi[] = {
+    {password_manager::features::kUpmExperimentVariationParam.name,
+     password_manager::features::kUpmExperimentVariationOption[2].name}};
 
 const FeatureEntry::FeatureVariation
     kUnifiedPasswordManagerAndroidVariations[] = {
         // Skip kEnableForSyncingUsers which is the default Enabled param.
         {"Shadow Traffic only", kUpmAndroidShadowSyncingUsers,
          std::size(kUpmAndroidShadowSyncingUsers), nullptr},
+        {"With Legacy UI", kUpmAndroidEnableWithLegacyUi,
+         std::size(kUpmAndroidEnableWithLegacyUi), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

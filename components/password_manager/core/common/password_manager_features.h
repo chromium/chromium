@@ -78,7 +78,9 @@ extern const base::FeatureParam<int> kMigrationVersion;
 constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
-        {UpmExperimentVariation::kShadowSyncingUsers, "1"}};
+        {UpmExperimentVariation::kShadowSyncingUsers, "1"},
+        {UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers, "2"},
+};
 
 constexpr base::FeatureParam<UpmExperimentVariation>
     kUpmExperimentVariationParam{&kUnifiedPasswordManagerAndroid, "stage",
@@ -117,12 +119,16 @@ bool IsPasswordScriptsFetchingEnabled();
 // Returns true if the unified password manager feature is active and in a stage
 // that allows to use the new UI.
 bool UsesUnifiedPasswordManagerUi();
+#endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
 // that requires migrating existing credentials initially. Independent of
 // whether only non-syncable data needs to be migrated or full credentials.
 bool RequiresInitialMigrationForUnifiedPasswordManager();
+#endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
 // that uses the unified storage for passwords that remain local on the device.
 bool ManagesLocalPasswordsInUnifiedPasswordManager();

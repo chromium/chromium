@@ -39,11 +39,24 @@ bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
     // i.e. necessary migrations have happened and appropriate flags are set.
     return true;
   }
-  return is_syncing &&
-         base::FeatureList::IsEnabled(
-             features::kUnifiedPasswordManagerAndroid) &&
-         features::kUpmExperimentVariationParam.Get() ==
-             features::UpmExperimentVariation::kShadowSyncingUsers;
+
+  if (!is_syncing)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
+    return false;
+
+  features::UpmExperimentVariation variation =
+      features::kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case features::UpmExperimentVariation::kEnableForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+      return false;
+    case features::UpmExperimentVariation::kShadowSyncingUsers:
+      return true;
+  }
+  NOTREACHED() << "Define explicitly whether shadow traffic is recorded!";
+  return false;
 }
 
 bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
@@ -61,6 +74,7 @@ bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
       features::kUpmExperimentVariationParam.Get();
   switch (variation) {
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return true;
     case features::UpmExperimentVariation::kShadowSyncingUsers:
       return false;
