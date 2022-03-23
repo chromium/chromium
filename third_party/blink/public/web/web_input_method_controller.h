@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INPUT_METHOD_CONTROLLER_H_
 
 #include "third_party/blink/public/platform/web_text_input_info.h"
+#include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/base/ime/ime_text_span.h"
 
@@ -15,7 +16,6 @@ class Rect;
 
 namespace blink {
 
-class WebRange;
 class WebString;
 template <typename T>
 class WebVector;

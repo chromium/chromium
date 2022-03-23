@@ -31,22 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 
-#include "build/build_config.h"
-#include "cc/input/browser_controls_state.h"
-#include "cc/metrics/begin_main_frame_metrics.h"
-#include "cc/paint/element_id.h"
-#include "cc/trees/layer_tree_host_client.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_text_input_info.h"
-#include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_hit_test_result.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
-#include "third_party/blink/public/web/web_range.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class LayerTreeHost;
@@ -58,6 +48,12 @@ struct ScreenInfo;
 struct ScreenInfos;
 }  // namespace display
 
+namespace gfx {
+class PointF;
+class Rect;
+class Vector2dF;
+}  // namespace gfx
+
 namespace ui {
 class Cursor;
 }
@@ -65,6 +61,7 @@ class Cursor;
 namespace blink {
 struct VisualProperties;
 class WebCoalescedInputEvent;
+class WebHitTestResult;
 
 namespace scheduler {
 class WebRenderWidgetSchedulingState;

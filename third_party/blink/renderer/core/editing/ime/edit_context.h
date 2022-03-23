@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 

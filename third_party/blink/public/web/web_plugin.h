@@ -43,6 +43,7 @@
 
 namespace gfx {
 class PointF;
+class Range;
 class Rect;
 }  // namespace gfx
 

@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/range/range.h"
 #include "ui/latency/latency_info.h"
 
 namespace chrome_pdf {

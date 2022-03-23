@@ -41,9 +41,22 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/ca_layer_result.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace cc {
+struct ApplyViewportChangesArgs;
+class LayerTreeHost;
+}  // namespace cc
+
+namespace gfx {
+class PointF;
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 
