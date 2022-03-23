@@ -220,6 +220,7 @@ source_set("wayland") {
       "//services/device/wake_lock/power_save_blocker",
       "//third_party/wayland-protocols:idle_inhibit_protocol",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/events/ozone/layout",
     ]
   }
 }

@@ -22,11 +22,21 @@
 #include "ui/base/ime/utf_offset.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/ozone/layout/xkb/xkb_modifier_converter.h"
 
 namespace exo {
 namespace wayland {
 
 namespace {
+
+// The list of modifiers that this supports.
+// This is consistent with X.h.
+constexpr const char* kModifierNames[] = {
+    XKB_MOD_NAME_SHIFT, XKB_MOD_NAME_CAPS,
+    XKB_MOD_NAME_CTRL,  XKB_MOD_NAME_ALT,
+    XKB_MOD_NAME_NUM,   "Mod3",
+    XKB_MOD_NAME_LOGO,  "Mod5",
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // text_input_v1 interface:
@@ -128,14 +138,6 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     uint32_t keysym = xkb_tracker_->GetKeysym(
         ui::KeycodeConverter::DomCodeToNativeKeycode(event.code()));
     bool pressed = (event.type() == ui::ET_KEY_PRESSED);
-    // TODO(mukai): consolidate the definition of this modifiers_mask with other
-    // similar ones in components/exo/keyboard.cc or arc_ime_service.cc.
-    constexpr uint32_t modifiers_mask =
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-        ui::EF_COMMAND_DOWN | ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
-    // 1-bit shifts to adjust the bitpattern for the modifiers; see also
-    // WaylandTextInputDelegate::SendModifiers().
-    uint32_t modifiers = (event.flags() & modifiers_mask) >> 1;
 
     zwp_text_input_v1_send_keysym(
         text_input_, TimeTicksToMilliseconds(event.time_stamp()),
@@ -143,7 +145,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
         keysym,
         pressed ? WL_KEYBOARD_KEY_STATE_PRESSED
                 : WL_KEYBOARD_KEY_STATE_RELEASED,
-        modifiers);
+        modifier_converter_.MaskFromUiFlags(event.flags()));
     wl_client_flush(client());
   }
 
@@ -247,7 +249,9 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
+  ui::XkbModifierConverter modifier_converter_{
+      std::vector<std::string>(std::begin(kModifierNames),
+                               std::end(kModifierNames))};
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
 
@@ -282,14 +286,6 @@ void text_input_activate(wl_client* client,
   text_input->Activate(surface);
 
   // Sending modifiers.
-  constexpr const char* kModifierNames[] = {
-      XKB_MOD_NAME_SHIFT,
-      XKB_MOD_NAME_CTRL,
-      XKB_MOD_NAME_ALT,
-      XKB_MOD_NAME_LOGO,
-      "Mod5",
-      "Mod3",
-  };
   wl_array modifiers;
   wl_array_init(&modifiers);
   for (const char* modifier : kModifierNames) {
