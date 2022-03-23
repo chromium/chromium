@@ -254,6 +254,9 @@ MetricReportingManager::MetricReportingManager(
       GetDefaultReportUploadFrequency());
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+  peripheral_events_and_telemetry_report_queue_ =
+      delegate_->CreateMetricReportQueue(Destination::PERIPHERAL_EVENTS,
+                                         Priority::SECURITY);
   delayed_init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
                             &MetricReportingManager::DelayedInit);
 
@@ -273,6 +276,7 @@ void MetricReportingManager::Shutdown() {
   info_report_queue_.reset();
   telemetry_report_queue_.reset();
   event_report_queue_.reset();
+  peripheral_events_and_telemetry_report_queue_.reset();
 }
 
 void MetricReportingManager::DelayedInit() {
@@ -470,9 +474,15 @@ void MetricReportingManager::InitAudioCollectors() {
 
 void MetricReportingManager::InitPeripheralsCollectors() {
   // Peripheral events
-  InitEventObserverManager(std::make_unique<UsbEventsObserver>(),
-                           ::ash::kReportDevicePeripherals,
-                           kReportDevicePeripheralsDefaultValue);
+  if (!peripheral_events_and_telemetry_report_queue_) {
+    return;
+  }
+  event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
+      std::make_unique<UsbEventsObserver>(),
+      peripheral_events_and_telemetry_report_queue_.get(), &reporting_settings_,
+      ::ash::kReportDevicePeripherals, kReportDevicePeripheralsDefaultValue,
+      /*additional_samplers=*/std::vector<Sampler*>()));
+
   auto peripheral_telemetry_sampler =
       std::make_unique<CrosHealthdMetricSampler>(
           chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
@@ -483,6 +493,6 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
       CrosHealthdMetricSampler::MetricType::kTelemetry,
       ash::kReportDevicePeripherals, kReportDevicePeripheralsDefaultValue,
-      telemetry_report_queue_.get());
+      peripheral_events_and_telemetry_report_queue_.get());
 }
 }  // namespace reporting
