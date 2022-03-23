@@ -27,6 +27,8 @@ const char kDesktopCaptureApiInvalidOriginError[] =
 const char kDesktopCaptureApiInvalidTabIdError[] = "Invalid tab specified.";
 const char kDesktopCaptureApiTabUrlNotSecure[] =
     "URL scheme for the specified tab is not secure.";
+const char kTargetTabRequiredFromServiceWorker[] =
+    "A target tab is required when called from a service worker context.";
 }  // namespace
 
 DesktopCaptureChooseDesktopMediaFunction::
@@ -96,7 +98,9 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
     target_name = base::UTF8ToUTF16(GetExtensionTargetName());
     target_render_frame_host = render_frame_host();
   }
-  DCHECK(target_render_frame_host);
+
+  if (!target_render_frame_host)
+    return RespondNow(Error(kTargetTabRequiredFromServiceWorker));
 
   return Execute(params->sources, target_render_frame_host, origin,
                  target_name);
