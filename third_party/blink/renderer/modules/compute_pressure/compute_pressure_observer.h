@@ -45,8 +45,9 @@ class ComputePressureObserver final
   static Vector<V8ComputePressureSource> supportedSources();
 
   // ComputePressureObserver IDL implementation.
-  ScriptPromise observe(ScriptState*, ExceptionState&);
-  void stop(ScriptState*);
+  ScriptPromise observe(ScriptState*, V8ComputePressureSource, ExceptionState&);
+  void unobserve(V8ComputePressureSource);
+  void disconnect();
 
   ComputePressureObserver(const ComputePressureObserver&) = delete;
   ComputePressureObserver operator=(const ComputePressureObserver&) = delete;

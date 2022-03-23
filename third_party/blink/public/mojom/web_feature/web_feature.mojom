@@ -3209,7 +3209,7 @@ enum WebFeature {
   kSanitizerAPIGetDefaultConfig = 3898,
   kComputePressureObserver_Constructor = 3899,
   kComputePressureObserver_Observe = 3900,
-  kComputePressureObserver_Stop = 3901,
+  kOBSOLETE_ComputePressureObserver_Stop = 3901,
   kWebAppWindowControlsOverlay = 3902,
   kPaymentRequestShowWithoutGestureOrToken = 3903,
   kV8Navigator_UpdateAdInterestGroups_Method = 3904,
@@ -3502,6 +3502,8 @@ enum WebFeature {
   kBluetoothDeviceForget = 4181,
   kTopicsAPI_BrowsingTopics_Method = 4182,
   kBlockingAttributeRenderToken = 4183,
+  kComputePressureObserver_Unobserve = 4184,
+  kComputePressureObserver_Disconnect = 4185,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

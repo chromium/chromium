@@ -33534,7 +33534,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="280" label="HTMLAppletElement"/>
   <int value="281" label="HTMLMediaElementSeekToFragmentStart"/>
   <int value="282" label="HTMLMediaElementPauseAtFragmentEnd"/>
-  <int value="283" label="PrefixedWindowURL"/>
+  <int value="283" label="OBSOLETE_PrefixedWindowURL"/>
   <int value="284" label="PrefixedWorkerURL"/>
   <int value="285" label="WindowOrientation"/>
   <int value="286" label="DOMStringListContains"/>
@@ -34691,7 +34691,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1410" label="RegisterProtocolHandlerInsecureOrigin"/>
   <int value="1411" label="CrossOriginWindowAlert"/>
   <int value="1412" label="CrossOriginWindowConfirm"/>
-  <int value="1413" label="CrossOriginWindowPrompt"/>
+  <int value="1413" label="OBSOLETE_CrossOriginWindowPrompt"/>
   <int value="1414" label="CrossOriginWindowPrint"/>
   <int value="1415" label="MediaStreamOnActive"/>
   <int value="1416" label="MediaStreamOnInactive"/>
@@ -35791,8 +35791,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2473" label="TextToSpeech_SpeakDisallowedByAutoplay"/>
   <int value="2474" label="StaleWhileRevalidateEnabled"/>
   <int value="2475" label="MediaElementSourceOnOfflineContext"/>
-  <int value="2476" label="MediaStreamDestinationOnOfflineContext"/>
-  <int value="2477" label="MediaStreamSourceOnOfflineContext"/>
+  <int value="2476" label="OBSOLETE_MediaStreamDestinationOnOfflineContext"/>
+  <int value="2477" label="OBSOLETE_MediaStreamSourceOnOfflineContext"/>
   <int value="2478" label="RTCDataChannelInitMaxRetransmitTime"/>
   <int value="2479"
       label="RTCPeerConnectionCreateDataChannelMaxPacketLifeTime"/>
@@ -36544,7 +36544,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3166" label="XRSessionRequestHitTestSource"/>
   <int value="3167" label="XRSessionRequestHitTestSourceForTransientInput"/>
   <int value="3168" label="XRDOMOverlay"/>
-  <int value="3169" label="CssStyleSheetReplaceWithImport"/>
+  <int value="3169" label="OBSOLETE_CssStyleSheetReplaceWithImport"/>
   <int value="3170" label="CryptoAlgorithmEd25519"/>
   <int value="3171" label="CryptoAlgorithmX25519"/>
   <int value="3172" label="DisplayNames"/>
@@ -37305,7 +37305,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3898" label="SanitizerAPIGetDefaultConfig"/>
   <int value="3899" label="ComputePressureObserver_Constructor"/>
   <int value="3900" label="ComputePressureObserver_Observe"/>
-  <int value="3901" label="ComputePressureObserver_Stop"/>
+  <int value="3901" label="OBSOLETE_ComputePressureObserver_Stop"/>
   <int value="3902" label="WebAppWindowControlsOverlay"/>
   <int value="3903" label="PaymentRequestShowWithoutGestureOrToken"/>
   <int value="3904" label="V8Navigator_UpdateAdInterestGroups_Method"/>
@@ -37601,6 +37601,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4181" label="BluetoothDeviceForget"/>
   <int value="4182" label="TopicsAPI_BrowsingTopics_Method"/>
   <int value="4183" label="BlockingAttributeRenderToken"/>
+  <int value="4184" label="ComputePressureObserver_Unobserve"/>
+  <int value="4185" label="ComputePressureObserver_Disconnect"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

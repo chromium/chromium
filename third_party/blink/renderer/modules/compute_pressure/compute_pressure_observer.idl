@@ -23,9 +23,13 @@ enum ComputePressureSource {
     CallWith=ScriptState,
     MeasureAs=ComputePressureObserver_Observe,
     RaisesException
-  ] Promise<void> observe();
+  ] Promise<void> observe(ComputePressureSource source);
 
-  [CallWith=ScriptState, MeasureAs=ComputePressureObserver_Stop] void stop();
+  [
+    MeasureAs=ComputePressureObserver_Unobserve
+  ] void unobserve(ComputePressureSource source);
+
+  [MeasureAs=ComputePressureObserver_Disconnect] void disconnect();
 
   [
     SameObject,

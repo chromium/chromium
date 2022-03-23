@@ -30,7 +30,7 @@ promise_test(async t => {
 
   // Calling observe() from a detached iframe should fail but not crash.
   await promise_rejects_dom(t, 'InvalidStateError', iframe_DOMException,
-                            observer.observe());
+                            observer.observe('cpu'));
 }, 'ComputePressureObserver.observe() on detached frame rejects');
 
 promise_test(async t => {
@@ -42,12 +42,12 @@ promise_test(async t => {
       () => {},
       {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
 
-  await observer.observe();
+  await observer.observe('cpu');
 
   iframe.remove();
 
-  // Calling stop() from a detached iframe should not crash.
-  observer.stop();
+  // Calling disconnect() from a detached iframe should not crash.
+  observer.disconnect();
 }, 'ComputePressureObserver.stop() on detached frame returns');
 
 promise_test(async t => {
@@ -62,7 +62,7 @@ promise_test(async t => {
 
   // await is intentionally not used here. We want to remove the iframe while
   // the returned Promise settles.
-  const observe_promise = observer.observe();
+  const observe_promise = observer.observe('cpu');
   iframe.remove();
 
   // Establish an observer and wait for an update in the main frame. This should
@@ -71,8 +71,8 @@ promise_test(async t => {
   const update = await new Promise((resolve, reject) => {
     const observer = new ComputePressureObserver(
         resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
-    t.add_cleanup(() => observer.stop());
-    observer.observe().catch(reject);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe('cpu').catch(reject);
   });
   assert_in_array(update.cpuUtilization, [0.25, 0.75],
                   'cpuUtilization quantization');

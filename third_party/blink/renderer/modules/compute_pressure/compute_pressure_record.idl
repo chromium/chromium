@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/compute-pressure/#dom-computepressurerecord
+[
+    Exposed=Window,
+    SecureContext
+] dictionary ComputePressureRecord {
+   // TODO(crbug.com/1308316): Remove cpuSpeed and cpuUtilization.
+   // when switching to new API.
+   double cpuSpeed;
+   double cpuUtilization;
+};

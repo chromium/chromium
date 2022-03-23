@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_observer_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_observer_update.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_source.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -112,6 +112,8 @@ ComputePressureObserver* ComputePressureObserver::Create(
     V8ComputePressureUpdateCallback* callback,
     ComputePressureObserverOptions* options,
     ExceptionState& exception_state) {
+  // TODO(crbug.com/1306803): Remove this check whenever bucketing is not
+  // anymore in use.
   if (!NormalizeObserverOptions(*options, exception_state)) {
     DCHECK(exception_state.HadException());
     return nullptr;
@@ -128,8 +130,11 @@ Vector<V8ComputePressureSource> ComputePressureObserver::supportedSources() {
       {V8ComputePressureSource(V8ComputePressureSource::Enum::kCpu)});
 }
 
+// TODO(crbug.com/1308303): Remove ScriptPromise to match specs, whenever
+// we redesign the interface with browser.
 ScriptPromise ComputePressureObserver::observe(
     ScriptState* script_state,
+    V8ComputePressureSource source,
     ExceptionState& exception_state) {
   if (!compute_pressure_host_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -161,9 +166,21 @@ ScriptPromise ComputePressureObserver::observe(
   return resolver->Promise();
 }
 
-void ComputePressureObserver::stop(ScriptState* script_state) {
+// TODO(crbug.com/1306819): Unobserve is supposed to only stop observing
+// one source but should continue to observe other sources.
+// For now, since "cpu" is the only source, unobserve() has the same
+// functionality as disconnect().
+void ComputePressureObserver::unobserve(V8ComputePressureSource source) {
+  // TODO(crbug.com/1306819):
+  // 1. observer needs to be dequeued from active observer list of
+  // requested source.
+  // 2. observer records from the source need to be removed from `records_`
+  // 3. receiver_.reset is only necessary when no source is being observed.
   receiver_.reset();
-  return;
+}
+
+void ComputePressureObserver::disconnect() {
+  receiver_.reset();
 }
 
 void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
@@ -177,12 +194,11 @@ void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
 
 void ComputePressureObserver::OnUpdate(
     mojom::blink::ComputePressureStatePtr state) {
-  auto* update = ComputePressureObserverUpdate::Create();
-  update->setCpuUtilization(state->cpu_utilization);
-  update->setCpuSpeed(state->cpu_speed);
-  update->setOptions(normalized_options_);
+  auto* record = ComputePressureRecord::Create();
+  record->setCpuUtilization(state->cpu_utilization);
+  record->setCpuSpeed(state->cpu_speed);
 
-  observer_callback_->InvokeAndReportException(this, update);
+  observer_callback_->InvokeAndReportException(this, record, this);
 }
 
 void ComputePressureObserver::ContextDestroyed() {
