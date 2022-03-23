@@ -13,6 +13,7 @@
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
  public:
@@ -82,7 +83,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ReorderPinnedExtensions) {
   ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
                                  ui::DragDropTypes::DRAG_MOVE);
   extensions_container()->OnDragUpdated(drop_event);
-  extensions_container()->OnPerformDrop(drop_event);
+  auto drop_cb = extensions_container()->GetDropCallback(drop_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(drop_event, output_drag_op);
   WaitForAnimation();
 
   // Verify the new order is C, A, B.

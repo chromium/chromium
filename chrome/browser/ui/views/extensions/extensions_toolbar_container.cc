@@ -699,17 +699,6 @@ void ExtensionsToolbarContainer::OnDragExited() {
   DragDropCleanup(dragged_extension_id);
 }
 
-DragOperation ExtensionsToolbarContainer::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  auto drop_callback = GetDropCallback(event);
-  if (!drop_callback)
-    return DragOperation::kNone;
-
-  DragOperation output_drag_op = DragOperation::kNone;
-  std::move(drop_callback).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
     const ui::DropTargetEvent& event) {
   BrowserActionDragData data;
