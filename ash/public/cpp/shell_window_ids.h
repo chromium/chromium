@@ -216,6 +216,9 @@ enum NonContainerWindowId {
 
   // The window that shows the Desks Templates grid in overview.
   kShellWindowId_DesksTemplatesGridWindow,
+
+  // The window that shows the "No recent items" label in overview.
+  kShellWindowId_OverviewNoWindowsLabelWindow,
 };
 
 // A list of system modal container IDs. The order of the list is important that

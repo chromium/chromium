@@ -1836,6 +1836,7 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
 
     aura::Window* widget_window = no_windows_widget_->GetNativeWindow();
     widget_window->parent()->StackChildAtBottom(widget_window);
+    widget_window->SetId(kShellWindowId_OverviewNoWindowsLabelWindow);
     ScopedOverviewAnimationSettings settings(OVERVIEW_ANIMATION_NO_RECENTS_FADE,
                                              widget_window);
     no_windows_widget_->SetOpacity(1.f);
