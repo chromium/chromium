@@ -22,7 +22,7 @@ GridItems NGGridNode::ConstructGridItems(
   auto* layout_grid = To<LayoutNGGrid>(box_.Get());
   const NGGridPlacementData* cached_placement_data = nullptr;
 
-  if (layout_grid->HasCachedPlacementData()) {
+  if (!layout_grid->IsGridPlacementDirty()) {
     cached_placement_data = &layout_grid->CachedPlacementData();
 
     // Even if the cached placement data is incorrect, as long as the grid is

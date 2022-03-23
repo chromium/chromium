@@ -587,13 +587,13 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   DCHECK_LT(end_range_index, ranges_.size());
 
   NGGridLayoutTrackCollection subgrid_collection(Direction());
-  subgrid_collection.ranges_.ReserveInitialCapacity(end_range_index -
+  subgrid_collection.ranges_.ReserveInitialCapacity(end_range_index + 1 -
                                                     begin_range_index);
 
   const wtf_size_t start_line_offset = ranges_[begin_range_index].start_line;
   const wtf_size_t begin_set_index = ranges_[begin_range_index].begin_set_index;
 
-  for (wtf_size_t i = begin_range_index; i < end_range_index; ++i) {
+  for (wtf_size_t i = begin_range_index; i <= end_range_index; ++i) {
     Range translated_range = ranges_[i];
     translated_range.start_line -= start_line_offset;
     translated_range.begin_set_index -= begin_set_index;

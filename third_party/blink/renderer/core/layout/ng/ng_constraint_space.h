@@ -693,6 +693,14 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
   }
 
+  const NGGridLayoutTrackCollection* SubgriddedColumns() const {
+    return HasRareData() ? rare_data_->SubgriddedColumns() : nullptr;
+  }
+
+  const NGGridLayoutTrackCollection* SubgriddedRows() const {
+    return HasRareData() ? rare_data_->SubgriddedRows() : nullptr;
+  }
+
   // Return true if the two constraint spaces are similar enough that it *may*
   // be possible to skip re-layout. If true is returned, the caller is expected
   // to verify that any constraint space size (available size, percentage size,
@@ -1162,7 +1170,7 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_block_sizes;
     }
 
-    const NGGridLayoutTrackCollection* SubgriddedColumns() {
+    const NGGridLayoutTrackCollection* SubgriddedColumns() const {
       return data_union_type == kSubgridData
                  ? subgrid_data_.layout_data.columns.get()
                  : nullptr;
@@ -1173,7 +1181,7 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureSubgridData()->layout_data.columns = std::move(columns);
     }
 
-    const NGGridLayoutTrackCollection* SubgriddedRows() {
+    const NGGridLayoutTrackCollection* SubgriddedRows() const {
       return data_union_type == kSubgridData
                  ? subgrid_data_.layout_data.rows.get()
                  : nullptr;

@@ -27,7 +27,6 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
-  bool HasCachedPlacementData() const;
   const NGGridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(NGGridPlacementData&& placement_data);
 
@@ -65,10 +64,11 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
-  void RemoveChild(LayoutObject*) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void RemoveChild(LayoutObject* child) override;
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style) override;
 
-  absl::optional<NGGridPlacementData> cached_placement_data_;
+  NGGridPlacementData cached_placement_data_;
 };
 
 // wtf/casting.h helper.

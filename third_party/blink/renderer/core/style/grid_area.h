@@ -148,14 +148,9 @@ struct GridSpan {
   bool IsIndefinite() const { return type_ == kIndefinite; }
 
   void Translate(wtf_size_t offset) {
-    DCHECK_EQ(type_, kUntranslatedDefinite);
-
-    type_ = kTranslatedDefinite;
-    start_line_ += offset;
-    end_line_ += offset;
-
-    DCHECK_GE(start_line_, 0);
-    DCHECK_GT(end_line_, 0);
+    DCHECK_NE(type_, kIndefinite);
+    *this =
+        GridSpan(start_line_ + offset, end_line_ + offset, kTranslatedDefinite);
   }
 
  private:
@@ -163,21 +158,18 @@ struct GridSpan {
 
   template <typename T>
   GridSpan(T start_line, T end_line, GridSpanType type) : type_(type) {
-#if DCHECK_IS_ON()
-    DCHECK_LT(start_line, end_line);
-    if (type == kTranslatedDefinite) {
-      DCHECK_GE(start_line, static_cast<T>(0));
-      DCHECK_GT(end_line, static_cast<T>(0));
-    }
-#endif
-
     const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGEnabled()
                                     ? kGridMaxTracks
                                     : kLegacyGridMaxTracks;
-
     start_line_ =
         ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
     end_line_ = ClampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
+
+#if DCHECK_IS_ON()
+    DCHECK_LT(start_line, end_line);
+    if (type == kTranslatedDefinite)
+      DCHECK_GE(start_line, static_cast<T>(0));
+#endif
   }
 
   int start_line_;

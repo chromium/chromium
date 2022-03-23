@@ -41,11 +41,7 @@ class NGGridLayoutAlgorithmTest
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
-    NGGridPlacementData placement_data(
-        algorithm.Node().IsParentNGGrid(),
-        algorithm.ComputeAutomaticRepetitions(kForColumns),
-        algorithm.ComputeAutomaticRepetitions(kForRows));
-
+    auto placement_data = algorithm.PlacementData();
     items_->grid_items_ = algorithm.Node().ConstructGridItems(&placement_data);
 
     // Build block track collections.

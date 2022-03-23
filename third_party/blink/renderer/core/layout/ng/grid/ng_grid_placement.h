@@ -130,11 +130,11 @@ class CORE_EXPORT NGGridPlacement {
 
   // Place non auto-positioned elements from |grid_items|; returns true if any
   // item needs to resolve an automatic position. Otherwise, false.
-  bool PlaceNonAutoGridItems(const GridItems& grid_items,
-                             Vector<GridArea>* resolved_positions,
-                             PositionVector* positions_locked_to_major_axis,
-                             PositionVector* positions_not_locked_to_major_axis,
-                             PlacedGridItemsList* placed_items);
+  bool PlaceNonAutoGridItems(
+      const GridItems& grid_items,
+      PlacedGridItemsList* placed_items,
+      PositionVector* positions_locked_to_major_axis,
+      PositionVector* positions_not_locked_to_major_axis);
   // Place elements from |grid_items| that have a definite position on the major
   // axis but need auto-placement on the minor axis.
   void PlaceGridItemsLockedToMajorAxis(
@@ -154,26 +154,33 @@ class CORE_EXPORT NGGridPlacement {
   void PlaceGridItemAtCursor(const GridArea& position,
                              PlacedGridItemsList* placed_items,
                              AutoPlacementCursor* placement_cursor) const;
+  // After the auto-placement algorithm is done, if we're placing items within a
+  // subgrid, clamp their resolved positions to the subgrid's explicit grid.
+  void ClampGridItemsToFitSubgridArea(
+      const GridTrackSizingDirection track_direction);
 
-  bool HasSparsePacking() const;
   wtf_size_t AutoRepeatTrackCount(
       const GridTrackSizingDirection track_direction) const;
+  wtf_size_t SubgridSpanSize(
+      const GridTrackSizingDirection track_direction) const;
+
+  bool HasSparsePacking() const;
 
   // Used to resolve positions using |GridPositionsResolver|.
   const ComputedStyle& grid_style_;
 
-  const PackingBehavior packing_behavior_;
-  const GridTrackSizingDirection major_direction_;
-  const GridTrackSizingDirection minor_direction_;
-  const wtf_size_t column_auto_repeat_track_count_;
-  const wtf_size_t row_auto_repeat_track_count_;
-  const wtf_size_t column_auto_repetitions_;
-  const wtf_size_t row_auto_repetitions_;
-  const bool is_parent_grid_container_ : 1;
+  PackingBehavior packing_behavior_;
+  NGGridPlacementData placement_data_;
+  GridTrackSizingDirection major_direction_;
+  GridTrackSizingDirection minor_direction_;
 
+#if DCHECK_IS_ON()
+  bool auto_placement_algorithm_called_ : 1;
+#endif
+
+  wtf_size_t column_auto_repeat_track_count_;
+  wtf_size_t row_auto_repeat_track_count_;
   wtf_size_t minor_max_end_line_;
-  wtf_size_t column_start_offset_;
-  wtf_size_t row_start_offset_;
 };
 
 }  // namespace blink

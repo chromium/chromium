@@ -12,21 +12,16 @@
 namespace blink {
 
 struct CORE_EXPORT NGGridPlacementData {
-  NGGridPlacementData(const bool is_parent_grid_container,
-                      const wtf_size_t column_auto_repetitions,
-                      const wtf_size_t row_auto_repetitions)
-      : is_parent_grid_container(is_parent_grid_container),
-        column_auto_repetitions(column_auto_repetitions),
-        row_auto_repetitions(row_auto_repetitions),
-        column_start_offset(0),
-        row_start_offset(0) {}
+  NGGridPlacementData() = default;
 
-  explicit NGGridPlacementData(Vector<GridArea>&& grid_item_positions)
-      : grid_item_positions(grid_item_positions) {}
+  explicit NGGridPlacementData(bool is_parent_grid_container)
+      : is_parent_grid_container(is_parent_grid_container) {}
 
   bool operator==(const NGGridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
            is_parent_grid_container == other.is_parent_grid_container &&
+           column_subgrid_span_size == other.column_subgrid_span_size &&
+           row_subgrid_span_size == other.row_subgrid_span_size &&
            column_auto_repetitions == other.column_auto_repetitions &&
            row_auto_repetitions == other.row_auto_repetitions &&
            column_start_offset == other.column_start_offset &&
@@ -37,10 +32,12 @@ struct CORE_EXPORT NGGridPlacementData {
 
   bool is_parent_grid_container : 1;
 
-  wtf_size_t column_auto_repetitions;
-  wtf_size_t row_auto_repetitions;
-  wtf_size_t column_start_offset;
-  wtf_size_t row_start_offset;
+  wtf_size_t column_subgrid_span_size{kNotFound};
+  wtf_size_t row_subgrid_span_size{kNotFound};
+  wtf_size_t column_auto_repetitions{0};
+  wtf_size_t row_auto_repetitions{0};
+  wtf_size_t column_start_offset{0};
+  wtf_size_t row_start_offset{0};
 };
 
 // This struct contains the column and row data necessary to layout grid items.

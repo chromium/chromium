@@ -15,7 +15,6 @@ void LayoutNGGrid::UpdateBlockLayout(bool relayout_children) {
     UpdateOutOfFlowBlockLayout();
     return;
   }
-
   UpdateInFlowBlockLayout();
 }
 
@@ -24,7 +23,7 @@ void LayoutNGGrid::AddChild(LayoutObject* new_child,
   NOT_DESTROYED();
   LayoutBlock::AddChild(new_child, before_child);
 
-  // Out-of-flow grid items do not impact grid placement.
+  // Out-of-flow grid items don't impact placement.
   if (!new_child->IsOutOfFlowPositioned())
     SetGridPlacementDirty(true);
 }
@@ -33,7 +32,7 @@ void LayoutNGGrid::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
 
-  // Out-of-flow grid items do not impact grid placement.
+  // Out-of-flow grid items don't impact placement.
   if (!child->IsOutOfFlowPositioned())
     SetGridPlacementDirty(true);
 }
@@ -112,13 +111,9 @@ const LayoutNGGridInterface* LayoutNGGrid::ToLayoutNGGridInterface() const {
   return this;
 }
 
-bool LayoutNGGrid::HasCachedPlacementData() const {
-  return cached_placement_data_ && !IsGridPlacementDirty();
-}
-
 const NGGridPlacementData& LayoutNGGrid::CachedPlacementData() const {
-  DCHECK(HasCachedPlacementData());
-  return *cached_placement_data_;
+  DCHECK(!IsGridPlacementDirty());
+  return cached_placement_data_;
 }
 
 void LayoutNGGrid::SetCachedPlacementData(
@@ -139,7 +134,7 @@ const NGGridLayoutData* LayoutNGGrid::GridLayoutData() const {
 wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (!HasCachedPlacementData())
+  if (IsGridPlacementDirty())
     return 0;
 
   const bool is_for_columns = track_direction == kForColumns;
@@ -149,18 +144,18 @@ wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
           : StyleRef().GridTemplateRows().TrackList().AutoRepeatTrackCount();
 
   return auto_repeat_size *
-         (is_for_columns ? cached_placement_data_->column_auto_repetitions
-                         : cached_placement_data_->row_auto_repetitions);
+         (is_for_columns ? cached_placement_data_.column_auto_repetitions
+                         : cached_placement_data_.row_auto_repetitions);
 }
 
 wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (!HasCachedPlacementData())
+  if (IsGridPlacementDirty())
     return 0;
   return (track_direction == kForColumns)
-             ? cached_placement_data_->column_start_offset
-             : cached_placement_data_->row_start_offset;
+             ? cached_placement_data_.column_start_offset
+             : cached_placement_data_.row_start_offset;
 }
 
 wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(

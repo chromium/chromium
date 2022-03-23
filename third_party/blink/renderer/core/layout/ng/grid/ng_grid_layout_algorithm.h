@@ -83,6 +83,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridItemContributionType contribution_type,
       GridItemData* grid_item) const;
 
+  NGGridPlacementData PlacementData() const;
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 

@@ -40,30 +40,38 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
                             : PackingBehavior::kDense),
+      placement_data_(placement_data),
       // The major direction is the one specified in the 'grid-auto-flow'
       // property (row or column), the minor direction is its opposite.
       major_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForRows
                                                                : kForColumns),
       minor_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForColumns
                                                                : kForRows),
+#if DCHECK_IS_ON()
+      auto_placement_algorithm_called_(false),
+#endif
       column_auto_repeat_track_count_(
           grid_style.GridTemplateColumns().TrackList().AutoRepeatTrackCount() *
           placement_data.column_auto_repetitions),
       row_auto_repeat_track_count_(
           grid_style.GridTemplateRows().TrackList().AutoRepeatTrackCount() *
-          placement_data.row_auto_repetitions),
-      column_auto_repetitions_(placement_data.column_auto_repetitions),
-      row_auto_repetitions_(placement_data.row_auto_repetitions),
-      is_parent_grid_container_(placement_data.is_parent_grid_container),
-      column_start_offset_(placement_data.column_start_offset),
-      row_start_offset_(placement_data.row_start_offset) {}
+          placement_data.row_auto_repetitions) {
+}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
     const GridItems& grid_items) {
-  NGGridPlacementData placement_data(is_parent_grid_container_,
-                                     column_auto_repetitions_,
-                                     row_auto_repetitions_);
+#if DCHECK_IS_ON()
+  DCHECK(!auto_placement_algorithm_called_)
+      << "Auto-placement algorithm should only be called once.";
+  auto_placement_algorithm_called_ = true;
+#endif
+
+  auto FinalizeResolvedPositions = [&]() -> NGGridPlacementData {
+    ClampGridItemsToFitSubgridArea(kForColumns);
+    ClampGridItemsToFitSubgridArea(kForRows);
+    return std::move(placement_data_);
+  };
 
   // Step 1. Position anything that’s not auto-placed; if no items need
   // auto-placement, then we are done.
@@ -71,16 +79,11 @@ NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
   PositionVector positions_locked_to_major_axis;
   PositionVector positions_not_locked_to_major_axis;
 
-  const bool has_auto_placed_grid_item =
-      PlaceNonAutoGridItems(grid_items, &placement_data.grid_item_positions,
-                            &positions_locked_to_major_axis,
-                            &positions_not_locked_to_major_axis, &placed_items);
-
-  placement_data.column_start_offset = column_start_offset_;
-  placement_data.row_start_offset = row_start_offset_;
-
-  if (!has_auto_placed_grid_item)
-    return placement_data;
+  if (!PlaceNonAutoGridItems(grid_items, &placed_items,
+                             &positions_locked_to_major_axis,
+                             &positions_not_locked_to_major_axis)) {
+    return FinalizeResolvedPositions();
+  }
 
   placed_items.AppendCurrentItemsToOrderedList();
 
@@ -114,21 +117,19 @@ NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
       placement_cursor = AutoPlacementCursor(placed_items.FirstPlacedItem());
     }
   }
-  return placement_data;
+  return FinalizeResolvedPositions();
 }
 
 bool NGGridPlacement::PlaceNonAutoGridItems(
     const GridItems& grid_items,
-    Vector<GridArea>* resolved_positions,
+    PlacedGridItemsList* placed_items,
     PositionVector* positions_locked_to_major_axis,
-    PositionVector* positions_not_locked_to_major_axis,
-    PlacedGridItemsList* placed_items) {
-  DCHECK(resolved_positions && positions_locked_to_major_axis &&
-         positions_not_locked_to_major_axis && placed_items &&
-         resolved_positions->IsEmpty());
+    PositionVector* positions_not_locked_to_major_axis) {
+  DCHECK(placed_items && positions_locked_to_major_axis &&
+         positions_not_locked_to_major_axis);
 
-  resolved_positions->ReserveInitialCapacity(grid_items.Size());
-  column_start_offset_ = row_start_offset_ = 0;
+  placement_data_.grid_item_positions.ReserveInitialCapacity(grid_items.Size());
+  placement_data_.column_start_offset = placement_data_.row_start_offset = 0;
 
   for (const auto& grid_item : grid_items.item_data) {
     const auto& item_style = grid_item.node.Style();
@@ -136,12 +137,12 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     GridArea position;
     position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
-        /* is_ng_grid */ true, is_parent_grid_container_);
+        /* is_ng_grid */ true, placement_data_.is_parent_grid_container);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
-        /* is_ng_grid */ true, is_parent_grid_container_);
+        /* is_ng_grid */ true, placement_data_.is_parent_grid_container);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
     // When we have negative indices that go beyond the start of the explicit
@@ -150,31 +151,34 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     // of that minimum is the number of tracks we need to prepend.
     // Simplifying the logic above: maximize the negative value of start lines.
     if (position.columns.IsUntranslatedDefinite()) {
-      column_start_offset_ = std::max<int>(
-          column_start_offset_, -position.columns.UntranslatedStartLine());
+      placement_data_.column_start_offset =
+          std::max<int>(placement_data_.column_start_offset,
+                        -position.columns.UntranslatedStartLine());
     }
+
     if (position.rows.IsUntranslatedDefinite()) {
-      row_start_offset_ = std::max<int>(row_start_offset_,
-                                        -position.rows.UntranslatedStartLine());
+      placement_data_.row_start_offset =
+          std::max<int>(placement_data_.row_start_offset,
+                        -position.rows.UntranslatedStartLine());
     }
-    resolved_positions->emplace_back(position);
+    placement_data_.grid_item_positions.emplace_back(position);
   }
 
   minor_max_end_line_ = (minor_direction_ == kForColumns)
                             ? GridPositionsResolver::ExplicitGridColumnCount(
                                   grid_style_, column_auto_repeat_track_count_,
                                   /* is_ng_grid */ true) +
-                                  column_start_offset_
+                                  placement_data_.column_start_offset
                             : GridPositionsResolver::ExplicitGridRowCount(
                                   grid_style_, row_auto_repeat_track_count_,
                                   /* is_ng_grid */ true) +
-                                  row_start_offset_;
+                                  placement_data_.row_start_offset;
 
   placed_items->needs_to_sort_item_vector = false;
   auto& non_auto_placed_items = placed_items->item_vector;
   non_auto_placed_items.ReserveInitialCapacity(grid_items.Size());
 
-  for (auto& position : *resolved_positions) {
+  for (auto& position : placement_data_.grid_item_positions) {
     GridSpan item_major_span = position.Span(major_direction_);
     GridSpan item_minor_span = position.Span(minor_direction_);
 
@@ -183,15 +187,15 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
 
     if (!has_indefinite_major_span) {
       item_major_span.Translate((major_direction_ == kForColumns)
-                                    ? column_start_offset_
-                                    : row_start_offset_);
+                                    ? placement_data_.column_start_offset
+                                    : placement_data_.row_start_offset);
       position.SetSpan(item_major_span, major_direction_);
     }
 
     if (!has_indefinite_minor_span) {
       item_minor_span.Translate((minor_direction_ == kForColumns)
-                                    ? column_start_offset_
-                                    : row_start_offset_);
+                                    ? placement_data_.column_start_offset
+                                    : placement_data_.row_start_offset);
       position.SetSpan(item_minor_span, minor_direction_);
     }
 
@@ -335,6 +339,39 @@ void NGGridPlacement::PlaceGridItemAtCursor(
   placement_cursor->InsertPlacedItemAtCurrentPosition(new_placed_item);
 }
 
+void NGGridPlacement::ClampGridItemsToFitSubgridArea(
+    const GridTrackSizingDirection track_direction) {
+  const wtf_size_t subgrid_span_size = SubgridSpanSize(track_direction);
+
+  // If no subgrid span size was specified, then we should create implicit grid
+  // lines for placement, so we don't need to clamp the resolved positions.
+  if (subgrid_span_size == kNotFound)
+    return;
+
+  DCHECK_GT(subgrid_span_size, 0u);
+  const int start_offset = StartOffset(track_direction);
+
+  for (auto& resolved_position : placement_data_.grid_item_positions) {
+    int start_line =
+        resolved_position.StartLine(track_direction) - start_offset;
+    int end_line = resolved_position.EndLine(track_direction) - start_offset;
+
+    resolved_position.SetSpan(
+        GridSpan::TranslatedDefiniteGridSpan(
+            ClampTo<int>(start_line, 0, subgrid_span_size - 1),
+            ClampTo<int>(end_line, 1, subgrid_span_size)),
+        track_direction);
+  }
+
+  // At this point, any grid item placed on a implicit grid line before the
+  // subgrid's explicit grid should be clamped to its first line.
+  // As such, the start offset of the explicit grid should be 0.
+  if (track_direction == kForColumns)
+    placement_data_.column_start_offset = 0;
+  else
+    placement_data_.row_start_offset = 0;
+}
+
 wtf_size_t NGGridPlacement::AutoRepeatTrackCount(
     const GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? column_auto_repeat_track_count_
@@ -343,14 +380,22 @@ wtf_size_t NGGridPlacement::AutoRepeatTrackCount(
 
 wtf_size_t NGGridPlacement::AutoRepetitions(
     const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? column_auto_repetitions_
-                                          : row_auto_repetitions_;
+  return (track_direction == kForColumns)
+             ? placement_data_.column_auto_repetitions
+             : placement_data_.row_auto_repetitions;
 }
 
 wtf_size_t NGGridPlacement::StartOffset(
     const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? column_start_offset_
-                                          : row_start_offset_;
+  return (track_direction == kForColumns) ? placement_data_.column_start_offset
+                                          : placement_data_.row_start_offset;
+}
+
+wtf_size_t NGGridPlacement::SubgridSpanSize(
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? placement_data_.column_subgrid_span_size
+             : placement_data_.row_subgrid_span_size;
 }
 
 bool NGGridPlacement::HasSparsePacking() const {
@@ -627,7 +672,7 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
   GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
       grid_style_, out_of_flow_item_style, track_direction,
       AutoRepeatTrackCount(track_direction), /* is_ng_grid */ true,
-      is_parent_grid_container_);
+      placement_data_.is_parent_grid_container);
 
   if (span.IsIndefinite()) {
     *start_line = kNotFound;
