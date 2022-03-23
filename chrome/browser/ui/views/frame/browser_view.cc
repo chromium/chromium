@@ -882,7 +882,7 @@ BrowserView::~BrowserView() {
 }
 
 // static
-const BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
+BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
     content::WebContents* web_contents) {
   // Check first to see if the we can find a top level widget for the
   // `web_contents`. This covers the case of searching for the browser window
