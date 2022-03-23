@@ -199,8 +199,9 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Diagnostics --------------------------------------------------------------
 
-  // Returns the original text of sql statement. Do not keep a pointer to it.
-  const char* GetSQLStatement();
+  // Returns the original text of a SQL statement. Intended for logging in case
+  // of failures.
+  std::string GetSQLStatement();
 
  private:
   friend class Database;

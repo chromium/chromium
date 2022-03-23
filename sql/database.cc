@@ -556,8 +556,8 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
 #endif
 
   if (stmt) {
-    base::StringAppendF(&debug_info, "statement: %s\n",
-                        stmt->GetSQLStatement());
+    std::string sql_string = stmt->GetSQLStatement();
+    base::StringAppendF(&debug_info, "statement: %s\n", sql_string.c_str());
   } else {
     base::StringAppendF(&debug_info, "statement: NULL\n");
   }
@@ -1989,9 +1989,12 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
   // This block is wrapped around a DCHECK_IS_ON() check so we don't waste CPU
   // cycles computing the strings that make up the log message in production.
 #if DCHECK_IS_ON()
-  if (statement)
-    sql_statement = statement->GetSQLStatement();
-  DCHECK(sql_statement);
+  std::string logged_statement;
+  if (statement) {
+    logged_statement = statement->GetSQLStatement();
+  } else {
+    logged_statement = sql_statement;
+  }
 
   std::string database_id = histogram_tag_;
   if (database_id.empty())
@@ -2008,7 +2011,7 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
            << " sqlite_error_code: " << sqlite_error_code
            << " errno: " << GetLastErrno()
            << "\nSQLite error description: " << GetErrorMessage()
-           << "\nSQL statement: " << sql_statement;
+           << "\nSQL statement: " << logged_statement;
 #endif  // DCHECK_IS_ON()
 
   // Inform the error expecter that we've encountered the error.

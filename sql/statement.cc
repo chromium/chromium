@@ -574,9 +574,22 @@ bool Statement::ColumnBlobAsVector(int column_index,
                             reinterpret_cast<std::vector<char>*>(result));
 }
 
-const char* Statement::GetSQLStatement() {
+std::string Statement::GetSQLStatement() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // SQLite promises to keep the returned buffer alive until the statement is
+  // finalized. We immediately copy the buffer contents into a std::string so we
+  // don't need to worry about its lifetime. The performance overhead is
+  // acceptable because this method should only be invoked for logging details
+  // about SQLite errors.
+  //
+  // It may be tempting to consider using sqlite3_expanded_sql() here. We
+  // currently prefer sqlite3_sql() because the returned SQL string matches the
+  // source code (making it easy to search for), and because we don't need to
+  // worry about SQL statements that work with large data, such as BLOBS storing
+  // images.
+  // See https://www.sqlite.org/c3ref/expanded_sql.html for more details on the
+  // difference between sqlite3_sql() and sqlite3_expanded_sql().
   return sqlite3_sql(ref_->stmt());
 }
 
