@@ -3110,24 +3110,29 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsMultiCalls) {
+       ForDebuggingOnlyReportsMultiCallsAllowed) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionLoss may be called at most once."});
+      /*expected_errors=*/{}, GURL("https://loss.url2"),
+      /*expected_debug_win_report_url=*/absl::nullopt);
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionWin may be called at most once."});
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      GURL("https://win.url2"));
 }
 
 }  // namespace

@@ -2769,24 +2769,52 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsMultiCalls) {
+       ForDebuggingOnlyReportsMultiCallsAllowed) {
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1",
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      0,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionLoss may be called at most once."});
+      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/GURL("https://loss.url2"),
+      /*expected_debug_win_report_url=*/absl::nullopt);
+
+  // Test that the first URL is preserved when the second call throws.
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(
+          "1",
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
+             try {
+               forDebuggingOnly.reportAdAuctionLoss("http://invalidloss.url");
+             } catch (e) {})"),
+      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/GURL("https://loss.url"),
+      /*expected_debug_win_report_url=*/absl::nullopt);
 
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1",
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
-      0,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionWin may be called at most once."});
+      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/GURL("https://win.url2"));
+
+  // Test that the first URL is preserved when the second call throws.
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(
+          "1",
+          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
+             try {
+              forDebuggingOnly.reportAdAuctionWin("http://invalidwin.url");
+             } catch (e) {})"),
+      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/GURL("https://win.url"));
 }
 
 // Subsequent runs of the same script should not affect each other.

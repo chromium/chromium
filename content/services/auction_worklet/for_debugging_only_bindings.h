@@ -15,9 +15,9 @@
 namespace auction_worklet {
 
 // Class to manage bindings for setting a debugging report URL. Expected to be
-// used for a short-lived v8::Context. Allows only a single call for a report
-// URL. On any subequent calls, clears the report URL and throws an exception.
-// Also throws on invalid URLs or non-HTTPS URLs.
+// used for a short-lived v8::Context. The URL passed to the last successful
+// call will be used as the reporting URL. Throws on invalid URLs or non-HTTPS
+// URLs.
 class ForDebuggingOnlyBindings {
  public:
   // Add forDebuggingOnly object to `global_template`. The
@@ -44,9 +44,6 @@ class ForDebuggingOnlyBindings {
 
   absl::optional<GURL> loss_report_url_;
   absl::optional<GURL> win_report_url_;
-
-  bool first_loss_report_call_ = true;
-  bool first_win_report_call_ = true;
 };
 
 }  // namespace auction_worklet

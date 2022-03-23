@@ -69,15 +69,6 @@ void ForDebuggingOnlyBindings::ReportAdAuctionLoss(
   ForDebuggingOnlyBindings* bindings = static_cast<ForDebuggingOnlyBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  bindings->loss_report_url_.reset();
-
-  if (!bindings->first_loss_report_call_) {
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "reportAdAuctionLoss may be called at most once")));
-    return;
-  }
-  bindings->first_loss_report_call_ = false;
 
   std::string url_string;
   if (args.Length() < 1 || args[0].IsEmpty() ||
@@ -103,15 +94,6 @@ void ForDebuggingOnlyBindings::ReportAdAuctionWin(
   ForDebuggingOnlyBindings* bindings = static_cast<ForDebuggingOnlyBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  bindings->win_report_url_.reset();
-
-  if (!bindings->first_win_report_call_) {
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "reportAdAuctionWin may be called at most once")));
-    return;
-  }
-  bindings->first_win_report_call_ = false;
 
   std::string url_string;
   if (args.Length() < 1 || args[0].IsEmpty() ||
