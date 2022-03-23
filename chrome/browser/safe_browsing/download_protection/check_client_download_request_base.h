@@ -167,8 +167,8 @@ class CheckClientDownloadRequestBase {
   base::TimeTicks start_time_ = base::TimeTicks::Now();  // Used for stats.
   base::TimeTicks timeout_start_time_;
   base::TimeTicks request_start_time_;
-  bool skipped_url_whitelist_ = false;
-  bool skipped_certificate_whitelist_ = false;
+  bool skipped_url_allowlist_ = false;
+  bool skipped_certificate_allowlist_ = false;
   bool sampled_unsupported_file_ = false;
 
   bool is_extended_reporting_ = false;

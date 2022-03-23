@@ -192,7 +192,7 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
   if (is_allowlisted) {
     DVLOG(2) << source_url_ << " is on the download allowlist.";
     if (ShouldSampleAllowlistedDownload()) {
-      skipped_url_whitelist_ = true;
+      skipped_url_allowlist_ = true;
     } else {
       // TODO(grt): Continue processing without uploading so that
       // ClientDownloadRequest callbacks can be run even for this type of safe
@@ -324,9 +324,9 @@ void CheckClientDownloadRequestBase::SendRequest() {
     return;
   }
 
-  client_download_request_->set_skipped_url_whitelist(skipped_url_whitelist_);
-  client_download_request_->set_skipped_certificate_whitelist(
-      skipped_certificate_whitelist_);
+  client_download_request_->set_skipped_url_allowlist(skipped_url_allowlist_);
+  client_download_request_->set_skipped_certificate_allowlist(
+      skipped_certificate_allowlist_);
 
   if (!client_download_request_->SerializeToString(
           &client_download_request_data_)) {
