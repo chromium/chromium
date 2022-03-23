@@ -23,7 +23,6 @@ class Widget;
 namespace ash {
 
 class CaptureModeSession;
-class ScopedA11yOverrideWindowSetter;
 
 // CaptureModeSessionFocusCycler handles the special focus transitions which
 // happen between the capture session UI items. These include the capture bar
@@ -154,6 +153,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
 
  private:
   friend class CaptureModeSessionTestApi;
+  class ScopedA11yOverrideWindowSetter;
 
   // Removes the focus ring from the current focused item if possible. Does not
   // alter |current_focus_group_| or |focus_index_|.

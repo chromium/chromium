@@ -7,7 +7,6 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
-#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -50,9 +49,7 @@ OverviewHighlightController::TestApi::GetHighlightView() const {
 
 OverviewHighlightController::OverviewHighlightController(
     OverviewSession* overview_session)
-    : overview_session_(overview_session),
-      scoped_a11y_overrider_(
-          std::make_unique<ScopedA11yOverrideWindowSetter>()) {}
+    : overview_session_(overview_session) {}
 
 OverviewHighlightController::~OverviewHighlightController() = default;
 
@@ -287,8 +284,6 @@ void OverviewHighlightController::UpdateHighlight(
   if (!suppress_accessibility_event) {
     // Don't emit if focusing since focusing will emit an accessibility event as
     // well.
-    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-        highlighted_view_->GetView()->GetWidget()->GetNativeWindow());
     highlighted_view_->GetView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kSelection, true);
   }
