@@ -208,7 +208,8 @@ PageLoadTracker::PageLoadTracker(
     const GURL& currently_committed_url,
     bool is_first_navigation_in_web_contents,
     content::NavigationHandle* navigation_handle,
-    UserInitiatedInfo user_initiated_info)
+    UserInitiatedInfo user_initiated_info,
+    ukm::SourceId source_id)
     : did_stop_tracking_(false),
       app_entered_background_(false),
       navigation_start_(navigation_handle->NavigationStart()),
@@ -223,6 +224,7 @@ PageLoadTracker::PageLoadTracker(
       user_initiated_info_(user_initiated_info),
       embedder_interface_(embedder_interface),
       metrics_update_dispatcher_(this, navigation_handle, embedder_interface),
+      source_id_(source_id),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(
           is_first_navigation_in_web_contents) {
@@ -240,8 +242,6 @@ PageLoadTracker::PageLoadTracker(
     INVOKE_AND_PRUNE_OBSERVERS(observers_, OnFencedFramesStart,
                                navigation_handle, currently_committed_url);
   } else {
-    source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                        ukm::SourceIdType::NAVIGATION_ID);
     INVOKE_AND_PRUNE_OBSERVERS(observers_, OnStart, navigation_handle,
                                currently_committed_url, started_in_foreground_);
   }

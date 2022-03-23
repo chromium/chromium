@@ -285,7 +285,9 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       navigation_handle,
       std::make_unique<PageLoadTracker>(
           in_foreground, embedder_interface_.get(), currently_committed_url,
-          !has_navigated_, navigation_handle, user_initiated_info)));
+          !has_navigated_, navigation_handle, user_initiated_info,
+          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                 ukm::SourceIdType::NAVIGATION_ID))));
   DCHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : lifecycle_observers_)
