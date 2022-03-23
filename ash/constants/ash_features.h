@@ -232,7 +232,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobePolymer3;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobeNetworkScreenSkip;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnablePciguardUi;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess;
 COMPONENT_EXPORT(ASH_CONSTANTS)
