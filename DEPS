@@ -523,10 +523,23 @@ deps = {
     'condition': '(host_os == "linux")',
   },
 
+  # We don't know target_cpu at deps time. At least until there's a universal
+  # binary of httpd-php, pull both intel and arm versions in DEPS and then pick
+  # the right one at runtime.
   'src/third_party/apache-mac': {
     'packages': [
       {
-        'package': 'infra/3pp/tools/httpd-php/${{platform}}',
+        'package': 'infra/3pp/tools/httpd-php/mac-amd64',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.2',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "mac")',
+  },
+  'src/third_party/apache-mac-arm64': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/httpd-php/mac-arm64',
         'version': 'version:2@httpd2.4.38.php7.3.31.chromium.2',
       },
     ],

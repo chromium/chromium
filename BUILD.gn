@@ -1192,7 +1192,10 @@ if (!is_ios) {
     }
 
     if (is_mac) {
-      data += [ "//third_party/apache-mac/" ]
+      data += [
+        "//third_party/apache-mac/",
+        "//third_party/apache-mac-arm64/",
+      ]
     }
 
     if (is_android) {
