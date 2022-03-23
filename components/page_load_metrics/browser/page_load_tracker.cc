@@ -235,6 +235,10 @@ PageLoadTracker::PageLoadTracker(
     base::UmaHistogramEnumeration(
         internal::kPageLoadPrerender2Event,
         internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
+  } else if (navigation_handle->GetNavigatingFrameType() ==
+             content::FrameType::kFencedFrameRoot) {
+    INVOKE_AND_PRUNE_OBSERVERS(observers_, OnFencedFramesStart,
+                               navigation_handle, currently_committed_url);
   } else {
     source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                         ukm::SourceIdType::NAVIGATION_ID);

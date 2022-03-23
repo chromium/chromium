@@ -250,6 +250,16 @@ class PageLoadMetricsObserver {
                                 const GURL& currently_committed_url,
                                 bool started_in_foreground);
 
+  // For FencedFrames pages, OnFencedFramesStart is called instead of OnStart.
+  // The default implementation returns STOP_OBSERVING, so that observers that
+  // are not aware of FencedFrames will not mix FencedFrames metrics into the
+  // existing reports. FencedFrames will show different characteristics as it's
+  // content is likely a subframe rather than a main frame.
+  // TODO(crbug.com/1301880): FencedFrames support is still in progress.
+  virtual ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url);
+
   // For prerendered pages, OnPrerenderStart is called instead of OnStart. The
   // default implementation returns STOP_OBSERVING, so that observers that are
   // not aware of prerender will not see prerendered page loads.

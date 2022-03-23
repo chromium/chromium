@@ -90,6 +90,13 @@ PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnStart(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
