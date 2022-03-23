@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+// An identical copy of this proto is maintained in the server code base.
+// http://google3/chrome/chromeos/apps_foundation/app_data.proto
+// This proto is add only. Any changes made here must also be made in the
+// file above.
+message AppData {
+  repeated string app_name = 1;
+}

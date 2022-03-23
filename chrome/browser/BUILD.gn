@@ -4945,6 +4945,8 @@ static_library("browser") {
       "//ash/services/secure_channel/public/mojom",
       "//ash/webui/projector_app",
       "//build:chromeos_buildflags",
+      "//chrome/browser/apps/app_provisioning_service/proto",
+      "//chrome/browser/apps/app_provisioning_service/proto:proto",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/chromeos",
