@@ -232,6 +232,9 @@ class KioskLaunchController
   // Tracks the moment when extensions start to be installed.
   absl::optional<base::Time> extension_start_time_;
 
+  // Tracks the moment when Kiosk launcher is started.
+  base::Time launcher_start_time_;
+
   // Observe the installation status of extensions in Ash. This object is
   // only used when Lacros is disabled.
   base::ScopedObservation<extensions::ForceInstalledTracker,

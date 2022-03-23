@@ -126,6 +126,8 @@ class KioskLaunchControllerTest
 
   void FireSplashScreenTimer() { controller_->OnTimerFire(); }
 
+  void DeleteSplashScreen() { controller_->OnDeletingSplashScreenView(); }
+
   void SetOnline(bool online) {
     view_->SetNetworkReady(online);
     static_cast<AppLaunchSplashScreenView::Delegate*>(controller_.get())
@@ -149,6 +151,7 @@ class KioskLaunchControllerTest
 };
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, RegularFlow) {
+  base::HistogramTester histogram;
   controller()->Start(kiosk_app_id(), false);
   ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
@@ -176,6 +179,21 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, RegularFlow) {
   ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   ExpectViewState(AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
+
+  DeleteSplashScreen();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  switch (GetParam()) {
+    case KioskAppType::kArcApp:
+      histogram.ExpectTotalCount("Kiosk.LaunchDuration.Arc", 1);
+      break;
+    case KioskAppType::kChromeApp:
+      histogram.ExpectTotalCount("Kiosk.LaunchDuration.ChromeApp", 1);
+      break;
+    case KioskAppType::kWebApp:
+      histogram.ExpectTotalCount("Kiosk.LaunchDuration.Web", 1);
+      break;
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, AlreadyInstalled) {

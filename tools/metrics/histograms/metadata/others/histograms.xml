@@ -6374,6 +6374,18 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks kiosk launch errors.</summary>
 </histogram>
 
+<histogram name="Kiosk.LaunchDuration.{KioskType}" units="ms"
+    expires_after="2022-09-20">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>Records the total duration it takes to launch a kiosk app.</summary>
+  <token key="KioskType">
+    <variant name="Arc"/>
+    <variant name="ChromeApp"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
     expires_after="2023-04-24">
   <owner>xiyuan@chromium.org</owner>

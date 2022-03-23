@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -118,6 +119,20 @@ void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
   UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration", time_delta);
 }
 
+void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
+  switch (type) {
+    case KioskAppType::kArcApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Arc", duration);
+      break;
+    case KioskAppType::kChromeApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.ChromeApp", duration);
+      break;
+    case KioskAppType::kWebApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Web", duration);
+      break;
+  }
+}
+
 extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
   extensions::ExtensionSystem* system =
       extensions::ExtensionSystem::Get(profile);
@@ -194,6 +209,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                << static_cast<int>(kiosk_app_id.type) << "...";
   kiosk_app_id_ = kiosk_app_id;
   auto_launch_ = auto_launch;
+  launcher_start_time_ = base::Time::Now();
 
   RecordKioskLaunchUMA(auto_launch);
 
@@ -308,6 +324,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
 void KioskLaunchController::OnDeletingSplashScreenView() {
   splash_screen_view_ = nullptr;
+  RecordKioskLaunchDuration(kiosk_app_id_.type,
+                            base::Time::Now() - launcher_start_time_);
 }
 
 KioskAppManagerBase::App KioskLaunchController::GetAppData() {
