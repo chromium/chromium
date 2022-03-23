@@ -1009,8 +1009,8 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   "1234"))
       .WillOnce(Return(true));
 
   auto auth_response =
@@ -1025,15 +1025,14 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(_, _, _))
+  EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
   // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              GrantSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              GrantSharingPermission(
+                  _, url::Origin::Create(GURL(kIdpTestOrigin)), "1234"))
       .Times(1);
 
   auto auth_response =
@@ -1047,11 +1046,10 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(_, _, _))
+  EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              GrantSharingPermissionForAccount(_, _, _))
+              GrantSharingPermission(_, _, _))
       .Times(0);
 
   auto auth_response =
@@ -1076,8 +1074,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   "1234"))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
@@ -1157,8 +1155,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   // but web contents has not navigated to that URL so origin() is null in
   // tests. We should fix this.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   "1234"))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
@@ -1310,8 +1308,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   "1234"))
       .WillOnce(Return(true));
 
   base::RunLoop ukm_loop;
@@ -1428,8 +1426,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
 
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAccount(
-                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   "1234"))
       .WillOnce(Return(true));
 
   auto auth_response =

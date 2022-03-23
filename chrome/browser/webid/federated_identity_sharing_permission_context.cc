@@ -38,9 +38,9 @@ FederatedIdentitySharingPermissionContext::
 FederatedIdentitySharingPermissionContext::
     ~FederatedIdentitySharingPermissionContext() = default;
 
-bool FederatedIdentitySharingPermissionContext::HasSharingPermissionForAccount(
-    const url::Origin& identity_provider,
+bool FederatedIdentitySharingPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
+    const url::Origin& identity_provider,
     const std::string& account_id) {
   const auto key = GetUniqueKey(relying_party.Serialize());
   auto granted_object = GetGrantedObject(identity_provider, key);
@@ -57,10 +57,10 @@ bool FederatedIdentitySharingPermissionContext::HasSharingPermissionForAccount(
   return false;
 }
 
-void FederatedIdentitySharingPermissionContext::
-    GrantSharingPermissionForAccount(const url::Origin& identity_provider,
-                                     const url::Origin& relying_party,
-                                     const std::string& account_id) {
+void FederatedIdentitySharingPermissionContext::GrantSharingPermission(
+    const url::Origin& relying_party,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
   auto rp_string = relying_party.Serialize();
   const auto key = GetUniqueKey(rp_string);
   auto granted_object = GetGrantedObject(identity_provider, key);
@@ -82,10 +82,10 @@ void FederatedIdentitySharingPermissionContext::
   }
 }
 
-void FederatedIdentitySharingPermissionContext::
-    RevokeSharingPermissionForAccount(const url::Origin& identity_provider,
-                                      const url::Origin& relying_party,
-                                      const std::string& account_id) {
+void FederatedIdentitySharingPermissionContext::RevokeSharingPermission(
+    const url::Origin& relying_party,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
   const auto key = GetUniqueKey(relying_party.Serialize());
   auto granted_object = GetGrantedObject(identity_provider, key);
   auto new_object = granted_object->value.Clone();

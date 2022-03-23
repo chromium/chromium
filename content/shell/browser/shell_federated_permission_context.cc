@@ -33,30 +33,29 @@ void ShellFederatedPermissionContext::RevokeRequestPermission(
       std::make_pair(relying_party.Serialize(), identity_provider.Serialize()));
 }
 
-// FederatedIdentitySharingPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasSharingPermissionForAccount(
-    const url::Origin& identity_provider,
+bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
+    const url::Origin& identity_provider,
     const std::string& account_id) {
   return sharing_permissions_.find(std::tuple(
-             identity_provider.Serialize(), relying_party.Serialize(),
+             relying_party.Serialize(), identity_provider.Serialize(),
              account_id)) != sharing_permissions_.end();
 }
 
-void ShellFederatedPermissionContext::GrantSharingPermissionForAccount(
-    const url::Origin& identity_provider,
+void ShellFederatedPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party,
+    const url::Origin& identity_provider,
     const std::string& account_id) {
   sharing_permissions_.insert(std::tuple(
-      identity_provider.Serialize(), relying_party.Serialize(), account_id));
+      relying_party.Serialize(), identity_provider.Serialize(), account_id));
 }
 
-void ShellFederatedPermissionContext::RevokeSharingPermissionForAccount(
-    const url::Origin& identity_provider,
+void ShellFederatedPermissionContext::RevokeSharingPermission(
     const url::Origin& relying_party,
+    const url::Origin& identity_provider,
     const std::string& account_id) {
-  sharing_permissions_.erase(std::tuple(identity_provider.Serialize(),
-                                        relying_party.Serialize(), account_id));
+  sharing_permissions_.erase(std::tuple(
+      relying_party.Serialize(), identity_provider.Serialize(), account_id));
 }
 
 // FederatedIdentityActiveSessionPermissionContextDelegate

@@ -35,16 +35,15 @@ class ShellFederatedPermissionContext
                                const url::Origin& identity_provider) override;
 
   // FederatedIdentitySharingPermissionContextDelegate
-  bool HasSharingPermissionForAccount(const url::Origin& identity_provider,
-                                      const url::Origin& relying_party,
-                                      const std::string& account_id) override;
-  void GrantSharingPermissionForAccount(const url::Origin& identity_provider,
-                                        const url::Origin& relying_party,
-                                        const std::string& account_id) override;
-  void RevokeSharingPermissionForAccount(
-      const url::Origin& identity_provider,
-      const url::Origin& relying_party,
-      const std::string& account_id) override;
+  bool HasSharingPermission(const url::Origin& relying_party,
+                            const url::Origin& identity_provider,
+                            const std::string& account_id) override;
+  void GrantSharingPermission(const url::Origin& relying_party,
+                              const url::Origin& identity_provider,
+                              const std::string& account_id) override;
+  void RevokeSharingPermission(const url::Origin& relying_party,
+                               const url::Origin& identity_provider,
+                               const std::string& account_id) override;
 
   // FederatedIdentityActiveSessionPermissionContextDelegate
   bool HasActiveSession(const url::Origin& relying_party,
@@ -60,7 +59,7 @@ class ShellFederatedPermissionContext
  private:
   // Pairs of <RP, IDP>
   std::set<std::pair<std::string, std::string>> request_permissions_;
-  // Tuples of <IDP, RP, Account>
+  // Tuples of <RP, IDP, Account>
   std::set<std::tuple<std::string, std::string, std::string>>
       sharing_permissions_;
   // Tuples of <RP, IDP, Account>

@@ -41,13 +41,13 @@ TEST_F(FederatedIdentitySharingPermissionContextTest,
   const auto idp = url::Origin::Create(GURL("https://idp.example"));
   std::string account{"consetogo"};
 
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account));
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account));
 
-  context()->GrantSharingPermissionForAccount(idp, rp, account);
-  EXPECT_TRUE(context()->HasSharingPermissionForAccount(idp, rp, account));
+  context()->GrantSharingPermission(rp, idp, account);
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account));
 
-  context()->RevokeSharingPermissionForAccount(idp, rp, account);
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account));
+  context()->RevokeSharingPermission(rp, idp, account);
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account));
 }
 
 // Ensure the context can handle multiple accounts per RP/IdP origin.
@@ -58,22 +58,22 @@ TEST_F(FederatedIdentitySharingPermissionContextTest,
   std::string account_a{"consetogo"};
   std::string account_b{"woolwich"};
 
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_a));
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_b));
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_a));
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_b));
 
-  context()->GrantSharingPermissionForAccount(idp, rp, account_a);
-  EXPECT_TRUE(context()->HasSharingPermissionForAccount(idp, rp, account_a));
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_b));
+  context()->GrantSharingPermission(rp, idp, account_a);
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account_a));
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_b));
 
-  context()->GrantSharingPermissionForAccount(idp, rp, account_b);
-  EXPECT_TRUE(context()->HasSharingPermissionForAccount(idp, rp, account_a));
-  EXPECT_TRUE(context()->HasSharingPermissionForAccount(idp, rp, account_b));
+  context()->GrantSharingPermission(rp, idp, account_b);
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account_a));
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account_b));
 
-  context()->RevokeSharingPermissionForAccount(idp, rp, account_a);
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_a));
-  EXPECT_TRUE(context()->HasSharingPermissionForAccount(idp, rp, account_b));
+  context()->RevokeSharingPermission(rp, idp, account_a);
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_a));
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account_b));
 
-  context()->RevokeSharingPermissionForAccount(idp, rp, account_b);
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_a));
-  EXPECT_FALSE(context()->HasSharingPermissionForAccount(idp, rp, account_b));
+  context()->RevokeSharingPermission(rp, idp, account_b);
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_a));
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_b));
 }

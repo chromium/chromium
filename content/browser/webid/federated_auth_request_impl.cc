@@ -610,8 +610,8 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
                                                              idp_origin);
     }
     if (GetSharingPermissionContext()) {
-      GetSharingPermissionContext()->RevokeSharingPermissionForAccount(
-          idp_origin, origin_, hint_);
+      GetSharingPermissionContext()->RevokeSharingPermission(origin_,
+                                                             idp_origin, hint_);
     }
     if (GetActiveSessionPermissionContext()) {
       GetActiveSessionPermissionContext()->RevokeActiveSession(
@@ -797,8 +797,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // Consider this a sign-in if we have seen a successful sign-up for
         // this account before.
         if (GetSharingPermissionContext() &&
-            GetSharingPermissionContext()->HasSharingPermissionForAccount(
-                url::Origin::Create(provider_), origin_, account.id)) {
+            GetSharingPermissionContext()->HasSharingPermission(
+                origin_, url::Origin::Create(provider_), account.id)) {
           login_state = LoginState::kSignIn;
         }
         account.login_state = login_state;
@@ -943,8 +943,8 @@ void FederatedAuthRequestImpl::CompleteIdTokenRequest(
         // moot since we don't actually inspect the returned idtoken.
         // https://crbug.com/1199088
         CHECK(!account_id_.empty());
-        GetSharingPermissionContext()->GrantSharingPermissionForAccount(
-            url::Origin::Create(provider_), origin_, account_id_);
+        GetSharingPermissionContext()->GrantSharingPermission(
+            origin_, url::Origin::Create(provider_), account_id_);
       }
 
       if (GetActiveSessionPermissionContext()) {
