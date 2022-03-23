@@ -54,9 +54,10 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
         base::WrapUnique(new ProhibitedTechnologiesHandler());
 
     managed_config_handler_->Init(
-        /*cellular_policy_handler=*/nullptr, helper_.network_state_handler(),
-        network_profile_handler_.get(), network_config_handler_.get(),
-        nullptr /* network_device_handler */,
+        /*cellular_policy_handler=*/nullptr,
+        /*managed_cellular_pref_handler=*/nullptr,
+        helper_.network_state_handler(), network_profile_handler_.get(),
+        network_config_handler_.get(), nullptr /* network_device_handler */,
         prohibited_technologies_handler_.get());
 
     prohibited_technologies_handler_->Init(managed_config_handler_.get(),

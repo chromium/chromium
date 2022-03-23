@@ -21,6 +21,7 @@
 #include "chromeos/network/cellular_esim_installer.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -29,6 +30,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/shill_property_util.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -136,10 +138,16 @@ class CellularPolicyHandlerTest : public testing::Test {
             network_state_handler_.get(), network_profile_handler_.get(),
             network_device_handler_.get(), network_configuration_handler_.get(),
             /*UIProxyConfigService=*/nullptr);
+    managed_cellular_pref_handler_ =
+        std::make_unique<ManagedCellularPrefHandler>();
+    ManagedCellularPrefHandler::RegisterLocalStatePrefs(
+        device_prefs_.registry());
+    managed_cellular_pref_handler_->SetDevicePrefs(&device_prefs_);
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
         network_profile_handler_.get(), network_state_handler_.get(),
+        managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
   }
 
@@ -183,6 +191,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     cellular_inhibitor_.reset();
     network_configuration_handler_.reset();
     managed_network_configuration_handler_.reset();
+    managed_cellular_pref_handler_.reset();
     network_profile_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
@@ -211,6 +220,17 @@ class CellularPolicyHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void CheckIccidSmdpPairInPref(bool is_installed) {
+    const std::string* smdp_address =
+        managed_cellular_pref_handler_->GetSmdpAddressFromIccid(kICCID);
+    if (!is_installed) {
+      EXPECT_FALSE(smdp_address);
+      return;
+    }
+    EXPECT_TRUE(smdp_address);
+    EXPECT_FALSE(smdp_address->empty());
+  }
+
   void FastForwardProfileRefreshDelay() {
     const base::TimeDelta kProfileRefreshCallbackDelay =
         base::Milliseconds(150);
@@ -237,9 +257,11 @@ class CellularPolicyHandlerTest : public testing::Test {
   std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
+  TestingPrefServiceSimple device_prefs_;
 };
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
@@ -257,6 +279,7 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
   CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 
   histogram_tester.ExpectBucketCount(
       kInstallViaPolicyOperationHistogram,
@@ -315,6 +338,7 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
   CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
@@ -340,6 +364,7 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
       /*expected_count=*/1);
   CheckShillConfiguration(/*is_installed=*/false);
+  CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
@@ -359,6 +384,7 @@ TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
   CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
@@ -377,6 +403,7 @@ TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
   CheckShillConfiguration(/*is_installed=*/false);
+  CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
 TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
@@ -397,6 +424,7 @@ TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
   CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfile) {
@@ -414,6 +442,7 @@ TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfile) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
   CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
 }  // namespace chromeos

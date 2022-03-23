@@ -20,6 +20,7 @@
 namespace chromeos {
 
 class CellularPolicyHandler;
+class ManagedCellularPrefHandler;
 class NetworkUIData;
 
 // This class compares (entry point is Run()) |modified_policies| with the
@@ -62,6 +63,7 @@ class PolicyApplicator {
                    base::Value global_network_config,
                    ConfigurationHandler* handler,
                    CellularPolicyHandler* cellular_policy_handler,
+                   ManagedCellularPrefHandler* managed_cellular_pref_handler,
                    std::set<std::string>* modified_policy_guids);
 
   PolicyApplicator(const PolicyApplicator&) = delete;
@@ -147,6 +149,7 @@ class PolicyApplicator {
 
   CellularPolicyHandler* cellular_policy_handler_ = nullptr;
   ConfigurationHandler* handler_;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   NetworkProfile profile_;
   std::map<std::string, base::Value> all_policies_;
   base::Value global_network_config_;

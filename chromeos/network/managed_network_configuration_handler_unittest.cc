@@ -29,6 +29,7 @@
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_policy_handler.h"
 #include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/mock_network_state_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -179,6 +180,12 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         network_state_handler_.get());
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
 
+    managed_cellular_pref_handler_ =
+        std::make_unique<ManagedCellularPrefHandler>();
+    ManagedCellularPrefHandler::RegisterLocalStatePrefs(
+        device_prefs_.registry());
+    managed_cellular_pref_handler_->SetDevicePrefs(&device_prefs_);
+
     // ManagedNetworkConfigurationHandlerImpl's ctor is private.
     managed_network_configuration_handler_.reset(
         new ManagedNetworkConfigurationHandlerImpl());
@@ -192,9 +199,9 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         &user_prefs_, &local_state_, network_state_handler_.get(),
         network_profile_handler_.get());
     managed_network_configuration_handler_->Init(
-        cellular_policy_handler_.get(), network_state_handler_.get(),
-        network_profile_handler_.get(), network_configuration_handler_.get(),
-        network_device_handler_.get(),
+        cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
+        network_state_handler_.get(), network_profile_handler_.get(),
+        network_configuration_handler_.get(), network_device_handler_.get(),
         nullptr /* no ProhibitedTechnologiesHandler */);
     managed_network_configuration_handler_->set_ui_proxy_config_service(
         ui_proxy_config_service_.get());
@@ -202,6 +209,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
         network_profile_handler_.get(), network_state_handler_.get(),
+        managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
 
     base::RunLoop().RunUntilIdle();
@@ -216,6 +224,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     cellular_esim_profile_handler_.reset();
     cellular_connection_handler_.reset();
     cellular_inhibitor_.reset();
+    managed_cellular_pref_handler_.reset();
     network_configuration_handler_.reset();
     ui_proxy_config_service_.reset();
     network_profile_handler_.reset();
@@ -343,6 +352,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
+  std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_network_configuration_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
@@ -355,7 +365,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
+  TestingPrefServiceSimple local_state_, device_prefs_;
 };
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
@@ -396,6 +406,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
   EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
+  const std::string* iccid = properties->FindStringKey(shill::kIccidProperty);
+  ASSERT_TRUE(iccid);
+  EXPECT_TRUE(managed_cellular_pref_handler_->GetSmdpAddressFromIccid(*iccid));
 
   // Verify that applying a new cellular policy with same ICCID should update
   // the old shill configuration.

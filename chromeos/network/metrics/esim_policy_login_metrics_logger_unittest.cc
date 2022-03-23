@@ -63,6 +63,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
     managed_config_handler_.reset(new ManagedNetworkConfigurationHandlerImpl());
     managed_config_handler_->Init(
         /*cellular_policy_handler=*/nullptr,
+        /*managed_cellular_pref_handler=*/nullptr,
         network_state_test_helper_.network_state_handler(),
         network_profile_handler_.get(), network_config_handler_.get(),
         /*network_device_handler=*/nullptr,

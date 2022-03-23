@@ -74,6 +74,7 @@ void ESimTestBase::SetUp() {
       std::make_unique<CellularESimUninstallHandler>();
   cellular_esim_uninstall_handler_->Init(
       cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
+      /*managed_cellular_pref_handler=*/nullptr,
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
 

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
@@ -22,6 +23,7 @@ namespace chromeos {
 
 class CellularESimProfileHandler;
 class CellularInhibitor;
+class ManagedCellularPrefHandler;
 class NetworkState;
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
@@ -56,6 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   void Init(CellularInhibitor* cellular_inhibitor,
             CellularESimProfileHandler* cellular_esim_profile_handler,
+            ManagedCellularPrefHandler* managed_cellular_pref_handler,
             NetworkConfigurationHandler* network_configuration_handler,
             NetworkConnectionHandler* network_connection_handler,
             NetworkStateHandler* network_state_handler);
@@ -171,7 +174,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnDisableProfile(HermesResponseStatus status);
 
   void AttemptUninstallProfile();
-  void OnUninstallProfile(HermesResponseStatus status);
+  void OnUninstallProfile(const base::flat_set<std::string>& removed_iccids,
+                          HermesResponseStatus status);
 
   void AttemptRemoveShillService();
   void OnRemoveServiceSuccess();
@@ -181,6 +185,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   absl::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
   NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
   const NetworkState* GetNextResetServiceToRemove() const;
+  base::flat_set<std::string> GetAllIccidsOnEuicc(
+      const dbus::ObjectPath& euicc_path);
 
   UninstallState state_ = UninstallState::kIdle;
   base::circular_deque<std::unique_ptr<UninstallRequest>> uninstall_requests_;
@@ -189,6 +195,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;

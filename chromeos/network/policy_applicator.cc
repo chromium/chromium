@@ -16,6 +16,7 @@
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/network/cellular_policy_handler.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
@@ -64,12 +65,6 @@ std::string GetGUIDFromONCPart(const base::Value& onc_part) {
   if (!guid_value)
     return std::string();
   return guid_value->GetString();
-}
-
-bool IsCellularPolicy(const base::Value& onc_config) {
-  const std::string* type =
-      onc_config.FindStringKey(::onc::network_config::kType);
-  return type && *type == ::onc::network_type::kCellular;
 }
 
 const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
@@ -127,9 +122,11 @@ PolicyApplicator::PolicyApplicator(
     base::Value global_network_config,
     ConfigurationHandler* handler,
     CellularPolicyHandler* cellular_policy_handler,
+    ManagedCellularPrefHandler* managed_cellular_pref_handler,
     std::set<std::string>* modified_policy_guids)
     : cellular_policy_handler_(cellular_policy_handler),
       handler_(handler),
+      managed_cellular_pref_handler_(managed_cellular_pref_handler),
       profile_(profile),
       all_policies_(std::move(all_policies)),
       global_network_config_(std::move(global_network_config)) {
@@ -251,6 +248,13 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     ApplyNewPolicy(entry_identifier, entry_properties, std::move(ui_data),
                    old_guid, new_guid, *new_policy,
                    std::move(profile_entry_finished_callback));
+
+    const std::string* iccid = policy_util::GetIccidFromONC(*new_policy);
+    const std::string* smdp_address = GetSMDPAddressFromONC(*new_policy);
+    if (was_managed && managed_cellular_pref_handler_ && iccid &&
+        smdp_address) {
+      managed_cellular_pref_handler_->AddIccidSmdpPair(*iccid, *smdp_address);
+    }
     return;
   }
 
@@ -262,6 +266,11 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     // Note: An alternative might be to preserve the user settings, but it's
     // unclear which values originating the policy should be removed.
     DeleteEntry(entry_identifier, std::move(profile_entry_finished_callback));
+
+    const std::string* iccid = policy_util::GetIccidFromONC(onc_part);
+    if (managed_cellular_pref_handler_ && iccid) {
+      managed_cellular_pref_handler_->RemovePairWithIccid(*iccid);
+    }
     return;
   }
 
@@ -437,7 +446,7 @@ void PolicyApplicator::ApplyRemainingPolicies() {
     NET_LOG(EVENT) << "Creating new configuration managed by policy " << guid
                    << " in profile " << profile_.ToDebugString() << ".";
 
-    if (IsCellularPolicy(*network_policy)) {
+    if (policy_util::IsCellularPolicy(*network_policy)) {
       const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
       if (features::IsESimPolicyEnabled() && smdp_address) {
         NET_LOG(EVENT)

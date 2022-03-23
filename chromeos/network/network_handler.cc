@@ -97,9 +97,10 @@ void NetworkHandler::Init() {
   network_configuration_handler_->Init(network_state_handler_.get(),
                                        network_device_handler_.get());
   managed_network_configuration_handler_->Init(
-      cellular_policy_handler_.get(), network_state_handler_.get(),
-      network_profile_handler_.get(), network_configuration_handler_.get(),
-      network_device_handler_.get(), prohibited_technologies_handler_.get());
+      cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
+      network_state_handler_.get(), network_profile_handler_.get(),
+      network_configuration_handler_.get(), network_device_handler_.get(),
+      prohibited_technologies_handler_.get());
   network_connection_handler_->Init(
       network_state_handler_.get(), network_configuration_handler_.get(),
       managed_network_configuration_handler_.get(),
@@ -110,12 +111,14 @@ void NetworkHandler::Init() {
       network_state_handler_.get());
   cellular_esim_uninstall_handler_->Init(
       cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
+      managed_cellular_pref_handler_.get(),
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
   if (features::IsESimPolicyEnabled()) {
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
         network_profile_handler_.get(), network_state_handler_.get(),
+        managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
     esim_policy_login_metrics_logger_->Init(
         network_state_handler_.get(),

@@ -20,11 +20,13 @@
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/fake_stub_cellular_networks_provider.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "components/prefs/testing_pref_service.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -40,6 +42,7 @@ const char kDefaultEid[] = "12345678901234567890123456789012";
 const char kTestCarrierProfilePath[] = "/org/chromium/Hermes/Profile/123";
 const char kTestNetworkServicePath[] = "/service/cellular123";
 const char kTestCellularIccid[] = "100000000000000001";
+const char kTestCellularSmdpAddress[] = "smdp_address1";
 const char kTestProfileName[] = "TestCellularNetwork";
 const char kTestServiceProvider[] = "Test Wireless";
 
@@ -74,11 +77,17 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         std::make_unique<TestCellularESimProfileHandler>();
     cellular_esim_profile_handler_->Init(network_state_handler_.get(),
                                          cellular_inhibitor_.get());
+    managed_cellular_pref_handler_ =
+        std::make_unique<ManagedCellularPrefHandler>();
+    ManagedCellularPrefHandler::RegisterLocalStatePrefs(
+        device_prefs_.registry());
+    managed_cellular_pref_handler_->SetDevicePrefs(&device_prefs_);
 
     cellular_esim_uninstall_handler_ =
         std::make_unique<CellularESimUninstallHandler>();
     cellular_esim_uninstall_handler_->Init(
         cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
+        managed_cellular_pref_handler_.get(),
         network_configuration_handler_.get(), network_connection_handler_.get(),
         network_state_handler_.get());
 
@@ -93,6 +102,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     cellular_esim_uninstall_handler_.reset();
     cellular_esim_profile_handler_.reset();
     cellular_inhibitor_.reset();
+    managed_cellular_pref_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
     network_configuration_handler_.reset();
@@ -118,6 +128,10 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         first_profile_state, hermes::profile::ProfileClass::kOperational,
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);
+    // Setup as a managed profile and has iccid and smdp address pair in pref.
+    managed_cellular_pref_handler_->AddIccidSmdpPair(kTestCellularIccid,
+                                                     kTestCellularSmdpAddress);
+
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestCarrierProfilePath2),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid2,
@@ -180,6 +194,10 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     return !profile_paths.empty();
   }
 
+  const std::string* GetSmdpAddressFromPref(const std::string& iccid) {
+    return managed_cellular_pref_handler_->GetSmdpAddressFromIccid(iccid);
+  }
+
   void AddStub(const std::string& stub_iccid, const std::string& eid) {
     stub_cellular_networks_provider_->AddStub(stub_iccid, eid);
     network_state_handler_->SyncStubCellularNetworks();
@@ -212,12 +230,14 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
+  std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
   std::unique_ptr<FakeStubCellularNetworksProvider>
       stub_cellular_networks_provider_;
+  TestingPrefServiceSimple device_prefs_;
 };
 
 TEST_F(CellularESimUninstallHandlerTest, Success) {
@@ -239,6 +259,7 @@ TEST_F(CellularESimUninstallHandlerTest, Success) {
   EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(status);
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
@@ -262,6 +283,7 @@ TEST_F(CellularESimUninstallHandlerTest, Success_AlreadyDisabled) {
   EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(status);
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
@@ -277,6 +299,7 @@ TEST_F(CellularESimUninstallHandlerTest, DisconnectFailure) {
   run_loop.Run();
   EXPECT_FALSE(status);
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(GetSmdpAddressFromPref(kTestCellularIccid));
 
   ExpectResult(
       CellularESimUninstallHandler::UninstallESimResult::kDisconnectFailed);
@@ -295,6 +318,7 @@ TEST_F(CellularESimUninstallHandlerTest, HermesFailure) {
   run_loop.Run();
   EXPECT_FALSE(status);
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(GetSmdpAddressFromPref(kTestCellularIccid));
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::
                    kRefreshProfilesFailed);
@@ -331,6 +355,8 @@ TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
   EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid2));
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
                /*expected_count=*/2);
@@ -359,6 +385,8 @@ TEST_F(CellularESimUninstallHandlerTest, ResetEuiccMemory) {
   EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid2));
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
                /*expected_count=*/1);

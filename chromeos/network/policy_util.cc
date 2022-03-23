@@ -388,6 +388,24 @@ bool IsPolicyMatching(const base::Value& policy,
   return false;
 }
 
+bool IsCellularPolicy(const base::Value& onc_config) {
+  const std::string* type =
+      onc_config.FindStringKey(::onc::network_config::kType);
+  return type && *type == ::onc::network_type::kCellular;
+}
+
+const std::string* GetIccidFromONC(const base::Value& onc_config) {
+  if (!IsCellularPolicy(onc_config))
+    return nullptr;
+
+  const base::Value* cellular_dict =
+      onc_config.FindDictKey(::onc::network_config::kCellular);
+  if (!cellular_dict || !cellular_dict->is_dict())
+    return nullptr;
+
+  return cellular_dict->FindStringKey(::onc::cellular::kICCID);
+}
+
 }  // namespace policy_util
 
 }  // namespace chromeos

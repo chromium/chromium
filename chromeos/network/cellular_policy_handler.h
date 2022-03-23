@@ -26,6 +26,7 @@ namespace chromeos {
 class CellularESimInstaller;
 class NetworkProfileHandler;
 class NetworkStateHandler;
+class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 enum class HermesResponseStatus;
 
@@ -50,6 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
             CellularESimInstaller* cellular_esim_installer,
             NetworkProfileHandler* network_profile_handler,
             NetworkStateHandler* network_state_handler,
+            ManagedCellularPrefHandler* managed_cellular_pref_handler,
             ManagedNetworkConfigurationHandler*
                 managed_network_configuration_handler);
 
@@ -117,6 +119,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
       nullptr;
 

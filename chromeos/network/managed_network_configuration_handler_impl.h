@@ -26,6 +26,7 @@ class Value;
 namespace chromeos {
 
 class CellularPolicyHandler;
+class ManagedCellularPrefHandler;
 class NetworkConfigurationHandler;
 struct NetworkProfile;
 class NetworkProfileHandler;
@@ -171,6 +172,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // Handlers may be null in tests so long as they do not execute any paths
   // that require the handlers.
   void Init(CellularPolicyHandler* cellular_policy_handler,
+            ManagedCellularPrefHandler* managed_cellular_pref_handler,
             NetworkStateHandler* network_state_handler,
             NetworkProfileHandler* network_profile_handler,
             NetworkConfigurationHandler* network_configuration_handler,
@@ -248,6 +250,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   // Local references to the associated handler instances.
   CellularPolicyHandler* cellular_policy_handler_ = nullptr;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;

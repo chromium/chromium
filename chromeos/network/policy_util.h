@@ -62,6 +62,13 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
 bool IsPolicyMatching(const base::Value& policy,
                       const base::Value& actual_network);
 
+// Returns if the given |onc_config| is Cellular type configuration.
+bool IsCellularPolicy(const base::Value& onc_config);
+
+// Returns the ICCID value from the given |onc_config|, returns nullptr if it
+// is not a Cellular type ONC or no ICCID field is found.
+const std::string* GetIccidFromONC(const base::Value& onc_config);
+
 }  // namespace policy_util
 
 }  // namespace chromeos

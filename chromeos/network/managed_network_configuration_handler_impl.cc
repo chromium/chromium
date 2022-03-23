@@ -619,7 +619,7 @@ bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
   auto policy_applicator = std::make_unique<PolicyApplicator>(
       *profile, CloneGuidToPolicyMap(policies->per_network_config),
       policies->global_network_config.Clone(), this, cellular_policy_handler_,
-      modified_policies);
+      managed_cellular_pref_handler_, modified_policies);
   auto* policy_applicator_unowned = policy_applicator.get();
   policy_applicators_[userhash] = std::move(policy_applicator);
   policy_applicator_unowned->Run();
@@ -944,12 +944,14 @@ ManagedNetworkConfigurationHandlerImpl::
 
 void ManagedNetworkConfigurationHandlerImpl::Init(
     CellularPolicyHandler* cellular_policy_handler,
+    ManagedCellularPrefHandler* managed_cellular_pref_handler,
     NetworkStateHandler* network_state_handler,
     NetworkProfileHandler* network_profile_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkDeviceHandler* network_device_handler,
     ProhibitedTechnologiesHandler* prohibited_technologies_handler) {
   cellular_policy_handler_ = cellular_policy_handler;
+  managed_cellular_pref_handler_ = managed_cellular_pref_handler;
   network_state_handler_ = network_state_handler;
   network_profile_handler_ = network_profile_handler;
   network_configuration_handler_ = network_configuration_handler;

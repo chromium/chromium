@@ -13,6 +13,7 @@
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/hermes_metrics_util.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
@@ -48,11 +49,13 @@ CellularESimUninstallHandler::~CellularESimUninstallHandler() {
 void CellularESimUninstallHandler::Init(
     CellularInhibitor* cellular_inhibitor,
     CellularESimProfileHandler* cellular_esim_profile_handler,
+    ManagedCellularPrefHandler* managed_cellular_pref_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkStateHandler* network_state_handler) {
   cellular_inhibitor_ = cellular_inhibitor;
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
+  managed_cellular_pref_handler_ = managed_cellular_pref_handler;
   network_configuration_handler_ = network_configuration_handler;
   network_connection_handler_ = network_connection_handler;
   network_state_handler_ = network_state_handler;
@@ -304,22 +307,26 @@ void CellularESimUninstallHandler::AttemptUninstallProfile() {
   DCHECK_EQ(state_, UninstallState::kUninstallingProfile);
 
   if (uninstall_requests_.front()->reset_euicc) {
+    base::flat_set<std::string> iccids =
+        GetAllIccidsOnEuicc(*uninstall_requests_.front()->euicc_path);
     HermesEuiccClient::Get()->ResetMemory(
         *uninstall_requests_.front()->euicc_path,
         hermes::euicc::ResetOptions::kDeleteOperationalProfiles,
         base::BindOnce(&CellularESimUninstallHandler::OnUninstallProfile,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), iccids));
     return;
   }
 
+  base::flat_set<std::string> iccids{*uninstall_requests_.front()->iccid};
   HermesEuiccClient::Get()->UninstallProfile(
       *uninstall_requests_.front()->euicc_path,
       *uninstall_requests_.front()->esim_profile_path,
       base::BindOnce(&CellularESimUninstallHandler::OnUninstallProfile,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), iccids));
 }
 
 void CellularESimUninstallHandler::OnUninstallProfile(
+    const base::flat_set<std::string>& removed_iccids,
     HermesResponseStatus status) {
   DCHECK_EQ(state_, UninstallState::kUninstallingProfile);
 
@@ -334,6 +341,10 @@ void CellularESimUninstallHandler::OnUninstallProfile(
     return;
   }
 
+  if (managed_cellular_pref_handler_) {
+    for (const auto& iccid : removed_iccids)
+      managed_cellular_pref_handler_->RemovePairWithIccid(iccid);
+  }
   TransitionToUninstallState(UninstallState::kRemovingShillService);
   AttemptRemoveShillService();
 }
@@ -433,6 +444,21 @@ CellularESimUninstallHandler::GetEnabledCellularESimProfilePath() {
     }
   }
   return absl::nullopt;
+}
+
+base::flat_set<std::string> CellularESimUninstallHandler::GetAllIccidsOnEuicc(
+    const dbus::ObjectPath& euicc_path) {
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(euicc_path);
+  const std::string& eid = euicc_properties->eid().value();
+  base::flat_set<std::string> iccids;
+  for (const auto& esim_profile :
+       cellular_esim_profile_handler_->GetESimProfiles()) {
+    if (esim_profile.eid() == eid) {
+      iccids.emplace(esim_profile.iccid());
+    }
+  }
+  return iccids;
 }
 
 const NetworkState* CellularESimUninstallHandler::GetNextResetServiceToRemove()
