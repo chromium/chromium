@@ -405,7 +405,7 @@ input, textarea, select, button {
     margin: 0__qem;
     font: -webkit-small-control;
     text-rendering: auto; /* FIXME: Remove when tabs work with optimizeLegibility. */
-    color: -internal-light-dark(black, white);
+    color: FieldText;
     letter-spacing: normal;
     word-spacing: normal;
     line-height: normal;
@@ -426,7 +426,7 @@ textarea {
   padding: 2px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  background-color: -internal-light-dark(#ffffff, #3B3B3B);
+  background-color: Field;
   font-family: monospace;
 }
 
@@ -436,7 +436,7 @@ input {
     border: 2px inset -internal-light-dark(#767676, #858585);
     -webkit-rtl-ordering: logical;
     cursor: text;
-    background-color: -internal-light-dark(#ffffff, #3B3B3B);
+    background-color: Field;
 }
 
 input[type="search" i] {
@@ -620,7 +620,7 @@ select:-internal-autofill-selected {
   appearance: menulist-button;
   background-image:none !important;
   background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
-  color: -internal-light-dark(black, white) !important;
+  color: FieldText !important;
 }
 
 input[type="radio" i],
@@ -890,8 +890,8 @@ select {
     align-items: center;
     white-space: pre;
     -webkit-rtl-ordering: logical;
-    color: -internal-light-dark(black, white);
-    background-color: -internal-light-dark(#ffffff, #3B3B3B);
+    color: FieldText;
+    background-color: Field;
     border: 1px solid -internal-light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
@@ -1377,7 +1377,7 @@ dialog {
     border: solid;
     padding: 1em;
     background: -internal-light-dark(white, black);
-    color: -internal-light-dark(black, white);
+    color: FieldText;
 }
 
 dialog:-internal-modal {

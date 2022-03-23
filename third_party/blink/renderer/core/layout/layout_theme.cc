@@ -626,7 +626,7 @@ Color LayoutTheme::DefaultSystemColor(
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
     case CSSValueID::kField:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF3B3B3B
                                                               : 0xFFFFFFFF;
     case CSSValueID::kFieldtext:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
