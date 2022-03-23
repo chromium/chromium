@@ -13,6 +13,7 @@ source_set("window_management") {
   ]
   deps = [
     "//ash",
+    "//chrome/browser/ash/system_extensions:system_extensions_group",
     "//chrome/browser/profiles:profile",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/mojom",
@@ -20,5 +21,18 @@ source_set("window_management") {
     "//ui/aura",
     "//ui/views",
     "//ui/webui",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "cros_window_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":window_management",
+    "//chrome/test:test_support",
   ]
 }
