@@ -6,9 +6,12 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -77,7 +80,8 @@ class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
 
 }  // namespace
 
-class ProcessedLocalAudioSourceTest : public SimTest {
+class ProcessedLocalAudioSourceTest : public SimTest,
+                                      public testing::WithParamInterface<bool> {
  protected:
   ProcessedLocalAudioSourceTest() = default;
 
@@ -125,7 +129,10 @@ class ProcessedLocalAudioSourceTest : public SimTest {
   void CheckOutputFormatMatches(const media::AudioParameters& params) {
     EXPECT_EQ(kSampleRate, params.sample_rate());
     EXPECT_EQ(kChannelLayout, params.channel_layout());
-    EXPECT_EQ(kExpectedOutputBufferSize, params.frames_per_buffer());
+    if (media::IsChromeWideEchoCancellationEnabled())
+      EXPECT_EQ(kExpectedSourceBufferSize, params.frames_per_buffer());
+    else
+      EXPECT_EQ(kExpectedOutputBufferSize, params.frames_per_buffer());
   }
 
   media::AudioCapturerSource::CaptureCallback* capture_source_callback() const {
@@ -154,7 +161,18 @@ class ProcessedLocalAudioSourceTest : public SimTest {
 // shut-down. The unit tests in media_stream_audio_unittest.cc provide more
 // comprehensive testing of the object graph connections and multi-threading
 // concerns.
-TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
+TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (GetParam()) {
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
+  } else {
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
+  }
+#endif
+
   using ThisTest =
       ProcessedLocalAudioSourceTest_VerifyAudioFlowWithoutAudioProcessing_Test;
 
@@ -202,5 +220,13 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
   MediaStreamAudioTrack::From(audio_track())->Stop();
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+INSTANTIATE_TEST_SUITE_P(All, ProcessedLocalAudioSourceTest, testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProcessedLocalAudioSourceTest,
+                         testing::Values(false));
+#endif
 
 }  // namespace blink
