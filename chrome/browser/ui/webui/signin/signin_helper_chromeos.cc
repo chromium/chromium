@@ -37,6 +37,8 @@ SigninHelper::SigninHelper(
     account_manager::AccountManager* account_manager,
     crosapi::AccountManagerMojoService* account_manager_mojo_service,
     const base::RepeatingClosure& close_dialog_closure,
+    const base::RepeatingCallback<void(const std::string&, const std::string&)>&
+        show_signin_blocked_error,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<ArcHelper> arc_helper,
     const std::string& gaia_id,
@@ -47,6 +49,7 @@ SigninHelper::SigninHelper(
       account_manager_mojo_service_(account_manager_mojo_service),
       arc_helper_(std::move(arc_helper)),
       close_dialog_closure_(close_dialog_closure),
+      show_signin_blocked_error_(show_signin_blocked_error),
       account_key_(gaia_id, account_manager::AccountType::kGaia),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
@@ -63,21 +66,10 @@ SigninHelper::SigninHelper(
 SigninHelper::~SigninHelper() = default;
 
 void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
-  // Flow of control after this call:
-  // |AccountManager::UpsertAccount| updates / inserts the account and calls
-  // its |Observer|s, one of which is
-  // |ProfileOAuth2TokenServiceDelegateChromeOS|.
-  // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted| seeds the
-  // Gaia id and email id for this account in |AccountTrackerService| and
-  // invokes |FireRefreshTokenAvailable|. This causes the account to propagate
-  // throughout the Identity Service chain, including in
-  // |AccountFetcherService|. |AccountFetcherService::OnRefreshTokenAvailable|
-  // invokes |AccountTrackerService::StartTrackingAccount|, triggers a fetch
-  // for the account information from Gaia and updates this information into
-  // |AccountTrackerService|. At this point the account will be fully added to
-  // the system.
-  UpsertAccount(result.refresh_token);
+  // TODO(rodmartin): Add implementation with an instance of
+  // UserCloudSigninRestrictionPolicyFetcherChromeOS.
 
+  UpsertAccount(result.refresh_token);
   CloseDialogAndExit();
 }
 
@@ -92,6 +84,19 @@ void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
 }
 
 void SigninHelper::UpsertAccount(const std::string& refresh_token) {
+  // Flow of control after this call:
+  // |AccountManager::UpsertAccount| updates / inserts the account and calls
+  // its |Observer|s, one of which is
+  // |ProfileOAuth2TokenServiceDelegateChromeOS|.
+  // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted| seeds the
+  // Gaia id and email id for this account in |AccountTrackerService| and
+  // invokes |FireRefreshTokenAvailable|. This causes the account to propagate
+  // throughout the Identity Service chain, including in
+  // |AccountFetcherService|. |AccountFetcherService::OnRefreshTokenAvailable|
+  // invokes |AccountTrackerService::StartTrackingAccount|, triggers a fetch
+  // for the account information from Gaia and updates this information into
+  // |AccountTrackerService|. At this point the account will be fully added to
+  // the system.
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
 
   auto new_account = account_manager::Account{account_key_, email_};

@@ -150,7 +150,10 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
                      account_manager_mojo_service,
                      // EduCoexistenceChildSigninHelper will not be closing the
                      // dialog. Therefore, passing a void callback.
-                     base::DoNothing(),
+                     /*close_dialog_closure=*/base::DoNothing(),
+                     // EduCoexistenceChildSigninHelper will not be blocked by
+                     // policy. Therefore, passing a void callback.
+                     /*show_signin_blocked_error=*/base::DoNothing(),
                      url_loader_factory,
                      std::move(arc_helper),
                      gaia_id,
@@ -216,7 +219,11 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
 
 InlineLoginHandlerChromeOS::InlineLoginHandlerChromeOS(
     const base::RepeatingClosure& close_dialog_closure)
-    : close_dialog_closure_(close_dialog_closure) {}
+    : close_dialog_closure_(close_dialog_closure) {
+  show_signin_blocked_error_ = base::BindRepeating(
+      &InlineLoginHandlerChromeOS::ShowSigninBlockedErrorPage,
+      weak_factory_.GetWeakPtr());
+}
 
 InlineLoginHandlerChromeOS::~InlineLoginHandlerChromeOS() = default;
 
@@ -364,10 +371,20 @@ void InlineLoginHandlerChromeOS::CreateSigninHelper(
   // SigninHelper deletes itself after its work is done.
   new SigninHelper(
       account_manager, account_manager_mojo_service, close_dialog_closure_,
-      profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
-      params.email, params.auth_code,
+      show_signin_blocked_error_, profile->GetURLLoaderFactory(),
+      std::move(arc_helper), params.gaia_id, params.email, params.auth_code,
       GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                          params.gaia_id));
+}
+
+void InlineLoginHandlerChromeOS::ShowSigninBlockedErrorPage(
+    const std::string& email,
+    const std::string& hosted_domain) {
+  base::DictionaryValue params;
+  params.SetString("email", email);
+  params.SetString("hostedDomain", hosted_domain);
+
+  FireWebUIListener("show-signin-blocked-by-policy-page", params);
 }
 
 void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(

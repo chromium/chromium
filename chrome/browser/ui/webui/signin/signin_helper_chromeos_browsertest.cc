@@ -42,6 +42,9 @@ class TestSigninHelper : public SigninHelper {
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       const base::RepeatingClosure& close_dialog_closure,
+      const base::RepeatingCallback<void(const std::string&,
+                                         const std::string&)>&
+          show_signin_blocked_by_policy_page,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<ArcHelper> arc_helper,
       const std::string& gaia_id,
@@ -51,6 +54,7 @@ class TestSigninHelper : public SigninHelper {
       : SigninHelper(account_manager,
                      account_manager_mojo_service,
                      close_dialog_closure,
+                     show_signin_blocked_by_policy_page,
                      url_loader_factory,
                      std::move(arc_helper),
                      gaia_id,
@@ -117,7 +121,9 @@ class SigninHelperChromeOSTest
     OnSigninHelperCreated();
     return new TestSigninHelper(
         this, account_manager(), account_manager_mojo_service(),
-        close_dialog_closure, shared_url_loader_factory(),
+        close_dialog_closure,
+        /*show_signin_blocked_by_policy_page=*/base::DoNothing(),
+        shared_url_loader_factory(),
         /*arc_helper=*/nullptr, kFakeGaiaId, kFakeEmail, kFakeAuthCode,
         kFakeDeviceId);
   }
@@ -247,9 +253,10 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
     OnSigninHelperCreated();
     return new TestSigninHelper(
         this, account_manager(), account_manager_mojo_service(),
-        close_dialog_closure, shared_url_loader_factory(),
-        std::move(arc_helper), kFakeGaiaId, kFakeEmail, kFakeAuthCode,
-        kFakeDeviceId);
+        close_dialog_closure,
+        /*show_signin_blocked_by_policy_page=*/base::DoNothing(),
+        shared_url_loader_factory(), std::move(arc_helper), kFakeGaiaId,
+        kFakeEmail, kFakeAuthCode, kFakeDeviceId);
   }
 
   bool IsAccountAvailableInArc(account_manager::Account account) {
@@ -335,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
   auto account = on_token_upserted_account();
   ASSERT_TRUE(account.has_value());
   EXPECT_EQ(account.value().raw_email, kFakeEmail);
-  // 1 account should be available in ARC.
+  // 0 account should be available in ARC.
   EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 0);
   // Note: after we receive one `OnAccountAvailableInArc` call - we may get
   // another call after the refresh token is updated for account.
