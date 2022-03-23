@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -252,21 +251,14 @@ ChromeBlobStorageContext::URLLoaderFactoryForToken(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       blob_url_loader_factory_remote;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<BlobRegistryWrapper> registry,
-             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-             mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
-            storage::BlobURLLoaderFactory::Create(
-                std::move(token), registry->url_registry()->AsWeakPtr(),
-                std::move(receiver));
-          },
-          base::WrapRefCounted(
-              static_cast<StoragePartitionImpl*>(storage_partition)
-                  ->GetBlobRegistry()),
-          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
-          std::move(token)));
+
+  storage::BlobURLLoaderFactory::Create(
+      std::move(token),
+      static_cast<StoragePartitionImpl*>(storage_partition)
+          ->GetBlobUrlRegistry()
+          ->AsWeakPtr(),
+      blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
+
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       std::move(blob_url_loader_factory_remote));
 }
@@ -279,21 +271,13 @@ ChromeBlobStorageContext::URLLoaderFactoryForUrl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       blob_url_loader_factory_remote;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<BlobRegistryWrapper> registry,
-             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-             const GURL& url) {
-            auto blob_remote = registry->url_registry()->GetBlobFromUrl(url);
-            storage::BlobURLLoaderFactory::Create(std::move(blob_remote), url,
-                                                  std::move(receiver));
-          },
-          base::WrapRefCounted(
-              static_cast<StoragePartitionImpl*>(storage_partition)
-                  ->GetBlobRegistry()),
-          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
-          url));
+
+  storage::BlobURLLoaderFactory::Create(
+      static_cast<StoragePartitionImpl*>(storage_partition)
+          ->GetBlobUrlRegistry()
+          ->GetBlobFromUrl(url),
+      url, blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
+
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       std::move(blob_url_loader_factory_remote));
 }

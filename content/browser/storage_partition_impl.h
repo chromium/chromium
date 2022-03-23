@@ -42,6 +42,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -234,6 +235,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   BroadcastChannelService* GetBroadcastChannelService();
   BluetoothAllowedDevicesMap* GetBluetoothAllowedDevicesMap();
   BlobRegistryWrapper* GetBlobRegistry();
+  storage::BlobUrlRegistry* GetBlobUrlRegistry();
   PrefetchURLLoaderService* GetPrefetchURLLoaderService();
   CookieStoreManager* GetCookieStoreManager();
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
@@ -620,6 +622,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<BroadcastChannelService> broadcast_channel_service_;
   std::unique_ptr<BluetoothAllowedDevicesMap> bluetooth_allowed_devices_map_;
   scoped_refptr<BlobRegistryWrapper> blob_registry_;
+  std::unique_ptr<storage::BlobUrlRegistry> blob_url_registry_;
   std::unique_ptr<PrefetchURLLoaderService> prefetch_url_loader_service_;
   std::unique_ptr<CookieStoreManager> cookie_store_manager_;
   scoped_refptr<BucketContext> bucket_context_;

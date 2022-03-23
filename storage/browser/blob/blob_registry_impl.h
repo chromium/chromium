@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
                    base::WeakPtr<BlobUrlRegistry> url_registry,
+                   scoped_refptr<base::TaskRunner> url_registry_runner,
                    scoped_refptr<FileSystemContext> file_system_context);
 
   BlobRegistryImpl(const BlobRegistryImpl&) = delete;
@@ -95,8 +96,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                          std::unique_ptr<BlobDataHandle> result);
 
   base::WeakPtr<BlobStorageContext> context_;
-  base::WeakPtr<BlobUrlRegistry> url_registry_;
   scoped_refptr<FileSystemContext> file_system_context_;
+
+  // `url_registry_` should only be accessed on `url_registry_runner_`.
+  base::WeakPtr<BlobUrlRegistry> url_registry_;
+  scoped_refptr<base::TaskRunner> url_registry_runner_;
 
   mojo::ReceiverSet<blink::mojom::BlobRegistry, std::unique_ptr<Delegate>>
       receivers_;

@@ -87,7 +87,8 @@ class BlobRegistryImplTest : public testing::Test {
                           /*force_in_memory=*/false,
                           std::vector<std::string>()));
     registry_impl_ = std::make_unique<BlobRegistryImpl>(
-        context_->AsWeakPtr(), url_registry_.AsWeakPtr(), file_system_context_);
+        context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
+        base::SequencedTaskRunnerHandle::Get(), file_system_context_);
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
     delegate_ptr_ = delegate.get();
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),
