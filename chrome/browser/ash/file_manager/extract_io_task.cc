@@ -6,6 +6,8 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "components/services/unzip/content/unzip_service.h"
 
@@ -45,20 +47,34 @@ void ExtractIOTask::ZipExtractCallback(bool success) {
   }
 }
 
-base::FilePath ExtractIOTask::CreateDestinationName(
-    const base::FilePath& parent,
-    const base::FilePath& source_file) {
-  const base::FilePath target = source_file.BaseName().RemoveExtension();
-  base::FilePath destination_directory = parent.Append(target);
-  if (base::PathExists(destination_directory)) {
-    // Create a unique name for the output directory.
-    for (int i = 1; base::PathExists(destination_directory) && i < kMaxRetries;
-         ++i) {
-      destination_directory = parent.Append(
-          base::StrCat({target.value(), " (", base::NumberToString(i), ")"}));
-    }
+void ExtractIOTask::ExtractIntoNewDirectory(
+    base::FilePath destination_directory,
+    base::FilePath source_file,
+    bool created_ok) {
+  if (created_ok) {
+    unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
+                 base::BindOnce(&ExtractIOTask::ZipExtractCallback,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }  // TODO(crbug.com/953256) Report directory creation error.
+}
+
+void ExtractIOTask::ExtractArchive(
+    size_t index,
+    base::FileErrorOr<storage::FileSystemURL> destination_result) {
+  DCHECK(index < progress_.sources.size());
+  const base::FilePath source_file = progress_.sources[index].url.path();
+  if (destination_result.is_error()) {
+    ZipExtractCallback(false);
+  } else {
+    const base::FilePath destination_directory =
+        destination_result.value().path();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::CreateDirectory, destination_directory),
+        base::BindOnce(&ExtractIOTask::ExtractIntoNewDirectory,
+                       weak_ptr_factory_.GetWeakPtr(), destination_directory,
+                       source_file));
   }
-  return destination_directory;
 }
 
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
@@ -69,19 +85,15 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
   progress_.state = State::kInProgress;
   progress_callback_.Run(progress_);
-  for (const EntryStatus& source : progress_.sources) {
-    const base::FilePath source_file = source.url.path();
+  for (size_t index = 0; index < progress_.sources.size(); ++index) {
+    const EntryStatus& source = progress_.sources[index];
+    const base::FilePath source_file = source.url.path().BaseName();
     // TODO(crbug.com/953256) Perform this check only once.
     if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
-      const base::FilePath destination_directory =
-          CreateDestinationName(parent_folder_.path(), source_file);
-      // Create the directory to extract into.
-      if (base::CreateDirectory(destination_directory)) {
-        unzip::Unzip(unzip::LaunchUnzipper(), source_file,
-                     destination_directory,
-                     base::BindOnce(&ExtractIOTask::ZipExtractCallback,
-                                    weak_ptr_factory_.GetWeakPtr()));
-      }  // TODO(crbug.com/953256) Report directory creation error.
+      util::GenerateUnusedFilename(
+          parent_folder_, source_file.RemoveExtension(), file_system_context_,
+          base::BindOnce(&ExtractIOTask::ExtractArchive,
+                         weak_ptr_factory_.GetWeakPtr(), index));
     } else {
       progress_.state = State::kError;
       // We won't get a callback so reduce the count and maybe finalise.
