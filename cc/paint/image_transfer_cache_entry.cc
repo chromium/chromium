@@ -409,10 +409,10 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     if (subsampling == SkYUVAInfo::Subsampling::kUnknown)
       return false;
     subsampling_ = subsampling;
-    uint32_t needs_mips;
+    uint32_t needs_mips = 0;
     reader.Read(&needs_mips);
     has_mips_ = needs_mips;
-    SkYUVColorSpace yuv_color_space;
+    SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
     reader.Read(&yuv_color_space);
     yuv_color_space_ = yuv_color_space;
     sk_sp<SkColorSpace> decoded_color_space;
@@ -497,16 +497,16 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       color_type > kLastEnum_SkColorType)
     return false;
 
-  uint32_t width;
+  uint32_t width = 0;
   reader.Read(&width);
-  uint32_t height;
+  uint32_t height = 0;
   reader.Read(&height);
-  uint32_t needs_mips;
+  uint32_t needs_mips = 0;
   reader.Read(&needs_mips);
   has_mips_ = needs_mips;
-  size_t pixel_size;
+  size_t pixel_size = 0;
   reader.ReadSize(&pixel_size);
-  size_t row_bytes;
+  size_t row_bytes = 0;
   reader.ReadSize(&row_bytes);
   sk_sp<SkColorSpace> pixmap_color_space;
   reader.Read(&pixmap_color_space);
