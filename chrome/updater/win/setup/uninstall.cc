@@ -22,7 +22,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
-#include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -38,11 +37,12 @@
 namespace updater {
 namespace {
 
-void DeleteComServer(UpdaterScope scope, HKEY root, bool uninstall_all) {
+void DeleteComServer(UpdaterScope scope, bool uninstall_all) {
   for (const CLSID& clsid : JoinVectors(
            GetSideBySideServers(scope),
            uninstall_all ? GetActiveServers(scope) : std::vector<CLSID>())) {
-    installer::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
+    installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope),
+                                 GetComServerClsidRegistryPath(clsid),
                                  WorkItem::kWow64Default);
   }
 }
@@ -82,13 +82,14 @@ void DeleteComInterfaces(HKEY root, bool uninstall_all) {
   }
 }
 
-void DeleteGoogleUpdateEntries(UpdaterScope scope, HKEY root) {
-  installer::DeleteRegistryKey(root, UPDATER_KEY, KEY_WOW64_32KEY);
+void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
+  installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), UPDATER_KEY,
+                               KEY_WOW64_32KEY);
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
   if (target_path)
-    base::DeleteFile(*target_path);
+    base::DeletePathRecursively(target_path->DirName());
 }
 
 int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
@@ -143,8 +144,6 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
 int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   VLOG(1) << __func__ << ", scope: " << scope;
   DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
-  HKEY key =
-      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
@@ -152,24 +151,13 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
 
   updater::UnregisterWakeTask(scope);
 
-  if (uninstall_all) {
-    std::unique_ptr<WorkItemList> uninstall_list(
-        WorkItem::CreateWorkItemList());
-    uninstall_list->AddDeleteRegKeyWorkItem(key, UPDATER_KEY, KEY_WOW64_32KEY);
-    if (!uninstall_list->Do()) {
-      LOG(ERROR) << "Failed to delete the registry keys.";
-      uninstall_list->Rollback();
-      return kErrorFailedToDeleteRegistryKeys;
-    }
+  if (uninstall_all)
+    DeleteGoogleUpdateFilesAndKeys(scope);
 
-    // TODO(crbug.com/1307528) : Windows Uninstall discrepancies need fixing.
-    DeleteGoogleUpdateEntries(scope, key);
-  }
-
-  DeleteComInterfaces(key, uninstall_all);
+  DeleteComInterfaces(UpdaterScopeToHKeyRoot(scope), uninstall_all);
   if (scope == UpdaterScope::kSystem)
     DeleteComService(uninstall_all);
-  DeleteComServer(scope, key, uninstall_all);
+  DeleteComServer(scope, uninstall_all);
 
   if (scope == UpdaterScope::kUser)
     UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));

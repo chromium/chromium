@@ -736,4 +736,9 @@ bool IsServiceRunning(const std::wstring& service_name) {
          status.dwCurrentState == SERVICE_START_PENDING;
 }
 
+HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope) {
+  return scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
+                                        : HKEY_CURRENT_USER;
+}
+
 }  // namespace updater

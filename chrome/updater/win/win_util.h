@@ -232,6 +232,11 @@ std::wstring BuildExeCommandLine(
 // Returns `true` if the service specified is currently running or starting.
 bool IsServiceRunning(const std::wstring& service_name);
 
+// Returns the HKEY root corresponding to the UpdaterScope:
+// * scope == UpdaterScope::kSystem == HKEY_LOCAL_MACHINE
+// * scope == UpdaterScope::kUser == HKEY_CURRENT_USER
+HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

@@ -199,8 +199,7 @@ void CheckInstallation(UpdaterScope scope,
   const bool is_active_and_sxs = check_installation_versions ==
                                  CheckInstallationVersions::kCheckActiveAndSxS;
 
-  const HKEY root =
-      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   if (is_active_and_sxs) {
     for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
@@ -361,8 +360,7 @@ absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
-  const HKEY root =
-      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
   for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_TRUE(DeleteRegKey(root, key));
   }
@@ -871,14 +869,11 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {
-  HKEY root =
-      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-
   std::wstring uninstall_cmd_line_string;
-  EXPECT_EQ(
-      ERROR_SUCCESS,
-      base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
-          .ReadValue(kRegValueUninstallCmdLine, &uninstall_cmd_line_string));
+  EXPECT_EQ(ERROR_SUCCESS, base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                                             UPDATER_KEY, Wow6432(KEY_READ))
+                               .ReadValue(kRegValueUninstallCmdLine,
+                                          &uninstall_cmd_line_string));
   base::CommandLine command_line =
       base::CommandLine::FromString(uninstall_cmd_line_string);
 
@@ -893,8 +888,7 @@ void RunUninstallCmdLine(UpdaterScope scope) {
 }
 
 void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
-  HKEY root =
-      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   base::win::RegKey key;
   ASSERT_EQ(
@@ -961,8 +955,7 @@ void InstallApp(UpdaterScope scope, const std::string& app_id) {
   base::win::RegKey key;
   ASSERT_EQ(
       key.Create(
-          scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
-                                         : HKEY_CURRENT_USER,
+          UpdaterScopeToHKeyRoot(scope),
           base::StrCat({CLIENTS_KEY, base::SysUTF8ToWide(app_id)}).c_str(),
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
@@ -971,10 +964,9 @@ void InstallApp(UpdaterScope scope, const std::string& app_id) {
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   base::win::RegKey key;
-  ASSERT_EQ(key.Open(scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
-                                                    : HKEY_CURRENT_USER,
-                     CLIENTS_KEY, Wow6432(KEY_WRITE)),
-            ERROR_SUCCESS);
+  ASSERT_EQ(
+      key.Open(UpdaterScopeToHKeyRoot(scope), CLIENTS_KEY, Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
   ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
 }
 

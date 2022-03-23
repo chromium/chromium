@@ -243,7 +243,6 @@ constexpr int kErrorWaitFailedInstall = 6;
 constexpr int kErrorPathServiceFailed = 7;
 constexpr int kErrorComInitializationFailed = 8;
 constexpr int kErrorUnknownCommandLine = 9;
-constexpr int kErrorFailedToDeleteRegistryKeys = 10;
 constexpr int kErrorNoVersionedDirectory = 11;
 constexpr int kErrorNoBaseDirectory = 12;
 constexpr int kErrorPathTooLong = 13;
