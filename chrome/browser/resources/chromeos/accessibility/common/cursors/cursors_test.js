@@ -658,3 +658,28 @@ TEST_F(
         [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'Inline text content'}]
       ]);
     });
+
+TEST_F('AccessibilityExtensionCursorsTest', 'CopiedSelection', function() {
+  const site = `
+    <p>hello</p><p>world</p>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    const [hello, world] = root.findAll({role: RoleType.STATIC_TEXT});
+    assertEquals('hello', hello.name);
+    assertEquals('world', world.name);
+
+    const range = new cursors.Range(
+        cursors.Cursor.fromNode(hello), cursors.Cursor.fromNode(world));
+    range.select();
+
+    // Wait for the selection to change.
+    await new Promise(r => {
+      root.addEventListener(EventType.DOCUMENT_SELECTION_CHANGED, r);
+    });
+
+    assertEquals(hello, root.anchorObject);
+    assertEquals(0, root.anchorOffset);
+    assertEquals(world, root.focusObject);
+    assertEquals(5, root.focusOffset);
+  });
+});

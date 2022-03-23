@@ -238,6 +238,13 @@ cursors.Range = class {
       let endIndex = end.index === cursors.NODE_INDEX ? end.selectionIndex + 1 :
                                                         end.selectionIndex;
 
+      // If the range covers more than one node, ends on the node, and is over
+      // text, then adjust the selection to cover the entire end node.
+      if (start.node !== end.node && end.index === cursors.NODE_INDEX &&
+          AutomationPredicate.text(end.node)) {
+        endIndex = end.getText().length;
+      }
+
       // Richly editables should always set a caret, but not select. This
       // makes it possible to navigate through content editables using
       // ChromeVox keys and not hear selections as you go.
