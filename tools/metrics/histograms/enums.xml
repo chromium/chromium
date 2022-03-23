@@ -54494,7 +54494,6 @@ from previous Chrome versions.
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
   <int value="-202371473" label="enable-optimization-guide-debug-logs"/>
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
-  <int value="-201829551" label="CameraAppDocumentManualCrop:enabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
@@ -57052,7 +57051,6 @@ from previous Chrome versions.
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1580340993" label="EnableTabMuting:enabled"/>
-  <int value="1580606206" label="CameraAppDocumentManualCrop:disabled"/>
   <int value="1581002467" label="enable-explicit-dma-fences"/>
   <int value="1582004845" label="ChromeOSAmbientModeAnimation:enabled"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>

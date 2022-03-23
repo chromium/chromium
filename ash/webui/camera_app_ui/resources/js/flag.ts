@@ -6,5 +6,5 @@
  * Name of the chrome flags.
  */
 export enum Flag {
-  DOCUMENT_MANUAL_CROP = 'cameraAppDocumentManualCrop',
+  PLACEHOLDER_FLAG = '',
 }

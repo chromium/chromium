@@ -19,7 +19,6 @@ import {
 } from '../device/index.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
-import {Flag} from '../flag.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
@@ -632,15 +631,6 @@ export class Camera extends View implements CameraViewUI {
   private async reviewDocument(
       originImage: ImageBlob, refCorners: Point[]|null):
       Promise<{docBlob: Blob, mimeType: MimeType}|null> {
-    const needFirstRecrop = refCorners === null;
-    const allowRecrop = loadTimeData.getChromeFlag(Flag.DOCUMENT_MANUAL_CROP);
-    if (needFirstRecrop && !allowRecrop) {
-      const message = loadTimeData.getI18nMessage(
-          I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
-      nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
-      throw new CanceledError(`Couldn't detect a document`);
-    }
-
     nav.open(ViewName.FLASH);
     const helper = ChromeHelper.getInstance();
     let result = null;
@@ -702,7 +692,7 @@ export class Camera extends View implements CameraViewUI {
         };
 
         await this.cropDocument.setReviewPhoto(originImage.blob);
-        if (needFirstRecrop) {
+        if (refCorners === null) {
           nav.close(ViewName.FLASH);
           await doRecrop();
         } else {
@@ -737,24 +727,20 @@ export class Camera extends View implements CameraViewUI {
           ],
         });
 
-        const negOptions = [
-          new review.Option({text: I18nString.LABEL_RETAKE}, {
-            callback: () => {
-              sendEvent(metrics.DocResultType.CANCELED);
-            },
-            exitValue: null,
-          }),
-        ];
-        if (allowRecrop) {
-          negOptions.unshift(
-              new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
-                callback: doRecrop,
-                hasPopup: true,
-              }));
-        }
         const negative = new review.OptionGroup({
           template: review.ButtonGroupTemplate.NEGATIVE,
-          options: negOptions,
+          options: [
+            new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
+              callback: doRecrop,
+              hasPopup: true,
+            }),
+            new review.Option({text: I18nString.LABEL_RETAKE}, {
+              callback: () => {
+                sendEvent(metrics.DocResultType.CANCELED);
+              },
+              exitValue: null,
+            }),
+          ],
         });
 
         const mimeType = await this.review.startReview(positive, negative);

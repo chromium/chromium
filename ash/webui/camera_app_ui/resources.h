@@ -38,8 +38,6 @@ const struct {
     {"document_mode_dialog_got_it", IDS_DOCUMENT_MODE_DIALOG_GOT_IT},
     {"document_mode_dialog_msg", IDS_DOCUMENT_MODE_DIALOG_MSG},
     {"document_mode_dialog_intro_title", IDS_DOCUMENT_MODE_DIALOG_INTRO_TITLE},
-    {"document_mode_dialog_not_detected_title",
-     IDS_DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE},
     {"error_msg_camera_paused", IDS_ERROR_MSG_CAMERA_PAUSED},
     {"error_msg_empty_recording", IDS_ERROR_MSG_EMPTY_RECORDING},
     {"error_msg_file_system_failed", IDS_ERROR_MSG_FILE_SYSTEM_FAILED},

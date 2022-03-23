@@ -29,8 +29,6 @@ export enum I18nString {
   DOCUMENT_MODE_DIALOG_GOT_IT = 'document_mode_dialog_got_it',
   DOCUMENT_MODE_DIALOG_MSG = 'document_mode_dialog_msg',
   DOCUMENT_MODE_DIALOG_INTRO_TITLE = 'document_mode_dialog_intro_title',
-  DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE =
-      'document_mode_dialog_not_detected_title',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED = 'error_msg_file_system_failed',
