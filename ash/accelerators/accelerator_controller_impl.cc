@@ -296,7 +296,7 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
     window_to_move = window_util::GetActiveWindow();
   }
 
-  if (!window_to_move)
+  if (!window_to_move || !desks_util::BelongsToActiveDesk(window_to_move))
     return;
 
   Desk* target_desk = nullptr;
