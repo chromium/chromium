@@ -10,6 +10,7 @@ import {ChromeVoxEditableTextBase, TextChangeEvent} from '../../common/editable_
 
 import {BrailleBackground} from '../braille_background.js';
 import {Color} from '../color.js';
+import {EditableLine} from './editable_line.js';
 import {IntentHandler} from './intent_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
@@ -336,14 +337,14 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return;
     }
 
-    this.startLine_ = new editing.EditableLine(
+    this.startLine_ = new EditableLine(
         root.selectionStartObject, root.selectionStartOffset,
         root.selectionStartObject, root.selectionStartOffset);
-    this.endLine_ = new editing.EditableLine(
+    this.endLine_ = new EditableLine(
         root.selectionEndObject, root.selectionEndOffset,
         root.selectionEndObject, root.selectionEndOffset);
 
-    this.line_ = new editing.EditableLine(
+    this.line_ = new EditableLine(
         root.selectionStartObject, root.selectionStartOffset,
         root.selectionEndObject, root.selectionEndOffset);
 
@@ -421,10 +422,10 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return;
     }
 
-    const startLine = new editing.EditableLine(
+    const startLine = new EditableLine(
         root.selectionStartObject, root.selectionStartOffset,
         root.selectionStartObject, root.selectionStartOffset);
-    const endLine = new editing.EditableLine(
+    const endLine = new EditableLine(
         root.selectionEndObject, root.selectionEndOffset,
         root.selectionEndObject, root.selectionEndOffset);
 
@@ -442,7 +443,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       // Nothing changed, return.
       return;
     } else {
-      cur = new editing.EditableLine(
+      cur = new EditableLine(
           root.selectionStartObject, root.selectionStartOffset,
           root.selectionEndObject, root.selectionEndOffset, baseLineOnStart);
     }
@@ -456,12 +457,12 @@ const AutomationRichEditableText = class extends AutomationEditableText {
   }
 
   /**
-   * @param {!editing.EditableLine} cur
-   * @param {!editing.EditableLine} prev
-   * @param {!editing.EditableLine} startLine
-   * @param {!editing.EditableLine} endLine
-   * @param {!editing.EditableLine} prevStartLine
-   * @param {!editing.EditableLine} prevEndLine
+   * @param {!EditableLine} cur
+   * @param {!EditableLine} prev
+   * @param {!EditableLine} startLine
+   * @param {!EditableLine} endLine
+   * @param {!EditableLine} prevStartLine
+   * @param {!EditableLine} prevEndLine
    * @param {boolean} baseLineOnStart
    * @param {!Array<AutomationIntent>} intents
    * @private
@@ -906,7 +907,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
   /**
    * @private
-   * @param {editing.EditableLine} cur Current line.
+   * @param {EditableLine} cur Current line.
    */
   updateIntraLineState_(cur) {
     let text = cur.text;
@@ -920,8 +921,8 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
   /**
    * @param {!Array<AutomationIntent>} intents
-   * @param {!editing.EditableLine} cur
-   * @param {!editing.EditableLine} prev
+   * @param {!EditableLine} cur
+   * @param {!EditableLine} prev
    * @return {boolean}
    * @private
    */
@@ -936,7 +937,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
   }
 
   /**
-   * @param {!editing.EditableLine} cur
+   * @param {!EditableLine} cur
    * @private
    */
   speakAllMarkers_(cur) {
@@ -959,7 +960,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
  * table output when over email or url text fields.
  * @implements {ChromeVoxStateObserver}
  */
-editing.EditingChromeVoxStateObserver = class {
+class EditingChromeVoxStateObserver {
   constructor() {
     ChromeVoxState.addObserver(this);
   }
@@ -979,10 +980,10 @@ editing.EditingChromeVoxStateObserver = class {
     BrailleBackground.getInstance().getTranslatorManager().refresh(
         localStorage['brailleTable']);
   }
-};
+}
 
 
 /**
  * @private {ChromeVoxStateObserver}
  */
-editing.observer_ = new editing.EditingChromeVoxStateObserver();
+EditingChromeVoxStateObserver.instance_ = new EditingChromeVoxStateObserver();

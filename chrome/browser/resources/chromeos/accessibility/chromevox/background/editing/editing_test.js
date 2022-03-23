@@ -24,6 +24,8 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
     await importModule(
+        'EditableLine', '/chromevox/background/editing/editable_line.js');
+    await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
     await importModule('TtsBackground', '/chromevox/common/tts_background.js');
     await super.setUpDeferred();
@@ -910,7 +912,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineOneStaticText', function() {
       function(root) {
         const staticText = root.find({role: RoleType.STATIC_TEXT});
 
-        let e = new editing.EditableLine(staticText, 0, staticText, 0);
+        let e = new EditableLine(staticText, 0, staticText, 0);
         assertEquals('this ', e.text);
 
         assertEquals(0, e.startOffset);
@@ -921,7 +923,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineOneStaticText', function() {
         assertEquals(0, e.containerStartOffset);
         assertEquals(4, e.containerEndOffset);
 
-        e = new editing.EditableLine(staticText, 1, staticText, 1);
+        e = new EditableLine(staticText, 1, staticText, 1);
         assertEquals('this ', e.text);
 
         assertEquals(1, e.startOffset);
@@ -932,7 +934,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineOneStaticText', function() {
         assertEquals(0, e.containerStartOffset);
         assertEquals(4, e.containerEndOffset);
 
-        e = new editing.EditableLine(staticText, 5, staticText, 5);
+        e = new EditableLine(staticText, 5, staticText, 5);
         assertEquals('is ', e.text);
 
         assertEquals(0, e.startOffset);
@@ -943,7 +945,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineOneStaticText', function() {
         assertEquals(0, e.containerStartOffset);
         assertEquals(2, e.containerEndOffset);
 
-        e = new editing.EditableLine(staticText, 7, staticText, 7);
+        e = new EditableLine(staticText, 7, staticText, 7);
         assertEquals('is ', e.text);
 
         assertEquals(2, e.startOffset);
@@ -965,7 +967,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineTwoStaticTexts', function() {
         const text = root.find({role: RoleType.STATIC_TEXT});
         const bold = text.nextSibling;
 
-        let e = new editing.EditableLine(text, 0, text, 0);
+        let e = new EditableLine(text, 0, text, 0);
         assertEquals('hello world', e.text);
 
         assertEquals(0, e.startOffset);
@@ -976,7 +978,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineTwoStaticTexts', function() {
         assertEquals(0, e.containerStartOffset);
         assertEquals(5, e.containerEndOffset);
 
-        e = new editing.EditableLine(text, 5, text, 5);
+        e = new EditableLine(text, 5, text, 5);
         assertEquals('hello world', e.text);
 
         assertEquals(5, e.startOffset);
@@ -987,7 +989,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineTwoStaticTexts', function() {
         assertEquals(0, e.containerStartOffset);
         assertEquals(5, e.containerEndOffset);
 
-        e = new editing.EditableLine(bold, 0, bold, 0);
+        e = new EditableLine(bold, 0, bold, 0);
         assertEquals('hello world', e.text);
 
         assertEquals(6, e.startOffset);
@@ -998,7 +1000,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineTwoStaticTexts', function() {
         assertEquals(6, e.containerStartOffset);
         assertEquals(10, e.containerEndOffset);
 
-        e = new editing.EditableLine(bold, 4, bold, 4);
+        e = new EditableLine(bold, 4, bold, 4);
         assertEquals('hello world', e.text);
 
         assertEquals(10, e.startOffset);
@@ -1026,20 +1028,20 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineEquality', function() {
         const world = root.findAll({role: RoleType.PARAGRAPH})[1].lastChild;
 
         // The same position -- sanity check.
-        let e1 = new editing.EditableLine(thisIsATest, 0, thisIsATest, 0);
+        let e1 = new EditableLine(thisIsATest, 0, thisIsATest, 0);
         assertEquals('this ', e1.text);
         assertTrue(e1.isSameLine(e1));
 
         // Offset into the same soft line.
-        let e2 = new editing.EditableLine(thisIsATest, 1, thisIsATest, 1);
+        let e2 = new EditableLine(thisIsATest, 1, thisIsATest, 1);
         assertTrue(e1.isSameLine(e2));
 
         // Boundary.
-        e2 = new editing.EditableLine(thisIsATest, 4, thisIsATest, 4);
+        e2 = new EditableLine(thisIsATest, 4, thisIsATest, 4);
         assertTrue(e1.isSameLine(e2));
 
         // Offsets into different soft lines.
-        e2 = new editing.EditableLine(thisIsATest, 5, thisIsATest, 5);
+        e2 = new EditableLine(thisIsATest, 5, thisIsATest, 5);
         assertEquals('is ', e2.text);
         assertFalse(e1.isSameLine(e2));
 
@@ -1047,46 +1049,46 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineEquality', function() {
         assertTrue(e2.isSameLine(e2));
 
         // Different offsets into second soft line.
-        e1 = new editing.EditableLine(thisIsATest, 6, thisIsATest, 6);
+        e1 = new EditableLine(thisIsATest, 6, thisIsATest, 6);
         assertTrue(e1.isSameLine(e2));
 
         // Boundary.
-        e1 = new editing.EditableLine(thisIsATest, 7, thisIsATest, 7);
+        e1 = new EditableLine(thisIsATest, 7, thisIsATest, 7);
         assertTrue(e1.isSameLine(e2));
 
         // Third line.
-        e1 = new editing.EditableLine(thisIsATest, 8, thisIsATest, 8);
+        e1 = new EditableLine(thisIsATest, 8, thisIsATest, 8);
         assertEquals('a ', e1.text);
         assertFalse(e1.isSameLine(e2));
 
         // Last line.
-        e2 = new editing.EditableLine(thisIsATest, 10, thisIsATest, 10);
+        e2 = new EditableLine(thisIsATest, 10, thisIsATest, 10);
         assertEquals('test', e2.text);
         assertFalse(e1.isSameLine(e2));
 
         // Boundary.
-        e1 = new editing.EditableLine(thisIsATest, 13, thisIsATest, 13);
+        e1 = new EditableLine(thisIsATest, 13, thisIsATest, 13);
         assertTrue(e1.isSameLine(e2));
 
         // Cross into new paragraph.
-        e2 = new editing.EditableLine(hello, 0, hello, 0);
+        e2 = new EditableLine(hello, 0, hello, 0);
         assertEquals('hello world', e2.text);
         assertFalse(e1.isSameLine(e2));
 
         // On same node, with multi-static text line.
-        e1 = new editing.EditableLine(hello, 1, hello, 1);
+        e1 = new EditableLine(hello, 1, hello, 1);
         assertTrue(e1.isSameLine(e2));
 
         // On same node, with multi-static text line; boundary.
-        e1 = new editing.EditableLine(hello, 5, hello, 5);
+        e1 = new EditableLine(hello, 5, hello, 5);
         assertTrue(e1.isSameLine(e2));
 
         // On different node, with multi-static text line.
-        e1 = new editing.EditableLine(world, 1, world, 1);
+        e1 = new EditableLine(world, 1, world, 1);
         assertTrue(e1.isSameLine(e2));
 
         // Another mix of lines.
-        e2 = new editing.EditableLine(thisIsATest, 9, thisIsATest, 9);
+        e2 = new EditableLine(thisIsATest, 9, thisIsATest, 9);
         assertFalse(e1.isSameLine(e2));
       });
 });
@@ -1106,20 +1108,20 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineStrictEquality', function() {
         const world = root.findAll({role: RoleType.PARAGRAPH})[1].lastChild;
 
         // The same position -- sanity check.
-        let e1 = new editing.EditableLine(thisIsATest, 0, thisIsATest, 0);
+        let e1 = new EditableLine(thisIsATest, 0, thisIsATest, 0);
         assertEquals('this ', e1.text);
         assertTrue(e1.isSameLineAndSelection(e1));
 
         // Offset into the same soft line.
-        let e2 = new editing.EditableLine(thisIsATest, 1, thisIsATest, 1);
+        let e2 = new EditableLine(thisIsATest, 1, thisIsATest, 1);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // Boundary.
-        e2 = new editing.EditableLine(thisIsATest, 4, thisIsATest, 4);
+        e2 = new EditableLine(thisIsATest, 4, thisIsATest, 4);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // Offsets into different soft lines.
-        e2 = new editing.EditableLine(thisIsATest, 5, thisIsATest, 5);
+        e2 = new EditableLine(thisIsATest, 5, thisIsATest, 5);
         assertEquals('is ', e2.text);
         assertFalse(e1.isSameLineAndSelection(e2));
 
@@ -1127,24 +1129,24 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineStrictEquality', function() {
         assertTrue(e2.isSameLineAndSelection(e2));
 
         // Different offsets into second soft line.
-        e1 = new editing.EditableLine(thisIsATest, 6, thisIsATest, 6);
+        e1 = new EditableLine(thisIsATest, 6, thisIsATest, 6);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // Boundary.
-        e1 = new editing.EditableLine(thisIsATest, 7, thisIsATest, 7);
+        e1 = new EditableLine(thisIsATest, 7, thisIsATest, 7);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // Cross into new paragraph.
-        e2 = new editing.EditableLine(hello, 0, hello, 0);
+        e2 = new EditableLine(hello, 0, hello, 0);
         assertEquals('hello world', e2.text);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // On same node, with multi-static text line.
-        e1 = new editing.EditableLine(hello, 1, hello, 1);
+        e1 = new EditableLine(hello, 1, hello, 1);
         assertFalse(e1.isSameLineAndSelection(e2));
 
         // On same node, with multi-static text line; boundary.
-        e1 = new editing.EditableLine(hello, 5, hello, 5);
+        e1 = new EditableLine(hello, 5, hello, 5);
         assertFalse(e1.isSameLineAndSelection(e2));
       });
 });
@@ -1164,11 +1166,11 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
         const world = root.findAll({role: RoleType.PARAGRAPH})[1].lastChild;
 
         // The same position -- sanity check.
-        let e1 = new editing.EditableLine(thisIsATest, 0, thisIsATest, 0, true);
+        let e1 = new EditableLine(thisIsATest, 0, thisIsATest, 0, true);
         assertEquals('this ', e1.text);
 
         // Offsets into different soft lines; base on focus (default).
-        e1 = new editing.EditableLine(thisIsATest, 0, thisIsATest, 6);
+        e1 = new EditableLine(thisIsATest, 0, thisIsATest, 6);
         assertEquals('is ', e1.text);
         // Notice that the offset is truncated at the beginning of the line.
         assertEquals(0, e1.startOffset);
@@ -1176,7 +1178,7 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
         assertEquals(1, e1.endOffset);
 
         // Offsets into different soft lines; base on anchor.
-        e1 = new editing.EditableLine(thisIsATest, 0, thisIsATest, 6, true);
+        e1 = new EditableLine(thisIsATest, 0, thisIsATest, 6, true);
         assertEquals('this ', e1.text);
         assertEquals(0, e1.startOffset);
         // Notice            that the end offset is truncated up to the end of
@@ -1184,13 +1186,13 @@ TEST_F('ChromeVoxEditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
         assertEquals(5, e1.endOffset);
 
         // Across paragraph selection with base line on focus.
-        e1 = new editing.EditableLine(thisIsATest, 5, hello, 2);
+        e1 = new EditableLine(thisIsATest, 5, hello, 2);
         assertEquals('hello world', e1.text);
         assertEquals(0, e1.startOffset);
         assertEquals(2, e1.endOffset);
 
         // Across paragraph selection with base line on anchor.
-        e1 = new editing.EditableLine(thisIsATest, 5, hello, 2, true);
+        e1 = new EditableLine(thisIsATest, 5, hello, 2, true);
         assertEquals('is ', e1.text);
         assertEquals(0, e1.startOffset);
         assertEquals(3, e1.endOffset);
@@ -1211,7 +1213,7 @@ TEST_F('ChromeVoxEditingTest', 'IsValidLine', function() {
 
         // The EditableLine object automatically adjusts to surround the line no
         // matter what the input is.
-        const line = new editing.EditableLine(text, 0, text, 0);
+        const line = new EditableLine(text, 0, text, 0);
         assertTrue(line.isValidLine());
 
         // During the course of editing operations, this line may become

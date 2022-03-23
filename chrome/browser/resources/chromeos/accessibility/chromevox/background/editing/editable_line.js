@@ -9,22 +9,17 @@
  * of a line get saved.
  */
 
-goog.provide('editing.EditableLine');
-
-goog.scope(function() {
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
-const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const FormType = LibLouis.FormType;
-const Range = cursors.Range;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 const Movement = cursors.Movement;
 const Unit = cursors.Unit;
 
-editing.EditableLine = class {
+export class EditableLine {
   /**
    * @param {!AutomationNode} startNode
    * @param {number} startIndex
@@ -35,11 +30,11 @@ editing.EditableLine = class {
    * automatically truncated up to either the line start or end.
    */
   constructor(startNode, startIndex, endNode, endIndex, opt_baseLineOnStart) {
-    /** @private {!Cursor} */
-    this.start_ = new Cursor(startNode, startIndex);
+    /** @private {!cursors.Cursor} */
+    this.start_ = new cursors.Cursor(startNode, startIndex);
     this.start_ = this.start_.deepEquivalent || this.start_;
-    /** @private {!Cursor} */
-    this.end_ = new Cursor(endNode, endIndex);
+    /** @private {!cursors.Cursor} */
+    this.end_ = new cursors.Cursor(endNode, endIndex);
     this.end_ = this.end_.deepEquivalent || this.end_;
 
     /** @private {AutomationNode|undefined} */
@@ -511,7 +506,7 @@ editing.EditableLine = class {
   /**
    * Returns true if |otherLine| surrounds the same line as |this|. Note that
    * the contents of the line might be different.
-   * @param {editing.EditableLine} otherLine
+   * @param {EditableLine} otherLine
    * @return {boolean}
    */
   isSameLine(otherLine) {
@@ -533,7 +528,7 @@ editing.EditableLine = class {
   /**
    * Returns true if |otherLine| surrounds the same line as |this| and has the
    * same selection.
-   * @param {editing.EditableLine} otherLine
+   * @param {EditableLine} otherLine
    * @return {boolean}
    */
   isSameLineAndSelection(otherLine) {
@@ -544,7 +539,7 @@ editing.EditableLine = class {
 
   /**
    * Returns whether this line comes before |otherLine| in document order.
-   * @param {!editing.EditableLine} otherLine
+   * @param {!EditableLine} otherLine
    * @return {boolean}
    */
   isBeforeLine(otherLine) {
@@ -623,7 +618,7 @@ editing.EditableLine = class {
 
   /**
    * Speaks the line using text to speech.
-   * @param {editing.EditableLine} prevLine
+   * @param {EditableLine} prevLine
    */
   speakLine(prevLine) {
     // Detect when the entire line is just a breaking space. This occurs on
@@ -657,8 +652,8 @@ editing.EditableLine = class {
       }
 
       o.withRichSpeech(
-           Range.fromNode(cur),
-           prev ? Range.fromNode(prev) : Range.fromNode(cur),
+           cursors.Range.fromNode(cur),
+           prev ? cursors.Range.fromNode(prev) : cursors.Range.fromNode(cur),
            OutputEventType.NAVIGATE)
           .onSpeechEnd(() => {
             speakNodeAtIndex(++index, cur);
@@ -679,7 +674,7 @@ editing.EditableLine = class {
   /**
    * Creates a range around the character to the right of the line's starting
    * position.
-   * @return {!Range}
+   * @return {!cursors.Range}
    */
   createCharRange() {
     const start = this.start_;
@@ -693,12 +688,12 @@ editing.EditableLine = class {
         start.equals(end)) {
       end = new cursors.Cursor(start.node, start.index + 1);
     }
-    return new Range(start, end);
+    return new cursors.Range(start, end);
   }
 
   /**
    * @param {boolean} shouldMoveToPreviousWord
-   * @return {!Range}
+   * @return {!cursors.Range}
    */
   createWordRange(shouldMoveToPreviousWord) {
     const pos = this.start_;
@@ -711,7 +706,6 @@ editing.EditableLine = class {
         shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
         Dir.BACKWARD);
     const end = start.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
-    return new Range(start, end);
+    return new cursors.Range(start, end);
   }
-};
-});  // goog.scope
+}

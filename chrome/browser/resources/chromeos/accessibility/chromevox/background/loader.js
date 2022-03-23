@@ -56,4 +56,3 @@ goog.require('TtsInterface');
 goog.require('constants');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');
-goog.require('editing.EditableLine');

@@ -6,6 +6,7 @@
  * @fileoverview Handles automation intents for speech feedback.
  * Braille is *not* handled in this module.
  */
+import {EditableLine} from './editable_line.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
 const Cursor = cursors.Cursor;
@@ -24,8 +25,8 @@ export class IntentHandler {
   /**
    * Called when intents are received from an AutomationEvent.
    * @param {!Array<AutomationIntent>} intents
-   * @param {!editing.EditableLine} cur The current line.
-   * @param {editing.EditableLine} prev The previous line.
+   * @param {!EditableLine} cur The current line.
+   * @param {EditableLine} prev The previous line.
    * @return {boolean} Whether intents are handled.
    */
   static onIntents(intents, cur, prev) {
@@ -46,8 +47,8 @@ export class IntentHandler {
   /**
    * Called when an intent is received.
    * @param {!AutomationIntent} intent
-   * @param {!editing.EditableLine} cur The current line.
-   * @param {editing.EditableLine} prev The previous line.
+   * @param {!EditableLine} cur The current line.
+   * @param {EditableLine} prev The previous line.
    * @return {boolean} Whether the intent was handled.
    */
   static onIntent(intent, cur, prev) {
@@ -75,8 +76,8 @@ export class IntentHandler {
    * Called when the text selection moves.
    * @param {!AutomationIntent} intent A move selection
    *     intent.
-   * @param {!editing.EditableLine} cur The current line.
-   * @param {editing.EditableLine} prev The previous line.
+   * @param {!EditableLine} cur The current line.
+   * @param {EditableLine} prev The previous line.
    * @return {boolean} Whether the intent was handled.
    */
   static onMoveSelection(intent, cur, prev) {
