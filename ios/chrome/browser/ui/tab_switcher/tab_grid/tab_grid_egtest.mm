@@ -233,6 +233,12 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       grey_descendant(SearchHistorySuggestedActionWithMatches(matches_count)),
       grey_sufficientlyVisible(), nil);
 }
+// Matcher for the select tabs button in the context menu.
+id<GREYMatcher> SelectTabsContextMenuItem() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
+}
+
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -259,6 +265,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testSearchOpenTabsContextMenuAddToReadingList),
       @selector(testSearchOpenTabsContextMenuAddToBookmarks),
       @selector(testSearchOpenTabsContextMenuCloseTab),
+      @selector(testSearchOpenTabsContextMenuSelectTabsUnavailable),
       @selector(testOpenTabsHeaderVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
@@ -584,6 +591,34 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testTabGridItemContextSelectTabs {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [[EarlGrey selectElementWithMatcher:SelectTabsContextMenuItem()]
+      performAction:grey_tap()];
+  WaitForTabGridFullscreen();
+
+  // Wait for the select all button to appear to confirm that edit mode was
+  // entered.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return (error == nil);
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Wait for select all button to appear in tab grid mode.");
 }
 
 #pragma mark - Drag and drop in Multiwindow
@@ -1872,6 +1907,28 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   // Make sure that the tab is no longer present.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
       assertWithMatcher:grey_nil()];
+}
+
+- (void)testSearchOpenTabsContextMenuSelectTabsUnavailable {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* title2 = base::SysUTF8ToNSString(kTitle2);
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(title2)];
+
+  [self longPressTabWithTitle:title2];
+
+  [[EarlGrey selectElementWithMatcher:SelectTabsContextMenuItem()]
+      assertWithMatcher:grey_nil()];
+
+  // Dismiss the context menu.
+  [[EarlGrey selectElementWithMatcher:RegularTabGrid()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 }
 
 // Tests "search recent tabs" and "search open tabs" suggested actions switch
