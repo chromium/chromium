@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 import public "protos/perfetto/trace/track_event/track_event.proto";
+import public "protos/perfetto/trace/track_event/debug_annotation.proto";
 
 package perfetto.protos;
 
@@ -152,6 +153,11 @@ message FrameTreeNodeInfo {
   optional bool has_speculative_render_frame_host = 3;
 
   optional RenderFrameHost current_frame_host = 4;
+  optional RenderFrameHost speculative_frame_host = 5;
+
+  // Additional untyped debug information associated with this
+  // FrameTreeNode, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message ChromeHashedPerformanceMark {
@@ -204,6 +210,10 @@ message RenderProcessHost {
 
   // Details about the associated browser context.
   optional ChromeBrowserContext browser_context = 4;
+
+  // Additional untyped debug information associated with this
+  // RenderProcessHost, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message RenderProcessHostListener {
@@ -276,6 +286,10 @@ message SiteInstance {
 
   // The SiteInstanceGroup this SiteInstance belongs to.
   optional SiteInstanceGroup site_instance_group = 7;
+
+  // Additional untyped debug information associated with this
+  // SiteInstance, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message SiteInstanceGroup {
@@ -287,8 +301,13 @@ message SiteInstanceGroup {
 
   // The process ID of the SiteInstanceGroup.
   optional RenderProcessHost process = 3;
+
+  // Additional untyped debug information associated with this
+  // SiteInstanceGroup, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
+// Next ID: 7
 message RenderViewHost {
   // The RenderViewHostMapId for the RenderViewHost.
   optional int32 rvh_map_id = 1;
@@ -296,14 +315,21 @@ message RenderViewHost {
   // The routing ID for the RenderViewHost.
   optional int32 routing_id = 2;
 
-  // The process ID of the RenderViewHost.
+  // The process ID of the RenderViewHost. Deprecated in favour of |process|.
   optional int32 process_id = 3;
+
+  // Process this RenderViewHost is associated with.
+  optional RenderProcessHost process = 6;
 
   // Whether the RenderViewHost is in back/forward cache or not.
   optional bool is_in_back_forward_cache = 4;
 
   // Whether the renderer-side RenderView is created.
   optional bool renderer_view_created = 5;
+
+  // Additional untyped debug information associated with this
+  // RenderViewHost, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message RenderFrameProxyHost {
@@ -327,6 +353,10 @@ message RenderFrameProxyHost {
   // The SiteInstanceGroupId of the SiteInstanceGroup associated with the
   // RenderFrameProxyHost.
   optional int32 site_instance_group_id = 6;
+
+  // Additional untyped debug information associated with this
+  // RenderFrameProxyHost, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message AndroidView {
@@ -420,6 +450,10 @@ message GlobalRenderFrameHostId {
 message BrowsingContextState {
   // The ID of the BrowsingInstance that the BrowsingContextState belongs to.
   optional int32 browsing_instance_id = 1;
+
+  // Additional untyped debug information associated with this
+  // FrameTreeNode, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message RenderFrameHost {
@@ -448,6 +482,10 @@ message RenderFrameHost {
   optional RenderFrameHost outer_document = 9;
   optional RenderFrameHost embedder = 10;
   optional BrowsingContextState browsing_context_state = 11;
+
+  // Additional untyped debug information associated with this
+  // RenderViewHost, populated via TracedProto::AddDebugAnnotations API.
+  repeated DebugAnnotation debug_annotations = 99;
 }
 
 message ChromeThreadPoolTask {
@@ -711,6 +749,19 @@ message ProcessSingleton {
   optional RemoteHungProcessTerminateReason remote_process_terminate_reason = 2;
 }
 
+message NavigationHandle {
+  optional int64 navigation_id = 1;
+  optional bool has_committed = 2;
+  optional bool is_error_page = 3;
+  optional FrameTreeNodeInfo frame_tree_node = 4;
+  optional RenderFrameHost render_frame_host = 5;
+
+  // Additional untyped debug information associated with this
+  // NavigationHandle/Request, populated via TracedProto::AddDebugAnnotations
+  // API.
+  repeated DebugAnnotation debug_annotations = 99;
+}
+
 enum DeviceThermalState {
   DEVICE_THERMAL_STATE_UNKNOWN = 0;
   DEVICE_THERMAL_STATE_NOMINAL = 1;
@@ -801,5 +852,7 @@ message ChromeTrackEvent {
     optional BrowsingContextState browsing_context_state = 1035;
 
     optional DeviceThermalState device_thermal_state = 1036;
+
+    optional NavigationHandle navigation = 1037;
   }
 }

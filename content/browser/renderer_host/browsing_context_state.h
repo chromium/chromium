@@ -229,10 +229,9 @@ class CONTENT_EXPORT BrowsingContextState
       SiteInstance* instance_to_skip,
       RenderFrameProxyHost* outer_delegate_proxy);
 
-  void WriteIntoTrace(perfetto::TracedValue ctx) const;
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState>
-          proto) const;
+  using TraceProto = perfetto::protos::pbzero::BrowsingContextState;
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

@@ -320,10 +320,10 @@ class CONTENT_EXPORT NavigationRequest
   NavigationUIData* GetNavigationUIData() override;
   bool IsExternalProtocol() override;
   net::Error GetNetErrorCode() override;
-  RenderFrameHostImpl* GetRenderFrameHost() override;
+  RenderFrameHostImpl* GetRenderFrameHost() const override;
   bool IsSameDocument() override;
-  bool HasCommitted() override;
-  bool IsErrorPage() override;
+  bool HasCommitted() const override;
+  bool IsErrorPage() const override;
   bool HasSubframeNavigationEntryCommitted() override;
   bool DidReplaceEntry() override;
   bool ShouldUpdateHistory() override;
@@ -381,7 +381,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsWaitingToCommit() override;
   bool WasResourceHintsReceived() override;
   bool IsPdf() override;
-  void WriteIntoTrace(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   PrerenderTriggerType GetPrerenderTriggerType() override;
   std::string GetPrerenderEmbedderHistogramSuffix() override;

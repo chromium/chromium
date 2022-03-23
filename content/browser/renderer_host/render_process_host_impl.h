@@ -213,7 +213,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsReady() override;
   BrowserContext* GetBrowserContext() override;
   bool InSameStoragePartition(StoragePartition* partition) override;
-  int GetID() override;
+  int GetID() const override;
   bool IsInitializedAndNotDead() override;
   void SetBlocked(bool blocked) override;
   bool IsBlocked() override;
@@ -276,7 +276,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool HostHasNotBeenUsed() override;
   void SetProcessLock(const IsolationContext& isolation_context,
                       const ProcessLock& process_lock) override;
-  ProcessLock GetProcessLock() override;
+  ProcessLock GetProcessLock() const override;
   bool IsProcessLockedToSiteForTesting() override;
   void BindCacheStorage(
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
@@ -292,10 +292,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
-  void WriteIntoTrace(perfetto::TracedValue context) override;
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
-      override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
   void EnableBlinkRuntimeFeatures(
       const std::vector<std::string>& features) override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)

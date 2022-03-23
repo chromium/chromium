@@ -74,8 +74,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void FlushLocalFrameMessages();
 
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
-  TestRenderViewHost* GetRenderViewHost() override;
-  MockRenderProcessHost* GetProcess() override;
+  TestRenderViewHost* GetRenderViewHost() const override;
+  MockRenderProcessHost* GetProcess() const override;
   MockAgentSchedulingGroupHost& GetAgentSchedulingGroup() override;
   TestRenderWidgetHost* GetRenderWidgetHost() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,

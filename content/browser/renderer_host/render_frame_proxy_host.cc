@@ -793,8 +793,7 @@ void RenderFrameProxyHost::TearDownMojoConnection() {
 }
 
 void RenderFrameProxyHost::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameProxyHost>
-        proto) {
+    perfetto::TracedProto<TraceProto> proto) const {
   proto->set_routing_id(GetRoutingID());
   proto->set_process_id(GetProcess()->GetID());
   proto->set_is_render_frame_proxy_live(is_render_frame_proxy_live());

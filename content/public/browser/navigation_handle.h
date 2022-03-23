@@ -46,6 +46,10 @@ class HttpResponseHeaders;
 class ProxyServer;
 }  // namespace net
 
+namespace perfetto::protos::pbzero {
+class NavigationHandle;
+}  // namespace perfetto::protos::pbzero
+
 namespace content {
 class CommitDeferringCondition;
 struct GlobalRenderFrameHostId;
@@ -267,7 +271,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // changes that occur during navigation.) This can only be accessed after a
   // response has been delivered for processing, or after the navigation fails
   // with an error page.
-  virtual RenderFrameHost* GetRenderFrameHost() = 0;
+  virtual RenderFrameHost* GetRenderFrameHost() const = 0;
 
   // Returns the id of the RenderFrameHost this navigation is committing from.
   // In case a navigation happens within the same RenderFrameHost,
@@ -303,13 +307,13 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // This returns true for either successful commits or error pages that
   // replace the previous page (distinguished by |IsErrorPage|), and false for
   // errors that leave the user on the previous page.
-  virtual bool HasCommitted() = 0;
+  virtual bool HasCommitted() const = 0;
 
   // Whether the navigation committed an error page.
   //
   // DO NOT use this before the navigation commit. It would always return false.
   // You can use it from WebContentsObserver::DidFinishNavigation().
-  virtual bool IsErrorPage() = 0;
+  virtual bool IsErrorPage() const = 0;
 
   // Not all committed subframe navigations (i.e., !IsInMainFrame &&
   // HasCommitted) end up causing a change of the current NavigationEntry. For
@@ -525,8 +529,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Whether this navigation is for PDF content in a PDF-specific renderer.
   virtual bool IsPdf() = 0;
 
+  using TraceProto = perfetto::protos::pbzero::NavigationHandle;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(
+      perfetto::TracedProto<TraceProto> context) const = 0;
 
   // Sets an overall request timeout for this navigation, which will cause the
   // navigation to fail if it expires before the navigation commits. This is

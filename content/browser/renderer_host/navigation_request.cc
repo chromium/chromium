@@ -6188,14 +6188,18 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   return origin;
 }
 
-void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("navigation_id", navigation_id_);
-  dict.Add("has_committed", HasCommitted());
-  dict.Add("is_error_page", IsErrorPage());
-  dict.Add("net_error", net_error_);
+void NavigationRequest::WriteIntoTrace(
+    perfetto::TracedProto<TraceProto> ctx) const {
+  ctx->set_navigation_id(navigation_id_);
+  ctx->set_has_committed(HasCommitted());
+  ctx->set_is_error_page(IsErrorPage());
+  ctx.Set(TraceProto::kFrameTreeNode, frame_tree_node_);
+  if (state_ >= WILL_PROCESS_RESPONSE)
+    ctx.Set(TraceProto::kRenderFrameHost, GetRenderFrameHost());
+
+  perfetto::TracedDictionary dict = std::move(ctx).AddDebugAnnotations();
   dict.Add("url", common_params_->url);
-  dict.Add("frame_tree_node", frame_tree_node_);
+  dict.Add("net_error", net_error_);
   dict.Add("browser_initiated", commit_params_->is_browser_initiated);
   dict.Add("from_begin_navigation", from_begin_navigation_);
   dict.Add("is_synchronous_renderer_commit", is_synchronous_renderer_commit_);
@@ -6208,9 +6212,6 @@ void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
     dict.Add("rfh_restored_from_bfcache",
              rfh_restored_from_back_forward_cache_);
   }
-
-  if (state_ >= WILL_PROCESS_RESPONSE)
-    dict.Add("render_frame_host", GetRenderFrameHost());
 }
 
 bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
@@ -6433,11 +6434,11 @@ net::IPEndPoint NavigationRequest::GetSocketAddress() {
   return response() ? response()->remote_endpoint : net::IPEndPoint();
 }
 
-bool NavigationRequest::HasCommitted() {
+bool NavigationRequest::HasCommitted() const {
   return state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE;
 }
 
-bool NavigationRequest::IsErrorPage() {
+bool NavigationRequest::IsErrorPage() const {
   return state_ == DID_COMMIT_ERROR_PAGE;
 }
 
@@ -6592,7 +6593,7 @@ net::Error NavigationRequest::GetNetErrorCode() {
 // The RenderFrameHost that will commit the navigation or an error page.
 // This is computed when the response is received, or when the navigation
 // fails and error page should be displayed.
-RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() {
+RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() const {
   // Only allow the RenderFrameHost to be retrieved once it has been set for
   // this navigation. This will happens either at WillProcessResponse time for
   // regular navigations or at WillFailRequest time for error pages.

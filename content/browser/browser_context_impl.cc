@@ -302,4 +302,9 @@ PrefetchService* BrowserContextImpl::GetPrefetchService() {
   return prefetch_service_.get();
 }
 
+void BrowserContextImpl::WriteIntoTrace(
+    perfetto::TracedProto<TraceProto> proto) const {
+  proto->set_id(UniqueId());
+}
+
 }  // namespace content

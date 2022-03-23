@@ -315,7 +315,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ~RenderFrameHostImpl() override;
 
   // RenderFrameHost
-  int GetRoutingID() override;
+  int GetRoutingID() const override;
   const blink::LocalFrameToken& GetFrameToken() override;
   const base::UnguessableToken& GetReportingSource() override;
 
@@ -325,13 +325,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
                              bool exclude_offscreen,
                              size_t max_nodes,
                              const base::TimeDelta& timeout) override;
-  SiteInstanceImpl* GetSiteInstance() override;
-  RenderProcessHost* GetProcess() override;
-  GlobalRenderFrameHostId GetGlobalId() override;
+  SiteInstanceImpl* GetSiteInstance() const override;
+  RenderProcessHost* GetProcess() const override;
+  GlobalRenderFrameHostId GetGlobalId() const override;
   RenderWidgetHostImpl* GetRenderWidgetHost() override;
   RenderWidgetHostView* GetView() override;
-  RenderFrameHostImpl* GetParent() override;
-  RenderFrameHostImpl* GetParentOrOuterDocument() override;
+  RenderFrameHostImpl* GetParent() const override;
+  RenderFrameHostImpl* GetParentOrOuterDocument() const override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
   bool IsInPrimaryMainFrame() override;
@@ -352,8 +352,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   size_t GetFrameDepth() override;
   bool IsCrossProcessSubframe() override;
   WebExposedIsolationLevel GetWebExposedIsolationLevel() override;
-  const GURL& GetLastCommittedURL() override;
-  const url::Origin& GetLastCommittedOrigin() override;
+  const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
   const net::NetworkIsolationKey& GetNetworkIsolationKey() override;
   const net::IsolationInfo& GetIsolationInfoForSubresources() override;
   net::IsolationInfo GetPendingIsolationInfoForSubresources() override;
@@ -383,7 +383,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void InsertVisualStateCallback(VisualStateCallback callback) override;
   void CopyImageAt(int x, int y) override;
   void SaveImageAt(int x, int y) override;
-  RenderViewHost* GetRenderViewHost() override;
+  RenderViewHost* GetRenderViewHost() const override;
   service_manager::InterfaceProvider* GetRemoteInterfaces() override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
   content::PageVisibilityState GetVisibilityState() override;
@@ -448,7 +448,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   StoragePartitionImpl* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
-  void WriteIntoTrace(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
   bool IsErrorDocument() override;
@@ -457,13 +457,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
-
-  // Additional non-override const version of GetParent.
-  const RenderFrameHostImpl* GetParent() const;
-
-  // Write a representation of this object into a trace.
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameHost> proto);
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
@@ -2401,7 +2394,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //  B GetParent & GetParentOrOuterDocumentOrEmbedder returns A.
   //  A GetParent & GetParentOrOuterDocumentOrEmbedder returns
   //  nullptr.
-  RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder();
+  RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const;
 
   // Computes the nonce to be used for isolation info and storage key.
   absl::optional<base::UnguessableToken> ComputeNonce(bool anonymous);
@@ -3310,8 +3303,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
           receiver);
 
-  perfetto::protos::pbzero::RenderFrameHost::LifecycleState
-  LifecycleStateToProto();
+  TraceProto::LifecycleState LifecycleStateToProto() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void RunScreenAIAnnotator();

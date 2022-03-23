@@ -1701,7 +1701,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     prefetched_signed_exchange_cache_->RecordHistograms();
 }
 
-int RenderFrameHostImpl::GetRoutingID() {
+int RenderFrameHostImpl::GetRoutingID() const {
   return routing_id_;
 }
 
@@ -1898,11 +1898,11 @@ void RenderFrameHostImpl::ForwardMessageFromHost(
                                                         source_origin);
 }
 
-SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() {
+SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() const {
   return site_instance_.get();
 }
 
-RenderProcessHost* RenderFrameHostImpl::GetProcess() {
+RenderProcessHost* RenderFrameHostImpl::GetProcess() const {
   return agent_scheduling_group_.GetProcess();
 }
 
@@ -1910,11 +1910,7 @@ AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
   return agent_scheduling_group_;
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
-  return parent_;
-}
-
-const RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
+RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
   return parent_;
 }
 
@@ -2176,11 +2172,11 @@ RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
 }
 
-const GURL& RenderFrameHostImpl::GetLastCommittedURL() {
+const GURL& RenderFrameHostImpl::GetLastCommittedURL() const {
   return last_committed_url_;
 }
 
-const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() {
+const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() const {
   return last_committed_origin_;
 }
 
@@ -2518,7 +2514,7 @@ void RenderFrameHostImpl::SaveImageAt(int x, int y) {
       gfx::Point(point_in_view.x(), point_in_view.y()));
 }
 
-RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() {
+RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() const {
   return render_view_host_.get();
 }
 
@@ -4417,7 +4413,7 @@ RenderWidgetHostView* RenderFrameHostImpl::GetView() {
   return GetRenderWidgetHost()->GetView();
 }
 
-GlobalRenderFrameHostId RenderFrameHostImpl::GetGlobalId() {
+GlobalRenderFrameHostId RenderFrameHostImpl::GetGlobalId() const {
   return GlobalRenderFrameHostId(GetProcess()->GetID(), GetRoutingID());
 }
 
@@ -5238,55 +5234,31 @@ void RenderFrameHostImpl::ReportInspectorIssue(
       this, std::move(info));
 }
 
-void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("process", GetProcess());
-  dict.Add("routing_id", GetRoutingID());
-  dict.Add("lifecycle_state", LifecycleStateImplToString(lifecycle_state()));
-  dict.Add("origin", GetLastCommittedOrigin());
-  dict.Add("url", GetLastCommittedURL());
-  dict.Add("frame_tree_node_id", frame_tree_node_->frame_tree_node_id());
-  dict.Add("site_instance", GetSiteInstance());
-  if (auto* parent = GetParent()) {
-    dict.Add("parent", parent);
-  } else if (auto* outer_document = GetParentOrOuterDocument()) {
-    dict.Add("outer_document", outer_document);
-  } else if (auto* embedder = GetParentOrOuterDocumentOrEmbedder()) {
-    dict.Add("embedder", embedder);
-  }
-  dict.Add("browsing_context_state", browsing_context_state_);
-}
-
 void RenderFrameHostImpl::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameHost> proto) {
-  GetProcess()->WriteIntoTrace(proto.WriteNestedMessage(
-      perfetto::protos::pbzero::RenderFrameHost::kProcess));
-  auto global_render_frame_host_id = proto.WriteNestedMessage(
-      perfetto::protos::pbzero::RenderFrameHost::kRenderFrameHostId);
-  global_render_frame_host_id->set_routing_id(GetRoutingID());
-  global_render_frame_host_id->set_process_id(GetProcess()->GetID());
+    perfetto::TracedProto<TraceProto> proto) const {
+  proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
+  proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
   proto->set_lifecycle_state(LifecycleStateToProto());
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
   proto->set_url(GetLastCommittedURL().possibly_invalid_spec());
-  proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
-  GetSiteInstance()->WriteIntoTrace(proto.WriteNestedMessage(
-      perfetto::protos::pbzero::RenderFrameHost::kSiteInstance));
+  proto.Set(TraceProto::kProcess, GetProcess());
+  proto.Set(TraceProto::kSiteInstance, GetSiteInstance());
   if (auto* parent = GetParent()) {
-    parent->WriteIntoTrace(proto.WriteNestedMessage(
-        perfetto::protos::pbzero::RenderFrameHost::kParent));
+    proto.Set(TraceProto::kParent, parent);
   } else if (auto* outer_document = GetParentOrOuterDocument()) {
+    proto.Set(TraceProto::kOuterDocument, outer_document);
     outer_document->WriteIntoTrace(proto.WriteNestedMessage(
         perfetto::protos::pbzero::RenderFrameHost::kOuterDocument));
   } else if (auto* embedder = GetParentOrOuterDocumentOrEmbedder()) {
+    proto.Set(TraceProto::kEmbedder, embedder);
     embedder->WriteIntoTrace(proto.WriteNestedMessage(
         perfetto::protos::pbzero::RenderFrameHost::kEmbedder));
   }
-  browsing_context_state_->WriteIntoTrace(proto.WriteNestedMessage(
-      perfetto::protos::pbzero::RenderFrameHost::kBrowsingContextState));
+  proto.Set(TraceProto::kBrowsingContextState, browsing_context_state_);
 }
 
 perfetto::protos::pbzero::RenderFrameHost::LifecycleState
-RenderFrameHostImpl::LifecycleStateToProto() {
+RenderFrameHostImpl::LifecycleStateToProto() const {
   using RFHProto = perfetto::protos::pbzero::RenderFrameHost;
   switch (lifecycle_state()) {
     case LifecycleStateImpl::kSpeculative:
@@ -12832,12 +12804,13 @@ void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
                                             data, std::move(callback));
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() {
+RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
       /*escape_guest_view=*/false);
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder() {
+RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder()
+    const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
       /*escape_guest_view=*/true);
 }

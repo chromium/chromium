@@ -2196,17 +2196,6 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 }
 #endif
 
-void RenderProcessHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
-  // TODO(https://crbug.com/1116471): Add support for writing typed events into
-  // untyped event contexts and merge the two overloaded methods (the one taking
-  // perfetto::TracedValue` and the one taking `perfetto::TracedProto<...>`).
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", GetID());
-  // Can be null in the unittests.
-  if (ChildProcessSecurityPolicyImpl::GetInstance())
-    dict.Add("process_lock", GetProcessLock().ToString());
-}
-
 void RenderProcessHostImpl::EnableBlinkRuntimeFeatures(
     const std::vector<std::string>& features) {
   // To enable runtime features, the render process must be locked to the site
@@ -2228,15 +2217,11 @@ void RenderProcessHostImpl::EnableBlinkRuntimeFeatures(
 }
 
 void RenderProcessHostImpl::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
-  int id = GetID();
-  proto->set_id(id);
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
+    const {
+  proto->set_id(GetID());
   proto->set_process_lock(GetProcessLock().ToString());
-  if (browser_context_) {
-    browser_context_->WriteIntoTrace(
-        proto.WriteNestedMessage<perfetto::protos::pbzero::RenderProcessHost::
-                                     FieldMetadata_BrowserContext>());
-  }
+  proto.Set(TraceProto::kBrowserContext, browser_context_);
 
   // Pid() can be called only on valid process, so we should check for this
   // before accessing it.
@@ -2246,6 +2231,11 @@ void RenderProcessHostImpl::WriteIntoTrace(
     if (process.IsValid())
       proto->set_child_process_id(process.Pid());
   }
+
+  perfetto::TracedDictionary dict = std::move(proto).AddDebugAnnotations();
+  // Can be null in the unittests.
+  if (ChildProcessSecurityPolicyImpl::GetInstance())
+    dict.Add("process_lock", GetProcessLock().ToString());
 }
 
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
@@ -2739,7 +2729,7 @@ mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
   return renderer_interface_.get();
 }
 
-ProcessLock RenderProcessHostImpl::GetProcessLock() {
+ProcessLock RenderProcessHostImpl::GetProcessLock() const {
   return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
 }
 
@@ -3698,7 +3688,7 @@ bool RenderProcessHostImpl::InSameStoragePartition(
   return storage_partition_impl_ == partition;
 }
 
-int RenderProcessHostImpl::GetID() {
+int RenderProcessHostImpl::GetID() const {
   return id_;
 }
 

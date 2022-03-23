@@ -101,9 +101,8 @@ struct ChildProcessLauncherPriority {
     return !(*this == other);
   }
 
-  void WriteIntoTrace(
-      perfetto::TracedProto<
-          perfetto::protos::pbzero::ChildProcessLauncherPriority> proto);
+  using TraceProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
   // Prefer |is_background()| to inspecting these fields individually (to ensure
   // all logic uses the same notion of "backgrounded").

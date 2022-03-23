@@ -10,7 +10,13 @@
 
 #include "base/hash/hash.h"
 #include "base/i18n/number_formatting.h"
+#include "content/common/content_export.h"
 #include "ipc/ipc_message.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+
+namespace perfetto::protos::pbzero {
+class GlobalRenderFrameHostId;
+}  // namespace perfetto::protos::pbzero
 
 namespace content {
 
@@ -55,7 +61,7 @@ inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
 // These IDs can be considered to be unique for the lifetime of the browser
 // process. While they are finite and thus must eventually roll over, this case
 // may be considered sufficiently rare as to be ignorable.
-struct GlobalRenderFrameHostId {
+struct CONTENT_EXPORT GlobalRenderFrameHostId {
   GlobalRenderFrameHostId() = default;
 
   GlobalRenderFrameHostId(int child_id, int frame_routing_id)
@@ -87,6 +93,10 @@ struct GlobalRenderFrameHostId {
   explicit operator bool() const {
     return frame_routing_id != MSG_ROUTING_NONE;
   }
+
+  using TraceProto = perfetto::protos::pbzero::GlobalRenderFrameHostId;
+  // Write a representation of this object into proto.
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 };
 
 inline std::ostream& operator<<(std::ostream& os,

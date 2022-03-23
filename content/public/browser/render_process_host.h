@@ -273,7 +273,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // plugins, etc.
   //
   // This will never return ChildProcessHost::kInvalidUniqueID.
-  virtual int GetID() = 0;
+  virtual int GetID() const = 0;
 
   // Returns true iff the Init() was called and the process hasn't died yet.
   //
@@ -538,7 +538,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
   // //content.
-  virtual ProcessLock GetProcessLock() = 0;
+  virtual ProcessLock GetProcessLock() const = 0;
 
   // Returns true if this process is locked to a particular site-specific
   // ProcessLock.  See the SetProcessLock() call above.
@@ -623,11 +623,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // the BrowserContext they are associated with.
   virtual std::string GetInfoForBrowserContextDestructionCrashReporting() = 0;
 
+  using TraceProto = perfetto::protos::pbzero::RenderProcessHost;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
   virtual void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost>
-          proto) = 0;
+      perfetto::TracedProto<TraceProto> proto) const = 0;
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Ask the renderer process to dump its profiling data to disk. Invokes

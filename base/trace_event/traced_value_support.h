@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 // This file contains specialisations for trace serialisation for key
@@ -34,6 +35,16 @@ struct TraceFormatTraits<scoped_refptr<T>,
       return;
     }
     perfetto::WriteIntoTracedValue(std::move(context), *value);
+  }
+
+  template <class MessageType>
+  static void WriteIntoTrace(perfetto::TracedProto<MessageType> context,
+                             const scoped_refptr<T>& value) {
+    if (value) {
+      // Proto message without any fields is treated as nullptr.
+      return;
+    }
+    perfetto::WriteIntoTracedProto(std::move(context), *value);
   }
 };
 

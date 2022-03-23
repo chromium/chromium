@@ -1315,16 +1315,6 @@ void SiteInstance::StartIsolatingSite(
   }
 }
 
-void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", GetId().value());
-  dict.Add("browsing_instance_id", GetBrowsingInstanceId().value());
-  dict.Add("is_default", IsDefaultSiteInstance());
-  dict.Add("site_info", site_info_);
-  if (group())
-    dict.Add("site_instance_group", group());
-}
-
 void SiteInstanceImpl::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::SiteInstance> proto) {
   proto->set_site_instance_id(GetId().value());
@@ -1332,11 +1322,14 @@ void SiteInstanceImpl::WriteIntoTrace(
   proto->set_is_default(IsDefaultSiteInstance());
   proto->set_has_process(HasProcess());
   proto->set_related_active_contents_count(GetRelatedActiveContentsCount());
+
+  proto.Set(TraceProto::kSiteInstanceGroup, group());
   if (group()) {
     proto->set_active_rfh_count(site_instance_group_->active_frame_count());
-    group()->WriteIntoTrace(proto.WriteNestedMessage(
-        perfetto::protos::pbzero::SiteInstance::kSiteInstanceGroup));
   }
+
+  perfetto::TracedDictionary dict = std::move(proto).AddDebugAnnotations();
+  dict.Add("site_info", site_info_);
 }
 
 int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {

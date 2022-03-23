@@ -366,17 +366,13 @@ void BrowsingContextState::ExecuteRemoteFramesBroadcastMethod(
   }
 }
 
-void BrowsingContextState::WriteIntoTrace(perfetto::TracedValue ctx) const {
-  perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
-  dict.Add("this", static_cast<const void*>(this));
-  dict.Add("browsing_instance_id", browsing_instance_id_);
-}
-
 void BrowsingContextState::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState> proto)
-    const {
+    perfetto::TracedProto<TraceProto> proto) const {
   if (browsing_instance_id_.has_value())
     proto->set_browsing_instance_id(browsing_instance_id_.value().value());
+
+  perfetto::TracedDictionary dict = std::move(proto).AddDebugAnnotations();
+  dict.Add("this", static_cast<const void*>(this));
 }
 
 }  // namespace content

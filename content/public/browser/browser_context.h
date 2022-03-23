@@ -288,13 +288,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // 2) The embedder saves its salt across restarts.
   static std::string CreateRandomMediaDeviceIDSalt();
 
-  // Write a representation of this object into a trace.
-  void WriteIntoTrace(perfetto::TracedValue context);
-
+  using TraceProto = perfetto::protos::pbzero::ChromeBrowserContext;
   // Write a representation of this object into tracing proto.
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::ChromeBrowserContext>
-          context);
+  // rvalue ensure that the this method can be called without having access
+  // to the declaration of ChromeBrowserContext proto.
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend
@@ -445,6 +443,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   friend class BrowserContextImpl;
   std::unique_ptr<BrowserContextImpl> impl_;
   BrowserContextImpl* impl() { return impl_.get(); }
+  const BrowserContextImpl* impl() const { return impl_.get(); }
 };
 
 }  // namespace content

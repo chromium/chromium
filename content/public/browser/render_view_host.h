@@ -14,6 +14,10 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 
+namespace perfetto::protos::pbzero {
+class RenderViewHost;
+}  // namespace perfetto::protos::pbzero
+
 namespace content {
 
 class RenderFrameHost;
@@ -52,10 +56,10 @@ class CONTENT_EXPORT RenderViewHost {
   virtual ~RenderViewHost() {}
 
   // Returns the RenderWidgetHost for this RenderViewHost.
-  virtual RenderWidgetHost* GetWidget() = 0;
+  virtual RenderWidgetHost* GetWidget() const = 0;
 
   // Returns the RenderProcessHost for this RenderViewHost.
-  virtual RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetProcess() const = 0;
 
   // Returns the routing id for IPC use for this RenderViewHost.
   //
@@ -63,16 +67,18 @@ class CONTENT_EXPORT RenderViewHost {
   // and shared its IPC channel and its routing ID. Although this inheritance is
   // no longer so, the IPC channel is currently still shared. Expect this to
   // change.
-  virtual int GetRoutingID() = 0;
+  virtual int GetRoutingID() const = 0;
 
   // Instructs the RenderView to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
 
   // Returns true if the RenderView is active and has not crashed.
-  virtual bool IsRenderViewLive() = 0;
+  virtual bool IsRenderViewLive() const = 0;
 
+  using TraceProto = perfetto::protos::pbzero::RenderViewHost;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(
+      perfetto::TracedProto<TraceProto> context) const = 0;
 
  private:
   // This interface should only be implemented inside content.

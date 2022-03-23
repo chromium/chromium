@@ -121,7 +121,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
-  int GetID() override;
+  int GetID() const override;
   bool IsInitializedAndNotDead() override;
   void SetBlocked(bool blocked) override;
   bool IsBlocked() override;
@@ -187,7 +187,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool HostHasNotBeenUsed() override;
   void SetProcessLock(const IsolationContext& isolation_context,
                       const ProcessLock& process_lock) override;
-  ProcessLock GetProcessLock() override;
+  ProcessLock GetProcessLock() const override;
   bool IsProcessLockedToSiteForTesting() override;
   void StopTrackingProcessForShutdownDelay() override {}
   void BindCacheStorage(
@@ -252,10 +252,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       override {}
 
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
-  void WriteIntoTrace(perfetto::TracedValue context) override;
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
-      override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
   void EnableBlinkRuntimeFeatures(
       const std::vector<std::string>& features) override;
 

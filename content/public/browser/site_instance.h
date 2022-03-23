@@ -17,6 +17,10 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
 
+namespace perfetto::protos::pbzero {
+class SiteInstance;
+}  // namespace perfetto::protos::pbzero
+
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
@@ -186,8 +190,9 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // affects performance.
   virtual SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() = 0;
 
+  using TraceProto = perfetto::protos::pbzero::SiteInstance;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) = 0;
 
   // Estimates the overhead in terms of process count due to OriginAgentCluster
   // (OAC) SiteInstances in the BrowsingInstance related to this SiteInstance.

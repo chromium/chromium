@@ -273,7 +273,7 @@ class TestRenderViewHost : public RenderViewHostImpl,
   TestRenderViewHost& operator=(const TestRenderViewHost&) = delete;
 
   // RenderViewHostImpl overrides.
-  MockRenderProcessHost* GetProcess() override;
+  MockRenderProcessHost* GetProcess() const override;
   bool CreateRenderView(
       const absl::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,

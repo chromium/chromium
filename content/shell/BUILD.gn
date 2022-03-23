@@ -415,6 +415,7 @@ repack("pak") {
   testonly = true
 
   sources = [
+    "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
@@ -440,6 +441,7 @@ repack("pak") {
 
   deps = [
     ":resources",
+    "//base/tracing/protos:chrome_track_event_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
     "//content/app/resources",

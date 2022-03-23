@@ -428,7 +428,7 @@ bool TestRenderViewHost::CreateRenderView(
   return true;
 }
 
-MockRenderProcessHost* TestRenderViewHost::GetProcess() {
+MockRenderProcessHost* TestRenderViewHost::GetProcess() const {
   return static_cast<MockRenderProcessHost*>(RenderViewHostImpl::GetProcess());
 }
 

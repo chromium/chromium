@@ -32,8 +32,7 @@ namespace content {
 using internal::ChildProcessLauncherHelper;
 
 void ChildProcessLauncherPriority::WriteIntoTrace(
-    perfetto::TracedProto<
-        perfetto::protos::pbzero::ChildProcessLauncherPriority> proto) {
+    perfetto::TracedProto<TraceProto> proto) const {
   proto->set_is_backgrounded(is_background());
   proto->set_has_pending_views(boost_for_pending_views);
 

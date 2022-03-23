@@ -24,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -113,14 +113,16 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(GetNavigationUIData, NavigationUIData*());
   MOCK_METHOD0(IsExternalProtocol, bool());
   net::Error GetNetErrorCode() override { return net_error_code_; }
-  RenderFrameHost* GetRenderFrameHost() override { return render_frame_host_; }
+  RenderFrameHost* GetRenderFrameHost() const override {
+    return render_frame_host_;
+  }
   bool IsSameDocument() override { return is_same_document_; }
   MOCK_METHOD0(WasServerRedirect, bool());
   const std::vector<GURL>& GetRedirectChain() override {
     return redirect_chain_;
   }
-  bool HasCommitted() override { return has_committed_; }
-  bool IsErrorPage() override { return is_error_page_; }
+  bool HasCommitted() const override { return has_committed_; }
+  bool IsErrorPage() const override { return is_error_page_; }
   MOCK_METHOD0(HasSubframeNavigationEntryCommitted, bool());
   MOCK_METHOD0(DidReplaceEntry, bool());
   MOCK_METHOD0(ShouldUpdateHistory, bool());
@@ -195,9 +197,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(bool, IsWaitingToCommit, ());
   MOCK_METHOD(bool, WasResourceHintsReceived, ());
   MOCK_METHOD(bool, IsPdf, ());
-  void WriteIntoTrace(perfetto::TracedValue context) override {
-    auto dict = std::move(context).WriteDictionary();
-  }
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto>) const override {}
   MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
   MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());

@@ -641,7 +641,7 @@ bool RenderViewHostImpl::DidReceiveBackForwardCacheAck() {
   return GetPageLifecycleStateManager()->DidReceiveBackForwardCacheAck();
 }
 
-bool RenderViewHostImpl::IsRenderViewLive() {
+bool RenderViewHostImpl::IsRenderViewLive() const {
   return GetProcess()->IsInitializedAndNotDead() && renderer_view_created_;
 }
 
@@ -763,19 +763,19 @@ void RenderViewHostImpl::RenderProcessExited(
   // |this| might have been deleted. Do not add code here.
 }
 
-RenderWidgetHostImpl* RenderViewHostImpl::GetWidget() {
+RenderWidgetHostImpl* RenderViewHostImpl::GetWidget() const {
   return render_widget_host_.get();
 }
 
-AgentSchedulingGroupHost& RenderViewHostImpl::GetAgentSchedulingGroup() {
+AgentSchedulingGroupHost& RenderViewHostImpl::GetAgentSchedulingGroup() const {
   return render_widget_host_->agent_scheduling_group();
 }
 
-RenderProcessHost* RenderViewHostImpl::GetProcess() {
+RenderProcessHost* RenderViewHostImpl::GetProcess() const {
   return GetAgentSchedulingGroup().GetProcess();
 }
 
-int RenderViewHostImpl::GetRoutingID() {
+int RenderViewHostImpl::GetRoutingID() const {
   return routing_id_;
 }
 
@@ -956,17 +956,11 @@ void RenderViewHostImpl::SetWillSendRendererPreferencesCallbackForTesting(
   will_send_renderer_preferences_callback_for_testing_ = callback;
 }
 
-void RenderViewHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("routing_id", GetRoutingID());
-  dict.Add("process", GetProcess());
-}
-
 void RenderViewHostImpl::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::RenderViewHost> proto) {
+    perfetto::TracedProto<TraceProto> proto) const {
   proto->set_rvh_map_id(render_view_host_map_id_.value());
   proto->set_routing_id(GetRoutingID());
-  proto->set_process_id(GetProcess()->GetID());
+  proto.Set(TraceProto::kProcess, GetProcess());
   proto->set_is_in_back_forward_cache(is_in_back_forward_cache_);
   proto->set_renderer_view_created(renderer_view_created_);
 }

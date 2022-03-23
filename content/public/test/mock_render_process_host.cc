@@ -272,7 +272,7 @@ bool MockRenderProcessHost::Send(IPC::Message* msg) {
   return true;
 }
 
-int MockRenderProcessHost::GetID() {
+int MockRenderProcessHost::GetID() const {
   return id_;
 }
 
@@ -506,7 +506,7 @@ void MockRenderProcessHost::SetProcessLock(
     is_renderer_locked_to_site_ = true;
 }
 
-ProcessLock MockRenderProcessHost::GetProcessLock() {
+ProcessLock MockRenderProcessHost::GetProcessLock() const {
   return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
 }
 
@@ -533,13 +533,8 @@ MockRenderProcessHost::GetInfoForBrowserContextDestructionCrashReporting() {
   return std::string();
 }
 
-void MockRenderProcessHost::WriteIntoTrace(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", GetID());
-}
-
 void MockRenderProcessHost::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+    perfetto::TracedProto<TraceProto> proto) const {
   proto->set_id(GetID());
 }
 

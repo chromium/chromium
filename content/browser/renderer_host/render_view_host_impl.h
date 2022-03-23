@@ -130,12 +130,12 @@ class CONTENT_EXPORT RenderViewHostImpl
   RenderViewHostImpl& operator=(const RenderViewHostImpl&) = delete;
 
   // RenderViewHost implementation.
-  RenderWidgetHostImpl* GetWidget() override;
-  RenderProcessHost* GetProcess() override;
-  int GetRoutingID() override;
+  RenderWidgetHostImpl* GetWidget() const override;
+  RenderProcessHost* GetProcess() const override;
+  int GetRoutingID() const override;
   void EnablePreferredSizeMode() override;
-  bool IsRenderViewLive() override;
-  void WriteIntoTrace(perfetto::TracedValue context) override;
+  bool IsRenderViewLive() const override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
 
   void SendWebPreferencesToRenderer();
   void SendRendererPreferencesToRenderer(
@@ -201,7 +201,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Returns the `AgentSchedulingGroupHost` this view is associated with (via
   // the widget).
-  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
+  AgentSchedulingGroupHost& GetAgentSchedulingGroup() const;
 
   // Tells the renderer process to request a page-scale animation based on the
   // specified point/rect.
@@ -318,10 +318,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   // class to FrameTree/FrameTreeNode.
   FrameTree* frame_tree() const { return frame_tree_; }
   void SetFrameTree(FrameTree& frame_tree);
-
-  // Write a representation of this object into a trace.
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::RenderViewHost> proto);
 
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless

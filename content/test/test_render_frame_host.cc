@@ -96,12 +96,12 @@ void TestRenderFrameHost::FlushLocalFrameMessages() {
   local_frame_.FlushForTesting();
 }
 
-TestRenderViewHost* TestRenderFrameHost::GetRenderViewHost() {
+TestRenderViewHost* TestRenderFrameHost::GetRenderViewHost() const {
   return static_cast<TestRenderViewHost*>(
       RenderFrameHostImpl::GetRenderViewHost());
 }
 
-MockRenderProcessHost* TestRenderFrameHost::GetProcess() {
+MockRenderProcessHost* TestRenderFrameHost::GetProcess() const {
   return static_cast<MockRenderProcessHost*>(RenderFrameHostImpl::GetProcess());
 }
 

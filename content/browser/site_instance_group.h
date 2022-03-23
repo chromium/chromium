@@ -126,11 +126,9 @@ class CONTENT_EXPORT SiteInstanceGroup
     return agent_scheduling_group_ != nullptr;
   }
 
+  using TraceProto = perfetto::protos::pbzero::SiteInstanceGroup;
   // Write a representation of this object into a trace.
-  void WriteIntoTrace(perfetto::TracedValue context) const;
-  void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::SiteInstanceGroup> proto)
-      const;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
  private:
   friend class RefCounted<SiteInstanceGroup>;

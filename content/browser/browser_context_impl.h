@@ -28,6 +28,10 @@ namespace storage {
 class ExternalMountPoints;
 }  // namespace storage
 
+namespace perfetto::protos::pbzero {
+class ChromeBrowserContext;
+}  // namespace perfetto::protos::pbzero
+
 namespace content {
 
 class BackgroundSyncScheduler;
@@ -93,6 +97,10 @@ class BrowserContextImpl {
   }
 
   PrefetchService* GetPrefetchService();
+
+  using TraceProto = perfetto::protos::pbzero::ChromeBrowserContext;
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
