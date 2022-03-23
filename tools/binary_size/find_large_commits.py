@@ -24,12 +24,13 @@ def _ReadCsv(path):
 def _FindBigDeltas(revs_and_sizes, increase_threshold, decrease_threshold):
   """Filters revs_and_sizes for entries that grow/shrink too much."""
   big_jumps = []
-  prev_size = revs_and_sizes[0][1]
+  prev_rev, prev_size = revs_and_sizes[0]
   for rev, size in revs_and_sizes:
     delta = size - prev_size
-    prev_size = size
     if delta > increase_threshold or -delta > decrease_threshold:
-      big_jumps.append((rev, delta))
+      big_jumps.append((rev, delta, prev_rev))
+    prev_rev = rev
+    prev_size = size
   return big_jumps
 
 
@@ -42,16 +43,15 @@ def _LookupCommitInfo(rev):
   date = '{} {}'.format(day, year)
   title = re.search(r'\n +(\S.*)', desc).group(1).replace('\t', ' ')
   milestone = None
-  if 'Roll AFDO' not in title:
-    releases = subprocess.check_output(['git', 'find-releases', sha1],
-                                       encoding="utf-8")
-    version = re.search('initially in (\d\d)', releases)
-    milestone = ''
-    if version:
-      milestone = 'M{}'.format(version.group(1))
-    version = re.search('initially in branch-heads/(\d\d\d\d)', releases)
-    if version:
-      milestone = version.group(1)
+  releases = subprocess.check_output(['git', 'find-releases', sha1],
+                                     encoding="utf-8")
+  version = re.search('initially in (\d\d)', releases)
+  milestone = ''
+  if version:
+    milestone = 'M{}'.format(version.group(1))
+  version = re.search('initially in branch-heads/(\d\d\d\d)', releases)
+  if version:
+    milestone = version.group(1)
 
   return sha1, author, date, title, milestone
 
@@ -61,7 +61,7 @@ def main():
   parser.add_argument(
       '--increase-threshold',
       type=int,
-      default=50 * 1024,
+      default=30 * 1024,
       help='Minimum number of bytes larger to be considered a notable.')
   parser.add_argument(
       '--decrease-threshold',
@@ -73,22 +73,19 @@ def main():
   options = parser.parse_args()
 
   revs_and_sizes = _ReadCsv(options.points_csv)
-  rev_and_delta = _FindBigDeltas(revs_and_sizes, options.increase_threshold,
-                                 options.decrease_threshold)
+  big_deltas = _FindBigDeltas(revs_and_sizes, options.increase_threshold,
+                              options.decrease_threshold)
 
   print('Printing info for up to {} commits in the range {}-{}'.format(
-      len(rev_and_delta), revs_and_sizes[0][0], revs_and_sizes[-1][0]))
+      len(big_deltas), revs_and_sizes[0][0], revs_and_sizes[-1][0]))
   print('Revision,Hash,Title,Author,Delta,Date,Milestone')
-  afdo_count = 0
-  for rev, delta in rev_and_delta:
+  for rev, delta, prev_rev in big_deltas:
     sha1, author, date, title, milestone = _LookupCommitInfo(rev)
-    if milestone is not None:
-      print('\t'.join(
-          [str(rev), sha1, title, author,
-           str(delta), date, milestone]))
-    else:
-      afdo_count += 1
-  print('Skipped %d AFDO rolls' % afdo_count)
+    rev_str = str(rev)
+    if rev - prev_rev > 1:
+      rev_str = f'{prev_rev}..{rev}'
+    print('\t'.join([rev_str, sha1, title, author,
+                     str(delta), date, milestone]))
 
 
 if __name__ == '__main__':
