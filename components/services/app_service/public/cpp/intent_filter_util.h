@@ -41,9 +41,7 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
 
 // Create intent filter for URL scope, with prefix matching only for the path.
 // e.g. filter created for https://www.google.com/ will match any URL that
-// started with https://www.google.com/*. If |with_action_view| is true, the
-// intent filter created will contain the VIEW action, otherwise no action will
-// be added.
+// started with https://www.google.com/*.
 
 // TODO(crbug.com/1092784): Update/add all related unit tests to test with
 // action view.
