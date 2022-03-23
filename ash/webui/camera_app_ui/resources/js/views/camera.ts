@@ -366,7 +366,7 @@ export class Camera extends View implements CameraViewUI {
       }
     };
     state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
-    this.scanOptions.onChange = checkRefocus;
+    this.scanOptions.addOnChangeListener(() => checkRefocus());
   }
 
   override getSubViews(): View[] {

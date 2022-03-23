@@ -35,6 +35,8 @@ function getElemetFromScanType(type: ScanType): HTMLInputElement {
 
 const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
 
+type ScanOptionsChangeListener = () => void;
+
 /**
  * Controller for the scan options of Camera view.
  */
@@ -57,14 +59,7 @@ export class ScanOptions implements CameraUI {
 
   private readonly documentCornerOverylay: DocumentCornerOverlay;
 
-  /**
-   * Called when scan option changed.
-   * TODO(pihsun): Change to use a setter function to set this callback,
-   * instead of a public property.
-   */
-  onChange = (): void => {
-    // Do nothing.
-  };
+  private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
   /**
    * @param cameraManager Camera manager instance.
@@ -93,6 +88,13 @@ export class ScanOptions implements CameraUI {
         }
       });
     }
+  }
+
+  /**
+   * Add listener for scan options change.
+   */
+  addOnChangeListener(listener: ScanOptionsChangeListener): void {
+    this.onChangeListeners.add(listener);
   }
 
   /**
@@ -161,7 +163,9 @@ export class ScanOptions implements CameraUI {
       await this.documentCornerOverylay.stop();
     }
 
-    this.onChange();
+    for (const listener of this.onChangeListeners) {
+      listener();
+    }
   }
 
   private stopBarcodeScanner() {

@@ -658,6 +658,10 @@ body.timer-10s #toggle-timer:checked {
   background-image: url(/images/camera_button_mirror_off.svg);
 }
 
+body:is(.scan) #toggle-mirror:disabled {
+  display: none;
+}
+
 #toggle-mic:checked {
   background-image: url(/images/camera_button_mic_on.svg);
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {assertInstanceof} from '../../assert.js';
+import {assert, assertInstanceof} from '../../assert.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -41,9 +41,9 @@ export class Options implements CameraUI {
       dom.get('#switch-device', HTMLButtonElement);
 
   /**
-   * Device id of the camera device currently used or selected.
+   * CameraConfig of the camera device currently used or selected.
    */
-  private videoDeviceId: string|null = null;
+  private currentConfig: CameraConfig|null = null;
 
   /**
    * Mirroring set per device.
@@ -101,7 +101,7 @@ export class Options implements CameraUI {
       }
     });
     this.toggleFps.addEventListener('change', () => {
-      if (this.videoDeviceId === null) {
+      if (this.currentConfig === null) {
         return;
       }
       const prefFps = this.toggleFps.checked ? 60 : 30;
@@ -109,7 +109,7 @@ export class Options implements CameraUI {
       const resolution = assertInstanceof(
           this.cameraManager.getCaptureResolution(), Resolution);
       const reconfiguring = this.cameraManager.setPrefVideoConstFps(
-          this.videoDeviceId, resolution, prefFps);
+          this.currentConfig.deviceId, resolution, prefFps);
       if (reconfiguring === null) {
         return;
       }
@@ -174,8 +174,8 @@ export class Options implements CameraUI {
   }
 
   onUpdateConfig(config: CameraConfig): void {
-    this.videoDeviceId = config.deviceId;
-    this.updateMirroring(config.facing);
+    this.currentConfig = config;
+    this.updateMirroring();
     this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
 
@@ -184,6 +184,7 @@ export class Options implements CameraUI {
           state.assertState(`fps-${fps}`),
           fps === this.cameraManager.getConstFps());
     }
+
     this.toggleFps.hidden = (() => {
       if (config.mode !== Mode.VIDEO) {
         return true;
@@ -191,11 +192,11 @@ export class Options implements CameraUI {
       if (config.facing !== Facing.EXTERNAL) {
         return true;
       }
-      if (this.videoDeviceId === null) {
+      if (this.currentConfig === null) {
         return true;
       }
       const info = this.cameraManager.getCameraInfo().getCamera3DeviceInfo(
-          this.videoDeviceId);
+          this.currentConfig.deviceId);
       if (info === null) {
         return true;
       }
@@ -220,26 +221,36 @@ export class Options implements CameraUI {
   }
 
   private updateOptionAvailability(): void {
+    this.toggleMirror.disabled = !this.allowModifyMirrorState();
     this.toggleFps.disabled =
         !this.cameraAvailble || state.get(state.State.TAKING);
   }
 
   /**
-   * Updates mirroring for a new stream.
-   *
-   * @param facing Facing of the stream.
+   * Returns whether the mirror state can be modified. We don't allow toggling
+   * mirror button when it is under scan mode unless it is an external camera
+   * since we don't know how the external camera will be used.
    */
-  private updateMirroring(facing: Facing) {
+  private allowModifyMirrorState(): boolean {
+    assert(this.currentConfig !== null);
+    return this.currentConfig.mode !== Mode.SCAN ||
+        this.currentConfig.facing === Facing.EXTERNAL;
+  }
+
+  /**
+   * Updates mirroring for a new stream.
+   */
+  private updateMirroring() {
+    assert(this.currentConfig !== null);
     // Update mirroring by detected facing-mode. Enable mirroring by default if
     // facing-mode isn't available.
-    let enabled = facing !== Facing.ENVIRONMENT;
+    let enabled = this.currentConfig.facing !== Facing.ENVIRONMENT;
 
+    const deviceId = this.currentConfig.deviceId;
     // Override mirroring only if mirroring was toggled manually.
-    if (this.videoDeviceId !== null &&
-        this.videoDeviceId in this.mirroringToggles) {
-      enabled = this.mirroringToggles[this.videoDeviceId];
+    if (deviceId in this.mirroringToggles && this.allowModifyMirrorState()) {
+      enabled = this.mirroringToggles[deviceId];
     }
-
     util.toggleChecked(this.toggleMirror, enabled);
   }
 
@@ -247,8 +258,9 @@ export class Options implements CameraUI {
    * Saves the toggled mirror state for the current video device.
    */
   private saveMirroring() {
-    if (this.videoDeviceId !== null) {
-      this.mirroringToggles[this.videoDeviceId] = this.toggleMirror.checked;
+    if (this.currentConfig !== null) {
+      this.mirroringToggles[this.currentConfig.deviceId] =
+          this.toggleMirror.checked;
       localStorage.set('mirroringToggles', this.mirroringToggles);
     }
   }
