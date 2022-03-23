@@ -185,8 +185,9 @@ void CronetContextAdapter::Destroy(JNIEnv* env,
   delete context_;
 }
 
-net::URLRequestContext* CronetContextAdapter::GetURLRequestContext() {
-  return context_->GetURLRequestContext();
+net::URLRequestContext* CronetContextAdapter::GetURLRequestContext(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  return context_->GetURLRequestContext(network);
 }
 
 void CronetContextAdapter::PostTaskToNetworkThread(

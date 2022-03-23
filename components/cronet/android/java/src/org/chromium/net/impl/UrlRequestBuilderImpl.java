@@ -4,8 +4,12 @@
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
+import android.net.Network;
+import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -59,6 +63,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
     private RequestFinishedInfo.Listener mRequestFinishedListener;
+    private Network mNetwork;
     // Idempotency of the request.
     @CronetEngineBase.Idempotency
     private int mIdempotency = DEFAULT_IDEMPOTENCY;
@@ -203,13 +208,23 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
         return this;
     }
 
+    // TODO(stefanoduo): Add @Override once interface portion of the API has been merged.
+    public UrlRequestBuilderImpl bindToNetwork(@Nullable Network network) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is available starting from Android Marshmallow");
+        }
+        mNetwork = network;
+        return this;
+    }
+
     @Override
     public UrlRequestBase build() {
         @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N SDK.
         final UrlRequestBase request = mCronetEngine.createRequest(mUrl, mCallback, mExecutor,
                 mPriority, mRequestAnnotations, mDisableCache, mDisableConnectionMigration,
                 mAllowDirectExecutor, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid, mRequestFinishedListener, mIdempotency);
+                mTrafficStatsUid, mRequestFinishedListener, mIdempotency, mNetwork);
         if (mMethod != null) {
             request.setHttpMethod(mMethod);
         }

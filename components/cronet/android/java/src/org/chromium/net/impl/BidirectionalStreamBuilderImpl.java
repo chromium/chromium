@@ -4,6 +4,10 @@
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
+import android.net.Network;
+import android.os.Build;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -48,6 +52,7 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
     private int mTrafficStatsTag;
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
+    private @Nullable Network mNetwork;
 
     /**
      * Creates a builder for {@link BidirectionalStream} objects. All callbacks for
@@ -145,12 +150,22 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
         return this;
     }
 
+    // TODO(stefanoduo): Add @Override once interface portion of the API has been merged.
+    public ExperimentalBidirectionalStream.Builder bindToNetwork(@Nullable Network network) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is available starting from Android Marshmallow");
+        }
+        mNetwork = network;
+        return this;
+    }
+
     @Override
     @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N SDK.
     public ExperimentalBidirectionalStream build() {
         return mCronetEngine.createBidirectionalStream(mUrl, mCallback, mExecutor, mHttpMethod,
                 mRequestHeaders, mPriority, mDelayRequestHeadersUntilFirstFlush,
                 mRequestAnnotations, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid);
+                mTrafficStatsUid, mNetwork);
     }
 }

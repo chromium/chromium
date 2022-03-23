@@ -4,6 +4,9 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -47,6 +50,12 @@ import javax.annotation.concurrent.GuardedBy;
 @JNIAdditionalImport(VersionSafeCallbacks.class)
 @VisibleForTesting
 public final class CronetUrlRequest extends UrlRequestBase {
+    /*
+     * Network handle representing the default network. To be used when a network has not been
+     * explicitly set.
+     */
+    private static final long DEFAULT_NETWORK_HANDLE = -1;
+
     private final boolean mAllowDirectExecutor;
 
     /* Native adapter object, owned by UrlRequest. */
@@ -89,6 +98,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
     private final VersionSafeCallbacks.RequestFinishedInfoListener mRequestFinishedListener;
+    private final long mNetworkHandle;
 
     private CronetUploadDataStream mUploadDataStream;
 
@@ -142,7 +152,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int idempotency, @Nullable Network network) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -171,6 +181,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 ? new VersionSafeCallbacks.RequestFinishedInfoListener(requestFinishedListener)
                 : null;
         mIdempotency = convertIdempotency(idempotency);
+        mNetworkHandle = network != null ? network.getNetworkHandle() : DEFAULT_NETWORK_HANDLE;
     }
 
     @Override
@@ -217,7 +228,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                         mRequestContext.hasRequestFinishedListener()
                                 || mRequestFinishedListener != null,
                         mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                        mTrafficStatsUid, mIdempotency);
+                        mTrafficStatsUid, mIdempotency, mNetworkHandle);
                 mRequestContext.onRequestStarted();
                 if (mInitialMethod != null) {
                     if (!CronetUrlRequestJni.get().setHttpMethod(
@@ -849,7 +860,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
         long createRequestAdapter(CronetUrlRequest caller, long urlRequestContextAdapter,
                 String url, int priority, boolean disableCache, boolean disableConnectionMigration,
                 boolean enableMetrics, boolean trafficStatsTagSet, int trafficStatsTag,
-                boolean trafficStatsUidSet, int trafficStatsUid, int idempotency);
+                boolean trafficStatsUidSet, int trafficStatsUid, int idempotency,
+                long networkHandle);
 
         @NativeClassQualifiedName("CronetURLRequestAdapter")
         boolean setHttpMethod(long nativePtr, CronetUrlRequest caller, String method);

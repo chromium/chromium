@@ -56,18 +56,20 @@ int CalculateLoadFlags(int load_flags,
 
 }  // namespace
 
-CronetURLRequest::CronetURLRequest(CronetContext* context,
-                                   std::unique_ptr<Callback> callback,
-                                   const GURL& url,
-                                   net::RequestPriority priority,
-                                   bool disable_cache,
-                                   bool disable_connection_migration,
-                                   bool enable_metrics,
-                                   bool traffic_stats_tag_set,
-                                   int32_t traffic_stats_tag,
-                                   bool traffic_stats_uid_set,
-                                   int32_t traffic_stats_uid,
-                                   net::Idempotency idempotency)
+CronetURLRequest::CronetURLRequest(
+    CronetContext* context,
+    std::unique_ptr<Callback> callback,
+    const GURL& url,
+    net::RequestPriority priority,
+    bool disable_cache,
+    bool disable_connection_migration,
+    bool enable_metrics,
+    bool traffic_stats_tag_set,
+    int32_t traffic_stats_tag,
+    bool traffic_stats_uid_set,
+    int32_t traffic_stats_uid,
+    net::Idempotency idempotency,
+    net::NetworkChangeNotifier::NetworkHandle network)
     : context_(context),
       network_tasks_(std::move(callback),
                      url,
@@ -80,7 +82,8 @@ CronetURLRequest::CronetURLRequest(CronetContext* context,
                      traffic_stats_tag,
                      traffic_stats_uid_set,
                      traffic_stats_uid,
-                     idempotency),
+                     idempotency,
+                     network),
       initial_method_("GET"),
       initial_request_headers_(std::make_unique<net::HttpRequestHeaders>()) {
   DCHECK(!context_->IsOnNetworkThread());
@@ -172,16 +175,18 @@ void CronetURLRequest::MaybeReportMetricsAndRunCallback(
           base::Unretained(&network_tasks_), std::move(callback)));
 }
 
-CronetURLRequest::NetworkTasks::NetworkTasks(std::unique_ptr<Callback> callback,
-                                             const GURL& url,
-                                             net::RequestPriority priority,
-                                             int load_flags,
-                                             bool enable_metrics,
-                                             bool traffic_stats_tag_set,
-                                             int32_t traffic_stats_tag,
-                                             bool traffic_stats_uid_set,
-                                             int32_t traffic_stats_uid,
-                                             net::Idempotency idempotency)
+CronetURLRequest::NetworkTasks::NetworkTasks(
+    std::unique_ptr<Callback> callback,
+    const GURL& url,
+    net::RequestPriority priority,
+    int load_flags,
+    bool enable_metrics,
+    bool traffic_stats_tag_set,
+    int32_t traffic_stats_tag,
+    bool traffic_stats_uid_set,
+    int32_t traffic_stats_uid,
+    net::Idempotency idempotency,
+    net::NetworkChangeNotifier::NetworkHandle network)
     : callback_(std::move(callback)),
       initial_url_(url),
       initial_priority_(priority),
@@ -194,7 +199,8 @@ CronetURLRequest::NetworkTasks::NetworkTasks(std::unique_ptr<Callback> callback,
       traffic_stats_tag_(traffic_stats_tag),
       traffic_stats_uid_set_(traffic_stats_uid_set),
       traffic_stats_uid_(traffic_stats_uid),
-      idempotency_(idempotency) {
+      idempotency_(idempotency),
+      network_(network) {
   DETACH_FROM_THREAD(network_thread_checker_);
 }
 
@@ -285,7 +291,7 @@ void CronetURLRequest::NetworkTasks::Start(
   VLOG(1) << "Starting chromium request: "
           << initial_url_.possibly_invalid_spec().c_str()
           << " priority: " << RequestPriorityToString(initial_priority_);
-  url_request_ = context->GetURLRequestContext()->CreateRequest(
+  url_request_ = context->GetURLRequestContext(network_)->CreateRequest(
       initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION);
   url_request_->SetLoadFlags(initial_load_flags_);
   url_request_->set_method(method);

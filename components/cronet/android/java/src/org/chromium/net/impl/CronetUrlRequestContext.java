@@ -4,9 +4,12 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
+import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -154,6 +157,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @GuardedBy("mLock")
     private boolean mIsStoppingNetLog;
 
+    /** If not null, the network to be used for requests that do not explicitly specify one. **/
+    private @Nullable Network mNetwork;
+
     @UsedByReflection("CronetEngine.java")
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
         mRttListenerList.disableThreadAsserts();
@@ -235,13 +241,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int idempotency, @Nullable Network network) {
+        if (network == null) {
+            network = mNetwork;
+        }
         synchronized (mLock) {
             checkHaveAdapter();
             return new CronetUrlRequest(this, url, priority, callback, executor, requestAnnotations,
                     disableCache, disableConnectionMigration, allowDirectExecutor,
                     trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet, trafficStatsUid,
-                    requestFinishedListener, idempotency);
+                    requestFinishedListener, idempotency, network);
         }
     }
 
@@ -251,13 +260,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush, Collection<Object> requestAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid) {
+            int trafficStatsUid, @Nullable Network network) {
+        if (network == null) {
+            network = mNetwork;
+        }
         synchronized (mLock) {
             checkHaveAdapter();
             return new CronetBidirectionalStream(this, url, priority, callback, executor,
                     httpMethod, requestHeaders, delayRequestHeadersUntilFirstFlush,
                     requestAnnotations, trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet,
-                    trafficStatsUid);
+                    trafficStatsUid, network);
         }
     }
 
@@ -405,6 +417,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     ? mDownstreamThroughputKbps
                     : CONNECTION_METRIC_UNKNOWN;
         }
+    }
+
+    @SuppressWarnings("DoNotCallSuggester")
+    // TODO(stefanoduo): Swap with @Override once interface portion of the API has been merged.
+    public void bindToNetwork(@Nullable Network network) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is available starting from Android Marshmallow");
+        }
+        mNetwork = network;
     }
 
     @VisibleForTesting
