@@ -70,6 +70,7 @@ cast_shared_library("libcast_browser_android") {
   deps = [
     ":common_apk_deps",
     "//chromecast:cast_shell_lib_simple",
+    "//components/module_installer/android:native",
   ]
 }
 
