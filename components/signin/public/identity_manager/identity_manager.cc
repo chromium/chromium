@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -14,8 +15,10 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/ubertoken_fetcher_impl.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -53,7 +56,8 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
                        AccountTrackerService* account_tracker_service,
                        SigninClient* signin_client,
                        const account_manager::Account& device_account,
-                       signin::Tribool device_account_is_child) {
+                       signin::Tribool device_account_is_child,
+                       ConsentLevel requested_level) {
   if (device_account.key.account_type() != account_manager::AccountType::kGaia)
     return;
 
@@ -66,11 +70,8 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
       account_tracker_service->SeedAccountInfo(
           /*gaia=*/device_account.key.id(), device_account.raw_email);
 
-  // TODO(https://crbug.com/1194983): Figure out how split sync settings will
-  // work here. For now, we will mimic Ash's behaviour of having sync turned on
-  // by default.
   const CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(requested_level);
   DCHECK(signin_client);
 
   if (primary_account_id == device_account_id) {
@@ -91,13 +92,13 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
 
   PrimaryAccountMutator::PrimaryAccountError error =
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          device_account_id, ConsentLevel::kSync);
+          device_account_id, requested_level);
   identity_manager->GetAccountsMutator()->UpdateAccountInfo(
       device_account_id, device_account_is_child, signin::Tribool::kUnknown);
   CHECK_EQ(PrimaryAccountMutator::PrimaryAccountError::kNoError, error)
       << "SetPrimaryAccount error: " << static_cast<int>(error);
-  CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
+  CHECK(identity_manager->HasPrimaryAccount(requested_level));
+  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(requested_level).gaia,
            device_account.key.id());
 }
 #endif
@@ -173,11 +174,16 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
     const absl::optional<bool>& initial_account_is_child =
         signin_client_->IsInitialPrimaryAccountChild();
     CHECK(initial_account_is_child.has_value());
-    SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
-                      initial_account.value(),
-                      initial_account_is_child.value()
-                          ? signin::Tribool::kTrue
-                          : signin::Tribool::kFalse);
+    SetPrimaryAccount(
+        this, account_tracker_service_.get(), signin_client_,
+        initial_account.value(),
+        initial_account_is_child.value() ? signin::Tribool::kTrue
+                                         : signin::Tribool::kFalse,
+        base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
+            ? ConsentLevel::kSignin
+            : ConsentLevel::kSync
+
+    );
   }
 #endif
 }
