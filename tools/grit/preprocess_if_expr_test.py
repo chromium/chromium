@@ -25,7 +25,7 @@ class PreprocessIfExprTest(unittest.TestCase):
     with open(os.path.join(self._out_folder, file_name), 'r') as f:
       return f.read()
 
-  def _run_test(self, defines, file_name):
+  def _run_test(self, additional_options, file_name, expected_file_name):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
     preprocess_if_expr.main([
@@ -35,15 +35,39 @@ class PreprocessIfExprTest(unittest.TestCase):
         self._out_folder,
         '--in-files',
         file_name,
-    ] + defines)
+    ] + additional_options)
+    actual = self._read_out_file(file_name)
+    with open(os.path.join(_HERE_DIR, 'preprocess_tests', expected_file_name),
+              'r') as f:
+      expected = f.read()
+      self.assertMultiLineEqual(expected, actual)
 
   def testPreprocess(self):
-    self._run_test(['-D', 'foo', '-D', 'bar'], 'test_with_ifexpr.js')
-    actual = self._read_out_file('test_with_ifexpr.js')
-    self.assertIn('I should be included in HTML', actual)
-    self.assertIn('I should be included in JS', actual)
-    self.assertNotIn('I should be excluded from HTML', actual)
-    self.assertNotIn('I should be excluded from JS', actual)
+    self._run_test(['-D', 'foo', '-D', 'bar'], 'test_with_ifexpr.js',
+                   'test_with_ifexpr_expected.js')
+
+  def testPreprocessWithComments(self):
+    self._run_test(['-D', 'foo', '-D', 'bar', '--enable_removal_comments'],
+                   'test_with_ifexpr.js',
+                   'test_with_ifexpr_expected_comments.js')
+
+  def testPreprocessTypescriptWithComments(self):
+    self._run_test(['-D', 'foo', '-D', 'bar', '--enable_removal_comments'],
+                   'test_with_ifexpr.ts', 'test_with_ifexpr_expected.ts')
+
+  def testPreprocessHtmlWithComments(self):
+    self._run_test(['-D', 'foo', '--enable_removal_comments'],
+                   'test_with_ifexpr.html', 'test_with_ifexpr_expected.html')
+
+  def testPreprocessJavaScriptHtmlTemplateWithComments(self):
+    self._run_test(['-D', 'foo', '--enable_removal_comments'],
+                   'test_with_ifexpr.html.js',
+                   'test_with_ifexpr_expected.html.js')
+
+  def testPreprocessTypeScriptHtmlTemplateWithComments(self):
+    self._run_test(['-D', 'foo', '--enable_removal_comments'],
+                   'test_with_ifexpr.html.ts',
+                   'test_with_ifexpr_expected.html.ts')
 
 
 if __name__ == '__main__':

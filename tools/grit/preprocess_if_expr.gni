@@ -46,5 +46,10 @@ template("preprocess_if_expr") {
       ]
       outputs += [ invoker.out_manifest ]
     }
+
+    if (defined(invoker.enable_removal_comments) &&
+        invoker.enable_removal_comments) {
+      args += [ "--enable_removal_comments" ]
+    }
   }
 }

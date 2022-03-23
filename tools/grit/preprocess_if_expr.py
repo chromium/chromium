@@ -21,8 +21,9 @@ class PreprocessIfExprNode(grit.node.base.Node):
   def __init__(self):
     super(PreprocessIfExprNode, self).__init__()
 
-  def PreprocessIfExpr(self, content):
-    return grit.format.html_inline.CheckConditionalElements(self, content)
+  def PreprocessIfExpr(self, content, removal_comments_extension):
+    return grit.format.html_inline.CheckConditionalElements(
+        self, content, removal_comments_extension)
 
   def EvaluateCondition(self, expr):
     return grit.node.base.Node.EvaluateExpression(expr, self.defines,
@@ -57,6 +58,21 @@ def ParseDefinesArg(definesArg):
   return defines
 
 
+def ExtensionForComments(input_file):
+  """Get the file extension that determines the comment style.
+
+  Returns the file extension that determines the format of the
+  'grit-removed-lines' comments. '.ts' or '.js' will produce '/*...*/'-style
+  comments, '.html; will produce '<!-- -->'-style comments.
+  """
+  split = os.path.splitext(input_file)
+  extension = split[1]
+  # .html.ts and .html.js files should still use HTML comments.
+  if os.path.splitext(split[0])[1] == '.html':
+    extension = '.html'
+  return extension
+
+
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--in-folder', required=True)
@@ -66,6 +82,7 @@ def main(argv):
   parser.add_argument('-D', '--defines', nargs="*", action='append')
   parser.add_argument('-E', '--environment')
   parser.add_argument('-t', '--target')
+  parser.add_argument('--enable_removal_comments', action='store_true')
   args = parser.parse_args(argv)
 
   in_folder = os.path.normpath(os.path.join(_CWD, args.in_folder))
@@ -81,8 +98,12 @@ def main(argv):
     with io.open(in_path, encoding='utf-8', mode='r') as f:
       content = f.read()
 
+    removal_comments_extension = None  # None means no removal comments
+    if args.enable_removal_comments:
+      removal_comments_extension = ExtensionForComments(input_file)
+
     try:
-      preprocessed = node.PreprocessIfExpr(content)
+      preprocessed = node.PreprocessIfExpr(content, removal_comments_extension)
     except:
       raise Exception('Error processing %s' % in_path)
     out_path = os.path.join(out_folder, input_file)
