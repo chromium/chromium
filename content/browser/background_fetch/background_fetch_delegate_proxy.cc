@@ -65,13 +65,18 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
   // frames. (This may be missing in unit tests.)
   if (rfh && !rfh->GetParent() &&
       rfh->GetBrowserContext()->GetDownloadManager()->GetDelegate()) {
+    WebContents::Getter web_contents_getter(base::BindRepeating(
+        [](GlobalRenderFrameHostId rfh_id) {
+          return WebContents::FromRenderFrameHost(
+              RenderFrameHost::FromID(rfh_id));
+        },
+        rfh->GetGlobalId()));
     rfh->GetBrowserContext()
         ->GetDownloadManager()
         ->GetDelegate()
         ->CheckDownloadAllowed(
-            base::BindRepeating(&WebContents::FromRenderFrameHost, rfh),
-            origin.GetURL(), "GET", absl::nullopt,
-            false /* from_download_cross_origin_redirect */,
+            std::move(web_contents_getter), origin.GetURL(), "GET",
+            absl::nullopt, false /* from_download_cross_origin_redirect */,
             true /* content_initiated */,
             base::BindOnce(&BackgroundFetchDelegateProxy::
                                DidGetPermissionFromDownloadRequestLimiter,
