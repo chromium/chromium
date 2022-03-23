@@ -172,6 +172,90 @@ void WaitForElevatedInstallToComplete(base::Process process) {
   }
 }
 
+void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
+  const base::FilePath main_file = path.Append(kRecoveryFileName);
+  const base::FilePath manifest_file =
+      path.Append(FILE_PATH_LITERAL("manifest.json"));
+  if (!base::PathExists(main_file) || !base::PathExists(manifest_file))
+    return;
+
+  std::unique_ptr<base::DictionaryValue> manifest(ReadManifest(manifest_file));
+  const std::string* name = manifest->FindStringKey("name");
+  if (!name || *name != kRecoveryManifestName)
+    return;
+  std::string proposed_version;
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
+    if (base::IsStringASCII(*ptr))
+      proposed_version = *ptr;
+  }
+  const base::Version version(proposed_version);
+  if (!version.IsValid())
+    return;
+
+  const bool is_deferred_run = true;
+#if BUILDFLAG(IS_WIN)
+  const auto cmdline = BuildRecoveryInstallCommandLine(
+      main_file, *manifest, is_deferred_run, version);
+
+  RecordRecoveryComponentUMAEvent(RCE_RUNNING_ELEVATED);
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  options.elevated = true;
+  base::Process process = base::LaunchElevatedProcess(cmdline, options);
+#elif BUILDFLAG(IS_MAC)
+  base::mac::ScopedAuthorizationRef authRef(
+      base::mac::AuthorizationCreateToRunAsRoot(nullptr));
+  if (!authRef.get()) {
+    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
+    return;
+  }
+
+  const auto arguments = GetRecoveryInstallArguments(
+      *manifest, is_deferred_run, version);
+  // Convert the arguments memory layout to the format required by
+  // ExecuteWithPrivilegesAndGetPID(): an array of string pointers
+  // that ends with a null pointer.
+  std::vector<const char*> raw_string_args;
+  for (const auto& arg : arguments)
+    raw_string_args.push_back(arg.c_str());
+  raw_string_args.push_back(nullptr);
+
+  pid_t pid = -1;
+  const OSStatus status = base::mac::ExecuteWithPrivilegesAndGetPID(
+      authRef.get(), main_file.value().c_str(), kAuthorizationFlagDefaults,
+      raw_string_args.data(), nullptr, &pid);
+  if (status != errAuthorizationSuccess) {
+    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
+    return;
+  }
+
+  // The child process must print its PID in the first line of its STDOUT. See
+  // https://cs.chromium.org/chromium/src/base/mac/authorization_util.h?l=8
+  // for more details. When |pid| cannot be determined, we are not able to
+  // get process exit code, thus bail out early.
+  if (pid < 0) {
+    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_UNKNOWN_RESULT);
+    return;
+  }
+  base::Process process = base::Process::Open(pid);
+#endif
+  // This task joins a process, hence .WithBaseSyncPrimitives().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&WaitForElevatedInstallToComplete, std::move(process)));
+}
+
+void ElevatedInstallRecoveryComponent(const base::FilePath& installer_path) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DoElevatedInstallRecoveryComponent, installer_path));
+}
+
 }  // namespace
 
 // Component installer that is responsible to repair the chrome installation
@@ -442,6 +526,14 @@ void RegisterPrefsForRecoveryComponent(PrefRegistrySimple* registry) {
 
 void AcceptedElevatedRecoveryInstall(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  ElevatedInstallRecoveryComponent(
+      prefs->GetFilePath(prefs::kRecoveryComponentUnpackPath));
+#endif
+#endif
+
   prefs->SetBoolean(prefs::kRecoveryComponentNeedsElevation, false);
 }
 

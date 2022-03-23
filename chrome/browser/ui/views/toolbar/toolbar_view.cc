@@ -391,6 +391,9 @@ void ToolbarView::Init() {
   // Start global error services now so we set the icon on the menu correctly.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   SigninGlobalErrorFactory::GetForProfile(browser_->profile());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  RecoveryInstallGlobalErrorFactory::GetForProfile(browser_->profile());
+#endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Set the button icon based on the system state. Do this after
