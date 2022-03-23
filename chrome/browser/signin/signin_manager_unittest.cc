@@ -8,6 +8,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -62,10 +63,11 @@ class FakeIdentityManagerObserver : public IdentityManager::Observer {
 class SigninManagerTest : public testing::Test {
  public:
   SigninManagerTest()
-      : identity_test_env_(/*test_url_loader_factory=*/nullptr,
+      : client_(&prefs_),
+        identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            /*pref_service=*/&prefs_,
                            signin::AccountConsistencyMethod::kDice,
-                           /*test_signin_client=*/nullptr),
+                           &client_),
         observer_(identity_test_env_.identity_manager()) {
     RecreateSigninManager();
   }
@@ -75,7 +77,7 @@ class SigninManagerTest : public testing::Test {
 
   void RecreateSigninManager() {
     signin_manger_ =
-        std::make_unique<SigninManager>(&prefs_, identity_manager());
+        std::make_unique<SigninManager>(&prefs_, identity_manager(), &client_);
   }
 
   AccountInfo GetAccountInfo(const std::string& email) {
@@ -160,6 +162,7 @@ class SigninManagerTest : public testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   content::BrowserTaskEnvironment task_environment_;
+  TestSigninClient client_;
   IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<SigninManager> signin_manger_;
   FakeIdentityManagerObserver observer_;
@@ -185,9 +188,8 @@ TEST_F(
   // Invalid token.
   SetInvalidRefreshTokenForAccount(identity_manager(), account.account_id);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The primary account is not removed when becoming invalid.
-  // TODO(https://crbug.com/1260291): Revisit this once signout flows are
-  // defined.
+  // Lacros token service does not check for the validity of tokens.
+  // Therefore, the primary account should not be removed.
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 #else
   ExpectUnconsentedPrimaryAccountClearedEvent(account);
@@ -209,13 +211,8 @@ TEST_F(
 
   // With no refresh token, there is no unconsented primary account any more.
   identity_test_env()->RemoveRefreshTokenForAccount(account.account_id);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The primary account is never cleared by the `SigninManager` on Lacros.
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-#else
   ExpectUnconsentedPrimaryAccountClearedEvent(account);
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 TEST_F(SigninManagerTest, UnconsentedPrimaryAccountNotChangedOnSignout) {
@@ -358,9 +355,6 @@ TEST_F(SigninManagerTest,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   ExpectUnconsentedPrimaryAccountSetEvent(first_account);
 
-// Switching the primary account is not supported on lacros.
-// TODO(https://crbug.com/1260291): Revisit this once signout flows are defined.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Set the sync primary account to the second account in cookies.
   // The unconsented primary account should be updated.
   identity_test_env()->SetPrimaryAccount(second_account.email,
@@ -385,10 +379,20 @@ TEST_F(SigninManagerTest,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_EQ(first_account,
-            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  EXPECT_EQ(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // On Lacros, the UPA does not change on sync consent revoked.
+      second_account,
+#else
+      first_account,
+#endif
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_EQ(1U, observer().events().size());
+#else
   EXPECT_EQ(2U, observer().events().size());
+#endif
   event = observer().events()[0];
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
             event.GetEventTypeFor(ConsentLevel::kSync));
@@ -397,6 +401,7 @@ TEST_F(SigninManagerTest,
   EXPECT_EQ(second_account, event.GetPreviousState().primary_account);
   EXPECT_EQ(second_account, event.GetCurrentState().primary_account);
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   event = observer().events()[1];
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kNone,
             event.GetEventTypeFor(ConsentLevel::kSync));
@@ -404,7 +409,7 @@ TEST_F(SigninManagerTest,
             event.GetEventTypeFor(ConsentLevel::kSignin));
   EXPECT_EQ(second_account, event.GetPreviousState().primary_account);
   EXPECT_EQ(first_account, event.GetCurrentState().primary_account);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 }
 
 TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {

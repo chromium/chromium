@@ -27,6 +27,7 @@ class ConsistencyCookieManager;
 
 class AccountProfileMapper;
 class WebSigninHelperLacros;
+class SigninClient;
 #endif
 
 class PrefService;
@@ -34,7 +35,9 @@ class PrefService;
 class SigninManager : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
-  SigninManager(PrefService* prefs, signin::IdentityManager* identity_manger);
+  SigninManager(PrefService* prefs,
+                signin::IdentityManager* identity_manger,
+                SigninClient* client);
   ~SigninManager() override;
 
   SigninManager(const SigninManager&) = delete;
@@ -72,10 +75,7 @@ class SigninManager : public KeyedService,
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-  void OnRefreshTokenRemovedForAccount(
-      const CoreAccountId& account_id) override;
+  void OnEndBatchOfRefreshTokenStateChanges() override;
   void OnRefreshTokensLoaded() override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
@@ -102,6 +102,9 @@ class SigninManager : public KeyedService,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<WebSigninHelperLacros> web_signin_helper_lacros_;
+  // Whether this is the main profile for which the primary account is
+  // the account used to signin to the device aka initial primary account.
+  bool is_main_profile_ = false;
 #endif
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};

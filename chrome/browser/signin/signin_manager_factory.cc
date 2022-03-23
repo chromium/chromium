@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -28,6 +29,7 @@ SigninManagerFactory::SigninManagerFactory()
           "SigninManager",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ChromeSigninClientFactory::GetInstance());
 }
 
 SigninManagerFactory::~SigninManagerFactory() = default;
@@ -36,7 +38,8 @@ KeyedService* SigninManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new SigninManager(profile->GetPrefs(),
-                           IdentityManagerFactory::GetForProfile(profile));
+                           IdentityManagerFactory::GetForProfile(profile),
+                           ChromeSigninClientFactory::GetForProfile(profile));
 }
 
 bool SigninManagerFactory::ServiceIsCreatedWithBrowserContext() const {
