@@ -18,6 +18,8 @@
 #include "base/process/kill.h"
 #elif BUILDFLAG(IS_POSIX)
 #include <signal.h>
+#elif BUILDFLAG(IS_FUCHSIA)
+#include <zircon/syscalls.h>
 #endif
 
 namespace blink {
@@ -177,7 +179,6 @@ void HandleChromeDebugURL(const GURL& url) {
     // base::debug::SetDumpWithoutCrashingFunction.  Refer to the documentation
     // of base::debug::DumpWithoutCrashing for more details.
     base::debug::DumpWithoutCrashing();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
   } else if (url == kChromeUIKillURL) {
     LOG(ERROR) << "Intentionally terminating current process because user"
                   " navigated to "
@@ -189,8 +190,11 @@ void HandleChromeDebugURL(const GURL& url) {
         base::win::kProcessKilledExitCode);
 #elif BUILDFLAG(IS_POSIX)
     PCHECK(kill(base::Process::Current().Pid(), SIGTERM) == 0);
+#elif BUILDFLAG(IS_FUCHSIA)
+    zx_process_exit(ZX_TASK_RETCODE_SYSCALL_KILL);
+#else
+#error Unsupported platform
 #endif
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
   } else if (url == kChromeUIHangURL) {
     LOG(ERROR) << "Intentionally hanging ourselves with sleep infinite loop"
                << " because user navigated to " << url.spec();
