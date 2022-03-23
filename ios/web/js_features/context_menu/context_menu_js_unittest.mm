@@ -94,6 +94,15 @@ const char kImageAlt[] = "Some alt text for an image";
 // Style used to size the image returned by |GetHtmlForImage()|.
 const char kImageSizeStyle[] = "width:100%;height:25%;";
 
+// Style used to size a div with the background image set. The div should be
+// the same size as the image's natural size as specified in kImageNaturalWidth
+// andkImageNaturalHeight.
+const char kBackgroundDivStyle[] = "width:100%;height:25px;";
+
+// Style used to create an overlay div.
+const char kOverlayDivStyle[] = "position:fixed;left:0;top:0;width:100%;height:"
+                                "100%;background-color:black;";
+
 // Returns HTML for a test webpage with the given |head| and |body|.
 NSString* GetHtmlForPage(NSString* head, NSString* body) {
   return [NSString
@@ -367,6 +376,68 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
                               kImageNaturalWidth);
   expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
                               kImageNaturalHeight);
+
+  CheckElementResult(kPointOnImage, expected_value);
+}
+
+// Tests that the correct src is found for elements with background-image.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       FindImageElementAtPointBackgroundImageCSS) {
+  NSString* html_for_div =
+      [NSString stringWithFormat:@"<div style='background-image:url(%s);%s' />",
+                                 kImageSource, kBackgroundDivStyle];
+  NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
+  expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
+  expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetKey(kContextMenuElementBoundingBox,
+                        GetExpectedBoundingBoxForTestImage());
+
+  CheckElementResult(kPointOnImage, expected_value);
+}
+
+// Tests that the correct src is found for images behind transparent layers.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       FindImageElementAtPointBehindTransparentLayer) {
+  NSString* html_for_img = GetHtmlForImage(
+      kImageSource, kImageAlt, /*title=*/nullptr, /*style=*/nullptr);
+  NSString* html_for_div =
+      [NSString stringWithFormat:@"%@<div style='%sopacity:0;' />",
+                                 html_for_img, kOverlayDivStyle];
+  NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
+  expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
+  expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
+  expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
+  expected_value.SetKey(kContextMenuElementBoundingBox,
+                        GetExpectedBoundingBoxForTestImage());
+
+  CheckElementResult(kPointOnImage, expected_value);
+}
+
+// Tests that opaque objects block image selection underneath.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       FindImageElementAtPointBehindOpaqueLayer) {
+  NSString* html_for_img = GetHtmlForImage(
+      kImageSource, kImageAlt, /*title=*/nullptr, /*style=*/nullptr);
+  NSString* html_for_div =
+      [NSString stringWithFormat:@"%@<div style='%sopacity:1;' />",
+                                 html_for_img, kOverlayDivStyle];
+  NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
   CheckElementResult(kPointOnImage, expected_value);
 }

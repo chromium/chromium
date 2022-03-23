@@ -13,6 +13,14 @@ goog.provide('__crWeb.allFramesContextMenu');
 /** Beginning of anonymous object */
 (function() {
 
+// The minimum opacity for an element to be considered as opaque. Elements
+// with a higher opacity will prevent selection of images underneath.
+var OPACITY_THRESHOLD = 0.9;
+
+// The maximum opacity for an element to be considered as transparent.
+// Images with a lower opacity will not be selectable.
+var TRANSPARENCY_THRESHOLD = 0.1;
+
 // The maximum depth to search for elements at any point.
 var MAX_SEARCH_DEPTH = 8;
 
@@ -39,6 +47,7 @@ var getResponseForLinkElement = function(element) {
 /**
  * Returns an object representing the details of a given image element.
  * @param {HTMLElement} element The element whose details will be returned.
+ * @param {string} src The source of the image or image-like element.
  * @return {!Object} An object of the form {
  *                     {@code src} The src of the image.
  *                     {@code referrerPolicy} The referrer policy to use for
@@ -54,9 +63,9 @@ var getResponseForLinkElement = function(element) {
  *                         the image, if one exists.
  *                   }.
  */
-var getResponseForImageElement = function(element) {
+var getResponseForImageElement = function(element, src) {
   var result = {
-    src: element.currentSrc,
+    src: src,
     referrerPolicy: getReferrerPolicy_(),
     boundingBox: getElementBoundingBox_(element)
   };
@@ -85,7 +94,7 @@ var getResponseForImageElement = function(element) {
       result.referrerPolicy = getReferrerPolicy_(parent);
       break;
     }
-  parent = parent.parentNode;
+    parent = parent.parentNode;
   }
   // Copy the image natural width, if any.
   if (element.naturalWidth) {
@@ -167,7 +176,8 @@ var findElementAtPoint = function(
     // Element.closest will find link elements that are parents of the current
     // element. It also works for SVGAElements, links within svg tags. However,
     // we must still iterate through the elements at this position to find
-    // images.
+    // images. This ensures that it will never miss the link, even if this loop
+    //  terminates due to hitting an opaque element.
     if (!foundLinkElement) {
       var closestLink = element.closest('a');
       if (closestLink && closestLink.href &&
@@ -199,6 +209,11 @@ var findElementAtPoint = function(
               requestId, centerX, centerY, element)) {
         return true;
       }
+    }
+
+    // Opaque elements should block taps on images that are behind them.
+    if (isOpaqueElement(element)) {
+      break;
     }
   }
 
@@ -268,9 +283,10 @@ var processElementForFindElementAtPoint = function(
       return true;
     }
 
-    if (tagName === 'img' && element.currentSrc) {
+    var imageSrc = getImageSource(element);
+    if (imageSrc && !isTransparentElement(element)) {
       sendFindElementAtPointResponse(
-          requestId, getResponseForImageElement(element));
+          requestId, getResponseForImageElement(element, imageSrc));
       return true;
     }
   }
@@ -436,6 +452,75 @@ var getElementBoundingBox_ = function(element) {
   else {
     return null;
   }
+};
+
+/**
+ * Checks if the element is effectively transparent and should be skipped when
+ * checking for image and link elements.
+ * @param {Element!} element Element in the page.
+ * @return {boolean} True if the element is transparent.
+ */
+var isTransparentElement = function(element) {
+  var style = window.getComputedStyle(element);
+  return isOpaque = style.getPropertyValue('display') === 'none' ||
+      style.getPropertyValue('visibility') !== 'visible' ||
+      Number(style.getPropertyValue('opacity')) <= TRANSPARENCY_THRESHOLD;
+};
+
+/**
+ * Checks if the element blocks the user from viewing elements underneath it.
+ * @param {Element!} element The element to check for opacity.
+ * @return {boolean} True if the element blocks viewing of other elements.
+ */
+var isOpaqueElement = function(element) {
+  var style = window.getComputedStyle(element);
+  var isOpaque = style.getPropertyValue('display') !== 'none' &&
+      style.getPropertyValue('visibility') === 'visible' &&
+      Number(style.getPropertyValue('opacity')) >= OPACITY_THRESHOLD;
+
+  // We consider an element opaque if it has a background color with an alpha
+  // value of 1. To check this, we check to see if only rgb values are returned
+  // or all rgba values are (the alpha value is only returned if it is not 1).
+  var hasOpaqueBackgroundColor =
+      style.getPropertyValue('background-color').split(', ').length === 3;
+  var imageSource = getImageSource(element);
+  var hasBackground = imageSource || hasOpaqueBackgroundColor;
+
+  return isOpaque && hasBackground;
+};
+
+/**
+ * Returns the image source if the element is an <img> or an element with a
+ * background image.
+ * @param {Element?} element The element from which to get the image source.
+ * @return {string?} The image source, or null if no image source was found.
+ */
+var getImageSource = function(element) {
+  if (element && element.tagName && element.tagName.toLowerCase() === 'img') {
+    return element.currentSrc || element.src;
+  }
+  var backgroundImageString = window.getComputedStyle(element).backgroundImage;
+  if (backgroundImageString === '' || backgroundImageString === 'none') {
+    return null;
+  }
+  return extractUrlFromBackgroundImageString(backgroundImageString);
+};
+
+/**
+ * Returns a url if it is the first background image in the string. Otherwise,
+ * returns null.
+ * @param {string} backgroundImageString String of the CSS background image
+ *     property of an element.
+ * @return {string?} The url of the first background image in
+ * |backgroundImageString| or null if none are found.
+ */
+var extractUrlFromBackgroundImageString = function(backgroundImageString) {
+  // backgroundImageString can contain more than one background image, some of
+  // which may be urls or gradients.
+  // Example: 'url("image1"), linear-gradient(#ffffff, #000000), url("image2")'
+  var regex = /^url\(['|"]?(.+?)['|"]?\)/;
+  var url = regex.exec(backgroundImageString);
+  return url ? url[1] : null;
 };
 
 /**
