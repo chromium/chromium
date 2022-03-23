@@ -58,38 +58,39 @@ TEST_F(GridLinkedListTest, IntNodeBasic) {
   IntNode* num2 = MakeGarbageCollected<IntNode>(2);
   IntNode* num3 = MakeGarbageCollected<IntNode>(3);
 
-  Persistent<GridLinkedList<IntNode>> gll =
+  Persistent<GridLinkedList<IntNode>> gll_persistent =
       MakeGarbageCollected<GridLinkedList<IntNode>>();
+  GridLinkedList<IntNode>* gll = gll_persistent;
 
   EXPECT_EQ(gll->Size(), 0);
   EXPECT_TRUE(gll->IsEmpty());
 
   gll->Append(num1);
   EXPECT_EQ(gll->Size(), 1);
-  EXPECT_EQ(NthElement<IntNode>(gll, 0)->Value(), 1);
+  EXPECT_EQ(NthElement(gll, 0)->Value(), 1);
 
   gll->Append(num2);
   EXPECT_EQ(gll->Size(), 2);
-  EXPECT_EQ(NthElement<IntNode>(gll, 0)->Value(), 1);
-  EXPECT_EQ(NthElement<IntNode>(gll, 1)->Value(), 2);
+  EXPECT_EQ(NthElement(gll, 0)->Value(), 1);
+  EXPECT_EQ(NthElement(gll, 1)->Value(), 2);
 
   gll->Push(num3);
   EXPECT_EQ(gll->Size(), 3);
-  EXPECT_EQ(NthElement<IntNode>(gll, 0)->Value(), 3);
-  EXPECT_EQ(NthElement<IntNode>(gll, 1)->Value(), 1);
-  EXPECT_EQ(NthElement<IntNode>(gll, 2)->Value(), 2);
+  EXPECT_EQ(NthElement(gll, 0)->Value(), 3);
+  EXPECT_EQ(NthElement(gll, 1)->Value(), 1);
+  EXPECT_EQ(NthElement(gll, 2)->Value(), 2);
 
   gll->Remove(num1);
   EXPECT_EQ(gll->Size(), 2);
-  EXPECT_EQ(NthElement<IntNode>(gll, 0)->Value(), 3);
-  EXPECT_EQ(NthElement<IntNode>(gll, 1)->Value(), 2);
+  EXPECT_EQ(NthElement(gll, 0)->Value(), 3);
+  EXPECT_EQ(NthElement(gll, 1)->Value(), 2);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(1, IntNode::destructor_calls);
 
   gll->Remove(num3);
   EXPECT_EQ(gll->Size(), 1);
-  EXPECT_EQ(NthElement<IntNode>(gll, 0)->Value(), 2);
+  EXPECT_EQ(NthElement(gll, 0)->Value(), 2);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(2, IntNode::destructor_calls);

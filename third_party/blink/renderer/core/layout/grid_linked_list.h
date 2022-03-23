@@ -74,6 +74,9 @@ class GridLinkedList : public GarbageCollected<GridLinkedList<NodeType>> {
   GridLinkedList() {
     static_assert(IsGarbageCollectedType<NodeType>::value,
                   "NodeType must be a garbage collected object.");
+    static_assert(
+        std::is_base_of<GridLinkedListNodeBase<NodeType>, NodeType>::value,
+        "NodeType should inherit GridLinkedListNodeBase.");
   }
 
   NodeType* Head() const { return head_; }
