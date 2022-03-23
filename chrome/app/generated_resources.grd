@@ -2539,29 +2539,41 @@ are declared in tools/grit/grit_rule.gni.
                desc="A symbol for active downloads, in this case downward arrow ↓. If the downward arrow ↓ resembles another symbol in the language, please translate the downward arrow ↓ as a symbol that indicates a downward arrow">
         '''↓ '''
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_RESUMING"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING"
                desc="When resuming a download, let the user know we're resuming the download.">
         Resuming...
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_DONE"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DONE"
                desc="When a download is finished, let the user know.">
         Done
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_BLOCKED"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED"
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_FAILED"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_FAILED"
                desc="When a download is failed, let the user know.">
         Failed
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_FAILED_WEBDRIVE"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_FAILED_WEBDRIVE"
                desc="When a download is failed and was expecting to save to web drive, let the user know.">
         '''Failed to save to '''
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_MALWARE"
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE"
                desc="Malware warning for the user.">
         Malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS"
+               desc="The label on the checkbox with which the user chooses to bypass blocked download.">
+        I understand this download will harm my computer
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE"
+               desc="Label for the Continue button on the blocked download bubble subpage.">
+        Continue
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_DELETE"
+               desc="Label for the Delete button on the blocked download bubble subpage.">
+        Delete
       </message>
 
       <!-- Desktop omnibox PWA install icon -->

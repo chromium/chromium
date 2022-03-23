@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,6 +29,8 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/progress_ring_utils.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -156,12 +159,21 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 }
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
-  bubble_delegate_->SetContentsView(GetPrimaryView());
+  switcher_view_->RemoveAllChildViews();
+  switcher_view_->AddChildView(GetPrimaryView());
+  switcher_view_->InvalidateLayout();
 }
 
-// TODO(bhatiarohit): Open subpage here.
 void DownloadToolbarButtonView::OpenSecurityDialog(
-    DownloadUIModel::DownloadUIModelPtr download) {}
+    DownloadUIModel::DownloadUIModelPtr download,
+    ui::ImageModel icon) {
+  // Save the model before RemoveAllChildViews destroys it.
+  DownloadUIModel::DownloadUIModelPtr saved_model = std::move(download);
+  switcher_view_->RemoveAllChildViews();
+  switcher_view_->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
+      std::move(saved_model), icon, bubble_controller_.get(), this));
+  switcher_view_->InvalidateLayout();
+}
 
 void DownloadToolbarButtonView::CloseDialog() {
   bubble_delegate_->GetWidget()->CloseWithReason(
@@ -170,6 +182,7 @@ void DownloadToolbarButtonView::CloseDialog() {
 
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   bubble_delegate_ = nullptr;
+  switcher_view_ = nullptr;
 }
 
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
@@ -183,8 +196,11 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->RegisterDeleteDelegateCallback(
       base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
                      weak_factory_.GetWeakPtr()));
-  bubble_delegate->SetContentsView(std::move(bubble_contents_view));
-
+  switcher_view_ =
+      bubble_delegate->SetContentsView(std::make_unique<views::View>());
+  switcher_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  switcher_view_->AddChildView(std::move(bubble_contents_view));
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

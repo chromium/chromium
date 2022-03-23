@@ -611,6 +611,12 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Download Bubble Items -->
+      <message name="IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED"
+               desc="Message shown to the user to validate the download when the download url is classified to lead to malware by the safebrowsing database.">
+        Chromium blocked this file because it is dangerous
+      </message>
+
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"
                desc="Message shown when a CRX has been downloaded and is being unpacked.">

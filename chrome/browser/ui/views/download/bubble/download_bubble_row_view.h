@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -41,7 +42,7 @@ struct DownloadStyleInfo {
   bool operator==(const DownloadStyleInfo& rhs);
 };
 
-class DownloadBubbleRowView : public views::View,
+class DownloadBubbleRowView : public views::Button,
                               public views::ContextMenuController,
                               public DownloadUIModel::Observer {
  public:
@@ -120,7 +121,7 @@ class DownloadBubbleRowView : public views::View,
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // The model controlling this object's state.
-  const DownloadUIModel::DownloadUIModelPtr model_;
+  DownloadUIModel::DownloadUIModelPtr model_;
 
   // Reuse the download shelf context menu in the bubble.
   std::unique_ptr<DownloadShelfContextMenuView> context_menu_;

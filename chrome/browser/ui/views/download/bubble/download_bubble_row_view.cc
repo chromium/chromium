@@ -114,6 +114,7 @@ void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
 
 void DownloadBubbleRowView::SetIconFromImageModel(ui::ImageModel icon) {
   icon_->SetImage(icon);
+  InvalidateLayout();
 }
 
 void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
@@ -146,7 +147,9 @@ void DownloadBubbleRowView::LoadIcon() {
 }
 
 DownloadBubbleRowView::~DownloadBubbleRowView() {
-  model_->RemoveObserver(this);
+  if (model_.get()) {
+    model_->RemoveObserver(this);
+  }
 }
 
 DownloadBubbleRowView::DownloadBubbleRowView(
@@ -154,7 +157,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadBubbleRowListView* row_list_view,
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler)
-    : model_(std::move(model)),
+    : Button(base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
+                                 base::Unretained(this))),
+      model_(std::move(model)),
       context_menu_(
           std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr(),
                                                          bubble_controller)),
@@ -208,8 +213,18 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   OnDownloadUpdated();
 }
 
-// TODO(bhatiarohit): Make the row clickable with this method.
-void DownloadBubbleRowView::OnMainButtonPressed() {}
+void DownloadBubbleRowView::OnMainButtonPressed() {
+  SetEnabled(false);
+  if (style_info_.has_subpage_button) {
+    model_->RemoveObserver(this);
+    navigation_handler_->OpenSecurityDialog(std::move(model_),
+                                            style_info_.icon_model_override);
+    // |this| is deleted now.
+  } else {
+    DownloadCommands(model_->GetWeakPtr())
+        .ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE);
+  }
+}
 
 void DownloadBubbleRowView::UpdateUIForWarnings() {
   if (style_info_.state == download::DownloadItem::DownloadState::IN_PROGRESS &&
@@ -288,6 +303,10 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
 
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   secondary_label_->SetText(model_->GetStatusText());
+
+  views::Button::SetAccessibleName(base::JoinString(
+      {primary_label_->GetText(), secondary_label_->GetText()}, u"\n"));
+
   if (GetWidget()) {
     secondary_label_->SetEnabledColor(
         GetColorProvider()->GetColor(style_info_.secondary_text_color));
@@ -333,5 +352,5 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
                      base::RepeatingClosure());
 }
 
-BEGIN_METADATA(DownloadBubbleRowView, views::View)
+BEGIN_METADATA(DownloadBubbleRowView, views::Button)
 END_METADATA

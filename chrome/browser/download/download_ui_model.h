@@ -79,6 +79,29 @@ class DownloadUIModel {
     std::u16string GetBubbleWarningStatusText() const;
   };
 
+#if !BUILDFLAG(IS_ANDROID)
+  struct BubbleSubpageInfo {
+   public:
+    // Summary of the download warning
+    std::u16string warning_summary;
+
+    // Label for the checkbox, empty if no checkbox is needed
+    bool has_checkbox;
+    std::u16string checkbox_label;
+
+    // Label and commands for the two buttons
+    bool has_first_button;
+    DownloadCommands::Command first_button_command;
+    std::u16string first_button_label;
+    bool has_second_button;
+    DownloadCommands::Command second_button_command;
+    std::u16string second_button_label;
+    BubbleSubpageInfo();
+    ~BubbleSubpageInfo();
+    BubbleSubpageInfo(const BubbleSubpageInfo&);
+  };
+#endif
+
   using DownloadUIModelPtr =
       std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
 
@@ -390,6 +413,9 @@ class DownloadUIModel {
   // Executes the given download command on this download.
   virtual void ExecuteCommand(DownloadCommands* download_commands,
                               DownloadCommands::Command command);
+
+  // Gets the information about the download bubbles subpage.
+  BubbleSubpageInfo GetBubbleSubpageInfo() const;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

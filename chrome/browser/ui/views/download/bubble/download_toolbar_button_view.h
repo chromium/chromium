@@ -23,8 +23,8 @@ class DownloadBubbleNavigationHandler {
  public:
   // Primary dialog is either main or partial view.
   virtual void OpenPrimaryDialog() = 0;
-  virtual void OpenSecurityDialog(
-      DownloadUIModel::DownloadUIModelPtr download) = 0;
+  virtual void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
+                                  ui::ImageModel icon) = 0;
   virtual void CloseDialog() = 0;
 };
 
@@ -56,8 +56,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;
-  void OpenSecurityDialog(
-      DownloadUIModel::DownloadUIModelPtr download) override;
+  void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
+                          ui::ImageModel icon) override;
   void CloseDialog() override;
 
  private:
@@ -81,6 +81,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
+  raw_ptr<views::View> switcher_view_ = nullptr;
 
   base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };
