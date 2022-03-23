@@ -90,7 +90,6 @@ class VideoWakeLockPictureInPictureService final
 class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
  public:
   ReadyState GetReadyState() const override { return kReadyStateHaveMetadata; }
-  bool HasVideo() const override { return true; }
   void OnRequestPictureInPicture() override {
     // Use a fake but valid viz::SurfaceId.
     surface_id_ = viz::SurfaceId(
@@ -100,7 +99,11 @@ class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
   }
   absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 
+  bool HasVideo() const override { return has_video_; }
+  void SetHasVideo(bool has_video) { has_video_ = has_video; }
+
  private:
+  bool has_video_ = true;
   absl::optional<viz::SurfaceId> surface_id_;
 };
 
@@ -137,8 +140,10 @@ class VideoWakeLockTestWebFrameClient
 class VideoWakeLockTest : public testing::Test {
  public:
   void SetUp() override {
+    auto media_player = std::make_unique<VideoWakeLockMediaPlayer>();
+    media_player_ = media_player.get();
     client_ = std::make_unique<VideoWakeLockTestWebFrameClient>(
-        std::make_unique<VideoWakeLockMediaPlayer>());
+        std::move(media_player));
 
     helper_.Initialize(client_.get());
     helper_.Resize(gfx::Size(800, 600));
@@ -148,10 +153,15 @@ class VideoWakeLockTest : public testing::Test {
         WTF::BindRepeating(&VideoWakeLockPictureInPictureService::Bind,
                            WTF::Unretained(&pip_service_)));
 
+    fake_layer_ = cc::Layer::Create();
+
     GetDocument().body()->setInnerHTML("<body><video></video></body>");
     video_ = To<HTMLVideoElement>(GetDocument().QuerySelector("video"));
+    SetFakeCcLayer(fake_layer_.get());
     video_->SetReadyState(HTMLMediaElement::ReadyState::kHaveMetadata);
     video_wake_lock_ = MakeGarbageCollected<VideoWakeLock>(*video_.Get());
+    video_->SetSrc("http://example.com/foo.mp4");
+    test::RunPendingTasks();
 
     GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                  true);
@@ -164,6 +174,7 @@ class VideoWakeLockTest : public testing::Test {
 
   HTMLVideoElement* Video() const { return video_.Get(); }
   VideoWakeLock* GetVideoWakeLock() const { return video_wake_lock_.Get(); }
+  VideoWakeLockMediaPlayer* GetMediaPlayer() const { return media_player_; }
 
   LocalFrame& GetFrame() const { return *helper_.LocalMainFrame()->GetFrame(); }
   Page& GetPage() const { return *GetDocument().GetPage(); }
@@ -235,6 +246,9 @@ class VideoWakeLockTest : public testing::Test {
   std::unique_ptr<frame_test_helpers::TestWebFrameClient> client_;
   Persistent<HTMLVideoElement> video_;
   Persistent<VideoWakeLock> video_wake_lock_;
+
+  VideoWakeLockMediaPlayer* media_player_;
+  scoped_refptr<cc::Layer> fake_layer_;
 
   VideoWakeLockPictureInPictureService pip_service_;
   frame_test_helpers::WebViewHelper helper_;
@@ -333,13 +347,6 @@ TEST_F(VideoWakeLockTest, LeavingRemotePlaybackResumesLock) {
 }
 
 TEST_F(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
-  // This initialeses the video element in order to not crash when the
-  // interstitial tries to show itself and so that the WebMediaPlayer is set up.
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  SetFakeCcLayer(layer.get());
-  Video()->SetSrc("http://example.com/foo.mp4");
-  test::RunPendingTasks();
-
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -350,13 +357,6 @@ TEST_F(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
 }
 
 TEST_F(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
-  // This initialeses the video element in order to not crash when the
-  // interstitial tries to show itself and so that the WebMediaPlayer is set up.
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  SetFakeCcLayer(layer.get());
-  Video()->SetSrc("http://example.com/foo.mp4");
-  test::RunPendingTasks();
-
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -368,13 +368,6 @@ TEST_F(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
 }
 
 TEST_F(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
-  // This initialeses the video element in order to not crash when the
-  // interstitial tries to show itself and so that the WebMediaPlayer is set up.
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  SetFakeCcLayer(layer.get());
-  Video()->SetSrc("http://example.com/foo.mp4");
-  test::RunPendingTasks();
-
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -386,13 +379,6 @@ TEST_F(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
 }
 
 TEST_F(VideoWakeLockTest, RemotingVideoInPictureInPictureDoesNotRequestLock) {
-  // This initialeses the video element in order to not crash when the
-  // interstitial tries to show itself and so that the WebMediaPlayer is set up.
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  SetFakeCcLayer(layer.get());
-  Video()->SetSrc("http://example.com/foo.mp4");
-  test::RunPendingTasks();
-
   SimulatePlaying();
   SimulateEnterPictureInPicture();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
@@ -510,11 +496,6 @@ TEST_F(VideoWakeLockTest, HidingMutedVideoReleasesLock) {
 }
 
 TEST_F(VideoWakeLockTest, HiddenMutedVideoAlwaysVisibleInPictureInPicture) {
-  // This initialeses the video element in order to not crash when the
-  // interstitial tries to show itself and so that the WebMediaPlayer is set up.
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  SetFakeCcLayer(layer.get());
-  Video()->SetSrc("http://example.com/foo.mp4");
   Video()->setMuted(true);
   HideVideo();
   UpdateVisibilityObserver();
@@ -526,6 +507,20 @@ TEST_F(VideoWakeLockTest, HiddenMutedVideoAlwaysVisibleInPictureInPicture) {
 
   SimulateLeavePictureInPicture();
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, VideoWithNoFramesReleasesLock) {
+  GetMediaPlayer()->SetHasVideo(false);
+  SimulatePlaying();
+
+  EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, VideoWithFramesTakesLock) {
+  GetMediaPlayer()->SetHasVideo(true);
+  SimulatePlaying();
+
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
 }
 
 }  // namespace blink

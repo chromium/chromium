@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/media/remote_playback_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -130,12 +131,15 @@ bool VideoWakeLock::ShouldBeActive() const {
        (page_visible &&
         (is_visible_ || VideoElement().EffectiveMediaVolume())));
 
-  // The video wake lock should be active iif:
+  bool has_video = VideoElement().HasVideo();
+
+  // The video wake lock should be active iff:
   //  - it's playing;
+  //  - it has video frames;
   //  - the visibility requirements are met (see above);
   //  - it's *not* playing in Remote Playback;
   //  - the document is not paused nor destroyed.
-  return playing_ && visibility_requirements_met &&
+  return playing_ && has_video && visibility_requirements_met &&
          remote_playback_state_ !=
              mojom::blink::PresentationConnectionState::CONNECTED &&
          context_is_running;

@@ -50,7 +50,7 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   DCHECK(browser_context);
   content::WebContents::CreateParams create_params(browser_context, nullptr);
   create_params.site_instance = site_instance;
-  create_params.enable_wake_locks = params.keep_screen_on;
+
   return content::WebContents::Create(create_params);
 }
 
