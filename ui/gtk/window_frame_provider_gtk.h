@@ -6,6 +6,7 @@
 #define UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 
 #include "base/containers/flat_map.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/linux_ui/window_frame_provider.h"
 

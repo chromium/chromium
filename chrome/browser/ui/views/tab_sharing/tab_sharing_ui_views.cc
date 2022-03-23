@@ -33,6 +33,7 @@
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/border.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

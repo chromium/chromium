@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"

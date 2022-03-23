@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {

@@ -17,6 +17,7 @@
 #include "ui/views/views_export.h"
 
 class SkRRect;
+struct SkRect;
 
 namespace gfx {
 class Canvas;

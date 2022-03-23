@@ -7,6 +7,9 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_analysis.h"
 

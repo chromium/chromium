@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/button/md_text_button.h"
 
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"

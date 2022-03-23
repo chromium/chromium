@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image_skia.h"
 

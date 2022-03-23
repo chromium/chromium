@@ -15,6 +15,9 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "components/sync/model/string_ordinal.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+class SkBitmap;
 
 namespace app_list {
 namespace reorder {

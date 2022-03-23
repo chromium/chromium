@@ -8,7 +8,10 @@
 #include "components/media_message_center/media_notification_background.h"
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+
+class SkPath;
 
 namespace gfx {
 class Rect;

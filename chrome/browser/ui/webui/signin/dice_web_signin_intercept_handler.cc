@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"

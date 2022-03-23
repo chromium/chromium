@@ -9,7 +9,10 @@
 #include "base/gtest_prod_util.h"
 #include "components/media_message_center/media_notification_background.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+
+struct SkPoint;
 
 namespace gfx {
 class Rect;

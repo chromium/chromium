@@ -9,6 +9,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);

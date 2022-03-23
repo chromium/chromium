@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/controls/button/label_button.h"
 
 #if BUILDFLAG(IS_WIN)

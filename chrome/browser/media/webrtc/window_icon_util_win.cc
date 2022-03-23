@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/window_icon_util.h"
 
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/icon_util.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {

@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media_message_center {

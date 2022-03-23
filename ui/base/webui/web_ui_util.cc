@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "third_party/modp_b64/modp_b64.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"

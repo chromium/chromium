@@ -23,6 +23,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace chromeos {
 namespace settings {
