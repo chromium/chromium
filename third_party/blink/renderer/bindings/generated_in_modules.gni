@@ -1022,6 +1022,8 @@ generated_dictionary_sources_in_modules = [
 generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_alpha_option.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_alpha_option.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ancestor_status.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ancestor_status.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_app_banner_prompt_outcome.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_app_banner_prompt_outcome.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_append_mode.cc",
