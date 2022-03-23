@@ -208635,19 +208635,6 @@
        {}
       ]
      ],
-     "effect-reference-feimage-004.html": [
-      "99b0e8f5ab82361c45cdcc303c35f81e10f90a7c",
-      [
-       null,
-       [
-        [
-         "/css/filter-effects/reference/effect-reference-feimage-004-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "effect-reference-lighting-no-light.tentative.html": [
       "beefd47a544d5c82b4b1d468ce99938e6d9924d9",
       [
@@ -280833,10 +280820,6 @@
        "9b982b3cfb408badeb9b8b977000fc5e8935e5a6",
        []
       ],
-      "effect-reference-feimage-004-ref.html": [
-       "0aa3378e59076c09b38a51859ae872c001557d0b",
-       []
-      ],
       "effect-reference-lighting-no-light.tentative-ref.html": [
        "e863a6703b2acebbdb10a5eef342cbbd1b6b5bc9",
        []
@@ -282323,7 +282306,7 @@
     ],
     "admin": {
      "index.md": [
-      "1d0afc1c33ff61d72727cfd32ca4af6cad865466",
+      "dd7dfe2e72ae3aa2284cea498c0e36bbd7ab16fb",
       []
      ],
      "pywebsocket3.rst": [
@@ -307923,6 +307906,22 @@
    "loading": {
     "early-hints": {
      "resources": {
+      "arbitrary-header-in-early-hints.h2.py": [
+       "bb118c3200617231be054ee14fa873f046eac141",
+       []
+      ],
+      "arbitrary-header-in-early-hints.html": [
+       "cc939f5ea69c008c9c1ba3442932687a80aee1a9",
+       []
+      ],
+      "coep-mismatch.h2.py": [
+       "240a804f572a0223225d0888501a72834323e9c0",
+       []
+      ],
+      "coep-mismatch.html": [
+       "1811bf5506febc8ec36abd13d4196098c01b4ba0",
+       []
+      ],
       "csp-basic-loader.h2.py": [
        "080901efe60e70d8b178d0d9ffea5bbe04d71b94",
        []
@@ -307932,11 +307931,19 @@
        []
       ],
       "early-hints-helpers.sub.js": [
-       "33f80bc5f2dbe53ee1d7599f3ac46086951d356b",
+       "9eb1db383c73ca32d593384614ae5d7b478808ea",
        []
       ],
       "early-hints-test-loader.h2.py": [
        "aa9188c6dbc3920055095421bc880ec5595b0bbb",
+       []
+      ],
+      "empty-corp-absent.js": [
+       "b7965b64a1183bcaeb9fa45ba10f49e47f20317e",
+       []
+      ],
+      "empty-corp-absent.js.headers": [
+       "175cdf80464a658981a55d09d788dee26bf1e1a0",
        []
       ],
       "empty.js": [
@@ -364065,7 +364072,7 @@
       ]
      ],
      "system-color-consistency.html": [
-      "c714adc2c1ec6389a31bc02750f1568bf45d1242",
+      "5c5cc796f6c0aca80a09ef10fda6fcedf4fff4a6",
       [
        null,
        {}
@@ -474111,6 +474118,49 @@
    },
    "loading": {
     "early-hints": {
+     "arbitrary-header-in-early-hints.h2.window.js": [
+      "f0e848ec1075ae712615d08902ceaae24200575d",
+      [
+       "loading/early-hints/arbitrary-header-in-early-hints.h2.window.html",
+       {}
+      ]
+     ],
+     "coep-early-hints-none-final-require-corp.h2.window.js": [
+      "ab135b549394f93b037bf8d8218729cc0b6f1e87",
+      [
+       "loading/early-hints/coep-early-hints-none-final-require-corp.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "coep-early-hints-require-corp-final-none.h2.window.js": [
+      "68e20ba42f13fcd68d3cc2d2cb2445eca5c8d436",
+      [
+       "loading/early-hints/coep-early-hints-require-corp-final-none.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "csp-early-hints-absent-final-absent.h2.window.js": [
       "f61e268c8a3e2692951607eb8ad4dddd988f0ad3",
       [
@@ -483164,8 +483214,15 @@
         {}
        ]
       ],
-      "navigate-detach.html": [
+      "navigate-detach-in-onnavigate.html": [
        "0e80e1b1305c3a257e69b81a7dbdbf2984392629",
+       [
+        null,
+        {}
+       ]
+      ],
+      "navigate-detach-in-serialization.html": [
+       "14086c9f0152a9c94b93aa8a650572f7c7f71480",
        [
         null,
         {}
@@ -483228,14 +483285,14 @@
        ]
       ],
       "navigate-rejection-order-beforeunload-unserializablestate.html": [
-       "3039c92a08acd51da0dac300e4d3db1b62c18ae9",
+       "878280a56eb9cf993f9aea9bd00abc745fcd5eff",
        [
         null,
         {}
        ]
       ],
       "navigate-rejection-order-detached-unserializablestate.html": [
-       "f14df84aa3ae472390b0de855f36c517ebdc2047",
+       "2c6f9a28d49c19bcff79daa01a80ec330a1da18d",
        [
         null,
         {}
@@ -483270,7 +483327,7 @@
        ]
       ],
       "navigate-rejection-order-unload-unserializablestate.html": [
-       "287434a7ca91a70d28fe690ef53cccb0c9092ace",
+       "417dd27174ca3c0a9ebd13b9114638382598af6c",
        [
         null,
         {}
@@ -483332,8 +483389,15 @@
         {}
        ]
       ],
-      "reload-detach.html": [
+      "reload-detach-in-onnavigate.html": [
        "621bb598f64d6898ecde54d2bc5131f6c727617e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "reload-detach-in-serialization.html": [
+       "d958d9cc844daa7bb6853864f8a4f947a8748c62",
        [
         null,
         {}
@@ -483354,21 +483418,21 @@
        ]
       ],
       "reload-rejection-order-beforeunload-unserializablestate.html": [
-       "127f05f6d4f74f9353d52bac6a481d85886e1379",
+       "950d665218fc2d3a1d61102412cd543a3f2e0210",
        [
         null,
         {}
        ]
       ],
       "reload-rejection-order-detached-unserializablestate.html": [
-       "0e00510d2ee4e5fa80d009f65e8977d7bebd854f",
+       "9206f18e6ccec52becf43929e00395110cfb57f4",
        [
         null,
         {}
        ]
       ],
       "reload-rejection-order-unload-unserializablestate.html": [
-       "85f69efcaebe65f5c56062465471a2a655e762dc",
+       "9e7edcbba4f7ae6f1e4ad0741de22903f88ef479",
        [
         null,
         {}
