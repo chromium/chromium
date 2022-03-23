@@ -11,15 +11,6 @@ namespace web_app {
 
 // Manual tests:
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
-                       LaunchFromPlatformShortcut) {
-  helper_.InstallCreateShortcutWindowed("SiteA");
-  helper_.CheckWindowCreated();
-  helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut("SiteA");
-  helper_.CheckWindowCreated();
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, UninstallFromList) {
   helper_.InstallCreateShortcutWindowed("SiteA");
   helper_.UninstallFromList("SiteA");

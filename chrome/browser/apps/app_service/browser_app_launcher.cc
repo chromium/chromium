@@ -151,34 +151,4 @@ void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
 }
 #endif
 
-void BrowserAppLauncher::LaunchAppWithCallback(
-    const std::string& app_id,
-    const base::CommandLine& command_line,
-    const base::FilePath& current_directory,
-    const absl::optional<GURL>& url_handler_launch_url,
-    const absl::optional<GURL>& protocol_handler_launch_url,
-    const std::vector<base::FilePath>& launch_files,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback) {
-  // old-style app shortcuts
-  if (app_id.empty()) {
-    ::LaunchAppWithCallback(profile_, app_id, command_line, current_directory,
-                            std::move(callback));
-    return;
-  }
-
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
-          app_id);
-  if (!extension) {
-    web_app_launch_manager_.LaunchApplication(
-        app_id, command_line, current_directory, url_handler_launch_url,
-        protocol_handler_launch_url, launch_files, std::move(callback));
-    return;
-  }
-
-  ::LaunchAppWithCallback(profile_, app_id, command_line, current_directory,
-                          std::move(callback));
-}
-
 }  // namespace apps

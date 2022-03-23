@@ -820,6 +820,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
+
+  ui_test_utils::BrowserChangeObserver browser_waiter(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
@@ -828,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     // Pref was set to open in a window, so the app should have opened in a
     // window.  The launch should have created a new browser. Find the new
     // browser.
-    Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+    Browser* new_browser = browser_waiter.Wait();
     ASSERT_TRUE(new_browser);
 
     // Expect an app window.
