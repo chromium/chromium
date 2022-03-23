@@ -36,6 +36,9 @@ namespace {
 
 DesksTemplatesClient* g_desks_templates_client_instance = nullptr;
 
+// Used to generate unique IDs for desk template launches.
+int32_t g_launch_id = 0;
+
 // TODO(https://crbug.com/1284774): Remove metrics from this file.
 // Histogram names.
 constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
@@ -312,7 +315,11 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
     base::Time time_launch_started,
     base::TimeDelta delay) {
   DCHECK(desk_template);
-  DCHECK_GT(desk_template->launch_id(), 0);
+  DCHECK_EQ(desk_template->launch_id(), 0);
+
+  // Generate a unique ID for this launch. It is used to tell different template
+  // launches apart.
+  desk_template->set_launch_id(++g_launch_id);
 
   app_restore::RestoreData* restore_data =
       desk_template->mutable_desk_restore_data();
