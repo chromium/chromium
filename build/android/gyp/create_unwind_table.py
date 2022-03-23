@@ -698,7 +698,7 @@ def EncodeFunctionOffsetTable(
 ) -> Tuple[bytes, Dict[Tuple[EncodedAddressUnwind, ...], int]]:
   """Encodes the function offset table.
 
-  The function offset table maps local address_offset from function
+  The function offset table maps local instruction offset from function
   start to the location in the unwind instruction table.
 
   Args:
@@ -723,8 +723,13 @@ def EncodeFunctionOffsetTable(
 
     offsets[sequence] = len(function_offset_table)
     for address_offset, complete_instruction_sequence in sequence:
-      function_offset_table += Uleb128Encode(address_offset) + Uleb128Encode(
-          unwind_instruction_table_offsets[complete_instruction_sequence])
+      # Note: address_offset is the number of bytes from one address to another,
+      # while the instruction_offset is the number of 2-byte instructions
+      # from one address to another.
+      instruction_offset = address_offset >> 1
+      function_offset_table += (
+          Uleb128Encode(instruction_offset) + Uleb128Encode(
+              unwind_instruction_table_offsets[complete_instruction_sequence]))
 
   return bytes(function_offset_table), offsets
 

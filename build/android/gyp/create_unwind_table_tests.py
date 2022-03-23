@@ -690,7 +690,7 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence1 = bytes([1, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
 
@@ -725,11 +725,11 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence2 = bytes([2, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x20, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence2 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence2),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     address_unwind_sequences = [sequence1, sequence2]
@@ -771,11 +771,11 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence2 = bytes([2, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x20, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence2 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence2),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence3 = sequence1
@@ -1110,15 +1110,15 @@ class _TestGenerateUnwindTables(unittest.TestCase):
   def testGenerateUnwindTables(self):
     """This is an integration test that hooks everything together. """
     address_unwind_sequence0 = (
-        EncodedAddressUnwind(0x10, bytes([0, 0xb0])),
+        EncodedAddressUnwind(0x20, bytes([0, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
     address_unwind_sequence1 = (
-        EncodedAddressUnwind(0x10, bytes([1, 0xb0])),
+        EncodedAddressUnwind(0x20, bytes([1, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
     address_unwind_sequence2 = (
-        EncodedAddressUnwind(0x100, bytes([2, 0xb0])),
+        EncodedAddressUnwind(0x200, bytes([2, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
 
