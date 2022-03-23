@@ -18841,7 +18841,7 @@
     {
       'name': 'QuickUnlockModeWhitelist',
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
-      'type': 'list',
+      'type': 'string-enum-list',
       'schema': {
         'type': 'array',
         'items': {
@@ -18854,6 +18854,23 @@
         },
         'id': 'QuickUnlockModeWhitelist',
       },
+      'items': [
+        {
+          'name': 'all',
+          'value': 'all',
+          'caption': '''All''',
+        },
+        {
+          'name': 'PIN',
+          'value': 'PIN',
+          'caption': '''PIN''',
+        },
+        {
+          'name': 'FINGERPRINT',
+          'value': 'FINGERPRINT',
+          'caption': '''Fingerprint''',
+        },
+      ],
       'supported_on': ['chrome_os:56-100'],
       'features': {
         'dynamic_refresh': True,
