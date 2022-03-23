@@ -111,4 +111,10 @@ group("irt") {
     public_deps += irt_x64_deps
     data_deps += irt_x64_deps
   }
+  # TODO(https://crbug.com/1299021): Implement building these NaCl targets as
+  # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+  if (target_cpu == "arm64") {
+    public_deps = []
+    data_deps = []
+  }
 }

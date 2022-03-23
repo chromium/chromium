@@ -41,6 +41,12 @@ packaging_files_executables = [
 ]
 packaging_files_shlibs = []
 
+# TODO(https://crbug.com/1299021): Implement building these NaCl targets as
+# ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+if (target_cpu == "arm64") {
+  enable_nacl = false
+}
+
 if (enable_nacl) {
   packaging_files_executables += [
     "$root_out_dir/nacl_helper",

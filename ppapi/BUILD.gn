@@ -393,5 +393,10 @@ if (enable_nacl) {
       data_deps +=
           [ ":ppapi_nacl_tests(//build/toolchain/nacl:glibc_${target_cpu})" ]
     }
+    # TODO(https://crbug.com/1299021): Implement building these NaCl targets
+    # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+    if (target_cpu == "arm64") {
+      data_deps = []
+    }
   }
 }

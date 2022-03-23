@@ -19,6 +19,11 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
+  # TODO(https://crbug.com/1299021): Implement building these NaCl targets as
+  # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+  if (target_cpu == "arm64") {
+    data_deps = []
+  }
 }
 
 if (is_nacl) {

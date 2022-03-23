@@ -254,14 +254,20 @@ source_set("app_shell_lib") {
     deps += [
       "//components/nacl/browser",
       "//components/nacl/common",
-      "//components/nacl/loader",
       "//components/nacl/renderer",
       "//components/nacl/renderer/plugin:nacl_trusted_plugin",
       "//ppapi/shared_impl:shared_impl",
     ]
 
-    if (is_linux || is_chromeos) {
-      deps += [ "//components/nacl/loader:nacl_helper" ]
+    # TODO(https://crbug.com/1299021): Implement building these NaCl targets
+    # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+    if (target_cpu != "arm64") {
+      deps += [
+        "//components/nacl/loader",
+      ]
+      if (is_linux || is_chromeos) {
+        deps += [ "//components/nacl/loader:nacl_helper" ]
+      }
     }
   }
 }

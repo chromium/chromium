@@ -70,10 +70,17 @@ static_library("browser") {
     ]
 
     deps += [
-      "//components/nacl/loader:nacl_helper_integration",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:suid_sandbox_client",
     ]
+    # TODO(https://crbug.com/1299021): Implement building the dependencies of
+    # this NaCl target as ARM32 when Chrome is built for ARM64 (for
+    # Linux/Chrome OS).
+    if (target_cpu != "arm64") {
+      deps += [
+        "//components/nacl/loader:nacl_helper_integration",
+      ]
+    }
   }
 
   if (is_win && current_cpu == "x86") {

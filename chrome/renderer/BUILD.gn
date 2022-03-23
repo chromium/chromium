@@ -211,9 +211,15 @@ static_library("renderer") {
 
   if (enable_nacl) {
     deps += [
-      "//components/nacl/loader",
       "//components/nacl/renderer",
     ]
+    # TODO(https://crbug.com/1299021): Implement building this NaCl target as
+    # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+    if (target_cpu != "arm64") {
+      deps += [
+        "//components/nacl/loader",
+      ]
+    }
   }
   if (enable_plugins) {
     sources += [
