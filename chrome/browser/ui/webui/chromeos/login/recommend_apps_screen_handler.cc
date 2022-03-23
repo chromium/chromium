@@ -120,10 +120,10 @@ void RecommendAppsScreenHandler::Show() {
 
 void RecommendAppsScreenHandler::Hide() {}
 
-void RecommendAppsScreenHandler::OnLoadSuccess(const base::Value& app_list) {
+void RecommendAppsScreenHandler::OnLoadSuccess(base::Value app_list) {
   recommended_app_count_ =
       static_cast<int>(app_list.GetListDeprecated().size());
-  LoadAppListInUI(app_list);
+  LoadAppListInUI(std::move(app_list));
 }
 
 void RecommendAppsScreenHandler::OnParseResponseError() {
@@ -138,7 +138,7 @@ void RecommendAppsScreenHandler::Initialize() {
   }
 }
 
-void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
+void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
@@ -149,7 +149,7 @@ void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
           ? IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML
           : IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
   CallJS("login.RecommendAppsOldScreen.setWebview", app_list_webview);
-  CallJS("login.RecommendAppsOldScreen.loadAppList", app_list);
+  CallJS("login.RecommendAppsOldScreen.loadAppList", std::move(app_list));
 }
 
 void RecommendAppsScreenHandler::OnUserSkip() {

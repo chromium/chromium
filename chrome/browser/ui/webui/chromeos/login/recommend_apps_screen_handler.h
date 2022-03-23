@@ -34,7 +34,7 @@ class RecommendAppsScreenView {
 
   // Called when the download of the recommend app list is successful. Shows the
   // downloaded `app_list` to the user.
-  virtual void OnLoadSuccess(const base::Value& app_list) = 0;
+  virtual void OnLoadSuccess(base::Value app_list) = 0;
 
   // Called when parsing the recommend app list response fails. Should skip this
   // screen.
@@ -64,7 +64,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   void Bind(ash::RecommendAppsScreen* screen) override;
   void Show() override;
   void Hide() override;
-  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadSuccess(base::Value app_list) override;
   void OnParseResponseError() override;
 
   // BaseScreenHandler:
@@ -74,7 +74,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   void OnUserSkip();
 
   // Call the JS function to load the list of apps in the WebView.
-  void LoadAppListInUI(const base::Value& app_list);
+  void LoadAppListInUI(base::Value app_list);
 
   void HandleSkip();
   void HandleRetry();

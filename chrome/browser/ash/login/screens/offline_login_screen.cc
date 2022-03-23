@@ -118,7 +118,7 @@ void OfflineLoginScreen::LoadOffline() {
     params.SetStringKey("emailDomain", email_domain);
   }
   if (view_)
-    view_->LoadParams(params);
+    view_->LoadParams(std::move(params));
 }
 
 void OfflineLoginScreen::OnUserAction(const std::string& action_id) {

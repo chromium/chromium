@@ -51,18 +51,6 @@ inline bool GetArg(const base::ListValue* args, size_t index, T* out_value) {
   return ParseValue(&list[index], out_value);
 }
 
-base::Value LOGIN_EXPORT MakeValue(bool v);
-base::Value LOGIN_EXPORT MakeValue(int v);
-base::Value LOGIN_EXPORT MakeValue(double v);
-base::Value LOGIN_EXPORT MakeValue(const std::string& v);
-base::Value LOGIN_EXPORT MakeValue(const std::u16string& v);
-base::Value LOGIN_EXPORT MakeValue(const AccountId& v);
-
-template <typename T>
-inline const T& MakeValue(const T& v) {
-  return v;
-}
-
 template <typename T>
 struct ParsedValueContainer {
   T value;

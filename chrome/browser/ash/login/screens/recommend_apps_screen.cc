@@ -87,9 +87,9 @@ void RecommendAppsScreen::HideImpl() {
   view_->Hide();
 }
 
-void RecommendAppsScreen::OnLoadSuccess(const base::Value& app_list) {
+void RecommendAppsScreen::OnLoadSuccess(base::Value app_list) {
   if (view_)
-    view_->OnLoadSuccess(app_list);
+    view_->OnLoadSuccess(std::move(app_list));
 }
 
 void RecommendAppsScreen::OnLoadError() {

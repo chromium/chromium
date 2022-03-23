@@ -57,7 +57,7 @@ class RecommendAppsScreen : public BaseScreen,
   void SetSkipForTesting() { skip_for_testing_ = true; }
 
   // RecommendAppsFetcherDelegate:
-  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadSuccess(base::Value app_list) override;
   void OnLoadError() override;
   void OnParseResponseError() override;
 

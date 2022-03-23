@@ -129,8 +129,8 @@ class AssistantOptInFlowScreenHandler
   void StopSpeakerIdEnrollment();
 
   // Send message and consent data to the page.
-  void ReloadContent(const base::Value& dict);
-  void AddSettingZippy(const std::string& type, const base::Value& data);
+  void ReloadContent(base::Value dict);
+  void AddSettingZippy(const std::string& type, base::Value data);
 
   // Update value prop screen to show the next settings.
   void UpdateValuePropScreen();

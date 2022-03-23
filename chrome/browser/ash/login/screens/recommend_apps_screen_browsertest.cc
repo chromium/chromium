@@ -77,7 +77,7 @@ class StubRecommendAppsFetcher : public RecommendAppsFetcher {
     for (const auto& app : apps) {
       app_list.Append(app.ToValue());
     }
-    delegate_->OnLoadSuccess(app_list);
+    delegate_->OnLoadSuccess(std::move(app_list));
   }
 
   void SimulateParseError() {

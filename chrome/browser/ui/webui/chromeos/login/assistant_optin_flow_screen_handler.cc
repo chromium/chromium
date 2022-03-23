@@ -375,13 +375,14 @@ void AssistantOptInFlowScreenHandler::StopSpeakerIdEnrollment() {
   ResetReceiver();
 }
 
-void AssistantOptInFlowScreenHandler::ReloadContent(const base::Value& dict) {
-  CallJS("login.AssistantOptInFlowScreen.reloadContent", dict);
+void AssistantOptInFlowScreenHandler::ReloadContent(base::Value dict) {
+  CallJS("login.AssistantOptInFlowScreen.reloadContent", std::move(dict));
 }
 
 void AssistantOptInFlowScreenHandler::AddSettingZippy(const std::string& type,
-                                                      const base::Value& data) {
-  CallJS("login.AssistantOptInFlowScreen.addSettingZippy", type, data);
+                                                      base::Value data) {
+  CallJS("login.AssistantOptInFlowScreen.addSettingZippy", type,
+         std::move(data));
 }
 
 void AssistantOptInFlowScreenHandler::UpdateValuePropScreen() {
@@ -495,7 +496,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
         consented ? assistant::prefs::ConsentStatus::kActivityControlAccepted
                   : assistant::prefs::ConsentStatus::kUnknown);
   } else {
-    AddSettingZippy("settings", zippy_data);
+    AddSettingZippy("settings", std::move(zippy_data));
   }
 
   const bool is_oobe_in_progress =
@@ -512,7 +513,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       "shouldSkipVoiceMatch",
       base::Value(!ash::AssistantState::Get()->HasAudioInputDevice()));
   dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
-  ReloadContent(dictionary);
+  ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.
   if (skip_activity_control)

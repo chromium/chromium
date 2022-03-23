@@ -47,7 +47,7 @@ void BaseWebUIHandler::ShowScreenWithData(OobeScreenId screen,
   if (data) {
     screen_params.SetKey("data", data->Clone());
   }
-  CallJS("cr.ui.Oobe.showScreen", screen_params);
+  CallJS("cr.ui.Oobe.showScreen", std::move(screen_params));
 }
 
 OobeUI* BaseWebUIHandler::GetOobeUI() {
@@ -64,8 +64,6 @@ OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
 void BaseWebUIHandler::OnJavascriptDisallowed() {
   javascript_disallowed_ = true;
 }
-
-void BaseWebUIHandler::InsertIntoList(std::vector<base::Value>*) {}
 
 void BaseWebUIHandler::OnRawCallback(
     const std::string& function_name,

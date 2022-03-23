@@ -28,7 +28,7 @@ class RecommendedArcAppFetcher : public AppFetcher,
   void GetApps(ResultCallback callback) override;
 
   // RecommendAppsFetcherDelegate:
-  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadSuccess(base::Value app_list) override;
   void OnLoadError() override;
   void OnParseResponseError() override;
 

@@ -111,7 +111,7 @@ void WelcomeScreenHandler::Unbind() {
 void WelcomeScreenHandler::ReloadLocalizedContent() {
   base::DictionaryValue localized_strings;
   GetOobeUI()->GetLocalizedStrings(&localized_strings);
-  core_oobe_view_->ReloadContent(localized_strings);
+  core_oobe_view_->ReloadContent(std::move(localized_strings));
 }
 
 void WelcomeScreenHandler::SetInputMethodId(
@@ -381,7 +381,7 @@ void WelcomeScreenHandler::UpdateA11yState() {
                        AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
   if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
     CancelChromeVoxHintIdleDetection();
-  CallJS("login.WelcomeScreen.refreshA11yInfo", a11y_info);
+  CallJS("login.WelcomeScreen.refreshA11yInfo", std::move(a11y_info));
 }
 
 // static

@@ -739,7 +739,8 @@ void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
   options->Append(std::move(custom));
   active_directory_join_type_ =
       ActiveDirectoryDomainJoinType::USING_CONFIGURATION;
-  CallJS("login.OAuthEnrollmentScreen.setAdJoinConfiguration", *options);
+  CallJS("login.OAuthEnrollmentScreen.setAdJoinConfiguration",
+         std::move(*options));
 }
 
 void EnrollmentScreenHandler::UpdateState(NetworkError::ErrorReason reason) {

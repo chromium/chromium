@@ -142,8 +142,8 @@ void CoreOobeHandler::FocusReturned(bool reverse) {
   CallJS("cr.ui.Oobe.focusReturned", reverse);
 }
 
-void CoreOobeHandler::ReloadContent(const base::DictionaryValue& dictionary) {
-  CallJS("cr.ui.Oobe.reloadContent", dictionary);
+void CoreOobeHandler::ReloadContent(base::DictionaryValue dictionary) {
+  CallJS("cr.ui.Oobe.reloadContent", std::move(dictionary));
 }
 
 void CoreOobeHandler::SetVirtualKeyboardShown(bool shown) {
@@ -322,7 +322,7 @@ void CoreOobeHandler::OnOobeConfigurationChanged() {
   configuration::FilterConfiguration(
       OobeConfiguration::Get()->GetConfiguration(),
       configuration::ConfigurationHandlerSide::HANDLER_JS, configuration);
-  CallJS("cr.ui.Oobe.updateOobeConfiguration", configuration);
+  CallJS("cr.ui.Oobe.updateOobeConfiguration", std::move(configuration));
 }
 
 void CoreOobeHandler::HandleLaunchHelpApp(double help_topic_id) {

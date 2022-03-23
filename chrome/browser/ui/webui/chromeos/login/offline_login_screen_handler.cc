@@ -96,8 +96,8 @@ void OfflineLoginScreenHandler::HandleEmailSubmitted(
   screen_->HandleEmailSubmitted(username);
 }
 
-void OfflineLoginScreenHandler::LoadParams(base::DictionaryValue& params) {
-  CallJS("login.OfflineLoginScreen.loadParams", params);
+void OfflineLoginScreenHandler::LoadParams(base::DictionaryValue params) {
+  CallJS("login.OfflineLoginScreen.loadParams", std::move(params));
 }
 
 void OfflineLoginScreenHandler::ShowPasswordPage() {

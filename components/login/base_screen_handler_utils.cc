@@ -107,31 +107,6 @@ bool ParseValue(const base::Value* value, AccountId* out_value) {
   return true;
 }
 
-base::Value MakeValue(bool v) {
-  return base::Value(v);
-}
-
-base::Value MakeValue(int v) {
-  return base::Value(v);
-}
-
-base::Value MakeValue(double v) {
-  return base::Value(v);
-}
-
-base::Value MakeValue(const std::string& v) {
-  return base::Value(v);
-}
-
-base::Value MakeValue(const std::u16string& v) {
-  return base::Value(v);
-}
-
-base::Value MakeValue(const AccountId& v) {
-  return base::Value(v.Serialize());
-}
-
-ParsedValueContainer<AccountId>::ParsedValueContainer() {
-}
+ParsedValueContainer<AccountId>::ParsedValueContainer() = default;
 
 }  // namespace login

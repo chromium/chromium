@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/values.h"
 
 namespace content {
@@ -19,18 +20,7 @@ namespace chromeos {
 // BaseWebUIHandler.
 class JSCallsContainer {
  public:
-  // An event is a message/JS call to or from WebUI.
-  struct Event {
-    Event(const std::string& function_name,
-          std::vector<base::Value>&& arguments);
-    ~Event();
-    Event(Event&&);
-    Event(const Event&) = delete;
-    Event& operator=(const Event&) = delete;
-
-    std::string function_name;
-    std::vector<base::Value> arguments;
-  };
+  using Event = base::OnceCallback<void(content::WebUI* web_ui)>;
 
   JSCallsContainer();
   ~JSCallsContainer();

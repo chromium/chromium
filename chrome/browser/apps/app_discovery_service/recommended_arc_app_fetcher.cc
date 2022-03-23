@@ -23,7 +23,7 @@ void RecommendedArcAppFetcher::GetApps(ResultCallback callback) {
   recommend_apps_fetcher_->Start();
 }
 
-void RecommendedArcAppFetcher::OnLoadSuccess(const base::Value& app_list) {
+void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
   if (!callback_)
     return;
   if (!app_list.is_dict()) {

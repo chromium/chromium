@@ -17,7 +17,7 @@ class RecommendAppsFetcherDelegate {
   virtual ~RecommendAppsFetcherDelegate() = default;
 
   // Called when the download of the recommend app list is successful.
-  virtual void OnLoadSuccess(const base::Value& app_list) = 0;
+  virtual void OnLoadSuccess(base::Value app_list) = 0;
 
   // Called when the download of the recommend app list fails.
   virtual void OnLoadError() = 0;

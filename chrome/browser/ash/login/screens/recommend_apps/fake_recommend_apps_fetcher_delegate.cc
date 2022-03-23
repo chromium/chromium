@@ -34,9 +34,8 @@ void FakeRecommendAppsFetcherDelegate::OnParseResponseError() {
   SetResult(Result::PARSE_ERROR);
 }
 
-void FakeRecommendAppsFetcherDelegate::OnLoadSuccess(
-    const base::Value& app_list) {
-  loaded_apps_ = app_list.Clone();
+void FakeRecommendAppsFetcherDelegate::OnLoadSuccess(base::Value app_list) {
+  loaded_apps_ = std::move(app_list);
   SetResult(Result::SUCCESS);
 }
 

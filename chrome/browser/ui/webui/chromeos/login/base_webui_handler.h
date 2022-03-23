@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "components/login/base_screen_handler_utils.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -27,6 +28,18 @@ class LocalizedValuesBuilder;
 }
 
 namespace chromeos {
+
+namespace {
+
+template <typename... Args>
+void PostponedJSCall(const std::string& function_name,
+                     Args... args,
+                     content::WebUI* web_ui) {
+  web_ui->CallJavascriptFunctionUnsafe(function_name,
+                                       base::Value(std::move(args))...);
+}
+
+}  // namespace
 
 class OobeUI;
 
@@ -74,19 +87,18 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // All CallJS invocations can be recorded for tests if CallJS recording is
   // enabled.
   template <typename... Args>
-  void CallJS(const std::string& function_name, const Args&... args) {
+  void CallJS(const std::string& function_name, Args... args) {
     // Record the call if the WebUI is not loaded or if we are in a test.
     if (!js_calls_container_->is_initialized()) {
-      std::vector<base::Value> arguments;
-      InsertIntoList(&arguments, args...);
-      js_calls_container_->events()->emplace_back(
-          JSCallsContainer::Event(function_name, std::move(arguments)));
+      js_calls_container_->events()->push_back(base::BindOnce(
+          &PostponedJSCall<Args...>, function_name, std::move(args)...));
+      return;
     }
 
     // Make the call now if the WebUI is loaded.
     if (js_calls_container_->is_initialized() && !javascript_disallowed_)
-      web_ui()->CallJavascriptFunctionUnsafe(
-          function_name, ::login::MakeValue(args).Clone()...);
+      web_ui()->CallJavascriptFunctionUnsafe(function_name,
+                                             base::Value(std::move(args))...);
   }
 
   // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed
@@ -145,25 +157,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
  private:
   friend class OobeUI;
-
-  // InsertIntoList takes a template parameter pack and expands into the
-  // following form:
-  //
-  //   for (auto arg : args)
-  //     stroage->emplace_back(::login::MakeValue(arg).Clone());
-  //
-  // This cannot be expressed with the current parameter pack expansion rules
-  // and the only way to do it is via compile-time recursion.
-  template <typename Head, typename... Tail>
-  void InsertIntoList(std::vector<base::Value>* storage,
-                      const Head& head,
-                      const Tail&... tail) {
-    storage->emplace_back(::login::MakeValue(head).Clone());
-    InsertIntoList(storage, tail...);
-  }
-  // Base condition for the recursion, when there are no more elements to
-  // insert. Does nothing.
-  void InsertIntoList(std::vector<base::Value>*);
 
   // These two functions wrap Add(Raw)Callback so that the incoming JavaScript
   // event can be recorded.

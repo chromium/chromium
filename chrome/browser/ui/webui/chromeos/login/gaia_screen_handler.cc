@@ -570,7 +570,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   was_security_token_pin_canceled_ = false;
 
   frame_state_ = FRAME_STATE_LOADING;
-  CallJS("login.GaiaSigninScreen.loadAuthExtension", params);
+  CallJS("login.GaiaSigninScreen.loadAuthExtension", std::move(params));
 }
 
 void GaiaScreenHandler::ReloadGaia(bool force_reload) {
@@ -1346,7 +1346,8 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
                                   &family_link_allowed);
   params.SetBoolKey("familyLinkAllowed", family_link_allowed);
 
-  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", params);
+  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError",
+         std::move(params));
 }
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {
