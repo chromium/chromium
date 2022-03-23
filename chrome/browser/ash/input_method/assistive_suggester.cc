@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
+#include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -163,13 +164,13 @@ void RecordMultiWordTextInputState(PrefService* pref_service,
 }  // namespace
 
 AssistiveSuggester::AssistiveSuggester(
-    InputMethodEngine* engine,
+    SuggestionHandlerInterface* suggestion_handler,
     Profile* profile,
     std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch)
     : profile_(profile),
-      personal_info_suggester_(engine, profile),
-      emoji_suggester_(engine, profile),
-      multi_word_suggester_(engine, profile),
+      personal_info_suggester_(suggestion_handler, profile),
+      emoji_suggester_(suggestion_handler, profile),
+      multi_word_suggester_(suggestion_handler, profile),
       suggester_switch_(std::move(suggester_switch)) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));

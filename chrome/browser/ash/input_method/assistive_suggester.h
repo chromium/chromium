@@ -13,11 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
-#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 
 namespace ash {
@@ -34,7 +34,7 @@ class AssistiveSuggester : public SuggestionsSource {
   };
 
   AssistiveSuggester(
-      InputMethodEngine* engine,
+      SuggestionHandlerInterface* suggestion_handler,
       Profile* profile,
       std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
 

@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
+#include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
@@ -103,9 +104,9 @@ class AssistiveSuggesterTest : public testing::Test {
   AssistiveSuggesterTest() { profile_ = std::make_unique<TestingProfile>(); }
 
   void SetUp() override {
-    engine_ = std::make_unique<InputMethodEngine>();
+    suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-        engine_.get(), profile_.get(),
+        suggestion_handler_.get(), profile_.get(),
         std::make_unique<AssistiveSuggesterClientFilter>());
 
     histogram_tester_.ExpectUniqueSample(
@@ -120,7 +121,7 @@ class AssistiveSuggesterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
-  std::unique_ptr<InputMethodEngine> engine_;
+  std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -271,7 +272,7 @@ TEST_F(AssistiveSuggesterTest,
 TEST_F(AssistiveSuggesterTest,
        QueriesAssistiveSuggesterSwitchWhenDeterminingIfFeatureAllowed) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{
               .emoji_suggestions = true,
@@ -294,7 +295,7 @@ TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
@@ -311,7 +312,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
@@ -332,7 +333,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
@@ -355,7 +356,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
                             features::kLacrosSupport},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
@@ -378,7 +379,7 @@ TEST_F(AssistiveSuggesterTest,
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
@@ -400,7 +401,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
@@ -423,9 +424,9 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
   }
 
   void SetUp() override {
-    engine_ = std::make_unique<InputMethodEngine>();
+    suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-        engine_.get(), profile_.get(),
+        suggestion_handler_.get(), profile_.get(),
         std::make_unique<FakeSuggesterSwitch>(
             FakeSuggesterSwitch::EnabledSuggestions{
                 .multi_word_suggestions = true,
@@ -442,7 +443,7 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
-  std::unique_ptr<InputMethodEngine> engine_;
+  std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -492,7 +493,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricNotRecordedWhenNoSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
@@ -508,7 +509,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricRecordedWhenGivenSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(),
+      suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
   std::vector<TextSuggestion> suggestions = {
@@ -671,9 +672,9 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
   }
 
   void SetUp() override {
-    engine_ = std::make_unique<InputMethodEngine>();
+    suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-        engine_.get(), profile_.get(),
+        suggestion_handler_.get(), profile_.get(),
         std::make_unique<FakeSuggesterSwitch>(
             FakeSuggesterSwitch::EnabledSuggestions{
                 .emoji_suggestions = true,
@@ -695,7 +696,7 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
-  std::unique_ptr<InputMethodEngine> engine_;
+  std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
   base::HistogramTester histogram_tester_;
 
   // Needs to outlive the emoji_suggester under test.
