@@ -2012,9 +2012,9 @@ TEST_F(ChunkDemuxerTest, WebMFile_LiveAudioAndVideo) {
                             kInfiniteDuration));
 
   DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
-  EXPECT_EQ(DemuxerStream::LIVENESS_LIVE, audio->liveness());
+  EXPECT_EQ(StreamLiveness::kLive, audio->liveness());
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
-  EXPECT_EQ(DemuxerStream::LIVENESS_LIVE, video->liveness());
+  EXPECT_EQ(StreamLiveness::kLive, video->liveness());
   EXPECT_EQ(212949, demuxer_->GetMemoryUsage());
 }
 

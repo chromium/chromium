@@ -122,7 +122,7 @@ bool WebCodecsEncodedChunkStreamParser::ProcessChunks(
 
     if (init_cb_) {
       InitParameters params(kInfiniteDuration);
-      params.liveness = DemuxerStream::LIVENESS_UNKNOWN;
+      params.liveness = StreamLiveness::kUnknown;
       if (audio_config_)
         params.detected_audio_track_count = 1;
       if (video_config_)

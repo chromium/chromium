@@ -74,7 +74,9 @@ class TestDemuxerStream : public media::DemuxerStream {
     return media::VideoDecoderConfig();
   }
   Type type() const override { return AUDIO; }
-  Liveness liveness() const override { return LIVENESS_RECORDED; }
+  media::StreamLiveness liveness() const override {
+    return media::StreamLiveness::kRecorded;
+  }
   bool SupportsConfigChanges() override { return true; }
 
  private:

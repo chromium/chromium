@@ -644,7 +644,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
                                    << "limit";
       return false;
     }
-    params.liveness = DemuxerStream::LIVENESS_RECORDED;
+    params.liveness = StreamLiveness::kRecorded;
   } else if (moov_->header.duration > 0 &&
              ((moov_->header.version == 0 &&
                moov_->header.duration !=
@@ -664,7 +664,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
                                    << "limit";
       return false;
     }
-    params.liveness = DemuxerStream::LIVENESS_RECORDED;
+    params.liveness = StreamLiveness::kRecorded;
   } else {
     // In ISO/IEC 14496-12:2005(E), 8.30.2: ".. If an MP4 file is created in
     // real-time, such as used in live streaming, it is not likely that the
@@ -676,10 +676,10 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 
     // TODO(wolenetz): Investigate gating liveness detection on timeline_offset
     // when it's populated. See http://crbug.com/312699
-    params.liveness = DemuxerStream::LIVENESS_LIVE;
+    params.liveness = StreamLiveness::kLive;
   }
 
-  DVLOG(1) << "liveness: " << params.liveness;
+  DVLOG(1) << "liveness: " << GetStreamLivenessName(params.liveness);
 
   if (init_cb_) {
     params.detected_audio_track_count = detected_audio_track_count;

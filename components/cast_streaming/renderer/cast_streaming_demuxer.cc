@@ -161,7 +161,9 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
     else
       CompletePendingRead();
   }
-  Liveness liveness() const final { return Liveness::LIVENESS_LIVE; }
+  media::StreamLiveness liveness() const final {
+    return media::StreamLiveness::kLive;
+  }
   bool SupportsConfigChanges() final { return true; }
 
   mojo::Receiver<CastStreamingBufferReceiver> receiver_;

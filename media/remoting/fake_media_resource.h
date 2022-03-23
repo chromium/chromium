@@ -32,7 +32,7 @@ class FakeDemuxerStream : public DemuxerStream {
   AudioDecoderConfig audio_decoder_config() override;
   VideoDecoderConfig video_decoder_config() override;
   Type type() const override;
-  Liveness liveness() const override;
+  StreamLiveness liveness() const override;
   void EnableBitstreamConverter() override {}
   bool SupportsConfigChanges() override;
 

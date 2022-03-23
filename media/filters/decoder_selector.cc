@@ -312,7 +312,7 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
                                GetDecoderName(decoder_->GetDecoderType()));
 
   DVLOG(2) << __func__ << ": initializing " << decoder_->GetDecoderType();
-  const bool is_live = stream_->liveness() == DemuxerStream::LIVENESS_LIVE;
+  const bool is_live = stream_->liveness() == StreamLiveness::kLive;
   traits_->InitializeDecoder(
       decoder_.get(), config_, is_live, cdm_context_,
       base::BindOnce(&DecoderSelector<StreamType>::OnDecoderInitializeDone,

@@ -60,7 +60,7 @@ class MEDIA_EXPORT StreamParser {
     base::Time timeline_offset;
 
     // Indicates live stream.
-    DemuxerStream::Liveness liveness;
+    StreamLiveness liveness = StreamLiveness::kUnknown;
 
     // Counts of tracks detected by type within this stream. Not all of these
     // tracks may be selected for use by the parser.

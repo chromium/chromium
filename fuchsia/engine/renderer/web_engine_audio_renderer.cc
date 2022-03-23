@@ -324,7 +324,7 @@ void WebEngineAudioRenderer::StartAudioConsumer() {
   DCHECK(stream_sink_);
 
   fuchsia::media::AudioConsumerStartFlags flags{};
-  if (demuxer_stream_->liveness() == media::DemuxerStream::LIVENESS_LIVE) {
+  if (demuxer_stream_->liveness() == media::StreamLiveness::kLive) {
     flags = fuchsia::media::AudioConsumerStartFlags::LOW_LATENCY;
   }
 

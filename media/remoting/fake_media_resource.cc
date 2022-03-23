@@ -63,8 +63,8 @@ DemuxerStream::Type FakeDemuxerStream::type() const {
   return type_;
 }
 
-DemuxerStream::Liveness FakeDemuxerStream::liveness() const {
-  return LIVENESS_UNKNOWN;
+StreamLiveness FakeDemuxerStream::liveness() const {
+  return StreamLiveness::kUnknown;
 }
 
 bool FakeDemuxerStream::SupportsConfigChanges() {

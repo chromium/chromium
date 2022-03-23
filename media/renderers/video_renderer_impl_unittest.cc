@@ -142,7 +142,7 @@ class VideoRendererImplTest : public testing::Test {
                       bool low_delay,
                       bool expect_success) {
     if (low_delay)
-      demuxer_stream->set_liveness(DemuxerStream::LIVENESS_LIVE);
+      demuxer_stream->set_liveness(StreamLiveness::kLive);
     EXPECT_CALL(mock_cb_, OnWaiting(_)).Times(0);
     EXPECT_CALL(mock_cb_, OnAudioConfigChange(_)).Times(0);
     EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());

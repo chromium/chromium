@@ -6,6 +6,17 @@
 
 namespace media {
 
+std::string GetStreamLivenessName(StreamLiveness liveness) {
+  switch (liveness) {
+    case StreamLiveness::kUnknown:
+      return "unknown";
+    case StreamLiveness::kRecorded:
+      return "recorded";
+    case StreamLiveness::kLive:
+      return "live";
+  }
+}
+
 // static
 const char* DemuxerStream::GetTypeName(Type type) {
   switch (type) {
@@ -38,8 +49,8 @@ DemuxerStream::~DemuxerStream() = default;
 
 // Most DemuxerStream implementations don't specify liveness. Returns unknown
 // liveness by default.
-DemuxerStream::Liveness DemuxerStream::liveness() const {
-  return DemuxerStream::LIVENESS_UNKNOWN;
+StreamLiveness DemuxerStream::liveness() const {
+  return StreamLiveness::kUnknown;
 }
 
 // Most DemuxerStream implementations don't need to convert bit stream.

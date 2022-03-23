@@ -33,8 +33,7 @@ std::string MockDemuxer::GetDisplayName() const {
   return "MockDemuxer";
 }
 
-MockDemuxerStream::MockDemuxerStream(DemuxerStream::Type type)
-    : type_(type), liveness_(LIVENESS_UNKNOWN) {}
+MockDemuxerStream::MockDemuxerStream(DemuxerStream::Type type) : type_(type) {}
 
 MockDemuxerStream::~MockDemuxerStream() = default;
 
@@ -42,7 +41,7 @@ DemuxerStream::Type MockDemuxerStream::type() const {
   return type_;
 }
 
-DemuxerStream::Liveness MockDemuxerStream::liveness() const {
+StreamLiveness MockDemuxerStream::liveness() const {
   return liveness_;
 }
 
@@ -68,7 +67,7 @@ void MockDemuxerStream::set_video_decoder_config(
   video_decoder_config_ = config;
 }
 
-void MockDemuxerStream::set_liveness(DemuxerStream::Liveness liveness) {
+void MockDemuxerStream::set_liveness(StreamLiveness liveness) {
   liveness_ = liveness;
 }
 

@@ -178,10 +178,10 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
     return DemuxerStream::VIDEO;
   }
 
-  Liveness liveness() const override {
+  media::StreamLiveness liveness() const override {
     // Select low-delay mode.
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return Liveness::LIVENESS_LIVE;
+    return media::StreamLiveness::kLive;
   }
 
   void EnableBitstreamConverter() override {

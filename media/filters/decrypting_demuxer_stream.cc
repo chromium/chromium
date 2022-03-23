@@ -133,7 +133,7 @@ DemuxerStream::Type DecryptingDemuxerStream::type() const {
   return demuxer_stream_->type();
 }
 
-DemuxerStream::Liveness DecryptingDemuxerStream::liveness() const {
+StreamLiveness DecryptingDemuxerStream::liveness() const {
   DCHECK(state_ != kUninitialized) << state_;
   return demuxer_stream_->liveness();
 }

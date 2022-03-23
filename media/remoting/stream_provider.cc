@@ -390,8 +390,8 @@ DemuxerStream::Type StreamProvider::MediaStream::type() const {
   return type_;
 }
 
-DemuxerStream::Liveness StreamProvider::MediaStream::liveness() const {
-  return DemuxerStream::LIVENESS_LIVE;
+StreamLiveness StreamProvider::MediaStream::liveness() const {
+  return StreamLiveness::kLive;
 }
 
 bool StreamProvider::MediaStream::SupportsConfigChanges() {

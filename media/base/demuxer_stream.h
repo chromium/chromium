@@ -16,6 +16,15 @@ class AudioDecoderConfig;
 class DecoderBuffer;
 class VideoDecoderConfig;
 
+enum class StreamLiveness {
+  kUnknown,
+  kRecorded,
+  kLive,
+  kMaxValue = kLive,
+};
+
+MEDIA_EXPORT std::string GetStreamLivenessName(StreamLiveness liveness);
+
 class MEDIA_EXPORT DemuxerStream {
  public:
   enum Type {
@@ -28,13 +37,6 @@ class MEDIA_EXPORT DemuxerStream {
 
   // Returns a string representation of |type|.
   static const char* GetTypeName(Type type);
-
-  enum Liveness {
-    LIVENESS_UNKNOWN,
-    LIVENESS_RECORDED,
-    LIVENESS_LIVE,
-    LIVENESS_MAX = LIVENESS_LIVE,
-  };
 
   // Status returned in the Read() callback.
   //  kOk : Indicates the second parameter is Non-NULL and contains media data
@@ -83,7 +85,7 @@ class MEDIA_EXPORT DemuxerStream {
   virtual Type type() const = 0;
 
   // Returns liveness of the streams provided, i.e. whether recorded or live.
-  virtual Liveness liveness() const;
+  virtual StreamLiveness liveness() const;
 
   virtual void EnableBitstreamConverter();
 

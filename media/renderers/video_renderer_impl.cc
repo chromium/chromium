@@ -42,7 +42,7 @@ constexpr int kAbsoluteMaxFrames = 24;
 
 bool ShouldUseLowDelayMode(DemuxerStream* stream) {
   return base::FeatureList::IsEnabled(kLowDelayVideoRenderingOnLiveStream) &&
-         stream->liveness() == DemuxerStream::LIVENESS_LIVE;
+         stream->liveness() == StreamLiveness::kLive;
 }
 
 }  // namespace

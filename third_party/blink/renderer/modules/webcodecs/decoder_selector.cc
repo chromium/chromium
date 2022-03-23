@@ -52,9 +52,9 @@ class NullDemuxerStream : public media::DemuxerStream {
   }
 
   void set_low_delay(bool low_delay) { low_delay_ = low_delay; }
-  media::DemuxerStream::Liveness liveness() const override {
-    return low_delay_ ? media::DemuxerStream::LIVENESS_LIVE
-                      : media::DemuxerStream::LIVENESS_UNKNOWN;
+  media::StreamLiveness liveness() const override {
+    return low_delay_ ? media::StreamLiveness::kLive
+                      : media::StreamLiveness::kUnknown;
   }
 
  private:

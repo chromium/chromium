@@ -105,7 +105,7 @@ class StreamProvider final : public Demuxer {
     AudioDecoderConfig audio_decoder_config() override;
     VideoDecoderConfig video_decoder_config() override;
     DemuxerStream::Type type() const override;
-    Liveness liveness() const override;
+    StreamLiveness liveness() const override;
     bool SupportsConfigChanges() override;
 
     void Initialize(base::OnceClosure init_done_cb);
