@@ -40,7 +40,7 @@
   },
   {
     "name": "activate-metrics-reporting-enabled-policy",
-    "owners": [ "oastorga", "ftirelo" ],
+    "owners": [ "ogastorga", "ftirelo" ],
     "expiry_milestone": 109
   },
   {
