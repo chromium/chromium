@@ -381,6 +381,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/kerberos_page/kerberos_add_account_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/kerberos_page/kerberos_page.html",
                                  "chrome/browser/resources/settings/chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.html",
+                                 "chrome/browser/resources/settings/chromeos/metrics_recorder.html",
                                  "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_browser_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_combined_setup_item.html",
                                  "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_constants.html",

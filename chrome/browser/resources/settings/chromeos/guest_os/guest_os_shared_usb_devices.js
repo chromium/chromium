@@ -15,7 +15,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
 

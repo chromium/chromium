@@ -20,7 +20,7 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Router} from '../../router.js';
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';

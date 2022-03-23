@@ -14,7 +14,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {FingerprintAttempt, FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
 

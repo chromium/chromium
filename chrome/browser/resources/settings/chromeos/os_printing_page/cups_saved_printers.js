@@ -13,7 +13,7 @@ import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_be
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';

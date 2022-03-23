@@ -25,7 +25,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
 

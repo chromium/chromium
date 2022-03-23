@@ -28,7 +28,7 @@ import '//resources/cr_elements/icons.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import '../../settings_shared_css.js';

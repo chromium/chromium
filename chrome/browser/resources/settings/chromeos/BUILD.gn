@@ -258,7 +258,7 @@ preprocess_if_expr("preprocess_v3") {
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
   in_files = [
     "chromeos/deep_linking_behavior.js",
-    "chromeos/metrics_recorder.m.js",
+    "chromeos/metrics_recorder.js",
     "chromeos/os_settings_routes.js",
     "chromeos/route_origin_behavior.js",
     "chromeos/search_handler.js",
@@ -705,7 +705,6 @@ js_library("global_scroll_target_behavior") {
 }
 
 js_library("metrics_recorder") {
-  sources = [ "metrics_recorder.m.js" ]
   deps = [ "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile" ]
 }
 

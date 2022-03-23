@@ -33,7 +33,7 @@ import {routes} from '../os_route.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import './bluetooth_device_list_item.js';
 
 Polymer({

@@ -15,7 +15,7 @@ import {assert} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
 

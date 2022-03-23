@@ -17,7 +17,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 Polymer({
   _template: html`{__html_template__}`,

@@ -120,7 +120,7 @@ export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_as
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './kerberos_page/kerberos_accounts_browser_proxy.js';
-export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.m.js';
+export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupMode, SmartLockSignInEnabledState} from './multidevice_page/multidevice_constants.js';
 export {NotificationAccessSetupOperationStatus} from './multidevice_page/multidevice_notification_access_setup_dialog.js';

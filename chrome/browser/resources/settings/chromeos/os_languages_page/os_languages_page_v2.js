@@ -40,7 +40,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
-import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
 Polymer({

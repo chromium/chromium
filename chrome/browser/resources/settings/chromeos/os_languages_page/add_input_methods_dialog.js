@@ -19,7 +19,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './cr_checkbox_with_policy.js';
-import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import './shared_style.js';
 import './languages.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';

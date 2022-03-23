@@ -18,7 +18,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {Route, Router} from '../../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.js';
-import {recordSettingChange} from '../../metrics_recorder.m.js';
+import {recordSettingChange} from '../../metrics_recorder.js';
 import {routes} from '../../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 import {isAppInstalled} from '../os_apps_page.js';

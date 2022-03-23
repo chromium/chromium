@@ -23,7 +23,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
 import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';

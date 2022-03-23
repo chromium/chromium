@@ -22,7 +22,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {recordSettingChange} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 
 Polymer({
