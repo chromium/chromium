@@ -18,7 +18,9 @@
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -43,7 +45,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                        public AppLifetimeMonitor::Observer,
                        public BrowserListObserver,
                        public AvatarMenuObserver,
-                       public ProfileManagerObserver {
+                       public ProfileManagerObserver,
+                       public ProfileObserver {
  public:
   class Delegate {
    public:
@@ -181,10 +184,13 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
-  // BrowserListObserver overrides;
+  // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
   void OnBrowserSetLastActive(Browser* browser) override;
+
+  // ProfileObserver overrides:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
@@ -356,6 +362,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // The avatar menu instance used by all app shims.
   std::unique_ptr<AvatarMenu> avatar_menu_;
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observation_{this};
 
   base::WeakPtrFactory<AppShimManager> weak_factory_;
 };
