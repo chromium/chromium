@@ -9,7 +9,6 @@ data:
   - file: chrome_crashpad_handler
   - file: icudtl.dat
   - file: keyboard_resources.pak
-  - file: libclearkeycdm.so
   - file: libminigbm.so
   - file: MEIPreload/manifest.json
   - file: MEIPreload/preloaded_data.pb
@@ -22,5 +21,6 @@ data:
   - file: test_ash_chrome
   - file: xdg-mime
   - file: xdg-settings
+  - dir: ClearKeyCdm/
   - dir: locales/
   - dir: resources/
