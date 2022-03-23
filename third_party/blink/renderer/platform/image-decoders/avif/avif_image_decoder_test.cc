@@ -291,7 +291,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
      ImageOrientationEnum::kOriginTopLeft,
-     1,
+     2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
@@ -304,7 +304,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::TransformToSRGB(),
      ImageOrientationEnum::kOriginTopLeft,
-     1,
+     2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},

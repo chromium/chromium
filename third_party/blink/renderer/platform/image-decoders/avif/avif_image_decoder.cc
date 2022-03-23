@@ -110,39 +110,52 @@ gfx::ColorSpace GetColorSpace(const avifImage* image) {
 // for the YUV-to-RGB conversion.
 bool IsColorSpaceSupportedByPCVR(const avifImage* image) {
   SkYUVColorSpace yuv_color_space;
-  // libyuv supports the alpha channel only with the I420 pixel format, which is
-  // 8-bit YUV 4:2:0.
+  // libyuv supports the 8-bit and 10-bit YUVA pixel formats.
   return GetColorSpace(image).ToSkYUVColorSpace(image->depth,
                                                 &yuv_color_space) &&
          (!image->alphaPlane ||
-          (image->depth == 8 && image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 &&
+          ((image->depth == 8 || image->depth == 10) &&
+           (image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 ||
+            image->yuvFormat == AVIF_PIXEL_FORMAT_YUV422 ||
+            image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444) &&
            image->alphaRange == AVIF_RANGE_FULL));
 }
 
-media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt, int depth) {
+media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt,
+                                               bool has_alpha,
+                                               int depth) {
   if (depth != 8 && depth != 10 && depth != 12) {
     // Unsupported bit depth.
     NOTREACHED();
     return media::PIXEL_FORMAT_UNKNOWN;
   }
-  int index = (depth - 8) / 2;
-  static constexpr media::VideoPixelFormat kYUV420Formats[] = {
-      media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_YUV420P10,
-      media::PIXEL_FORMAT_YUV420P12};
-  static constexpr media::VideoPixelFormat kYUV422Formats[] = {
-      media::PIXEL_FORMAT_I422, media::PIXEL_FORMAT_YUV422P10,
-      media::PIXEL_FORMAT_YUV422P12};
-  static constexpr media::VideoPixelFormat kYUV444Formats[] = {
-      media::PIXEL_FORMAT_I444, media::PIXEL_FORMAT_YUV444P10,
-      media::PIXEL_FORMAT_YUV444P12};
+  int depth_index = (depth - 8) / 2;
+  // In these lookup tables, the first index is has_alpha and the second index
+  // is depth_index. Note that there are no media::VideoPixelFormat values for
+  // 12-bit YUVA.
+  static constexpr media::VideoPixelFormat kYUV420Formats[][3] = {
+      {media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_YUV420P10,
+       media::PIXEL_FORMAT_YUV420P12},
+      {media::PIXEL_FORMAT_I420A, media::PIXEL_FORMAT_YUV420AP10,
+       media::PIXEL_FORMAT_UNKNOWN}};
+  static constexpr media::VideoPixelFormat kYUV422Formats[][3] = {
+      {media::PIXEL_FORMAT_I422, media::PIXEL_FORMAT_YUV422P10,
+       media::PIXEL_FORMAT_YUV422P12},
+      {media::PIXEL_FORMAT_I422A, media::PIXEL_FORMAT_YUV422AP10,
+       media::PIXEL_FORMAT_UNKNOWN}};
+  static constexpr media::VideoPixelFormat kYUV444Formats[][3] = {
+      {media::PIXEL_FORMAT_I444, media::PIXEL_FORMAT_YUV444P10,
+       media::PIXEL_FORMAT_YUV444P12},
+      {media::PIXEL_FORMAT_I444A, media::PIXEL_FORMAT_YUV444AP10,
+       media::PIXEL_FORMAT_UNKNOWN}};
   switch (fmt) {
     case AVIF_PIXEL_FORMAT_YUV420:
     case AVIF_PIXEL_FORMAT_YUV400:
-      return kYUV420Formats[index];
+      return kYUV420Formats[has_alpha][depth_index];
     case AVIF_PIXEL_FORMAT_YUV422:
-      return kYUV422Formats[index];
+      return kYUV422Formats[has_alpha][depth_index];
     case AVIF_PIXEL_FORMAT_YUV444:
-      return kYUV444Formats[index];
+      return kYUV444Formats[has_alpha][depth_index];
     case AVIF_PIXEL_FORMAT_NONE:
       NOTREACHED();
       return media::PIXEL_FORMAT_UNKNOWN;
@@ -948,14 +961,14 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
   // supported.
   if (IsColorSpaceSupportedByPCVR(image)) {
     // Create temporary frame wrapping the YUVA planes.
-    auto pixel_format = AvifToVideoPixelFormat(image->yuvFormat, image->depth);
+    const bool has_alpha = image->alphaPlane != nullptr;
+    auto pixel_format =
+        AvifToVideoPixelFormat(image->yuvFormat, has_alpha, image->depth);
     if (pixel_format == media::PIXEL_FORMAT_UNKNOWN)
       return false;
     auto size = gfx::Size(image->width, image->height);
     scoped_refptr<media::VideoFrame> frame;
-    if (image->alphaPlane) {
-      DCHECK_EQ(pixel_format, media::PIXEL_FORMAT_I420);
-      pixel_format = media::PIXEL_FORMAT_I420A;
+    if (has_alpha) {
       frame = media::VideoFrame::WrapExternalYuvaData(
           pixel_format, size, gfx::Rect(size), size, image->yuvRowBytes[0],
           image->yuvRowBytes[1], image->yuvRowBytes[2], image->alphaRowBytes,
