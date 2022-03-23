@@ -87,11 +87,6 @@ class MenuScrollButton : public View {
     host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override {
-    return ui::mojom::DragOperation::kNone;
-  }
-
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
     return base::DoNothing();
   }
