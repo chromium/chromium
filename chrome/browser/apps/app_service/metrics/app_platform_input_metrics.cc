@@ -138,11 +138,9 @@ constexpr char kAppInputEventsKey[] = "app_platform_metrics.app_input_events";
 
 AppPlatformInputMetrics::AppPlatformInputMetrics(
     Profile* profile,
-    apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry)
     : profile_(profile) {
   InstanceRegistry::Observer::Observe(&instance_registry);
-  AppRegistryCache::Observer::Observe(&app_registry_cache);
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->AddPreTargetHandler(this);
   }
@@ -186,15 +184,14 @@ void AppPlatformInputMetrics::OnFiveMinutes() {
 }
 
 void AppPlatformInputMetrics::OnTwoHours() {
-  for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
-    ukm::SourceId source_id = GetSourceId(event_counts.first);
-    if (source_id == ukm::kInvalidSourceId) {
-      continue;
-    }
+  if (!ShouldRecordUkm(profile_)) {
+    return;
+  }
 
+  for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
     // `event_counts.second` is the map from InputEventSource to the event
     // counts.
-    RecordInputEventsUkm(source_id, event_counts.second);
+    RecordInputEventsUkm(event_counts.first, event_counts.second);
   }
 
   app_id_to_event_count_per_two_hours_.clear();
@@ -233,29 +230,6 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
 void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
     InstanceRegistry* cache) {
   InstanceRegistry::Observer::Observe(nullptr);
-}
-
-void AppPlatformInputMetrics::OnAppRegistryCacheWillBeDestroyed(
-    AppRegistryCache* cache) {
-  AppRegistryCache::Observer::Observe(nullptr);
-}
-
-void AppPlatformInputMetrics::OnAppUpdate(const AppUpdate& update) {
-  if (!update.ReadinessChanged() ||
-      apps_util::IsInstalled(update.Readiness())) {
-    return;
-  }
-
-  auto it = app_id_to_source_id_.find(update.AppId());
-  if (it == app_id_to_source_id_.end()) {
-    return;
-  }
-
-  // Remove the source id when the app is removed. The source id will be added
-  // when record the UKM, so we don't need to add the source id here when the
-  // app is installed.
-  AppPlatformMetrics::RemoveSourceId(it->second);
-  app_id_to_source_id_.erase(it);
 }
 
 void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
@@ -338,35 +312,33 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
     return;
   }
 
+  if (!ShouldRecordUkmForAppTypeName(GetAppType(profile_, it->second.app_id))) {
+    return;
+  }
+
   ++app_id_to_event_count_per_two_hours_[it->second.app_id][event_source]
                                         [it->second.app_type_name];
 }
 
-ukm::SourceId AppPlatformInputMetrics::GetSourceId(const std::string& app_id) {
-  auto it = app_id_to_source_id_.find(app_id);
-  if (it != app_id_to_source_id_.end()) {
-    return it->second;
-  }
-
-  auto source_id = AppPlatformMetrics::GetSourceId(profile_, app_id);
-  app_id_to_source_id_[app_id] = source_id;
-  return source_id;
-}
-
 void AppPlatformInputMetrics::RecordInputEventsUkm(
-    ukm::SourceId source_id,
+    const std::string& app_id,
     const EventSourceToCounts& event_counts) {
   for (const auto& counts : event_counts) {
     InputEventSource event_source = counts.first;
 
     // `counts.second` is the map from AppTypeName to the event count.
     for (const auto& count : counts.second) {
+      auto source_id = AppPlatformMetrics::GetSourceId(profile_, app_id);
+      if (source_id == ukm::kInvalidSourceId) {
+        continue;
+      }
       ukm::builders::ChromeOSApp_InputEvent builder(source_id);
       builder.SetAppType((int)count.first)
           .SetAppInputEventSource((int)event_source)
           .SetAppInputEventCount(count.second)
           .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
           .Record(ukm::UkmRecorder::Get());
+      AppPlatformMetrics::RemoveSourceId(source_id);
     }
   }
 }
@@ -382,6 +354,10 @@ void AppPlatformInputMetrics::SaveInputEvents() {
 }
 
 void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
+  if (!ShouldRecordUkm(profile_)) {
+    return;
+  }
+
   DictionaryPrefUpdate input_events_update(profile_->GetPrefs(),
                                            kAppInputEventsKey);
   if (!input_events_update->is_dict()) {
@@ -389,8 +365,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
   }
 
   for (const auto [app_id, events] : input_events_update->GetDict()) {
-    ukm::SourceId source_id = GetSourceId(app_id);
-    if (source_id == ukm::kInvalidSourceId) {
+    if (!ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id))) {
       continue;
     }
 
@@ -401,7 +376,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
 
     EventSourceToCounts event_counts =
         ConvertDictValueToEventCounts(*events_dict);
-    RecordInputEventsUkm(source_id, event_counts);
+    RecordInputEventsUkm(app_id, event_counts);
   }
 }
 
