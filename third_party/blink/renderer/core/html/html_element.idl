@@ -65,10 +65,6 @@
     [ImplementedAs=offsetWidthForBinding] readonly attribute long offsetWidth;
     [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
-    // CSS Object Model (CSSOM)
-    // https://drafts.csswg.org/cssom/#the-elementcssinlinestyle-interface
-    [SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
-
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
@@ -77,3 +73,4 @@
 HTMLElement includes GlobalEventHandlers;
 HTMLElement includes DocumentAndElementEventHandlers;
 HTMLElement includes HTMLOrForeignElement;
+HTMLElement includes ElementCSSInlineStyle;

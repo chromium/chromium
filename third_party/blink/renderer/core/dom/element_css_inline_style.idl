@@ -1,0 +1,8 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// https://drafts.csswg.org/cssom/#the-elementcssinlinestyle-interface
+
+interface mixin ElementCSSInlineStyle {
+     [SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+};
