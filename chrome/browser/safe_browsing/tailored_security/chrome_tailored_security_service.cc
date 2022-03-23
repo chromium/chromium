@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -64,6 +65,12 @@ void ChromeTailoredSecurityService::MaybeNotifySyncUser(
   if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
           profile_->GetPrefs())) {
     return;
+  }
+
+  if (is_enabled) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.TailoredSecurity.SyncPromptSkippedAlreadyEnabled",
+        IsEnhancedProtectionEnabled(*prefs()));
   }
 
   if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
