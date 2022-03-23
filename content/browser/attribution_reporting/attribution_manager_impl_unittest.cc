@@ -1029,6 +1029,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.CreateReportStatus",
+      AttributionTrigger::AggregatableResult::kNoMatchingImpressions, 1);
 }
 
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {

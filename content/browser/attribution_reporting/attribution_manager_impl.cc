@@ -103,8 +103,12 @@ bool IsOriginSessionOnly(
   return false;
 }
 
-void RecordCreateReportStatus(AttributionTrigger::EventLevelResult status) {
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
+void RecordCreateReportStatus(CreateReportResult result) {
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus",
+                                result.event_level_status());
+  base::UmaHistogramEnumeration(
+      "Conversions.AggregatableReport.CreateReportStatus",
+      result.aggregatable_status());
 }
 
 ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
@@ -487,9 +491,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 }
 
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
-  RecordCreateReportStatus(result.event_level_status());
-
-  // TODO(crbug.com/1285319): Log metrics for aggregatable reports.
+  RecordCreateReportStatus(result);
 
   if (std::vector<AttributionReport>& new_reports = result.new_reports();
       !new_reports.empty()) {

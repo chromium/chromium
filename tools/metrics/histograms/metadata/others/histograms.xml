@@ -3076,6 +3076,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableReport.CreateReportStatus"
+    enum="ConversionCreateAggregatableReportStatus" expires_after="2022-09-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable reports are stored successfully or rejected
+    and why. Recorded once for each trigger event processed by the attribution
+    storage layer. `kNoHistograms` will be logged if the trigger doesn't declare
+    aggregatable trigger data.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome"
     enum="ConversionReportSendOutcome" expires_after="2022-09-08">
   <owner>linnan@chromium.org</owner>
