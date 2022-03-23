@@ -2268,4 +2268,20 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
   EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
 
+// Surfaces without non-client view should not crash.
+TEST_F(ShellSurfaceTest, NoNonClientViewWithConfigure) {
+  // Popup windows don't have a non-client view.
+  auto shell_surface =
+      test::ShellSurfaceBuilder({20, 20}).SetAsPopup().BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+
+  // Having a configure callback leads to a call to GetClientBoundsInScreen().
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+
+  shell_surface->SetWindowBounds(gfx::Rect(10, 10, 300, 300));
+  EXPECT_TRUE(callbacks.configure_state);
+  EXPECT_EQ(callbacks.configure_state->bounds, gfx::Rect(10, 10, 300, 300));
+}
+
 }  // namespace exo

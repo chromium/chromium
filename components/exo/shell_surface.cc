@@ -41,11 +41,14 @@ namespace {
 constexpr int kMaximizedOrFullscreenOrPinnedLockTimeoutMs = 100;
 
 gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          widget->non_client_view()->frame_view());
   gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
-  return frame_view->GetClientBoundsForWindowBounds(window_bounds);
+  // Account for popup windows not having a non-client view.
+  if (widget->non_client_view()) {
+    return static_cast<ash::NonClientFrameViewAsh*>(
+               widget->non_client_view()->frame_view())
+        ->GetClientBoundsForWindowBounds(window_bounds);
+  }
+  return window_bounds;
 }
 
 }  // namespace
