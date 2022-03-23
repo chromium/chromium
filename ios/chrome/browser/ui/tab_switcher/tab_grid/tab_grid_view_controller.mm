@@ -513,10 +513,41 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated {
+  [self updatePageWithCurrentSearchTerms:page];
+
   if (self.topToolbar.pageControl.selectedPage != page)
     [self.topToolbar.pageControl setSelectedPage:page animated:animated];
   if (self.currentPage != page) {
     [self scrollToPage:page animated:animated];
+  }
+}
+
+// Sets the current search terms on |page|. This allows the content to update
+// while the page is still hidden before the page change animation begins.
+- (void)updatePageWithCurrentSearchTerms:(TabGridPage)page {
+  if (self.tabGridMode != TabGridModeSearch ||
+      self.currentPage == TabGridPageIncognitoTabs) {
+    // No need to update search term if not in search mode or currently on the
+    // incognito page.
+    return;
+  }
+
+  NSString* searchTerms = nil;
+  if (self.currentPage == TabGridPageRegularTabs) {
+    searchTerms = self.regularTabsViewController.searchText;
+  } else {
+    searchTerms = self.remoteTabsViewController.searchTerms;
+  }
+
+  if (page == TabGridPageRegularTabs) {
+    // Search terms will be non-empty when switching pages. This is important
+    // because |searchItemsWithText:| will show items from all windows. When no
+    // search terms exist, |resetToAllItems| is used instead.
+    DCHECK(searchTerms.length);
+    self.regularTabsViewController.searchText = searchTerms;
+    [self.regularTabsDelegate searchItemsWithText:searchTerms];
+  } else {
+    self.remoteTabsViewController.searchTerms = searchTerms;
   }
 }
 
@@ -1903,30 +1934,30 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       self.incognitoTabsViewController.searchText = searchText;
-      if (searchText.length) {
-        [self.incognitoTabsDelegate searchItemsWithText:searchText];
-      } else {
-        // The expectation from searchItemsWithText is to search tabs from all
-        // the available windows to the app. However in the case of empy string
-        // the grid should revert back to its original state so it doesn't
-        // display all the tabs from all the available windows.
-        [self.incognitoTabsDelegate resetToAllItems];
-      }
+      [self updateSearchGrid:self.incognitoTabsDelegate
+              withSearchText:searchText];
       break;
     case TabGridPageRegularTabs:
-    case TabGridPageRemoteTabs:
       self.regularTabsViewController.searchText = searchText;
-      self.remoteTabsViewController.searchTerms = searchText;
-      if (searchText.length) {
-        [self.regularTabsDelegate searchItemsWithText:searchText];
-      } else {
-        // The expectation from searchItemsWithText is to search tabs from all
-        // the available windows to the app. However in the case of empy string
-        // the grid should revert back to its original state so it doesn't
-        // display all the tabs from all the available windows.
-        [self.regularTabsDelegate resetToAllItems];
-      }
+      [self updateSearchGrid:self.regularTabsDelegate
+              withSearchText:searchText];
       break;
+    case TabGridPageRemoteTabs:
+      self.remoteTabsViewController.searchTerms = searchText;
+      break;
+  }
+}
+
+- (void)updateSearchGrid:(id<GridCommands>)tabsDelegate
+          withSearchText:(NSString*)searchText {
+  if (searchText.length) {
+    [tabsDelegate searchItemsWithText:searchText];
+  } else {
+    // The expectation from searchItemsWithText is to search tabs from all
+    // the available windows to the app. However in the case of empy string
+    // the grid should revert back to its original state so it doesn't
+    // display all the tabs from all the available windows.
+    [tabsDelegate resetToAllItems];
   }
 }
 
