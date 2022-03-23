@@ -137,8 +137,7 @@ def _ValidateBrowserType(builder_name, test_config):
                        builder_name)
   elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf', 'win-10_amd-perf',
-                        'win-10_amd_laptop-perf'):
+                        'win-10_laptop_low_end-perf', 'win-10_amd_laptop-perf'):
     if browser_options.browser != 'release_x64':
       raise ValueError("%s must use 'release_x64' browser type" %
                        builder_name)

@@ -1532,55 +1532,6 @@
       "script": "//tools/perf/process_perf_results.py"
     }
   },
-  "win-10_amd-perf": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "--browser=release_x64",
-          "--upload-results",
-          "--test-shard-map-filename=win-10_amd-perf_map.json",
-          "--assert-gpu-compositing"
-        ],
-        "isolate_name": "performance_test_suite",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "1002:15d8-27.20.1034.6",
-              "os": "Windows-10-18363.476",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "11A5S4L300 [ThinkCentre M75q-1] (LENOVO)"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "ignore_task_failure": false,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 1
-        },
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
   "win-10_amd_laptop-perf": {
     "isolated_scripts": [
       {

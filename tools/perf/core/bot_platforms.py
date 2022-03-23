@@ -390,13 +390,6 @@ _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
 ])
-_WIN_10_AMD_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream'),
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('kraken'),
-    _GetBenchmarkConfig('octane'),
-    _GetBenchmarkConfig('system_health.common_desktop'),
-])
 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream'),
     _GetBenchmarkConfig('jetstream2'),
@@ -569,8 +562,6 @@ WIN_10 = PerfPlatform(
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
     ' Intel Kaby Lake HD Graphics 630', _WIN_10_BENCHMARK_CONFIGS,
     26, 'win', executables=_WIN_10_EXECUTABLE_CONFIGS)
-WIN_10_AMD = PerfPlatform('win-10_amd-perf', 'Windows AMD chipset',
-                          _WIN_10_AMD_BENCHMARK_CONFIGS, 1, 'win')
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
                                  _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 5, 'win')
