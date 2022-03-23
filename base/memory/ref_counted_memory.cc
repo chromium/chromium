@@ -71,8 +71,14 @@ RefCountedString::~RefCountedString() = default;
 // static
 scoped_refptr<RefCountedString> RefCountedString::TakeString(
     std::string* to_destroy) {
+  return TakeString(std::move(*to_destroy));
+}
+
+// static
+scoped_refptr<RefCountedString> RefCountedString::TakeString(
+    std::string&& str) {
   auto self = MakeRefCounted<RefCountedString>();
-  to_destroy->swap(self->data_);
+  str.swap(self->data_);
   return self;
 }
 
@@ -92,8 +98,14 @@ RefCountedString16::~RefCountedString16() = default;
 // static
 scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
     std::u16string* to_destroy) {
+  return TakeString(std::move(*to_destroy));
+}
+
+// static
+scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
+    std::u16string&& str) {
   auto self = MakeRefCounted<RefCountedString16>();
-  to_destroy->swap(self->data_);
+  str.swap(self->data_);
   return self;
 }
 

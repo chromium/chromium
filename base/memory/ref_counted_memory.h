@@ -135,6 +135,8 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
   // copy into object->data()).
   static scoped_refptr<RefCountedString> TakeString(std::string* to_destroy);
 
+  static scoped_refptr<RefCountedString> TakeString(std::string&& str);
+
   // RefCountedMemory:
   const unsigned char* front() const override;
   size_t size() const override;
@@ -160,6 +162,8 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
   // Constructs a RefCountedString16 object by performing a swap.
   static scoped_refptr<RefCountedString16> TakeString(
       std::u16string* to_destroy);
+
+  static scoped_refptr<RefCountedString16> TakeString(std::u16string&& str);
 
   // RefCountedMemory:
   const unsigned char* front() const override;
