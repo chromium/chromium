@@ -13,8 +13,8 @@ import '../../controls/settings_radio_group.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

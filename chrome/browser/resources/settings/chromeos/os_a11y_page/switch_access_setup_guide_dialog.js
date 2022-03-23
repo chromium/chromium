@@ -13,7 +13,6 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '../../controls/settings_slider.js';
 import '../os_icons.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';

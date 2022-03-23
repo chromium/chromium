@@ -12,8 +12,8 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

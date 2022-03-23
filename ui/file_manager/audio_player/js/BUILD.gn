@@ -137,6 +137,7 @@ optimize_webui("build") {
     ":main",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:library",
     "//ui/webui/resources:preprocess",
   ]
 }

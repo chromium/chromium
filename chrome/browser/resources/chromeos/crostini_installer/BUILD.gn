@@ -36,6 +36,7 @@ build_mwc_app("crostini_installer") {
   deps = [
     ":web_components",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources:library",
     "//ui/webui/resources:preprocess",
   ]
 }

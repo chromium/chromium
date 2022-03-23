@@ -20,8 +20,8 @@ import '../../controls/settings_slider.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
 import '../../controls/settings_dropdown_menu.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';

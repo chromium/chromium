@@ -53,14 +53,15 @@ js_library("display") {
     "../..:router",
     "../settings_scheduler_slider:settings_scheduler_slider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/settings_private.js",
-                   "$externs_path/system_display.js",
-                   "../settings_controls_types.js",
-                 ]
+  externs_list =
+      chrome_extension_public_externs + [
+        "$externs_path/settings_private.js",
+        "$externs_path/system_display.js",
+        "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
+        "../settings_controls_types.js",
+      ]
 }
 
 js_library("display_layout") {
@@ -118,6 +119,9 @@ js_library("pointers") {
     "../..:router",
     "//ui/webui/resources/cr_components/localized_link:localized_link",
   ]
+
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
 }
 
 js_library("power") {

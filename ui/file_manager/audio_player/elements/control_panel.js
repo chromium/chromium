@@ -4,8 +4,8 @@
 
 import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_icon_button.js';
 import './repeat_button.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -270,7 +270,6 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu.html|CrActionMenuElement",
                              "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar.html|CrToolbarElement",
                              "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field.html|CrToolbarSearchFieldElement",
-                             "ui/webui/resources/cr_elements/cr_slider/cr_slider.html|SliderTick",
                              "ui/webui/resources/html/assert.html|assert,assertNotReached",
                              "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
                              "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorType",
