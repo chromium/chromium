@@ -366,7 +366,8 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   // PrerenderManager.
   if (web_contents) {
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-    if (!prerender_manager || !prerender_manager->search_prerender_handle()) {
+    if (!prerender_manager ||
+        !prerender_manager->HasSearchResultPagePrerendered()) {
       base::UmaHistogramEnumeration(
           internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
           PrerenderPredictionStatus::kNotStarted);

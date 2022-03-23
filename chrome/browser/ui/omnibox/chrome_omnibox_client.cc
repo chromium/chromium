@@ -377,7 +377,8 @@ void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // PrerenderManager.
   content::WebContents* web_contents = controller_->GetWebContents();
   auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-  if (!prerender_manager || !prerender_manager->search_prerender_handle()) {
+  if (!prerender_manager ||
+      !prerender_manager->HasSearchResultPagePrerendered()) {
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
         PrerenderPredictionStatus::kNotStarted);

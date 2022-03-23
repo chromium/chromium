@@ -11,20 +11,29 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -230,6 +239,199 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
                          "document.onprerenderingchange === undefined"));
 #endif
+}
+
+class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
+    : public OmniboxPrerenderBrowserTest {
+ public:
+  PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSupportSearchSuggestionForPrerender2, {}},
+         {kSearchPrefetchServicePrefetching,
+          {
+              {"prefetch_caching_limit_ms", "10"},
+          }}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    OmniboxPrerenderBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    search_engine_server_.SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    search_engine_server_.ServeFilesFromDirectory(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    ASSERT_TRUE(search_engine_server_.Start());
+
+    TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(
+        chrome_test_utils::GetProfile(this));
+    ASSERT_TRUE(model);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+    ASSERT_TRUE(model->loaded());
+    TemplateURLData data;
+    data.SetShortName(kSearchDomain16);
+    data.SetKeyword(data.short_name());
+    data.SetURL(search_engine_server_
+                    .GetURL(kSearchDomain, "/title1.html?q={searchTerms}")
+                    .spec());
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+ protected:
+  int PrerenderQuery(const std::string& search_terms,
+                     const GURL& expected_prerender_url) {
+    AutocompleteMatch match = CreateSearchSuggestionMatch(search_terms);
+    prerender_manager_->StartPrerenderSearchSuggestion(match);
+    int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+    EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+    return host_id;
+  }
+
+  void PrerenderQueryAndWaitForExpiring(const std::string& search_terms,
+                                        const GURL& expected_prerender_url) {
+    int host_id = PrerenderQuery(search_terms, expected_prerender_url);
+
+    content::test::PrerenderHostObserver prerender_observer(
+        *GetActiveWebContents(), host_id);
+
+    // The prerender will be destroyed automatically soon, since the duration is
+    // set to 10ms.
+    prerender_observer.WaitForDestroyed();
+  }
+
+  GURL GetSearchSuggestionUrl(const std::string& search_terms) {
+    return search_engine_server_.GetURL(kSearchDomain,
+                                        "/title1.html?q=" + search_terms);
+  }
+
+  void InitializePrerenderManager() {
+    PrerenderManager::CreateForWebContents(GetActiveWebContents());
+
+    prerender_manager_ =
+        PrerenderManager::FromWebContents(GetActiveWebContents());
+    ASSERT_TRUE(prerender_manager_);
+  }
+
+  PrerenderManager* prerender_manager() { return prerender_manager_; }
+
+ private:
+  AutocompleteMatch CreateSearchSuggestionMatch(
+      const std::string& search_terms) {
+    AutocompleteMatch match;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        base::UTF8ToUTF16(search_terms));
+    match.search_terms_args->original_query = base::UTF8ToUTF16(search_terms);
+    match.destination_url = GetSearchSuggestionUrl(search_terms);
+    match.keyword = base::UTF8ToUTF16(search_terms);
+    match.RecordAdditionalInfo("should_prerender", "true");
+    return match;
+  }
+
+  constexpr static char kSearchDomain[] = "a.test";
+  constexpr static char16_t kSearchDomain16[] = u"a.test";
+  base::test::ScopedFeatureList feature_list_;
+  PrerenderManager* prerender_manager_;
+  net::test_server::EmbeddedTestServer search_engine_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// Tests that an ongoing prerender which loads an SRP should be canceled
+// automatically after the expiry duration.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
+                       SearchPrerenderExpiry) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  InitializePrerenderManager();
+
+  std::string search_query = "prerender2";
+  GURL expected_prerender_url = GetSearchSuggestionUrl("prerender222");
+  PrerenderQueryAndWaitForExpiring("prerender222", expected_prerender_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      /*PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed*/ 35, 1);
+
+  // Select the prerender hint. The prerendered result has been deleted, so
+  // browser loads the search result over again.
+  content::TestNavigationObserver observer(GetActiveWebContents());
+  GetActiveWebContents()->OpenURL(content::OpenURLParams(
+      expected_prerender_url, content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  observer.Wait();
+
+  // The prediction is correct, so kHitFinished should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+      PrerenderPredictionStatus::kHitFinished, 1);
+  // Since the prerendered page ran out of time, the timing metric should
+  // record `prefetch_caching_limit_ms`.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Prerender.Experimental.Search."
+      "FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration",
+      base::Milliseconds(10), 1);
+}
+
+// Tests that kCanceled is correctly recorded in the case that PrerenderManager
+// receives a new suggestion. Note: kCancel should only recorded when
+// PrerenderManager receives a new suggestion or on primary-page changed.
+// Otherwise one prediction might be recorded twice.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
+                       DifferentSuggestionAfterPrerenderExpired) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  InitializePrerenderManager();
+
+  GURL expected_prerender_url = GetSearchSuggestionUrl("prerender222");
+  // Prerender the first query, and wait for it to be deleted.
+  PrerenderQueryAndWaitForExpiring("prerender222", expected_prerender_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      /*PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed*/ 35, 1);
+
+  // Nothing should be recorded. Because there is no new navigation nor new
+  // search suggestion.
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine, 0);
+
+  // Suggest to prerender another term.
+  GURL prerender_url_2 = GetSearchSuggestionUrl("prerender233");
+  PrerenderQuery("prerender233", prerender_url_2);
+
+  // PrerenderPredictionStatus::kCancelled should be recorded for the prediction
+  // of "prerender222".
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+      PrerenderPredictionStatus::kCancelled, 1);
+
+  content::TestNavigationObserver observer(GetActiveWebContents());
+  GetActiveWebContents()->OpenURL(content::OpenURLParams(
+      prerender_url_2, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  observer.Wait();
+
+  // The prediction is correct, so kHitFinished should be recorded.
+  histogram_tester.ExpectBucketCount(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+      PrerenderPredictionStatus::kHitFinished, 1);
+
+  // Two predictions, two samples.
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine, 2);
 }
 
 }  // namespace

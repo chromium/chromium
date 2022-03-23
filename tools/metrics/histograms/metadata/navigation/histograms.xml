@@ -1554,6 +1554,53 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
+<histogram
+    name="Prerender.Experimental.Search.FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration"
+    units="ms" expires_after="2022-09-01">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    PrerenderManager records the duration period from the time to start
+    prerendering with the search hints to the time to navigate the search hints.
+    This duration is recorded when it finds the search hints predicts correctly,
+    e.g. users do search and results in activating the prerendered page, or
+    users do saerch the prerender hints but the prerendered page has been
+    destroyed due to expiration.
+
+    |====== HitFinishedSearchResultLifeTime=======|
+
+    @ Timestamp X ------------------------------- @ Timestamp Y
+
+    or
+
+    |====== HitFinishedSearchResultLifeTime=============|
+
+    @ Timestamp X ------------------------------------- @ Timestamp Z
+
+    Where:
+
+    * Timestamp X: Chrome receives the first prerender hints for a search term
+    A.
+
+    * Timestamp Y: User selects the search term A.
+
+    * Timestamp Z: Timestamp X + Fixed period T.
+
+    HitFinishedSearchResultLifeTime = min(Timestamp Y, Timestamp Z) - Timestamp
+    X = min(Timestamp Y - Timestamp X, T).
+
+    It aims to:
+
+    1. Track the prerenders which were canceled due to expiration(Fixed period
+    T).
+
+    2. Gain the understanding of the duration between the moment when browser
+    receives the first prerender hint and the moment when the hint is selected.
+    This data will be used to determine the threshold of deciding whether to
+    reuse a prefetched response or to resend a prefetch request.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"
     expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
