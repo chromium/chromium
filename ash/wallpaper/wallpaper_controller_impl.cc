@@ -126,6 +126,29 @@ constexpr int kDefaultEncodingQuality = 90;
 // The color of the wallpaper if no other wallpaper images are available.
 constexpr SkColor kDefaultWallpaperColor = SK_ColorGRAY;
 
+constexpr net::NetworkTrafficAnnotationTag
+    kDownloadGooglePhotoTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("wallpaper_download_google_photo",
+                                            R"(
+      semantics {
+        sender: "ChromeOS Wallpaper Picker"
+        description:
+          "When the user selects a photo from their Google Photos collection, "
+          "the image must be downloaded at a high enough resolution to display "
+          "as a wallpaper. This request fetches that image."
+        trigger: "When the user selects a Google Photo as their wallpaper, or "
+                 "when that selection reaches this device from cross-device "
+                 "sync."
+        data: "Stored credentials for the user's Google account."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "N/A"
+        policy_exception_justification:
+          "Not implemented, considered not necessary."
+      })");
+
 // The paths of wallpaper directories.
 base::FilePath& GlobalUserDataDir() {
   static base::NoDestructor<base::FilePath> dir_user_data;
@@ -2231,12 +2254,11 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
                                 kLargeWallpaperMaxWidth,
                                 kLargeWallpaperMaxHeight));
 
-    // TODO(angusmclean): Use a real traffic annotation below.
     ImageDownloader::DownloadCallback download_callback = base::BindOnce(
         &WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded,
         set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
-    ImageDownloader::Get()->Download(url, NO_TRAFFIC_ANNOTATION_YET, {},
-                                     params.account_id,
+    ImageDownloader::Get()->Download(url, kDownloadGooglePhotoTrafficAnnotation,
+                                     {}, params.account_id,
                                      std::move(download_callback));
   }
 }
