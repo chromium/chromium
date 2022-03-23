@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.Policy.BlockNonManagedCellularBehavior"
-    enum="NetworkBlockNonManagedCellularBehavior" expires_after="2022-05-01">
+    enum="NetworkBlockNonManagedCellularBehavior" expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>jiajunz@google.com</owner>
@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.Policy.EuiccStatusUploadResult"
-    enum="BooleanSuccess" expires_after="2022-05-01">
+    enum="BooleanSuccess" expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>jiajunz@google.com</owner>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.Policy.StatusAtLogin"
-    enum="NetworkESimPolicyStatusAtLogin" expires_after="2022-05-01">
+    enum="NetworkESimPolicyStatusAtLogin" expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>jiajunz@google.com</owner>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.ProfileDiscovery.Latency" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
-    expires_after="2022-05-01">
+    expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivit@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.SetupFlowResult"
-    enum="ESimSetupFlowResult" expires_after="2022-05-01">
+    enum="ESimSetupFlowResult" expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.StatusAtLogin"
-    enum="NetworkCellularESimProfileStatus" expires_after="2022-05-01">
+    enum="NetworkCellularESimProfileStatus" expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.Usage.Count" enum="NetworkCellularUsage"
-    expires_after="2022-05-01">
+    expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -515,11 +515,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.Pin.{SimPinOperation}"
-    enum="SimPinOperationResult" expires_after="2022-03-01">
+    enum="SimPinOperationResult" expires_after="2022-09-01">
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
-  <summary>Tracks the rate of success of various pin operations.</summary>
+  <summary>
+    Tracks the rate of success of various pin operations. Note: This histogram
+    was expired from 2022-03-01 to 2022-03-23; data may be missing.
+  </summary>
   <token key="SimPinOperation">
     <variant name="ChangeSuccess"/>
     <variant name="LockSuccess"/>
@@ -554,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
-    expires_after="2022-05-01">
+    expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -586,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.PSim.Usage.Count" enum="NetworkCellularUsage"
-    expires_after="2022-05-01">
+    expires_after="2022-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -615,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.ConnectionResult.All"
-    enum="ShillCellularConnectResult" expires_after="2022-04-01">
+    enum="ShillCellularConnectResult" expires_after="2022-10-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -632,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.ConnectionResult.UserInitiated"
-    enum="UserInitiatedCellularConnectResult" expires_after="2022-04-01">
+    enum="UserInitiatedCellularConnectResult" expires_after="2022-10-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -663,12 +666,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.Disconnections"
-    enum="NetworkCellularConnectionState" expires_after="2022-03-01">
+    enum="NetworkCellularConnectionState" expires_after="2022-09-01">
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks when cellular {SimType} network is connected and when cellular
-    network is disconnected without explicit user action.
+    network is disconnected without explicit user action. Note: This histogram
+    was expired from 2022-03-01 to 2022-03-23; data may be missing.
   </summary>
   <token key="SimType">
     <variant name="ESim"/>
