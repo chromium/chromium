@@ -6,6 +6,13 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 // Displays children in a two-dimensional grid and supports focusing children
 // with arrow keys.
+
+export interface CrGridElement {
+  $: {
+    items: HTMLSlotElement,
+  };
+}
+
 export class CrGridElement extends PolymerElement {
   static get is() {
     return 'cr-grid';
@@ -24,30 +31,22 @@ export class CrGridElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  columns: number = 1;
 
-    /** @type {number} */
-    this.columns = 1;
-  }
-
-  /** @private */
-  onColumnsChange_() {
+  private onColumnsChange_() {
     this.updateStyles({'--cr-grid-columns': this.columns});
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       e.preventDefault();
-      const items = this.$.items.assignedElements().filter(
-          (el) =>
-              (!!(el.offsetWidth || el.offsetHeight ||
-                  el.getClientRects().length)));
-      const currentIndex = items.indexOf(e.target);
+      const items =
+          (this.$.items.assignedElements() as HTMLElement[]).filter(el => {
+            return !!(
+                el.offsetWidth || el.offsetHeight ||
+                el.getClientRects().length);
+          });
+      const currentIndex = items.indexOf(e.target as HTMLElement);
       const isRtl = window.getComputedStyle(this)['direction'] === 'rtl';
       const bottomRowColumns = items.length % this.columns;
       const direction = ['ArrowRight', 'ArrowDown'].includes(e.key) ? 1 : -1;
@@ -75,18 +74,22 @@ export class CrGridElement extends PolymerElement {
           currentIndex + delta >= items.length) {
         delta += bottomRowColumns;
       }
-      const mod = function(m, n) {
-        return ((m % n) + n) % n;
-      };
-      const newIndex = mod(currentIndex + delta, items.length);
-      items[newIndex].focus();
+
+      const newIndex = (items.length + currentIndex + delta) % items.length;
+      items[newIndex]!.focus();
     }
 
     if (['Enter', ' '].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
-      e.target.click();
+      (e.target as HTMLElement).click();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-grid': CrGridElement;
   }
 }
 

@@ -157,7 +157,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr_expand_button/cr_expand_button.m.js",
     "cr_fingerprint/cr_fingerprint_icon.m.js",
     "cr_fingerprint/cr_fingerprint_progress_arc.m.js",
-    "cr_grid/cr_grid.js",
     "cr_icon_button/cr_icon_button.m.js",
     "cr_icons_css.m.js",
     "cr_input/cr_input.m.js",
@@ -216,6 +215,7 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
+    "cr_grid/cr_grid.ts",
     "cr_slider/cr_slider.ts",
     "cr_tabs/cr_tabs.ts",
     "cr_toolbar/cr_toolbar_selection_overlay.ts",
@@ -237,7 +237,6 @@ group("closure_compile") {
     "cr_dialog:closure_compile",
     "cr_expand_button:closure_compile",
     "cr_fingerprint:closure_compile",
-    "cr_grid:closure_compile",
     "cr_icon_button:closure_compile",
     "cr_input:closure_compile",
     "cr_lottie:closure_compile",
