@@ -47,6 +47,8 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundProminent] =
       GetColorWithMaxContrast(kColorButtonBackgroundProminent);
   mixer[kColorButtonForegroundUnchecked] = {kColorSecondaryForeground};
+  mixer[kColorDebugBoundsOutline] = SetAlpha(SK_ColorRED, 0x30);
+  mixer[kColorDebugContentOutline] = SetAlpha(SK_ColorBLUE, 0x30);
   mixer[kColorDialogBackground] = {kColorPrimaryBackground};
   mixer[kColorDialogForeground] = {kColorSecondaryForeground};
   mixer[kColorDropdownBackground] = {kColorPrimaryBackground};
