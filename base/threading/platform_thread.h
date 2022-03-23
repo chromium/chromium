@@ -124,6 +124,12 @@ class BASE_EXPORT PlatformThread {
   static PlatformThreadHandle CurrentHandle();
 
   // Yield the current thread so another thread can be scheduled.
+  //
+  // Note: this is likely not the right call to make in most situations. If this
+  // is part of a spin loop, consider base::Lock, which likely has better tail
+  // latency. Yielding the thread has different effects depending on the
+  // platform, system load, etc., and can result in yielding the CPU for less
+  // than 1us, or many tens of ms.
   static void YieldCurrentThread();
 
   // Sleeps for the specified duration (real-time; ignores time overrides).

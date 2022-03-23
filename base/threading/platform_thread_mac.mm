@@ -8,6 +8,7 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
+#include <mach/thread_switch.h>
 #include <stddef.h>
 #include <sys/resource.h>
 
@@ -51,6 +52,17 @@ void InitThreading() {
 
     DCHECK([NSThread isMultiThreaded]);
   }
+}
+
+// static
+void PlatformThread::YieldCurrentThread() {
+  // Don't use sched_yield(), as it can lead to 10ms delays.
+  //
+  // This only depresses the thread priority for 1ms, which is more in line
+  // with what calling code likely wants. See this bug in webkit for context:
+  // https://bugs.webkit.org/show_bug.cgi?id=204871
+  mach_msg_timeout_t timeout_ms = 1;
+  thread_switch(MACH_PORT_NULL, SWITCH_OPTION_DEPRESS, timeout_ms);
 }
 
 // static

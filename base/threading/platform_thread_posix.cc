@@ -269,10 +269,12 @@ PlatformThreadHandle PlatformThread::CurrentHandle() {
   return PlatformThreadHandle(pthread_self());
 }
 
+#if !BUILDFLAG(IS_APPLE)
 // static
 void PlatformThread::YieldCurrentThread() {
   sched_yield();
 }
+#endif  // !BUILDFLAG(IS_APPLE)
 
 // static
 void PlatformThread::Sleep(TimeDelta duration) {
