@@ -27,12 +27,15 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
   // These three policies take precedence over |kForceGoogleSafeSearch|. If any
   // of them is set, their handlers will set the proper prefs.
   // https://crbug.com/476908, https://crbug.com/590478.
-  if (policies.GetValue(key::kForceGoogleSafeSearch) ||
-      policies.GetValue(key::kForceYouTubeSafetyMode) ||
-      policies.GetValue(key::kForceYouTubeRestrict)) {
+  if (policies.GetValue(key::kForceGoogleSafeSearch,
+                        base::Value::Type::BOOLEAN) ||
+      policies.GetValue(key::kForceYouTubeSafetyMode,
+                        base::Value::Type::BOOLEAN) ||
+      policies.GetValue(key::kForceYouTubeRestrict,
+                        base::Value::Type::INTEGER)) {
     return;
   }
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value) {
     prefs->SetValue(prefs::kForceGoogleSafeSearch, value->Clone());
 

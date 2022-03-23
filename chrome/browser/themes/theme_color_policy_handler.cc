@@ -63,7 +63,8 @@ bool ThemeColorPolicyHandler::CheckPolicySettings(
 void ThemeColorPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
   if (!value)
     return;
 

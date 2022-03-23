@@ -56,8 +56,9 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     const policy::PolicyMap& policies,
     const policy::PolicyHandlerParameters& parameters,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (!value || !value->is_string())
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
+  if (!value)
     return;
   std::string str_value = value->GetString();
   base::FilePath::StringType string_value =

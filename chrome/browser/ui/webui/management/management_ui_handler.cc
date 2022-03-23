@@ -464,10 +464,10 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
       GetPolicyService()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()))
-          .GetValue(policy::key::kCloudReportingEnabled);
+          .GetValue(policy::key::kCloudReportingEnabled,
+                    base::Value::Type::BOOLEAN);
   const bool cloud_reporting_policy_enabled =
-      cloud_reporting_policy_value && cloud_reporting_policy_value->is_bool() &&
-      cloud_reporting_policy_value->GetBool();
+      cloud_reporting_policy_value && cloud_reporting_policy_value->GetBool();
 
   const struct {
     const char* policy_key;
@@ -501,10 +501,9 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
       enabled_messages.insert(report_definition.message);
     } else if (report_definition.policy_key) {
       for (const policy::PolicyMap* policy_map : policy_maps) {
-        const base::Value* policy_value =
-            policy_map->GetValue(report_definition.policy_key);
-        if (policy_value && policy_value->is_bool() &&
-            policy_value->GetBool()) {
+        const base::Value* policy_value = policy_map->GetValue(
+            report_definition.policy_key, base::Value::Type::BOOLEAN);
+        if (policy_value && policy_value->GetBool()) {
           enabled_messages.insert(report_definition.message);
           break;
         }

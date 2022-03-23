@@ -64,7 +64,7 @@ void EnterpriseConnectorsPolicyHandler::ApplyPolicySettings(
   if (!policy)
     return;
 
-  const base::Value* value = policy->value();
+  const base::Value* value = policy->value_unsafe();
   if (value) {
     prefs->SetValue(pref_path_, value->Clone());
 

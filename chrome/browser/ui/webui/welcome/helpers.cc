@@ -69,8 +69,9 @@ const base::FeatureParam<bool> kForceEnabledShowGoogleApp = {
 
 bool IsPolicySetAndFalse(const policy::PolicyMap& policies,
                          const std::string& policy_name) {
-  const base::Value* policy = policies.GetValue(policy_name);
-  return policy && policy->is_bool() && !policy->GetBool();
+  const base::Value* policy =
+      policies.GetValue(policy_name, base::Value::Type::BOOLEAN);
+  return policy && !policy->GetBool();
 }
 
 bool CanShowGoogleAppModule(const policy::PolicyMap& policies) {
@@ -86,7 +87,8 @@ bool CanShowGoogleAppModule(const policy::PolicyMap& policies) {
 bool CanShowNTPBackgroundModule(const policy::PolicyMap& policies,
                                 Profile* profile) {
   // We can't set the background if the NTP is something other than Google.
-  return !policies.GetValue(policy::key::kNewTabPageLocation) &&
+  return !policies.GetValue(policy::key::kNewTabPageLocation,
+                            base::Value::Type::STRING) &&
          search::DefaultSearchProviderIsGoogle(profile);
 }
 
@@ -98,13 +100,12 @@ bool CanShowSetDefaultModule(const policy::PolicyMap& policies) {
 }
 
 bool CanShowSigninModule(const policy::PolicyMap& policies) {
-  const base::Value* browser_signin_value =
-      policies.GetValue(policy::key::kBrowserSignin);
+  const base::Value* browser_signin_value = policies.GetValue(
+      policy::key::kBrowserSignin, base::Value::Type::INTEGER);
 
   if (!browser_signin_value)
     return true;
 
-  DCHECK(browser_signin_value->is_int());
   return static_cast<policy::BrowserSigninMode>(
              browser_signin_value->GetInt()) !=
          policy::BrowserSigninMode::kDisabled;
