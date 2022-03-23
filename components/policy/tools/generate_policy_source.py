@@ -1785,15 +1785,24 @@ def _WriteChromeOSPolicyAccessSource(supported_policies, f, protobuf_type):
   f.write('const std::array<%sPolicyAccess, %d> k%sPolicyAccess {{\n' %
           (protobuf_type, len(supported_policies), protobuf_type))
   for policy in supported_policies:
-    if policy.policy_protobuf_type == protobuf_type:
-      f.write('  {key::k%s,\n'
-              '   %s,\n'
-              '   [](em::CloudPolicySettings* policy)\n'
-              '       -> em::%sPolicyProto* {\n'
-              '     return policy->mutable_%s();\n'
-              '   }\n'
-              '  },\n' % (policy.name, str(policy.per_profile).lower(),
-                          protobuf_type, policy.name.lower()))
+    name = policy.name
+    lowercase_name = name.lower()
+
+    chunk_number = _ChunkNumber(policy.id)
+    if chunk_number == 0:
+      mutable_proto_ptr = 'policy->mutable_%s()' % lowercase_name
+    else:
+      mutable_proto_ptr = 'policy->mutable_subproto%d()->mutable_%s()' % (
+          chunk_number, lowercase_name)
+
+    f.write('  {key::k%s,\n'
+            '   %s,\n'
+            '   [](em::CloudPolicySettings* policy)\n'
+            '       -> em::%sPolicyProto* {\n'
+            '     return %s;\n'
+            '   }\n'
+            '  },\n' % (name, str(
+                policy.per_profile).lower(), protobuf_type, mutable_proto_ptr))
   f.write('}};\n\n')
 
 

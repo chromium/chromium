@@ -109,7 +109,7 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "boolean"
           },
-          "supported_on": ["chrome_os:99-"],
+          "supported_on": ["chrome_os:1-"],
           "id": 1015,
           "tags": [],
           "caption": "ChunkZeroLastFieldBooleanPolicy caption",
@@ -120,7 +120,7 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "boolean"
           },
-          "supported_on": ["chrome_os:99-"],
+          "supported_on": ["chrome_os:1-"],
           "id": 1016,
           "tags": [],
           "caption": "ChunkOneFirstFieldBooleanPolicy caption",
@@ -131,7 +131,7 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "boolean"
           },
-          "supported_on": ["chrome_os:99-"],
+          "supported_on": ["chrome_os:1-"],
           "id": 1815,
           "tags": [],
           "caption": "ChunkOneLastFieldBooleanPolicy caption",
@@ -142,7 +142,7 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "string"
           },
-          "supported_on": ["chrome_os:99-"],
+          "supported_on": ["chrome_os:1-"],
           "id": 1816,
           "tags": [],
           "caption": "ChunkTwoFirstFieldStringPolicy caption",
@@ -153,7 +153,7 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "string"
           },
-          "supported_on": ["chrome_os:99-"],
+          "supported_on": ["chrome_os:1-"],
           "id": 2615,
           "tags": [],
           "caption": "ChunkTwoLastFieldStringPolicy caption",
