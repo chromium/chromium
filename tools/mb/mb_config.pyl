@@ -4050,7 +4050,7 @@
     },
 
     'paeverywhere': {
-      'gn_args': 'use_allocator="none" use_allocator_shim=false',
+      'gn_args': 'use_allocator="none"',
     },
 
     'backuprefptr': {

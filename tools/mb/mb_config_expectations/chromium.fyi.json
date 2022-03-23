@@ -1296,7 +1296,6 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "none",
-      "use_allocator_shim": false,
       "use_goma": true
     }
   },
@@ -1309,7 +1308,6 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "none",
-      "use_allocator_shim": false,
       "use_goma": true
     }
   },
