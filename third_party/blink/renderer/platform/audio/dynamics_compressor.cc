@@ -46,6 +46,14 @@ constexpr float kMeteringReleaseTimeConstant = 0.325f;
 
 constexpr float kUninitializedValue = -1;
 
+constexpr float kPreDelay = 0.006f;  // seconds
+
+// Release zone values 0 -> 1.
+constexpr float kReleaseZone1 = 0.09f;
+constexpr float kReleaseZone2 = 0.16f;
+constexpr float kReleaseZone3 = 0.42f;
+constexpr float kReleaseZone4 = 0.98f;
+
 // Returns x if x is finite (not NaN or infinite), otherwise returns
 // default_value
 float EnsureFinite(float x, float default_value) {
@@ -69,11 +77,6 @@ DynamicsCompressor::DynamicsCompressor(float sample_rate,
       knee_threshold_db_(kUninitializedValue),
       yknee_threshold_db_(kUninitializedValue),
       knee_(kUninitializedValue) {
-  // Uninitialized state - for parameter recalculation.
-  last_filter_stage_ratio_ = -1;
-  last_anchor_ = -1;
-  last_filter_stage_gain_ = -1;
-
   SetNumberOfChannels(number_of_channels);
   // Initializes most member variables
   Reset();
@@ -122,39 +125,11 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     destination_channels_[i] = destination_bus->Channel(i)->MutableData();
   }
 
-  float filter_stage_gain = ParameterValue(kParamFilterStageGain);
-  float filter_stage_ratio = ParameterValue(kParamFilterStageRatio);
-  float anchor = ParameterValue(kParamFilterAnchor);
-
-  if (filter_stage_gain != last_filter_stage_gain_ ||
-      filter_stage_ratio != last_filter_stage_ratio_ ||
-      anchor != last_anchor_) {
-    last_filter_stage_gain_ = filter_stage_gain;
-    last_filter_stage_ratio_ = filter_stage_ratio;
-    last_anchor_ = anchor;
-  }
-
   const float db_threshold = ParameterValue(kParamThreshold);
   const float db_knee = ParameterValue(kParamKnee);
   const float ratio = ParameterValue(kParamRatio);
   float attack_time = ParameterValue(kParamAttack);
   const float release_time = ParameterValue(kParamRelease);
-  const float pre_delay_time = ParameterValue(kParamPreDelay);
-
-  // This is effectively a make-up gain on the compressed signal
-  // (pre-blending).
-  const float db_post_gain = ParameterValue(kParamPostGain);
-
-  // Linear blending value from dry to completely processed (0 -> 1)
-  // 0 means the signal is completely unprocessed.
-  // 1 mixes in only the compressed signal.
-  // equal power crossfade
-  const float effect_blend = ParameterValue(kParamEffectBlend);
-
-  const float release_zone1 = ParameterValue(kParamReleaseZone1);
-  const float release_zone2 = ParameterValue(kParamReleaseZone2);
-  const float release_zone3 = ParameterValue(kParamReleaseZone3);
-  const float release_zone4 = ParameterValue(kParamReleaseZone4);
 
   // Apply compression to the source signal.
   const float** source_channels = source_channels_.get();
@@ -163,9 +138,6 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   DCHECK_EQ(pre_delay_buffers_.size(), number_of_channels);
 
   const float sample_rate = SampleRate();
-
-  const float dry_mix = 1 - effect_blend;
-  const float wet_mix = effect_blend;
 
   const float k = UpdateStaticCurveParameters(db_threshold, db_knee, ratio);
 
@@ -176,8 +148,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   // Empirical/perceptual tuning.
   full_range_makeup_gain = fdlibm::powf(full_range_makeup_gain, 0.6f);
 
-  const float linear_post_gain =
-      audio_utilities::DecibelsToLinear(db_post_gain) * full_range_makeup_gain;
+  const float linear_post_gain = full_range_makeup_gain;
 
   // Attack parameters.
   attack_time = std::max(0.001f, attack_time);
@@ -195,10 +166,10 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   // Polynomial of the form
   // y = a + b*x + c*x^2 + d*x^3 + e*x^4;
 
-  const float y1 = release_frames * release_zone1;
-  const float y2 = release_frames * release_zone2;
-  const float y3 = release_frames * release_zone3;
-  const float y4 = release_frames * release_zone4;
+  const float y1 = release_frames * kReleaseZone1;
+  const float y2 = release_frames * kReleaseZone2;
+  const float y3 = release_frames * kReleaseZone3;
+  const float y4 = release_frames * kReleaseZone4;
 
   // All of these coefficients were derived for 4th order polynomial curve
   // fitting where the y values match the evenly spaced x values as follows:
@@ -220,7 +191,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   // y calculates adaptive release frames depending on the amount of
   // compression.
 
-  SetPreDelayTime(pre_delay_time);
+  SetPreDelayTime(kPreDelay);
 
   constexpr int number_of_division_frames = 32;
 
@@ -374,9 +345,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       const float post_warp_compressor_gain = static_cast<float>(
           sin(static_cast<double>(kPiOverTwoFloat * compressor_gain)));
 
-      // Calculate total gain using the linear post-gain and effect blend.
-      const float total_gain =
-          dry_mix + wet_mix * linear_post_gain * post_warp_compressor_gain;
+      // Calculate total gain using the linear post-gain.
+      const float total_gain = linear_post_gain * post_warp_compressor_gain;
 
       // Calculate metering.
       const float db_real_gain =
@@ -415,10 +385,6 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 }
 
 void DynamicsCompressor::Reset() {
-  last_filter_stage_ratio_ = -1;  // for recalc
-  last_anchor_ = -1;
-  last_filter_stage_gain_ = -1;
-
   detector_average_ = 0;
   compressor_gain_ = 1;
   metering_gain_ = 1;
@@ -492,29 +458,12 @@ bool DynamicsCompressor::RequiresTailProcessing() const {
 
 void DynamicsCompressor::InitializeParameters() {
   // Initializes compressor to default values.
-
   parameters_[kParamThreshold] = -24;    // dB
   parameters_[kParamKnee] = 30;          // dB
   parameters_[kParamRatio] = 12;         // unit-less
   parameters_[kParamAttack] = 0.003f;    // seconds
   parameters_[kParamRelease] = 0.250f;   // seconds
-  parameters_[kParamPreDelay] = 0.006f;  // seconds
-
-  // Release zone values 0 -> 1.
-  parameters_[kParamReleaseZone1] = 0.09f;
-  parameters_[kParamReleaseZone2] = 0.16f;
-  parameters_[kParamReleaseZone3] = 0.42f;
-  parameters_[kParamReleaseZone4] = 0.98f;
-
-  parameters_[kParamFilterStageGain] = 4.4f;  // dB
-  parameters_[kParamFilterStageRatio] = 2;
-  parameters_[kParamFilterAnchor] = 15000 / Nyquist();
-
-  parameters_[kParamPostGain] = 0;   // dB
-  parameters_[kParamReduction] = 0;  // dB
-
-  // Linear crossfade (0 -> 1).
-  parameters_[kParamEffectBlend] = 1;
+  parameters_[kParamReduction] = 0;      // dB
 }
 
 void DynamicsCompressor::SetPreDelayTime(float pre_delay_time) {

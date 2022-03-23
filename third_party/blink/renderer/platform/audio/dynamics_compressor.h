@@ -54,16 +54,6 @@ class PLATFORM_EXPORT DynamicsCompressor {
     kParamRatio,
     kParamAttack,
     kParamRelease,
-    kParamPreDelay,
-    kParamReleaseZone1,
-    kParamReleaseZone2,
-    kParamReleaseZone3,
-    kParamReleaseZone4,
-    kParamPostGain,
-    kParamFilterStageGain,
-    kParamFilterStageRatio,
-    kParamFilterAnchor,
-    kParamEffectBlend,
     kParamReduction,
     kParamLast
   };
@@ -111,11 +101,6 @@ class PLATFORM_EXPORT DynamicsCompressor {
   float parameters_[kParamLast];
 
   float sample_rate_;
-
-  // Emphasis filter controls.
-  float last_filter_stage_ratio_;
-  float last_anchor_;
-  float last_filter_stage_gain_;
 
   std::unique_ptr<const float*[]> source_channels_;
   std::unique_ptr<float*[]> destination_channels_;
