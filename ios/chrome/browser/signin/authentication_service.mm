@@ -446,8 +446,13 @@ void AuthenticationService::SignInInternal(ChromeIdentity* identity) {
   }
 
   // The primary account should now be set to the expected account_id.
-  CHECK_EQ(account_id, identity_manager_->GetPrimaryAccountId(
-                           signin::ConsentLevel::kSignin));
+  // If CHECK_EQ() fails, having the CHECK() before would help to understand if
+  // the primary account is empty or different that |account_id|.
+  // Related to crbug.com/1308448.
+  CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  CHECK(!primary_account.empty());
+  CHECK_EQ(account_id, primary_account);
   crash_keys::SetCurrentlySignedIn(true);
 }
 
