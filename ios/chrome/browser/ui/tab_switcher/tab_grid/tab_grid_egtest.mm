@@ -8,6 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
@@ -264,6 +265,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
       @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
       @selector(testSearchSuggestedActionsPageSwitch),
+      @selector(testHistorySuggestedActionInRegularTabsSearch),
+      @selector(testHistorySuggestedActionInRecentTabsSearch),
       @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
       @selector(testSearchResultCloseTab),
       @selector(testSearchResultCloseTabInIncognito),
@@ -1921,6 +1924,78 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       assertWithMatcher:grey_minimumVisiblePercent(0.6)];
   [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that tapping on search history action in the regular tabs search mode
+// opens the history modal and dismissing it returns to the search mode.
+- (void)testHistorySuggestedActionInRegularTabsSearch {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+  // Enter search mode & perform a search.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  // Tap on search history.
+  [[self scrollDownViewMatcher:RegularTabGrid()
+               toSelectMatcher:SearchHistorySuggestedAction()]
+      performAction:grey_tap()];
+
+  // Check that the history table is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Close History.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Make sure that search mode is still active and searching the same query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(
+                                          base::SysUTF8ToNSString(kTitle2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping on search history action in the recent tabs search mode
+// opens the history modal and dismissing it returns to the search mode.
+- (void)testHistorySuggestedActionInRecentTabsSearch {
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Enter search mode & perform a search.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  // Tap on search history.
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:SearchHistorySuggestedAction()]
+      performAction:grey_tap()];
+
+  // Check that the history table is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Close History.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Make sure that search mode is still active and searching the same query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(
+                                          base::SysUTF8ToNSString(kTitle2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that a search with no results in incognito mode will show the empty
