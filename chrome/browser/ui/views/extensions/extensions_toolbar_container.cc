@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
@@ -87,7 +88,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                     std::make_unique<ExtensionsToolbarButton>(
                         browser,
                         this,
-                        ExtensionsToolbarButton::ButtonType::kSiteAccess))
+                        ExtensionsToolbarButton::ButtonType::kSiteAccess),
+                    std::make_unique<ExtensionsRequestAccessButton>())
               : nullptr),
       display_mode_(display_mode) {
   // The container shouldn't show unless / until we have extensions available.
@@ -860,6 +862,11 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
   extensions_controls_->UpdateSiteAccessButtonVisibility(
       ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
           actions_, GetCurrentWebContents()));
+
+  // TODO(crbug.com/1239772): Get extensions that are requesting access to the
+  // current site.
+  const std::vector<std::unique_ptr<ToolbarActionViewController>> actions;
+  extensions_controls_->UpdateRequestAccessButton(actions);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

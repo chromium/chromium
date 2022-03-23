@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 
 class ExtensionsToolbarButton;
+class ExtensionsRequestAccessButton;
+class ToolbarActionViewController;
 
 class ExtensionsToolbarControls : public ToolbarIconContainerView {
  public:
@@ -16,7 +21,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
 
   explicit ExtensionsToolbarControls(
       std::unique_ptr<ExtensionsToolbarButton> extensions_button,
-      std::unique_ptr<ExtensionsToolbarButton> site_access_button);
+      std::unique_ptr<ExtensionsToolbarButton> site_access_button,
+      std::unique_ptr<ExtensionsRequestAccessButton> request_button);
   ExtensionsToolbarControls(const ExtensionsToolbarControls&) = delete;
   ExtensionsToolbarControls operator=(const ExtensionsToolbarControls&) =
       delete;
@@ -33,10 +39,16 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   // Updates `site_access_button_` visibility to the given one.
   void UpdateSiteAccessButtonVisibility(bool visibility);
 
+  // Updates `request_access_button_` visibility and content based on the given
+  // `actions`.
+  void UpdateRequestAccessButton(
+      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions);
+
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
 
  private:
+  const raw_ptr<ExtensionsRequestAccessButton> request_access_button_;
   const raw_ptr<ExtensionsToolbarButton> site_access_button_;
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;
 };
