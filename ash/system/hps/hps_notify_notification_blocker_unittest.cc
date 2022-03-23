@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/system/hps/hps_notify_notification_blocker_internal.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/network/sms_observer.h"
@@ -23,12 +24,17 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -129,6 +135,42 @@ class IdPopupBlocker : public message_center::NotificationBlocker {
 
  private:
   std::string target_id_;
+};
+
+// An app registry cache that can be used to register test app names.
+class FakeAppRegistryCache {
+ public:
+  // The following methods match the interface of apps::AppRegistryCacheWrapper.
+
+  static FakeAppRegistryCache& Get() {
+    static base::NoDestructor<FakeAppRegistryCache> kInstance;
+    return *kInstance;
+  }
+
+  // In the real class, returns the cache for the given user. We only maintain a
+  // single fake cache.
+  FakeAppRegistryCache* GetAppRegistryCache(const AccountId&) { return this; }
+
+  template <typename FunctionType>
+  bool ForApp(const std::string& app_id, FunctionType f) {
+    for (const std::unique_ptr<apps::AppUpdate>& app : apps_) {
+      if (app_id == app->AppId()) {
+        f(*app);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Test-only method to populate fake apps.
+  void AddApp(std::unique_ptr<apps::AppUpdate> app) {
+    apps_.push_back(std::move(app));
+  }
+
+ private:
+  // Use pointers as we need a default constructor.
+  std::vector<std::unique_ptr<apps::AppUpdate>> apps_;
 };
 
 // A test fixture that gives access to the HPS notify controller (to fake
@@ -442,6 +484,91 @@ TEST_F(HpsNotifyNotificationBlockerTest, SettingsButtonClicked) {
   // Click on show button.
   SimulateClick(/*button_index=*/1);
   EXPECT_EQ(1, GetNumOsSmartPrivacySettingsOpened());
+}
+
+TEST(HpsNotifyNotificationBlockerInternalTest, WebsiteNotifierTitles) {
+  // Website without title uses a generic "web" string.
+  const message_center::NotifierId untrusted_notifier(
+      GURL("http://untrusted.com:443"));
+  const std::u16string untrusted_title =
+      hps_internal::GetNotifierTitle<FakeAppRegistryCache>(untrusted_notifier,
+                                                           AccountId());
+  EXPECT_EQ(untrusted_title,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER));
+
+  // Website with a trusted title uses the title.
+  const message_center::NotifierId trusted_notifier(
+      GURL("https://trusted.com:443"), u"Trusted");
+  const std::u16string trusted_title =
+      hps_internal::GetNotifierTitle<FakeAppRegistryCache>(trusted_notifier,
+                                                           AccountId());
+  EXPECT_EQ(trusted_title, u"Trusted");
+}
+
+TEST(HpsNotifyNotificationBlockerInternalTest, AppNotifierTitles) {
+  // App without known title uses a generic "app" string.
+  const message_center::NotifierId unknown_app_notifier(
+      message_center::NotifierType::APPLICATION, "unknown-app");
+  const std::u16string unknown_app_title =
+      hps_internal::GetNotifierTitle<FakeAppRegistryCache>(unknown_app_notifier,
+                                                           AccountId());
+  EXPECT_EQ(unknown_app_title,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE_LOWER));
+
+  // Create an app cache with one used and one unused app.
+  auto* app_cache =
+      FakeAppRegistryCache::Get().GetAppRegistryCache(AccountId());
+  apps::App crostini_app_state(apps::AppType::kCrostini, "crostini-app");
+  crostini_app_state.short_name = "Signal Messenger";
+  auto crostini_app = std::make_unique<apps::AppUpdate>(
+      &crostini_app_state, /*delta=*/nullptr, AccountId());
+  app_cache->AddApp(std::move(crostini_app));
+  apps::App arc_app_state(apps::AppType::kArc, "arc-app");
+  arc_app_state.short_name = "Discord";
+  auto arc_app = std::make_unique<apps::AppUpdate>(
+      &arc_app_state, /*delta=*/nullptr, AccountId());
+  app_cache->AddApp(std::move(arc_app));
+
+  // App with a registered name uses that name.
+  const message_center::NotifierId crostini_app_notifier(
+      message_center::NotifierType::CROSTINI_APPLICATION, "crostini-app");
+  const std::u16string crostini_app_title =
+      hps_internal::GetNotifierTitle<FakeAppRegistryCache>(
+          crostini_app_notifier, AccountId());
+  EXPECT_EQ(crostini_app_title, u"Signal Messenger");
+}
+
+TEST(HpsNotifyNotificationBlockerInternalTest, PopupMessage) {
+  // Proper app names should be presented as-is.
+  const std::vector<std::u16string> list_1 = {u"App title"};
+  const std::u16string list_1_msg =
+      hps_internal::GetTitlesBlockedMessage(list_1);
+  EXPECT_TRUE(list_1_msg.find(u"App title") != std::u16string::npos);
+
+  // Improper app names should use a reasonable default. In this case, the
+  // default should be capitalized since it is the first word in the message.
+  const std::vector<std::u16string> list_2 = {l10n_util::GetStringUTF16(
+      IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER)};
+  const std::u16string list_2_msg =
+      hps_internal::GetTitlesBlockedMessage(list_2);
+  EXPECT_TRUE(
+      list_2_msg.find(l10n_util::GetStringUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)) !=
+      std::u16string::npos);
+
+  // Subsequent improper app names should not be capitalized.
+  const std::vector<std::u16string> list_3 = {
+      u"App title",
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER)};
+  const std::u16string list_3_msg =
+      hps_internal::GetTitlesBlockedMessage(list_3);
+  EXPECT_TRUE(
+      list_3_msg.find(l10n_util::GetStringUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)) ==
+      std::u16string::npos);
 }
 
 }  // namespace

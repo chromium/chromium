@@ -4777,11 +4777,17 @@ New install
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_3_PLUS" desc="Notification message explaining that a popup from three or more applications have been blocked.">
         <ph name="APP_1_TITLE">$1<ex>Google Chat</ex></ph>, <ph name="APP_2_TITLE">$2<ex>Chrome</ex></ph> and other notifications are hidden because viewing protection is on
       </message>
-      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE" desc="Title used for the OS when listing blocked notification sources.">
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE_UPPER" desc="Title used for the OS when listing it as the first word in the blocked notifications message (i.e. capitalized).">
         System
       </message>
-      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE" desc="Title used for a generic application when listing blocked notification sources.">
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE_LOWER" desc="Title used for the OS when listing it as a subsequent word in the blocked notifications message.">
+        system
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE_UPPER" desc="Title used for a generic application when listing it as the first word in the blocked notifications message (i.e. capitalized).">
         App
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE_LOWER" desc="Title used for a generic application when listing it as a subsequent word in the blocked notifications message.">
+        app
       </message>
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_ARC_TITLE" desc="Title used for an Android application when listing blocked notification sources.">
         Android
@@ -4789,8 +4795,11 @@ New install
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_CROSTINI_TITLE" desc="Title used for a Linux application when listing blocked notification sources.">
         Linux
       </message>
-      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE" desc="Title used for the web browser when listing blocked notification sources.">
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER" desc="Title used for the web browser when listing it as the first word in the blocked notifications message (i.e. capitalized).">
         Web
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER" desc="Title used for the web browser when listing it as a subsequent word in the blocked notifications message.">
+        web
       </message>
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_PHONE_HUB_TITLE" desc="Title used for the Phone Hub feature when listing blocked notification sources.">
         Phone Hub

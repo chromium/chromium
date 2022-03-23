@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/hps/hps_notify_notification_blocker_internal.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/status_area_widget.h"
@@ -23,18 +24,15 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_types.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
@@ -42,92 +40,55 @@ namespace {
 
 constexpr char kNotifierId[] = "hps-notify";
 
-// Returns a human-readable title for the given notification source.
-std::u16string GetNotifierTitle(const message_center::NotifierId& id) {
-  std::u16string title = l10n_util::GetStringUTF16(
-      IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE);
+// Returns the capitalized version of an improper-noun notifier title, or the
+// unchanged title if it is a proper noun.
+std::u16string GetCapitalizedNotifierTitle(const std::u16string& title) {
+  static base::NoDestructor<std::map<std::u16string, std::u16string>>
+      kCapitalizedTitles(
+          {{l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE_LOWER),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE_UPPER)},
+           {l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE_LOWER),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TITLE_UPPER)},
+           {l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)}});
 
-  // Assign default title based on notifier type.
-  switch (id.type) {
-    case message_center::NotifierType::APPLICATION:
-      title = l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_APP_TITLE);
-      break;
-
-    case message_center::NotifierType::ARC_APPLICATION:
-      title = l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_ARC_TITLE);
-      break;
-
-    case message_center::NotifierType::CROSTINI_APPLICATION:
-      title = l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_CROSTINI_TITLE);
-      break;
-
-    case message_center::NotifierType::WEB_PAGE:
-      title = id.title.value_or(l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE));
-      break;
-
-    case message_center::NotifierType::SYSTEM_COMPONENT:
-      // Handled by initial value.
-      break;
-
-    case message_center::NotifierType::PHONE_HUB:
-      title = l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_PHONE_HUB_TITLE);
-      break;
-  }
-
-  // If we can access a more-specific app title, assign it here.
-  if (id.type == message_center::NotifierType::APPLICATION ||
-      id.type == message_center::NotifierType::ARC_APPLICATION ||
-      id.type == message_center::NotifierType::CROSTINI_APPLICATION) {
-    // Access the registry of human-readable app names.
-    const AccountId account_id =
-        Shell::Get()->session_controller()->GetActiveAccountId();
-    apps::AppRegistryCache* app_cache =
-        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-
-    if (!app_cache) {
-      LOG(ERROR) << "Couldn't find app registry cache for user";
-      return title;
-    }
-
-    const bool found =
-        app_cache->ForApp(id.id, [&](const apps::AppUpdate& update) {
-          const std::string& short_name = update.ShortName();
-          title = std::u16string(short_name.begin(), short_name.end());
-        });
-
-    if (!found)
-      LOG(WARNING) << "No matching notifier found for ID " << id.id;
-  }
-
-  return title;
-}
-
-// Returns the right message for the number of titles.
-std::u16string GetTitlesBlockedMessage(
-    const std::vector<std::u16string>& titles) {
-  switch (titles.size()) {
-    case 0:
-      return u"";
-    case 1:
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_1, titles[0]);
-    case 2:
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_2, titles[0],
-          titles[1]);
-    default:
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_3_PLUS, titles[0],
-          titles[1]);
-  }
+  const auto it = kCapitalizedTitles->find(title);
+  return it == kCapitalizedTitles->end() ? title : it->second;
 }
 
 }  // namespace
+
+namespace hps_internal {
+
+// Returns the popup message listing the correct notifier titles and the correct
+// number of titles.
+std::u16string GetTitlesBlockedMessage(
+    const std::vector<std::u16string>& titles) {
+  DCHECK(!titles.empty());
+
+  const std::u16string& first_title = GetCapitalizedNotifierTitle(titles[0]);
+  switch (titles.size()) {
+    case 1:
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_1, first_title);
+    case 2:
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_2, first_title,
+          titles[1]);
+    default:
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_3_PLUS,
+          first_title, titles[1]);
+  }
+}
+
+}  // namespace hps_internal
 
 HpsNotifyNotificationBlocker::HpsNotifyNotificationBlocker(
     message_center::MessageCenter* message_center,
@@ -308,7 +269,10 @@ HpsNotifyNotificationBlocker::CreateInfoNotification() const {
       continue;
 
     // Use a human readable-title (e.g. "Web" vs "https://somesite.com:443").
-    const std::u16string& title = GetNotifierTitle(notification->notifier_id());
+    const std::u16string& title =
+        hps_internal::GetNotifierTitle<apps::AppRegistryCacheWrapper>(
+            notification->notifier_id(),
+            Shell::Get()->session_controller()->GetActiveAccountId());
     if (seen_titles.find(title) != seen_titles.end())
       continue;
 
@@ -329,7 +293,7 @@ HpsNotifyNotificationBlocker::CreateInfoNotification() const {
       message_center::NOTIFICATION_TYPE_SIMPLE, kInfoNotificationId,
       l10n_util::GetStringUTF16(
           IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_TITLE),
-      GetTitlesBlockedMessage(titles),
+      hps_internal::GetTitlesBlockedMessage(titles),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId),

@@ -1128,6 +1128,7 @@ component("ash") {
     "system/holding_space/screen_captures_section.h",
     "system/hps/hps_notify_notification_blocker.cc",
     "system/hps/hps_notify_notification_blocker.h",
+    "system/hps/hps_notify_notification_blocker_internal.h",
     "system/hps/hps_orientation_controller.cc",
     "system/hps/hps_orientation_controller.h",
     "system/ime/ime_feature_pod_controller.cc",
