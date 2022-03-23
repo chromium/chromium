@@ -90,6 +90,12 @@ try_.builder(
 )
 
 try_.builder(
+    name = "chromeos-amd64-generic-lacros-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+try_.builder(
     name = "lacros-arm-generic-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
