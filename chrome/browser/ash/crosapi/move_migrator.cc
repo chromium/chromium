@@ -550,6 +550,45 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
     }
   }
 
+  // Move IndexedDB objects related to extensions in the keeplist back to
+  // Ash's profile directory.
+  const base::FilePath lacros_indexed_db_dir =
+      tmp_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
+  if (base::PathExists(lacros_indexed_db_dir)) {
+    const base::FilePath ash_indexed_db_dir = original_profile_dir.Append(
+        browser_data_migrator_util::kIndexedDBFilePath);
+    if (!base::CreateDirectory(ash_indexed_db_dir)) {
+      PLOG(ERROR) << "CreateDirectory() failed for  "
+                  << ash_indexed_db_dir.value();
+      return false;
+    }
+
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionsAshOnly) {
+      const auto& [blob_path, leveldb_path] =
+          browser_data_migrator_util::GetIndexedDBPaths(tmp_profile_dir,
+                                                        extension_id);
+      if (base::PathExists(blob_path)) {
+        const base::FilePath ash_blob_path =
+            ash_indexed_db_dir.Append(blob_path.BaseName());
+        if (!base::Move(blob_path, ash_blob_path)) {
+          PLOG(ERROR) << "Failed moving " << blob_path.value() << " to "
+                      << ash_blob_path.value();
+          return false;
+        }
+      }
+      if (base::PathExists(leveldb_path)) {
+        const base::FilePath ash_leveldb_path =
+            ash_indexed_db_dir.Append(leveldb_path.BaseName());
+        if (!base::Move(leveldb_path, ash_indexed_db_dir)) {
+          PLOG(ERROR) << "Failed moving " << leveldb_path.value() << " to "
+                      << ash_leveldb_path.value();
+          return false;
+        }
+      }
+    }
+  }
+
   return true;
 }
 
