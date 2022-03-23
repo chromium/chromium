@@ -226,7 +226,8 @@ const base::Feature kAutofillEnableSupportForHonorificPrefixes{
     "AutofillEnableSupportForHonorificPrefixes",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables autofill to function within a FencedFrame, and is disabled by default
+// Enables autofill to function within a FencedFrame, and is disabled by
+// default.
 // TODO(crbug.com/1294378): Remove once launched.
 const base::Feature kAutofillEnableWithinFencedFrame{
     "AutofillEnableWithinFencedFrame", base::FEATURE_DISABLED_BY_DEFAULT};

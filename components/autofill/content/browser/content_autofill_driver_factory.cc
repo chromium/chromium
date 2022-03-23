@@ -91,6 +91,14 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
+  // Within fenced frames and their descendants, Password Manager should for now
+  // be disabled (crbug.com/1294378).
+  if (render_frame_host->IsNestedWithinFencedFrame() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableWithinFencedFrame)) {
+    return nullptr;
+  }
+
   auto [iter, insertion_happened] =
       driver_map_.emplace(render_frame_host, nullptr);
   std::unique_ptr<ContentAutofillDriver>& driver = iter->second;

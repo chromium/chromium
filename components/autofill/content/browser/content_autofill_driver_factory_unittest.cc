@@ -21,8 +21,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
-using content::RenderFrameHost;
 using testing::_;
 using testing::Between;
 
@@ -278,5 +278,78 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   EXPECT_NE(factory_test_api().GetDriver(main_rfh()), nullptr);
   EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
 }
+
+// Fixture for testing that Autofill is enabled in fenced frames unless
+// AutofillEnableWithinFencedFrame is enabled. The bool parameter
+// enables/disables that feature.
+class ContentAutofillDriverFactoryFencedFramesTest
+    : public content::RenderViewHostTestHarness,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ContentAutofillDriverFactoryFencedFramesTest() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::Feature> disabled;
+    enabled.push_back(
+        {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
+    if (autofill_enabled_in_fencedframe()) {
+      enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
+    } else {
+      disabled.push_back(features::kAutofillEnableWithinFencedFrame);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+  ~ContentAutofillDriverFactoryFencedFramesTest() override = default;
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    factory_ = ContentAutofillDriverFactoryTestApi::Create(
+        web_contents(), &client_, "en_US",
+        BrowserAutofillManager::AutofillDownloadManagerState::
+            ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
+        AutofillManager::AutofillManagerFactoryCallback());
+  }
+
+  void NavigateAndCommitInFrame(const std::string& url,
+                                content::RenderFrameHost* rfh) {
+    auto navigation =
+        content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
+    // These tests simulate loading events manually.
+    navigation->SetKeepLoading(true);
+    navigation->Start();
+    navigation->Commit();
+  }
+
+  bool autofill_enabled_in_fencedframe() const { return GetParam(); }
+
+  ContentAutofillDriverFactory& factory() { return *factory_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestAutofillClient client_;
+  std::unique_ptr<ContentAutofillDriverFactory> factory_;
+};
+
+TEST_P(ContentAutofillDriverFactoryFencedFramesTest,
+       DisableAutofillWithinFencedFrame) {
+  NavigateAndCommitInFrame("http://test.org", main_rfh());
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+  content::RenderFrameHost* fenced_frame_subframe =
+      content::RenderFrameHostTester::For(fenced_frame_root)
+          ->AppendChild("iframe");
+  EXPECT_NE(nullptr, factory().DriverForFrame(main_rfh()));
+  if (autofill_enabled_in_fencedframe()) {
+    EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_root));
+    EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_subframe));
+  } else {
+    EXPECT_EQ(nullptr, factory().DriverForFrame(fenced_frame_root));
+    EXPECT_EQ(nullptr, factory().DriverForFrame(fenced_frame_subframe));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
+                         ContentAutofillDriverFactoryFencedFramesTest,
+                         testing::Bool());
 
 }  // namespace autofill

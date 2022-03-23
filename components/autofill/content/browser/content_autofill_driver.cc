@@ -112,11 +112,6 @@ ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
 
 void ContentAutofillDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableWithinFencedFrame) &&
-      render_frame_host_->IsNestedWithinFencedFrame()) {
-    return;
-  }
   receiver_.Bind(std::move(pending_receiver));
 }
 

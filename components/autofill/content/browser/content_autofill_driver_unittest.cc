@@ -43,7 +43,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace autofill {
 
@@ -407,65 +406,6 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
   FakeAutofillAgent fake_agent_;
 };
 
-class ContentAutofillDriverFencedFramesTest
-    : public content::RenderViewHostTestHarness,
-      public ::testing::WithParamInterface<bool> {
- public:
-  class TestContentAutofillDriver : public ContentAutofillDriver {
-   public:
-    explicit TestContentAutofillDriver(content::RenderFrameHost* rfh)
-        : ContentAutofillDriver(rfh) {}
-  };
-
-  ContentAutofillDriverFencedFramesTest()
-      : autofill_enabled_in_fencedframe_(GetParam()) {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
-    std::vector<base::Feature> disabled;
-    enabled.push_back(
-        {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
-    if (autofill_enabled_in_fencedframe_) {
-      enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
-    } else {
-      disabled.push_back(features::kAutofillEnableWithinFencedFrame);
-    }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
-  }
-
-  ~ContentAutofillDriverFencedFramesTest() override = default;
-  void NavigateAndCommitInFrame(const std::string& url,
-                                content::RenderFrameHost* rfh) {
-    auto navigation =
-        content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
-    // These tests simulate loading events manually.
-    // TODO(crbug.com/1294378): Consider refactoring to rely on load events
-    // dispatched by NavigationSimulator.
-    navigation->SetKeepLoading(true);
-    navigation->Start();
-    navigation->Commit();
-  }
-
- protected:
-  bool autofill_enabled_in_fencedframe_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(ContentAutofillDriverFencedFramesTest, ToggleAutofillWithinFencedFrame) {
-  base::RunLoop().RunUntilIdle();
-  NavigateAndCommitInFrame("http://test.org", main_rfh());
-  content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-
-  TestContentAutofillDriver test_content_autofill_driver(fenced_frame_root);
-  mojo::AssociatedRemote<mojom::AutofillDriver> host_remote;
-
-  test_content_autofill_driver.BindPendingReceiver(
-      host_remote.BindNewEndpointAndPassDedicatedReceiver());
-  ContentAutofillDriverTestApi test_api(&test_content_autofill_driver);
-  EXPECT_EQ(autofill_enabled_in_fencedframe_, test_api.receiver().is_bound());
-}
-
 TEST_P(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset());
   Navigate(NavigationType::kNormal);
@@ -776,9 +716,6 @@ TEST_P(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
 
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,
                          ContentAutofillDriverTest,
-                         testing::Bool());
-INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,
-                         ContentAutofillDriverFencedFramesTest,
                          testing::Bool());
 
 }  // namespace autofill

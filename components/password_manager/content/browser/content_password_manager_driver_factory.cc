@@ -13,6 +13,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/form_submission_tracker_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -80,6 +81,12 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
   // up.
   if (!render_frame_host->IsRenderFrameLive())
     return nullptr;
+
+  if (render_frame_host->IsNestedWithinFencedFrame() &&
+      !base::FeatureList::IsEnabled(
+          features::kEnablePasswordManagerWithinFencedFrame)) {
+    return nullptr;
+  }
 
   // try_emplace() will return an iterator to the driver corresponding to
   // `render_frame_host`, creating a new one if `render_frame_host` is not

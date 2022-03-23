@@ -13,7 +13,8 @@ void NotifyDidNavigateMainFrame(bool is_renderer_initiated,
                                 ui::PageTransition transition,
                                 bool was_initiated_by_link_click,
                                 FormSubmissionObserver* observer) {
-  DCHECK(observer);
+  if (!observer)
+    return;
 
   // Password manager is interested in
   // - form submission navigations,

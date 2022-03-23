@@ -58,6 +58,7 @@ class ContentPasswordManagerDriverFactory
  private:
   friend class content::WebContentsUserData<
       ContentPasswordManagerDriverFactory>;
+  friend class ContentPasswordManagerDriverFactoryTestApi;
 
   ContentPasswordManagerDriverFactory(
       content::WebContents* web_contents,

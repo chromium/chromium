@@ -67,6 +67,7 @@
 #include "components/autofill/content/renderer/autofill_assistant_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
@@ -92,6 +93,7 @@
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -624,16 +626,24 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   blink::AssociatedInterfaceRegistry* associated_interfaces =
       render_frame_observer->associated_interfaces();
-  PasswordAutofillAgent* password_autofill_agent =
-      new PasswordAutofillAgent(render_frame, associated_interfaces);
-  PasswordGenerationAgent* password_generation_agent =
-      new PasswordGenerationAgent(render_frame, password_autofill_agent,
-                                  associated_interfaces);
-  autofill::AutofillAssistantAgent* autofill_assistant_agent =
-      new autofill::AutofillAssistantAgent(render_frame);
-  new AutofillAgent(render_frame, password_autofill_agent,
-                    password_generation_agent, autofill_assistant_agent,
-                    associated_interfaces);
+
+  if (!render_frame->IsInFencedFrameTree() ||
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWithinFencedFrame) ||
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kEnablePasswordManagerWithinFencedFrame)) {
+    PasswordAutofillAgent* password_autofill_agent =
+        new PasswordAutofillAgent(render_frame, associated_interfaces);
+    PasswordGenerationAgent* password_generation_agent =
+        new PasswordGenerationAgent(render_frame, password_autofill_agent,
+                                    associated_interfaces);
+    autofill::AutofillAssistantAgent* autofill_assistant_agent =
+        new autofill::AutofillAssistantAgent(render_frame);
+    new AutofillAgent(render_frame, password_autofill_agent,
+                      password_generation_agent, autofill_assistant_agent,
+                      associated_interfaces);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   new autofill_assistant::AutofillAssistantAgent(render_frame,

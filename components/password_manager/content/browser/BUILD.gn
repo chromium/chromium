@@ -40,15 +40,27 @@ static_library("browser") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_password_manager_driver_factory_test_api.cc",
+    "content_password_manager_driver_factory_test_api.h",
+  ]
+
+  public_deps = [ ":browser" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_password_manager_driver_factory_unittest.cc",
     "content_password_manager_driver_unittest.cc",
     "form_submission_tracker_util_unittest.cc",
     "password_manager_log_router_factory_unittest.cc",
   ]
   deps = [
     ":browser",
+    ":test_support",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",

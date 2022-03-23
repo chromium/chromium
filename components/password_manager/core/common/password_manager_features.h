@@ -28,6 +28,7 @@ extern const base::Feature kEnableManualPasswordGeneration;
 extern const base::Feature kEnableOverwritingPlaceholderUsernames;
 extern const base::Feature kEnablePasswordsAccountStorage;
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;
+extern const base::Feature kEnablePasswordManagerWithinFencedFrame;
 extern const base::Feature kFillingAcrossAffiliatedWebsites;
 extern const base::Feature kFillOnAccountSelect;
 #if BUILDFLAG(IS_LINUX)

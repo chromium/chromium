@@ -55,6 +55,12 @@ const base::Feature KEnablePasswordGenerationForClearTextFields = {
     "EnablePasswordGenerationForClearTextFields",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// By default, Password Manager is disabled in fenced frames for now.
+// TODO(crbug.com/1294378): Remove once launched.
+const base::Feature kEnablePasswordManagerWithinFencedFrame{
+    "EnablePasswordManagerWithinFencedFrame",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables filling password on a website when there is saved password on
 // affiliated website.
 const base::Feature kFillingAcrossAffiliatedWebsites{
