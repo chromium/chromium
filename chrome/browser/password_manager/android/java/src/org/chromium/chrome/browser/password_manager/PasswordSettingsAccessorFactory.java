@@ -17,4 +17,8 @@ public abstract class PasswordSettingsAccessorFactory {
     public PasswordSettingsAccessor createAccessor() {
         return null;
     }
+
+    public boolean canCreateAccessor() {
+        return false;
+    }
 }

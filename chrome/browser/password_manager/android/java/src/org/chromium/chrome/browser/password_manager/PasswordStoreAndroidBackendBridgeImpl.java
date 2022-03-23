@@ -4,16 +4,11 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
-
 import android.accounts.Account;
-import android.app.PendingIntent;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.common.base.Optional;
 
-import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccountUtils;
@@ -28,7 +23,6 @@ import java.lang.annotation.Target;
  * store backend that forwards password store operations to a downstream implementation.
  */
 class PasswordStoreAndroidBackendBridgeImpl {
-    private static final String TAG = "PwdStoreBackend";
     /**
      * Each operation sent to the passwords API will be assigned a JobId. The native side uses
      * this ID to map an API response to the job that invoked it.
@@ -116,34 +110,15 @@ class PasswordStoreAndroidBackendBridgeImpl {
         if (mNativeBackendBridge == 0) return;
 
         @AndroidBackendErrorType
-        int error = AndroidBackendErrorType.UNCATEGORIZED;
-        int api_error_code = 0; // '0' means SUCCESS.
+        int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
+        int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
-        if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
-            error = ((PasswordStoreAndroidBackend.BackendException) exception).errorCode;
+        if (exception instanceof ResolvableApiException) {
+            PasswordManagerAndroidBackendUtil.handleResolvableApiException(
+                    (ResolvableApiException) exception);
         }
-
-        if (exception instanceof ApiException) {
-            error = AndroidBackendErrorType.EXTERNAL_ERROR;
-            api_error_code = ((ApiException) exception).getStatusCode();
-
-            if (usesUnifiedPasswordManagerUI() && exception instanceof ResolvableApiException
-                    && api_error_code != ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE) {
-                // Backend error is user-recoverable, launch pending intent to allow the user to
-                // resolve it. Resolution for the authentication errors is not launched as
-                // user is requested to reauthenticate by Google services and Sync in Chrome.
-                ResolvableApiException resolvableApiException = (ResolvableApiException) exception;
-                PendingIntent pendingIntent = resolvableApiException.getResolution();
-                try {
-                    pendingIntent.send();
-                } catch (PendingIntent.CanceledException e) {
-                    Log.e(TAG, "Can not launch error resolution intent", e);
-                }
-            }
-        }
-
         PasswordStoreAndroidBackendBridgeImplJni.get().onError(
-                mNativeBackendBridge, jobId, error, api_error_code);
+                mNativeBackendBridge, jobId, error, apiErrorCode);
     }
 
     private Optional<Account> getAccount(String syncingAccount) {

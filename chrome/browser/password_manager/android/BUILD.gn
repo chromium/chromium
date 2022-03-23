@@ -8,6 +8,7 @@ java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [
     "android_backend_error.h",
     "chromesync_status_code.h",
+    "password_manager_setting.h",
     "password_store_operation_target.h",
   ]
 }
@@ -32,6 +33,10 @@ source_set("backend") {
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
     "password_manager_lifecycle_helper_impl.h",
+    "password_manager_setting.h",
+    "password_settings_updater_android_bridge.h",
+    "password_settings_updater_android_bridge_impl.cc",
+    "password_settings_updater_android_bridge_impl.h",
     "password_store_android_backend.cc",
     "password_store_android_backend.h",
     "password_store_android_backend_bridge.h",
@@ -94,9 +99,11 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtil.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
@@ -119,6 +126,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
@@ -130,8 +138,10 @@ junit_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelperTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
