@@ -533,13 +533,25 @@ PermissionState FakeWebState::GetStateForPermission(
 
 void FakeWebState::SetStateForPermission(PermissionState state,
                                          Permission permission) {
+  bool should_notify_observers = false;
   switch (permission) {
     case PermissionCamera:
+      if (camera_permission_state_ != state) {
+        should_notify_observers = true;
+      }
       camera_permission_state_ = state;
-      return;
+      break;
     case PermissionMicrophone:
+      if (microphone_permission_state_ != state) {
+        should_notify_observers = true;
+      }
       microphone_permission_state_ = state;
-      return;
+      break;
+  }
+  if (should_notify_observers) {
+    for (auto& observer : observers_) {
+      observer.PermissionStateChanged(this, permission);
+    }
   }
 }
 
