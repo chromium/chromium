@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 
-#import "base/metrics/user_metrics.h"
-#include "components/version_info/version_info.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -39,9 +35,6 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
       RecordSigninUserActionForAccessPoint(self.accessPoint, self.promoAction);
     }
   }
-  if (self.accountManagerService)
-    signin::RecordVersionSeen(self.accountManagerService,
-                              version_info::GetVersion());
 }
 
 @end

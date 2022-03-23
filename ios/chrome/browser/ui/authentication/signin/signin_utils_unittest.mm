@@ -97,7 +97,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
 }
@@ -108,7 +109,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_1_1("1.1");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_1));
 }
@@ -119,7 +121,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_1_2("1.2");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_2));
 }
@@ -130,7 +133,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_2_0));
 }
@@ -141,7 +145,8 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_3_0));
 }
@@ -156,8 +161,10 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_5_0));
 }
@@ -171,8 +178,10 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
@@ -192,8 +201,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   NSString* newAccountGaiaId = @"foo1";
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ newAccountGaiaId ]);
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   NSArray* allIdentities = account_manager_service_->GetAllIdentities();
   ChromeIdentity* foo1Identity = nil;
   for (ChromeIdentity* identity in allIdentities) {
@@ -218,8 +229,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_4_0("4.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
@@ -234,7 +247,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
 TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(

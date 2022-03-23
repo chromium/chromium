@@ -162,8 +162,9 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   return IsStrictSubset(last_known_gaia_id_list, identities);
 }
 
-void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
-                       const base::Version& current_version) {
+void RecordUpgradePromoSigninStarted(
+    ChromeAccountManagerService* account_manager_service,
+    const base::Version& current_version) {
   DCHECK(account_manager_service);
   DCHECK(current_version.IsValid());
 
