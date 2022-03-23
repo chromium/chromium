@@ -337,7 +337,8 @@
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
       "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
-      "2012C0122892D332325339998251D1CC3CAE396A"   // https://crbug.com/882461 SecureConnect
+      "2012C0122892D332325339998251D1CC3CAE396A",  // https://crbug.com/882461 SecureConnect
+      "C8F4673FC69965390BC376C0761EC341492F9D87"   // Contact Center Insights
     ]
   },
   "experimental": {

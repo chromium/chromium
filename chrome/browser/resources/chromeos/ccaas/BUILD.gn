@@ -1,0 +1,68 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/closure_args.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+reporting_proto_js_dir =
+    "${root_out_dir}/jsproto/components/reporting/proto/synced"
+
+# JS library that includes all protos used by the extension for reporting
+# purposes
+js_library("reporting_protos") {
+  extra_deps = [
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+  ]
+
+  deps = [ "//third_party/protobuf:js_proto" ]
+
+  sources = [
+    # Include all generated proto files
+    "${reporting_proto_js_dir}/metric_data.js",
+    "${reporting_proto_js_dir}/record.js",
+    "${reporting_proto_js_dir}/record_constants.js",
+  ]
+}
+
+# Generate a bundle that contains all external dependencies and protos used by
+# the extension for reporting purposes.
+js_binary("generate_ccaas_deps") {
+  deps = [ ":reporting_protos" ]
+  sources = [ "$externs_path/chrome_extensions.js" ]
+  outputs = [ "${target_gen_dir}/ccaas_deps.js" ]
+  closure_flags = default_closure_args + [
+                    "generate_exports=true",
+                    "jscomp_warning=checkTypes",
+                    "jscomp_warning=deprecatedAnnotations",
+                    "jscomp_warning=deprecated",
+                  ]
+}
+
+# JS library that includes all extension sources
+js_library("extension_sources") {
+  extra_deps = [ ":generate_ccaas_deps" ]
+
+  deps = [ ":reporting_protos" ]
+
+  sources = [
+    # Include all external dependencies so we can refrain ourselves from using
+    # the optimized bundle for type checks against the closure compiler
+    "$externs_path/chrome_extensions.js",
+    "background.js",
+    "background_wrapper.js",
+  ]
+}
+
+# Compile extension sources
+js_type_check("closure_compile") {
+  deps = [ ":extension_sources" ]
+
+  closure_flags = default_closure_args + [
+                    "jscomp_warning=checkTypes",
+                    "jscomp_warning=deprecatedAnnotations",
+                    "jscomp_warning=deprecated",
+                  ]
+}
