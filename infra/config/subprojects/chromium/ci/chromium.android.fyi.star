@@ -254,13 +254,13 @@ ci.builder(
 
 # TODO(crbug.com/1293115): [Cronet] Move to non-FYI once the tester works fine.
 ci.builder(
-    name = "android-cronet-x86-dbg-kitkat-tests",
+    name = "android-cronet-x86-rel-kitkat-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "k",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
+    triggered_by = ["ci/android-cronet-x86-rel"],
 )
 
 # TODO(crbug.com/1293115): [Cronet] Move to non-FYI once the tester works fine.
