@@ -5,7 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 
-#include "base/callback.h"
+#include <cstdint>
+
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -32,7 +33,7 @@ class GtkPrimarySelectionDevice : public WaylandDataDeviceBase {
     return data_device_.get();
   }
 
-  void SetSelectionSource(GtkPrimarySelectionSource* source);
+  void SetSelectionSource(GtkPrimarySelectionSource* source, uint32_t serial);
 
  private:
   // gtk_primary_selection_device_listener callbacks

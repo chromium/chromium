@@ -8,16 +8,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/public/platform_clipboard.h"
-
-namespace wl {
-struct Serial;
-}
 
 namespace ui {
 
@@ -71,8 +65,6 @@ class WaylandDataDeviceBase {
   void RegisterDeferredReadClosure(base::OnceClosure closure);
 
   void NotifySelectionOffer(WaylandDataOfferBase* offer) const;
-
-  absl::optional<wl::Serial> GetSerialForSelection() const;
 
  private:
   // wl_callback_listener callback

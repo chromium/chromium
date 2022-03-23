@@ -62,12 +62,6 @@ void WaylandTouch::Up(void* data,
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchReleaseEvent(timestamp, id);
-
-  // Reset kTouchPress serial only after dispatching touch-up event, so popups
-  // may detect if they were triggered by a tap gesture, and avoid grab in such
-  // case, which, per the spec, is illegal and may lead to instant popup
-  // dismissal by the compositor.
-  touch->connection_->serial_tracker().ResetSerial(wl::SerialType::kTouchPress);
 }
 
 void WaylandTouch::Motion(void* data,

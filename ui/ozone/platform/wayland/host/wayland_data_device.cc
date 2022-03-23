@@ -73,14 +73,10 @@ void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
   RegisterDeferredReadCallback();
 }
 
-void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source) {
-  auto serial = GetSerialForSelection();
-  if (!serial.has_value()) {
-    LOG(ERROR) << "Failed to set selection. No serial found.";
-    return;
-  }
+void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source,
+                                           uint32_t serial) {
   auto* data_source = source ? source->data_source() : nullptr;
-  wl_data_device_set_selection(data_device_.get(), data_source, serial->value);
+  wl_data_device_set_selection(data_device_.get(), data_source, serial);
   connection()->ScheduleFlush();
 }
 
