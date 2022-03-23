@@ -2277,6 +2277,11 @@ if (!is_android) {
       ]
     }
 
+    if (build_with_tflite_lib) {
+      sources += [ "../browser/permissions/prediction_service_browsertest.cc" ]
+      deps += [ "//components/permissions/prediction_service" ]
+    }
+
     # If this target is used on Android in the future, these browser/speech/*
     # files will probably not be applicable.
     sources += [

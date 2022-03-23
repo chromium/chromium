@@ -32,4 +32,19 @@ PredictionModelHandler::PredictionModelHandler(
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
           absl::nullopt) {}
 
+void PredictionModelHandler::OnModelUpdated(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    const optimization_guide::ModelInfo& model_info) {
+  // First invoke parent to update internal status.
+  optimization_guide::ModelHandler<
+      GeneratePredictionsResponse,
+      const GeneratePredictionsRequest&>::OnModelUpdated(optimization_target,
+                                                         model_info);
+  model_load_run_loop_.Quit();
+}
+
+void PredictionModelHandler::WaitForModelLoadForTesting() {
+  model_load_run_loop_.Run();
+}
+
 }  // namespace permissions
