@@ -751,12 +751,6 @@ const char kSkipPattern[] = "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)";
 std::map<std::string, std::string> kSkipParams = {
     {"product-skip-pattern", kSkipPattern}};
 
-const char kGlobalHeuristicsJSONData[] = R"###(
-      {
-        "sensitive_product_regex": "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)"
-      }
-  )###";
-
 std::map<std::string, std::string> kSkipAddToCartRequests = {
     {"https://www.electronicexpress.com", "https://www.electronicexpress.com"},
     {"https://www.electronicexpress.com", "https://www.google.com"},
@@ -838,7 +832,7 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCart) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }
 
-  // Heuristics from component.
+  // General heuristics from component.
   const std::string& component_pattern = R"###(
       {
         "cart_page_url_regex": "bar"
@@ -846,13 +840,37 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCart) {
   )###";
   EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
                   .PopulateDataFromComponent("{}", component_pattern, "", ""));
-  EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.bar.com")));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
 
-  // Feature param has a higher priority.
+  // Per-domain heuristics from component which has a higher priority than
+  // general heuristics.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "cart_url_regex" : "foo.com/([^/]+/)?trac"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/test/trac")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
+
+  // Feature param has a higher priority than component.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule, {{"cart-pattern", "foo"}});
-  EXPECT_FALSE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.bar.com")));
+      ntp_features::kNtpChromeCartModule,
+      {{"cart-pattern", "baz"}, {"cart-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/cart"
+      }
+  )###"}});
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/test/trac")));
 }
 
 TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
@@ -864,7 +882,7 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
 
-  // Heuristics from component.
+  // General heuristics from component.
   const std::string& component_pattern = R"###(
       {
         "checkout_page_url_regex": "bar"
@@ -872,23 +890,74 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
   )###";
   EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
                   .PopulateDataFromComponent("{}", component_pattern, "", ""));
-  EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.bar.com")));
+  EXPECT_TRUE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
 
-  // Feature param has a higher priority.
+  // Per-domain heuristics from component which has a higher priority than
+  // general heuristics.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "checkout_url_regex" : "foo.com/([^/]+/)?tuokcehc"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(
+      GURL("https://wwww.foo.com/test/tuokcehc")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
+
+  // Feature param has a higher priority than component.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule, {{"checkout-pattern", "foo"}});
+      ntp_features::kNtpChromeCartModule,
+      {{"checkout-pattern", "foo"}, {"checkout-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/checkout"
+      }
+  )###"}});
   EXPECT_FALSE(
-      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.bar.com")));
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
+  EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(
+      GURL("https://wwww.foo.com/test/tuokcehc")));
 }
 
 TEST_F(CommerceHintAgentUnitTest, IsPurchaseByURL) {
+  // Heuristics from feature param default value.
   for (auto* str : kPurchaseURL) {
     EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(str))) << str;
   }
   for (auto* str : kNotPurchaseURL) {
     EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(str))) << str;
   }
+
+  // Per-domain heuristics from component has a higher priority than default
+  // value.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "purchase_url_regex" : "foo.com/([^/]+/)?esahcrup"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsPurchase(
+      GURL("https://wwww.foo.com/test/esahcrup")));
+
+  // Feature param has a higher priority than component.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule,
+      {{"purchase-url-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/purchase"
+      }
+  )###"}});
+  EXPECT_FALSE(CommerceHintAgent::IsPurchase(
+      GURL("https://wwww.foo.com/test/esahcrup")));
 }
 
 TEST_F(CommerceHintAgentUnitTest, IsPurchaseByForm) {
@@ -934,9 +1003,13 @@ TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromFeatureParam) {
 }
 
 TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromComponent) {
-  EXPECT_TRUE(
-      commerce_heuristics::CommerceHeuristicsData::GetInstance()
-          .PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
+  const std::string& component_pattern = R"###(
+      {
+        "sensitive_product_regex": "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
 
   for (auto* str : kSkipText) {
     EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;

@@ -13,6 +13,9 @@ namespace {
 // CommerceHintHeuristics types.
 constexpr char kMerchantNameType[] = "merchant_name";
 constexpr char kMerchantCartURLType[] = "cart_url";
+constexpr char kMerchantCartURLRegexType[] = "cart_url_regex";
+constexpr char kMerchantCheckoutURLRegexType[] = "checkout_url_regex";
+constexpr char kMerchantPurchaseURLRegexType[] = "purchase_url_regex";
 
 // CommerceGlobalHeuristics types.
 constexpr char kSkipProductPatternType[] = "sensitive_product_regex";
@@ -65,6 +68,9 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
       ConstructGlobalRegex(kPurchaseButtonTextPatternType);
   add_to_cart_request_pattern_ =
       ConstructGlobalRegex(kAddToCartRequestPatternType);
+  domain_cart_url_pattern_mapping_.clear();
+  domain_checkout_url_pattern_mapping_.clear();
+  domain_purchase_url_pattern_mapping_.clear();
   return true;
 }
 
@@ -108,6 +114,24 @@ const re2::RE2* CommerceHeuristicsData::GetAddToCartRequestPattern() {
   return add_to_cart_request_pattern_.get();
 }
 
+const re2::RE2* CommerceHeuristicsData::GetCartPageURLPatternForDomain(
+    const std::string& domain) {
+  return GetCommerceHintHeuristicsRegex(domain_cart_url_pattern_mapping_,
+                                        kMerchantCartURLRegexType, domain);
+}
+
+const re2::RE2* CommerceHeuristicsData::GetCheckoutPageURLPatternForDomain(
+    const std::string& domain) {
+  return GetCommerceHintHeuristicsRegex(domain_checkout_url_pattern_mapping_,
+                                        kMerchantCheckoutURLRegexType, domain);
+}
+
+const re2::RE2* CommerceHeuristicsData::GetPurchasePageURLPatternForDomain(
+    const std::string& domain) {
+  return GetCommerceHintHeuristicsRegex(domain_purchase_url_pattern_mapping_,
+                                        kMerchantPurchaseURLRegexType, domain);
+}
+
 absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(
     const std::string& type,
     const std::string& domain) {
@@ -129,6 +153,21 @@ absl::optional<std::string> CommerceHeuristicsData::GetCommerceGlobalHeuristics(
     return absl::nullopt;
   }
   return absl::optional<std::string>(*global_heuristics_.FindString(type));
+}
+
+const re2::RE2* CommerceHeuristicsData::GetCommerceHintHeuristicsRegex(
+    std::map<std::string, std::unique_ptr<re2::RE2>>& map,
+    const std::string type,
+    const std::string domain) {
+  if (map.find(domain) != map.end())
+    return map.at(domain).get();
+  absl::optional<std::string> pattern = GetCommerceHintHeuristics(type, domain);
+  if (!pattern.has_value())
+    return nullptr;
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  map.emplace(domain, std::make_unique<re2::RE2>(*pattern, options));
+  return map.at(domain).get();
 }
 
 std::unique_ptr<re2::RE2> CommerceHeuristicsData::ConstructGlobalRegex(

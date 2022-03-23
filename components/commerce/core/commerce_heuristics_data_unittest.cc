@@ -12,12 +12,16 @@ const char kHintHeuristicsJSONData[] = R"###(
       {
           "foo.com": {
               "merchant_name": "Foo",
-              "cart_url": "foo.com/cart"
+              "cart_url": "foo.com/cart",
+              "cart_url_regex" : "foo.com/([^/]+/)?cart"
           },
           "bar.com": {
-              "merchant_name": "Bar"
+              "merchant_name": "Bar",
+              "checkout_url_regex" : "bar.com/([^/]+/)?checkout"
           },
-          "baz.com": {}
+          "baz.com": {
+              "purchase_url_regex" : "baz.com/([^/]+/)?purchase"
+          }
       }
   )###";
 const char kGlobalHeuristicsJSONData[] = R"###(
@@ -62,8 +66,16 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
             "Foo");
   ASSERT_EQ(*hint_heuristics->FindDict("foo.com")->FindString("cart_url"),
             "foo.com/cart");
+  ASSERT_EQ(*hint_heuristics->FindDict("foo.com")->FindString("cart_url_regex"),
+            "foo.com/([^/]+/)?cart");
   ASSERT_EQ(*hint_heuristics->FindDict("bar.com")->FindString("merchant_name"),
             "Bar");
+  ASSERT_EQ(
+      *hint_heuristics->FindDict("bar.com")->FindString("checkout_url_regex"),
+      "bar.com/([^/]+/)?checkout");
+  ASSERT_EQ(
+      *hint_heuristics->FindDict("baz.com")->FindString("purchase_url_regex"),
+      "baz.com/([^/]+/)?purchase");
   auto* global_heuristics = GetGlobalHeuristics();
   ASSERT_EQ(global_heuristics->size(), 7u);
   ASSERT_TRUE(global_heuristics->contains("sensitive_product_regex"));
@@ -195,5 +207,65 @@ TEST_F(CommerceHeuristicsDataTest, TestGetAddToCartRequestPattern) {
       kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
 
   ASSERT_EQ(data.GetAddToCartRequestPattern()->pattern(), "add_to_cart");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetCartPageURLPatternForDomain) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCartPageURLPatternForDomain("foo.com")->pattern(),
+            "foo.com/([^/]+/)?cart");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetCheckoutPageURLPatternForDomain) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCheckoutPageURLPatternForDomain("bar.com")->pattern(),
+            "bar.com/([^/]+/)?checkout");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetPurchasePageURLPatternForDomain) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetPurchasePageURLPatternForDomain("baz.com")->pattern(),
+            "baz.com/([^/]+/)?purchase");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestRepopulateHintData) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCartPageURLPatternForDomain("foo.com")->pattern(),
+            "foo.com/([^/]+/)?cart");
+  ASSERT_EQ(data.GetCheckoutPageURLPatternForDomain("bar.com")->pattern(),
+            "bar.com/([^/]+/)?checkout");
+  ASSERT_EQ(data.GetPurchasePageURLPatternForDomain("baz.com")->pattern(),
+            "baz.com/([^/]+/)?purchase");
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      R"###(
+      {
+          "qux.com": {
+              "purchase_url_regex" : "qux.com/([^/]+/)?purchase"
+          }
+      }
+  )###",
+      kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_FALSE(data.GetCartPageURLPatternForDomain("foo.com"));
+  ASSERT_FALSE(data.GetCheckoutPageURLPatternForDomain("bar.com"));
+  ASSERT_FALSE(data.GetPurchasePageURLPatternForDomain("baz.com"));
+  ASSERT_EQ(data.GetPurchasePageURLPatternForDomain("qux.com")->pattern(),
+            "qux.com/([^/]+/)?purchase");
 }
 }  // namespace commerce_heuristics
