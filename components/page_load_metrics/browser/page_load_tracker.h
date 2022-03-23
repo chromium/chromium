@@ -51,10 +51,20 @@ enum class PageLoadPrerenderEvent {
   kMaxValue = kPrerenderActivationNavigation,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PageLoadTrackerPageType {
+  kPrimaryPage = 0,
+  kPrerenderPage = 1,
+  kFencedFramesPage = 2,
+  kMaxValue = kFencedFramesPage,
+};
+
 extern const char kErrorEvents[];
 extern const char kPageLoadCompletedAfterAppBackground[];
-extern const char kPageLoadStartedInForeground[];
 extern const char kPageLoadPrerender2Event[];
+extern const char kPageLoadStartedInForeground[];
+extern const char kPageLoadTrackerPageType[];
 
 }  // namespace internal
 

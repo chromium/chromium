@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
@@ -54,14 +53,19 @@ namespace internal {
 const char kErrorEvents[] = "PageLoad.Internal.ErrorCode";
 const char kPageLoadCompletedAfterAppBackground[] =
     "PageLoad.Internal.PageLoadCompleted.AfterAppBackground";
+const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
 const char kPageLoadStartedInForeground[] =
     "PageLoad.Internal.NavigationStartedInForeground";
-const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
+const char kPageLoadTrackerPageType[] = "PageLoad.Internal.PageType";
 
 }  // namespace internal
 
 void RecordInternalError(InternalErrorLoadEvent event) {
-  UMA_HISTOGRAM_ENUMERATION(internal::kErrorEvents, event, ERR_LAST_ENTRY);
+  base::UmaHistogramEnumeration(internal::kErrorEvents, event, ERR_LAST_ENTRY);
+}
+
+void RecordPageType(internal::PageLoadTrackerPageType type) {
+  base::UmaHistogramEnumeration(internal::kPageLoadTrackerPageType, type);
 }
 
 // TODO(csharrison): Add a case for client side redirects, which is what JS
@@ -100,8 +104,8 @@ bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
 namespace {
 
 void RecordAppBackgroundPageLoadCompleted(bool completed_after_background) {
-  UMA_HISTOGRAM_BOOLEAN(internal::kPageLoadCompletedAfterAppBackground,
-                        completed_after_background);
+  base::UmaHistogramBoolean(internal::kPageLoadCompletedAfterAppBackground,
+                            completed_after_background);
 }
 
 void DispatchEventsAfterBackForwardCacheRestore(
@@ -237,17 +241,20 @@ PageLoadTracker::PageLoadTracker(
     base::UmaHistogramEnumeration(
         internal::kPageLoadPrerender2Event,
         internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
+    RecordPageType(internal::PageLoadTrackerPageType::kPrerenderPage);
   } else if (navigation_handle->GetNavigatingFrameType() ==
              content::FrameType::kFencedFrameRoot) {
     INVOKE_AND_PRUNE_OBSERVERS(observers_, OnFencedFramesStart,
                                navigation_handle, currently_committed_url);
+    RecordPageType(internal::PageLoadTrackerPageType::kFencedFramesPage);
   } else {
     INVOKE_AND_PRUNE_OBSERVERS(observers_, OnStart, navigation_handle,
                                currently_committed_url, started_in_foreground_);
+    RecordPageType(internal::PageLoadTrackerPageType::kPrimaryPage);
   }
 
-  UMA_HISTOGRAM_BOOLEAN(internal::kPageLoadStartedInForeground,
-                        started_in_foreground_);
+  base::UmaHistogramBoolean(internal::kPageLoadStartedInForeground,
+                            started_in_foreground_);
 }
 
 PageLoadTracker::~PageLoadTracker() {

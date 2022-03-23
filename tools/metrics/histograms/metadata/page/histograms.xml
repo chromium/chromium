@@ -1881,6 +1881,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Internal.PageType" enum="PageLoadTrackerPageType"
+    expires_after="2022-09-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    This records the Page type that each PageLoadTracker tracks. This metric is
+    recorded when a PageLoadTracker is created for a Page.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
     enum="LargestContentType" expires_after="2022-09-11">
