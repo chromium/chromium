@@ -9,6 +9,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content

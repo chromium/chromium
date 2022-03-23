@@ -15,6 +15,10 @@
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace webapps {
 
 // Populates webapk::WebApk and returns it.

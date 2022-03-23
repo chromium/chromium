@@ -13,6 +13,10 @@
 
 class Profile;
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 class BrowserContext;
 }  // namespace content

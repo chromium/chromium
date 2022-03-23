@@ -17,7 +17,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
