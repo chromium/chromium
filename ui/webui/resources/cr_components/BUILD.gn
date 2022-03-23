@@ -8,8 +8,6 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(!is_android && !is_ios)
-
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
