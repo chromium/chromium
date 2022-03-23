@@ -98,6 +98,8 @@ constexpr char kExtensionAppIconResourceName[] =
 constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.svg";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
+constexpr char kGoogleGTransparentIconResourceName[] =
+    "realbox/icons/google_g_transparent.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
 #endif
@@ -423,7 +425,7 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kGoogleSitesIconResourceName;
   }
   if (icon.name == kGoogleSuperGIcon.name) {
-    return kGoogleGIconResourceName;
+    return kGoogleGTransparentIconResourceName;
   }
 #endif
   if (icon.name == omnibox::kIncognitoIcon.name) {
