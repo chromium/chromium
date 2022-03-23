@@ -42,9 +42,9 @@ export function GooglePhotosPhotosTest() {
   /** Scrolls the specified |element| until |predicate| returns true. */
   async function scrollElementUntil(
       element: HTMLElement, predicate: () => boolean) {
-    const timeout = +new Date() + 1000;
+    const timeout = +new Date() + 2000;
     while (!predicate()) {
-      element.scrollBy(0, 500);
+      element.scrollBy(0, 1000);
       await waitAfterNextRender(googlePhotosPhotosElement!);
       if (+new Date() > timeout) {
         assertNotReached('Timed out while scrolling.');
@@ -313,8 +313,7 @@ export function GooglePhotosPhotosTest() {
     assertEquals(photoEls[1]!.selected, false);
   });
 
-  // TODO(dmblack): Re-enable after branch.
-  test.skip('incrementally loads photos', async () => {
+  test('incrementally loads photos', async () => {
     // Set photos count returned by |wallpaperProvider|.
     const photosCount = 200;
     wallpaperProvider.setGooglePhotosCount(photosCount);
