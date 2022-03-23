@@ -309,8 +309,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://b.test",
-      /*source_event_id=*/"1", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -318,19 +318,16 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
-  GURL conversion_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  GURL register_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html");
 
-  // We can't use `JsReplace` directly to input the origin as it will use string
-  // literals which shouldn't be provided in the window features string.
-  std::string window_features =
-      base::StrCat({"attributionsourceeventid=1,attributiondestination=",
-                    url::Origin::Create(conversion_url).Serialize()});
+  GURL conversion_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
 
   TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace(R"(window.open($1, '_top', $2);)",
-                                       conversion_url, window_features)));
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(window.open($1, '_top',
+      "attributionsrc="+$2);)",
+                                               conversion_url, register_url)));
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.

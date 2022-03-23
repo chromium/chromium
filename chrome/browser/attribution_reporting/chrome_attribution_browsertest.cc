@@ -138,9 +138,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
-  waiter.AddWebFeatureExpectation(
-    blink::mojom::WebFeature::kImpressionRegistration);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -151,21 +148,18 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   // Create an observer to catch the opened WebContents.
   content::WebContentsAddedObserver window_observer;
 
+  GURL register_url = server_.GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html");
+
   GURL link_url = server_.GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
   // Navigate the page using window.open and set an attribution source.
   EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
-    window.open($1, "_blank",
-    "attributionsourceeventid=1,attributiondestination=https://b.test,\
-    attributionreportto=https://report.com,attributionexpiry=1000,\
-    attributionsourcepriority=10");)",
-                                                      link_url)));
+    window.open($1, "_blank", "attributionsrc="+$2);)",
+                                                      link_url, register_url)));
 
   content::WebContents* new_contents = window_observer.GetWebContents();
   WaitForLoadStop(new_contents);
-
-  // Verify that the impression registration is observed.
-  waiter.Wait();
 
   // Ensure the window was opened in a new tab. If the window is in a new popup
   // the web contents would not belong to the tab strip.
