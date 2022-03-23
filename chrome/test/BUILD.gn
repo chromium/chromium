@@ -4256,6 +4256,8 @@ if (!is_android) {
     }
 
     if (is_fuchsia) {
+      use_test_server = true
+
       use_cfv2 = false
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/font_capabilities.test-cmx",
