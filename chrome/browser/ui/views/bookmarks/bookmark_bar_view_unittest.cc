@@ -21,6 +21,9 @@
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/url_constants.h"
@@ -35,11 +38,14 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -65,6 +71,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     Browser::CreateParams params(profile(), true);
     params.window = &browser_window_;
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
   }
 
   virtual BookmarkBarView* bookmark_bar_view() = 0;
@@ -108,6 +115,10 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     return BookmarkModelFactory::GetForBrowserContext(profile());
   }
 
+  SavedTabGroupModel* stg_model() {
+    return SavedTabGroupServiceFactory::GetForProfile(profile())->model();
+  }
+
   void WaitForBookmarkModelToLoad() {
     bookmarks::test::WaitForBookmarkModelToLoad(model());
   }
@@ -117,6 +128,52 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   void AddNodesToBookmarkBarFromModelString(const std::string& string) {
     bookmarks::test::AddNodesFromModelString(
         model(), model()->bookmark_bar_node(), string);
+  }
+
+  void AddGroupsToSTGModel() {
+    size_t initial_button_count = test_helper_->GetTabGroupButtonCount();
+    const std::u16string title_1 = u"First Group";
+    const std::u16string title_2 = u"Second Group";
+    const std::u16string title_3 = u"The Third Group";
+
+    const tab_groups::TabGroupColorId& color_1 =
+        tab_groups::TabGroupColorId::kGrey;
+    const tab_groups::TabGroupColorId& color_2 =
+        tab_groups::TabGroupColorId::kRed;
+    const tab_groups::TabGroupColorId& color_3 =
+        tab_groups::TabGroupColorId::kGreen;
+
+    std::vector<GURL> urls_1(CreateGURL({"A_Link"}));
+    std::vector<GURL> urls_2(CreateGURL({"B_Link", "Not_A_Link"}));
+    std::vector<GURL> urls_3(CreateGURL({"Mickey", "Donald", "Goofy"}));
+
+    SavedTabGroup group_1(id_1_, title_1, color_1, urls_1);
+    SavedTabGroup group_2(id_2_, title_2, color_2, urls_2);
+    SavedTabGroup group_3(id_3_, title_3, color_3, urls_3);
+
+    stg_model()->Add(group_1);
+    stg_model()->Add(group_2);
+    stg_model()->Add(group_3);
+
+    size_t current_button_count = test_helper_->GetTabGroupButtonCount();
+    EXPECT_EQ(3u, current_button_count - initial_button_count);
+    EXPECT_EQ(
+        title_1,
+        test_helper_->GetTabGroupButton(current_button_count - 3)->GetText());
+    EXPECT_EQ(
+        title_2,
+        test_helper_->GetTabGroupButton(current_button_count - 2)->GetText());
+    EXPECT_EQ(
+        title_3,
+        test_helper_->GetTabGroupButton(current_button_count - 1)->GetText());
+  }
+
+  std::vector<GURL> CreateGURL(std::vector<std::string> paths) {
+    std::vector<GURL> gurls;
+    gurls.reserve(paths.size());
+    for (std::string path : paths)
+      gurls.emplace_back(GURL(base_path_ + path));
+    return gurls;
   }
 
   // Creates the model, blocking until it loads, then creates the
@@ -136,6 +193,10 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   TestBrowserWindow browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
+  std::string base_path_ = "file:///c:/tmp/";
+  tab_groups::TabGroupId id_1_ = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId id_2_ = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId id_3_ = tab_groups::TabGroupId::GenerateNew();
 
  private:
   static std::unique_ptr<KeyedService> CreateTemplateURLService(
@@ -208,6 +269,41 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<BookmarkBarView> bookmark_bar_view_ = nullptr;
 };
+
+// Verify that adding a single tab group button adds only 1 button and it is
+// appended to the end of the list.
+TEST_F(BookmarkBarViewTest, AddAdditionalTabGroupButton) {
+  // Adds 3 buttons to our model.
+  AddGroupsToSTGModel();
+
+  // Create a new SavedTabGroup and add it to our model.
+  tab_groups::TabGroupId group_id(tab_groups::TabGroupId::GenerateNew());
+  const std::u16string group_title = u"Additional Group";
+  const tab_groups::TabGroupColorId& group_color =
+      tab_groups::TabGroupColorId::kBlue;
+
+  std::vector<GURL> group_urls(CreateGURL({"Additional_Link"}));
+  SavedTabGroup group(group_id, group_title, group_color, group_urls);
+  stg_model()->Add(group);
+
+  // Verify we have 4 buttons and the title of the group is the same.
+  EXPECT_EQ(4u, test_helper_->GetTabGroupButtonCount());
+  EXPECT_EQ(group_title, test_helper_->GetTabGroupButton(3)->GetText());
+}
+
+// Verify that removing a tab group from the model removes the correct button.
+TEST_F(BookmarkBarViewTest, RemoveTabGroupButton) {
+  // Adds 3 buttons to our model.
+  AddGroupsToSTGModel();
+
+  // Removes the second tab group button.
+  stg_model()->Remove(id_2_);
+
+  // Verify we have 2 buttons and do not have the title of the second tab group.
+  EXPECT_EQ(2u, test_helper_->GetTabGroupButtonCount());
+  EXPECT_EQ(u"First Group", test_helper_->GetTabGroupButton(0)->GetText());
+  EXPECT_EQ(u"The Third Group", test_helper_->GetTabGroupButton(1)->GetText());
+}
 
 // Verify that in instant extended mode the visibility of the apps shortcut
 // button properly follows the pref value.
