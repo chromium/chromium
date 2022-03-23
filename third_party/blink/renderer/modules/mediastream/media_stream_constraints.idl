@@ -9,4 +9,6 @@ dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) audio = false;
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
+    [RuntimeEnabled=GetDisplayMediaSetAutoSelectAllScreens]
+    boolean autoSelectAllScreens = false;
 };

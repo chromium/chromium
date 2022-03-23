@@ -5312,6 +5312,7 @@ interface MediaDevices : EventTarget
     method constructor
     method enumerateDevices
     method getDisplayMedia
+    method getDisplayMediaSet
     method getSupportedConstraints
     method getUserMedia
     method produceCropId

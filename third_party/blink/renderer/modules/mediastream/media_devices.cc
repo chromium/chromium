@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -313,6 +314,13 @@ ScriptPromise MediaDevices::getDisplayMedia(
       exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
       return ScriptPromise();
     }
+  }
+
+  if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {
+    exception_state.ThrowTypeError(
+        "The autoSelectAllScreens property is not allowed for usage with "
+        "getDisplayMedia.");
+    return ScriptPromise();
   }
 
   return SendUserMediaRequest(script_state,
