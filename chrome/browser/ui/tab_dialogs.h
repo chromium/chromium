@@ -55,6 +55,11 @@ class TabDialogs : public base::SupportsUserData::Data {
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
       content::WebContents* web_contents) = 0;
 
+  // Shows the force installed and deprecated app dialog.
+  virtual void ShowForceInstalledDeprecatedAppsDialog(
+      const extensions::ExtensionId& app_id,
+      content::WebContents* web_contents) = 0;
+
   // Shows or hides the ManagePasswords bubble.
   // Pass true for |user_action| if this is a user initiated action.
   virtual void ShowManagePasswordsBubble(bool user_action) = 0;

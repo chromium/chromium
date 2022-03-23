@@ -168,6 +168,10 @@ bool HasMatchingOrGreaterThanIcon(const SortedSizesPx& downloaded_icon_sizes,
   return largest >= pixels;
 }
 
+// Query string for showing the force installed apps deprecation dialog.
+// Should match with kChromeUIAppsWithForceInstalledDeprecationDialogURL.
+const char kForceInstallDialogQueryString[] = "showForceInstallDialog";
+
 }  // namespace
 
 AppLauncherHandler::AppInstallInfo::AppInstallInfo() {}
@@ -315,10 +319,11 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode));
 
   bool is_deprecated_app = false;
+  auto* context = extension_service_->GetBrowserContext();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-  is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
-      extension_service_->GetBrowserContext(), extension->id());
+  is_deprecated_app =
+      extensions::IsExtensionUnsupportedDeprecatedApp(context, extension->id());
 #endif
   value->SetBoolKey("is_deprecated_app", is_deprecated_app);
 
@@ -333,7 +338,8 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
 
   std::u16string name = base::UTF8ToUTF16(extension->name());
   base::i18n::UnadjustStringForLocaleDirection(&name);
-  if (is_deprecated_app) {
+  if (is_deprecated_app && !extensions::IsExtensionForceInstalled(
+                               context, extension->id(), nullptr)) {
     name = l10n_util::GetStringFUTF16(IDS_APPS_PAGE_DEPRECATED_APP_TITLE, name);
     deprecated_app_ids_.insert(extension->id());
   }
@@ -753,6 +759,15 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
       TabDialogs::FromWebContents(web_contents)
           ->ShowDeprecatedAppsDialog(deprecated_app_ids_, web_contents);
     }
+    std::string app_id;
+    if (net::GetValueForKeyInQuery(web_contents->GetLastCommittedURL(),
+                                   kForceInstallDialogQueryString, &app_id)) {
+      if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, app_id) &&
+          extensions::IsExtensionForceInstalled(profile, app_id, nullptr)) {
+        TabDialogs::FromWebContents(web_contents)
+            ->ShowForceInstalledDeprecatedAppsDialog(app_id, web_contents);
+      }
+    }
   }
   has_loaded_apps_ = true;
 }
@@ -772,10 +787,18 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
 
   if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id) &&
       base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
-    TabDialogs::FromWebContents(web_ui()->GetWebContents())
-        ->ShowDeprecatedAppsDialog(deprecated_app_ids_,
-                                   web_ui()->GetWebContents());
-    return;
+    if (!extensions::IsExtensionForceInstalled(profile, extension_id,
+                                               nullptr)) {
+      TabDialogs::FromWebContents(web_ui()->GetWebContents())
+          ->ShowDeprecatedAppsDialog(deprecated_app_ids_,
+                                     web_ui()->GetWebContents());
+      return;
+    } else {
+      TabDialogs::FromWebContents(web_ui()->GetWebContents())
+          ->ShowForceInstalledDeprecatedAppsDialog(extension_id,
+                                                   web_ui()->GetWebContents());
+      return;
+    }
   }
 
   extensions::Manifest::Type type;

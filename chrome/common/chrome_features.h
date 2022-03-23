@@ -224,6 +224,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWebAppSettingsPage;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChromeAppsDeprecation;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kKeepForceInstalledPreinstalledApps;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

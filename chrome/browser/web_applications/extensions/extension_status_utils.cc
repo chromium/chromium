@@ -108,11 +108,18 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
 
   const extensions::Extension* app = registry->GetExtensionById(
       extension_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (!app)
+  if (!app || !app->is_app())
     return false;
 
-  return app->is_app() &&
-         !IsExtensionForceInstalled(context, extension_id, nullptr);
+  if (!base::FeatureList::IsEnabled(
+          features::kKeepForceInstalledPreinstalledApps)) {
+    return true;
+  }
+
+  if (!IsExtensionForceInstalled(context, extension_id, nullptr))
+    return true;
+
+  return !IsPreinstalledAppId(extension_id);
 }
 #endif
 

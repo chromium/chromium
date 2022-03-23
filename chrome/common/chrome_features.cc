@@ -326,6 +326,10 @@ const base::Feature kDesktopPWAsWebAppSettingsPage{
 // Apps will not launch and will be marked in the UI as deprecated.
 const base::Feature kChromeAppsDeprecation{"ChromeAppsDeprecation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+//  Controls whether force installed and preinstalled apps should be exempt from
+//  deprecation.
+const base::Feature kKeepForceInstalledPreinstalledApps{
+    "KeepForceInstalledPreinstalledApps", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Enable DNS over HTTPS (DoH).

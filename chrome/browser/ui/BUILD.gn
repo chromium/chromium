@@ -3339,6 +3339,8 @@ static_library("ui") {
     sources += [
       "views/web_apps/deprecated_apps_dialog_view.cc",
       "views/web_apps/deprecated_apps_dialog_view.h",
+      "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
+      "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
       "webui/app_launcher_page_ui.cc",
       "webui/app_launcher_page_ui.h",
       "webui/app_settings/web_app_settings_navigation_throttle.cc",

@@ -133,9 +133,15 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   Browser::CreateParams create_params(profile, /*user_gesture=*/false);
   Browser* browser = Browser::Create(create_params);
 
-  NavigateParams params(browser,
-                        GURL(chrome::kChromeUIAppsWithDeprecationDialogURL),
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  GURL url;
+  if (extensions::IsExtensionForceInstalled(profile, app_id, nullptr)) {
+    url = GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
+               app_id);
+  } else {
+    url = GURL(chrome::kChromeUIAppsWithDeprecationDialogURL);
+  }
+
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
   Navigate(&params);

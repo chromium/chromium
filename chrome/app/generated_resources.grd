@@ -5107,7 +5107,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         The "<ph name="EXTENSION_NAME">$2<ex>Some New Search</ex></ph>" extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN">$1<ex>google.com</ex></ph>
       </message>
       <!-- End Extension Settings Overridden Dialog strings. -->
-
+      <!-- Force Installed Deprecated Apps Deletion Dialog strings. -->
+      <message name="IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT" desc="Content of the force installed deprecated app dialog">
+        Your administrator installed "<ph name="EXTENSION_NAME">$1<ex>Google Dos</ex></ph>" but this Chrome App is no longer supported. Contact your administrator to remove it. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+      </message>
+      <!-- End Force Installed Deprecated Apps Deletion Dialog strings. -->
       <!-- Deprecated Apps Deletion Dialog strings. -->
       <message name="IDS_DEPRECATED_APPS_RENDERER_TITLE" desc="The title of the deprecated app dialog">
         {NUM_APPS, plural,
