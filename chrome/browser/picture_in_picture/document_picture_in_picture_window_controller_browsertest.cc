@@ -213,9 +213,24 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   ASSERT_TRUE(window_controller());
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   window_controller()->Close(/*should_pause_video=*/true);
 
   ASSERT_FALSE(window_controller()->GetWindowForTesting());
+}
+
+// Tests navigating the opener closes the picture in picture window.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       ClosePictureInPictureWhenOpenerNavigates) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  ASSERT_TRUE(window_controller());
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+  GURL test_page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kPictureInPictureWindowSizePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+
+  EXPECT_FALSE(window_controller()->GetWindowForTesting());
 }

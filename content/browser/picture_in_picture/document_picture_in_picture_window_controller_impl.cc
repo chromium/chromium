@@ -110,9 +110,11 @@ WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
 }
 
 void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
-  if (window_)
-    window_->Close();
-  CloseInternal(/*should_pause_video=*/true);
+  ForceClosePictureInPicture();
+}
+
+void DocumentPictureInPictureWindowControllerImpl::PrimaryPageChanged(Page&) {
+  ForceClosePictureInPicture();
 }
 
 void DocumentPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
@@ -122,6 +124,13 @@ void DocumentPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
   // any case, OnWindowDestroyed will do cleanup even when
   // OnLeavingPictureInPicture didn't get triggered.
   GetWebContentsImpl()->ExitPictureInPicture();
+}
+
+void DocumentPictureInPictureWindowControllerImpl::
+    ForceClosePictureInPicture() {
+  if (window_)
+    window_->Close();
+  CloseInternal(/*should_pause_video=*/true);
 }
 
 void DocumentPictureInPictureWindowControllerImpl::CloseInternal(

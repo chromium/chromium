@@ -62,6 +62,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;
+  void PrimaryPageChanged(Page&) override;
 
  private:
   friend class WebContentsUserData<
@@ -89,6 +90,11 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   WebContentsImpl* GetWebContentsImpl();
 
   void EnsureWindow();
+
+  // Convenience routine for cases in which we'd like to cause the picture in
+  // picture window to close. This will close the window, then clean up the
+  // internal state.
+  void ForceClosePictureInPicture();
 
   // If true, the PiP window is currently in the process of being closed.
   bool closing_ = false;
