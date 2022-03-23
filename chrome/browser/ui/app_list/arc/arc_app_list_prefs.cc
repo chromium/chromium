@@ -1526,20 +1526,6 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
     package_dict->RemoveKey(kPermissionStates);
   }
 
-  // TODO (crbug.com/xxxxx): Remove in M78. This is required to force updating
-  // icons for all packages in case framework version is changed. Prior to this
-  // change |InvalidatePackageIcons| for framework did not refresh all packages.
-  if (package_name == kFrameworkPackageName) {
-    const int last_framework_version =
-        profile_->GetPrefs()->GetInteger(arc::prefs::kArcFrameworkVersion);
-    if (last_framework_version != package.package_version) {
-      InvalidatePackageIcons(package_name);
-      profile_->GetPrefs()->SetInteger(arc::prefs::kArcFrameworkVersion,
-                                       package.package_version);
-    }
-    return;
-  }
-
   if (old_package_version == -1 ||
       old_package_version == package.package_version) {
     return;
