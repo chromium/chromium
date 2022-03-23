@@ -556,12 +556,7 @@ bool AutofillPopupControllerImpl::HasSuggestions() {
   if (suggestions_.empty())
     return false;
   int id = suggestions_[0].frontend_id;
-  return id > 0 || id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
-         id == POPUP_ITEM_ID_PASSWORD_ENTRY ||
-         id == POPUP_ITEM_ID_USERNAME_ENTRY ||
-         id == POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
-         id == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY ||
-         id == POPUP_ITEM_ID_DATALIST_ENTRY ||
+  return id > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
          id == POPUP_ITEM_ID_SCAN_CREDIT_CARD;
 }
 
