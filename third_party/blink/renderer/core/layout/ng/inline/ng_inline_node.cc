@@ -530,11 +530,9 @@ void NGInlineNode::PrepareLayoutIfNeeded() const {
 
 void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (Data().shaping_state_ != NGInlineNodeData::kShapingNone) {
-    if (auto* context = GetLayoutBox()->GetDisplayLockContext()) {
-      if (!context->IsLocked() && Data().IsShapingDeferred()) {
-        ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone,
-                                    MutableData(), nullptr, nullptr);
-      }
+    if (ShouldBeReshaped()) {
+      ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, MutableData(),
+                                  nullptr, nullptr);
     }
     return;
   }
@@ -2020,6 +2018,15 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
 bool NGInlineNode::UseFirstLineStyle() const {
   return GetLayoutBox() &&
          GetLayoutBox()->GetDocument().GetStyleEngine().UsesFirstLineRules();
+}
+
+bool NGInlineNode::ShouldBeReshaped() const {
+  if (!Data().IsShapingDeferred())
+    return false;
+  if (const auto* context = To<Element>(GetDOMNode())->GetDisplayLockContext())
+    return !context->IsLocked();
+  // This is deferred, but not locked yet.
+  return false;
 }
 
 void NGInlineNode::CheckConsistency() const {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -166,6 +167,40 @@ TEST_F(DeferredShapingTest, ListMarkerCrash) {
   GetElementById("target")->setTextContent("foobar");
   UpdateAllLifecyclePhasesForTest();
   // Pass if no crash.
+}
+
+TEST_F(DeferredShapingTest, FragmentItemCache) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<p id="target" style="font-family:Times; width:100px">
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+  auto* target_box = GetLayoutBoxByElementId("target");
+  const LayoutUnit deferred_item_width =
+      (*target_box->PhysicalFragments().begin())
+          .Items()
+          ->Items()[0]
+          .Size()
+          .width;
+
+  ScrollAndWaitForIntersectionCheck(1800);
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+  EXPECT_NE(deferred_item_width, (*target_box->PhysicalFragments().begin())
+                                     .Items()
+                                     ->Items()[0]
+                                     .Size()
+                                     .width);
 }
 
 TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
