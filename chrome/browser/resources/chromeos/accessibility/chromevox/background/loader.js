@@ -12,7 +12,6 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('AutoScrollHandler');
 goog.require('AutomationObjectConstructorInstaller');
-goog.require('BackgroundKeyboardHandler');
 goog.require('BaseAutomationHandler');
 goog.require('BrailleCaptionsBackground');
 goog.require('BrailleCommandData');
@@ -54,6 +53,7 @@ goog.require('QueueMode');
 goog.require('TreeDumper');
 goog.require('TreePathRecoveryStrategy');
 goog.require('TtsInterface');
+
 goog.require('constants');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');

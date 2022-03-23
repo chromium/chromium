@@ -6,16 +6,6 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 
-goog.provide('BackgroundKeyboardHandler');
-
-goog.require('ChromeVoxState');
-goog.require('EventSourceState');
-goog.require('KeyCode');
-goog.require('MathHandler');
-goog.require('Output');
-goog.require('ChromeVoxKbHandler');
-goog.require('ChromeVoxPrefs');
-
 /**
  * @enum {string}
  * Internal pass through mode state (see usage below).
@@ -34,7 +24,7 @@ const KeyboardPassThroughState_ = {
   PENDING_SHORTCUT_KEYUPS: 'pending_shortcut_keyups'
 };
 
-BackgroundKeyboardHandler = class {
+export class BackgroundKeyboardHandler {
   constructor() {
     /** @private {!KeyboardPassThroughState_} */
     this.passThroughState_ = KeyboardPassThroughState_.NO_PASS_THROUGH;
@@ -136,4 +126,4 @@ BackgroundKeyboardHandler = class {
 
     return false;
   }
-};
+}

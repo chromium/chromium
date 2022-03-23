@@ -9,6 +9,14 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  * Test fixture for UserActionMonitor.
  */
 ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'BackgroundKeyboardHandler',
+        '/chromevox/background/keyboard_handler.js');
+  }
+
   /**
    * Returns the start node of the current ChromeVox range.
    * @return {AutomationNode}
