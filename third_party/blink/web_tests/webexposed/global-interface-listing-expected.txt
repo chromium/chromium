@@ -5061,6 +5061,17 @@ interface MIDIPort : EventTarget
     method constructor
     method open
     setter onstatechange
+interface ML
+    attribute @@toStringTag
+    method constructor
+    method createContext
+interface MLContext
+    attribute @@toStringTag
+    method constructor
+interface MLModelLoader
+    attribute @@toStringTag
+    method constructor
+    method load
 interface Magnetometer : Sensor
     attribute @@toStringTag
     getter x
@@ -5850,6 +5861,7 @@ interface Navigator
     getter mediaDevices
     getter mediaSession
     getter mimeTypes
+    getter ml
     getter onLine
     getter pdfViewerEnabled
     getter permissions

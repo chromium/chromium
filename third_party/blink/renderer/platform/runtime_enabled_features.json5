@@ -1414,6 +1414,10 @@
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
     },
     {
+      name: "MachineLearningModelLoader",
+      status: "experimental",
+    },
+    {
       name: "ManagedConfiguration",
       status: "stable",
     },
