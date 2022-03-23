@@ -1231,15 +1231,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="MobileStartup.ToolbarInflationTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeCleanerDialogDoneReason" separator="_">
-  <suffix name="Accepted" label="User accepted the prompt."/>
-  <suffix name="Canceled" label="User clicked the cancel button."/>
-  <suffix name="DetailsButtonClicked" label="User clicked the details button."/>
-  <suffix name="Dismissed"
-      label="User dismissed the prompt, for example by pressing ESC."/>
-  <affected-histogram name="SoftwareReporter.PromptDialog.TimeUntilDone"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ChromeCleanerFetchCompletedReason" separator="_">
   <suffix name="DownloadFailure"
       label="Download failed without an OK HTTP response code."/>
@@ -10017,17 +10008,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SoftwareReporter.MajorVersion"/>
   <affected-histogram name="SoftwareReporter.MemoryUsed"/>
   <affected-histogram name="SoftwareReporter.MinorVersion"/>
-  <affected-histogram name="SoftwareReporter.RunningTime"/>
   <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome2"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeRegistryError"/>
   <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep2"/>
-  <affected-histogram name="SoftwareReporter.Step"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SoftwareReporterInvocationType" separator="_">
-  <suffix name="Periodic" label="Periodic run of the reporter."/>
-  <suffix name="UserInitiated" label="User-initiated run of the reporter."/>
-  <affected-histogram name="SoftwareReporter.ReporterSequenceResult"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SpdyImpact" separator="_">

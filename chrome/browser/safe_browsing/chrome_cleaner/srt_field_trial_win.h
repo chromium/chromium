@@ -77,9 +77,6 @@ std::string GetSRTPromptGroupName();
 // Records a value for the SRT Prompt Histogram.
 void RecordSRTPromptHistogram(SRTPromptHistogramValue value);
 
-// Records a value for SoftwareReporter.PromptShownWithType Histogram
-void RecordPromptShownWithTypeHistogram(PromptTypeHistogramValue value);
-
 // Records a SoftwareReporter.PromptShown histogram with value false and
 // a SoftwareReporter.NoPromptReason histogram with the reason corresponding
 // to |value|.

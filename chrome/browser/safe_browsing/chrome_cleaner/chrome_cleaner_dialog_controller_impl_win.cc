@@ -79,7 +79,6 @@ void ChromeCleanerDialogControllerImpl::Accept(bool logs_enabled) {
   DCHECK(browser_);
 
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_ACCEPTED);
-  RecordCleanupStartedHistogram(CLEANUP_STARTED_FROM_PROMPT_DIALOG);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Accepted"));
 

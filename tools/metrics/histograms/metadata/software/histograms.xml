@@ -105,7 +105,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.CleanupStarted"
-    enum="SoftwareReporterCleanupStarted" expires_after="2022-08-25">
+    enum="SoftwareReporterCleanupStarted" expires_after="2022-03-16">
+  <obsolete>
+    Removed 03-2022 due to lack of use
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

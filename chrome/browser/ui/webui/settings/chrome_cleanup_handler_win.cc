@@ -238,8 +238,6 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::Value::List& args) {
   // The state is propagated to all open tabs and should be consistent.
   DCHECK_EQ(controller_->logs_enabled(profile_), allow_logs_upload);
 
-  safe_browsing::RecordCleanupStartedHistogram(
-      safe_browsing::CLEANUP_STARTED_FROM_PROMPT_IN_SETTINGS);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartCleanup"));
 

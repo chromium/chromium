@@ -194,8 +194,6 @@ ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread() {
         LaunchStatus::kLaunchSucceededFailedToWaitForCompletion);
   }
 
-  base::UmaHistogramSparse(
-      "SoftwareReporter.Cleaner.ExitCodeFromConnectedProcess", exit_code);
   return ProcessStatus(LaunchStatus::kSuccess, exit_code);
 }
 

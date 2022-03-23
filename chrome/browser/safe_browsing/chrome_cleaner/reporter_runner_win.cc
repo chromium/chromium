@@ -147,8 +147,6 @@ class UMAHistogramReporter {
   }
 
   void ReportExitCode(int exit_code) const {
-    RecordSparseHistogram("SoftwareReporter.ExitCode", exit_code);
-
     // Also report the exit code that the reporter writes to the registry.
     base::win::RegKey reporter_key;
     DWORD exit_code_in_registry;
