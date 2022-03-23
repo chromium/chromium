@@ -105,7 +105,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
@@ -961,14 +960,10 @@ void RemoveOriginTrialHintsFromAcceptCH(
     PersistAcceptCH(url::Origin::Create(url), delegate, client_hints);
   }
 
-  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies) &&
-      !base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial)) {
-    if (auto* cookie_manager = frame_tree_node->current_frame_host()
-                                   ->GetStoragePartition()
-                                   ->GetCookieManagerForBrowserProcess()) {
-      cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
-    }
+  if (auto* cookie_manager = frame_tree_node->current_frame_host()
+                                 ->GetStoragePartition()
+                                 ->GetCookieManagerForBrowserProcess()) {
+    cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
   }
 }
 

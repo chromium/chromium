@@ -126,6 +126,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   //
   // 2.  Choose the partitioned cookie with the most recent last_access_time.
   //
+  // This function is a no-op when PartitionedCookies are disabled or
+  // PartitionedCookiesBypassOriginTrial is enabled.
   // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
   // Trial ends.
   void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;

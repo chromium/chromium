@@ -32,7 +32,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -1062,12 +1061,9 @@ ParseAndPersistAcceptCHForNavigation(
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
   PersistAcceptCH(origin, delegate, persisted_hints);
-  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies) &&
-      !base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial) &&
-      std::find(persisted_hints.begin(), persisted_hints.end(),
+  if (std::find(persisted_hints.begin(), persisted_hints.end(),
                 WebClientHintsType::kPartitionedCookies) ==
-          persisted_hints.end()) {
+      persisted_hints.end()) {
     if (auto* cookie_manager = frame_tree_node->current_frame_host()
                                    ->GetStoragePartition()
                                    ->GetCookieManagerForBrowserProcess()) {

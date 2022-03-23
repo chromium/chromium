@@ -310,7 +310,8 @@ class SynchronousCookieManager {
 class CookieManagerTest : public testing::Test {
  public:
   CookieManagerTest() {
-    scoped_feature_list_.Init();
+    scoped_feature_list_.InitWithFeatures({net::features::kPartitionedCookies},
+                                          {});
     InitializeCookieService(nullptr, nullptr);
   }
 
@@ -3177,6 +3178,34 @@ TEST_F(CookieManagerTest, ConvertPartitionedCookiesToUnpartitioned) {
   EXPECT_EQ(4u, cookies.size());
   EXPECT_EQ("__Host-D", cookies[3].Name());
   EXPECT_TRUE(cookies[3].IsPartitioned());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {net::features::kPartitionedCookies,
+       net::features::kPartitionedCookiesBypassOriginTrial},
+      {});
+
+  // Should not convert partitioned cookies to unpartitioned when
+  // PartitionedCookiesBypassOriginTrial is enabled.
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-E", "0", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(),
+          /*secure=*/true, /*httponly=*/false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+          /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://first.com"))),
+      "https", true));
+  service()->ConvertPartitionedCookiesToUnpartitioned(GURL(kCookieHttpsURL));
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+
+  cookies = service_wrapper()->GetCookieList(
+      GURL(kCookieHttpsURL), net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(5u, cookies.size());
+  EXPECT_EQ("__Host-E", cookies[4].Name());
+  EXPECT_TRUE(cookies[4].IsPartitioned());
 }
 
 }  // namespace

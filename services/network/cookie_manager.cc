@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -465,6 +466,11 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
 }
 
 void CookieManager::ConvertPartitionedCookiesToUnpartitioned(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies) ||
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionedCookiesBypassOriginTrial)) {
+    return;
+  }
   cookie_store_->ConvertPartitionedCookiesToUnpartitioned(url);
 }
 
