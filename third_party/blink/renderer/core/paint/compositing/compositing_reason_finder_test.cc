@@ -92,6 +92,27 @@ TEST_P(CompositingReasonFinderTest, DontPromoteTrivial3DWithLowEndDevice) {
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
+TEST_P(CompositingReasonFinderTest, FixedElementShouldHaveCompositingReason) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .fixedDivStyle {
+      position: fixed;
+      width: 100px;
+      height: 100px;
+      border: 1px solid;
+    }
+    </style>
+    <body style="background-image: linear-gradient(grey, yellow);">
+      <div id="fixedDiv" class='fixedDivStyle'></div>
+    </body>
+  )HTML");
+
+  ScopedFixedElementsDontOverscrollForTest fixed_elements_dont_overscroll(true);
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
+}
+
 TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
   SetBodyInnerHTML(R"HTML(
     <style>
