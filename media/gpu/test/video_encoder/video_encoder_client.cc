@@ -17,6 +17,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
+#include "media/base/media_log.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/bitstream_helpers.h"

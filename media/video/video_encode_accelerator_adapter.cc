@@ -122,7 +122,7 @@ VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     : output_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       input_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_factories_(gpu_factories),
-      media_log_(media_log->Clone()),
+      media_log_(std::move(media_log)),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
       callback_task_runner_(std::move(callback_task_runner)) {
   DETACH_FROM_SEQUENCE(accelerator_sequence_checker_);

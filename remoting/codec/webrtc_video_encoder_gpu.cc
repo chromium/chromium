@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "media/video/video_encode_accelerator.h"

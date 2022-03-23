@@ -20,7 +20,6 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
-#include "media/base/media_util.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/video/picture.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
@@ -150,10 +149,6 @@ bool AndroidVideoEncodeAccelerator::Initialize(
   DCHECK(client);
 
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
-
-  // NullMediaLog silently and safely does nothing.
-  if (!media_log)
-    media_log = std::make_unique<media::NullMediaLog>();
 
   if (config.input_format != PIXEL_FORMAT_I420) {
     MEDIA_LOG(ERROR, media_log.get())

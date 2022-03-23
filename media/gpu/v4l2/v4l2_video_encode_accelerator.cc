@@ -31,7 +31,6 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_log.h"
-#include "media/base/media_util.h"
 #include "media/base/scopedfd_helper.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame_layout.h"
@@ -205,10 +204,6 @@ bool V4L2VideoEncodeAccelerator::Initialize(
 
   TRACE_EVENT0("media,gpu", "V4L2VEA::Initialize");
   VLOGF(2) << ": " << config.AsHumanReadableString();
-
-  // NullMediaLog silently and safely does nothing.
-  if (!media_log)
-    media_log = std::make_unique<media::NullMediaLog>();
 
   // V4L2VEA doesn't support temporal layers but we let it pass here to support
   // simulcast.

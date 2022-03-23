@@ -28,6 +28,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -724,7 +725,8 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
           ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
           : media::VideoEncodeAccelerator::Config::ContentType::kCamera,
       spatial_layers, inter_layer_pred);
-  if (!video_encoder_->Initialize(config, this)) {
+  if (!video_encoder_->Initialize(config, this,
+                                  std::make_unique<media::NullMediaLog>())) {
     LogAndNotifyError(FROM_HERE, "Error initializing video_encoder",
                       media::VideoEncodeAccelerator::kInvalidArgumentError);
     return;

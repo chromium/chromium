@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_log.h"
-#include "media/base/media_util.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_media_log_service.h"
@@ -138,10 +137,6 @@ bool MojoVideoEncodeAccelerator::Initialize(
   vea_.set_disconnect_handler(
       base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
                      base::Unretained(this)));
-
-  // NullMediaLog silently and safely does nothing.
-  if (!media_log)
-    media_log = std::make_unique<media::NullMediaLog>();
 
   // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
   // after `MojoVideoEncodeAccelerator` is destructed.

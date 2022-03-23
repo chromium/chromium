@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/base/bitrate.h"
+#include "media/base/media_log.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
 #include "ppapi/c/pp_errors.h"
