@@ -10,9 +10,9 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 
 import androidx.annotation.StringRes;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -30,9 +30,12 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         getActivity().setTitle(R.string.privacy_sandbox_learn_more_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.learn_more_preference);
-        Preference topicDescription = findPreference(TOPICS_DESCRIPTION_PREFERENCE);
+        LongSummaryTextMessagePreference topicDescription =
+                findPreference(TOPICS_DESCRIPTION_PREFERENCE);
         assert topicDescription != null;
-        topicDescription.setSelectable(true);
+        // The summary does not contain links, so we don't want it to be individually focussable
+        // when talkback is enabled.
+        topicDescription.setSummaryMovementMethod(null);
         topicDescription.setSummary(TextUtils.concat(
                 formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_1), "\n\n",
                 formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_2), "\n\n",

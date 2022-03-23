@@ -91,7 +91,9 @@ public class AdPersonalizationFragment
         for (Topic topic : currentTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(R.drawable.btn_close,
-                    R.string.privacy_sandbox_remove_interest_button_description);
+                    getResources().getString(
+                            R.string.privacy_sandbox_remove_interest_button_description,
+                            topic.getName()));
             preference.setDividerAllowedAbove(false);
             preference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(preference);

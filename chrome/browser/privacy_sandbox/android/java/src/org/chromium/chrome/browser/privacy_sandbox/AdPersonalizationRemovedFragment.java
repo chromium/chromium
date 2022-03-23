@@ -51,8 +51,10 @@ public class AdPersonalizationRemovedFragment
 
         for (Topic topic : PrivacySandboxBridge.getBlockedTopics()) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
-            preference.setImage(
-                    R.drawable.ic_add, R.string.privacy_sandbox_add_interest_button_description);
+            preference.setImage(R.drawable.ic_add,
+                    getResources().getString(
+                            R.string.privacy_sandbox_add_interest_button_description,
+                            topic.getName()));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(preference);

@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.ui.widget.ChromeImageButton;
@@ -20,7 +19,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  */
 public class ImageButtonPreference extends ChromeBasePreference implements View.OnClickListener {
     private @DrawableRes int mImage;
-    private @StringRes int mContentDescription;
+    private String mContentDescription;
 
     public ImageButtonPreference(Context context) {
         super(context);
@@ -35,7 +34,7 @@ public class ImageButtonPreference extends ChromeBasePreference implements View.
     /**
      * Set the image and content description for this preference.
      */
-    public void setImage(@DrawableRes int image, @StringRes int contentDescription) {
+    public void setImage(@DrawableRes int image, String contentDescription) {
         mImage = image;
         mContentDescription = contentDescription;
     }
@@ -50,9 +49,8 @@ public class ImageButtonPreference extends ChromeBasePreference implements View.
         super.onBindViewHolder(holder);
         ChromeImageButton imageButton = (ChromeImageButton) holder.findViewById(R.id.image_button);
         imageButton.setImageResource(mImage);
-        if (mContentDescription != 0) {
-            imageButton.setContentDescription(
-                    imageButton.getResources().getString(mContentDescription));
+        if (mContentDescription != null) {
+            imageButton.setContentDescription(mContentDescription);
         }
         imageButton.setOnClickListener(this);
     }

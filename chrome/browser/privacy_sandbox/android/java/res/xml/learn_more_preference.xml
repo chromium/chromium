@@ -9,6 +9,8 @@
     <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
         android:key="topics_description"
         android:title="@string/privacy_sandbox_topic_interests_subtitle"
+        android:selectable="false"
+        app:singleLineTitle="false"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>
