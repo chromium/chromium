@@ -128,6 +128,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryNudgeSessionReset;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryScreenshotNudge;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDesksCloseAll;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kContextualNudges;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCroshSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -593,6 +594,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryScreenshotNudgeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDesksCloseAllEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();

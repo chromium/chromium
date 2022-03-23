@@ -486,7 +486,7 @@ int DesksBarView::GetMiniViewIndex(const DeskMiniView* mini_view) const {
 
 void DesksBarView::OnHoverStateMayHaveChanged() {
   for (auto* mini_view : mini_views_)
-    mini_view->UpdateCloseButtonVisibility();
+    mini_view->UpdateDeskButtonVisibility();
 }
 
 void DesksBarView::OnGestureTap(const gfx::Rect& screen_rect,
@@ -808,7 +808,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
 
   for (auto* mini_view : mini_views_)
-    mini_view->UpdateCloseButtonVisibility();
+    mini_view->UpdateDeskButtonVisibility();
 
   // Switch to zero state, which happens if there would be one desk after
   // removal, unless we are viewing the desks templates grid.

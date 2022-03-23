@@ -18,6 +18,8 @@
 namespace ash {
 
 class CloseButton;
+class DeskActionContextMenu;
+class DeskActionView;
 class DeskNameView;
 class DeskPreviewView;
 class DesksBarView;
@@ -56,6 +58,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   const CloseButton* close_desk_button() const { return close_desk_button_; }
 
+  DeskActionView* desk_action_view() { return desk_action_view_; }
+
   DesksBarView* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
   DeskPreviewView* desk_preview() { return desk_preview_; }
@@ -75,12 +79,12 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // has the focus).
   bool IsDeskNameBeingModified() const;
 
-  // Updates the visibility state of the close button depending on whether this
+  // Updates the visibility state of the desk buttons depending on whether this
   // view is mouse hovered, or if switch access is enabled.
-  void UpdateCloseButtonVisibility();
+  void UpdateDeskButtonVisibility();
 
-  // Gesture tapping may affect the visibility of the close button. There's only
-  // one mini_view that shows the close button on long press at any time.
+  // Gesture tapping may affect the visibility of the desk buttons. There's only
+  // one mini_view that shows the desk buttons on long press at any time.
   // This is useful for touch-only UIs.
   void OnWidgetGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
@@ -91,6 +95,12 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   // Gets the preview border's insets.
   gfx::Insets GetPreviewBorderInsets() const;
+
+  bool IsPointOnMiniView(const gfx::Point& screen_location) const;
+
+  // Hides the `desk_action_view_` and opens `context_menu_`. Called when
+  // `desk_preview_` is right-clicked or long-pressed.
+  void OpenContextMenu();
 
   // views::View:
   const char* GetClassName() const override;
@@ -126,10 +136,17 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  bool IsPointOnMiniView(const gfx::Point& screen_location) const;
-
  private:
-  void OnCloseButtonPressed();
+  // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
+  // to false depending on whether the `kDesksCloseAll` feature is active, and
+  // then removes the desk.
+  // TODO(crbug.com/1308426): This function will take a boolean parameter when
+  // we add ability to close desk with all its windows.
+  void OnRemovingDesk();
+
+  // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
+  // visible.
+  void OnContextMenuClosed();
 
   void OnDeskPreviewPressed();
 
@@ -139,7 +156,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   DesksBarView* const owner_bar_;
 
   // The root window on which this mini_view is created.
-  aura::Window* root_window_;
+  aura::Window* const root_window_;
 
   // The associated desk. Can be null when the desk is deleted before this
   // mini_view completes its removal animation. See comment above
@@ -147,20 +164,32 @@ class ASH_EXPORT DeskMiniView : public views::View,
   Desk* desk_;  // Not owned.
 
   // The view that shows a preview of the desk contents.
-  DeskPreviewView* desk_preview_;
+  DeskPreviewView* desk_preview_ = nullptr;
 
   // The editable desk name.
-  DeskNameView* desk_name_view_;
+  DeskNameView* desk_name_view_ = nullptr;
 
   // The close button that shows on hover.
-  CloseButton* close_desk_button_;
+  CloseButton* close_desk_button_ = nullptr;
+
+  // When the Close-All flag is enabled, we store the hover interface for desk
+  // actions here.
+  DeskActionView* desk_action_view_ = nullptr;
+
+  // The context menu that appears when `desk_preview_` is right-clicked or
+  // long-pressed.
+  std::unique_ptr<DeskActionContextMenu> context_menu_;
 
   // True when this mini view is being animated to be removed from the bar.
   bool is_animating_to_remove_ = false;
 
-  // We force showing the close button when the mini_view is long pressed or
+  // We force showing desk buttons when the mini_view is long pressed or
   // tapped using touch gestures.
-  bool force_show_close_button_ = false;
+  bool force_show_desk_buttons_ = false;
+
+  // Prevents `desk_action_view_` from becoming visible while `context_menu_` is
+  // open.
+  bool is_context_menu_open_ = false;
 
   // When the DeskNameView is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.

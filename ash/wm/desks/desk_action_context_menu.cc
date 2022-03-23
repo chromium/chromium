@@ -27,7 +27,7 @@ enum CommandId {
 }  // namespace
 
 DeskActionContextMenu::DeskActionContextMenu(
-    std::u16string initial_combine_desks_target_name,
+    const std::u16string& initial_combine_desks_target_name,
     base::RepeatingClosure combine_desks_callback,
     base::RepeatingClosure close_all_callback,
     base::RepeatingClosure on_context_menu_closed_callback)
@@ -39,7 +39,7 @@ DeskActionContextMenu::DeskActionContextMenu(
   context_menu_model_.AddItemWithIcon(
       CommandId::kCombineDesks,
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION,
-                                 std::move(initial_combine_desks_target_name)),
+                                 initial_combine_desks_target_name),
       ui::ImageModel::FromVectorIcon(kCombineDesksIcon,
                                      ui::kColorAshSystemUIMenuIcon));
 
@@ -53,11 +53,11 @@ DeskActionContextMenu::DeskActionContextMenu(
 DeskActionContextMenu::~DeskActionContextMenu() = default;
 
 void DeskActionContextMenu::UpdateCombineDesksTargetName(
-    std::u16string new_combine_desks_target_name) {
+    const std::u16string& new_combine_desks_target_name) {
   context_menu_model_.SetLabel(
       CommandId::kCombineDesks,
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION,
-                                 std::move(new_combine_desks_target_name)));
+                                 new_combine_desks_target_name));
 }
 
 void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {

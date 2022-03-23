@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -390,7 +391,15 @@ void DeskPreviewView::Layout() {
 }
 
 bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
-  mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
+  // If we have a right click and the `kDesksCloseAll` feature is enabled, we
+  // should open the context menu.
+  if (features::IsDesksCloseAllEnabled() && event.IsRightMouseButton()) {
+    DeskNameView::CommitChanges(GetWidget());
+    mini_view_->OpenContextMenu();
+  } else {
+    mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
+  }
+
   return Button::OnMousePressed(event);
 }
 
@@ -410,6 +419,8 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     // Only long press can trigger drag & drop.
     case ui::ET_GESTURE_LONG_PRESS:
+      // TODO(crbug.com/1308780): Need to figure out how we can still maintain
+      // drag functionality while allowing long press to open the context menu.
       owner_bar->HandleLongPressEvent(mini_view_, *event);
       event->SetHandled();
       break;

@@ -308,6 +308,12 @@ const base::Feature kClipboardHistoryNudgeSessionReset{
 const base::Feature kClipboardHistoryScreenshotNudge{
     "ClipboardHistoryScreenshotNudge", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
+// with a button to close desk and windows and a button to combine desks (the
+// legacy behavior).
+const base::Feature kDesksCloseAll{"DesksCloseAll",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables contextual nudges for gesture education.
 const base::Feature kContextualNudges{"ContextualNudges",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1585,6 +1591,10 @@ bool IsClipboardHistoryEnabled() {
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
+}
+
+bool IsDesksCloseAllEnabled() {
+  return base::FeatureList::IsEnabled(kDesksCloseAll);
 }
 
 bool IsLauncherItemColorSyncEnabled() {
