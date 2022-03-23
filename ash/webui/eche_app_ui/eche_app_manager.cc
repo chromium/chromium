@@ -94,7 +94,8 @@ EcheAppManager::EcheAppManager(
           message_receiver_.get(),
           feature_status_provider_.get(),
           pref_service,
-          multidevice_setup_client)),
+          multidevice_setup_client,
+          connection_manager_.get())),
       stream_status_changed_function_(
           std::move(stream_status_changed_function)) {
   ash::GetNetworkConfigService(

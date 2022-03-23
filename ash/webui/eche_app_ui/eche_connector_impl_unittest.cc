@@ -39,6 +39,11 @@ class EcheConnectorImplTest : public testing::Test {
     fake_feature_status_provider_.SetStatus(feature_status);
   }
 
+  void SendNotAllowedMessage() {
+    proto::ExoMessage message;
+    connector_->SendMessage(message);
+  }
+
   FakeFeatureStatusProvider fake_feature_status_provider_;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   std::unique_ptr<EcheConnectorImpl> connector_;
@@ -79,39 +84,44 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisabled);
 
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+
+  connector_->SendAppsSetupRequest();
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
+  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 2u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetFeatureStatus(FeatureStatus::kConnecting);
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
 
-  connector_->SendAppsSetupRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
-
-  SetFeatureStatus(FeatureStatus::kDisconnected);
-  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
-
-  connector_->SendAppsSetupRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
-  EXPECT_EQ(connector_->GetMessageCount(), 2);
 
   SetFeatureStatus(FeatureStatus::kConnected);
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
 
-  connector_->SendAppsSetupRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 3u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 2u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 }
 
@@ -146,36 +156,44 @@ TEST_F(EcheConnectorImplTest, GetAppsAccessStateRequest) {
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisabled);
 
   connector_->GetAppsAccessStateRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(connector_->GetMessageCount(), 0);
+  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
 
-  SetFeatureStatus(FeatureStatus::kConnecting);
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
-
-  connector_->GetAppsAccessStateRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
-  SetFeatureStatus(FeatureStatus::kDisconnected);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
+  EXPECT_EQ(connector_->GetMessageCount(), 0);
+
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
 
   connector_->GetAppsAccessStateRequest();
 
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
-  EXPECT_EQ(connector_->GetMessageCount(), 2);
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
+  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 2u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetFeatureStatus(FeatureStatus::kConnecting);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetFeatureStatus(FeatureStatus::kConnected);
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
 
-  connector_->GetAppsAccessStateRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 3u);
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 2u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 }
 
@@ -189,6 +207,40 @@ TEST_F(EcheConnectorImplTest, Disconnect) {
 
   EXPECT_EQ(connector_->GetMessageCount(), 0);
   EXPECT_EQ(fake_connection_manager_.num_disconnect_calls(), 1u);
+}
+
+// Tests Send not allowed message with disabled feature status.
+TEST_F(EcheConnectorImplTest, SendMessage) {
+  SetFeatureStatus(FeatureStatus::kConnecting);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+
+  SendNotAllowedMessage();
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetFeatureStatus(FeatureStatus::kDisabled);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+
+  SendNotAllowedMessage();
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+
+  SendNotAllowedMessage();
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
+  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(connector_->GetMessageCount(), 1);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  SendNotAllowedMessage();
+
+  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
+  EXPECT_EQ(connector_->GetMessageCount(), 0);
 }
 
 }  // namespace eche_app

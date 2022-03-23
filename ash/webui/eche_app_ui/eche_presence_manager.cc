@@ -149,7 +149,7 @@ void EchePresenceManager::OnTimerExpired() {
     proto::ProximityPing ping;
     proto::ExoMessage message;
     *message.mutable_proximity_ping() = std::move(ping);
-    eche_connector_->SendMessage(message.SerializeAsString());
+    eche_connector_->SendMessage(message);
   }
 }
 

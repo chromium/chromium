@@ -7,6 +7,7 @@
 
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
+#include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/containers/queue.h"
 
 namespace ash {
@@ -19,7 +20,7 @@ class EcheConnector {
  public:
   virtual ~EcheConnector() = default;
 
-  virtual void SendMessage(const std::string& message) = 0;
+  virtual void SendMessage(const proto::ExoMessage message) = 0;
   virtual void Disconnect() = 0;
   virtual void SendAppsSetupRequest() = 0;
   virtual void GetAppsAccessStateRequest() = 0;

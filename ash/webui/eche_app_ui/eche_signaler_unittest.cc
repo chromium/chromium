@@ -100,11 +100,11 @@ class FakeEcheConnector : public EcheConnector {
   FakeEcheConnector(TaskRunner* task_runner) { task_runner_ = task_runner; }
   ~FakeEcheConnector() override = default;
 
-  const std::vector<std::string>& sent_messages() const {
+  const std::vector<proto::ExoMessage>& sent_messages() const {
     return sent_messages_;
   }
 
-  void SendMessage(const std::string& message) override {
+  void SendMessage(const proto::ExoMessage message) override {
     sent_messages_.push_back(message);
     task_runner_->Finish();
   }
@@ -116,7 +116,7 @@ class FakeEcheConnector : public EcheConnector {
 
  private:
   TaskRunner* task_runner_;
-  std::vector<std::string> sent_messages_;
+  std::vector<proto::ExoMessage> sent_messages_;
 };
 
 }  // namespace
@@ -149,12 +149,12 @@ class EcheSignalerTest : public testing::Test {
     return message;
   }
 
-  std::string getTearDownSiggnalingMessage() const {
+  proto::ExoMessage getTearDownSiggnalingMessage() const {
     proto::SignalingAction action;
     action.set_action_type(proto::ActionType::ACTION_TEAR_DOWN);
     proto::ExoMessage message;
     *message.mutable_action() = std::move(action);
-    return message.SerializeAsString();
+    return message;
   }
 
   TaskRunner task_runner_;
@@ -180,12 +180,14 @@ TEST_F(EcheSignalerTest, TestSendSignalingMessage) {
 TEST_F(EcheSignalerTest, TestTearDownSignaling) {
   FakeExchangerClient fake_exchanger_client;
   signaler_->Bind(fake_exchanger_client.CreatePendingReceiver());
-  std::string tear_down_signaling_message = getTearDownSiggnalingMessage();
+  proto::ExoMessage tear_down_signaling_message =
+      getTearDownSiggnalingMessage();
 
   fake_exchanger_client.TearDownSignaling();
   task_runner_.WaitForResult();
 
-  EXPECT_EQ(fake_connector_.sent_messages()[0], tear_down_signaling_message);
+  EXPECT_EQ(fake_connector_.sent_messages()[0].SerializeAsString(),
+            tear_down_signaling_message.SerializeAsString());
 }
 
 // Tests SetSignalingMessageObserver and observer should be triggered when

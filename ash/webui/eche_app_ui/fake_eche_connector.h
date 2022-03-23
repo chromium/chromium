@@ -27,7 +27,7 @@ class FakeEcheConnector : public EcheConnector {
     return attempt_nearby_connection_count_;
   }
 
-  void SendMessage(const std::string& message) override;
+  void SendMessage(const proto::ExoMessage message) override;
   void Disconnect() override;
   void SendAppsSetupRequest() override;
   void GetAppsAccessStateRequest() override;

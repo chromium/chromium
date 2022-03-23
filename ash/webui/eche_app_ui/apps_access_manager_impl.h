@@ -9,6 +9,7 @@
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
@@ -23,12 +24,15 @@ namespace eche_app {
 
 using AccessStatus =
     ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
+using ConnectionStatus = secure_channel::ConnectionManager::Status;
 
 // Implements AppsAccessManager by persisting the last-known
 // apps access value to user prefs.
-class AppsAccessManagerImpl : public AppsAccessManager,
-                              public EcheMessageReceiver::Observer,
-                              public FeatureStatusProvider::Observer {
+class AppsAccessManagerImpl
+    : public AppsAccessManager,
+      public EcheMessageReceiver::Observer,
+      public FeatureStatusProvider::Observer,
+      public secure_channel::ConnectionManager::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -37,7 +41,8 @@ class AppsAccessManagerImpl : public AppsAccessManager,
       EcheMessageReceiver* message_receiver,
       FeatureStatusProvider* feature_status_provider,
       PrefService* pref_service,
-      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      secure_channel::ConnectionManager* connection_manager);
 
   ~AppsAccessManagerImpl() override;
 
@@ -58,20 +63,27 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
+  // secure_channel::ConnectionManager::Observer:
+  void OnConnectionStatusChanged() override;
+
   void AttemptAppsAccessStateRequest();
   void GetAppsAccessStateRequest();
   void SendShowAppsAccessSetupRequest();
   void UpdateFeatureEnabledState(AccessStatus access_status);
   bool IsWaitingForAccessToInitiallyEnableApps() const;
+  bool IsEligibleForOnboarding() const;
+  void UpdateSetupOperationState();
 
   AccessStatus ComputeAppsAccessState(proto::AppsAccessState apps_access_state);
 
   FeatureStatus current_feature_status_;
+  ConnectionStatus current_connection_status_;
   EcheConnector* eche_connector_;
   EcheMessageReceiver* message_receiver_;
   FeatureStatusProvider* feature_status_provider_;
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  secure_channel::ConnectionManager* connection_manager_;
   bool initialized_ = false;
 };
 

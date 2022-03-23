@@ -28,7 +28,7 @@ void EcheSignaler::SendSignalingMessage(const std::vector<uint8_t>& signal) {
   request.set_data(encoded_signal);
   proto::ExoMessage message;
   *message.mutable_request() = std::move(request);
-  eche_connector_->SendMessage(message.SerializeAsString());
+  eche_connector_->SendMessage(message);
 }
 
 void EcheSignaler::SetSignalingMessageObserver(
@@ -44,7 +44,7 @@ void EcheSignaler::TearDownSignaling() {
   action.set_action_type(proto::ActionType::ACTION_TEAR_DOWN);
   proto::ExoMessage message;
   *message.mutable_action() = std::move(action);
-  eche_connector_->SendMessage(message.SerializeAsString());
+  eche_connector_->SendMessage(message);
 }
 
 void EcheSignaler::Bind(

@@ -10,7 +10,7 @@ namespace eche_app {
 FakeEcheConnector::FakeEcheConnector() = default;
 FakeEcheConnector::~FakeEcheConnector() = default;
 
-void FakeEcheConnector::SendMessage(const std::string& message) {}
+void FakeEcheConnector::SendMessage(const proto::ExoMessage message) {}
 void FakeEcheConnector::Disconnect() {}
 
 void FakeEcheConnector::SendAppsSetupRequest() {

@@ -38,22 +38,28 @@ AppsAccessManagerImpl::AppsAccessManagerImpl(
     EcheMessageReceiver* message_receiver,
     FeatureStatusProvider* feature_status_provider,
     PrefService* pref_service,
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    secure_channel::ConnectionManager* connection_manager)
     : eche_connector_(eche_connector),
       message_receiver_(message_receiver),
       feature_status_provider_(feature_status_provider),
       pref_service_(pref_service),
-      multidevice_setup_client_(multidevice_setup_client) {
+      multidevice_setup_client_(multidevice_setup_client),
+      connection_manager_(connection_manager) {
   DCHECK(message_receiver_);
   DCHECK(feature_status_provider_);
+  DCHECK(connection_manager_);
   current_feature_status_ = feature_status_provider_->GetStatus();
+  current_connection_status_ = connection_manager_->GetStatus();
   feature_status_provider_->AddObserver(this);
   message_receiver_->AddObserver(this);
+  connection_manager_->AddObserver(this);
 }
 
 AppsAccessManagerImpl::~AppsAccessManagerImpl() {
   feature_status_provider_->RemoveObserver(this);
   message_receiver_->RemoveObserver(this);
+  connection_manager_->RemoveObserver(this);
 }
 
 AccessStatus AppsAccessManagerImpl::GetAccessStatus() const {
@@ -62,20 +68,25 @@ AccessStatus AppsAccessManagerImpl::GetAccessStatus() const {
 }
 
 void AppsAccessManagerImpl::OnSetupRequested() {
-  switch (feature_status_provider_->GetStatus()) {
+  current_feature_status_ = feature_status_provider_->GetStatus();
+
+  if (!IsEligibleForOnboarding())
+    return;
+
+  switch (connection_manager_->GetStatus()) {
     // We're already connected, so request that the UI be shown on the phone.
-    case FeatureStatus::kConnected:
+    case ConnectionStatus::kConnected:
       SendShowAppsAccessSetupRequest();
       break;
     // We're already connecting, so wait until a connection succeeds before
     // trying to send a message
-    case FeatureStatus::kConnecting:
+    case ConnectionStatus::kConnecting:
       SetAppsSetupOperationStatus(
           AppsAccessSetupOperation::Status::kConnecting);
       break;
     // We are not connected, so try to reconnect it. We'll send the message in
-    // OnFeatureStatusChanged().
-    case FeatureStatus::kDisconnected:
+    // UpdateSetupOperationState().
+    case ConnectionStatus::kDisconnected:
       SetAppsSetupOperationStatus(
           AppsAccessSetupOperation::Status::kConnecting);
       eche_connector_->AttemptNearbyConnection();
@@ -90,8 +101,7 @@ void AppsAccessManagerImpl::OnGetAppsAccessStateResponseReceived(
   if (apps_access_state_response.result() == proto::Result::RESULT_NO_ERROR) {
     AccessStatus access_status =
         ComputeAppsAccessState(apps_access_state_response.apps_access_state());
-    // TODO(samchiu): Call UpdateFeatureEnabledState to Check access status and
-    // disable Eche feature.
+    UpdateFeatureEnabledState(access_status);
     SetAccessStatusInternal(access_status);
   }
 }
@@ -106,38 +116,19 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
 }
 
 void AppsAccessManagerImpl::OnFeatureStatusChanged() {
-  AttemptAppsAccessStateRequest();
+  UpdateSetupOperationState();
+}
 
-  if (!IsSetupOperationInProgress())
+void AppsAccessManagerImpl::OnConnectionStatusChanged() {
+  // When this feature is disabled, we will not be able to get
+  // OnFeatureStatusChanged() once the connection state changes, we need to
+  // listen to OnConnectionStatusChanged() and then trigger the onboarding
+  // process. For other cases (eg: feature enabled), OnFeatureStatusChanged has
+  // been called, so we return directly.
+  if (feature_status_provider_->GetStatus() != FeatureStatus::kDisabled)
     return;
 
-  const FeatureStatus previous_feature_status = current_feature_status_;
-  current_feature_status_ = feature_status_provider_->GetStatus();
-
-  if (previous_feature_status == current_feature_status_)
-    return;
-
-  // If we were previously connecting and could not establish a connection,
-  // send a timeout state.
-  if (previous_feature_status == FeatureStatus::kConnecting &&
-      current_feature_status_ != FeatureStatus::kConnected) {
-    SetAppsSetupOperationStatus(
-        AppsAccessSetupOperation::Status::kTimedOutConnecting);
-    return;
-  }
-
-  // If we were previously connected and are now no longer connected, send a
-  // connection disconnected state.
-  if (previous_feature_status == FeatureStatus::kConnected &&
-      current_feature_status_ != FeatureStatus::kConnected) {
-    SetAppsSetupOperationStatus(
-        AppsAccessSetupOperation::Status::kConnectionDisconnected);
-    return;
-  }
-
-  if (current_feature_status_ == FeatureStatus::kConnected) {
-    SendShowAppsAccessSetupRequest();
-  }
+  UpdateSetupOperationState();
 }
 
 void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
@@ -145,8 +136,6 @@ void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
           chromeos::features::kEchePhoneHubPermissionsOnboarding)) {
     PA_LOG(INFO) << "kEchePhoneHubPermissionsOnboarding flag is false, ignores "
                     "to get apps access status from phone.";
-    // TODO: Update to use the actual access value, instead of hard-coding to
-    // kAccessGranted.
     pref_service_->SetInteger(prefs::kAppsAccessStatus,
                               static_cast<int>(AccessStatus::kAccessGranted));
     return;
@@ -155,19 +144,27 @@ void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
   if (initialized_)
     return;
 
-  const FeatureStatus previous_feature_status = current_feature_status_;
   const FeatureStatus new_feature_status =
       feature_status_provider_->GetStatus();
+  const ConnectionStatus new_connection_status =
+      connection_manager_->GetStatus();
 
-  if (previous_feature_status == new_feature_status)
+  PA_LOG(INFO) << "AttemptAppsAccessStateRequest current_feature_status: "
+               << current_feature_status_ << " changed to "
+               << new_feature_status
+               << " current_connection_status: " << current_connection_status_
+               << " changed to " << new_connection_status;
+
+  if (current_feature_status_ == new_feature_status &&
+      current_connection_status_ == new_connection_status)
     return;
 
-  if (new_feature_status == FeatureStatus::kDisconnected) {
+  if (new_connection_status == ConnectionStatus::kDisconnected) {
     eche_connector_->AttemptNearbyConnection();
     return;
   }
-  if (new_feature_status == FeatureStatus::kConnected ||
-      new_feature_status == FeatureStatus::kConnecting) {
+  if (new_connection_status == ConnectionStatus::kConnected ||
+      new_connection_status == ConnectionStatus::kConnecting) {
     GetAppsAccessStateRequest();
   }
 }
@@ -220,6 +217,10 @@ AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState(
 
 void AppsAccessManagerImpl::UpdateFeatureEnabledState(
     AccessStatus access_status) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kEchePhoneHubPermissionsOnboarding))
+    return;
+
   const FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kEche);
   switch (access_status) {
@@ -259,5 +260,56 @@ bool AppsAccessManagerImpl::IsWaitingForAccessToInitiallyEnableApps() const {
              FeatureState::kEnabledByUser;
 }
 
+void AppsAccessManagerImpl::UpdateSetupOperationState() {
+  AttemptAppsAccessStateRequest();
+
+  if (!IsSetupOperationInProgress())
+    return;
+
+  const FeatureStatus previous_feature_status = current_feature_status_;
+  current_feature_status_ = feature_status_provider_->GetStatus();
+
+  const ConnectionStatus previous_connection_status =
+      current_connection_status_;
+  current_connection_status_ = connection_manager_->GetStatus();
+
+  if (previous_feature_status == current_feature_status_ &&
+      previous_connection_status == current_connection_status_)
+    return;
+
+  // If we were previously connecting and could not establish a connection,
+  // send a timeout state.
+  if (previous_connection_status == ConnectionStatus::kConnecting &&
+      (current_connection_status_ != ConnectionStatus::kConnected ||
+       !IsEligibleForOnboarding())) {
+    SetAppsSetupOperationStatus(
+        AppsAccessSetupOperation::Status::kTimedOutConnecting);
+    return;
+  }
+
+  // If we were previously connected and are now no longer connected, send a
+  // connection disconnected state.
+  if (previous_connection_status == ConnectionStatus::kConnected &&
+      (current_connection_status_ != ConnectionStatus::kConnected ||
+       !IsEligibleForOnboarding())) {
+    SetAppsSetupOperationStatus(
+        AppsAccessSetupOperation::Status::kConnectionDisconnected);
+    return;
+  }
+
+  if (!IsEligibleForOnboarding())
+    return;
+
+  if (current_connection_status_ == ConnectionStatus::kConnected) {
+    SendShowAppsAccessSetupRequest();
+  }
+}
+
+bool AppsAccessManagerImpl::IsEligibleForOnboarding() const {
+  return current_feature_status_ == FeatureStatus::kConnected ||
+         current_feature_status_ == FeatureStatus::kConnecting ||
+         current_feature_status_ == FeatureStatus::kDisconnected ||
+         current_feature_status_ == FeatureStatus::kDisabled;
+}
 }  // namespace eche_app
 }  // namespace ash
