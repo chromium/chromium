@@ -315,10 +315,12 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
             cell_block_constraint.effective_rowspan > 1 ? cell_block_size
                                                         : kIndefiniteSize;
 
-        data->cells.emplace_back(cell_block_constraint.borders,
-                                 rowspan_block_size,
-                                 cell_block_constraint.column_index,
-                                 is_initial_block_size_indefinite);
+        data->cells.emplace_back(
+            cell_block_constraint.borders, rowspan_block_size,
+            cell_block_constraint.column_index,
+            is_initial_block_size_indefinite,
+            cell_block_constraint
+                .has_descendant_that_depends_on_percentage_block_size);
       }
     }
   }

@@ -1650,6 +1650,7 @@ virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-after-table-
 virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-after-table-cell-child.html [ Pass ]
 virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-before-table-cell.html [ Pass ]
 virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-before-table-cell-child.html [ Pass ]
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/table-cell-expansion-003.html [ Pass ]
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-000.html [ Failure ]
@@ -4321,6 +4322,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/break-after-table-cell.html [
 crbug.com/1078927 external/wpt/css/css-break/table/break-after-table-cell-child.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell-child.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/table-cell-expansion-003.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
 crbug.com/1156312 external/wpt/css/css-break/widows-orphans-017.html [ Failure ]

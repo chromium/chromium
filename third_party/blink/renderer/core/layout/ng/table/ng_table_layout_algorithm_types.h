@@ -122,16 +122,21 @@ class CORE_EXPORT NGTableTypes {
     wtf_size_t column_index;
     wtf_size_t effective_rowspan;
     bool is_constrained;  // True if this cell has a specified block-size.
-    CellBlockConstraint(LayoutUnit min_block_size,
-                        NGBoxStrut borders,
-                        wtf_size_t column_index,
-                        wtf_size_t effective_rowspan,
-                        bool is_constrained)
+    bool has_descendant_that_depends_on_percentage_block_size;
+    CellBlockConstraint(
+        LayoutUnit min_block_size,
+        NGBoxStrut borders,
+        wtf_size_t column_index,
+        wtf_size_t effective_rowspan,
+        bool is_constrained,
+        bool has_descendant_that_depends_on_percentage_block_size)
         : min_block_size(min_block_size),
           borders(borders),
           column_index(column_index),
           effective_rowspan(effective_rowspan),
-          is_constrained(is_constrained) {}
+          is_constrained(is_constrained),
+          has_descendant_that_depends_on_percentage_block_size(
+              has_descendant_that_depends_on_percentage_block_size) {}
   };
 
   // RowspanCells span multiple rows.

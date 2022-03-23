@@ -68,18 +68,23 @@ class NGTableConstraintSpaceData
     Cell(NGBoxStrut borders,
          LayoutUnit rowspan_block_size,
          wtf_size_t start_column,
-         bool is_initial_block_size_indefinite)
+         bool is_initial_block_size_indefinite,
+         bool has_descendant_that_depends_on_percentage_block_size)
         : borders(borders),
           rowspan_block_size(rowspan_block_size),
           start_column(start_column),
-          is_initial_block_size_indefinite(is_initial_block_size_indefinite) {}
+          is_initial_block_size_indefinite(is_initial_block_size_indefinite),
+          has_descendant_that_depends_on_percentage_block_size(
+              has_descendant_that_depends_on_percentage_block_size) {}
 
     bool operator==(const Cell& other) const {
       return borders == other.borders &&
              rowspan_block_size == other.rowspan_block_size &&
              start_column == other.start_column &&
              is_initial_block_size_indefinite ==
-                 other.is_initial_block_size_indefinite;
+                 other.is_initial_block_size_indefinite &&
+             has_descendant_that_depends_on_percentage_block_size ==
+                 other.has_descendant_that_depends_on_percentage_block_size;
     }
     bool operator!=(const Cell& other) const { return !(*this == other); }
 
@@ -89,6 +94,7 @@ class NGTableConstraintSpaceData
     const LayoutUnit rowspan_block_size;
     const wtf_size_t start_column;
     const bool is_initial_block_size_indefinite;
+    const bool has_descendant_that_depends_on_percentage_block_size;
   };
 
   bool IsTableSpecificDataEqual(const NGTableConstraintSpaceData& other) const {

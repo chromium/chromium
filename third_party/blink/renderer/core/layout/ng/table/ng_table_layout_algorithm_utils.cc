@@ -225,18 +225,22 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       effective_rowspan = std::min(max_rows, effective_rowspan);
     }
     bool has_rowspan = effective_rowspan > 1;
+    bool has_descendant_that_depends_on_percentage_block_size =
+        layout_result->HasDescendantThatDependsOnPercentageBlockSize();
 
     NGTableTypes::CellBlockConstraint cell_block_constraint = {
-        fragment.BlockSize(), cell_borders,
-        colspan_cell_tabulator->CurrentColumn(), effective_rowspan,
-        cell_specified_block_length.IsFixed()};
+        fragment.BlockSize(),
+        cell_borders,
+        colspan_cell_tabulator->CurrentColumn(),
+        effective_rowspan,
+        cell_specified_block_length.IsFixed(),
+        has_descendant_that_depends_on_percentage_block_size};
     colspan_cell_tabulator->ProcessCell(cell);
     cell_block_constraints->push_back(cell_block_constraint);
     is_constrained |= cell_block_constraint.is_constrained && !has_rowspan;
     row_baseline_tabulator.ProcessCell(
         fragment, NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-        has_rowspan,
-        layout_result->HasDescendantThatDependsOnPercentageBlockSize());
+        has_rowspan, has_descendant_that_depends_on_percentage_block_size);
 
     // Compute cell's css block size.
     absl::optional<LayoutUnit> cell_css_block_size;
