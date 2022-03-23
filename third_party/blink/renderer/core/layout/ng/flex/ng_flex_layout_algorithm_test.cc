@@ -209,22 +209,14 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
-  const String& body_content = R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="columns: 2; height: 300px; width: 300px; background: orange;">
       <div style="display: flex; background: blue;" id=flexbox>
         <div style="width: 100px; height: 300px; background: grey;"></div>
       </div>
     </div>
-  )HTML";
-  // TODO(crbug.com/660611): Remove next 6 lines when flex fragmentation ships.
-  SetBodyInnerHTML(body_content);
-  UpdateAllLifecyclePhasesForTest();
-  LayoutObject* flexbox = GetLayoutObjectByElementId("flexbox");
-  EXPECT_NE(flexbox, nullptr);
-  if (!flexbox->IsLayoutNGFlexibleBox())
-    return;
+  )HTML");
   // We don't currently set DevtoolsFlexInfo when fragmenting.
-  const DevtoolsFlexInfo* devtools = LayoutForDevtools(body_content);
   DCHECK(!devtools);
 }
 

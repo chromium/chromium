@@ -1347,6 +1347,7 @@
       // https://drafts.csswg.org/css-flexbox-1/#pagination
       name: "LayoutNGFlexFragmentation",
       depends_on: ["LayoutNG"],
+      status: "test",
     },
     {
       // Traverse the fragment tree when painting and hit-testing, instead of

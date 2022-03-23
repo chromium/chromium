@@ -239,12 +239,6 @@
     "args": ["--disable-features=SchemefulSameSite"]
   },
   {
-    "prefix": "layout_ng_flex_frag",
-    "bases": ["external/wpt/css/css-break/flexbox",
-              "fast/multicol/flexbox"],
-    "args": ["--enable-blink-features=LayoutNGFlexFragmentation"]
-  },
-  {
     "prefix": "layout_ng_table_frag",
     "bases": ["external/wpt/css/css-break/table",
               "external/wpt/css/css-multicol/table"],
