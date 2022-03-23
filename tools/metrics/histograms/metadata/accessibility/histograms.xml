@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak" enum="BooleanEnabled"
-    expires_after="2022-04-10">
+    expires_after="2023-03-23">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
-    enum="BooleanEnabled" expires_after="2022-05-01">
+    enum="BooleanEnabled" expires_after="2023-03-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2022-04-17">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.EnhancedNetworkVoices"
-    enum="BooleanEnabled" expires_after="2022-06-30">
+    enum="BooleanEnabled" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -646,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.NavigationControls"
-    enum="BooleanEnabled" expires_after="2022-04-03">
+    enum="BooleanEnabled" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosSelectToSpeak.OverrideSpeechRateMultiplier"
     enum="CrosSelectToSpeakOverrideSpeechRateMultiplier"
-    expires_after="2022-04-24">
+    expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -671,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2022-04-24">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2022-05-01">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -693,7 +693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.StartSpeechMethod"
-    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2022-04-03">
+    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2023-03-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -704,7 +704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.StateChangeEvent"
-    enum="CrosSelectToSpeakStateChangeEvent" expires_after="2022-04-03">
+    enum="CrosSelectToSpeakStateChangeEvent" expires_after="2023-03-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.TtsEngineUsed"
-    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2022-06-30">
+    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2023-03-23">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
