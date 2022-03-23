@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1209796539517632982">שרתי שמות אוטומטיים</translation>
 <translation id="1210831758834677569">לאו</translation>
+<translation id="1223825810409523901">‏תוסף Chrome</translation>
 <translation id="1243314992276662751">העלאה</translation>
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">אין אישור לשנות את תצורת הרשתות המשותפות</translation>
 <translation id="1665611772925418501">הקובץ לא ניתן לשינוי.</translation>
 <translation id="1673103856845176271">לא היתה אפשרות לגשת לקובץ מסיבות אבטחה.</translation>
+<translation id="16762847117768727">‏תמונת ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">רוכב אופניים</translation>
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
@@ -812,6 +814,7 @@
 <translation id="7925686952655276919">אין להשתמש בנתונים ניידים עבור סנכרון</translation>
 <translation id="7928710562641958568">הוצאת המכשיר</translation>
 <translation id="7943385054491506837">‏ארה"ב – Colemak</translation>
+<translation id="7948417415021769876">‏ארכיון 7z</translation>
 <translation id="7953739707111622108">לא ניתן לפתוח מכשיר זה משום שמערכת הקבצים שלו לא זוהתה.</translation>
 <translation id="7969525169268594403">סלובנית</translation>
 <translation id="7972920761225148017">צרפתית (שוויץ)</translation>
@@ -861,6 +864,7 @@
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8372852072747894550">יוונית</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
+<translation id="8387733224523483503">הקובץ <ph name="FILE_NAME" /> חולץ.</translation>
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8408068190360279472">רשת <ph name="NETWORK_TYPE" />, מתבצעת התחברות</translation>
 <translation id="8425213833346101688">שינוי</translation>
@@ -955,6 +959,7 @@
 <translation id="9174050671906956834">פריטים שבאשפה יימחקו באופן סופי לאחר 30 יום.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">קזחית</translation>
+<translation id="9200427192836333033">חולצו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>

@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Doğrulama təsdiqi uzaqdan ləğv edildi</translation>
 <translation id="4394214039309501350">Xarici keçid</translation>
 <translation id="4401287888955153199">Hamısını çıxarın</translation>
+<translation id="4410695710508688828">Çıxarılma əməliyyatı alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
