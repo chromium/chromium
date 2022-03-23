@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_switches.h"

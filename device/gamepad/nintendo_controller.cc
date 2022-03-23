@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 

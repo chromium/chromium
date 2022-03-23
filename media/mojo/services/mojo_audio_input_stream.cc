@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {

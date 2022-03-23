@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 

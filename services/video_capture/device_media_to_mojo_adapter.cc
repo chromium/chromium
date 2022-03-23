@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"

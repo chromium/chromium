@@ -4,6 +4,7 @@
 
 #include "services/media_session/audio_focus_request.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "services/media_session/audio_focus_manager.h"
 
 namespace media_session {

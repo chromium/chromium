@@ -13,6 +13,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"

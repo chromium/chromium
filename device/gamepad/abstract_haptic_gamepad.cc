@@ -5,6 +5,7 @@
 #include "device/gamepad/abstract_haptic_gamepad.h"
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 
 namespace device {
