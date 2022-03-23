@@ -983,7 +983,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
         A list of interests will appear here as you browse the web
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
-        Interest you removed will appear here
+        Interests you removed will appear here
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_CATEGORY" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
         Sites you visit that define your interests
