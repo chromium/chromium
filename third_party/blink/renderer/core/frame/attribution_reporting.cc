@@ -38,6 +38,9 @@ ScriptPromise HandleRegisterResult(
     case AttributionSrcLoader::RegisterResult::kUntrustworthyOrigin:
       exception_state.ThrowTypeError("URL must have a trustworthy origin.");
       break;
+    case AttributionSrcLoader::RegisterResult::kFailedToRegister:
+      exception_state.ThrowTypeError("Failed to register.");
+      break;
   }
 
   return ScriptPromise();

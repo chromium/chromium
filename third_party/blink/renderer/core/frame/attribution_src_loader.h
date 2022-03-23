@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 
+#include <stddef.h>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -34,6 +36,7 @@ class CORE_EXPORT AttributionSrcLoader
     kNotAllowed,
     kInsecureContext,
     kUntrustworthyOrigin,
+    kFailedToRegister,
   };
 
   explicit AttributionSrcLoader(LocalFrame* frame);
@@ -61,6 +64,8 @@ class CORE_EXPORT AttributionSrcLoader
   absl::optional<WebImpression> RegisterNavigation(const KURL& attribution_src);
 
   void Trace(Visitor* visitor) const;
+
+  static constexpr size_t kMaxConcurrentRequests = 30;
 
  private:
   // Represents what events are able to be registered from an attributionsrc.
