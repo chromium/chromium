@@ -17,7 +17,6 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
-#include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -575,10 +574,16 @@ void AmbientController::OnEnabledPrefChanged() {
             &AmbientController::OnPhotoRefreshIntervalPrefChanged,
             weak_ptr_factory_.GetWeakPtr()));
 
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientAnimationTheme,
+        base::BindRepeating(&AmbientController::OnAnimationThemePrefChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+
     // Trigger the callbacks manually the first time to init AmbientUiModel.
     OnLockScreenInactivityTimeoutPrefChanged();
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
+    OnAnimationThemePrefChanged();
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
@@ -604,7 +609,8 @@ void AmbientController::OnEnabledPrefChanged() {
     for (const auto* pref_name :
          {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
-          ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds}) {
+          ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+          ambient::prefs::kAmbientAnimationTheme}) {
       if (pref_change_registrar_->IsObserved(pref_name))
         pref_change_registrar_->Remove(pref_name);
     }
@@ -617,6 +623,7 @@ void AmbientController::OnEnabledPrefChanged() {
       fingerprint_observer_receiver_.reset();
 
     ambient_photo_controller_.reset();
+    current_theme_from_pref_.reset();
   }
 }
 
@@ -648,6 +655,53 @@ void AmbientController::OnPhotoRefreshIntervalPrefChanged() {
   ambient_ui_model_.SetPhotoRefreshInterval(
       base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds)));
+}
+
+void AmbientController::OnAnimationThemePrefChanged() {
+  absl::optional<AmbientAnimationTheme> previous_theme_from_pref =
+      current_theme_from_pref_;
+  DCHECK(GetPrimaryUserPrefService());
+  int current_theme_as_int = GetPrimaryUserPrefService()->GetInteger(
+      ambient::prefs::kAmbientAnimationTheme);
+  // Gracefully handle pref having invalid value in case pref storage is
+  // corrupted somehow.
+  if (current_theme_as_int < 0 ||
+      current_theme_as_int >
+          static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
+    LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
+                 << current_theme_as_int << ". Default to "
+                 << kDefaultAmbientAnimationTheme;
+    current_theme_as_int = static_cast<int>(kDefaultAmbientAnimationTheme);
+  }
+  current_theme_from_pref_ =
+      static_cast<AmbientAnimationTheme>(current_theme_as_int);
+
+  if (previous_theme_from_pref.has_value()) {
+    DVLOG(4) << "AmbientAnimationTheme changed from "
+             << *previous_theme_from_pref << " to "
+             << *current_theme_from_pref_;
+    // For a given topic category, the topics downloaded from IMAX and saved to
+    // cache differ from theme to theme:
+    // 1) Slideshow mode keeps primary/related photos paired within a topic,
+    //    whereas animated themes split the photos into 2 separate topics.
+    // 2) The resolution of the photos downloaded from FIFE may differ between
+    //    themes, depending on the image assets' sizes in the animation file.
+    // For this reason, it is better to not re-use the cache when switching
+    // between themes.
+    //
+    // There are corner cases here where the theme may change and the program
+    // crashes before the cache gets cleared below. This is intentionally not
+    // accounted for because it's not worth the added complexity. If this
+    // should happen, re-using the cache will still work without fatal behavior.
+    // The UI may just not be optimal. Furthermore, the cache gradually gets
+    // overwritten with topics reflecting the new theme anyways, so ambient mode
+    // should not be stuck with a mismatched cache indefinitely.
+    DCHECK(ambient_photo_controller_);
+    ambient_photo_controller_->ClearCache();
+  } else {
+    DVLOG(4) << "AmbientAnimationTheme initialized to "
+             << *current_theme_from_pref_;
+  }
 }
 
 void AmbientController::RequestAccessToken(
@@ -766,20 +820,8 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
     // the animation. They do not turn on the dedicated animation experiment
     // flag as that is only intended for developers who want to bypass the hub.
     // If the hub is disabled, fallback to the default theme.
-    DCHECK(GetPrimaryUserPrefService());
-    int current_theme_as_int = GetPrimaryUserPrefService()->GetInteger(
-        ambient::prefs::kAmbientAnimationTheme);
-    // Gracefully handle pref having invalid value in case pref storage is
-    // corrupted somehow.
-    if (current_theme_as_int < 0 ||
-        current_theme_as_int >
-            static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
-      LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
-                   << current_theme_as_int << ". Default to "
-                   << kDefaultAmbientAnimationTheme;
-    } else {
-      current_theme = static_cast<AmbientAnimationTheme>(current_theme_as_int);
-    }
+    DCHECK(current_theme_from_pref_);
+    current_theme = *current_theme_from_pref_;
   }
   DVLOG(4) << "Loaded ambient theme " << current_theme;
 

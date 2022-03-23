@@ -15,6 +15,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_handler.h"
@@ -180,6 +182,7 @@ class ASH_EXPORT AmbientController
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
+  void OnAnimationThemePrefChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;
@@ -240,6 +243,10 @@ class ASH_EXPORT AmbientController
   // Null if the slideshow theme is active.
   std::unique_ptr<AmbientAnimationStaticResources>
       pending_animation_static_resources_;
+
+  // Not set until the AmbientAnimationTheme is initially read from pref
+  // storage when ambient mode is enabled.
+  absl::optional<AmbientAnimationTheme> current_theme_from_pref_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

@@ -199,8 +199,6 @@ void AmbientBackendModel::OnImagesReadyTimeoutFired() {
 void AmbientBackendModel::AddNextImage(
     const PhotoWithDetails& photo_with_details) {
   DCHECK(!photo_with_details.IsNull());
-  DCHECK(!photo_config_.should_split_topics ||
-         photo_with_details.related_photo.isNull());
 
   ResetImageFailures();
 
