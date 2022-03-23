@@ -739,9 +739,14 @@ class LocalDeviceInstrumentationTestRun(
           try:
             if not os.path.exists(self._test_instance.coverage_directory):
               os.makedirs(self._test_instance.coverage_directory)
-            device.PullFile(coverage_device_file,
-                            self._test_instance.coverage_directory)
-            device.RemovePath(coverage_device_file, True)
+            # Retries add time to test execution.
+            if device.PathExists(coverage_device_file, retries=0):
+              device.PullFile(coverage_device_file,
+                              self._test_instance.coverage_directory)
+              device.RemovePath(coverage_device_file, True)
+            else:
+              logging.warning('Coverage file does not exist: %s',
+                              coverage_device_file)
           except (OSError, base_error.BaseError) as e:
             logging.warning('Failed to handle coverage data after tests: %s', e)
 
