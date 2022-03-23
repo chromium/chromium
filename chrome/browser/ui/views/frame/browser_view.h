@@ -481,6 +481,8 @@ class BrowserView : public BrowserWindow,
   bool IsTabStripEditable() const override;
   bool IsToolbarVisible() const override;
   bool IsToolbarShowing() const override;
+  bool IsLocationBarVisible() const override;
+
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override;

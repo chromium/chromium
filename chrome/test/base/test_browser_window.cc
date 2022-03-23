@@ -235,6 +235,10 @@ bool TestBrowserWindow::IsToolbarShowing() const {
   return false;
 }
 
+bool TestBrowserWindow::IsLocationBarVisible() const {
+  return false;
+}
+
 ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
     content::WebContents* contents,
     translate::TranslateStep step,

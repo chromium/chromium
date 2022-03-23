@@ -658,6 +658,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       FocusToolbar(browser_);
       break;
     case IDC_FOCUS_LOCATION:
+      if (!window()->IsLocationBarVisible())
+        break;
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Location"));
       FocusLocationBar(browser_);
       break;

@@ -1750,6 +1750,8 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
   if (!IsActive())
     return;
 #endif
+  if (!IsLocationBarVisible())
+    return;
 
   LocationBarView* location_bar = GetLocationBarView();
   location_bar->FocusLocation(is_user_initiated);
@@ -2154,6 +2156,11 @@ bool BrowserView::IsToolbarVisible() const {
 
 bool BrowserView::IsToolbarShowing() const {
   return IsToolbarVisible();
+}
+
+bool BrowserView::IsLocationBarVisible() const {
+  return browser_->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR) &&
+         GetLocationBarView()->GetVisible();
 }
 
 void BrowserView::ShowUpdateChromeDialog() {

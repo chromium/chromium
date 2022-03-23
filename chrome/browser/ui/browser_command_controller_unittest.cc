@@ -280,6 +280,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   }
   void ExitFullscreen() override { fullscreen_ = false; }
   bool IsToolbarShowing() const override { return toolbar_showing_; }
+  bool IsLocationBarVisible() const override { return true; }
 
   ExclusiveAccessContext* GetExclusiveAccessContext() override { return this; }
 

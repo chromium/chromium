@@ -392,6 +392,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Visible() functions are renamed to Available().
   virtual bool IsToolbarShowing() const = 0;
 
+  // Returns whether the location bar is visible.
+  virtual bool IsLocationBarVisible() const = 0;
+
   // Shows the dialog for a sharing feature.
   virtual SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                            SharingDialogData data) = 0;
