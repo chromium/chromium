@@ -22,8 +22,7 @@
   <script defer src="state.js"></script>
   <script defer src="infocard-ui.js"></script>
   <script defer src="tree-ui.js"></script>
-  <!-- Async so that it does not slow down loads that do not require it. -->
-  <script defer async src="https://apis.google.com/js/api.js"
+  <script defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};onAuthScriptLoaded()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">
   </script>
