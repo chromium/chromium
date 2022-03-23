@@ -20,7 +20,9 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -34,7 +36,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
@@ -917,6 +921,60 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       "at 'chrome://trusted/web_ui_dedicated_worker.js' cannot be accessed "
       "from origin 'chrome-untrusted://untrusted'.";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
+}
+
+class WebUIFencedFrameBrowserTest : public WebUIImplBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebUIImplBrowserTest::SetUpOnMainThread();
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->AddDefaultHandlers(GetTestDataFilePath());
+  }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Test that creates a fenced frame and navigates to a WebUI URL.
+// Ensures that it is blocked.
+IN_PROC_BROWSER_TEST_F(WebUIFencedFrameBrowserTest, RequestBlocked) {
+  ASSERT_TRUE(https_server()->Start());
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL secure_url = https_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(web_contents, secure_url));
+
+  // Load a fenced frame.
+  const GURL fenced_frame_url(
+      https_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(web_contents->GetMainFrame(),
+                                                   fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_rfh);
+
+  std::vector<FencedFrame*> fenced_frames =
+      web_contents->GetMainFrame()->GetFencedFrames();
+  ASSERT_EQ(1u, fenced_frames.size());
+
+  // Now navigate the fenced frame to a WebUI URL.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  FencedFrame* fenced_frame = fenced_frames.back();
+  TestFrameNavigationObserver fenced_frame_observer(fenced_frame_rfh);
+  fenced_frame->Navigate(web_ui_url, base::TimeTicks::Now());
+  fenced_frame_observer.WaitForCommit();
+
+  // The navigation fails because WebUI doesn't have 'Supports-Loading-Mode'
+  EXPECT_FALSE(fenced_frame_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::Error::ERR_BLOCKED_BY_RESPONSE,
+            fenced_frame_observer.last_net_error_code());
 }
 
 }  // namespace content
