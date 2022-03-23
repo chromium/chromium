@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -158,12 +161,24 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
     [self updateSwitchForPermission:permission tableViewLoaded:NO];
   }
 
-  TableViewLinkHeaderFooterItem* permissionsDescription =
-      [[TableViewLinkHeaderFooterItem alloc]
+  TableViewAttributedStringHeaderFooterItem* permissionsDescription =
+      [[TableViewAttributedStringHeaderFooterItem alloc]
           initWithType:ItemTypePermissionsDescription];
-  permissionsDescription.text = l10n_util::GetNSStringF(
-      IDS_IOS_PAGE_INFO_PERMISSIONS_DESCRIPTION,
+  NSString* description = l10n_util::GetNSStringF(
+      IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION,
       base::SysNSStringToUTF16(self.pageInfoSecurityDescription.siteURL));
+  NSMutableAttributedString* descriptionAttributedString =
+      [[NSMutableAttributedString alloc]
+          initWithAttributedString:PutBoldPartInString(
+                                       description,
+                                       kTableViewSublabelFontStyle)];
+  [descriptionAttributedString
+      addAttributes:@{
+        NSForegroundColorAttributeName :
+            [UIColor colorNamed:kTextSecondaryColor]
+      }
+              range:NSMakeRange(0, descriptionAttributedString.length)];
+  permissionsDescription.attributedString = descriptionAttributedString;
   [self.tableViewModel setFooter:permissionsDescription
         forSectionWithIdentifier:SectionIdentifierPermissions];
 }

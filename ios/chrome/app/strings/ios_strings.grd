@@ -1585,9 +1585,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_OFFLINE_TITLE" desc="Title of the message to display in the page info bubble when the page you are on is an offline page.">
         Viewing Offline Version
       </message>
-      <message name="IDS_IOS_PAGE_INFO_PERMISSIONS_DESCRIPTION" desc="Format of the description at the bottom of the permissions section (in page info).">
-        Manage site permissions for <ph name="URL">$1<ex>www.dailydot.com</ex></ph>. These permissions will be reset when you close the tab.
-      </message>
       <message name="IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER" desc="Header of the permissions section (in page info)">
         Permissions
       </message>
@@ -1663,8 +1660,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
         Microphone
       </message>
-      <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION" desc="Description of the permissions infobar used to update site permissions.">
-        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>"<ph name="SITE_NAME">$1</ph>"<ph name="END_BOLD">END_BOLD</ph> permissions will reset to off when you leave this site.
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION" desc="Description of the permissions infobar and in the page info used to update site permissions.">
+        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>"<ph name="SITE_NAME">$1<ex>www.dailydot.com</ex></ph>"<ph name="END_BOLD">END_BOLD</ph> permissions will reset to off when you leave this site.
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE" desc="Title of the permissions infobar used to update site permissions.">
         Permissions
