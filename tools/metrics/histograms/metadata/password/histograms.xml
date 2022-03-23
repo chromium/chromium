@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutoSigninFirstRunDialog"
-    enum="AutoSigninFirstRun" expires_after="2022-04-30">
+    enum="AutoSigninFirstRun" expires_after="2022-10-30">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -2776,7 +2776,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes{CustomPassphraseStatus}"
-    units="sites" expires_after="2022-05-01">
+    units="sites" expires_after="2022-11-01">
   <obsolete>
     Removed in M99. Replaced with
     PasswordManager.{Store}BlacklistedSitesHiRes2{CustomPassphraseStatus}.
