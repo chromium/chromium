@@ -23,6 +23,7 @@ include_rules = [
   "+crypto",
   "+dbus",
   "+net",
+  "+services/preferences/public/cpp",
   "+testing",
   "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",

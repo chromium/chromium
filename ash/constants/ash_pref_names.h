@@ -21,6 +21,8 @@ extern const char kESimRefreshedEuiccs[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kESimProfiles[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kManagedCellularIccidSmdpPair[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnterpriseAllowed[];

@@ -35,6 +35,7 @@ component("network") {
     "//crypto",
     "//dbus",
     "//net",
+    "//services/preferences/public/cpp",
     "//skia",
     "//url",
   ]
@@ -77,6 +78,8 @@ component("network") {
     "geolocation_handler.h",
     "hermes_metrics_util.cc",
     "hermes_metrics_util.h",
+    "managed_cellular_pref_handler.cc",
+    "managed_cellular_pref_handler.h",
     "managed_network_configuration_handler.cc",
     "managed_network_configuration_handler.h",
     "managed_network_configuration_handler_impl.cc",
@@ -281,6 +284,7 @@ source_set("unit_tests") {
     "//dbus",
     "//net",
     "//net:test_support",
+    "//services/preferences/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -300,6 +304,7 @@ source_set("unit_tests") {
     "fast_transition_observer_unittest.cc",
     "firewall_hole_unittest.cc",
     "geolocation_handler_unittest.cc",
+    "managed_cellular_pref_handler_unittest.cc",
     "managed_network_configuration_handler_unittest.cc",
     "metrics/connection_info_metrics_logger_unittest.cc",
     "metrics/esim_policy_login_metrics_logger_unittest.cc",

@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
+#define CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
+
+#include "base/component_export.h"
+#include "components/prefs/pref_service.h"
+
+class PrefService;
+class PrefRegistrySimple;
+
+namespace chromeos {
+
+// This class provides the ability to add, remove and get ICCID and SMDP+
+// address pair for managed cellular networks and stores it persistently in
+// prefs.
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
+ public:
+  ManagedCellularPrefHandler();
+  ManagedCellularPrefHandler(const ManagedCellularPrefHandler&) = delete;
+  ManagedCellularPrefHandler& operator=(const ManagedCellularPrefHandler&) =
+      delete;
+  ~ManagedCellularPrefHandler();
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  void SetDevicePrefs(PrefService* device_prefs);
+
+  // Add a new ICCID and SMDP+ address pair to device pref for a managed
+  // cellular network.
+  void AddIccidSmdpPair(const std::string& iccid,
+                        const std::string& smdp_address);
+
+  // Remove the ICCID and SMDP+ address pair from the device pref with given
+  // |iccid|.
+  void RemovePairWithIccid(const std::string& iccid);
+
+  // Returns the corresponding SMDP+ address for the given |iccid|. Returns
+  // nullptr if no such |iccid| is found.
+  const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;
+
+ private:
+  // Initialized to null and set once SetDevicePrefs() is called.
+  PrefService* device_prefs_ = nullptr;
+};
+
+}  // namespace chromeos
+
+#endif  // CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_

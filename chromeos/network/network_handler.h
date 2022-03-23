@@ -27,6 +27,7 @@ class ClientCertResolver;
 class ConnectionInfoMetricsLogger;
 class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
+class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandlerImpl;
 class NetworkActivationHandler;
@@ -102,6 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
   NetworkConfigurationHandler* network_configuration_handler();
+  ManagedCellularPrefHandler* managed_cellular_pref_handler();
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler();
   NetworkActivationHandler* network_activation_handler();
   NetworkCertificateHandler* network_certificate_handler();
@@ -137,6 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
+  std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   std::unique_ptr<ConnectionInfoMetricsLogger> connection_info_metrics_logger_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>

@@ -5,6 +5,7 @@
 #include "chromeos/network/network_handler_test_helper.h"
 
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_test_helper_base.h"
@@ -30,6 +31,7 @@ void NetworkHandlerTestHelper::RegisterPrefs(
   DCHECK(device_registry);
   ::onc::RegisterPrefs(device_registry);
   NetworkMetadataStore::RegisterPrefs(device_registry);
+  ManagedCellularPrefHandler::RegisterLocalStatePrefs(device_registry);
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(device_registry);
   if (user_registry) {
     NetworkMetadataStore::RegisterPrefs(user_registry);

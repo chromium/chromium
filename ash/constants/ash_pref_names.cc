@@ -36,6 +36,12 @@ const char kESimRefreshedEuiccs[] = "cros_esim.refreshed_euiccs";
 // by serializing a CellularESimProfile.
 const char kESimProfiles[] = "cros_esim.esim_profiles";
 
+// Pref which stores a dictionary of Integrated Circuit Card IDentifier (ICCID)
+// and Subscription Management - Data Preparation (SMDP+) address pair for each
+// managed cellular network.
+const char kManagedCellularIccidSmdpPair[] =
+    "cros_esim.managed_iccid_smdp_pair";
+
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.
 const char kAudioDevicesMute[] = "settings.audio.devices.mute";
