@@ -7,11 +7,8 @@
  * fetching/caching values that have been stored that way.
  */
 class Storage {
-  /**
-   * @param {function()=} opt_callbackForTesting
-   * @private
-   */
-  constructor(opt_callbackForTesting) {
+   /** @private */
+  constructor() {
     /** @private {number} */
     this.baseDelta_ = Storage.DELTA.defaultValue;
 
@@ -29,15 +26,17 @@ class Storage {
 
     /** @private {boolean} */
     this.enable_ = Storage.ENABLE.defaultValue;
-
-    this.init_(opt_callbackForTesting);
   }
 
   // ======= Public methods =======
 
-  static initialize() {
-    if (!Storage.instance) {
+  /**
+   * @param {function()=} opt_callbackForTesting
+   */
+  static initialize(opt_callbackForTesting) {
+    if (!Storage.instance || opt_callbackForTesting) {
       Storage.instance = new Storage();
+      Storage.instance.init_(opt_callbackForTesting);
     }
   }
 

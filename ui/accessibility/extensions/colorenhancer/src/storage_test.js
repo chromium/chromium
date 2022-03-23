@@ -197,7 +197,7 @@ TEST_F('ColorEnhancerStorageTest', 'InitialFetch', function() {
   Storage.setSiteDelta('fetch.com', 0.2);
 
   // Simulate re-starting the extension by creating a new instance.
-  Storage.instance = new Storage(this.newCallback(() => {
+  Storage.initialize(this.newCallback(() => {
     checkFloatValue(0.7, Storage.baseDelta);
     assertEquals(CvdType.PROTANOMALY, Storage.type);
     assertEquals(true, Storage.enable);
