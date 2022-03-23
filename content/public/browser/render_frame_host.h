@@ -312,7 +312,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if `this` was loaded in a <fencedframe> element directly or if
   // one of `this` ancestors was loaded in a <fencedframe> element. This
   // supports both Shadow DOM and MPArch implementations.
-  virtual bool IsNestedWithinFencedFrame() = 0;
+  virtual bool IsNestedWithinFencedFrame() const = 0;
 
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees, in breadth-first

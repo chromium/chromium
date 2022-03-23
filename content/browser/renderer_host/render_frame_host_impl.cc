@@ -730,20 +730,29 @@ bool ParentNeedsTrustTokenPermissionsPolicy(
 // information sources say that the policy is enabled.
 network::mojom::TrustTokenRedemptionPolicy
 DetermineWhetherToForbidTrustTokenRedemption(
-    const RenderFrameHostImpl* parent,
+    const RenderFrameHostImpl* frame,
     const blink::mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin) {
-  // For main frame loads, the frame's permissions policy is determined entirely
-  // by response headers, which are provided by the renderer.
-  if (!parent)
-    return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
+  std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
+  if (frame->IsNestedWithinFencedFrame()) {
+    // In Fenced Frames, all permission policy gated features must be disabled
+    // for privacy reasons.
+    subframe_policy =
+        blink::PermissionsPolicy::CreateForFencedFrame(subframe_origin);
+  } else {
+    // For main frame loads, the frame's permissions policy is determined
+    // entirely by response headers, which are provided by the renderer.
+    if (!frame->GetParent())
+      return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
-  const blink::PermissionsPolicy* parent_policy = parent->permissions_policy();
-  blink::ParsedPermissionsPolicy container_policy =
-      commit_params.frame_policy.container_policy;
+    const blink::PermissionsPolicy* parent_policy =
+        frame->GetParent()->permissions_policy();
+    blink::ParsedPermissionsPolicy container_policy =
+        commit_params.frame_policy.container_policy;
 
-  auto subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
-      parent_policy, container_policy, subframe_origin);
+    subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
+        parent_policy, container_policy, subframe_origin);
+  }
 
   if (subframe_policy->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
@@ -1098,7 +1107,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       }
       result.trust_token_redemption_policy_ =
           DetermineWhetherToForbidTrustTokenRedemption(
-              navigation_request.GetRenderFrameHost()->GetParent(),
+              navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin());
     }
 
@@ -1981,7 +1990,7 @@ bool RenderFrameHostImpl::IsInFencedFrameTree() {
   }
 }
 
-bool RenderFrameHostImpl::IsNestedWithinFencedFrame() {
+bool RenderFrameHostImpl::IsNestedWithinFencedFrame() const {
   switch (fenced_frame_status_) {
     case FencedFrameStatus::kNotNestedInFencedFrame:
       return false;

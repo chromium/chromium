@@ -10,7 +10,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/url_loader_monitor.h"
+#include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
@@ -22,6 +24,7 @@
 #include "services/network/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 // These integration tests verify that calling the Fetch API with Trust Tokens
 // parameters results in the parameters' counterparts appearing downstream in
@@ -314,6 +317,70 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
           }));
 
   SimulateNetworkServiceCrash();
+  run_loop.Run();
+}
+
+constexpr char kTrustTokenHeader[] =
+    "/set-header?Feature-Policy: trust-token-redemption 'self'";
+
+class TrustTokenPermissionsPolicyFencedFrameTest
+    : public TrustTokenPermissionsPolicyBrowsertest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  TrustTokenPermissionsPolicyFencedFrameTest()
+      : policy_header_in_primary_page_(std::get<0>(GetParam())),
+        policy_header_in_fenced_frame_page_(std::get<1>(GetParam())) {}
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ protected:
+  const bool policy_header_in_primary_page_;
+  const bool policy_header_in_fenced_frame_page_;
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TrustTokenPermissionsPolicyFencedFrameTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(TrustTokenPermissionsPolicyFencedFrameTest,
+                       PassesNegativeValueToFactoryParams) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL primary_url(embedded_test_server()->GetURL(
+      "a.com",
+      policy_header_in_primary_page_ ? kTrustTokenHeader : "/title1.html"));
+
+  GURL fenced_frame_url(embedded_test_server()->GetURL(
+      "b.com", policy_header_in_fenced_frame_page_
+                   ? std::string(kTrustTokenHeader) +
+                         "&Supports-Loading-Mode: fenced-frame"
+                   : "/fenced_frames/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), primary_url));
+
+  base::RunLoop run_loop;
+  ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
+      base::BindLambdaForTesting(
+          [&](const network::mojom::URLLoaderFactoryParams* params,
+              const url::Origin& origin, bool unused_is_for_isolated_world) {
+            if (origin.host() != "b.com")
+              return;
+            EXPECT_TRUE(params);
+            EXPECT_THAT(params->trust_token_redemption_policy,
+                        network::mojom::TrustTokenRedemptionPolicy::kForbid);
+            run_loop.Quit();
+          }));
+
+  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+
   run_loop.Run();
 }
 
