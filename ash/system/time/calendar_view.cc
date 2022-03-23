@@ -394,17 +394,17 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       calendar_utils::kDateHorizontalPadding +
       calendar_utils::kColumnSetPadding);
 
-  down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
-                          base::Unretained(this), /*up=*/false),
-      IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
-      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
-
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/true),
       IconButton::Type::kSmallFloating, &vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
+      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
+                          base::Unretained(this), /*up=*/false),
+      IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
+      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   tri_view->AddView(TriView::Container::END, button_container);
   AddChildView(tri_view);

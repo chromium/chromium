@@ -456,13 +456,13 @@ TEST_F(CalendarViewTest, HeaderFocusing) {
   PressTab();
   EXPECT_EQ(settings_button(), focus_manager->GetFocusedView());
 
-  // Moves to down button.
-  PressTab();
-  EXPECT_EQ(down_button(), focus_manager->GetFocusedView());
-
   // Moves to up button.
   PressTab();
   EXPECT_EQ(up_button(), focus_manager->GetFocusedView());
+
+  // Moves to down button.
+  PressTab();
+  EXPECT_EQ(down_button(), focus_manager->GetFocusedView());
 }
 
 // Tests the focus loop between the back button, today's button, settings
