@@ -3347,13 +3347,6 @@ const char kPageInfoStoreInfoName[] = "Page info store info";
 const char kPageInfoStoreInfoDescription[] =
     "Enable a store info row to the page info menu on eligible pages.";
 
-const char kPasswordProtectionForSignedInUsersName[] =
-    "Password Protection for Signed-In Users";
-const char kPasswordProtectionForSignedInUsersDescription[] =
-    "Enable signed-in (Google account) password protection for signed-in "
-    "users and allows users to change their signed-in password through "
-    "password reuse warnings on phishing or low reputation sites.";
-
 const char kPersistShareHubOnAppSwitchName[] = "Persist sharing hub";
 const char kPersistShareHubOnAppSwitchDescription[] =
     "Persist the sharing hub across app pauses/resumes.";

@@ -116,10 +116,6 @@ const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionForSignedInUsers{
-    "SafeBrowsingPasswordProtectionForSignedInUsers",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -139,11 +135,6 @@ const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
 const base::Feature kSafeBrowsingPageLoadToken{
     "SafeBrowsingPageLoadToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature
-    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
-        "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid",
-        base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
     "SafeBrowsingRemoveCookiesInAuthRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -151,9 +142,6 @@ const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
 const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
     "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-constexpr base::FeatureParam<bool> kShouldFillOldPhishGuardProto{
-    &kPasswordProtectionForSignedInUsers, "DeprecateOldProto", false};
 
 const base::Feature kSuspiciousSiteTriggerQuotaFeature{
     "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -198,10 +186,8 @@ constexpr struct {
     {&kExtensionTelemetryReportContactedHosts, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
-    {&kPasswordProtectionForSignedInUsers, true},
     {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingPageLoadToken, true},
-    {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSendSampledPingsForProtegoAllowlistDomains, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
@@ -244,10 +230,6 @@ base::ListValue GetFeatureStatusList() {
   param_list.Append(base::Value(kFileTypePoliciesTag.name));
 
   return param_list;
-}
-
-bool GetShouldFillOldPhishGuardProto() {
-  return kShouldFillOldPhishGuardProto.Get();
 }
 
 std::string GetClientSideDetectionTag() {

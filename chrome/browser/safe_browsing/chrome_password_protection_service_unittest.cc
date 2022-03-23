@@ -437,25 +437,6 @@ class ChromePasswordProtectionServiceTest
       mock_remove_callback_;
 };
 
-class ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest
-    : public ChromePasswordProtectionServiceTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      safe_browsing::kPasswordProtectionForSignedInUsers};
-};
-
-class ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest
-    : public ChromePasswordProtectionServiceTest {
- public:
-  ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyUserPopulationForPasswordOnFocusPing) {
   ReusedPasswordAccountType reused_password_type;
@@ -517,7 +498,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
       reused_password_type));
 }
 
-TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+TEST_F(ChromePasswordProtectionServiceTest,
        VerifyUserPopulationForSyncPasswordEntryPing) {
   // Sets up the account as a gmail account as there is no hosted domain.
   ReusedPasswordAccountType reused_password_type;
@@ -526,9 +507,6 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
 
   // Sync password entry pinging is enabled by default.
   service_->ConfigService(false /*incognito*/, false /*SBER*/);
-  // Sync password pings are now gated by Safe Browsing, not Safe Browsing
-  // Enhanced Reporting (SBER), on Android, because warnings are now enabled
-  // with kPasswordProtectionForSignedInUsers.
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
@@ -539,9 +517,6 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
       reused_password_type));
 
   service_->ConfigService(true /*incognito*/, false /*SBER*/);
-  // Sync password pings are now gated by Safe Browsing, not Safe Browsing
-  // Enhanced Reporting (SBER), on Android, because warnings are now enabled
-  // with kPasswordProtectionForSignedInUsers.
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
@@ -558,49 +533,16 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_PROTECTION_OFF);
   service_->ConfigService(false /*incognito*/, false /*SBER*/);
-  // Sync password pings are now gated by Safe Browsing, not Safe Browsing
-  // Enhanced Reporting (SBER), on Android, because warnings are now enabled
-  // with kPasswordProtectionForSignedInUsers.
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_REUSE);
-  // Sync password pings are now gated by Safe Browsing, not Safe Browsing
-  // Enhanced Reporting (SBER), on Android, because warnings are now enabled.
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(
-    ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
-    VerifyUserPopulationForSyncPasswordEntryPing) {
-  // Sets up the account as a gmail account as there is no hosted domain.
-  ReusedPasswordAccountType reused_password_type;
-  reused_password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
-  reused_password_type.set_is_account_syncing(true);
-
-  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
-                                    PASSWORD_REUSE);
-
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
-  // Sync password pings are now gated by Safe Browsing Enhanced Reporting,
-  // because kPasswordProtectionForSignedInUsers is disabled.
-  EXPECT_FALSE(service_->IsPingingEnabled(
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  // Sync password pings are now gated by Safe Browsing Enhanced Reporting,
-  // because kPasswordProtectionForSignedInUsers is disabled.
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
-  EXPECT_TRUE(service_->IsPingingEnabled(
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-}
-#endif
 
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPingingIsSkippedIfMatchEnterpriseAllowlist) {
@@ -1320,7 +1262,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextSaved) {
   EXPECT_EQ(warning_text, service_->GetWarningDetailText(reused_password_type));
 }
 
-TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+TEST_F(ChromePasswordProtectionServiceTest,
        VerifyGetWarningDetailTextEnterprise) {
   std::u16string warning_text_non_sync = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC);
@@ -1359,8 +1301,7 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
             service_->GetWarningDetailText(reused_password_type));
 }
 
-TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
-       VerifyGetWarningDetailTextGmail) {
+TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextGmail) {
   std::u16string warning_text_non_sync = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC);
   std::u16string warning_text_sync =
@@ -1372,25 +1313,6 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
   reused_password_type.set_is_account_syncing(true);
   EXPECT_EQ(warning_text_sync,
             service_->GetWarningDetailText(reused_password_type));
-}
-
-TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
-       VerifyCanShowInterstitial) {
-  // Do not show interstitial if policy not set for password_alert.
-  ASSERT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
-  GURL trigger_url = GURL(kPhishingURL);
-  ReusedPasswordAccountType reused_password_type;
-  reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
-  reused_password_type.set_is_account_syncing(false);
-  service_->SetAccountInfo(kUserName);
-  EXPECT_FALSE(
-      service_->CanShowInterstitial(reused_password_type, trigger_url));
-
-  // Show interstitial if the policy is set to password_alert.
-  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
-                                    PASSWORD_REUSE);
-  EXPECT_TRUE(service_->CanShowInterstitial(reused_password_type, trigger_url));
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {

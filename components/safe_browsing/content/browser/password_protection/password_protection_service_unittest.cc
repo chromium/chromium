@@ -1381,24 +1381,6 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       LoginReputationClientResponse::LOW_REPUTATION));
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-
-    // Don't show modal warning if non-sync gaia account experiment is not
-    // on.
-    reused_password_account_type.set_account_type(
-        ReusedPasswordAccountType::GMAIL);
-    reused_password_account_type.set_is_account_syncing(false);
-    EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
-        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-        reused_password_account_type, LoginReputationClientResponse::PHISHING));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-    // Show modal warning if non-sync gaia account experiment is on.
     reused_password_account_type.set_account_type(
         ReusedPasswordAccountType::GMAIL);
     reused_password_account_type.set_is_account_syncing(false);
@@ -1421,37 +1403,10 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-
     reused_password_account_type.set_account_type(
         ReusedPasswordAccountType::GMAIL);
     reused_password_account_type.set_is_account_syncing(true);
-    // If kPasswordProtectionForSignedInUsers is enabled, then password reuse
-    // warnings are supported for both saved passwords and GMAIL passwords on
-    // both desktop and Android platforms.
     EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
-        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-        reused_password_account_type, LoginReputationClientResponse::PHISHING));
-  }
-
-  {
-    // TODO(crbug.com/1237388): Remove it once the flag is completed removed.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-
-    reused_password_account_type.set_account_type(
-        ReusedPasswordAccountType::GMAIL);
-    reused_password_account_type.set_is_account_syncing(true);
-// If kPasswordProtectionForSignedInUsers is disabled, then GMAIL password
-// reuse warnings are only supported on desktop platforms.
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
-#else
-  EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
-#endif
         LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
         reused_password_account_type, LoginReputationClientResponse::PHISHING));
   }
@@ -1567,14 +1522,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
       PasswordType::ENTERPRISE_PASSWORD));
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::SAVED_PASSWORD));
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-    EXPECT_FALSE(
-        password_protection_service_->IsSupportedPasswordTypeForPinging(
-            PasswordType::OTHER_GAIA_PASSWORD));
-  }
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {

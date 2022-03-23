@@ -283,15 +283,12 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
             break;
         }
       }
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kPasswordProtectionForSignedInUsers)) {
-        ReusedPasswordAccountType password_account_type_to_add =
-            password_protection_service_
-                ->GetPasswordProtectionReusedPasswordAccountType(password_type_,
-                                                                 username_);
-        *reuse_event->mutable_reused_password_account_type() =
-            password_account_type_to_add;
-      }
+      ReusedPasswordAccountType password_account_type_to_add =
+          password_protection_service_
+              ->GetPasswordProtectionReusedPasswordAccountType(password_type_,
+                                                               username_);
+      *reuse_event->mutable_reused_password_account_type() =
+          password_account_type_to_add;
       break;
     }
     default:

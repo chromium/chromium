@@ -369,12 +369,9 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
   if (password_type == PasswordType::ENTERPRISE_PASSWORD)
     return service->HasUnhandledEnterprisePasswordReuse(web_contents);
 
-  bool enable_warning_for_non_sync_users = base::FeatureList::IsEnabled(
-      safe_browsing::kPasswordProtectionForSignedInUsers);
   DCHECK(password_type == PasswordType::PRIMARY_ACCOUNT_PASSWORD ||
          password_type == PasswordType::SAVED_PASSWORD ||
-         (enable_warning_for_non_sync_users &&
-          password_type == PasswordType::OTHER_GAIA_PASSWORD));
+         password_type == PasswordType::OTHER_GAIA_PASSWORD);
   // Otherwise, checks if there's any unhandled sync password reuses matches
   // this origin.
   auto* unhandled_sync_password_reuses = profile->GetPrefs()->GetDictionary(
@@ -1028,15 +1025,10 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
             /*in_new_tab=*/true);
   } else {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::
-                kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
-      JNIEnv* env = base::android::AttachCurrentThread();
-
-      PasswordCheckupLauncherHelper::
-          LaunchLocalCheckupFromPhishGuardWarningDialog(
-              env, web_contents->GetTopLevelNativeWindow()->GetJavaObject());
-    }
+    JNIEnv* env = base::android::AttachCurrentThread();
+    PasswordCheckupLauncherHelper::
+        LaunchLocalCheckupFromPhishGuardWarningDialog(
+            env, web_contents->GetTopLevelNativeWindow()->GetJavaObject());
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.
@@ -1127,10 +1119,7 @@ std::u16string ChromePasswordProtectionService::GetWarningDetailText(
         IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED);
   }
 
-  bool enable_warning_for_non_sync_users = base::FeatureList::IsEnabled(
-      safe_browsing::kPasswordProtectionForSignedInUsers);
-  if (enable_warning_for_non_sync_users &&
-      !password_type.is_account_syncing()) {
+  if (!password_type.is_account_syncing()) {
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC);
   }

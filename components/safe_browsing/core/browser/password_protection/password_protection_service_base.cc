@@ -153,9 +153,7 @@ bool PasswordProtectionServiceBase::CanSendPing(
 bool PasswordProtectionServiceBase::
     IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
         ReusedPasswordAccountType password_type) const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::kPasswordProtectionForSignedInUsers) &&
-         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
+  return password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
          password_type.is_account_syncing();
 }
 
@@ -176,12 +174,6 @@ void PasswordProtectionServiceBase::RequestFinished(
     if (outcome != RequestOutcome::RESPONSE_ALREADY_CACHED) {
       CacheVerdict(request->main_frame_url(), request->trigger_type(),
                    password_type, *response, base::Time::Now());
-    }
-    bool enable_warning_for_non_sync_users = base::FeatureList::IsEnabled(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-    if (!enable_warning_for_non_sync_users &&
-        request->password_type() == PasswordType::OTHER_GAIA_PASSWORD) {
-      return;
     }
 
     // If it's password alert mode and a Gsuite/enterprise account, we do not
@@ -410,8 +402,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForPinging(
     case PasswordType::ENTERPRISE_PASSWORD:
       return true;
     case PasswordType::OTHER_GAIA_PASSWORD:
-      return base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSignedInUsers);
+      return true;
     case PasswordType::PASSWORD_TYPE_UNKNOWN:
     case PasswordType::PASSWORD_TYPE_COUNT:
       return false;
@@ -438,9 +429,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
       password_type.account_type() != ReusedPasswordAccountType::GSUITE)
     return false;
 
-  return password_type.is_account_syncing() ||
-         base::FeatureList::IsEnabled(
-             safe_browsing::kPasswordProtectionForSignedInUsers);
+  return true;
 #endif
 }
 

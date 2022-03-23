@@ -1916,9 +1916,6 @@ extern const char kPageInfoHistoryDescription[];
 extern const char kPageInfoStoreInfoName[];
 extern const char kPageInfoStoreInfoDescription[];
 
-extern const char kPasswordProtectionForSignedInUsersName[];
-extern const char kPasswordProtectionForSignedInUsersDescription[];
-
 extern const char kPersistShareHubOnAppSwitchName[];
 extern const char kPersistShareHubOnAppSwitchDescription[];
 

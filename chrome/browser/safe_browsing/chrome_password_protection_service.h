@@ -399,14 +399,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Unit tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForPasswordOnFocusPing);
-  FRIEND_TEST_ALL_PREFIXES(
-      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
-      VerifyUserPopulationForSyncPasswordEntryPing);
-#if BUILDFLAG(IS_ANDROID)
-  FRIEND_TEST_ALL_PREFIXES(
-      ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
-      VerifyUserPopulationForSyncPasswordEntryPing);
-#endif
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyUserPopulationForSyncPasswordEntryPing);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForSavedPasswordEntryPing);
   FRIEND_TEST_ALL_PREFIXES(
@@ -433,9 +427,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       VerifyUnhandledSyncPasswordReuseUponClearHistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyCanShowInterstitial);
-  FRIEND_TEST_ALL_PREFIXES(
-      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
-      VerifyCanShowInterstitial);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyCanShowInterstitial);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifySendsPingForAboutBlank);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,

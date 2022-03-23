@@ -5177,14 +5177,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "safe-browsing-password-protection-for-signed-in-users",
-    "owners": [
-      "xinghuilu",
-      "chrome-safebrowsing-alerts@google.com"
-    ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "sameparty-cookies-considered-first-party",
     "owners": ["cfredric", "chrome-first-party-sets@chromium.org"],
     "expiry_milestone": 108

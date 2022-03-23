@@ -98,9 +98,6 @@ const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 // Enable omitting non-user gesture from referrer chain.
 extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
 
-// Enable GAIA password protection for signed-in users.
-extern const base::Feature kPasswordProtectionForSignedInUsers;
-
 // Controls whether Chrome prompts Enhanced Safe Browsing users for deep
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;
@@ -123,11 +120,6 @@ extern const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise;
 
 // Controls whether page load tokens are added to Safe Browsing requests.
 extern const base::Feature kSafeBrowsingPageLoadToken;
-
-// Controls whether Safe Browsing password reuse warnings are updated with
-// a "Check passwords" button integrated with the CheckPasswords page.
-extern const base::Feature
-    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid;
 
 // Controls whether cookies are removed when the access token is present.
 extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
@@ -179,11 +171,6 @@ extern const base::Feature kVisualFeaturesInPasswordProtectionAndroid;
 extern const base::Feature kVisualFeaturesSizes;
 
 base::ListValue GetFeatureStatusList();
-
-// Returns whether or not to stop filling in the SyncAccountType and
-// ReusedPasswordType enums. This is used in the
-// |kPasswordProtectionForSignedInUsers| experiment.
-bool GetShouldFillOldPhishGuardProto();
 
 // Returns the tag used for Client Side Phishing Detection models, as
 // computed from the current feature flags.
