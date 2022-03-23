@@ -276,13 +276,6 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     if (same_origin_only_ && !rule_data->HasDocumentSecurityOrigin())
       continue;
 
-    StyleRule* rule = rule_data->Rule();
-
-    // If the rule has no properties to apply, then ignore it in the non-debug
-    // mode.
-    if (!rule->ShouldConsiderForMatchingRules(include_empty_rules_))
-      continue;
-
     const auto& selector = rule_data->Selector();
     if (UNLIKELY(part_request && part_request->for_shadow_pseudo)) {
       if (!selector.IsAllowedAfterPart()) {
@@ -329,6 +322,22 @@ void ElementRuleCollector::CollectMatchingRulesForList(
         }
       }
     }
+
+    // If the rule has no properties to apply, then ignore it in the non-debug
+    // mode. We put this test last because a) it rarely rejects anything, and
+    // b) it's the only thing that touches the memory for the property set.
+    //
+    // If the rule matches, we'll need those properties, so we can just as well
+    // take the cache misses anyway, but otherwise, we're better off rejecting
+    // the rule in some other way first.
+    //
+    // TODO(sesse): See if we can get the property set allocated on the same
+    // cache line as the StyleRule, to reduce the impact further. Also, consider
+    // just taking empty rules out of the RuleSet altogether, although that
+    // would entail doing something to get them back for debug mode.
+    StyleRule* rule = rule_data->Rule();
+    if (!rule->ShouldConsiderForMatchingRules(include_empty_rules_))
+      continue;
 
     matched++;
     unsigned layer_order =
