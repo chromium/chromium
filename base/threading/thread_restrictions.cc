@@ -297,8 +297,7 @@ ScopedAllowBlocking::ScopedAllowBlocking(const Location& from_here)
   TRACE_EVENT_BEGIN(
       "base", "ScopedAllowBlocking", [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+            base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
 }
 
@@ -322,8 +321,7 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
       "base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope",
       [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+            base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
 
   // Since this object is used to indicate that sync primitives will be used to
@@ -350,8 +348,7 @@ ThreadRestrictions::ScopedAllowIO::ScopedAllowIO(const Location& from_here)
 {
   TRACE_EVENT_BEGIN("base", "ScopedAllowIO", [&](perfetto::EventContext ctx) {
     ctx.event()->set_source_location_iid(
-        base::trace_event::InternedSourceLocation::Get(
-            &ctx, base::trace_event::TraceSourceLocation(from_here)));
+        base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
   });
 }
 

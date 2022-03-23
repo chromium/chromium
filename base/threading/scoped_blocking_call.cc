@@ -45,8 +45,7 @@ ScopedBlockingCall::ScopedBlockingCall(const Location& from_here,
   TRACE_EVENT_BEGIN(
       "base", "ScopedBlockingCall", [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+            base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
 
 #if DCHECK_IS_ON()

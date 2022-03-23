@@ -167,8 +167,8 @@ void BeginFrameArgs::AsProtozeroInto(
   state->set_on_critical_path(on_critical_path);
   state->set_animate_only(animate_only);
 #ifndef NDEBUG
-  state->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
-      &ctx, base::trace_event::TraceSourceLocation(created_from)));
+  state->set_source_location_iid(
+      base::trace_event::InternedSourceLocation::Get(&ctx, created_from));
 #endif
 }
 

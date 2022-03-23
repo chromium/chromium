@@ -105,9 +105,8 @@ void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
         data->set_level(
             trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
         data->set_creation_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx,
-                base::trace_event::TraceSourceLocation(creation_location_)));
+            base::trace_event::InternedSourceLocation::Get(&ctx,
+                                                           creation_location_));
       });
   callback_.Run(memory_pressure_level);
 }

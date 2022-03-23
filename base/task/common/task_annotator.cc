@@ -169,8 +169,7 @@ void TaskAnnotator::ClearObserverForTesting() {
 void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
                                      const PendingTask& task) const {
   ctx.event()->set_task_execution()->set_posted_from_iid(
-      base::trace_event::InternedSourceLocation::Get(
-          &ctx, base::trace_event::TraceSourceLocation(task.posted_from)));
+      base::trace_event::InternedSourceLocation::Get(&ctx, task.posted_from));
 }
 
 // TRACE_EVENT argument helper, writing the incoming task flow information
