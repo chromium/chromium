@@ -33,13 +33,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url, uint32_t seed);
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback);
 
 void TestDeclineDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback);
 
 AppId InstallPwaForCurrentUrl(Browser* browser);

@@ -249,13 +249,12 @@ void WebAppInstallTask::InstallWebAppFromManifest(
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents(), bypass_service_worker_check,
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
-                     GetWeakPtr(), std::move(web_app_info),
-                     /*force_shortcut_app=*/false));
+                     GetWeakPtr(), std::move(web_app_info)));
 }
 
 void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
-    bool force_shortcut_app,
+    WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback install_callback) {
@@ -266,10 +265,11 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
   dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
   install_source_ = install_source;
+  flow_ = flow;
 
   data_retriever_->GetWebAppInstallInfo(
-      web_contents(), base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo,
-                                     GetWeakPtr(), force_shortcut_app));
+      web_contents(),
+      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr()));
 }
 
 void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
@@ -349,7 +349,6 @@ void UpdateFinalizerClientData(
 void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebAppInstallInfo> web_application_info,
     bool overwrite_existing_manifest_fields,
-    ForInstallableSite for_installable_site,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   CheckInstallPreconditions();
@@ -398,8 +397,7 @@ void WebAppInstallTask::InstallWebAppWithParams(
 
   data_retriever_->GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr(),
-                     /*force_shortcut_app=*/false));
+      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr()));
 }
 
 void WebAppInstallTask::LoadAndRetrieveWebAppInstallInfoWithIcons(
@@ -452,11 +450,6 @@ base::Value WebAppInstallTask::TakeErrorDict() {
   base::Value error_dict = std::move(*error_dict_);
   error_dict_->DictClear();
   return error_dict;
-}
-
-void WebAppInstallTask::SetInstallFinalizerForTesting(
-    WebAppInstallFinalizer* install_finalizer) {
-  install_finalizer_ = install_finalizer;
 }
 
 void WebAppInstallTask::CheckInstallPreconditions() {
@@ -532,8 +525,7 @@ void WebAppInstallTask::OnWebAppUrlLoadedGetWebAppInstallInfo(
 
   data_retriever_->GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr(),
-                     /*force_shortcut_app*/ false));
+      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr()));
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
@@ -589,7 +581,6 @@ void WebAppInstallTask::OnWebAppInstallabilityChecked(
 }
 
 void WebAppInstallTask::OnGetWebAppInstallInfo(
-    bool force_shortcut_app,
     std::unique_ptr<WebAppInstallInfo> web_app_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (ShouldStopInstall())
@@ -619,8 +610,7 @@ void WebAppInstallTask::OnGetWebAppInstallInfo(
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents(), bypass_service_worker_check,
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
-                     GetWeakPtr(), std::move(web_app_info),
-                     force_shortcut_app));
+                     GetWeakPtr(), std::move(web_app_info)));
 }
 
 void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
@@ -647,7 +637,6 @@ void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
 
 void WebAppInstallTask::OnDidPerformInstallableCheck(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    bool force_shortcut_app,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
@@ -665,10 +654,6 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
                         webapps::InstallResultCode::kNotValidManifestForWebApp);
     return;
   }
-
-  const auto for_installable_site = is_installable && !force_shortcut_app
-                                        ? ForInstallableSite::kYes
-                                        : ForInstallableSite::kNo;
 
   if (opt_manifest)
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
@@ -711,21 +696,23 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   // If the manifest specified icons, don't use the page icons.
   const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
 
-  CheckForPlayStoreIntentOrGetIcons(
-      std::move(opt_manifest), std::move(web_app_info), std::move(icon_urls),
-      for_installable_site, skip_page_favicons);
+  CheckForPlayStoreIntentOrGetIcons(std::move(opt_manifest),
+                                    std::move(web_app_info),
+                                    std::move(icon_urls), skip_page_favicons);
 }
 
 void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
     blink::mojom::ManifestPtr opt_manifest,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::vector<GURL> icon_urls,
-    ForInstallableSite for_installable_site,
     bool skip_page_favicons) {
+  bool is_create_shortcut = flow_ == WebAppInstallFlow::kCreateShortcut;
   // Background installations are not a user-triggered installs, and thus
   // cannot be sent to the store.
-  if (for_installable_site == ForInstallableSite::kYes &&
-      !background_installation_ && opt_manifest) {
+  bool skip_store =
+      is_create_shortcut || background_installation_ || !opt_manifest;
+
+  if (!skip_store) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<PlayStoreIntent> intent =
         GetPlayStoreIntentFromManifest(*opt_manifest);
@@ -739,8 +726,8 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
               intent->app_id,
               base::BindOnce(&WebAppInstallTask::OnDidCheckForIntentToPlayStore,
                              GetWeakPtr(), std::move(web_app_info),
-                             std::move(icon_urls), for_installable_site,
-                             skip_page_favicons, intent->intent));
+                             std::move(icon_urls), skip_page_favicons,
+                             intent->intent));
           return;
         }
       }
@@ -760,14 +747,14 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
             base::BindOnce(
                 &WebAppInstallTask::OnDidCheckForIntentToPlayStoreLacros,
                 GetWeakPtr(), std::move(web_app_info), std::move(icon_urls),
-                for_installable_site, skip_page_favicons, intent->intent));
+                skip_page_favicons, intent->intent));
         return;
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
   OnDidCheckForIntentToPlayStore(std::move(web_app_info), std::move(icon_urls),
-                                 for_installable_site, skip_page_favicons,
+                                 skip_page_favicons,
                                  /*intent=*/"",
                                  /*should_intent_to_store=*/false);
 }
@@ -775,7 +762,6 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
 void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::vector<GURL> icon_urls,
-    ForInstallableSite for_installable_site,
     bool skip_page_favicons,
     const std::string& intent,
     bool should_intent_to_store) {
@@ -813,21 +799,18 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
   data_retriever_->GetIcons(
       web_contents(), std::move(icon_urls), skip_page_favicons,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedShowDialog,
-                     GetWeakPtr(), std::move(web_app_info),
-                     for_installable_site));
+                     GetWeakPtr(), std::move(web_app_info)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppInstallTask::OnDidCheckForIntentToPlayStoreLacros(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::vector<GURL> icon_urls,
-    ForInstallableSite for_installable_site,
     bool skip_page_favicons,
     const std::string& intent,
     crosapi::mojom::IsInstallableResult result) {
   OnDidCheckForIntentToPlayStore(
-      std::move(web_app_info), std::move(icon_urls), for_installable_site,
-      skip_page_favicons, intent,
+      std::move(web_app_info), std::move(icon_urls), skip_page_favicons, intent,
       result == crosapi::mojom::IsInstallableResult::kInstallable);
 }
 #endif
@@ -886,7 +869,6 @@ void WebAppInstallTask::OnIconsRetrieved(
 
 void WebAppInstallTask::OnIconsRetrievedShowDialog(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
@@ -904,19 +886,17 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 
   if (background_installation_) {
     DCHECK(!dialog_callback_);
-    OnDialogCompleted(for_installable_site, /*user_accepted=*/true,
-                      std::move(web_app_info));
+    OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info));
   } else {
     DCHECK(dialog_callback_);
     std::move(dialog_callback_)
-        .Run(web_contents(), std::move(web_app_info), for_installable_site,
-             base::BindOnce(&WebAppInstallTask::OnDialogCompleted, GetWeakPtr(),
-                            for_installable_site));
+        .Run(web_contents(), std::move(web_app_info),
+             base::BindOnce(&WebAppInstallTask::OnDialogCompleted,
+                            GetWeakPtr()));
   }
 }
 
 void WebAppInstallTask::OnDialogCompleted(
-    ForInstallableSite for_installable_site,
     bool user_accepted,
     std::unique_ptr<WebAppInstallInfo> web_app_info) {
   if (ShouldStopInstall())

@@ -146,7 +146,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
 
 void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
-    bool force_shortcut_app,
+    WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback) {
@@ -156,7 +156,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppFromManifestWithFallback(
-      contents, force_shortcut_app, install_source, std::move(dialog_callback),
+      contents, flow, install_source, std::move(dialog_callback),
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
                      GetWeakPtr(), task.get(), std::move(callback)));
 
@@ -225,7 +225,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
   }
   task->InstallWebAppFromInfo(
       std::move(web_application_info), overwrite_existing_manifest_fields,
-      for_installable_site, install_source,
+      install_source,
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
                      GetWeakPtr(), task.get(), std::move(callback)));
 

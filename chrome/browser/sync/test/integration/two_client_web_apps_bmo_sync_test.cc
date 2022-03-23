@@ -112,7 +112,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
         ->install_manager()
         .InstallWebAppFromManifestWithFallback(
             browser->tab_strip_model()->GetActiveWebContents(),
-            /*force_shortcut_app=*/false, source,
+            WebAppInstallManager::WebAppInstallFlow::kInstallSite, source,
             base::BindOnce(test::TestAcceptDialogCallback),
             base::BindLambdaForTesting([&](const AppId& new_app_id,
                                            webapps::InstallResultCode code) {

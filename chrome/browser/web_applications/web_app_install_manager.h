@@ -45,6 +45,18 @@ class WebAppRegistrar;
 // TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
 class WebAppInstallManager final : public SyncInstallDelegate {
  public:
+  // The different UI flows that exist for creating a web app.
+  enum class WebAppInstallFlow {
+    // TODO(crbug.com/1216457): This should be removed by adding all known flows
+    // to this enum.
+    kUnknown,
+    // The 'Create Shortcut' flow for adding the current page as a shortcut app.
+    kCreateShortcut,
+    // The 'Install Site' flow for installing the current site with an app
+    // experience determined by the site.
+    kInstallSite,
+  };
+
   explicit WebAppInstallManager(Profile* profile);
   WebAppInstallManager(const WebAppInstallManager&) = delete;
   WebAppInstallManager& operator=(const WebAppInstallManager&) = delete;
@@ -73,12 +85,10 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   // Infers WebApp info from the blink renderer process and then retrieves a
   // manifest in a way similar to |InstallWebAppFromManifest|. If the manifest
-  // is incomplete or missing, the inferred info is used. |force_shortcut_app|
-  // forces the creation of a shortcut app instead of a PWA even if installation
-  // is available.
+  // is incomplete or missing, the inferred info is used.
   void InstallWebAppFromManifestWithFallback(
       content::WebContents* contents,
-      bool force_shortcut_app,
+      WebAppInstallFlow flow,
       webapps::WebappInstallSource install_source,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);

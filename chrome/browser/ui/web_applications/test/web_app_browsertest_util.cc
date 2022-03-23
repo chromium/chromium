@@ -87,7 +87,6 @@ namespace {
 void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   web_app_info->user_display_mode = DisplayMode::kStandalone;
   std::move(acceptance_callback)
@@ -137,7 +136,7 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
-      /*force_shortcut_app=*/false,
+      WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -166,7 +165,7 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
-      /*force_shortcut_app=*/false,
+      WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(

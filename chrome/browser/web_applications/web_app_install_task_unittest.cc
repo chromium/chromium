@@ -268,9 +268,8 @@ class WebAppInstallTaskTest : public WebAppTest {
   InstallResult InstallWebAppFromManifestWithFallbackAndGetResults() {
     InstallResult result;
     base::RunLoop run_loop;
-    const bool force_shortcut_app = false;
     install_task_->InstallWebAppFromManifestWithFallback(
-        web_contents(), force_shortcut_app,
+        web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
@@ -450,10 +449,9 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -505,10 +503,9 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& force_installed_app_id,
@@ -531,10 +528,9 @@ TEST_F(WebAppInstallTaskTest, GetWebAppInstallInfoFailed) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -557,10 +553,9 @@ TEST_F(WebAppInstallTaskTest, WebContentsDestroyed) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -587,10 +582,9 @@ TEST_F(WebAppInstallTaskTest, InstallTaskDestroyed) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -640,10 +634,9 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -925,10 +918,9 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -960,10 +952,9 @@ TEST_F(WebAppInstallTaskTest, UserInstallDeclined) {
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestDeclineDialogCallback),
       base::BindLambdaForTesting(
@@ -1041,9 +1032,11 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
 
   base::RunLoop run_loop;
 
+  install_task_->SetFlowForTesting(
+      WebAppInstallManager::WebAppInstallFlow::kInstallSite);
   install_task_->InstallWebAppFromInfo(
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
-      ForInstallableSite::kYes, webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
@@ -1074,9 +1067,11 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
 
   base::RunLoop run_loop;
 
+  install_task_->SetFlowForTesting(
+      WebAppInstallManager::WebAppInstallFlow::kInstallSite);
   install_task_->InstallWebAppFromInfo(
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
-      ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
+      webapps::WebappInstallSource::ARC,
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                      webapps::InstallResultCode code) {
         std::unique_ptr<WebAppInstallInfo> final_web_app_info =
@@ -1110,7 +1105,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
   base::RunLoop run_loop;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), /*force_shortcut_app=*/true,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kCreateShortcut,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
@@ -1163,7 +1158,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
 
   base::RunLoop run_loop;
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), /*force_shortcut_app=*/false,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -1404,7 +1399,7 @@ TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), /*force_shortcut_app=*/false,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -1454,10 +1449,9 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
 
   base::RunLoop run_loop;
   bool callback_called = false;
-  const bool force_shortcut_app = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), force_shortcut_app,
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(

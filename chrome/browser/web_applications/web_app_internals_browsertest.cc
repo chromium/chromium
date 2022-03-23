@@ -90,7 +90,7 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     GetProvider().install_manager().InstallWebAppFromManifestWithFallback(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        /*force_shortcut_app=*/false,
+        WebAppInstallManager::WebAppInstallFlow::kInstallSite,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting(

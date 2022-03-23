@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 
 class Browser;
 class Profile;
@@ -38,11 +39,9 @@ using WebAppInstalledCallback =
                             webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.
-// If |force_shortcut_app| is true, the current page will be installed even if
-// the site does not meet installability requirements (see
-// |AppBannerManager::PerformInstallableCheck|).
-void CreateWebAppFromCurrentWebContents(Browser* browser,
-                                        bool force_shortcut_app);
+void CreateWebAppFromCurrentWebContents(
+    Browser* browser,
+    WebAppInstallManager::WebAppInstallFlow flow);
 
 // Starts install of a WebApp for a given |web_contents|, initiated from
 // a promotional banner or omnibox install icon.

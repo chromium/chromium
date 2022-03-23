@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
@@ -40,7 +41,6 @@ class WebContents;
 
 namespace web_app {
 
-class WebAppInstallManager;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
 class WebAppRegistrar;
@@ -53,6 +53,8 @@ class WebAppInstallTask : content::WebContentsObserver {
  public:
   using RetrieveWebAppInstallInfoWithIconsCallback =
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>;
+
+  using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
 
   WebAppInstallTask(Profile* profile,
                     WebAppInstallManager* install_manager,
@@ -97,7 +99,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // inferred info is used.
   void InstallWebAppFromManifestWithFallback(
       content::WebContents* web_contents,
-      bool force_shortcut_app,
+      WebAppInstallFlow flow,
       webapps::WebappInstallSource install_source,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);
@@ -134,7 +136,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   void InstallWebAppFromInfo(
       std::unique_ptr<WebAppInstallInfo> web_application_info,
       bool overwrite_existing_manifest_fields,
-      ForInstallableSite for_installable_site,
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
@@ -170,7 +171,12 @@ class WebAppInstallTask : content::WebContentsObserver {
   // flag is enabled to be used by: chrome://web-app-internals
   base::Value TakeErrorDict();
 
-  void SetInstallFinalizerForTesting(WebAppInstallFinalizer* install_finalizer);
+  void SetInstallFinalizerForTesting(
+      WebAppInstallFinalizer* install_finalizer) {
+    install_finalizer_ = install_finalizer;
+  }
+
+  void SetFlowForTesting(WebAppInstallFlow flow) { flow_ = flow; }
 
  private:
   void CheckInstallPreconditions();
@@ -200,8 +206,7 @@ class WebAppInstallTask : content::WebContentsObserver {
                                      bool valid_manifest_for_web_app,
                                      bool is_installable);
 
-  void OnGetWebAppInstallInfo(bool force_shortcut_app,
-                              std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
   // Makes amendments to |web_app_info| based on the options set in
   // |install_params|.
@@ -210,7 +215,6 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      bool force_shortcut_app,
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
@@ -224,7 +228,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       blink::mojom::ManifestPtr opt_manifest,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       std::vector<GURL> icon_urls,
-      ForInstallableSite for_installable_site,
       bool skip_page_favicons);
 
   // Called when the asynchronous check for whether an intent to the Play Store
@@ -232,7 +235,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnDidCheckForIntentToPlayStore(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       std::vector<GURL> icon_urls,
-      ForInstallableSite for_installable_site,
       bool skip_page_favicons,
       const std::string& intent,
       bool should_intent_to_store);
@@ -244,7 +246,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnDidCheckForIntentToPlayStoreLacros(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       std::vector<GURL> icon_urls,
-      ForInstallableSite for_installable_site,
       bool skip_page_favicons,
       const std::string& intent,
       crosapi::mojom::IsInstallableResult result);
@@ -258,12 +259,10 @@ class WebAppInstallTask : content::WebContentsObserver {
       DownloadedIconsHttpResults icons_http_results);
   void OnIconsRetrievedShowDialog(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      ForInstallableSite for_installable_site,
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
-  void OnDialogCompleted(ForInstallableSite for_installable_site,
-                         bool user_accepted,
+  void OnDialogCompleted(bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnInstallFinalized(const AppId& app_id,
                           webapps::InstallResultCode code,
@@ -329,6 +328,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   raw_ptr<WebAppRegistrar> registrar_;
 
   std::unique_ptr<base::Value> error_dict_;
+
+  // TODO(crbug.com/1216457): Make this enum const and set its value in the
+  // constructor.
+  WebAppInstallFlow flow_ = WebAppInstallFlow::kUnknown;
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
 };

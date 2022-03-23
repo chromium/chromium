@@ -147,13 +147,12 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     test::WaitUntilReady(provider);
     provider->install_manager().InstallWebAppFromManifestWithFallback(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        /*force_shortcut_app=*/false,
+        WebAppInstallManager::WebAppInstallFlow::kInstallSite,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         /*dialog_callback=*/
         base::BindLambdaForTesting(
             [](content::WebContents*,
                std::unique_ptr<WebAppInstallInfo> web_app_info,
-               ForInstallableSite,
                WebAppInstallationAcceptanceCallback acceptance_callback) {
               web_app_info->user_display_mode = DisplayMode::kTabbed;
               std::move(acceptance_callback)

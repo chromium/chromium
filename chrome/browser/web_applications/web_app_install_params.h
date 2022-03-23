@@ -43,7 +43,6 @@ using WebAppInstallationAcceptanceCallback =
 using WebAppInstallDialogCallback = base::OnceCallback<void(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;
 
 enum class InstallableCheckResult {

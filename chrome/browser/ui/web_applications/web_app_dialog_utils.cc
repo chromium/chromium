@@ -30,26 +30,35 @@
 
 namespace web_app {
 
+using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
+
 namespace {
 
 void OnWebAppInstallShowInstallDialog(
+    WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
     chrome::PwaInProductHelpState iph_state,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);
-  if (for_installable_site == ForInstallableSite::kYes) {
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
-    chrome::ShowPWAInstallBubble(
-        initiator_web_contents, std::move(web_app_info),
-        std::move(web_app_acceptance_callback), iph_state);
-  } else {
-    chrome::ShowWebAppInstallDialog(initiator_web_contents,
-                                    std::move(web_app_info),
-                                    std::move(web_app_acceptance_callback));
+
+  switch (flow) {
+    case WebAppInstallFlow::kInstallSite:
+      web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+      chrome::ShowPWAInstallBubble(
+          initiator_web_contents, std::move(web_app_info),
+          std::move(web_app_acceptance_callback), iph_state);
+      return;
+    case WebAppInstallFlow::kCreateShortcut:
+      chrome::ShowWebAppInstallDialog(initiator_web_contents,
+                                      std::move(web_app_info),
+                                      std::move(web_app_acceptance_callback));
+      return;
+    case WebAppInstallFlow::kUnknown:
+      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 WebAppInstalledCallback& GetInstalledCallbackForTesting() {
@@ -93,8 +102,9 @@ bool CanPopOutWebApp(Profile* profile) {
          !profile->IsOffTheRecord();
 }
 
-void CreateWebAppFromCurrentWebContents(Browser* browser,
-                                        bool force_shortcut_app) {
+void CreateWebAppFromCurrentWebContents(
+    Browser* browser,
+    WebAppInstallManager::WebAppInstallFlow flow) {
   DCHECK(CanCreateWebApp(browser));
 
   content::WebContents* web_contents =
@@ -107,15 +117,16 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
-          web_contents, force_shortcut_app
-                            ? webapps::InstallTrigger::CREATE_SHORTCUT
-                            : webapps::InstallTrigger::MENU);
+          web_contents,
+          flow == WebAppInstallManager::WebAppInstallFlow::kCreateShortcut
+              ? webapps::InstallTrigger::CREATE_SHORTCUT
+              : webapps::InstallTrigger::MENU);
 
   WebAppInstalledCallback callback = base::DoNothing();
 
   provider->install_manager().InstallWebAppFromManifestWithFallback(
-      web_contents, force_shortcut_app, install_source,
-      base::BindOnce(OnWebAppInstallShowInstallDialog, install_source,
+      web_contents, flow, install_source,
+      base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      chrome::PwaInProductHelpState::kNotShown),
       base::BindOnce(OnWebAppInstalled, std::move(callback)));
 }
@@ -131,8 +142,9 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
 
   provider->install_manager().InstallWebAppFromManifest(
       web_contents, bypass_service_worker_check, install_source,
-      base::BindOnce(OnWebAppInstallShowInstallDialog, install_source,
-                     iph_state),
+      base::BindOnce(OnWebAppInstallShowInstallDialog,
+                     WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+                     install_source, iph_state),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
   return true;
 }

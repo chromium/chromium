@@ -293,7 +293,7 @@ class WebAppInstallManagerTest
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromManifestWithFallback(
-        web_contents(), /*force_shortcut_app=*/false,
+        web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
