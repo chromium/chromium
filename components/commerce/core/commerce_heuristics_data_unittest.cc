@@ -52,6 +52,22 @@ class CommerceHeuristicsDataTest : public testing::Test {
   }
 };
 
+TEST_F(CommerceHeuristicsDataTest, TestVersion) {
+  base::Version version1("2022.1.1.1200");
+  commerce_heuristics::CommerceHeuristicsData::GetInstance().UpdateVersion(
+      version1);
+  ASSERT_EQ(
+      commerce_heuristics::CommerceHeuristicsData::GetInstance().GetVersion(),
+      "2022.1.1.1200");
+
+  base::Version version2("2022.2.1.1300");
+  commerce_heuristics::CommerceHeuristicsData::GetInstance().UpdateVersion(
+      version2);
+  ASSERT_EQ(
+      commerce_heuristics::CommerceHeuristicsData::GetInstance().GetVersion(),
+      "2022.2.1.1300");
+}
+
 TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   ASSERT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
                   .PopulateDataFromComponent(kHintHeuristicsJSONData,
