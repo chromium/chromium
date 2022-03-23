@@ -74,6 +74,9 @@ class SideSearchBrowserController
   // Toggles panel visibility.
   void ToggleSidePanel();
 
+  // Clobbers all side search side panels in current browser.
+  void ClobberAllInCurrentBrowser();
+
  private:
   // Gets and sets the toggled state of the side panel. If called with
   // kSideSearchStatePerTab enabled this determines whether the side panel

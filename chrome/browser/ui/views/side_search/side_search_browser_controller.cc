@@ -455,6 +455,15 @@ void SideSearchBrowserController::CloseSidePanel(
     ClearSideContentsCacheForActiveTab();
 }
 
+void SideSearchBrowserController::ClobberAllInCurrentBrowser() {
+  auto* tab_strip_model = browser_view_->browser()->tab_strip_model();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    SideSearchTabContentsHelper::FromWebContents(
+        tab_strip_model->GetWebContentsAt(i))
+        ->set_toggled_open(false);
+  }
+}
+
 void SideSearchBrowserController::ClearSideContentsCacheForActiveTab() {
   web_view_->SetWebContents(nullptr);
 

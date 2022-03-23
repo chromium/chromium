@@ -108,6 +108,8 @@ void SidePanelToolbarButton::ButtonPressed() {
     return;
   }
 
+  browser_view->MaybeClobberAllSideSearchSidePanels();
+
   if (!side_panel_webview_) {
     // Using base::Unretained(this) is safe here because the side panel (and the
     // web view as its child) will be destroyed before the toolbar which will
