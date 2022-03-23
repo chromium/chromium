@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.js';
+import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 

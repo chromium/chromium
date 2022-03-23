@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/icons.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview Polymer element for a container used in displaying network
  * health info.
  */
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-health-container',
 
   properties: {

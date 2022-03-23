@@ -108,7 +108,7 @@ js_library("internet_detail_page") {
     "//ui/webui/resources/cr_components/chromeos/network:network_property_list_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container",
     "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",

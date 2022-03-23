@@ -26,7 +26,7 @@ group("polymer3_elements") {
     "cellular_setup:polymer3_elements",
     "multidevice_setup:polymer3_elements",
     "network:polymer3_elements",
-    "network_health:polymer3_elements",
+    "network_health:web_components",
     "quick_unlock:polymer3_elements",
     "smb_shares:web_components",
     "traffic_counters:web_components",

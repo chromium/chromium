@@ -22,8 +22,8 @@ js_library("network_diagnostics_test") {
     ":network_health_test_utils",
     "../../..:chai_assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network_health:mojo_interface_provider.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:mojo_interface_provider",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -33,19 +33,19 @@ js_library("routine_group_test") {
     ":network_health_test_utils",
     "../../..:chai_assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("network_health_test_utils") {
-  deps = [ "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m" ]
+  deps = [ "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics" ]
 }
 
 js_library("fake_network_diagnostics_routines") {
   deps = [
     ":network_health_test_utils",
     "../../..:chai_assert",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
   ]
 }

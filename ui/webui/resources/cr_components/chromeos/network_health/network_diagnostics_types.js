@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 
 /**
  * @fileoverview
@@ -18,7 +16,7 @@
  *   result: chromeos.networkDiagnostics.mojom.RoutineResult,
  * }}
  */
-/* #export */ let RoutineResponse;
+export let RoutineResponse;
 
 /**
  * A network diagnostics routine. Holds descriptive information about the
@@ -33,13 +31,13 @@
  *   result: ?chromeos.networkDiagnostics.mojom.RoutineResult,
  * }}
  */
-/* #export */ let Routine;
+export let Routine;
 
 /**
  * Definition for different groups of network routines.
  * @enum {number}
  */
-/* #export */ const RoutineGroup = {
+export const RoutineGroup = {
   CONNECTION: 0,
   WIFI: 1,
   PORTAL: 2,
@@ -50,7 +48,7 @@
   ARC: 7
 };
 
-/* #export */ const Icons = {
+export const Icons = {
   TEST_FAILED: 'test_failed.png',
   TEST_NOT_RUN: 'test_not_run.png',
   TEST_PASSED: 'test_passed.png'

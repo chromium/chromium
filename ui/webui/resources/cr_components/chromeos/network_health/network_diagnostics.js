@@ -2,9 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/js/load_time_data.m.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import '../../../cr_elements/cr_button/cr_button.m.js';
+import './routine_group.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {getNetworkDiagnosticsService} from './mojo_interface_provider.js';
+import {Routine, RoutineGroup, RoutineResponse} from './network_diagnostics_types.js';
 
 /**
  * @fileoverview Polymer element for interacting with Network Diagnostics.
@@ -35,6 +45,7 @@ function createRoutine(name, type, group, func) {
 }
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-diagnostics',
 
   behaviors: [

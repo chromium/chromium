@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://connectivity-diagnostics/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/routine_group.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/routine_group.js';
 
-import {Icons, Routine} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.m.js';
+import {Icons, Routine} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';

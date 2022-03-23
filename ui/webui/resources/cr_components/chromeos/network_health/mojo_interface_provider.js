@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 
 /**
  * @fileoverview
@@ -25,7 +23,7 @@ let networkDiagnosticsService = null;
  *     {!chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  *     testNetworkDiagnosticsService
  */
-/* #export */ function setNetworkDiagnosticsServiceForTesting(
+export function setNetworkDiagnosticsServiceForTesting(
     testNetworkDiagnosticsService) {
   networkDiagnosticsService = testNetworkDiagnosticsService;
 }
@@ -34,7 +32,7 @@ let networkDiagnosticsService = null;
  * @return
  *     {!chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  */
-/* #export */ function getNetworkDiagnosticsService() {
+export function getNetworkDiagnosticsService() {
   if (networkDiagnosticsService) {
     return networkDiagnosticsService;
   }

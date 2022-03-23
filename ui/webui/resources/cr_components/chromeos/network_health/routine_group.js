@@ -6,7 +6,20 @@
  * @fileoverview Polymer element for a group of diagnostic routines.
  */
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './network_health_container.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {Icons, Routine} from './network_diagnostics_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'routine-group',
 
   behaviors: [

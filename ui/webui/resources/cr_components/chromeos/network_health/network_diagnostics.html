@@ -1,42 +1,27 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="network_diagnostics_mojo.html">
-<link rel="import" href="network_diagnostics_types.html">
-<link rel="import" href="routine_group.html">
-
-<dom-module id="network-diagnostics">
-  <template>
-    <routine-group name="[[i18n('NetworkDiagnosticsConnectionGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.CONNECTION)]]">
+<routine-group name="[[i18n('NetworkDiagnosticsConnectionGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.CONNECTION)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsWifiGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.WIFI)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsCaptivePortal')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.PORTAL)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsGatewayGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.GATEWAY)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsFirewallGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.FIREWALL)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsDnsGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.DNS)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsGoogleServicesGroup')]]"
+    routines=
+        "[[getRoutineGroup_(routines_.*, RoutineGroup_.GOOGLE_SERVICES)]]">
+</routine-group>
+<template is="dom-if" if="[[areArcNetworkingRoutinesEnabled_]]" restamp>
+    <routine-group  name="[[i18n('NetworkDiagnosticsArcGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.ARC)]]">
     </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsWifiGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.WIFI)]]">
-    </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsCaptivePortal')]]"
-      routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.PORTAL)]]">
-    </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsGatewayGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.GATEWAY)]]">
-    </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsFirewallGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.FIREWALL)]]">
-    </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsDnsGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.DNS)]]">
-    </routine-group>
-    <routine-group name="[[i18n('NetworkDiagnosticsGoogleServicesGroup')]]"
-        routines=
-            "[[getRoutineGroup_(routines_.*, RoutineGroup_.GOOGLE_SERVICES)]]">
-    </routine-group>
-    <template is="dom-if" if="[[areArcNetworkingRoutinesEnabled_]]" restamp>
-      <routine-group  name="[[i18n('NetworkDiagnosticsArcGroup')]]"
-          routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.ARC)]]">
-      </routine-group>
-    </template>
-  </template>
-  <script src="network_diagnostics.js"></script>
-</dom-module>
+</template>

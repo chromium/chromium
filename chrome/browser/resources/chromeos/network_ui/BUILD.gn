@@ -79,7 +79,7 @@ js_library("network_ui") {
   deps = [
     ":network_ui_browser_proxy",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

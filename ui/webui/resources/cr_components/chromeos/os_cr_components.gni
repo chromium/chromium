@@ -75,4 +75,10 @@ cr_components_migrated_imports = [
   "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.html",
   "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_utils.html",
   "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_types.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/mojo_interface_provider.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/network_health_container.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/network_health_summary.html",
+  "ui/webui/resources/cr_components/chromeos/network_health/routine_group.html",
 ]

@@ -1,55 +1,43 @@
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="network_diagnostics_mojo.html">
-<link rel="import" href="network_diagnostics_types.html">
-<link rel="import" href="network_health_container.html">
+<style>
+  .routine-container {
+    align-items: center;
+    display: flex;
+    height: 20px;
+    margin: 5px;
+    padding: 5px;
+  }
+  .routine-icon {
+    height: 25px;
+    width: auto;
+  }
+  .routine-name {
+    flex: 1;
+    font-size: 0.8rem;
+    padding-inline-start: 10px;
+  }
+</style>
 
-<dom-module id="routine-group">
-  <template>
-    <style>
-      .routine-container {
-        align-items: center;
-        display: flex;
-        height: 20px;
-        margin: 5px;
-        padding: 5px;
-      }
-      .routine-icon {
-        height: 25px;
-        width: auto;
-      }
-      .routine-name {
-        flex: 1;
-        font-size: 0.8rem;
-        padding-inline-start: 10px;
-      }
-    </style>
-
-    <network-health-container expanded="[[expanded]]" label="[[name]]"
-        on-toggle-expanded="onToggleExpanded_">
-      <span slot="header" >
-        <template is="dom-if" if="[[running_]]">
-          <paper-spinner-lite active></paper-spinner-lite>
-        </template>
-        <img class="routine-icon" hidden="[[!showGroupIcon_]]"
-            src="[[getGroupIcon_(routines.*)]]">
-      </span>
-      <template is="dom-repeat" items="[[routines]]" as="routine"
-          mutable-data>
-        <div class="routine-container" aria-label="[[i18n(routine.name)]]"
-            aria-description="[[routine.ariaDescription]]">
-          <img class="routine-icon" src="[[getRoutineIcon_(routine.result)]]">
-          <div aria-hidden="true" class="routine-name">
-            [[i18n(routine.name)]]
-          </div>
-          <div id="result-msg" aria-hidden="true" hidden="[[!routine.resultMsg]]">
-            [[routine.resultMsg]]
-          </div>
-        </div>
-      </template>
-    </network-health-container>
-
+<network-health-container expanded="[[expanded]]" label="[[name]]"
+    on-toggle-expanded="onToggleExpanded_">
+  <span slot="header" >
+    <template is="dom-if" if="[[running_]]">
+      <paper-spinner-lite active></paper-spinner-lite>
+    </template>
+    <img class="routine-icon" hidden="[[!showGroupIcon_]]"
+        src="[[getGroupIcon_(routines.*)]]">
+  </span>
+  <template is="dom-repeat" items="[[routines]]" as="routine"
+      mutable-data>
+    <div class="routine-container" aria-label="[[i18n(routine.name)]]"
+        aria-description="[[routine.ariaDescription]]">
+      <img class="routine-icon" src="[[getRoutineIcon_(routine.result)]]">
+      <div aria-hidden="true" class="routine-name">
+        [[i18n(routine.name)]]
+      </div>
+      <div id="result-msg" aria-hidden="true" hidden="[[!routine.resultMsg]]">
+        [[routine.resultMsg]]
+      </div>
+    </div>
   </template>
-  <script src="routine_group.js"></script>
-</dom-module>
+</network-health-container>
+
