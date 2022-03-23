@@ -2,7 +2,7 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
 // META: script=/common/dispatcher/dispatcher.js
-// META: script=../credentialless/resources/common.js
+// META: script=/html/cross-origin-embedder-policy/credentialless/resources/common.js
 
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
 const control_iframe = document.createElement('iframe');

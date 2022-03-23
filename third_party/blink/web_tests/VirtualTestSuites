@@ -855,7 +855,7 @@
   {
     "prefix": "partitioned-cookies",
     "bases": ["external/wpt/cookies/partitioned-cookies/",
-              "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/",
+              "external/wpt/html/anonymous-iframe/",
               "http/tests/cookies/partitioned-cookies",
               "http/tests/inspector-protocol/network/"],
     "args": ["--enable-features=PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
@@ -1017,7 +1017,7 @@
       "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame",
-      "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe"
+      "external/wpt/html/anonymous-iframe"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,SharedStorageAPI,Prerender2,PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
   },
@@ -1026,7 +1026,7 @@
     "bases": [
       "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
-      "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe"
+      "external/wpt/html/anonymous-iframe"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,SharedStorageAPI,Prerender2,PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
   },

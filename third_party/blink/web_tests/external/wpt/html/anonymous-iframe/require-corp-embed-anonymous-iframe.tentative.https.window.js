@@ -28,8 +28,8 @@ promise_test(async t => {
   child.anonymous = true;
   t.add_cleanup(() => child.remove());
 
-  child.src =
-    "../resources/navigate-none.sub.html?postMessageTo=top";
+  child.src = "/html/cross-origin-embedder-policy/resources/" +
+    "navigate-none.sub.html?postMessageTo=top";
   document.body.append(child);
 
   assert_true(await iframe_allowed(child),
@@ -40,8 +40,8 @@ promise_test(async t => {
   // anonymous property from the parent.
   const grandchild = child.contentDocument.createElement("iframe");
 
-  grandchild.src =
-    `../resources/navigate-none.sub.html?postMessageTo=top`;
+  grandchild.src = "/html/cross-origin-embedder-policy/resources/" +
+    "navigate-none.sub.html?postMessageTo=top";
   child.contentDocument.body.append(grandchild);
 
   assert_true(await iframe_allowed(grandchild),

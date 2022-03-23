@@ -8,7 +8,7 @@
 <!-- Pull in executor_path needed by newPopup / newIframe -->
 <script src="/html/cross-origin-embedder-policy/credentialless/resources/common.js"></script>
 <!-- Pull in newPopup / newIframe -->
-<script src="/html/cross-origin-embedder-policy/anonymous-iframe/resources/common.js"></script>
+<script src="/html/anonymous-iframe/resources/common.js"></script>
 <body>
 <script>
 
@@ -27,8 +27,7 @@ promise_test(async t => {
     const importScript = ${importScript};
     await importScript("/html/cross-origin-embedder-policy/credentialless" +
                        "/resources/common.js");
-    await importScript("/html/cross-origin-embedder-policy/anonymous-iframe" +
-                       "/resources/common.js");
+    await importScript("/html/anonymous-iframe/resources/common.js");
     await importScript("/common/utils.js");
     send("${response_queue_uuid}", newIframe("${origin}"));
   `;

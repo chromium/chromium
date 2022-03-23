@@ -1,7 +1,7 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
 // META: script=/common/dispatcher/dispatcher.js
-// META: script=../credentialless/resources/common.js
+// META: script=/html/cross-origin-embedder-policy/credentialless/resources/common.js
 // META: script=./resources/common.js
 // META: timeout=long
 
@@ -33,8 +33,7 @@ promise_test(async test => {
     await importScript("/common/utils.js");
     await importScript("/html/cross-origin-embedder-policy/credentialless" +
       "/resources/common.js");
-    await importScript("/html/cross-origin-embedder-policy/anonymous-iframe" +
-      "/resources/common.js");
+    await importScript("/html/anonymous-iframe/resources/common.js");
     const support_loading_mode_fenced_frame =
       "|header(Supports-Loading-Mode,fenced-frame)";
     const anonymous_iframe_2 =
