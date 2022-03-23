@@ -444,6 +444,7 @@ test("components_unittests") {
       "//components/media_router/browser/android:java",
       "//components/media_router/browser/android:test_support_java",
       "//components/messages/android:java",
+      "//components/messages/android:unit_tests",
       "//components/offline_items_collection/core:native_java_unittests_java",
       "//components/paint_preview/browser/android:java",
       "//components/paint_preview/player/android:unit_tests",
