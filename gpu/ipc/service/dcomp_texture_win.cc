@@ -231,7 +231,15 @@ void DCOMPTexture::SendOutputRect() {
   output_rect.set_x(window_relative_rect_.x() + parent_window_rect_.x());
   output_rect.set_y(window_relative_rect_.y() + parent_window_rect_.y());
   if (last_output_rect_ != output_rect) {
-    client_->OnOutputRectChange(output_rect);
+    if (!output_rect.IsEmpty()) {
+      // The initial `OnUpdateParentWindowRect()` call can cause an empty
+      // `output_rect`.
+      // Set MFMediaEngine's `UpdateVideoStream()` with an non-empty destination
+      // rectangle. Otherwise, the next `EnableWindowlessSwapchainMode()` call
+      // to MFMediaEngine will skip the creation of the DCOMP surface handle.
+      // Then, the next `GetVideoSwapchainHandle()` call returns S_FALSE.
+      client_->OnOutputRectChange(output_rect);
+    }
     last_output_rect_ = output_rect;
   }
 }
