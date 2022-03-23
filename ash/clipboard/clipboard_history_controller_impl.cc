@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -324,6 +325,16 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesForTest(
                    std::move(callback));
 }
 
+void ClipboardHistoryControllerImpl::BlockGetHistoryValuesForTest() {
+  get_history_values_blocker_for_test_.reset();
+  get_history_values_blocker_for_test_ = std::make_unique<base::OneShotEvent>();
+}
+
+void ClipboardHistoryControllerImpl::ResumeGetHistoryValuesForTest() {
+  DCHECK(get_history_values_blocker_for_test_);
+  get_history_values_blocker_for_test_->Signal();
+}
+
 bool ClipboardHistoryControllerImpl::ShouldShowNewFeatureBadge() const {
   return chromeos::features::IsClipboardHistoryContextMenuNudgeEnabled() &&
          nudge_controller_->ShouldShowNewFeatureBadge();
@@ -416,8 +427,28 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     GetHistoryValuesCallback callback,
     std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
         encoded_pngs) {
+  // If a test is performing some work that must be done before history values
+  // are returned, wait to run this function until that work is finished.
+  if (get_history_values_blocker_for_test_ &&
+      !get_history_values_blocker_for_test_->is_signaled()) {
+    get_history_values_blocker_for_test_->Post(
+        FROM_HERE,
+        base::BindOnce(
+            &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
+            weak_ptr_factory_.GetWeakPtr(), item_id_filter, std::move(callback),
+            std::move(encoded_pngs)));
+    return;
+  }
+
   base::Value item_results(base::Value::Type::LIST);
   DCHECK(encoded_pngs);
+
+  // Check after asynchronous PNG encoding finishes to make sure we have not
+  // entered a state where clipboard history is disabled, e.g., a locked screen.
+  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+    std::move(callback).Run(std::move(item_results));
+    return;
+  }
 
   bool all_images_encoded = true;
   // Get the clipboard data for each clipboard history item.
@@ -596,7 +627,7 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
   }
 
   if (confirmed_operation_callback_for_test_)
-    confirmed_operation_callback_for_test_.Run();
+    confirmed_operation_callback_for_test_.Run(/*success=*/true);
 }
 
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
@@ -676,10 +707,14 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     aura::Window* intended_window,
     ClipboardHistoryItem item,
     bool paste_plain_text) {
-  // It's possible that the window could change after posting the
-  // PasteClipboardHistoryItem task is scheduled.
-  if (!intended_window || intended_window != window_util::GetActiveWindow())
+  // It's possible that the window could change or we could enter a disabled
+  // mode after posting the `PasteClipboardHistoryItem()` task.
+  if (!intended_window || intended_window != window_util::GetActiveWindow() ||
+      !ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+    if (confirmed_operation_callback_for_test_)
+      confirmed_operation_callback_for_test_.Run(/*success=*/false);
     return;
+  }
 
   auto* clipboard = GetClipboard();
   std::unique_ptr<ui::ClipboardData> original_data;

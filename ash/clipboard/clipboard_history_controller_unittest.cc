@@ -82,17 +82,18 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   void OnShutdown() override {}
 };
 
-void ExpectHistoryValueMatchesBitmap(const base::Value& value,
+void ExpectHistoryValueMatchesBitmap(const base::Value::Dict* value,
                                      const SkBitmap& expected_bitmap) {
-  auto* format = value.FindKey("displayFormat");
-  EXPECT_TRUE(format);
-  EXPECT_EQ(format->GetString(), "png");
+  ASSERT_TRUE(value);
+  auto* format = value->FindString("displayFormat");
+  ASSERT_TRUE(format);
+  EXPECT_EQ("png", *format);
 
-  auto* image_data = value.FindKey("imageData");
-  EXPECT_TRUE(image_data);
+  auto* image_data = value->FindString("imageData");
+  ASSERT_TRUE(image_data);
   auto png = ui::ClipboardData::EncodeBitmapData(expected_bitmap);
   std::string png_data_url = webui::GetPngDataUrl(png.data(), png.size());
-  EXPECT_EQ(png_data_url, image_data->GetString());
+  EXPECT_EQ(png_data_url, *image_data);
 }
 
 }  // namespace
@@ -119,6 +120,40 @@ class ClipboardHistoryControllerTest : public AshTestBase {
   }
 
   void ShowMenu() { PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN); }
+
+  base::Value::List GetHistoryValues() {
+    base::test::TestFuture<base::Value> future;
+    GetClipboardHistoryController()->GetHistoryValuesForTest(
+        future.GetCallback());
+    auto result = future.Take();
+    EXPECT_TRUE(result.is_list());
+    return std::move(result.GetList());
+  }
+
+  void TestEnteringLockScreen() {
+    // Querying clipboard history should return nothing if the screen is locked
+    // while the request is in progress.
+    GetClipboardHistoryController()->BlockGetHistoryValuesForTest();
+    base::test::TestFuture<base::Value> future;
+    GetClipboardHistoryController()->GetHistoryValuesForTest(
+        future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+
+    auto* session_controller = Shell::Get()->session_controller();
+    session_controller->LockScreen();
+    GetSessionControllerClient()->FlushForTest();  // `LockScreen()` is async.
+    EXPECT_TRUE(session_controller->IsScreenLocked());
+
+    GetClipboardHistoryController()->ResumeGetHistoryValuesForTest();
+    auto* locked_during_query_result = future.Get().GetIfList();
+    ASSERT_TRUE(locked_during_query_result);
+    EXPECT_EQ(0u, locked_during_query_result->size());
+
+    // Querying clipboard history should return nothing if the screen is locked
+    // before the request is made.
+    auto locked_before_query_result = GetHistoryValues();
+    EXPECT_EQ(0u, locked_before_query_result.size());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -341,19 +376,13 @@ TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
   }
   FlushMessageLoop();
 
-  // The bitmap should be encoded to a PNG once this task completes.
-  base::test::TestFuture<base::Value> future;
-  GetClipboardHistoryController()->GetHistoryValuesForTest(
-      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  // The bitmap should be encoded to a PNG once this task completes. Manually
+  // pry into the contents of the result to confirm that the newly-encoded PNG
+  // is included.
+  auto result = GetHistoryValues();
+  EXPECT_EQ(1u, result.size());
 
-  // Manually pry into the contents of the result to confirm that the
-  // newly-encoded PNG is included.
-  base::Value result = future.Take();
-  EXPECT_TRUE(result.is_list());
-  EXPECT_EQ(1u, result.GetListDeprecated().size());
-
-  ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[0], test_bitmap);
+  ExpectHistoryValueMatchesBitmap(result[0].GetIfDict(), test_bitmap);
 }
 
 TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
@@ -368,22 +397,16 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
     FlushMessageLoop();
   }
 
-  // The bitmaps should be encoded to PNGs once this task completes.
-  base::test::TestFuture<base::Value> future;
-  GetClipboardHistoryController()->GetHistoryValuesForTest(
-      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-
-  // Manually pry into the contents of the result to confirm that the
-  // newly-encoded PNGs are included.
-  base::Value result = future.Take();
-  EXPECT_TRUE(result.is_list());
-  auto num_results = result.GetListDeprecated().size();
+  // The bitmaps should be encoded to PNGs once this task completes. Manually
+  // pry into the contents of the result to confirm that the newly-encoded PNGs
+  // are included.
+  auto result = GetHistoryValues();
+  auto num_results = result.size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
   // History values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
-    ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[i],
+    ExpectHistoryValueMatchesBitmap(result[i].GetIfDict(),
                                     test_bitmaps[num_results - 1 - i]);
   }
 }
@@ -409,25 +432,47 @@ TEST_F(ClipboardHistoryControllerTest, MAYBE_WriteBitmapWhileEncodingImage) {
   GetClipboardHistoryController()
       ->set_new_bitmap_to_write_while_encoding_for_test(test_bitmaps[1]);
 
-  base::test::TestFuture<base::Value> future;
-  GetClipboardHistoryController()->GetHistoryValuesForTest(
-      future.GetCallback());
-
-  // Both bitmaps should be encoded to a PNG once this task completes.
-  EXPECT_TRUE(future.Wait());
-
-  // Manually pry into the contents of the result to confirm that the
-  // newly-encoded PNGs are included.
-  base::Value result = future.Take();
-  EXPECT_TRUE(result.is_list());
-  auto num_results = result.GetListDeprecated().size();
+  // Both bitmaps should be encoded to a PNG once this task completes. Manually
+  // pry into the contents of the result to confirm that the newly-encoded PNGs
+  // are included.
+  auto result = GetHistoryValues();
+  auto num_results = result.size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
   // History values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
-    ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[i],
+    ExpectHistoryValueMatchesBitmap(result[i].GetIfDict(),
                                     test_bitmaps[num_results - 1 - i]);
   }
+}
+
+TEST_F(ClipboardHistoryControllerTest, LockedScreenText) {
+  // Write text to ClipboardHistory and verify that it can be retrieved.
+  WriteToClipboard("test");
+  auto history_list_value = GetHistoryValues();
+  EXPECT_EQ(1u, history_list_value.size());
+  auto* history_list_item = history_list_value[0].GetIfDict();
+  EXPECT_TRUE(history_list_item);
+  auto* history_list_item_text = history_list_item->FindString("textData");
+  EXPECT_TRUE(history_list_item_text);
+  EXPECT_EQ("test", *history_list_item_text);
+
+  TestEnteringLockScreen();
+}
+
+TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
+  // Write a bitmap to ClipboardHistory and verify that it can be returned.
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteImage(test_bitmap);
+  }
+  FlushMessageLoop();
+  auto result = GetHistoryValues();
+  EXPECT_EQ(1u, result.size());
+  ExpectHistoryValueMatchesBitmap(result[0].GetIfDict(), test_bitmap);
+
+  TestEnteringLockScreen();
 }
 
 }  // namespace ash

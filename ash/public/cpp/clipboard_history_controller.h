@@ -76,9 +76,12 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // its lifetime.
   virtual std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() = 0;
 
-  // Returns the history which tracks what is being copied to the clipboard.
-  // Only the items listed in |item_id_filter| are returned. If |item_id_filter|
-  // is empty, then all items in the history are returned.
+  // Calls `callback` with the clipboard history list, which tracks what has
+  // been copied to the clipboard. Only the items listed in |item_id_filter| are
+  // returned. If |item_id_filter| is empty, then all items in the history are
+  // returned. If clipboard history is disabled in the current mode, `callback`
+  // will be called with an empty history list.
+  // TODO(crbug.com/1309666): Remove const ref from |item_id_filter| param type.
   virtual void GetHistoryValues(const std::set<std::string>& item_id_filter,
                                 GetHistoryValuesCallback callback) const = 0;
 

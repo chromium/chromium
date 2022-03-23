@@ -19,6 +19,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/one_shot_event.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -78,6 +79,12 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   void GetHistoryValuesForTest(GetHistoryValuesCallback callback) const;
 
+  // Used to delay the post-encoding step of `GetHistoryValues()` until the
+  // completion of some work that needs to happen after history values have been
+  // requested and before the values are returned.
+  void BlockGetHistoryValuesForTest();
+  void ResumeGetHistoryValuesForTest();
+
   // Whether the ClipboardHistory has items.
   bool IsEmpty() const;
 
@@ -109,7 +116,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   }
 
   void set_confirmed_operation_callback_for_test(
-      base::RepeatingClosure new_callback) {
+      base::RepeatingCallback<void(bool)> new_callback) {
     confirmed_operation_callback_for_test_ = new_callback;
   }
 
@@ -144,11 +151,12 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
-  // Invoked by GetHistoryValues once all clipboard instances with images have
-  // been encoded into PNGs. Returns the history which tracks what is being
-  // copied to the clipboard. Only the items listed in `item_id_filter` are
-  // returned. If `item_id_filter` is empty, then all items in the history are
-  // returned.
+  // Invoked by `GetHistoryValues()` once all clipboard instances with images
+  // have been encoded into PNGs. Calls `callback` with the clipboard history
+  // list, which tracks what has been copied to the clipboard. Only the items
+  // listed in `item_id_filter` are returned. If `item_id_filter` is empty, then
+  // all items in the history are returned. If clipboard history is disabled in
+  // the current mode, `callback` will be called with an empty history list.
   void GetHistoryValuesWithEncodedPNGs(
       const std::set<std::string>& item_id_filter,
       GetHistoryValuesCallback callback,
@@ -219,6 +227,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // history menu and are waiting for the confirmations from `ClipboardHistory`.
   int pastes_to_be_confirmed_ = 0;
 
+  // Created when a test requests that `GetHistoryValues()` wait for some work
+  // to be done before encoding finishes. Reset and recreated if the same test
+  // makes the request to pause `GetHistoryValues()` again.
+  std::unique_ptr<base::OneShotEvent> get_history_values_blocker_for_test_;
+
   // The delay interval for restoring the clipboard buffer to its original
   // state following a paste event.
   absl::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
@@ -227,9 +240,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // menu opens.
   base::RepeatingClosure initial_item_selected_callback_for_test_;
 
-  // Called when the controller is notified of the confirmed clipboard data
-  // operation.
-  base::RepeatingClosure confirmed_operation_callback_for_test_;
+  // Called when a copy or paste finishes. Accepts the operation's success as an
+  // argument.
+  base::RepeatingCallback<void(bool)> confirmed_operation_callback_for_test_;
 
   // A new bitmap to be written to the clipboard while existing images are being
   // encoded during `GetHistoryValues()`, which will force `GetHistoryValues()`
