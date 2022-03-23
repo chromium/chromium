@@ -66,6 +66,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
       mojo::PendingAssociatedRemote<mojom::StubInterface> host,
       mojo::PendingAssociatedReceiver<mojom::StubInterface> view_receiver)
       override;
+  void ForwardCutCopyPaste(mojom::CutCopyPasteCommand command) override;
+  static void ForwardCutCopyPasteToNSApp(mojom::CutCopyPasteCommand command);
 
  private:
   friend class base::NoDestructor<ApplicationBridge>;

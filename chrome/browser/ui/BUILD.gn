@@ -4988,8 +4988,6 @@ static_library("ui") {
         "views/apps/native_app_window_frame_view_mac.h",
         "views/apps/native_app_window_frame_view_mac.mm",
         "views/chrome_views_delegate_mac.cc",
-        "views/frame/browser_view_commands_mac.h",
-        "views/frame/browser_view_commands_mac.mm",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
         "views/user_education/help_bubble_factory_mac.h",

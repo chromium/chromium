@@ -168,6 +168,27 @@ void ApplicationBridge::CreateWebContentsNSView(
                                    view_receiver.PassHandle());
 }
 
+void ApplicationBridge::ForwardCutCopyPaste(
+    mojom::CutCopyPasteCommand command) {
+  ForwardCutCopyPasteToNSApp(command);
+}
+
+// static
+void ApplicationBridge::ForwardCutCopyPasteToNSApp(
+    mojom::CutCopyPasteCommand command) {
+  switch (command) {
+    case mojom::CutCopyPasteCommand::kCut:
+      [NSApp sendAction:@selector(cut:) to:nil from:nil];
+      break;
+    case mojom::CutCopyPasteCommand::kCopy:
+      [NSApp sendAction:@selector(copy:) to:nil from:nil];
+      break;
+    case mojom::CutCopyPasteCommand::kPaste:
+      [NSApp sendAction:@selector(paste:) to:nil from:nil];
+      break;
+  }
+}
+
 ApplicationBridge::ApplicationBridge() = default;
 
 ApplicationBridge::~ApplicationBridge() = default;

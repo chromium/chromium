@@ -253,7 +253,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
-#include "chrome/browser/ui/views/frame/browser_view_commands_mac.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
+#include "components/remote_cocoa/browser/application_host.h"
 #endif
 
 #if defined(USE_AURA)
@@ -2492,6 +2493,22 @@ bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
       event, GetFocusManager());
 }
 
+#if BUILDFLAG(IS_MAC)
+namespace {
+remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
+    int command_id) {
+  if (command_id == IDC_CUT)
+    return remote_cocoa::mojom::CutCopyPasteCommand::kCut;
+  else if (command_id == IDC_COPY)
+    return remote_cocoa::mojom::CutCopyPasteCommand::kCopy;
+  else if (command_id == IDC_PASTE)
+    return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
+  NOTREACHED();
+  return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
+}
+}  // namespace
+#endif
+
 // TODO(devint): http://b/issue?id=1117225 Cut, Copy, and Paste are always
 // enabled in the page menu regardless of whether the command will do
 // anything. When someone selects the menu item, we just act as if they hit
@@ -2501,7 +2518,16 @@ bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
 // manager to do that.
 void BrowserView::CutCopyPaste(int command_id) {
 #if BUILDFLAG(IS_MAC)
-  ForwardCutCopyPasteToNSApp(command_id);
+  auto command = CommandFromBrowserCommand(command_id);
+  auto* application_host =
+      GetWidget() ? remote_cocoa::ApplicationHost::GetForNativeView(
+                        GetWidget()->GetNativeView())
+                  : nullptr;
+  if (application_host) {
+    application_host->GetApplication()->ForwardCutCopyPaste(command);
+  } else {
+    remote_cocoa::ApplicationBridge::ForwardCutCopyPasteToNSApp(command);
+  }
 #else
   // If a WebContents is focused, call its member method.
   //
