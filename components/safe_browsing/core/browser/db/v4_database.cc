@@ -29,6 +29,7 @@ namespace safe_browsing {
 namespace {
 
 const char kV4DatabaseSizeMetric[] = "SafeBrowsing.V4Database.Size";
+const char kV4DatabaseSizeLinearMetric[] = "SafeBrowsing.V4Database.SizeLinear";
 
 // The factory that controls the creation of the V4Database object.
 base::LazyInstance<std::unique_ptr<V4DatabaseFactory>>::Leaky g_db_factory =
@@ -335,6 +336,11 @@ void V4Database::RecordFileSizeHistograms() {
   }
   const int64_t db_size_kilobytes = static_cast<int64_t>(db_size / 1024);
   UMA_HISTOGRAM_COUNTS_1M(kV4DatabaseSizeMetric, db_size_kilobytes);
+
+  const int64_t db_size_megabytes =
+      static_cast<int64_t>(db_size_kilobytes / 1024);
+  UMA_HISTOGRAM_EXACT_LINEAR(kV4DatabaseSizeLinearMetric, db_size_megabytes,
+                             50);
 }
 
 void V4Database::CollectDatabaseInfo(
