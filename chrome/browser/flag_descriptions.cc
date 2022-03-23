@@ -1879,11 +1879,6 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
-const char kEnableSearchPrefetchName[] = "Search Prefetch";
-const char kEnableSearchPrefetchDescription[] =
-    "Allow the default search engine to specify prefetch behavior for "
-    "suggestions to search results pages.";
-
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

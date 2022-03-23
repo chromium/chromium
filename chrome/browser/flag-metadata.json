@@ -5269,11 +5269,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "search-prefetch",
-    "owners": ["ryansturm"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "search-result-inline-icon",
     "owners": ["yulunwu"],
     "expiry_milestone": 103
