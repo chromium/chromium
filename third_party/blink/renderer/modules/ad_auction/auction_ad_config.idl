@@ -15,5 +15,6 @@ dictionary AuctionAdConfig {
   unsigned long long sellerTimeout;
   record<USVString, any> perBuyerSignals;
   record<USVString, unsigned long long> perBuyerTimeouts;
+  record<USVString, unsigned short> perBuyerGroupLimits;
   sequence<AuctionAdConfig> componentAuctions;
 };

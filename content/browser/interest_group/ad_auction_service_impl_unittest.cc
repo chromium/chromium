@@ -844,6 +844,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({
+"priority": 1.59,
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
@@ -855,6 +856,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                          kOriginStringA, kOriginStringA, kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.priority = 2.0;
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -876,6 +878,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
+  EXPECT_EQ(group.priority, 1.59);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
@@ -906,6 +909,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
                                               kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.priority = 2.0;
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -927,6 +931,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
+  EXPECT_EQ(group.priority, 2.0);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(
       group.bidding_url->spec(),
@@ -1413,7 +1418,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
-  // Check that the ads didn't change.
+  // Check that the ads and bidding logic URL didn't change.
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
@@ -1424,6 +1429,45 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
             "https://example.com/render");
   EXPECT_EQ(group.ads.value()[0].metadata,
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+}
+
+// The `priority` field is not a valid number. The entire update should get
+// cancelled, since updates are atomic.
+TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"priority": "high",
+"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js"
+})",
+                                              kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.priority = 2.0;
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the priority and bidding logic URL didn't change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.priority.has_value());
+  EXPECT_EQ(group.priority.value(), 2.0);
+  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
 }
 
 // The server response can't be parsed as valid JSON. The update is cancelled.

@@ -77,6 +77,12 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeName) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializePriority) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.priority = 5.0;
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeBiddingUrl) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = GURL(kUrl1);

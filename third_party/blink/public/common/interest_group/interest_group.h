@@ -57,6 +57,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       base::Time expiry,
       url::Origin owner,
       std::string name,
+      double priority,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
       absl::optional<GURL> update_url,
@@ -81,6 +82,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   base::Time expiry;
   url::Origin owner;
   std::string name;
+  absl::optional<double> priority;  // Needs to be optional for updates.
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
   absl::optional<GURL> update_url;

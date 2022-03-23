@@ -1459,7 +1459,7 @@ TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
 }
 
 TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://host1:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());

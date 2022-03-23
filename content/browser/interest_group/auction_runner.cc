@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -75,6 +76,13 @@ const blink::InterestGroup::Ad* FindMatchingAd(
 bool IsValidBid(double bid) {
   return !std::isnan(bid) && std::isfinite(bid) && bid > 0;
 }
+
+struct StorageInterestGroupDescByPriority {
+  bool operator()(const StorageInterestGroup& a,
+                  const StorageInterestGroup& b) {
+    return a.interest_group.priority > b.interest_group.priority;
+  }
+};
 
 }  // namespace
 
@@ -452,6 +460,19 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
   ++num_owners_loaded_;
   if (!interest_groups.empty()) {
+    size_t size_limit =
+        config_->auction_ad_config_non_shared_params->all_buyers_group_limit;
+    const url::Origin& owner = interest_groups[0].interest_group.owner;
+    const auto limit_iter = config_->auction_ad_config_non_shared_params
+                                ->per_buyer_group_limits.find(owner);
+    if (limit_iter != config_->auction_ad_config_non_shared_params
+                          ->per_buyer_group_limits.cend()) {
+      size_limit = static_cast<size_t>(limit_iter->second);
+    }
+    std::sort(interest_groups.begin(), interest_groups.end(),
+              StorageInterestGroupDescByPriority());
+    interest_groups.resize(std::min(interest_groups.size(), size_limit));
+
     for (auto bidder = std::make_move_iterator(interest_groups.begin());
          bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
       // Ignore interest groups with no bidding script or no ads.

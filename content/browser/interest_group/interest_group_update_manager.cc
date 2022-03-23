@@ -160,6 +160,13 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
   blink::InterestGroup interest_group_update;
   interest_group_update.owner = owner;
   interest_group_update.name = name;
+  const base::Value* maybe_priority_value = value.FindKey("priority");
+  if (maybe_priority_value) {
+    // If the field is specified, it must be an integer or a double.
+    if (!maybe_priority_value->is_int() && !maybe_priority_value->is_double())
+      return absl::nullopt;
+    interest_group_update.priority = maybe_priority_value->GetDouble();
+  }
   const std::string* maybe_bidding_url = value.FindStringKey("biddingLogicUrl");
   if (maybe_bidding_url)
     interest_group_update.bidding_url = GURL(*maybe_bidding_url);
@@ -178,6 +185,11 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
   if (!interest_group_update.IsValid()) {
     return absl::nullopt;
   }
+  // If not specified by the update make sure the field is not specified.
+  // This must occur after the IsValid check since priority is required for a
+  // valid interest group, while an update should just keep the existing value.
+  if (!maybe_priority_value)
+    interest_group_update.priority.reset();
   return interest_group_update;
 }
 

@@ -32,6 +32,8 @@ struct InterestGroup {
   // `owner` must match the current frame URL's origin.
   url.mojom.Origin owner;
   string name;
+  // `priority` of the interest group.
+  double priority = 0.0;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
   // `bidding_wasm_helper_url` must match the current frame URL's origin.
@@ -68,13 +70,23 @@ struct AuctionAdConfigNonSharedParams {
   // JSON data, passed as object to auction worklet.
   map<url.mojom.Origin, string>? per_buyer_signals;
 
-  // Keys of `per_buyer_timeouts` must be valid HTTPS origins, or '*'. Values
-  // restrict the runtime of particular buyer's generateBid() scripts.
+  // Keys of `per_buyer_timeouts` must be valid HTTPS origins. Values restrict
+  // the runtime of particular buyer's generateBid() scripts.
   map<url.mojom.Origin, mojo_base.mojom.TimeDelta>? per_buyer_timeouts;
 
   // The value restricts generateBid() script's runtime of all buyers with
   // unspecified timeouts, if not Null.
   mojo_base.mojom.TimeDelta? all_buyers_timeout;
+
+  // Keys of `per_buyer_group_limits` must be valid HTTPS origins. Values
+  // restrict the number of bidding interest groups for a particular buyer
+  // that can participate in an auction. Values must be greater than 0.
+  map<url.mojom.Origin, uint16> per_buyer_group_limits;
+
+  // Limit on the number of bidding interest groups for any buyer. Must be
+  // greater than 0. Defaults to the largest uint16 value, which is fine
+  // in our case since the backend storage applies a lower limit.
+  uint16 all_buyers_group_limit = 65535;
 };
 
 // Configuration to pass to RunAdAuction().

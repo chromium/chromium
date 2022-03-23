@@ -657,6 +657,41 @@ bool CopyPerBuyerTimeoutsFromIdlToMojo(const ScriptState& script_state,
   return true;
 }
 
+bool CopyPerBuyerGroupLimitsFromIdlToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerGroupLimits())
+    return true;
+  for (const auto& per_buyer_group_limit : input.perBuyerGroupLimits()) {
+    if (per_buyer_group_limit.second <= 0) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerGroupLimits value",
+          String::Number(per_buyer_group_limit.second),
+          "must be greater than 0."));
+      return false;
+    }
+    if (per_buyer_group_limit.first == "*") {
+      output.auction_ad_config_non_shared_params->all_buyers_group_limit =
+          per_buyer_group_limit.second;
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_group_limit.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerGroupLimits buyer", per_buyer_group_limit.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->per_buyer_group_limits.insert(
+        buyer, per_buyer_group_limit.second);
+  }
+
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure.
@@ -683,7 +718,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyPerBuyerSignalsFromIdlToMojo(script_state, exception_state, config,
                                         *mojo_config) ||
       !CopyPerBuyerTimeoutsFromIdlToMojo(script_state, exception_state, config,
-                                         *mojo_config)) {
+                                         *mojo_config) ||
+      !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
+                                            config, *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -799,6 +836,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
     return;
   mojo_group->name = group->name();
+  mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
                                         *mojo_group)) {
     return;
