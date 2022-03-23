@@ -3214,7 +3214,7 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
   // Hide side search panel if it's right aligned.
   if (!exclude_side_search &&
       base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
-      side_search_side_panel_->GetVisible()) {
+      side_search_side_panel_ && side_search_side_panel_->GetVisible()) {
     side_search_controller_->CloseSidePanel();
     return true;
   }
