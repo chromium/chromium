@@ -572,15 +572,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "newheader", base::FeatureList::IsEnabled(
                        chromeos::features::kVirtualKeyboardNewHeader)));
 
-  // Flag used to enable system built-in IME decoder instead of NaCl.
-  features.Append(GenerateFeatureFlag("usemojodecoder", true));
-  // Enabling MojoDecoder implies the 2 previous flags are auto-enabled.
-  //   * fstinputlogic
-  //   * hmminputlogic
-  // TODO(b/171846787): Remove the 3 flags after they are removed from clients.
-  features.Append(GenerateFeatureFlag("fstinputlogic", true));
-  features.Append(GenerateFeatureFlag("hmminputlogic", true));
-
   features.Append(GenerateFeatureFlag(
       "borderedkey", base::FeatureList::IsEnabled(
                          chromeos::features::kVirtualKeyboardBorderedKey)));
