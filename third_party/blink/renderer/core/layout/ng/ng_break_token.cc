@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -13,7 +14,6 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGBreakToken : GarbageCollected<NGBreakToken> {
-  virtual ~SameSizeAsNGBreakToken() = default;
   Member<void*> member;
   unsigned flags;
 };
@@ -47,11 +47,13 @@ void AppendBreakTokenToString(const NGBreakToken* token,
 }  // namespace
 
 String NGBreakToken::ToString() const {
-  StringBuilder string_builder;
-  string_builder.Append("(");
-  string_builder.Append(InputNode().ToString());
-  string_builder.Append(")");
-  return string_builder.ToString();
+  switch (Type()) {
+    case kBlockBreakToken:
+      return To<NGBlockBreakToken>(this)->ToString();
+    case kInlineBreakToken:
+      return To<NGInlineBreakToken>(this)->ToString();
+  }
+  NOTREACHED();
 }
 
 void NGBreakToken::ShowBreakTokenTree() const {
@@ -63,6 +65,18 @@ void NGBreakToken::ShowBreakTokenTree() const {
 #endif  // DCHECK_IS_ON()
 
 void NGBreakToken::Trace(Visitor* visitor) const {
+  switch (Type()) {
+    case kBlockBreakToken:
+      To<NGBlockBreakToken>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kInlineBreakToken:
+      To<NGInlineBreakToken>(this)->TraceAfterDispatch(visitor);
+      return;
+  }
+  NOTREACHED();
+}
+
+void NGBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box_);
 }
 

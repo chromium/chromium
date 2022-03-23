@@ -90,10 +90,10 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   explicit NGInlineBreakToken(PassKey, NGLayoutInputNode node);
 
 #if DCHECK_IS_ON()
-  String ToString() const override;
+  String ToString() const;
 #endif
 
-  void Trace(Visitor*) const override;
+  void TraceAfterDispatch(Visitor*) const;
 
  private:
   const Member<const NGBreakToken>* SubBreakTokenAddress() const;

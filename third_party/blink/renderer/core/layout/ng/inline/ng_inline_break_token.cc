@@ -120,12 +120,12 @@ String NGInlineBreakToken::ToString() const {
 
 #endif  // DCHECK_IS_ON()
 
-void NGInlineBreakToken::Trace(Visitor* visitor) const {
+void NGInlineBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   // It is safe to check flags_ here because it is a const value and initialized
   // in ctor.
   if (flags_ & kHasSubBreakToken)
     visitor->Trace(*sub_break_token_);
-  NGBreakToken::Trace(visitor);
+  NGBreakToken::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

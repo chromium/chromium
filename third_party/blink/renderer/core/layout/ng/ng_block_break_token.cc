@@ -100,13 +100,13 @@ String NGBlockBreakToken::ToString() const {
 
 #endif  // DCHECK_IS_ON()
 
-void NGBlockBreakToken::Trace(Visitor* visitor) const {
+void NGBlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(data_);
   // Looking up |ChildBreakTokens()| in Trace() here is safe because
   // |const_num_children_| is const.
   for (auto& child : ChildBreakTokens())
     visitor->Trace(child);
-  NGBreakToken::Trace(visitor);
+  NGBreakToken::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

@@ -47,11 +47,12 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   }
 
 #if DCHECK_IS_ON()
-  virtual String ToString() const;
+  String ToString() const;
   void ShowBreakTokenTree() const;
 #endif
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
+  void TraceAfterDispatch(Visitor*) const;
 
  protected:
   NGBreakToken(NGBreakTokenType type,

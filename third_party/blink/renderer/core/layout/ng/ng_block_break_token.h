@@ -145,7 +145,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   const NGInlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
 #if DCHECK_IS_ON()
-  String ToString() const override;
+  String ToString() const;
 #endif
 
   using PassKey = base::PassKey<NGBlockBreakToken>;
@@ -181,7 +181,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     return MutableForOutOfFlow(this);
   }
 
-  void Trace(Visitor*) const override;
+  void TraceAfterDispatch(Visitor*) const;
 
  private:
   Member<NGBlockBreakTokenData> data_;
