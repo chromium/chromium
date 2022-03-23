@@ -616,19 +616,6 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
         unmask_auth_flow_type_);
   }
 
-  // Store request options temporarily if given. They will be used for
-  // AdditionallyPerformFidoAuth.
-  absl::optional<base::Value> request_options = absl::nullopt;
-  if (unmask_details_.fido_request_options.has_value()) {
-    // For opted-in user (CVC then FIDO case), request options are returned in
-    // unmask detail response.
-    request_options = unmask_details_.fido_request_options->Clone();
-  } else if (response.request_options.has_value()) {
-    // For Android users, request_options are provided from GetRealPan if the
-    // user has chosen to opt-in.
-    request_options = response.request_options->Clone();
-  }
-
   // Local boolean denotes whether to fill the form immediately. If CVC
   // authentication failed, report error immediately. If GetRealPan did not
   // return card authorization token (we can't call any FIDO-related flows,
@@ -697,6 +684,16 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
                                    response.card, response.cvc);
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_authorize_with_fido) {
+    absl::optional<base::Value> request_options = absl::nullopt;
+    if (unmask_details_.fido_request_options.has_value()) {
+      // For opted-in user (CVC then FIDO case), request options are returned in
+      // unmask detail response.
+      request_options = unmask_details_.fido_request_options->Clone();
+    } else if (response.request_options.has_value()) {
+      // For Android users, request_options are provided from GetRealPan if the
+      // user has chosen to opt-in.
+      request_options = response.request_options->Clone();
+    }
     AdditionallyPerformFidoAuth(response, request_options->Clone());
   }
   if (should_offer_fido_auth) {
