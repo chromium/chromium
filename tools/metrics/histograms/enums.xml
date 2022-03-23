@@ -22650,6 +22650,7 @@ Called by update_debug_scenarios.py.-->
   <int value="60" label="Application - Local/Session Storage"/>
   <int value="61" label="Application - IndexedDB"/>
   <int value="62" label="Application - Web SQL"/>
+  <int value="63" label="Performance Insights"/>
 </enum>
 
 <enum name="DevToolsRecordingEdited">
