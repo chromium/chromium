@@ -1021,6 +1021,17 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     ukm::SourceId source_id = it.second.source_id;
     DCHECK_NE(source_id, ukm::kInvalidSourceId);
     if (!it.second.running_time.is_zero()) {
+      auto new_source_id = GetSourceId(profile_, it.second.app_id);
+      if (new_source_id != ukm::kInvalidSourceId) {
+        ukm::builders::ChromeOSApp_UsageTime builder(new_source_id);
+        builder.SetAppType((int)it.second.app_type_name)
+            .SetDuration(it.second.running_time.InMilliseconds())
+            .SetUserDeviceMatrix(user_type_by_device_type_)
+            .Record(ukm::UkmRecorder::Get());
+        RemoveSourceId(new_source_id);
+      }
+
+      // Preserve a copy of UsageTime UKM to investigate the null app id issue.
       ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
       builder.SetAppType((int)app_type_name)
           .SetDuration(it.second.running_time.InMilliseconds())
@@ -1119,15 +1130,29 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
 
   for (auto& it : usage_times_from_pref_) {
     auto source_id = GetSourceId(profile_, it->app_id);
-    if (source_id == ukm::kInvalidSourceId) {
-      continue;
+    if (source_id != ukm::kInvalidSourceId) {
+      ukm::builders::ChromeOSApp_UsageTime builder(source_id);
+      builder.SetAppType((int)it->app_type_name)
+          .SetDuration(it->running_time.InMilliseconds())
+          .SetUserDeviceMatrix(user_type_by_device_type_)
+          .Record(ukm::UkmRecorder::Get());
+      RemoveSourceId(source_id);
     }
-    ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
-    builder.SetAppType((int)it->app_type_name)
-        .SetDuration(it->running_time.InMilliseconds())
-        .SetUserDeviceMatrix(user_type_by_device_type_)
-        .Record(ukm::UkmRecorder::Get());
-    RemoveSourceId(source_id);
+
+    // All windows read from the user pref have been closed before login, so
+    // create a new source id here, since we don't have previous source ids for
+    // them. This UKM record should not have the null app id issue. Still
+    // preserve a copy of UsageTime UKM to investigate the null app id issue for
+    // consistency.
+    source_id = GetSourceId(profile_, it->app_id);
+    if (source_id != ukm::kInvalidSourceId) {
+      ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
+      builder.SetAppType((int)it->app_type_name)
+          .SetDuration(it->running_time.InMilliseconds())
+          .SetUserDeviceMatrix(user_type_by_device_type_)
+          .Record(ukm::UkmRecorder::Get());
+      RemoveSourceId(source_id);
+    }
   }
 }
 
