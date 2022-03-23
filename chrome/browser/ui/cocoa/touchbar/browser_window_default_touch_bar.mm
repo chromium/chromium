@@ -100,7 +100,7 @@ NSButton* CreateTouchBarButtonWithImage(NSImage* image,
                                         action:@selector(executeCommand:)];
   button.tag = command;
   button.accessibilityTitle = l10n_util::GetNSString(tooltip_id);
-  return [button retain];
+  return button;
 }
 
 // Creates an NSButton for the touch bar using a vector icon.
@@ -496,8 +496,8 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   int tooltipId = _isStarred ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR;
 
   if (!_starredButton) {
-    _starredButton.reset(CreateTouchBarButtonWithImage(
-        image, self, IDC_BOOKMARK_THIS_TAB, tooltipId));
+    _starredButton.reset([CreateTouchBarButtonWithImage(
+        image, self, IDC_BOOKMARK_THIS_TAB, tooltipId) retain]);
     return;
   }
 
@@ -517,8 +517,8 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   int tooltipId = _isPageLoading ? IDS_TOOLTIP_STOP : IDS_TOOLTIP_RELOAD;
 
   if (!_reloadStopButton) {
-    _reloadStopButton.reset(
-        CreateTouchBarButtonWithImage(image, self, commandId, tooltipId));
+    _reloadStopButton.reset([CreateTouchBarButtonWithImage(
+        image, self, commandId, tooltipId) retain]);
     return;
   }
 
