@@ -6,6 +6,7 @@
 
 #include <grp.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <cstdint>
 #include <utility>
@@ -55,10 +56,7 @@ bool CheckBinaryPermissions() {
   stat(exe_path.value().c_str(), &st);
   gid_t binary_gid = st.st_gid;
 
-  // TODO(b/225198427): Get the gid of the current process for extra
-  // verification that the chrome-management-service is launched with
-  // the correct group id.
-  if (binary_gid != chrome_mgmt_gid) {
+  if (getegid() != chrome_mgmt_gid || binary_gid != chrome_mgmt_gid) {
     SYSLOG(ERROR)
         << "The chrome-management-service failed. Incorrect permissions "
            "for the chrome-management-service.";
