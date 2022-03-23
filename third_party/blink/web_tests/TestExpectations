@@ -7612,3 +7612,7 @@ crbug.com/1191990 [ Mac ] http/tests/serviceworker/clients-openwindow.html [ Pas
 
 # Sheriff 2022-03-23: More flaky tests.
 crbug.com/1309483 [ Win7 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
+crbug.com/1309633 [ Mac10.12 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
+crbug.com/1309633 [ Mac10.13 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
+crbug.com/1309633 [ Mac10.14 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
+crbug.com/1309633 [ Mac10.15 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
