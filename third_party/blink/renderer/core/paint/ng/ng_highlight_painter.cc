@@ -54,17 +54,18 @@ DocumentMarkerVector ComputeMarkersToPaint(Node* node, bool is_ellipsis) {
 
 DocumentMarkerVector MarkersFor(Node* node,
                                 bool is_ellipsis,
-                                DocumentMarker::MarkerTypes types) {
+                                DocumentMarker::MarkerType type) {
   // TODO(yoichio): Handle first-letter
   const auto* text_node = DynamicTo<Text>(node);
   // We don't paint any marker on ellipsis.
   if (!text_node || is_ellipsis)
     return DocumentMarkerVector();
 
-  // TODO(crbug.com/1147859) refactor ComputeMarkersToPaint to allow its logic
-  // (except for suggestion marker overrides) to also be used on new code path
   DocumentMarkerController& controller = node->GetDocument().Markers();
-  return controller.MarkersFor(*text_node, types);
+
+  if (type == DocumentMarker::MarkerType::kCustomHighlight)
+    return controller.CustomHighlightMarkersNotOverlapping(*text_node);
+  return controller.MarkersFor(*text_node, DocumentMarker::MarkerTypes{type});
 }
 
 unsigned GetTextContentOffset(const Text& text, unsigned offset) {
@@ -358,14 +359,10 @@ NGHighlightPainter::NGHighlightPainter(
                         paint_info.phase == PaintPhase::kSelectionDragImage) {
   if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
     bool is_ellipsis = fragment_item_.IsEllipsis();
-    target_ = MarkersFor(node_, is_ellipsis,
-                         DocumentMarker::MarkerTypes::TextFragment());
-    spelling_ =
-        MarkersFor(node_, is_ellipsis, DocumentMarker::MarkerTypes::Spelling());
-    grammar_ =
-        MarkersFor(node_, is_ellipsis, DocumentMarker::MarkerTypes::Grammar());
-    custom_ = MarkersFor(node_, is_ellipsis,
-                         DocumentMarker::MarkerTypes::CustomHighlight());
+    target_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kTextFragment);
+    spelling_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kSpelling);
+    grammar_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kGrammar);
+    custom_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kCustomHighlight);
     layers_ = NGHighlightOverlay::ComputeLayers(
         GetHighlightRegistry(node_), fragment_paint_info_,
         GetSelectionStatus(selection_), custom_, grammar_, spelling_, target_);
@@ -404,11 +401,14 @@ void NGHighlightPainter::Paint(Phase phase) {
     if (paint_start_offset == paint_end_offset)
       continue;
 
+    if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+      DCHECK(!DocumentMarker::MarkerTypes::HighlightPseudos().Contains(
+          marker->GetType()));
+    }
+
     switch (marker->GetType()) {
       case DocumentMarker::kSpelling:
       case DocumentMarker::kGrammar: {
-        if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
-          break;
         if (fragment_item_.GetNode()->GetDocument().Printing())
           break;
         if (phase == kBackground)
@@ -490,8 +490,6 @@ void NGHighlightPainter::Paint(Phase phase) {
 
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kCustomHighlight: {
-        if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
-          break;
         const auto& highlight_pseudo_marker =
             To<HighlightPseudoMarker>(*marker);
         const Document& document = node_->GetDocument();

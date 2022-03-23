@@ -785,18 +785,16 @@ DocumentMarkerVector DocumentMarkerController::Markers() const {
   return result;
 }
 
-DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
+DocumentMarkerVector
+DocumentMarkerController::CustomHighlightMarkersNotOverlapping(
     const Text& text) const {
-  DocumentMarkerVector markers_to_paint;
-
   // Fix overlapping CustomHighlightMarkers that share the same highlight name
   // so their intersections are not painted twice. Note:
   // DocumentMarkerController::MarkersFor() returns markers sorted by start
   // offset.
   DocumentMarkerVector custom_highlight_markers = MarkersFor(
       text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
-  HeapVector<Member<CustomHighlightMarker>>
-      custom_highlight_markers_not_overlapping;
+  DocumentMarkerVector result{};
   using NameToCustomHighlightMarkerMap =
       HashMap<String, Member<CustomHighlightMarker>, StringHash>;
   NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
@@ -816,8 +814,7 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
       if (current_custom_highlight_marker->StartOffset() >=
           stored_custom_highlight_marker->EndOffset()) {
         // Markers don't intersect, so the stored one is fine to be painted.
-        custom_highlight_markers_not_overlapping.push_back(
-            stored_custom_highlight_marker);
+        result.push_back(stored_custom_highlight_marker);
         insert_result.stored_value->value = current_custom_highlight_marker;
       } else {
         // Markers overlap, so expand the stored marker to cover both and
@@ -831,26 +828,40 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
 
   for (const auto& name_to_custom_highlight_marker_iterator :
        name_to_last_custom_highlight_marker_seen) {
-    custom_highlight_markers_not_overlapping.push_back(
-        name_to_custom_highlight_marker_iterator.value.Get());
+    result.push_back(name_to_custom_highlight_marker_iterator.value.Get());
   }
 
+  return result;
+}
+
+DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
+    const Text& text) const {
   HighlightRegistry* highlight_registry =
       document_->domWindow()->Supplementable<LocalDOMWindow>::
           RequireSupplement<HighlightRegistry>();
-  std::sort(custom_highlight_markers_not_overlapping.begin(),
-            custom_highlight_markers_not_overlapping.end(),
-            [highlight_registry](const Member<CustomHighlightMarker>& marker1,
-                                 const Member<CustomHighlightMarker>& marker2) {
-              return highlight_registry->CompareOverlayStackingPosition(
-                         marker1->GetHighlightName(), marker1->GetHighlight(),
-                         marker2->GetHighlightName(),
-                         marker2->GetHighlight()) ==
-                     HighlightRegistry::OverlayStackingPosition::
-                         kOverlayStackingPositionBelow;
-            });
+  DocumentMarker::MarkerTypes excluded_highlight_pseudos =
+      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()
+          ? DocumentMarker::MarkerTypes::HighlightPseudos()
+          : DocumentMarker::MarkerTypes();
+  DocumentMarkerVector markers_to_paint{};
 
-  markers_to_paint.AppendVector(custom_highlight_markers_not_overlapping);
+  if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+    DocumentMarkerVector custom_highlight_markers =
+        CustomHighlightMarkersNotOverlapping(text);
+    std::sort(custom_highlight_markers.begin(), custom_highlight_markers.end(),
+              [highlight_registry](const Member<DocumentMarker>& marker1,
+                                   const Member<DocumentMarker>& marker2) {
+                auto* custom1 = To<CustomHighlightMarker>(marker1.Get());
+                auto* custom2 = To<CustomHighlightMarker>(marker2.Get());
+                return highlight_registry->CompareOverlayStackingPosition(
+                           custom1->GetHighlightName(), custom1->GetHighlight(),
+                           custom2->GetHighlightName(),
+                           custom2->GetHighlight()) ==
+                       HighlightRegistry::OverlayStackingPosition::
+                           kOverlayStackingPositionBelow;
+              });
+    markers_to_paint = custom_highlight_markers;
+  }
 
   // We don't render composition or spelling markers that overlap suggestion
   // markers.
@@ -862,16 +873,18 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
     // If there are no suggestion markers, we can return early as a minor
     // performance optimization.
     markers_to_paint.AppendVector(MarkersFor(
-        text,
-        DocumentMarker::MarkerTypes::AllBut(DocumentMarker::MarkerTypes(
-            DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight))));
+        text, DocumentMarker::MarkerTypes::AllBut(
+                  DocumentMarker::MarkerTypes(DocumentMarker::kSuggestion |
+                                              DocumentMarker::kCustomHighlight))
+                  .Subtract(excluded_highlight_pseudos)));
     return markers_to_paint;
   }
 
   const DocumentMarkerVector& markers_overridden_by_suggestion_markers =
       MarkersFor(text,
                  DocumentMarker::MarkerTypes(DocumentMarker::kComposition |
-                                             DocumentMarker::kSpelling));
+                                             DocumentMarker::kSpelling)
+                     .Subtract(excluded_highlight_pseudos));
 
   Vector<unsigned> suggestion_starts;
   Vector<unsigned> suggestion_ends;
@@ -920,9 +933,11 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
 
   markers_to_paint.AppendVector(MarkersFor(
       text,
-      DocumentMarker::MarkerTypes::AllBut(DocumentMarker::MarkerTypes(
-          DocumentMarker::kComposition | DocumentMarker::kSpelling |
-          DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight))));
+      DocumentMarker::MarkerTypes::AllBut(
+          DocumentMarker::MarkerTypes(
+              DocumentMarker::kComposition | DocumentMarker::kSpelling |
+              DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight))
+          .Subtract(excluded_highlight_pseudos)));
 
   return markers_to_paint;
 }

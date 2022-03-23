@@ -50,7 +50,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kMarkerTypeIndexesCount
   };
 
-  enum MarkerType {
+  enum MarkerType : unsigned {
     kSpelling = 1 << kSpellingMarkerIndex,
     kGrammar = 1 << kGrammarMarkerIndex,
     kTextMatch = 1 << kTextMatchMarkerIndex,
@@ -115,6 +115,11 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
       return MarkerTypes(All().mask_ & ~types.mask_);
     }
 
+    static MarkerTypes HighlightPseudos() {
+      return MarkerTypes(kTextFragment | kSpelling | kGrammar |
+                         kCustomHighlight);
+    }
+
     static MarkerTypes ActiveSuggestion() {
       return MarkerTypes(kActiveSuggestion);
     }
@@ -141,6 +146,10 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
 
     MarkerTypes Add(const MarkerTypes& types) const {
       return MarkerTypes(mask_ | types.mask_);
+    }
+
+    MarkerTypes Subtract(const MarkerTypes& types) const {
+      return MarkerTypes(mask_ & ~types.mask_);
     }
 
     MarkerTypesIterator begin() const { return MarkerTypesIterator(mask_); }
