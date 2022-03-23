@@ -83,14 +83,13 @@ void FederatedIdentityActiveSessionPermissionContext::RevokeActiveSession(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  DCHECK(
-      HasActiveSession(relying_party, identity_provider, account_identifier));
-
   auto idp_string = identity_provider.Serialize();
   const auto object = GetGrantedObject(relying_party, idp_string);
+  if (!object)
+    return;
   auto new_object = object->value.Clone();
   auto& account_ids = *new_object.FindListKey(kAccountIdsKey);
-  account_ids.EraseListValue(base::Value((account_identifier)));
+  account_ids.EraseListValue(base::Value(account_identifier));
 
   // Remove the permission object if there is no account left.
   if (account_ids.GetListDeprecated().size() == 0) {
