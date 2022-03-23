@@ -75,17 +75,7 @@ enum class NotificationInteraction {
 void LaunchBubble(const GURL& url, const gfx::Image& icon) {
   auto* eche_tray = GetEcheTray();
   DCHECK(eche_tray);
-  eche_tray->SetUrl(url);
-  eche_tray->SetIcon(icon);
-  eche_tray->SetVisiblePreferred(true);
-  if (!features::IsEcheSWAInBackgroundEnabled() || eche_tray->IsInitialized()) {
-    eche_tray->ShowBubble();
-  } else {
-    eche_tray->InitBubble();
-
-    // Hide bubble first until the streaming is ready.
-    eche_tray->HideBubble();
-  }
+  eche_tray->LoadBubble(url, icon);
 }
 
 void LaunchWebApp(const std::string& package_name,
@@ -209,7 +199,9 @@ void EcheAppManagerFactory::ShowNotification(
 // static
 void EcheAppManagerFactory::CloseEche(Profile* profile) {
   if (features::IsEcheCustomWidgetEnabled()) {
-    GetEcheTray()->PurgeAndClose();
+    auto* eche_tray = GetEcheTray();
+    if (eche_tray)
+      eche_tray->PurgeAndClose();
     return;
   }
   for (auto* browser : *(BrowserList::GetInstance())) {
@@ -247,9 +239,10 @@ void EcheAppManagerFactory::OnStreamStateChanged(
     Profile* profile,
     const mojom::StreamStatus status) {
   if (status == mojom::StreamStatus::kStreamStatusStarted &&
-      features::IsEcheCustomWidgetEnabled() &&
-      features::IsEcheSWAInBackgroundEnabled()) {
-    GetEcheTray()->ShowBubble();
+      features::IsEcheCustomWidgetEnabled()) {
+    auto* eche_tray = GetEcheTray();
+    if (eche_tray)
+      eche_tray->ShowBubble();
   } else if (status == mojom::StreamStatus::kStreamStatusStopped) {
     CloseEche(profile);
   }

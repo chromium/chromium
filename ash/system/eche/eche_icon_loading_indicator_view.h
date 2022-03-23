@@ -13,10 +13,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-namespace views {
-class ImageView;
-}  // namespace views
-
 namespace gfx {
 class Canvas;
 class Animation;
@@ -29,7 +25,7 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
                                                 public views::ViewObserver,
                                                 public gfx::AnimationDelegate {
  public:
-  explicit EcheIconLoadingIndicatorView(views::ImageView* parent);
+  explicit EcheIconLoadingIndicatorView(views::View* parent);
   EcheIconLoadingIndicatorView(const EcheIconLoadingIndicatorView&) = delete;
   EcheIconLoadingIndicatorView& operator=(const EcheIconLoadingIndicatorView&) =
       delete;
@@ -50,7 +46,7 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
  private:
   absl::optional<base::TimeTicks> throbber_start_time_;
 
-  views::ImageView* parent_ = nullptr;
+  views::View* parent_ = nullptr;  // Unowned.
 
   base::ScopedObservation<views::View, views::ViewObserver> observed_session_{
       this};

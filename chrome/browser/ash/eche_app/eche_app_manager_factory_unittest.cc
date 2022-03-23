@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -42,17 +43,21 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
     eche_tray_ =
         ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+    phone_hub_tray_ = ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+                          ->phone_hub_tray();
   }
 
   TestingProfile* GetProfile() { return profile_; }
 
   EcheTray* eche_tray() { return eche_tray_; }
+  PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
   EcheTray* eche_tray_ = nullptr;
+  PhoneHubTray* phone_hub_tray_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
@@ -109,8 +114,8 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
       visible_name_1, user_id, gfx::Image());
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
-  // Eche tray should be visible after launch.
-  EXPECT_TRUE(eche_tray()->is_active());
+  // Eche icon should be visible after launch.
+  EXPECT_TRUE(phone_hub_tray()->eche_icon_view()->GetVisible());
 
   // Launch different application should not recreate widget
   views::Widget* widget = eche_tray()->GetBubbleWidget();

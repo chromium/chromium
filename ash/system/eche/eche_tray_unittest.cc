@@ -8,12 +8,14 @@
 #include <string>
 
 #include "ash/shell.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
@@ -39,6 +41,8 @@ class EcheTrayTest : public AshTestBase {
     AshTestBase::SetUp();
 
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+    phone_hub_tray_ =
+        StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
 
     display::test::DisplayManagerTestApi(display_manager())
         .SetFirstDisplayAsInternalDisplay();
@@ -51,9 +55,11 @@ class EcheTrayTest : public AshTestBase {
   }
 
   EcheTray* eche_tray() { return eche_tray_; }
+  PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
  private:
   EcheTray* eche_tray_ = nullptr;  // Not owned
+  PhoneHubTray* phone_hub_tray_ = nullptr;  // Not owned
   base::test::ScopedFeatureList feature_list_;
 
   // Calling the factory constructor is enough to set it up.
@@ -68,7 +74,7 @@ TEST_F(EcheTrayTest, PaletteTrayIsInvisible) {
 }
 
 // Verify taps on the eche tray button results in expected behaviour.
-// It also sets the url and calls `ShowBubble`.
+// It also sets the url and calls `LoadBubble`.
 TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   // Verify the eche tray button is not active, and the eche tray bubble
   // is not shown initially.
@@ -76,8 +82,8 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_FALSE(eche_tray()->GetVisible());
 
-  eche_tray()->SetUrl(GURL("http://google.com"));
   eche_tray()->SetVisiblePreferred(true);
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(eche_tray()->is_active());
@@ -115,15 +121,13 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
 
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
-  eche_tray()->SetUrl(GURL("http://google.com"));
-  eche_tray()->InitBubble();
-  eche_tray()->HideBubble();
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_FALSE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_TRUE(eche_tray()->loading_indicator_->GetAnimating());
+  EXPECT_TRUE(phone_hub_tray()->eche_loading_indicator()->GetAnimating());
 
   // Request this bubble to show up.
   eche_tray()->ShowBubble();
@@ -133,7 +137,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(eche_tray()->loading_indicator_->GetAnimating());
+  EXPECT_FALSE(phone_hub_tray()->eche_loading_indicator()->GetAnimating());
 }
 
 }  // namespace ash

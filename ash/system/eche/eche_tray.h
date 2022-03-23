@@ -20,6 +20,7 @@
 namespace views {
 
 class ImageView;
+class ImageButton;
 class View;
 class Widget;
 
@@ -40,6 +41,7 @@ class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
 class AshWebView;
+class PhoneHubTray;
 
 // This class represents the Eche tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
@@ -82,6 +84,13 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   // Sets the icon that will be used on the tray.
   void SetIcon(const gfx::Image& icon);
 
+  // Initializes the bubble with given parameters. If there is any previous
+  // bubble already shown with a different URL it is going to be closed. The
+  // bubble is not shown initially until `ShowBubble` is called. The `url`
+  // parameter is used to load the `WebView` inside the bubble. The `icon` is
+  // used to update the tray icon for `EcheTray`.
+  void LoadBubble(const GURL& url, const gfx::Image& icon);
+
   // Destroys the view inclusing the web view.
   // Note: `CloseBubble` only hides the view.
   void PurgeAndClose();
@@ -110,6 +119,14 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   // close, and minimize buttons.
   std::unique_ptr<views::View> CreateBubbleHeaderView();
 
+  views::ImageButton* GetIcon();
+  void StopLoadingAnimation();
+  void StartLoadingAnimation();
+  void SetIconVisibility(bool visibility);
+
+  PhoneHubTray* GetPhoneHubTray();
+  EcheIconLoadingIndicatorView* GetLoadingIndicator();
+
   // The url that is transferred to the web view.
   // In the current implementation, this is supposed to be
   // Eche window URL. However, the bubble does not interpret,
@@ -128,8 +145,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       observed_session_{this};
-  // The loading indicator, showing a throbber animation on top of the icon.
-  EcheIconLoadingIndicatorView* loading_indicator_ = nullptr;
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };

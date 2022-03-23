@@ -11,15 +11,22 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace views {
-class ImageView;
+class ImageButton;
 }
-
 namespace ash {
 
+class EcheIconLoadingIndicatorView;
 class PhoneHubContentView;
 class TrayBubbleWrapper;
 class SessionControllerImpl;
@@ -53,6 +60,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void Initialize() override;
   void CloseBubble() override;
   void ShowBubble() override;
+  bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
@@ -64,6 +72,20 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // OnboardingView::Delegate:
   void HideStatusHeaderView() override;
+
+  // Provides the Eche icon and Eche loading indicator to
+  // `EcheTray` in order to let `EcheTray` control the visibiliity
+  // of them. Please note that these views are in control of 'EcheTray'
+  // and the phone hub area is "borrowed" by `EcheTray` for the
+  // purpose of grouping the icons together.
+  views::ImageButton* eche_icon_view() { return eche_icon_; }
+  EcheIconLoadingIndicatorView* eche_loading_indicator() {
+    return eche_loading_indicator_;
+  }
+
+  // Sets a callback that will be called when eche icon is activated.
+  void SetEcheIconActivationCallback(
+      base::RepeatingCallback<bool(const ui::Event&)> callback);
 
   views::View* content_view_for_testing() { return content_view_; }
 
@@ -95,8 +117,23 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // connected.
   void TemporarilyDisableAnimation();
 
+  // Button click/press handlers for main phone hub icon and secondary
+  // Eche icon.
+  void EcheIconActivated(const ui::Event& event);
+  void PhoneHubIconActivated(const ui::Event& event);
+
   // Icon of the tray. Unowned.
-  views::ImageView* icon_;
+  views::ImageButton* icon_;
+
+  // Icon for Eche. Unowned.
+  views::ImageButton* eche_icon_ = nullptr;
+
+  // The loading indicator, showing a throbber animation on top of the icon.
+  EcheIconLoadingIndicatorView* eche_loading_indicator_ = nullptr;
+
+  // This callback is called when the Eche icon is activated.
+  base::RepeatingCallback<bool(const ui::Event&)> eche_icon_callback_ =
+      base::BindRepeating([](const ui::Event&) { return true; });
 
   // Controls the main content view displayed in the bubble based on the current
   // PhoneHub state.
@@ -116,6 +153,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
       observed_phone_hub_ui_controller_{this};
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       observed_session_{this};
+
+  base::WeakPtrFactory<PhoneHubTray> weak_factory_{this};
 };
 
 }  // namespace ash

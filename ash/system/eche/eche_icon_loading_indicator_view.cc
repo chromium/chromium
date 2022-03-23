@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
@@ -27,8 +28,7 @@ constexpr int kThrobberStrokeWidth = 2;
 
 }  // namespace
 
-EcheIconLoadingIndicatorView::EcheIconLoadingIndicatorView(
-    views::ImageView* parent)
+EcheIconLoadingIndicatorView::EcheIconLoadingIndicatorView(views::View* parent)
     : parent_(parent) {
   observed_session_.Observe(parent_);
 
@@ -59,12 +59,14 @@ void EcheIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   if (!throbber_start_time_)
     return;
 
-  const SkColor color =
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState());
-
-  gfx::PaintThrobberSpinning(canvas, GetLocalBounds(), color,
-                             base::TimeTicks::Now() - *throbber_start_time_,
-                             kThrobberStrokeWidth);
+  // The image covers the container horizontally and is centered vertically.
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.ClampToCenteredSize(
+      gfx::Size(GetLocalBounds().width(), GetLocalBounds().width()));
+  gfx::PaintThrobberSpinning(
+      canvas, bounds,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),
+      base::TimeTicks::Now() - *throbber_start_time_, kThrobberStrokeWidth);
 }
 
 void EcheIconLoadingIndicatorView::OnViewBoundsChanged(

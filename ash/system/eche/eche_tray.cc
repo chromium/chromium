@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -19,12 +20,15 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/ui_constants.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,6 +45,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -101,12 +106,6 @@ EcheTray::EcheTray(Shelf* shelf)
       views::CreateEmptyBorder(gfx::Insets(icon_padding, icon_padding)));
 
   icon_->SetTooltipText(GetAccessibleNameForTray());
-
-  if (features::IsEcheSWAInBackgroundEnabled()) {
-    loading_indicator_ = icon_->AddChildView(
-        std::make_unique<EcheIconLoadingIndicatorView>(icon_));
-    loading_indicator_->SetVisible(false);
-  }
 }
 
 EcheTray::~EcheTray() {
@@ -155,24 +154,15 @@ void EcheTray::CloseBubble() {
 }
 
 void EcheTray::ShowBubble() {
-  if (bubble_) {
-    bubble_->GetBubbleWidget()->Show();
-    bubble_->GetBubbleWidget()->Activate();
-    bubble_->bubble_view()->SetVisible(true);
-    SetIsActive(true);
-
-    // TODO(b/223297066): Observe the connection status and add/remove the
-    // loading indicator based on the connection status.
-    if (features::IsEcheSWAInBackgroundEnabled() &&
-        loading_indicator_->GetAnimating()) {
-      loading_indicator_->SetAnimating(false);
-    }
+  if (!bubble_)
     return;
-  }
+  SetIconVisibility(true);
+  StopLoadingAnimation();
 
-  InitBubble();
-
-  // TODO(nayebi): Add metric updates.
+  bubble_->GetBubbleWidget()->Show();
+  bubble_->GetBubbleWidget()->Activate();
+  bubble_->bubble_view()->SetVisible(true);
+  SetIsActive(true);
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {
@@ -217,16 +207,40 @@ void EcheTray::SetUrl(const GURL& url) {
 }
 
 void EcheTray::SetIcon(const gfx::Image& icon) {
-  icon_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kIconSize, kIconSize)));
+  views::ImageButton* icon_view = GetIcon();
+  if (icon_view) {
+    icon_view->SetImage(
+        views::ImageButton::STATE_NORMAL,
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+            gfx::Size(kIconSize, kIconSize)));
+    SetIconVisibility(true);
+  }
+}
+
+void EcheTray::LoadBubble(const GURL& url, const gfx::Image& icon) {
+  SetUrl(url);
+  SetIcon(icon);
+  // If the bubble is already initialized, setting the icon and url was enough
+  // to navigate the bubble to the new address.
+  if (IsInitialized()) {
+    ShowBubble();
+    return;
+  }
+  InitBubble();
+  StartLoadingAnimation();
+  auto* phone_hub_tray = GetPhoneHubTray();
+  if (phone_hub_tray) {
+    phone_hub_tray->SetEcheIconActivationCallback(
+        base::BindRepeating(&EcheTray::PerformAction, base::Unretained(this)));
+  }
+  // Hide bubble first until the streaming is ready.
+  HideBubble();
 }
 
 void EcheTray::PurgeAndClose() {
-  if (features::IsEcheSWAInBackgroundEnabled() &&
-      loading_indicator_->GetAnimating()) {
-    loading_indicator_->SetAnimating(false);
-  }
+  StopLoadingAnimation();
+  SetIconVisibility(false);
 
   if (!bubble_)
     return;
@@ -238,6 +252,7 @@ void EcheTray::PurgeAndClose() {
   bubble_.reset();
   SetIsActive(false);
   SetVisiblePreferred(false);
+  web_view_ = nullptr;
 }
 
 void EcheTray::HideBubble() {
@@ -289,9 +304,6 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
-
-  if (features::IsEcheSWAInBackgroundEnabled())
-    loading_indicator_->SetAnimating(true);
 }
 
 gfx::Size EcheTray::GetSizeForEche() const {
@@ -354,6 +366,46 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
       kEcheCloseIcon, IDS_APP_ACCNAME_CLOSE));
 
   return header;
+}
+
+views::ImageButton* EcheTray::GetIcon() {
+  PhoneHubTray* phone_hub_tray = GetPhoneHubTray();
+  if (!phone_hub_tray)
+    return nullptr;
+  return phone_hub_tray->eche_icon_view();
+}
+
+void EcheTray::StopLoadingAnimation() {
+  auto* loading_indicator = GetLoadingIndicator();
+  if (loading_indicator && loading_indicator->GetAnimating()) {
+    loading_indicator->SetAnimating(false);
+  }
+}
+
+void EcheTray::StartLoadingAnimation() {
+  auto* loading_indicator = GetLoadingIndicator();
+  if (loading_indicator) {
+    loading_indicator->SetAnimating(true);
+  }
+}
+
+void EcheTray::SetIconVisibility(bool visibility) {
+  auto* icon = GetIcon();
+  if (!icon)
+    return;
+  icon->SetVisible(visibility);
+  GetPhoneHubTray()->tray_container()->UpdateLayout();
+}
+
+PhoneHubTray* EcheTray::GetPhoneHubTray() {
+  return shelf()->GetStatusAreaWidget()->phone_hub_tray();
+}
+
+EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
+  PhoneHubTray* phone_hub_tray = GetPhoneHubTray();
+  if (!phone_hub_tray)
+    return nullptr;
+  return phone_hub_tray->eche_loading_indicator();
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)
