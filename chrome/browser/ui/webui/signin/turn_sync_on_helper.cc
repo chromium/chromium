@@ -606,12 +606,18 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       AbortAndDelete();
       return;
     }
-    // No explicit action when the ui gets closed. If the embedder wants the
-    // helper to abort sync in this case, it must redirect this action to
-    // ABORT_SYNC. For UI_CLOSED, also no final callback is sent.
-    case LoginUIService::UI_CLOSED:
+    // No explicit action when the ui gets closed. No final callback is sent.
+    case LoginUIService::UI_CLOSED: {
+      // We need to reset sync, to not leave it in a partially setup state.
+      auto* primary_account_mutator =
+          identity_manager_->GetPrimaryAccountMutator();
+      DCHECK(primary_account_mutator);
+      primary_account_mutator->RevokeSyncConsent(
+          signin_metrics::ABORT_SIGNIN,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
       scoped_callback_runner_.ReplaceClosure(base::OnceClosure());
       break;
+    }
   }
   delete this;
 }
