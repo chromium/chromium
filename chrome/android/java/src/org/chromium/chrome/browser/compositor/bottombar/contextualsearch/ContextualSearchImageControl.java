@@ -23,7 +23,7 @@ public class ContextualSearchImageControl {
     /** The {@link ContextualSearchPanel} that this class belongs to. */
     private final ContextualSearchPanel mPanel;
 
-    /** The percentage tha the image is visible that is based upon the panel position. */
+    /** The percentage that the image is visible that is based upon the panel position. */
     private float mVisibilityPercentageBasedOnPanelPosition;
 
     public ContextualSearchImageControl(ContextualSearchPanel panel) {
@@ -78,7 +78,7 @@ public class ContextualSearchImageControl {
     /**
      * @param resId The resource id of the card icon to display.
      */
-    public void setCardIconResourceId(int resId) {
+    void setCardIconResourceId(int resId) {
         mCardIconResourceId = resId;
         mCardIconVisible = true;
         animateCustomImageVisibility(true);

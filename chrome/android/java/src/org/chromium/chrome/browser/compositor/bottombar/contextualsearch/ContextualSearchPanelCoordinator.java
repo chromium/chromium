@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.Supplier;
@@ -154,8 +155,12 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public void setSearchTerm(String searchTerm) {}
 
     @Override
+    public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {}
+
+    @Override
     public void setDidSearchInvolvePromo() {}
 
+    @VisibleForTesting
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
@@ -163,11 +168,11 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
             boolean showDefaultSearchInContent) {}
 
     @Override
-    public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
-            boolean showDefaultSearchInBar, int defaultQueryInBarTextMaxWidthPx,
-            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent,
-            int defaultQueryInContentTextMaxWidthPx) {}
+    public void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
+            String thumbnailUrl, String quickActionUri, int quickActionCategory, int cardTagEnum,
+            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
+            int defaultQueryInBarTextMaxWidthPx, @Nullable List<String> inContentRelatedSearches,
+            boolean showDefaultSearchInContent, int defaultQueryInContentTextMaxWidthPx) {}
 
     @Override
     public void setCaption(String caption) {}

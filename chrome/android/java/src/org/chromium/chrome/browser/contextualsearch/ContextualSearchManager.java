@@ -77,6 +77,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.contextual_search.mojom.OverlayPosition;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
@@ -123,6 +124,9 @@ public class ContextualSearchManager
     // How long to wait for a Tap to be converted to a Long-press gesture when the user taps on
     // an existing tap-selection.
     private static final int TAP_ON_TAP_SELECTION_DELAY_MS = 100;
+
+    // A separator that we expect in the title of a dictionary response.
+    private static final String DEFINITION_MID_DOT = "\u00b7";
 
     private final ObserverList<ContextualSearchObserver> mObservers =
             new ObserverList<ContextualSearchObserver>();
@@ -216,7 +220,8 @@ public class ContextualSearchManager
     private boolean mIsRelatedSearchesSerp;
 
     /**
-     * For Related Searches we need to remember the ResolvedSearchTerm so we can switch back to it.
+     * For Related Searches we need to remember the ResolvedSearchTerm for the default query so we
+     * can switch back to it.
      */
     private ResolvedSearchTerm mResolvedSearchTerm;
 
@@ -507,13 +512,13 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void onPanelCollapsed() {
+    public void onPanelCollapsing() {
         if (mIsRelatedSearchesSerp && mResolvedSearchTerm != null) {
             // For now a literal search is not possible when we have Related Searches showing, but
             // may be a possibility once https://crbug.com/1223171 is done.
             final boolean isLiteralSearchPossible = false;
-            displayResolvedSearchTerm(mResolvedSearchTerm, mResolvedSearchTerm.displayText(),
-                    isLiteralSearchPossible);
+            displayResolvedSearchTerm(
+                    mResolvedSearchTerm, mResolvedSearchTerm.searchTerm(), isLiteralSearchPossible);
         }
     }
 
@@ -812,7 +817,8 @@ public class ContextualSearchManager
     /**
      * Displays the given {@link ResolvedSearchTerm} in the panel and logs the action.
      * @param resolvedSearchTerm The bundle of data from the server to be displayed
-     * @param message The main message to display in the Bar
+     * @param message The main message to display in the Bar. This is usually the same as the
+     *                SearchTerm except in cases where an error is returned by the server.
      * @param doLiteralSearch Whether this is a literal search for the verbatim selection
      *     or a resolved search.
      */
@@ -843,7 +849,24 @@ public class ContextualSearchManager
         int defaultQueryWidthSpInBar = ContextualSearchFieldTrial.getDefaultChipWidthSpInBar();
         int defaultQueryWidthSpInPanel = ContextualSearchFieldTrial.getDefaultChipWidthSpInPanel();
 
-        mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
+        // Check if the searchTerm is a composite (used for Definitions for pronunciation).
+        // The middle-dot character is returned by the server and marks the beginning of the
+        // pronunciation.
+        String pronunciation = null;
+        int dotSeparatorLocation = searchTerm.indexOf(DEFINITION_MID_DOT);
+        if (dotSeparatorLocation > 0 && dotSeparatorLocation < searchTerm.length()) {
+            assert resolvedSearchTerm.cardTagEnum() == CardTag.CT_DEFINITION
+                    || resolvedSearchTerm.cardTagEnum() == CardTag.CT_CONTEXTUAL_DEFINITION;
+            // Style with the pronunciation in gray in the second half.
+            String word = searchTerm.substring(0, dotSeparatorLocation);
+            pronunciation = searchTerm.substring(dotSeparatorLocation + 1);
+            pronunciation = LocalizationUtils.isLayoutRtl() ? pronunciation + DEFINITION_MID_DOT
+                                                            : DEFINITION_MID_DOT + pronunciation;
+            searchTerm = word;
+            message = word;
+        }
+
+        mSearchPanel.onSearchTermResolved(message, pronunciation, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
                 resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar,
                 spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
@@ -917,6 +940,7 @@ public class ContextualSearchManager
     /** Resets internal state that should be reset whenever a Search ends (panel is closed). */
     void resetStateAfterSearch() {
         mDidStartDelayedIntelligentResolveRequest = false;
+        mResolvedSearchTerm = null;
     }
 
     /**

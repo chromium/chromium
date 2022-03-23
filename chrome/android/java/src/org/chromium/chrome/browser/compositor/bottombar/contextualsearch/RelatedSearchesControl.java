@@ -242,7 +242,7 @@ public class RelatedSearchesControl {
         mSelectedChip = NO_SELECTED_CHIP;
     }
 
-    void onPanelCollapsed() {
+    void onPanelCollapsing() {
         clearSelectedSuggestions();
     }
 
