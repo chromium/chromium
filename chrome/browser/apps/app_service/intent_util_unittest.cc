@@ -655,10 +655,13 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   // "html" filter - glob match
   const Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1u);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type, PatternMatchType::kGlob);
   EXPECT_EQ(file_cond.condition_values[0]->value,
             R"(filesystem:chrome-extension://.*/.*\.html)");
+  EXPECT_EQ(file_cond.condition_values[1]->match_type, PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond.condition_values[1]->value,
+            R"(filesystem:chrome://file-manager/.*\.html)");
 
   // "any" filter - View action
   const IntentFilterPtr& mime_filter2 = filters[1];
@@ -672,11 +675,15 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   // "any" filter - glob match
   const Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 1u);
+  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             PatternMatchType::kGlob);
   EXPECT_EQ(file_cond2.condition_values[0]->value,
             R"(filesystem:chrome-extension://.*/.*\..*)");
+  EXPECT_EQ(file_cond2.condition_values[1]->match_type,
+            PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond2.condition_values[1]->value,
+            R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
@@ -738,11 +745,15 @@ TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
   // "html" filter - glob match
   const apps::mojom::Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1u);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kGlob);
   EXPECT_EQ(file_cond.condition_values[0]->value,
             R"(filesystem:chrome-extension://.*/.*\.html)");
+  EXPECT_EQ(file_cond.condition_values[1]->match_type,
+            apps::mojom::PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond.condition_values[1]->value,
+            R"(filesystem:chrome://file-manager/.*\.html)");
 
   // "any" filter - View action
   const apps::mojom::IntentFilterPtr& mime_filter2 = filters[1];
@@ -756,11 +767,15 @@ TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
   // "any" filter - glob match
   const apps::mojom::Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 1u);
+  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kGlob);
   EXPECT_EQ(file_cond2.condition_values[0]->value,
             R"(filesystem:chrome-extension://.*/.*\..*)");
+  EXPECT_EQ(file_cond2.condition_values[1]->match_type,
+            apps::mojom::PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond2.condition_values[1]->value,
+            R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
 // Converting an Arc Intent filter for a URL view intent filter should add a

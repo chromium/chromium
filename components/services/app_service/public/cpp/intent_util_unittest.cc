@@ -965,6 +965,12 @@ GURL ext_test_url(const std::string& file_name) {
   return url;
 }
 
+GURL system_web_app_test_url(const std::string& file_name) {
+  GURL url = GURL("filesystem:chrome://file-manager/external/" + file_name);
+  EXPECT_TRUE(url.is_valid());
+  return url;
+}
+
 std::vector<apps::mojom::IntentFilePtr> vectorise(
     const apps::mojom::IntentFilePtr& file) {
   std::vector<apps::mojom::IntentFilePtr> vector;
@@ -1172,6 +1178,27 @@ TEST_F(IntentUtilTest, FileURLMatch) {
   intent = std::make_unique<apps::Intent>(
       CreateIntentFiles(ext_test_url("abc"), "", false));
   EXPECT_FALSE(intent->MatchFilter(ext_wild_filter));
+}
+
+TEST_F(IntentUtilTest, FileSystemWebAppURLMatch) {
+  std::string mp3_url_pattern = R"(filesystem:chrome://.*/.*\.mp3)";
+
+  auto url_filter = apps_util::MakeURLFilterForView(mp3_url_pattern, "label");
+
+  // Test match with mp3 file extension.
+  auto intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(system_web_app_test_url("abc.mp3"), "", false));
+  EXPECT_TRUE(intent->MatchFilter(url_filter));
+
+  // Test non-match with mp4 file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(system_web_app_test_url("abc.mp4"), "", false));
+  EXPECT_FALSE(intent->MatchFilter(url_filter));
+
+  // Test non-match with just the end of a file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(system_web_app_test_url("abc.testmp3"), "", false));
+  EXPECT_FALSE(intent->MatchFilter(url_filter));
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
