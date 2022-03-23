@@ -1021,7 +1021,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     ukm::SourceId source_id = it.second.source_id;
     DCHECK_NE(source_id, ukm::kInvalidSourceId);
     if (!it.second.running_time.is_zero()) {
-      ukm::builders::ChromeOSApp_UsageTime builder(source_id);
+      ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
       builder.SetAppType((int)app_type_name)
           .SetDuration(it.second.running_time.InMilliseconds())
           .SetUserDeviceMatrix(user_type_by_device_type_)
@@ -1122,7 +1122,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
     if (source_id == ukm::kInvalidSourceId) {
       continue;
     }
-    ukm::builders::ChromeOSApp_UsageTime builder(source_id);
+    ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
     builder.SetAppType((int)it->app_type_name)
         .SetDuration(it->running_time.InMilliseconds())
         .SetUserDeviceMatrix(user_type_by_device_type_)

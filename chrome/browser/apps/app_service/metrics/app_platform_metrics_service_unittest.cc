@@ -633,8 +633,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                              int duration,
                              AppTypeName app_type_name) {
     const std::string kUrl = std::string("app://") + app_id;
-    const auto entries =
-        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+    const auto entries = test_ukm_recorder()->GetEntriesByName(
+        "ChromeOSApp.UsageTimeReusedSourceId");
     int usage_time = 0;
     for (const auto* entry : entries) {
       const ukm::UkmSource* src =
@@ -653,8 +653,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   void VerifyAppUsageTimeUkm(const GURL& url,
                              int duration,
                              AppTypeName app_type_name) {
-    const auto entries =
-        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+    const auto entries = test_ukm_recorder()->GetEntriesByName(
+        "ChromeOSApp.UsageTimeReusedSourceId");
     int usage_time = 0;
     for (const auto* entry : entries) {
       const ukm::UkmSource* src =
@@ -671,8 +671,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   }
 
   void VerifyNoAppUsageTimeUkm() {
-    auto entries =
-        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+    auto entries = test_ukm_recorder()->GetEntriesByName(
+        "ChromeOSApp.UsageTimeReusedSourceId");
     ASSERT_EQ(0U, entries.size());
   }
 
@@ -1279,7 +1279,8 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
 
   // Verify UKM is not reported.
-  auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(2U, entries.size());
 
   // Reset PlatformMetricsService to simulate the system reboot, and verify
@@ -1287,7 +1288,8 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
   ResetAppPlatformMetricsService();
   task_environment_.FastForwardBy(base::Minutes(5));
 
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(3U, entries.size());
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/2400000,
                         AppTypeName::kChromeBrowser);
@@ -1297,7 +1299,8 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
   // more AppKM is reported.
   ResetAppPlatformMetricsService();
   task_environment_.FastForwardBy(base::Minutes(5));
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(3U, entries.size());
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/2400000,
                         AppTypeName::kChromeBrowser);
@@ -1403,7 +1406,8 @@ TEST_F(AppPlatformMetricsServiceTest,
   task_environment_.FastForwardBy(base::Minutes(109));
 
   // Verify the app usage time AppKM for the web app and browser window.
-  auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(2U, entries.size());
   VerifyAppUsageTimeUkm(url, /*duration=*/480000, AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/60000,
@@ -1446,7 +1450,8 @@ TEST_F(AppPlatformMetricsServiceTest,
   task_environment_.FastForwardBy(base::Minutes(112));
 
   // Verify the app usage time AppKM.
-  auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(2U, entries.size());
   VerifyAppUsageTimeUkm(url, /*duration=*/300000, AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/180000,
@@ -1465,7 +1470,8 @@ TEST_F(AppPlatformMetricsServiceTest,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
 
   // Verify no more app usage time AppKM is recorded.
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(2U, entries.size());
 
   // Set the web app tab as inactivated.
@@ -1475,7 +1481,8 @@ TEST_F(AppPlatformMetricsServiceTest,
   task_environment_.FastForwardBy(base::Minutes(118));
 
   // Verify only the web app UKM is reported.
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(3U, entries.size());
   VerifyAppUsageTimeUkm(url, /*duration=*/420000, AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/180000,
@@ -1496,12 +1503,14 @@ TEST_F(AppPlatformMetricsServiceTest,
                        apps::InstanceState::kDestroyed);
 
   // Verify no more app usage time AppKM is recorded.
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(3U, entries.size());
 
   task_environment_.FastForwardBy(base::Minutes(119));
 
-  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(4U, entries.size());
   VerifyAppUsageTimeUkm(url, /*duration=*/420000, AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/240000,
@@ -1569,7 +1578,8 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
   task_environment_.FastForwardBy(base::Minutes(108));
 
   // Verify the app usage time AppKM for the web apps and browser window.
-  auto entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      "ChromeOSApp.UsageTimeReusedSourceId");
   ASSERT_EQ(3U, entries.size());
   VerifyAppUsageTimeUkm(url1, /*duration=*/300000, AppTypeName::kChromeBrowser);
   VerifyAppUsageTimeUkm(url2, /*duration=*/240000, AppTypeName::kChromeBrowser);
