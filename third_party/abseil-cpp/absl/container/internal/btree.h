@@ -631,7 +631,8 @@ class btree_node {
 
   // Compute how many values we can fit onto a leaf node taking into account
   // padding.
-  constexpr static size_type NodeTargetSlots(const int begin, const int end) {
+  constexpr static size_type NodeTargetSlots(const size_type begin,
+                                             const size_type end) {
     return begin == end ? begin
                         : SizeWithNSlots((begin + end) / 2 + 1) >
                                   params_type::kTargetNodeSize

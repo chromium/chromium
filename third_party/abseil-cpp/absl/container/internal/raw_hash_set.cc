@@ -23,6 +23,8 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
+// A single block of empty control bytes for tables without any slots allocated.
+// This enables removing a branch in the hot path of find().
 alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[16] = {
     ctrl_t::kSentinel, ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
     ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,

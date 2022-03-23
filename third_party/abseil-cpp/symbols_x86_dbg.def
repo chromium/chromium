@@ -1633,7 +1633,8 @@ EXPORTS
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPBUCordRep@23@AAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPBUCordRep@23@Vstring_view@3@AAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPBUCordRep@23@Vstring_view@3@_NAAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
-    ?DumpPCAndFrameSizesAndStackTrace@debugging_internal@absl@@YAXPAXQBQAXQAHHH_NP6AXPBD0@Z0@Z
+    ?DumpPCAndFrameSizesAndStackTrace@debugging_internal@absl@@YAXQAXQBQAXQAHHH_NP6AXPBDPAX@Z5@Z
+    ?DumpStackTrace@debugging_internal@absl@@YAXHH_NP6AXPBDPAX@Z2@Z
     ?DurationFromTimespec@absl@@YA?AVDuration@1@Utimespec@@@Z
     ?DurationFromTimeval@absl@@YA?AVDuration@1@Utimeval@@@Z
     ?Edge@CordRepBtree@cord_internal@absl@@QBEPAUCordRep@23@I@Z
@@ -1828,7 +1829,7 @@ EXPORTS
     ?GetPayloads@Status@absl@@AAEPAV?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@2@XZ
     ?GetPayloads@Status@absl@@ABEPBV?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@2@XZ
     ?GetPrependBuffer@CordRepRing@cord_internal@absl@@QAE?AV?$Span@D@3@I@Z
-    ?GetProgramCounter@debugging_internal@absl@@YAPAXPAX@Z
+    ?GetProgramCounter@debugging_internal@absl@@YAPAXQAX@Z
     ?GetRepData@CordRepRing@cord_internal@absl@@SAPBDPBUCordRep@23@@Z
     ?GetRepHi@time_internal@absl@@YA_JVDuration@2@@Z
     ?GetRepLo@time_internal@absl@@YAIVDuration@2@@Z
@@ -1871,7 +1872,6 @@ EXPORTS
     ?HasEdge@GraphCycles@synchronization_internal@absl@@QBE_NUGraphId@23@0@Z
     ?HasNode@GraphCycles@synchronization_internal@absl@@QAE_NUGraphId@23@@Z
     ?HasRandenHwAesImplementation@random_internal@absl@@YA_NXZ
-    ?HashSeed@container_internal@absl@@YAIPBW4ctrl_t@12@@Z
     ?Head@CordzInfo@cord_internal@absl@@SAPAV123@ABVCordzSnapshot@23@@Z
     ?HexStringToBytes@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@@Z
     ?HideMask@base_internal@absl@@YAIXZ
@@ -2072,6 +2072,7 @@ EXPORTS
     ?ParsePosixSpec@cctz@time_internal@absl@@YA_NABV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PAUPosixTimeZone@123@@Z
     ?ParseTime@absl@@YA_NVstring_view@1@0PAVTime@1@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?ParseTime@absl@@YA_NVstring_view@1@0VTimeZone@1@PAVTime@1@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
+    ?PerTableSalt@container_internal@absl@@YAIPBW4ctrl_t@12@@Z
     ?PermissionDeniedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Piece@AlphaNum@absl@@QBE?AVstring_view@2@XZ
     ?PiecewiseChunkSize@hash_internal@absl@@YAIXZ

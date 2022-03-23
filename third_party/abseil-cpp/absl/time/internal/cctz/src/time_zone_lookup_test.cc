@@ -1182,6 +1182,44 @@ TEST(PrevTransition, AmericaNewYork) {
   // We have a transition but we don't know which one.
 }
 
+TEST(NextTransition, Scan) {
+  for (const char* const* np = kTimeZoneNames; *np != nullptr; ++np) {
+    time_zone tz;
+    if (!load_time_zone(*np, &tz)) {
+      continue;  // tolerate kTimeZoneNames/zoneinfo skew
+    }
+    SCOPED_TRACE(testing::Message() << "In " << *np);
+
+    auto tp = time_point<absl::time_internal::cctz::seconds>::min();
+    time_zone::civil_transition trans;
+    while (tz.next_transition(tp, &trans)) {
+      time_zone::civil_lookup from_cl = tz.lookup(trans.from);
+      EXPECT_NE(from_cl.kind, time_zone::civil_lookup::REPEATED);
+      time_zone::civil_lookup to_cl = tz.lookup(trans.to);
+      EXPECT_NE(to_cl.kind, time_zone::civil_lookup::SKIPPED);
+
+      auto trans_tp = to_cl.trans;
+      time_zone::absolute_lookup trans_al = tz.lookup(trans_tp);
+      EXPECT_EQ(trans_al.cs, trans.to);
+      auto pre_trans_tp = trans_tp - absl::time_internal::cctz::seconds(1);
+      time_zone::absolute_lookup pre_trans_al = tz.lookup(pre_trans_tp);
+      EXPECT_EQ(pre_trans_al.cs + 1, trans.from);
+
+      auto offset_delta = trans_al.offset - pre_trans_al.offset;
+      EXPECT_EQ(offset_delta, trans.to - trans.from);
+      if (offset_delta == 0) {
+        // This "transition" is only an is_dst or abbr change.
+        EXPECT_EQ(to_cl.kind, time_zone::civil_lookup::UNIQUE);
+        if (trans_al.is_dst == pre_trans_al.is_dst) {
+          EXPECT_STRNE(trans_al.abbr, pre_trans_al.abbr);
+        }
+      }
+
+      tp = trans_tp;  // continue scan from transition
+    }
+  }
+}
+
 TEST(TimeZoneEdgeCase, AmericaNewYork) {
   const time_zone tz = LoadZone("America/New_York");
 

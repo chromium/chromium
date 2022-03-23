@@ -356,7 +356,8 @@ EXPORTS
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@AEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@Vstring_view@3@AEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@Vstring_view@3@_NAEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
-    ?DumpPCAndFrameSizesAndStackTrace@debugging_internal@absl@@YAXPEAXQEBQEAXQEAHHH_NP6AXPEBD0@Z0@Z
+    ?DumpPCAndFrameSizesAndStackTrace@debugging_internal@absl@@YAXQEAXQEBQEAXQEAHHH_NP6AXPEBDPEAX@Z5@Z
+    ?DumpStackTrace@debugging_internal@absl@@YAXHH_NP6AXPEBDPEAX@Z2@Z
     ?DurationFromTimespec@absl@@YA?AVDuration@1@Utimespec@@@Z
     ?DurationFromTimeval@absl@@YA?AVDuration@1@Utimeval@@@Z
     ?EmptyString@Status@absl@@CAPEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
@@ -481,7 +482,7 @@ EXPORTS
     ?GetParentStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ
     ?GetPayload@Status@absl@@QEBA?AV?$optional@VCord@absl@@@2@Vstring_view@2@@Z
     ?GetPrependBuffer@CordRepRing@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
-    ?GetProgramCounter@debugging_internal@absl@@YAPEAXPEAX@Z
+    ?GetProgramCounter@debugging_internal@absl@@YAPEAXQEAX@Z
     ?GetSaltMaterial@random_internal@absl@@YA?AV?$optional@I@2@XZ
     ?GetSkipCount@ExponentialBiased@profiling_internal@absl@@QEAA_J_J@Z
     ?GetStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ

@@ -47,7 +47,7 @@
 // The following platforms have an implementation of a hardware counter.
 #if defined(__i386__) || defined(__x86_64__) || defined(__aarch64__) || \
     defined(__powerpc__) || defined(__ppc__) || defined(__riscv) ||     \
-    defined(_M_IX86) || defined(_M_X64)
+    defined(_M_IX86) || (defined(_M_X64) && !defined(_M_ARM64EC))
 #define ABSL_HAVE_UNSCALED_CYCLECLOCK_IMPLEMENTATION 1
 #else
 #define ABSL_HAVE_UNSCALED_CYCLECLOCK_IMPLEMENTATION 0
