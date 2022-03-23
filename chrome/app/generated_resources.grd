@@ -12534,7 +12534,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- ChromeLabs Tab Search Media Tabs -->
     <message name='IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_NAME' desc="Name for the Tab Search Media Tabs experiment">
-      Tab Search Media Tabs
+      Media Tabs Section in Tab Search
     </message>
     <message name='IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_DESCRIPTION' desc='Description for the Tab Search Media Tabs experiment'>
        Adds a new section in 'Search Tabs' to easily find your tabs playing audio or video. Access through the button on the top corner of your browser.
