@@ -1847,6 +1847,7 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
         output_surface_plane_->damage_rect = frame->sub_buffer_rect;
     }
 
+    output_device_->SetViewportSize(frame->size);
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
     if (frame->sub_buffer_rect) {

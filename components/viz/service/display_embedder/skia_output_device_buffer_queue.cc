@@ -254,8 +254,7 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
   // See |needs_background_image|.
-  MaybeScheduleBackgroundImage(plane.has_value() ? plane->display_rect
-                                                 : gfx::RectF{4.f, 4.f});
+  MaybeScheduleBackgroundImage();
 
   if (plane) {
     // If the current_image_ is nullptr, it means there is no change on the
@@ -673,6 +672,11 @@ bool SkiaOutputDeviceBufferQueue::Reshape(
   return success;
 }
 
+void SkiaOutputDeviceBufferQueue::SetViewportSize(
+    const gfx::Size& viewport_size) {
+  viewport_size_ = viewport_size;
+}
+
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
   size_t existing_number_of_buffers = images_.size();
   FreeAllSurfaces();
@@ -692,15 +696,14 @@ bool SkiaOutputDeviceBufferQueue::RecreateImages() {
   return !images_.empty();
 }
 
-void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage(
-    const gfx::RectF& display_rect) {
+void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
   if (!needs_background_image_)
     return;
 
   gpu::SharedImageRepresentationOverlay::ScopedReadAccess* access = nullptr;
   OverlayCandidate candidate;
   candidate.color_space = color_space_;
-  candidate.display_rect = display_rect;
+  candidate.display_rect = gfx::RectF(gfx::SizeF(viewport_size_));
   candidate.solid_color = SK_ColorTRANSPARENT;
   candidate.plane_z_order = INT32_MIN;
 

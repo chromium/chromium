@@ -122,6 +122,8 @@ SkiaOutputDevice::BeginScopedPaint(bool allocate_frame_buffer) {
       std::move(end_semaphores), this, sk_surface);
 }
 
+void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
+
 void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   gr_context_->submit(sync_cpu);
   std::move(callback).Run();

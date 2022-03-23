@@ -281,6 +281,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::Size surface_size_for_swap_buffers() const {
     return reshape_surface_size_;
   }
+  gfx::Size viewport_size_for_swap_buffers() const {
+    return device_viewport_size_;
+  }
 
   bool ShouldApplyRoundedCorner(const DrawQuad* quad) const;
 

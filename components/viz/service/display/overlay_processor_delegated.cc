@@ -188,7 +188,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   }
 
   // Check for support.
-  this->CheckOverlaySupport(primary_plane, candidates);
+  this->CheckOverlaySupport(nullptr, candidates);
 
   for (auto&& each : *candidates) {
     if (!each.overlay_handled) {
@@ -283,6 +283,8 @@ void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
   // remove the primary plan entirely in the case of full delegation.
   // In that case we will do "output_surface_plane->reset()" like the existing
   // fullscreen overlay code.
+  if (delegated_status_ == DelegationStatus::kFullDelegation)
+    output_surface_plane->reset();
 }
 
 }  // namespace viz

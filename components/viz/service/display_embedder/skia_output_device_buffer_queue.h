@@ -54,6 +54,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                const gfx::ColorSpace& color_space,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
+  void SetViewportSize(const gfx::Size& viewport_size) override;
   SkSurface* BeginPaint(
       bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
@@ -89,7 +90,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   gfx::Size GetSwapBuffersSize();
   bool RecreateImages();
 
-  void MaybeScheduleBackgroundImage(const gfx::RectF& display_rect);
+  void MaybeScheduleBackgroundImage();
 
   // Given an overlay mailbox, returns the corresponding OverlayData* from
   // |overlays_|. Inserts an OverlayData if mailbox is not in |overlays_|.
@@ -103,6 +104,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   gfx::ColorSpace color_space_;
   gfx::Size image_size_;
   int sample_count_ = 1;
+  gfx::Size viewport_size_;
   gfx::OverlayTransform overlay_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   // All allocated images.

@@ -118,6 +118,9 @@ class SkiaOutputDevice {
                        float device_scale_factor,
                        gfx::OverlayTransform transform) = 0;
 
+  // For devices that supports viewporter.
+  virtual void SetViewportSize(const gfx::Size& viewport_size);
+
   // Submit the GrContext and run |callback| after. Note most but not all
   // implementations will run |callback| in this call stack.
   // If the |sync_cpu| flag is true this function will return once the gpu
