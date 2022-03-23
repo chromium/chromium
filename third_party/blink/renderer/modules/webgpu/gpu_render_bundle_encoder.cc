@@ -39,6 +39,8 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
+  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
+  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
   if (webgpu_desc->hasLabel()) {
     label = webgpu_desc->label().Utf8();
     dawn_desc.label = label.c_str();

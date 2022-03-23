@@ -1008,6 +1008,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgpu/gpu_render_pass_depth_stencil_attachment.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_render_pass_descriptor.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.idl",
+          "//third_party/blink/renderer/modules/webgpu/gpu_render_pass_layout.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_render_pipeline_descriptor.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_request_adapter_options.idl",
