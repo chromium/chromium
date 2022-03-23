@@ -671,7 +671,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   }
 
   void PerformStepsBeforeEnrollmentCheck();
-  void PerformSessionSignInSteps();
+  void PerformSessionSignInSteps(bool is_enterprise_enrolled);
 
   void SimpleEndToEnd();
 
@@ -713,7 +713,8 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   test::ExitUpdateScreenNoUpdate();
 }
 
-void OobeInteractiveUITest::PerformSessionSignInSteps() {
+void OobeInteractiveUITest::PerformSessionSignInSteps(
+    bool is_enterprise_enrolled) {
   ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
@@ -722,7 +723,9 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
   LogInAsRegularUser();
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled() &&
+      (!is_enterprise_enrolled ||
+       test_setup()->arc_state() != ArcState::kNotAvailable)) {
     test::WaitForConsolidatedConsentScreen();
     RunConsolidatedConsentScreenChecks();
     test::TapConsolidatedConsentAccept();
@@ -766,7 +769,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
   PerformStepsBeforeEnrollmentCheck();
-  PerformSessionSignInSteps();
+  PerformSessionSignInSteps(false /* is_enterprise_enrolled */);
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -855,7 +858,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   enrollment_ui_.LeaveSuccessScreen();
   login_screen_waiter->WaitEvenIfShown();
 
-  PerformSessionSignInSteps();
+  PerformSessionSignInSteps(true /* is_enterprise_enrolled */);
 
   WaitForLoginDisplayHostShutdown();
 }

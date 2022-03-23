@@ -9,6 +9,7 @@
 #include "base/hash/sha1.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -597,14 +598,15 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedUserTest,
                     ArcManagedOptin::kManagedDisabled);
 }
 
-// When both ARC opt ins are managed, skip the screen.
-// TODO(crbug.com/1273975): this test should be updated once the per user
-// metrics is integrated into consolidated consent.
-IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedUserTest, Skip) {
-  SetUpArcEnabledPolicy();
-  SetUpManagedOptIns(ArcManagedOptin::kManagedEnabled,
-                     ArcManagedOptin::kManagedEnabled);
-  LoginManagedUser();
+class ConsolidatedConsentScreenManagedDeviceTest
+    : public ConsolidatedConsentScreenTest {
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedDeviceTest, Skip) {
+  LoginAsRegularUser();
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             ConsolidatedConsentScreen::Result::NOT_APPLICABLE);

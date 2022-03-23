@@ -40,6 +40,7 @@ class MockConsolidatedConsentScreenView : public ConsolidatedConsentScreenView {
   MOCK_METHOD(void, SetBackupMode, (bool enabled, bool managed));
   MOCK_METHOD(void, SetLocationMode, (bool enabled, bool managed));
   MOCK_METHOD(void, SetIsDeviceOwner, (bool is_owner));
+  MOCK_METHOD(void, HideUsageOptin, ());
 
  private:
   ConsolidatedConsentScreen* screen_ = nullptr;

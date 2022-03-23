@@ -279,6 +279,8 @@ void LoginUIKeyboardTestWithUsersAndOwner::CheckGaiaKeyboard() {
   std::vector<std::string> expected_input_methods;
   // kPreferredKeyboardLayout is now set to last focused POD.
   expected_input_methods.push_back(user_input_methods[0]);
+  // Owner input method.
+  expected_input_methods.push_back(user_input_methods[2]);
   // Locale default input methods (the first one also is hardware IM).
   Append_en_US_InputMethods(&expected_input_methods);
 

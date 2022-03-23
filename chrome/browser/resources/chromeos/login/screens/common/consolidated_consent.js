@@ -86,6 +86,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         value: false,
       },
 
+      usageOptinHidden_: {
+        type: Boolean,
+        value: false,
+      },
+
       backupManaged_: {
         type: Boolean,
         value: false,
@@ -160,6 +165,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
             'setBackupMode',
             'setLocationMode',
             'setIsDeviceOwner',
+            'setUsageOptinHidden',
     ];
   }
   // clang-format on
@@ -601,6 +607,13 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   /**
+   * Hides the entire usage opt-in.
+   */
+  setUsageOptinHidden() {
+    this.usageOptinHidden_ = true;
+  }
+
+  /**
    * Sets current backup and restore mode.
    * @param {boolean} enabled Defines the state of backup opt in.
    * @param {boolean} managed Defines whether this setting is set by policy.
@@ -622,7 +635,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   /**
    * Sets isOwner_ property.
-   * @param {boolean} isOwner Defines whether the current user is the  device
+   * @param {boolean} isOwner Defines whether the current user is the device
    *     owner.
    */
   setIsDeviceOwner(isOwner) {

@@ -210,4 +210,8 @@ void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
 void ConsolidatedConsentScreenHandler::SetIsDeviceOwner(bool is_owner) {
   CallJS("login.ConsolidatedConsentScreen.setIsDeviceOwner", is_owner);
 }
+
+void ConsolidatedConsentScreenHandler::HideUsageOptin() {
+  CallJS("login.ConsolidatedConsentScreen.setUsageOptinHidden");
+}
 }  // namespace chromeos

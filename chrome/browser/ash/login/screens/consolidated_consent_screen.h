@@ -107,10 +107,14 @@ class ConsolidatedConsentScreen
   void OnOwnershipStatusCheckDone(
       DeviceSettingsService::OwnershipStatus status);
 
+  void ReportUsageOptIn(bool is_enabled);
+
   // Exits the screen with `Result::ACCEPTED` in the normal flow, and
   // `Result::ACCEPTED_DEMO_ONLINE` or `Result::ACCEPTED_DEMO_OFFLINE` in the
   // demo setup flow.
   void ExitScreenWithAcceptedResult();
+
+  absl::optional<bool> is_owner_;
 
   bool is_child_account_ = false;
 
