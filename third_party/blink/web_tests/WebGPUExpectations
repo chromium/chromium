@@ -94,6 +94,23 @@ crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_siz
 # Shifted by about half a pixel
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_copy.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_draw.https.html [ Failure ]
+
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Skip ]
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Skip ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Failure ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Failure ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Failure ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Failure ]
+
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Failure ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Failure ]
+crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
+crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
+crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
+crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
+
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_copy.https.html [ Failure ]
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_draw.https.html [ Failure ]
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_copy.https.html [ Failure ]
