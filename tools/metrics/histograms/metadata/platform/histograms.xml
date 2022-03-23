@@ -292,9 +292,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DetachableBase.ActivePercent" units="%"
-    expires_after="2022-04-10">
-  <owner>drinkcat@chromium.org</owner>
+    expires_after="2022-10-10">
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>
     Ratio of time a detachable base keyboard is active, i.e. when the USB
@@ -304,9 +304,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DetachableBase.AttachedOnBoot" enum="BooleanAttached"
-    expires_after="2022-04-10">
-  <owner>drinkcat@chromium.org</owner>
+    expires_after="2022-10-10">
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>
     For devices with a detachable base: whether or not the base is connected on
@@ -316,16 +316,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.DetachableBase.PairResult"
     enum="DetachableBasePairResult" expires_after="2022-04-24">
-  <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>Result of a detachable base pair operation.</summary>
 </histogram>
 
 <histogram name="Platform.DetachableBase.PendingRWUpdate"
     enum="DetachableBasePendingRWUpdate" expires_after="2022-04-24">
-  <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>
     Detachable base firmware updates can be configured to only occur on boot. In
@@ -343,16 +343,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.DetachableBase.ROUpdateResult"
     enum="DetachableBaseROUpdateResult" expires_after="2022-04-24">
-  <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>Result of a detachable base RO firmware update.</summary>
 </histogram>
 
 <histogram name="Platform.DetachableBase.RWUpdateResult"
     enum="DetachableBaseRWUpdateResult" expires_after="2022-04-24">
-  <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
+  <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
   <summary>Result of a detachable base RW firmware update.</summary>
 </histogram>
