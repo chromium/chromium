@@ -219,6 +219,8 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetStringKey("clientVersion", version_info::GetVersionNumber());
   params.SetBoolKey("readOnlyEmail", true);
+  params.SetBoolKey("enableAzureADIntegration",
+                    ash::features::IsAzureADIntegrationEnabled());
 
   CallJavascript("loadAuthenticator", params);
   if (features::IsNewLockScreenReauthLayoutEnabled()) {

@@ -566,6 +566,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
       !gaia_reauth_request_token_.empty()) {
     params.SetStringKey("rart", gaia_reauth_request_token_);
   }
+  params.SetBoolKey("enableAzureADIntegration",
+                    ash::features::IsAzureADIntegrationEnabled());
 
   was_security_token_pin_canceled_ = false;
 

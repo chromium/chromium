@@ -105,6 +105,7 @@ cr.define('cr.login', function() {
    *   isDeviceOwner: boolean,
    *   ssoProfile: string,
    *   enableCloseView: boolean,
+   *   enableAzureADIntegration: boolean
    * }}
    */
   /* #export */ let AuthParams;
@@ -126,6 +127,10 @@ cr.define('cr.login', function() {
   const GAIA_MESSAGE_GAIA_USER_INFO = 'ChromeOS.Gaia.Message.Gaia.UserInfo';
   const GAIA_MESSAGE_SAML_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Saml.CloseView';
   const GAIA_MESSAGE_GAIA_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Gaia.CloseView';
+
+  // Regular expressions used to check for Azure AD-related hosts
+  const AZURE_AD_HOST = /login\.microsoftonline\.com$/;
+  const AZURE_AD_B2B_HOST = /b2clogin\.com$/;
 
   /**
    * The source URL parameter for the constrained signin flow.
@@ -221,6 +226,8 @@ cr.define('cr.login', function() {
     'enableCloseView',   // True if authenticator should wait for the closeView
                          // message from Gaia.
     'rart',              // Encrypted reauth request token.
+    'enableAzureADIntegration'  // True if features specific to Azure AD are
+                                // enabled
   ];
 
   // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -458,6 +465,8 @@ cr.define('cr.login', function() {
       /** @private {?SyncTrustedVaultKeys} */
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
+      /** @private {boolean} */
+      this.isAzureADIntegrationEnabled_ = false;
 
       window.addEventListener(
           'message', e => this.onMessageFromWebview_(e), false);
@@ -499,6 +508,7 @@ cr.define('cr.login', function() {
       this.isSamlUserPasswordless_ = null;
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
+      this.isAzureADIntegrationEnabled_ = false;
     }
 
     /**
@@ -663,15 +673,12 @@ cr.define('cr.login', function() {
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
       this.enableCloseView_ = !!data.enableCloseView;
+      this.isAzureADIntegrationEnabled_ = data.enableAzureADIntegration;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
       this.samlAclUrl_ = data.samlAclUrl;
-      // The email field is repurposed as public session email in SAML guest
-      // mode, ie when frameUrl is not empty.
-      if (data.samlAclUrl) {
-        this.email_ = data.email;
-      }
+      this.email_ = data.email;
 
       if (data.startsOnSamlPage) {
         this.samlHandler_.startsOnSamlPage = true;
@@ -904,6 +911,37 @@ cr.define('cr.login', function() {
     }
 
     /**
+     * Check url's host to determine if it comes from Azure AD
+     * @param {URL?} url
+     * @private
+     */
+    isAzureAD_(url) {
+      return Boolean(
+          url.host.match(AZURE_AD_HOST) || url.host.match(AZURE_AD_B2B_HOST));
+    }
+
+    /**
+     * Try to auto-fill email on sign-in page if IdP is Azure AD
+     * @param {string} url url from location header
+     * @private
+     */
+    maybeAutofillUsernameIfAzureAD_(url) {
+      if (!this.isAzureADIntegrationEnabled_) {
+        return;
+      }
+      if (!url.startsWith('https')) {
+        return;
+      }
+      if (!this.email_) {
+        return;
+      }
+      if (this.isAzureAD_(new URL(url))) {
+        url = appendParam(url, 'login_hint', this.email_);
+        this.webview_.src = url;
+      }
+    }
+
+    /**
      * Invoked when headers are received in the main frame of the webview. It
      * 1) reads the authenticated user info from a signin header,
      * 2) signals the start of a saml flow upon receiving a saml header.
@@ -945,6 +983,7 @@ cr.define('cr.login', function() {
           assert(header.value !== undefined);
           const location = decodeURIComponent(header.value);
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
+          this.maybeAutofillUsernameIfAzureAD_(header.value);
         }
       }
     }
