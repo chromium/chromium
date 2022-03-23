@@ -265,6 +265,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
       @selector(testSearchSuggestedActionsPageSwitch),
       @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
+      @selector(testSearchResultCloseTab),
+      @selector(testSearchResultCloseTabInIncognito),
       /* Add new tests for tab search above this line. */};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
@@ -1944,6 +1946,60 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       selectElementWithMatcher:grey_accessibilityID(
                                    kTabGridIncognitoTabsEmptyStateIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that closing a tab works successfully in search results.
+- (void)testSearchResultCloseTab {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Close Tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that closing a tab works successfully in incognito search results.
+- (void)testSearchResultCloseTabInIncognito {
+  [self loadTestURLsInNewIncognitoTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Close Tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Helper Methods
