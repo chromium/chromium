@@ -687,13 +687,26 @@ export class NavigationListModel extends EventTarget {
     // mounting, which means we're just dealing with fake entries here. This
     // gets updated to handle real volumes once we support mounting them.
     if (util.isGuestOsEnabled()) {
-      // Remove all GuestOs entries and add the current ones.
+      // Remove all GuestOs placeholders, we readd any if they're needed.
       myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.GUEST_OS);
+
+      // For each volume, add any which aren't already in the list.
+      for (const volume of getVolumes(
+               VolumeManagerCommon.VolumeType.GUEST_OS)) {
+        if (myFilesEntry.findIndexByVolumeInfo(volume.volumeInfo) === -1) {
+          myFilesEntry.addEntry(new VolumeEntry(volume.volumeInfo));
+        }
+      }
+      // Now we add any guests we know about which don't already have a
+      // matching volume.
       for (const item of this.guestOsPlaceholders_) {
-        // It's a fake item, link the navigation model so DirectoryTree can
-        // choose the correct DirectoryItem for it.
-        item.entry.navigationModel = item;
-        myFilesEntry.addEntry(item.entry);
+        if (!getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS)
+                 .find(v => v.label === item.label)) {
+          // Since it's a fake item, link the navigation model so
+          // DirectoryTree can choose the correct DirectoryItem for it.
+          item.entry.navigationModel = item;
+          myFilesEntry.addEntry(item.entry);
+        }
       }
     }
 

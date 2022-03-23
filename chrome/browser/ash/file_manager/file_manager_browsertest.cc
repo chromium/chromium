@@ -1789,8 +1789,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("fakesListed").EnableGuestOsFiles(),
-        TestCase("mountGuestError").EnableGuestOsFiles(),
         TestCase("listUpdatedWhenGuestsChanged").EnableGuestOsFiles(),
+        TestCase("mountGuestSuccess").EnableGuestOsFiles(),
         TestCase("notListedWithoutFlag")));
 
 }  // namespace file_manager

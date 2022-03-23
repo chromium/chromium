@@ -39250,6 +39250,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="Android Documents Provider"/>
   <int value="10" label="SMB File Share"/>
   <int value="11" label="System internal"/>
+  <int value="12" label="Guest OS Files"/>
 </enum>
 
 <enum name="FileManagerZipHandlerType">

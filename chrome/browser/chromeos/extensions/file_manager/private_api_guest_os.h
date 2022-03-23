@@ -42,6 +42,10 @@ class FileManagerPrivateMountGuestFunction : public LoggedExtensionFunction {
  private:
   ~FileManagerPrivateMountGuestFunction() override;
 
+  // Callback for when the mount event completes. `success` is true if the mount
+  // succeeded, false on error.
+  void MountCallback(bool success);
+
   ResponseAction Run() override;
 };
 

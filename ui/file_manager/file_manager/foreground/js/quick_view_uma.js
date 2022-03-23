@@ -81,7 +81,7 @@ export class QuickViewUma {
       console.error('Unknown volume type: ' + volumeType);
     }
     // Record stats of dialog types. It must be in sync with
-    // FileDialogType enum in tools/metrics/histograms/histogram.xml.
+    // FileDialogType enum in tools/metrics/histograms/enums.xml.
     metrics.recordEnum('QuickView.DialogType', this.dialogType_, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,
@@ -105,7 +105,7 @@ QuickViewUma.WayToOpen = {
 };
 
 /**
- * The order should be consistnet with the definition  in histograms.xml.
+ * The order should be consistent with the definition in histograms.xml.
  *
  * @const {!Array<QuickViewUma.WayToOpen>}
  * @private
@@ -118,7 +118,7 @@ QuickViewUma.WayToOpenValues_ = [
 
 /**
  * Keep the order of this in sync with FileManagerVolumeType in
- * tools/metrics/histograms/histograms.xml.
+ * tools/metrics/histograms/enums.xml.
  *
  * @type {!Array<VolumeManagerCommon.VolumeType>}
  * @const
@@ -136,4 +136,5 @@ QuickViewUma.VolumeType = [
   VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
   VolumeManagerCommon.VolumeType.SMB,
   VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL,
+  VolumeManagerCommon.VolumeType.GUEST_OS,
 ];

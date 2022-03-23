@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -50,6 +51,7 @@ class DocumentsProviderTestVolume;
 class MediaViewTestVolume;
 class SmbfsTestVolume;
 class HiddenTestVolume;
+class GuestOsTestVolume;
 
 class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                                    public extensions::ExtensionApiTest {
@@ -202,6 +204,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
       const std::string& source_path,
       const std::vector<std::string>& mount_options);
 
+  base::FilePath MaybeMountGuestOs(
+      const std::string& source_path,
+      const std::vector<std::string>& mount_options);
+
   // Called during tablet mode test setup to enable the Ash virtual keyboard.
   void EnableVirtualKeyboard();
 
@@ -248,6 +254,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
   std::unique_ptr<HiddenTestVolume> hidden_volume_;
+
+  // Map from source path (e.g. sftp://1:2) to volume.
+  base::flat_map<std::string, std::unique_ptr<GuestOsTestVolume>>
+      guest_os_volumes_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

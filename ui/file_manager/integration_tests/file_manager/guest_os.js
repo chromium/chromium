@@ -49,35 +49,6 @@ testcase.fakesListed = async () => {
 };
 
 /**
- * Tests that clicking on a Guest OS entry in the sidebar triggers a mount
- * event, and an error is returned.
- * TODO(crbug/1293229): Scan errors don't seem to show up in the UI any more.
- * Need to fix that, then update this test to check for the expected error.
- */
-testcase.mountGuestError = async () => {
-  const guestName = 'Jellylorum';
-  // Start off with one guest.
-  const id = await sendTestMessage(
-      {name: 'registerMountableGuest', displayName: guestName});
-  // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
-
-  // Wait for our guest to appear and click it.
-  const query = '#directory-tree [root-type-icon=guest_os]';
-  await remoteCall.waitAndClickElement(appId, query);
-
-  // Check that the Guest is selected.
-  // TODO(crbug/1293229): It looks like scan errors are no longer surfaced in
-  // the UI, I remember they used to be? Need to figure out surfacing errors and
-  // then we check that instead.
-  await remoteCall.waitForElement(appId, `#breadcrumbs[path=${guestName}]`);
-
-  // We expect there to be an error, from the mount failure.
-  return IGNORE_APP_ERRORS;
-};
-
-/**
  * Tests that the list of guests is updated when new guests are added or
  * removed.
  */
@@ -118,4 +89,43 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
     await sendTestMessage({name: 'registerMountableGuest', displayName: name});
   }
   await remoteCall.waitForElementsCount(appId, [query], names.length);
+};
+
+/**
+ * Tests that clicking on a Guest OS entry in the sidebar mounts the
+ * corresponding volume, and that the UI is update appropriately (volume in
+ * sidebar and not fake, contents show up once done loading, etc).
+ */
+testcase.mountGuestSuccess = async () => {
+  const guestName = 'JennyAnyDots';
+  // Start off with one guest.
+  const id = await sendTestMessage(
+      {name: 'registerMountableGuest', displayName: guestName, canMount: true});
+  // Open the files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Wait for our guest to appear and click it.
+  const query = '#directory-tree [root-type-icon=guest_os]';
+  await remoteCall.waitAndClickElement(appId, query);
+
+  // Wait until it's loaded.
+  await remoteCall.waitForElement(
+      appId, `#breadcrumbs[path="My files/${guestName}"]`);
+
+  // We should have a volume in the sidebar
+  await remoteCall.waitForElement(
+      appId,
+      `.tree-item[volume-type-for-testing="guest_os"][entry-label="${
+          guestName}"]`);
+
+  // We should no longer have a fake
+  await remoteCall.waitForElementsCount(appId, [query], 0);
+
+  // And the volume should be focused in the main window
+  await remoteCall.waitForElement(
+      appId, `#list-container[scan-completed="${guestName}"]`);
+
+  // It should not be read-only
+  await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
 };

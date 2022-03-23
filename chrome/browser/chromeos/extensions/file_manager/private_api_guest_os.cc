@@ -4,9 +4,12 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_guest_os.h"
 
+#include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
 
 namespace {
@@ -44,8 +47,30 @@ FileManagerPrivateMountGuestFunction::~FileManagerPrivateMountGuestFunction() =
     default;
 
 ExtensionFunction::ResponseAction FileManagerPrivateMountGuestFunction::Run() {
-  LOG(ERROR) << "Mount not implemented";
-  return RespondNow(Error("Not implemented"));
+  using extensions::api::file_manager_private::MountGuest::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  auto* registry =
+      guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
+  auto* provider = registry->Get(params->id);
+  if (provider == nullptr) {
+    auto error =
+        base::StringPrintf("Unable to find guest for id %d", params->id);
+    LOG(ERROR) << error;
+    return RespondNow(Error(error));
+  }
+  provider->Mount(base::BindOnce(
+      &FileManagerPrivateMountGuestFunction::MountCallback, this));
+  return RespondLater();
+}
+
+void FileManagerPrivateMountGuestFunction::MountCallback(bool success) {
+  if (!success) {
+    Respond(Error("Error mounting guest"));
+    return;
+  }
+  Respond(NoArguments());
 }
 
 }  // namespace extensions

@@ -177,6 +177,11 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
       break;
+    case file_manager::VOLUME_TYPE_GUEST_OS:
+      // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
+      // not actually sure if it's possible to reach here.
+      NOTREACHED();
+      break;
     default:
       // Requested unmounting a device which is not unmountable.
       return RespondNow(Error("Invalid volume type"));

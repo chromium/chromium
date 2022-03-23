@@ -1087,6 +1087,7 @@ util.getRootTypeLabel = locationInfo => {
     case VolumeManagerCommon.RootType.ANDROID_FILES:
     case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
     case VolumeManagerCommon.RootType.SMB:
+    case VolumeManagerCommon.RootType.GUEST_OS:
       return locationInfo.volumeInfo.label;
     default:
       console.error('Unsupported root type: ' + locationInfo.rootType);
@@ -1135,6 +1136,7 @@ util.getEntryLabel = (locationInfo, entry) => {
  *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
  *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
  *  - "Linux Files" root "/" directory
+ *  - "Guest OS" root "/" directory
  *
  * which cannot be modified such as deleted/cut or renamed.
  *
@@ -1208,6 +1210,10 @@ util.isNonModifiable = (volumeManager, entry) => {
   }
 
   if (volumeType === VolumeManagerCommon.RootType.CROSTINI) {
+    return entry.fullPath === '/';
+  }
+
+  if (volumeType === VolumeManagerCommon.RootType.GUEST_OS) {
     return entry.fullPath === '/';
   }
 

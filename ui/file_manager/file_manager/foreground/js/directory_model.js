@@ -810,7 +810,9 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
-      // Do not rescan for crostini errors.
+      // Do not rescan for Guest OS (including Crostini) errors.
+      // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
+      // string, but once it gets its own strings this needs to include both.
       if (event.error.name === constants.CROSTINI_CONNECT_ERR) {
         return;
       }
@@ -1306,7 +1308,12 @@ export class DirectoryModel extends EventTarget {
          event.added[0].source === VolumeManagerCommon.Source.FILE) ||
         (event.added[0].volumeType ===
              VolumeManagerCommon.VolumeType.CROSTINI &&
-         this.getCurrentRootType() === VolumeManagerCommon.RootType.CROSTINI)) {
+         this.getCurrentRootType() === VolumeManagerCommon.RootType.CROSTINI) ||
+        // TODO(crbug/1293229): Don't redirect if the user is looking at a
+        // different Guest OS folder.
+        (event.added[0].volumeType ===
+             VolumeManagerCommon.VolumeType.GUEST_OS &&
+         this.getCurrentRootType() === VolumeManagerCommon.RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.
       event.added[0].resolveDisplayRoot().then((displayRoot) => {
