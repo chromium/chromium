@@ -306,7 +306,6 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
 }
 
 - (void)tearDown {
-  [super tearDown];
   // Ensure that pref set in testTabGridItemContextMenuAddToBookmarkGreyed is
   // reset even if the test failed.
   if ([self isRunningTest:@selector
@@ -316,6 +315,7 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
          forUserPref:base::SysUTF8ToNSString(
                          bookmarks::prefs::kEditBookmarksEnabled)];
   }
+  [super tearDown];
 }
 
 // Tests entering and leaving the tab grid.
