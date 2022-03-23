@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import argparse
-import cgi
 import colorsys
 import difflib
+import html
 import random
 import os
 import re
@@ -249,7 +249,7 @@ def parse_chunks_from_diff(diff):
   it = iter(diff)
   for line in it:
     while not line.startswith('@@'):
-      line = it.next()
+      line = next(it)
     parts = line.split(' ')
     previous_start, previous_end = parse_chunk_header_file_range(
         parts[1].lstrip('-'))
@@ -261,7 +261,7 @@ def parse_chunks_from_diff(diff):
     added_lines_end = None
     removed_lines = []
     while previous_start < previous_end or current_start < current_end:
-      line = it.next()
+      line = next(it)
       firstchar = line[0]
       line = line[1:]
       if not in_delta and (firstchar == '-' or firstchar == '+'):
@@ -335,20 +335,20 @@ def generate_substrings(file):
   data = []
   while True:
     buf = file.read(BUF_SIZE)
-    parts = buf.split('\0')
+    parts = buf.split(b'\0')
     data.append(parts[0])
     if len(parts) > 1:
-      joined = ''.join(data)
-      if joined != '':
-        yield joined
+      joined = b''.join(data)
+      if joined != b'':
+        yield joined.decode()
       for i in range(1, len(parts) - 1):
-        if parts[i] != '':
-          yield parts[i]
+        if parts[i] != b'':
+          yield parts[i].decode()
       data = [parts[-1]]
     if len(buf) < BUF_SIZE:
-      joined = ''.join(data)
-      if joined != '':
-        yield joined
+      joined = b''.join(data)
+      if joined != b'':
+        yield joined.decode()
       return
 
 
@@ -356,14 +356,17 @@ def generate_commits(git_log_stdout):
   """Parses git log output into a stream of Commit objects.
   """
   substring_generator = generate_substrings(git_log_stdout)
-  while True:
-    hash = substring_generator.next()
-    author_name = substring_generator.next()
-    author_email = substring_generator.next()
-    author_date = substring_generator.next()
-    message = substring_generator.next().rstrip('\n')
-    diff = substring_generator.next().split('\n')[1:-1]
-    yield Commit(hash, author_name, author_email, author_date, message, diff)
+  try:
+    while True:
+      hash = next(substring_generator)
+      author_name = next(substring_generator)
+      author_email = next(substring_generator)
+      author_date = next(substring_generator)
+      message = next(substring_generator).rstrip('\n')
+      diff = next(substring_generator).split('\n')[1:-1]
+      yield Commit(hash, author_name, author_email, author_date, message, diff)
+  except StopIteration:
+    pass
 
 
 def uberblame_aux(file_name, git_log_stdout, data, tokenization_method):
@@ -384,7 +387,6 @@ def uberblame_aux(file_name, git_log_stdout, data, tokenization_method):
   blame = tokenization_method(data)
 
   blamed_tokens = 0
-  total_tokens = len(blame)
   uber_blame = (data, blame[:])
 
   for commit in generate_commits(git_log_stdout):
@@ -448,11 +450,11 @@ def uberblame(file_name, revision, tokenization_method):
   git_log = subprocess.Popen(
       cmd_git_log, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   data = subprocess.check_output(
-      ['git', 'show', '%s:%s' % (revision, file_name)])
+      ['git', 'show', '%s:%s' % (revision, file_name)]).decode()
   data, blame = uberblame_aux(file_name, git_log.stdout, data,
                               tokenization_method)
 
-  _, stderr = git_log.communicate()
+  stderr = git_log.communicate()[1].decode()
   if git_log.returncode != 0:
     raise subprocess.CalledProcessError(git_log.returncode, cmd_git_log, stderr)
   return data, blame
@@ -482,7 +484,7 @@ def colorize_diff(diff):
 
   colorized = []
   for line in diff:
-    escaped = cgi.escape(line.replace('\r', ''), quote=True)
+    escaped = html.escape(line.replace('\r', ''), quote=True)
     if line.startswith('+'):
       colorized.append('<span class=\\"addition\\">%s</span>' % escaped)
     elif line.startswith('-'):
@@ -515,7 +517,7 @@ def create_visualization(data, blame):
   # loading the same blame of the same file twice will result in the
   # same generated HTML page.
   random.seed(0x52937865ec62d1ea)
-  html = """\
+  page = """\
   <html>
     <head>
       <style>
@@ -594,7 +596,7 @@ def create_visualization(data, blame):
     </body>
   </html>
   """
-  html = textwrap.dedent(html)
+  page = textwrap.dedent(page)
   commits = {}
   lines = []
   commit_colors = {}
@@ -627,7 +629,7 @@ def create_visualization(data, blame):
             lines.append(('<span class="token" style="background-color: %s" ' +
                           'onclick="display_commit(&quot;%s&quot;)">') % (color,
                                                                           hash))
-      lines.append(cgi.escape(c))
+      lines.append(html.escape(c))
       column += 1
     row += 1
   commit_data = ['{\n']
@@ -649,7 +651,7 @@ def create_visualization(data, blame):
         author_email=commit.author_email,
         author_date=commit.author_date,
         message=commit.message)
-    commit_display = cgi.escape(commit_display, quote=True)
+    commit_display = html.escape(commit_display, quote=True)
     commit_display += colorize_diff(commit.diff)
     commit_display = re.sub(links, '<a href=\\"\\1\\">\\1</a>', commit_display)
     commit_display = commit_display.replace('\n', '\\n')
@@ -659,10 +661,10 @@ def create_visualization(data, blame):
   line_nums = range(1, row if lastline.strip() == '' else row + 1)
   line_nums = '\n'.join([str(num) for num in line_nums])
   lines = ''.join(lines)
-  return html % (commit_data, line_nums, lines)
+  return page % (commit_data, line_nums, lines)
 
 
-def show_visualization(html):
+def show_visualization(page):
   """Display |html| in a web browser.
 
   Args:
@@ -672,7 +674,7 @@ def show_visualization(html):
   # TODO(thomasanderson): spin up a temporary web server to serve this
   # file so we don't have to leak it.
   html_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
-  html_file.write(html)
+  html_file.write(page.encode())
   html_file.flush()
   if sys.platform.startswith('linux'):
     # Don't show any messages when starting the browser.
