@@ -466,7 +466,6 @@ def start(**kwargs):
         else:
             rv = not run_tests(**kwargs)[0] or logged_critical.has_log
     finally:
-        logger.shutdown()
         logger.remove_handler(handler)
     return rv
 

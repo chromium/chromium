@@ -362,13 +362,10 @@ class WebDriverBrowser(Browser):
         self.logger.debug("Stopping WebDriver")
         clean = True
         if self.is_alive():
-            # Pass a timeout value to mozprocess Processhandler.kill()
-            # to ensure it always returns within it.
-            # See https://bugzilla.mozilla.org/show_bug.cgi?id=1760080
-            kill_result = self._proc.kill(timeout=5)
+            kill_result = self._proc.kill()
             if force and kill_result != 0:
                 clean = False
-                self._proc.kill(9, timeout=5)
+                self._proc.kill(9)
         success = not self.is_alive()
         if success and self._output_handler is not None:
             # Only try to do output post-processing if we managed to shut down
