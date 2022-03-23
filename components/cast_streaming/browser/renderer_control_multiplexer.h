@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,8 +20,9 @@ namespace cast_streaming {
 // callers by forwarding all such calls across a single mojo pipe.
 class RendererControlMultiplexer : public media::mojom::Renderer {
  public:
-  explicit RendererControlMultiplexer(
-      mojo::Remote<media::mojom::Renderer> renderer_remote);
+  RendererControlMultiplexer(
+      mojo::Remote<media::mojom::Renderer> renderer_remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~RendererControlMultiplexer() override;
 
   // Adds a new mojo pipe for which calls should be forwarded to
@@ -48,10 +50,14 @@ class RendererControlMultiplexer : public media::mojom::Renderer {
   void Flush(FlushCallback callback) override;
 
  private:
-  mojo::Remote<media::mojom::Renderer> renderer_remote_;
+  void OnMojoDisconnect();
 
+  mojo::Remote<media::mojom::Renderer> renderer_remote_;
   std::vector<std::unique_ptr<mojo::Receiver<media::mojom::Renderer>>>
       receiver_list_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<RendererControlMultiplexer> weak_factory_;
 };
 
 }  // namespace cast_streaming

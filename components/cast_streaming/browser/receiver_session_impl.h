@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
@@ -45,7 +46,8 @@ class ReceiverSessionImpl final
  private:
   class RendererControllerImpl : public ReceiverSession::RendererController {
    public:
-    RendererControllerImpl();
+    explicit RendererControllerImpl(
+        base::OnceCallback<void()> on_mojo_disconnect);
     ~RendererControllerImpl() override;
 
     mojo::PendingReceiver<media::mojom::Renderer> Bind();
@@ -57,6 +59,8 @@ class ReceiverSessionImpl final
     void SetVolume(float volume) override;
 
    private:
+    base::OnceCallback<void()> on_mojo_disconnect_;
+
     mojo::Remote<media::mojom::Renderer> renderer_controls_;
   };
 
@@ -95,6 +99,8 @@ class ReceiverSessionImpl final
   ReceiverSession::Client* const client_;
   std::unique_ptr<RendererControllerImpl> external_renderer_controls_;
   absl::optional<RendererControllerConfig> renderer_control_config_;
+
+  base::WeakPtrFactory<ReceiverSessionImpl> weak_factory_;
 };
 
 }  // namespace cast_streaming

@@ -107,6 +107,11 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // Sends an OnTimeUpdate() call to |remote_renderer_client_|.
   void SendTimestampUpdate();
 
+  // Helper to create |send_timestamp_update_caller_| on |task_runner_|.
+  void InitializeSendTimestampUpdateCaller();
+
+  void OnMojoDisconnect();
+
   // Renderer to which playback calls should be forwarded.
   std::unique_ptr<media::Renderer> real_renderer_;
 

@@ -22,7 +22,8 @@ PlaybackCommandDispatcher::PlaybackCommandDispatcher(
   mojo::Remote<media::mojom::Renderer> renderer;
   control_configuration->SetPlaybackController(
       renderer.BindNewPipeAndPassReceiver());
-  muxer_ = std::make_unique<RendererControlMultiplexer>(std::move(renderer));
+  muxer_ = std::make_unique<RendererControlMultiplexer>(std::move(renderer),
+                                                        task_runner_);
 
   // Create a "fake" media::mojom::Renderer so that the RpcCallTranslator can
   // pass commands to the |muxer_|.

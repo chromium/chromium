@@ -5,6 +5,7 @@
 #include "components/cast_streaming/renderer/playback_command_forwarding_renderer.h"
 
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 
 namespace cast_streaming {
 namespace {
@@ -25,10 +26,16 @@ class RendererCommandForwarder : public media::mojom::Renderer {
   // |owning_renderer| is expected to outlive this class.
   RendererCommandForwarder(
       PlaybackCommandForwardingRenderer* owning_renderer,
-      mojo::PendingReceiver<media::mojom::Renderer> playback_controller)
+      mojo::PendingReceiver<media::mojom::Renderer> playback_controller,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : owning_renderer_(owning_renderer),
         playback_controller_(this, std::move(playback_controller)) {
     DCHECK(owning_renderer_);
+
+    playback_controller_.set_disconnect_handler(base::BindPostTask(
+        std::move(task_runner),
+        base::BindOnce(&PlaybackCommandForwardingRenderer::OnMojoDisconnect,
+                       owning_renderer_->weak_factory_.GetWeakPtr())));
   }
 
   ~RendererCommandForwarder() override = default;
@@ -83,11 +90,7 @@ PlaybackCommandForwardingRenderer::PlaybackCommandForwardingRenderer(
   DCHECK(real_renderer_);
   DCHECK(pending_renderer_controls_);
 
-  send_timestamp_update_caller_.Start(
-      FROM_HERE, kTimeUpdateInterval,
-      base::BindRepeating(
-          &PlaybackCommandForwardingRenderer::SendTimestampUpdate,
-          weak_factory_.GetWeakPtr()));
+  InitializeSendTimestampUpdateCaller();
 }
 
 PlaybackCommandForwardingRenderer::~PlaybackCommandForwardingRenderer() =
@@ -103,9 +106,10 @@ void PlaybackCommandForwardingRenderer::Initialize(
   init_cb_ = std::move(init_cb);
   real_renderer_->Initialize(
       media_resource, this,
-      base::BindOnce(&PlaybackCommandForwardingRenderer::
-                         OnRealRendererInitializationComplete,
-                     weak_factory_.GetWeakPtr()));
+      base::BindPostTask(
+          task_runner_, base::BindOnce(&PlaybackCommandForwardingRenderer::
+                                           OnRealRendererInitializationComplete,
+                                       weak_factory_.GetWeakPtr())));
 }
 
 void PlaybackCommandForwardingRenderer::SetCdm(media::CdmContext* cdm_context,
@@ -141,7 +145,7 @@ void PlaybackCommandForwardingRenderer::OnRealRendererInitializationComplete(
   DCHECK(!playback_controller_);
 
   playback_controller_ = std::make_unique<RendererCommandForwarder>(
-      this, std::move(pending_renderer_controls_));
+      this, std::move(pending_renderer_controls_), task_runner_);
 
   std::move(init_cb_).Run(status);
 }
@@ -350,6 +354,31 @@ void PlaybackCommandForwardingRenderer::SendTimestampUpdate() {
   base::TimeDelta media_time = real_renderer_->GetMediaTime();
   remote_renderer_client_->OnTimeUpdate(media_time, media_time,
                                         base::TimeTicks::Now());
+}
+
+void PlaybackCommandForwardingRenderer::InitializeSendTimestampUpdateCaller() {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&PlaybackCommandForwardingRenderer::
+                                      InitializeSendTimestampUpdateCaller,
+                                  weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  send_timestamp_update_caller_.Start(
+      FROM_HERE, kTimeUpdateInterval,
+      base::BindPostTask(
+          task_runner_,
+          base::BindRepeating(
+              &PlaybackCommandForwardingRenderer::SendTimestampUpdate,
+              weak_factory_.GetWeakPtr())));
+}
+
+void PlaybackCommandForwardingRenderer::OnMojoDisconnect() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  OnError(media::PIPELINE_ERROR_DISCONNECTED);
+  real_renderer_.reset();
 }
 
 }  // namespace cast_streaming

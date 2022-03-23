@@ -26,7 +26,8 @@ ReceiverSessionImpl::ReceiverSessionImpl(
     ReceiverSession::Client* client)
     : message_port_provider_(std::move(message_port_provider)),
       av_constraints_(std::move(av_constraints)),
-      client_(client) {
+      client_(client),
+      weak_factory_(this) {
   // TODO(crbug.com/1218495): Validate the provided codecs against build flags.
   DCHECK(av_constraints_);
   DCHECK(message_port_provider_);
@@ -42,13 +43,10 @@ void ReceiverSessionImpl::StartStreamingAsync(
   DVLOG(1) << __func__;
   cast_streaming_receiver_ = std::move(cast_streaming_receiver);
 
-  // It is fine to use an unretained pointer to |this| here as the
-  // AssociatedRemote, is owned by |this| and will be torn-down at the same time
-  // as |this|.
   cast_streaming_receiver_->EnableReceiver(base::BindOnce(
-      &ReceiverSessionImpl::OnReceiverEnabled, base::Unretained(this)));
+      &ReceiverSessionImpl::OnReceiverEnabled, weak_factory_.GetWeakPtr()));
   cast_streaming_receiver_.set_disconnect_handler(base::BindOnce(
-      &ReceiverSessionImpl::OnMojoDisconnect, base::Unretained(this)));
+      &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
 }
 
 void ReceiverSessionImpl::StartStreamingAsync(
@@ -56,7 +54,9 @@ void ReceiverSessionImpl::StartStreamingAsync(
         cast_streaming_receiver,
     mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
   DCHECK(!renderer_control_config_);
-  external_renderer_controls_ = std::make_unique<RendererControllerImpl>();
+  external_renderer_controls_ =
+      std::make_unique<RendererControllerImpl>(base::BindOnce(
+          &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
   renderer_control_config_.emplace(std::move(renderer_controller),
                                    external_renderer_controls_->Bind());
 
@@ -189,7 +189,12 @@ void ReceiverSessionImpl::OnMojoDisconnect() {
   video_remote_.reset();
 }
 
-ReceiverSessionImpl::RendererControllerImpl::RendererControllerImpl() = default;
+ReceiverSessionImpl::RendererControllerImpl::RendererControllerImpl(
+    base::OnceCallback<void()> on_mojo_disconnect)
+    : on_mojo_disconnect_(std::move(on_mojo_disconnect)) {
+  DCHECK(on_mojo_disconnect_);
+}
+
 ReceiverSessionImpl::RendererControllerImpl::~RendererControllerImpl() =
     default;
 
@@ -216,7 +221,9 @@ void ReceiverSessionImpl::RendererControllerImpl::SetVolume(float volume) {
 
 mojo::PendingReceiver<media::mojom::Renderer>
 ReceiverSessionImpl::RendererControllerImpl::Bind() {
-  return renderer_controls_.BindNewPipeAndPassReceiver();
+  auto receiver = renderer_controls_.BindNewPipeAndPassReceiver();
+  renderer_controls_.set_disconnect_handler(std::move(on_mojo_disconnect_));
+  return receiver;
 }
 
 }  // namespace cast_streaming
