@@ -3804,6 +3804,15 @@
     },
 
     'gpu_webgpu_integration_isolated_scripts': {
+      # Test that expectations files are well-formed.
+      'telemetry_gpu_unittests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
       'webgpu_blink_web_tests': {
         'name': 'webgpu_blink_web_tests',
         'isolate_name': 'webgpu_blink_web_tests',
