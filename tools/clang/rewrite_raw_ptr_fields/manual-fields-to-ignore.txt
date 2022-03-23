@@ -188,11 +188,13 @@ device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t
 device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::kty
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::client_data_hash
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::rp_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::rp_name
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_name
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_display_name
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::cred_params
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::excluded_credentials
-device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::origin
-device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::challenge
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::resident_key
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::fmt
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::auth_data
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::statement
@@ -211,6 +213,20 @@ device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, co
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::n
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::e
+device::(anonymous namespace)::MakeCredRequest::client_data_hash
+device::(anonymous namespace)::MakeCredRequest::rp_id
+device::(anonymous namespace)::MakeCredRequest::user_id
+device::(anonymous namespace)::MakeCredRequest::cred_params
+device::(anonymous namespace)::MakeCredRequest::excluded_credentials
+device::(anonymous namespace)::MakeCredRequest::resident_key
+device::(anonymous namespace)::MakeCredRequest::user_verification
+device::(anonymous namespace)::MakeCredRequest::large_test
+device::(anonymous namespace)::MakeCredRequest::negative_test
+device::(anonymous namespace)::MakeCredRequest::skipped_1
+device::(anonymous namespace)::MakeCredRequest::skipped_2
+device::(anonymous namespace)::CBORExtract_MissingRequired_Test::TestBody()::Dummy::value
+device::(anonymous namespace)::CBORExtract_WrongType_Test::TestBody()::Dummy::value
+device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody()::Dummy::value
 
 # Populated manually - pointer to Objective-C object
 gfx::ScopedNSGraphicsContextSaveGState::context_
