@@ -637,8 +637,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessage(
 
 void ServiceWorkerTaskQueue::OnDestruct(
     content::ServiceWorkerContext* context) {
-  context->RemoveObserver(this);
-  observing_worker_contexts_.erase(context);
+  StopObserving(context);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
@@ -673,12 +672,12 @@ void ServiceWorkerTaskQueue::StartObserving(
 
 void ServiceWorkerTaskQueue::StopObserving(
     content::ServiceWorkerContext* service_worker_context) {
-  // TODO(crbug.com/1222759): Investigate when the DCHECK's condition can be
-  // false.
-  DCHECK(observing_worker_contexts_.count(service_worker_context) > 0u);
-  observing_worker_contexts_.erase(service_worker_context);
-  if (!observing_worker_contexts_.count(service_worker_context))
+  auto iter_pair =
+      observing_worker_contexts_.equal_range(service_worker_context);
+  DCHECK(iter_pair.first != observing_worker_contexts_.end());
+  if (std::distance(iter_pair.first, iter_pair.second) == 1)
     service_worker_context->RemoveObserver(this);
+  observing_worker_contexts_.erase(iter_pair.first);
 }
 
 void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(

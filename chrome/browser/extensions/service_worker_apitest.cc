@@ -2642,6 +2642,44 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Component) {
       << message_;
 }
 
+// Tests that two extensions with the same ServiceWorkerContext* can be
+// disabled successfully. This test ensures that the DCHECK in
+// ServiceWorkerTaskQueue::StopObserving does not fail in such a scenario.
+
+// Regression test for https://crbug.com/1223476
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       ObserveServiceWorkerContext) {
+  static constexpr char kManifest[] = R"({
+    "name": "Test",
+    "manifest_version": 3,
+    "version": "0.1",
+    "background": {"service_worker": "worker.js"}
+  })";
+  static constexpr char kScript[] = "";
+
+  TestExtensionDir test_dir1;
+  test_dir1.WriteManifest(kManifest);
+  test_dir1.WriteFile(FILE_PATH_LITERAL("worker.js"), kScript);
+
+  scoped_refptr<const Extension> extension1 =
+      LoadExtension(test_dir1.UnpackedPath());
+  ASSERT_TRUE(extension1);
+
+  TestExtensionDir test_dir2;
+  test_dir2.WriteManifest(kManifest);
+  test_dir2.WriteFile(FILE_PATH_LITERAL("worker.js"), kScript);
+
+  scoped_refptr<const Extension> extension2 =
+      LoadExtension(test_dir2.UnpackedPath());
+  ASSERT_TRUE(extension2);
+  EXPECT_NE(extension1->id(), extension2->id());
+
+  extension_service()->DisableExtension(extension1->id(),
+                                        disable_reason::DISABLE_USER_ACTION);
+  extension_service()->DisableExtension(extension2->id(),
+                                        disable_reason::DISABLE_USER_ACTION);
+}
+
 // Tests that an extension's service worker can't be used to relax the extension
 // CSP.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
