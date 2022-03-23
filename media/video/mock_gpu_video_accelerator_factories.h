@@ -48,6 +48,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
                std::unique_ptr<media::VideoDecoder>(MediaLog*,
                                                     RequestOverlayInfoCB));
 
+  MOCK_METHOD0(GetVideoEncodeAcceleratorSupportedProfiles,
+               absl::optional<VideoEncodeAccelerator::SupportedProfiles>());
   MOCK_METHOD0(IsEncoderSupportKnown, bool());
   MOCK_METHOD1(NotifyEncoderSupportKnown, void(base::OnceClosure));
   // CreateVideoEncodeAccelerator returns scoped_ptr, which the mocking
@@ -95,10 +97,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
-  absl::optional<VideoEncodeAccelerator::SupportedProfiles>
-  GetVideoEncodeAcceleratorSupportedProfiles() override {
-    return VideoEncodeAccelerator::SupportedProfiles();
-  }
 
   const std::vector<gfx::GpuMemoryBuffer*>& created_memory_buffers() {
     return created_memory_buffers_;
