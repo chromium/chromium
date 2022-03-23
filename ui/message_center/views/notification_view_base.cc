@@ -804,12 +804,12 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
   // If the view is not expanded, there should be no hover state.
   if (new_buttons && expanded_) {
     views::Widget* widget = GetWidget();
-    if (widget) {
+    if (widget && !widget->IsClosed()) {
       // This Layout() is needed because button should be in the right location
       // in the view hierarchy when SynthesizeMouseMoveEvent() is called.
       Layout();
       widget->SetSize(widget->GetContentsView()->GetPreferredSize());
-      GetWidget()->SynthesizeMouseMoveEvent();
+      widget->SynthesizeMouseMoveEvent();
     }
   }
 }
