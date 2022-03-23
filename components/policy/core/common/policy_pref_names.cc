@@ -10,11 +10,13 @@ namespace policy {
 namespace policy_prefs {
 
 #if BUILDFLAG(IS_WIN)
-// Boolean pref that stores if the OS is actively managed by
-// Azure Active Directory. This will be used to cache the management status so
-// that it is loaded faster at sartup.
+// Integer pref that stores Azure Active Directory management authority.
 const char kAzureActiveDirectoryManagement[] =
     "management.platform.azure_active_directory";
+
+// Integer pref that stores the Windows enterprise MDM management authority.
+const char kEnterpriseMDMManagementWindows[] =
+    "management.platform.enterprise_mdm_win";
 #elif BUILDFLAG(IS_MAC)
 // Integer pref that stores the Mac enterprise MDM management authority.
 const char kEnterpriseMDMManagementMac[] =

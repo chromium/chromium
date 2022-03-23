@@ -21,8 +21,8 @@ bool DomainEnrollmentStatusProvider::IsEnrolledToDomain() {
   return base::win::IsEnrolledToDomain();
 }
 
-EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider() =
-    default;
+EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider()
+    : ManagementStatusProvider(policy_prefs::kEnterpriseMDMManagementWindows) {}
 
 EnterpriseManagementAuthority
 EnterpriseMDMManagementStatusProvider::FetchAuthority() {
