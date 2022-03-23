@@ -153,12 +153,6 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
       options->screen()->DisplayId() != screen_info.display_id;
   bool requesting_fullscreen_screen_change =
       state_ == State::kFullscreen && requesting_other_screen;
-#if BUILDFLAG(IS_MAC)
-  // Moving a fullscreen window from one screen to another is gated by the
-  // Window Placement V2 feature state on Mac. See crbug.com/1303048
-  requesting_fullscreen_screen_change &=
-      RuntimeEnabledFeatures::WindowPlacementV2Enabled(frame.DomWindow());
-#endif  // BUILDFLAG(IS_MAC)
 
   // TODO(dtapuska): If we are already in fullscreen. If the options are
   // different than the currently requested one we may wish to request
