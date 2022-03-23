@@ -5,6 +5,7 @@
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"

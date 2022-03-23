@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

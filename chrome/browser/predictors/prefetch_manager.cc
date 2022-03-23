@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"

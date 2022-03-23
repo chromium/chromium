@@ -18,6 +18,7 @@
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"

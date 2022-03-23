@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

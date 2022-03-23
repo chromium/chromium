@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"

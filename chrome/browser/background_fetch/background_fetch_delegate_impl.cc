@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"

@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

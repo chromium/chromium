@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

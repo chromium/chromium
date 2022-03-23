@@ -23,6 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

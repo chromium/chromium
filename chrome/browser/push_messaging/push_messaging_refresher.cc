@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
