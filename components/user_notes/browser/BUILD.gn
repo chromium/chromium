@@ -24,7 +24,10 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "user_note_service_unittest.cc" ]
+  sources = [
+    "user_note_service_unittest.cc",
+    "user_notes_manager_unittest.cc",
+  ]
 
   deps = [
     ":browser",

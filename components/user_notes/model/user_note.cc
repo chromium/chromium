@@ -10,4 +10,8 @@ UserNote::UserNote(const std::string& guid) : guid_(guid) {}
 
 UserNote::~UserNote() = default;
 
+base::SafeRef<UserNote> UserNote::GetSafeRef() {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 }  // namespace user_notes

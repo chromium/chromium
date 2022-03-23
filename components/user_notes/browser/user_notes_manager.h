@@ -53,6 +53,11 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, Destructor);
+  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, GetNoteInstance);
+  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, GetAllNoteInstances);
+  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, RemoveNote);
+  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, AddNoteInstance);
   friend class content::PageUserData<UserNotesManager>;
 
   UserNotesManager(content::Page& page, base::SafeRef<UserNoteService> service);

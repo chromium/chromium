@@ -65,7 +65,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   };
 
   friend class UserNoteServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, UserNoteServiceTest);
+  friend class UserNotesManagerTest;
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also

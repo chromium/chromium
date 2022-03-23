@@ -6,7 +6,7 @@
 
 namespace user_notes {
 
-UserNoteInstance::UserNoteInstance(base::WeakPtr<UserNote> model)
+UserNoteInstance::UserNoteInstance(base::SafeRef<UserNote> model)
     : model_(model) {}
 
 UserNoteInstance::~UserNoteInstance() = default;

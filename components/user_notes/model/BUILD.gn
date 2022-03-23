@@ -9,4 +9,6 @@ static_library("model") {
     "user_note_metadata.cc",
     "user_note_metadata.h",
   ]
+
+  deps = [ "//base" ]
 }
