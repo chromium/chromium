@@ -219,11 +219,7 @@ class AudioSinkAudioTrackImpl {
             case 6:
                 return AudioFormat.CHANNEL_OUT_5POINT1;
             case 8:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
-                } else {
-                    return AudioFormat.CHANNEL_OUT_7POINT1;
-                }
+                return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
             default:
                 Log.e(TAG, "Unsupported channel count: " + channelCount);
                 return AudioFormat.CHANNEL_OUT_DEFAULT;

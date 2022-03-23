@@ -91,13 +91,8 @@ class VolumeControl {
         /** Sets the given mute state in AudioManager. */
         void setMuted(boolean muted) {
             if (DEBUG_LEVEL >= 1) Log.i(TAG, "setMuted: muted=" + muted);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                int direction = muted ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE;
-                int flag = 0;
-                mAudioManager.adjustStreamVolume(mStreamType, direction, flag);
-            } else {
-                mAudioManager.setStreamMute(mStreamType, muted);
-            }
+            mAudioManager.adjustStreamVolume(mStreamType,
+                    muted ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0 /*flag*/);
         }
 
         /** Refreshes the stored mute state by reading it from AudioManager.
