@@ -117,9 +117,13 @@ const char kQueryTilesMoreTrendingExperimentTag[] =
 // Json Experiment tag for ranking tiles on server based on client context.
 const char kQueryTilesRankTilesExperimentTag[] = "\"rankTiles\": \"true\"";
 
-// Default Json experiment tag for trending query enabled countries.
-constexpr char kDefaultExperimentTagForTrendingEnabledCountries[] =
+// Default Json experiment tag for IN and NG.
+constexpr char kDefaultExperimentTagForINAndNG[] =
     "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}";
+
+// Default Json experiment tag for JP.
+constexpr char kDefaultExperimentTagForJP[] =
+    "{maxLevels : 1, rankTiles : true}";
 
 const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
@@ -186,7 +190,12 @@ std::string TileConfig::GetExperimentTag(const std::string& country_code) {
       !base::FeatureList::IsEnabled(
           query_tiles::features::kQueryTilesDisableCountryOverride) &&
       features::IsQueryTilesEnabledForCountry(country_code)) {
-    return kDefaultExperimentTagForTrendingEnabledCountries;
+    if (base::EqualsCaseInsensitiveASCII(country_code, "IN") ||
+        base::EqualsCaseInsensitiveASCII(country_code, "NG")) {
+      return kDefaultExperimentTagForINAndNG;
+    } else if (base::EqualsCaseInsensitiveASCII(country_code, "JP")) {
+      return kDefaultExperimentTagForJP;
+    }
   }
   return tag;
 }
