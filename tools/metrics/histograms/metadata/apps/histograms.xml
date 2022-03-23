@@ -1245,7 +1245,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2022-05-01">
+    expires_after="2022-09-01">
+  <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1684,8 +1685,8 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2022-09-01">
 <!-- This metric is used in Tast tests. Do not rename the metric or variants. -->
 
-  <owner>jamescook@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     Emitted when the clamshell launcher {Transition} animation completes.
@@ -2265,6 +2266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.NumberOfNonSystemFolders" units="folder(s)"
     expires_after="2022-06-01">
+  <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -2615,9 +2617,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
-    units="ms" expires_after="2022-08-01">
-  <owner>jamescook@chromium.org</owner>
+    units="ms" expires_after="2022-09-01">
   <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     Time between when an app is installed and when the user launches the app.
