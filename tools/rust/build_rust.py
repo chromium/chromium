@@ -54,18 +54,8 @@ from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
-# Trunk on 3/11/2022
-RUST_REVISION = '2c6a29'
-RUST_SUB_REVISION = 1
-
-# Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
-# We trust the Rust build system checks, but to ensure it is not tampered with
-# itself check the hash.
-STAGE0_JSON_SHA256 = (
-    'a38b7ea8b8cbdb592b1a7ae8b97fa31746a2bda309597de111be4893a035070d')
-
-PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
-                                   CLANG_REVISION, CLANG_SUB_REVISION)
+from update_rust import (RUST_REVISION, RUST_SUB_REVISION, STAGE0_JSON_SHA256,
+                         GetPackageVersion)
 
 RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
@@ -162,7 +152,7 @@ def Configure(llvm_libs_root):
   subs = {}
   subs['INSTALL_DIR'] = RUST_TOOLCHAIN_OUT_DIR
   subs['LLVM_ROOT'] = llvm_libs_root
-  subs['PACKAGE_VERSION'] = PACKAGE_VERSION
+  subs['PACKAGE_VERSION'] = GetPackageVersion()
 
   # ...and apply substitutions, writing to config.toml in Rust tree.
   with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
@@ -329,7 +319,7 @@ def main():
       rust_version = version_file.readline().rstrip()
     with open(VERSION_STAMP_PATH, 'w') as stamp:
       stamp.write('rustc %s-dev (%s chromium)\n' %
-                  (rust_version, PACKAGE_VERSION))
+                  (rust_version, GetPackageVersion()))
 
   return 0
 
