@@ -32,6 +32,10 @@ class CONTENT_EXPORT CdmRegistry {
   // reported and what is actually available, if the reported functionality
   // changes between versions. (http://crbug.com/599588)
   virtual void RegisterCdm(const CdmInfo& info) = 0;
+
+  // Disables all hardware secure CDMs.
+  // TODO(xhwang): Provide a way to disable a specific `key_system`
+  virtual void DisableHardwareSecureCdms() = 0;
 };
 
 }  // namespace content

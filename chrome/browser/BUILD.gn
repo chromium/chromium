@@ -6758,6 +6758,8 @@ static_library("browser") {
     sources += [
       "media/cdm_pref_service_helper.cc",
       "media/cdm_pref_service_helper.h",
+      "media/media_foundation_service_monitor.cc",
+      "media/media_foundation_service_monitor.h",
     ]
 
     if (enable_media_foundation_widevine_cdm) {

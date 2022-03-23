@@ -20,6 +20,7 @@
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/media_foundation_service_monitor.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
@@ -100,6 +101,9 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
     base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
+
+  // Ensure MediaFoundationService process is monitored.
+  MediaFoundationServiceMonitor::GetInstance();
 
   VLOG(1) << "Register Media Foundation Widevine CDM";
   content::CdmInfo cdm_info(

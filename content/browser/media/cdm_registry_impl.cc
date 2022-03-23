@@ -238,6 +238,32 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
     FinalizeKeySystemCapabilities();
 }
 
+void CdmRegistryImpl::DisableHardwareSecureCdms() {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool disabled = false;
+  for (auto& cdm_info : cdms_) {
+    if (cdm_info.robustness == CdmInfo::Robustness::kHardwareSecure) {
+      cdm_info.status = CdmInfo::Status::kDisabled;
+      disabled = true;
+    }
+  }
+
+  if (!disabled) {
+    DVLOG(1) << "No hardware secure CDMs to disable";
+    return;
+  }
+
+  key_system_capabilities_.reset();
+
+  // If there are `key_system_capabilities_update_callbacks_` registered,
+  // finalize key system capabilities and notify the callbacks. Otherwise  we'll
+  // finalize key system capabilities in `ObserveKeySystemCapabilities()`.
+  if (!key_system_capabilities_update_callbacks_.empty())
+    FinalizeKeySystemCapabilities();
+}
+
 const std::vector<CdmInfo>& CdmRegistryImpl::GetRegisteredCdms() const {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -277,32 +303,6 @@ void CdmRegistryImpl::ObserveKeySystemCapabilities(
   }
 
   FinalizeKeySystemCapabilities();
-}
-
-void CdmRegistryImpl::DisableHardwareSecureCdms() {
-  DVLOG(2) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool disabled = false;
-  for (auto& cdm_info : cdms_) {
-    if (cdm_info.robustness == CdmInfo::Robustness::kHardwareSecure) {
-      cdm_info.status = CdmInfo::Status::kDisabled;
-      disabled = true;
-    }
-  }
-
-  if (!disabled) {
-    DVLOG(1) << "No hardware secure CDMs to disable";
-    return;
-  }
-
-  key_system_capabilities_.reset();
-
-  // If there are `key_system_capabilities_update_callbacks_` registered,
-  // finalize key system capabilities and notify the callbacks. Otherwise  we'll
-  // finalize key system capabilities in `ObserveKeySystemCapabilities()`.
-  if (!key_system_capabilities_update_callbacks_.empty())
-    FinalizeKeySystemCapabilities();
 }
 
 void CdmRegistryImpl::FinalizeKeySystemCapabilities() {

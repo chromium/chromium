@@ -36,6 +36,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // CdmRegistry implementation.
   void Init() override;
   void RegisterCdm(const CdmInfo& info) override;
+  void DisableHardwareSecureCdms() override;
 
   // Returns all registered CDMs. There might be multiple CdmInfo registered for
   // the same `key_system` and `robustness`. Notes:
@@ -55,9 +56,6 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // guaranteed to be finalized. The `cb` is always called on the original
   // thread this function was called on.
   void ObserveKeySystemCapabilities(KeySystemCapabilitiesUpdateCB cb);
-
-  // TODO(xhwang): Provide a way to disable a specific `key_system`
-  void DisableHardwareSecureCdms();
 
  private:
   // Make the test a friend class so it could create CdmRegistryImpl directly,
