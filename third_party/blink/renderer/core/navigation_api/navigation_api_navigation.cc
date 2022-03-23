@@ -72,13 +72,13 @@ void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
   if (!navigation_api_)
     return;
 
-  finished_resolver_->Reject(value);
-
   if (committed_resolver_) {
     // We never hit NotifyAboutTheCommittedToEntry(), so we should reject that
     // too.
     committed_resolver_->Reject(value);
   }
+
+  finished_resolver_->Reject(value);
 
   serialized_state_.reset();
 
@@ -86,7 +86,7 @@ void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
   navigation_api_ = nullptr;
 }
 
-void NavigationApiNavigation::CleanupForCrossDocument() {
+void NavigationApiNavigation::CleanupForWillNeverSettle() {
   DCHECK_EQ(committed_to_entry_, nullptr);
 
   committed_resolver_->Detach();

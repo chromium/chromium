@@ -69,6 +69,14 @@ enum class ClientNavigationReason {
   kNone
 };
 
+enum class CancelNavigationReason {
+  // The navigation was dropped, e.g. due to a 204, 205, or Content-Disposition:
+  // attachment.
+  kDropped,
+  // Anything else (including error cases that don't drop the navigation).
+  kOther
+};
+
 enum class CommitReason {
   // Committing initial empty document.
   kInitialization,

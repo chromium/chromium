@@ -212,7 +212,8 @@ class CORE_EXPORT FrameLoader final {
 
   // Like ClearClientNavigation, but also notifies the client to actually cancel
   // the navigation.
-  void CancelClientNavigation();
+  void CancelClientNavigation(
+      CancelNavigationReason reason = CancelNavigationReason::kOther);
 
   void Trace(Visitor*) const;
 

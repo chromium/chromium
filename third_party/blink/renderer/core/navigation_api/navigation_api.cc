@@ -190,7 +190,8 @@ NavigationApi* NavigationApi::From(LocalDOMWindow& window) {
 }
 
 NavigationApi::NavigationApi(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : Supplement<LocalDOMWindow>(window),
+      ExecutionContextLifecycleObserver(&window) {}
 
 void NavigationApi::setOnnavigate(EventListener* listener) {
   UseCounter::Count(GetSupplementable(), WebFeature::kAppHistory);
@@ -692,7 +693,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       // The spec only does the equivalent of CleanupApiNavigation() + resetting
       // the state, but we need to detach promise resolvers for this case since
       // we will never resolve the finished/committed promises.
-      ongoing_navigation_->CleanupForCrossDocument();
+      ongoing_navigation_->CleanupForWillNeverSettle();
     }
     return DispatchResult::kContinue;
   }
@@ -758,6 +759,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   DCHECK(!ongoing_navigation_signal_);
   ongoing_navigate_event_ = navigate_event;
   ongoing_navigation_signal_ = navigate_event->signal();
+  has_dropped_navigation_ = false;
   DispatchEvent(*navigate_event);
   ongoing_navigate_event_ = nullptr;
 
@@ -804,17 +806,23 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, tweaked_promise_list),
         ongoing_navigation_, navigate_event, react_type);
-  } else if (ongoing_navigation_) {
-    // The spec assumes it's ok to leave a promise permanently unresolved, but
-    // ScriptPromiseResolver requires either resolution or explicit detach.
-    ongoing_navigation_->CleanupForCrossDocument();
   }
+
+  // Note: we cannot clean up ongoing_navigation_ for cross-document
+  // navigations, because they might later get interrupted by another
+  // navigation, in which case we need to reject the promises and so on.
 
   return promise_list.IsEmpty() ? DispatchResult::kContinue
                                 : DispatchResult::kTransitionWhile;
 }
 
-void NavigationApi::InformAboutCanceledNavigation() {
+void NavigationApi::InformAboutCanceledNavigation(
+    CancelNavigationReason reason) {
+  if (reason == CancelNavigationReason::kDropped) {
+    has_dropped_navigation_ = true;
+    return;
+  }
+
   if (ongoing_navigation_signal_) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
@@ -840,6 +848,15 @@ void NavigationApi::InformAboutCanceledNavigation() {
       FinalizeWithAbortedNavigationError(script_state, traversal);
     DCHECK(upcoming_traversals_.IsEmpty());
   }
+}
+
+void NavigationApi::ContextDestroyed() {
+  if (ongoing_navigation_)
+    ongoing_navigation_->CleanupForWillNeverSettle();
+}
+
+bool NavigationApi::HasNonDroppedOngoingNavigation() const {
+  return ongoing_navigation_signal_ && !has_dropped_navigation_;
 }
 
 void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
@@ -923,6 +940,7 @@ const AtomicString& NavigationApi::InterfaceName() const {
 void NavigationApi::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(entries_);
   visitor->Trace(transition_);
   visitor->Trace(ongoing_navigation_);

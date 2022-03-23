@@ -453,7 +453,7 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
       return;
     if (auto* navigation_api =
             NavigationApi::navigation(*frame_->DomWindow())) {
-      if (navigation_api->HasOngoingNavigation())
+      if (navigation_api->HasNonDroppedOngoingNavigation())
         return;
     }
   }
@@ -1564,7 +1564,7 @@ void FrameLoader::DidDropNavigation() {
     return;
   // TODO(dgozman): should we ClearClientNavigation instead and not
   // notify the client in response to its own call?
-  CancelClientNavigation();
+  CancelClientNavigation(CancelNavigationReason::kDropped);
   DidFinishNavigation(FrameLoader::NavigationFinishState::kSuccess);
 
   // Forcibly instantiate WindowProxy for initial frame document.
@@ -1610,11 +1610,13 @@ void FrameLoader::ClearClientNavigation() {
   virtual_time_pauser_.UnpauseVirtualTime();
 }
 
-void FrameLoader::CancelClientNavigation() {
+void FrameLoader::CancelClientNavigation(CancelNavigationReason reason) {
   if (!client_navigation_)
     return;
+
   if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
-    navigation_api->InformAboutCanceledNavigation();
+    navigation_api->InformAboutCanceledNavigation(reason);
+
   ResourceError error = ResourceError::CancelledError(client_navigation_->url);
   ClearClientNavigation();
   if (WebPluginContainerImpl* plugin = frame_->GetWebPluginContainer())

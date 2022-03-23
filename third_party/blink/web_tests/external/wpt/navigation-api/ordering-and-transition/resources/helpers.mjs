@@ -7,6 +7,9 @@ export function hasVariant(name) {
 export class Recorder {
   #events = [];
   #errors = [];
+  #navigationAPI;
+  #domExceptionConstructor;
+  #location;
   #skipCurrentChange;
   #finalExpectedEvent;
   #finalExpectedEventCount;
@@ -15,8 +18,12 @@ export class Recorder {
   #readyToAssertResolve;
   #readyToAssertPromise = new Promise(resolve => { this.#readyToAssertResolve = resolve; });
 
-  constructor({ skipCurrentChange = false, finalExpectedEvent, finalExpectedEventCount = 1 }) {
+  constructor({ window = self, skipCurrentChange = false, finalExpectedEvent, finalExpectedEventCount = 1 }) {
     assert_equals(typeof finalExpectedEvent, "string", "Must pass a string for finalExpectedEvent");
+
+    this.#navigationAPI = window.navigation;
+    this.#domExceptionConstructor = window.DOMException;
+    this.#location = window.location;
 
     this.#skipCurrentChange = skipCurrentChange;
     this.#finalExpectedEvent = finalExpectedEvent;
@@ -24,7 +31,7 @@ export class Recorder {
   }
 
   setUpNavigationAPIListeners() {
-    navigation.addEventListener("navigate", e => {
+    this.#navigationAPI.addEventListener("navigate", e => {
       this.record("navigate");
 
       e.signal.addEventListener("abort", () => {
@@ -32,26 +39,26 @@ export class Recorder {
       });
     });
 
-    navigation.addEventListener("navigateerror", e => {
+    this.#navigationAPI.addEventListener("navigateerror", e => {
       this.recordWithError("navigateerror", e.error);
 
-      navigation.transition?.finished.then(
+      this.#navigationAPI.transition?.finished.then(
         () => this.record("transition.finished fulfilled"),
         err => this.recordWithError("transition.finished rejected", err)
       );
     });
 
-    navigation.addEventListener("navigatesuccess", () => {
+    this.#navigationAPI.addEventListener("navigatesuccess", () => {
       this.record("navigatesuccess");
 
-      navigation.transition?.finished.then(
+      this.#navigationAPI.transition?.finished.then(
         () => this.record("transition.finished fulfilled"),
         err => this.recordWithError("transition.finished rejected", err)
       );
     });
 
     if (!this.#skipCurrentChange) {
-      navigation.addEventListener("currententrychange", () => this.record("currententrychange"));
+      this.#navigationAPI.addEventListener("currententrychange", () => this.record("currententrychange"));
     }
   }
 
@@ -68,12 +75,12 @@ export class Recorder {
   }
 
   record(name) {
-    const transitionProps = navigation.transition === null ? null : {
-      from: navigation.transition.from,
-      navigationType: navigation.transition.navigationType
+    const transitionProps = this.#navigationAPI.transition === null ? null : {
+      from: this.#navigationAPI.transition.from,
+      navigationType: this.#navigationAPI.transition.navigationType
     };
 
-    this.#events.push({ name, location: location.hash, transitionProps });
+    this.#events.push({ name, location: this.#location.hash, transitionProps });
 
     if (name === this.#finalExpectedEvent && ++this.#currentFinalEventCount === this.#finalExpectedEventCount) {
       this.#readyToAssertResolve();
@@ -169,7 +176,7 @@ export class Recorder {
 
     // Assume assert() has been called so all error objects are the same.
     const { errorObject } = this.#errors[0];
-    assert_throws_dom("AbortError", () => { throw errorObject; });
+    assert_throws_dom("AbortError", this.#domExceptionConstructor, () => { throw errorObject; });
   }
 
   assertErrorsAre(expectedErrorObject) {

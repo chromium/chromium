@@ -32,7 +32,7 @@ class NavigationApiNavigation final
   void NotifyAboutTheCommittedToEntry(NavigationHistoryEntry*);
   void ResolveFinishedPromise();
   void RejectFinishedPromise(const ScriptValue& value);
-  void CleanupForCrossDocument();
+  void CleanupForWillNeverSettle();
 
   // Note: even though this returns the same NavigationResult every time, the
   // bindings layer will create a new JS object for each distinct navigation API

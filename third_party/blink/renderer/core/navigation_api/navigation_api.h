@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -42,8 +44,10 @@ class SerializedScriptValue;
 enum class UserNavigationInvolvement { kBrowserUI, kActivation, kNone };
 enum class NavigateEventType { kFragment, kHistoryApi, kCrossDocument };
 
-class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
-                                        public Supplement<LocalDOMWindow> {
+class CORE_EXPORT NavigationApi final
+    : public EventTargetWithInlineData,
+      public Supplement<LocalDOMWindow>,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -65,7 +69,14 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
   void SetEntriesForRestore(
       const mojom::blink::NavigationApiHistoryEntryArraysPtr&);
 
-  bool HasOngoingNavigation() const { return ongoing_navigation_signal_; }
+  // From the navigation API's perspective, a dropped navigation is still
+  // "ongoing"; that is, ongoing_navigation_signal_ and ongoing_navigation_ are
+  // non-null. (The impact of this is that another navigation will cancel that
+  // ongoing navigation, in a web-developer-visible way.) But from the
+  // perspective of other parts of Chromium which interface with the navigation
+  // API, e.g. to deal with the loading spinner, dropped navigations are not
+  // what they care about.
+  bool HasNonDroppedOngoingNavigation() const;
 
   // Web-exposed:
   NavigationHistoryEntry* currentEntry() const;
@@ -109,7 +120,19 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
                                        HistoryItem* destination_item,
                                        bool is_browser_initiated = false,
                                        bool is_synchronously_committed = true);
-  void InformAboutCanceledNavigation();
+
+  // In the spec, we are only informed about canceled navigations. But in the
+  // implementation we need to handle other cases:
+  // - "Dropped" navigations, e.g. navigations to 204/205/Content-Disposition:
+  //   attachment, need to be tracked for |HasNonDroppedOngoingNavigation()|.
+  //   (See https://github.com/WICG/navigation-api/issues/137 for more on why
+  //   they must be ignored.) This distinction is handled via the |reason|
+  //   argument.
+  // - If the frame is destroyed without canceling ongoing navigations, e.g. due
+  //   to a cross-document navigation, then we need to detach any outstanding
+  //   promise resolvers. This is handled via |ContextDestroyed()| below.
+  void InformAboutCanceledNavigation(
+      CancelNavigationReason reason = CancelNavigationReason::kOther);
 
   int GetIndexFor(NavigationHistoryEntry*);
 
@@ -120,6 +143,10 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
   }
 
   void Trace(Visitor*) const final;
+
+ protected:
+  // ExecutionContextLifecycleObserver implementation:
+  void ContextDestroyed() override;
 
  private:
   friend class NavigateReaction;
@@ -155,6 +182,7 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
   HeapVector<Member<NavigationHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
   int current_entry_index_ = -1;
+  bool has_dropped_navigation_ = false;
 
   Member<NavigationTransition> transition_;
 
