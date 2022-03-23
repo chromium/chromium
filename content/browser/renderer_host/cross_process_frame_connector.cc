@@ -630,8 +630,8 @@ void CrossProcessFrameConnector::MaybeLogShownCrash(
   // of a hidden tab with a sad frame being auto-reloaded when it becomes
   // shown.
   bool has_pending_navigation = false;
-  for (auto* parent = current_child_frame_host()->GetParentOrOuterDocument();
-       parent; parent = parent->GetParentOrOuterDocument()) {
+  for (auto* parent = current_child_frame_host()->GetParent(); parent;
+       parent = parent->GetParent()) {
     if (parent->frame_tree_node()->HasPendingCrossDocumentNavigation()) {
       has_pending_navigation = true;
       break;
