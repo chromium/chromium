@@ -86,6 +86,11 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
       case PIXEL_FORMAT_RGBAF16:
+      case PIXEL_FORMAT_I422A:
+      case PIXEL_FORMAT_I444A:
+      case PIXEL_FORMAT_YUV420AP10:
+      case PIXEL_FORMAT_YUV422AP10:
+      case PIXEL_FORMAT_YUV444AP10:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }
@@ -128,6 +133,11 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_XB30:
       case PIXEL_FORMAT_BGRA:
       case PIXEL_FORMAT_RGBAF16:
+      case PIXEL_FORMAT_I422A:
+      case PIXEL_FORMAT_I444A:
+      case PIXEL_FORMAT_YUV420AP10:
+      case PIXEL_FORMAT_YUV422AP10:
+      case PIXEL_FORMAT_YUV444AP10:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }

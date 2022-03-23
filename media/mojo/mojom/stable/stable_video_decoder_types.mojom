@@ -376,6 +376,17 @@ enum VideoPixelFormat {
   kPixelFormatBGRA = 32,  // 32bpp ARGB (byte-order), 1 plane.
 
   kPixelFormatRGBAF16 = 33,  // Half float RGBA, 1 plane.
+
+  [MinVersion=1]
+  kPixelFormatI422A = 34,   // 24bpp YUVA planar 1x1 Y, 2x1 UV, 1x1 A samples.
+
+  [MinVersion=1]
+  kPixelFormatI444A = 35,   // 32bpp YUVA planar, no subsampling.
+
+  // YUVA planar, 10 bits per pixel component.
+  [MinVersion=1] kPixelFormatYUV420AP10 = 36,
+  [MinVersion=1] kPixelFormatYUV422AP10 = 37,
+  [MinVersion=1] kPixelFormatYUV444AP10 = 38,
 };
 
 // Based on |media.mojom.EosVideoFrameData|.

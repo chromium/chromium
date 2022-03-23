@@ -152,6 +152,11 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_P016LE:
     case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
       return gfx::ColorSpace::CreateREC601();
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:

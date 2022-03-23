@@ -1129,6 +1129,16 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return media::stable::mojom::VideoPixelFormat::kPixelFormatBGRA;
       case ::media::VideoPixelFormat::PIXEL_FORMAT_RGBAF16:
         return media::stable::mojom::VideoPixelFormat::kPixelFormatRGBAF16;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_I422A:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatI422A;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_I444A:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatI444A;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_YUV420AP10:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatYUV420AP10;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_YUV422AP10:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatYUV422AP10;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_YUV444AP10:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatYUV444AP10;
     }
 
     NOTREACHED();
@@ -1232,6 +1242,21 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return true;
       case media::stable::mojom::VideoPixelFormat::kPixelFormatRGBAF16:
         *output = ::media::VideoPixelFormat::PIXEL_FORMAT_RGBAF16;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatI422A:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_I422A;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatI444A:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_I444A;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatYUV420AP10:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_YUV420AP10;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatYUV422AP10:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_YUV422AP10;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatYUV444AP10:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_YUV444AP10;
         return true;
     }
 

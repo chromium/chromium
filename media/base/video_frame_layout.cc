@@ -76,6 +76,11 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV444P12:
       return 3;
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
       return 4;
     case PIXEL_FORMAT_UNKNOWN:
       // Note: PIXEL_FORMAT_UNKNOWN is used for end-of-stream frame.

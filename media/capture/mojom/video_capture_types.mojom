@@ -40,6 +40,11 @@ enum VideoCapturePixelFormat {
   XB30,
   BGRA,
   RGBAF16,
+  [MinVersion=1] I422A,
+  [MinVersion=1] I444A,
+  [MinVersion=1] YUV420AP10,
+  [MinVersion=1] YUV422AP10,
+  [MinVersion=1] YUV444AP10,
 };
 
 [Stable, Extensible]

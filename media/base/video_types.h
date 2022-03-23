@@ -79,9 +79,18 @@ enum VideoPixelFormat {
 
   PIXEL_FORMAT_RGBAF16 = 33,  // Half float RGBA, 1 plane.
 
+  PIXEL_FORMAT_I422A = 34,  // 24bpp YUVA planar 1x1 Y, 2x1 UV, 1x1 A samples.
+
+  PIXEL_FORMAT_I444A = 35,  // 32bpp YUVA planar, no subsampling.
+
+  // YUVA planar, 10 bits per pixel component.
+  PIXEL_FORMAT_YUV420AP10 = 36,
+  PIXEL_FORMAT_YUV422AP10 = 37,
+  PIXEL_FORMAT_YUV444AP10 = 38,
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_RGBAF16,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_YUV444AP10,  // Must always be equal to largest entry logged.
 };
 
 // Returns the name of a Format as a string.
