@@ -302,7 +302,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
       // have other purposes (e.g., change the tab).
       // Also want tab to only trigger selecting the line for events that fill
       // a text field.
-      if (!has_non_shift_modifier &&
+      if (!has_non_shift_modifier && selected_line_ &&
           CanAcceptForTabKeyPressEvent(
               suggestions_[*selected_line_].frontend_id)) {
         AcceptSelectedLine();

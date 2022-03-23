@@ -903,4 +903,25 @@ TEST_F(AutofillPopupControllerUnitTest,
   EXPECT_FALSE(swallow_event);
 }
 
+// This is a regression test for crbug.com/1309431 to ensure that we don't crash
+// when we press tab before a line is selected.
+TEST_F(AutofillPopupControllerUnitTest, TabBeforeSelectingALine) {
+  // Set up the popup.
+  std::vector<Suggestion> suggestions = {
+      Suggestion("value", "", "", 1),
+      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
+      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
+  autofill_popup_controller_->Show(suggestions,
+                                   /*autoselect_first_suggestion=*/false,
+                                   PopupType::kUnspecified);
+
+  // autofill_popup_controller_->SetSelectedLine(...); is not called here to
+  // produce the edge case.
+
+  // The following should not crash:
+  bool swallow_event =
+      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
+  EXPECT_FALSE(swallow_event);
+}
+
 }  // namespace autofill
