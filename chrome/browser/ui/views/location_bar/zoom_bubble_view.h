@@ -17,6 +17,8 @@
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/views/controls/label.h"
 
+class Browser;
+
 namespace content {
 class WebContents;
 }
@@ -135,6 +137,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
 
   // Called by ButtonPressed() when |image_button_| is pressed.
   void ImageButtonPressed();
+
+  // Gets the browser for `web_contents()`. May return null.
+  Browser* GetBrowser() const;
 
   ZoomBubbleExtensionInfo extension_info_;
 

@@ -312,7 +312,7 @@ ZoomBubbleView::~ZoomBubbleView() {
 }
 
 std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = GetBrowser();
   if (!browser)
     return {};
   return BrowserView::GetBrowserViewForBrowser(browser)
@@ -471,8 +471,8 @@ void ZoomBubbleView::WindowClosing() {
 }
 
 void ZoomBubbleView::CloseBubble() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (ignore_close_bubble_ &&
+  Browser* browser = GetBrowser();
+  if (ignore_close_bubble_ && browser &&
       GetAnchorViewForBrowser(browser) == GetAnchorView()) {
     return;
   }
@@ -586,13 +586,19 @@ void ZoomBubbleView::ButtonPressed(base::RepeatingClosure closure) {
 
 void ZoomBubbleView::ImageButtonPressed() {
   DCHECK(extension_info_.icon_image) << "Invalid button press.";
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  DCHECK(browser);
-  chrome::AddSelectedTabWithURL(
-      browser,
-      GURL(base::StringPrintf("chrome://extensions?id=%s",
-                              extension_info_.id.c_str())),
-      ui::PAGE_TRANSITION_FROM_API);
+  Browser* browser = GetBrowser();
+  if (browser) {
+    chrome::AddSelectedTabWithURL(
+        browser,
+        GURL(base::StringPrintf("chrome://extensions?id=%s",
+                                extension_info_.id.c_str())),
+        ui::PAGE_TRANSITION_FROM_API);
+  }
+}
+
+Browser* ZoomBubbleView::GetBrowser() const {
+  return web_contents() ? chrome::FindBrowserWithWebContents(web_contents())
+                        : nullptr;
 }
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}
