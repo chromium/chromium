@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -72,8 +73,15 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   // extension was enabled.
   void FinishedEnableFlow(crosapi::mojom::LaunchParamsPtr launch_params,
                           LaunchCallback callback,
+                          crosapi::mojom::LaunchResultPtr result,
                           void* key,
                           bool success);
+
+  // Continues Launch() using the same {|launch_param|, |callback|} and passed
+  // |result| after prerequisites have been met.
+  void FinallyLaunch(crosapi::mojom::LaunchParamsPtr launch_params,
+                     LaunchCallback callback,
+                     crosapi::mojom::LaunchResultPtr result);
 
   // Tracks instances of ExtensionAppsEnableFlow. This class constructs one
   // instance of ExtensionAppsEnableFlow for each attempt to launch a disabled

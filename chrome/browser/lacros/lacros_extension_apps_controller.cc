@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 
 LacrosExtensionAppsController::LacrosExtensionAppsController()
@@ -50,8 +52,7 @@ void LacrosExtensionAppsController::Uninstall(
     bool report_abuse) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success =
-      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
+  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -111,8 +112,7 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
                                              LoadIconCallback callback) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success =
-      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
+  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (success && icon_key) {
     LoadIconFromExtension(
         icon_type, size_hint_in_dip, profile, extension->id(),
@@ -129,8 +129,7 @@ void LacrosExtensionAppsController::OpenNativeSettings(
     const std::string& app_id) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success =
-      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
+  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -155,11 +154,11 @@ void LacrosExtensionAppsController::SetWindowMode(
 void LacrosExtensionAppsController::Launch(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback) {
+  crosapi::mojom::LaunchResultPtr result = crosapi::mojom::LaunchResult::New();
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success = lacros_extensions_util::DemuxPlatformAppId(
-      launch_params->app_id, &profile, &extension);
-  crosapi::mojom::LaunchResultPtr result = crosapi::mojom::LaunchResult::New();
+  bool success = lacros_extensions_util::DemuxId(launch_params->app_id,
+                                                 &profile, &extension);
   if (!success) {
     std::move(callback).Run(std::move(result));
     return;
@@ -172,24 +171,16 @@ void LacrosExtensionAppsController::Launch(
     void* key = enable_flow.get();
     enable_flows_[key] = std::move(enable_flow);
 
-    // Calling Run() can result in a synchronous callback. It must be the last
-    // thing we do before returning.
     enable_flows_[key]->Run(
         base::BindOnce(&LacrosExtensionAppsController::FinishedEnableFlow,
                        weak_factory_.GetWeakPtr(), std::move(launch_params),
-                       std::move(callback), key));
+                       std::move(callback), std::move(result), key));
     return;
   }
 
-  auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
-  params.app_id = extension->id();
-
-  OpenApplication(profile, std::move(params));
-
-  // TODO(https://crbug.com/1225848): Store the resulting instance token, which
-  // will be used to close the instance at a later point in time.
-  result->instance_id = base::UnguessableToken::Create();
-  std::move(callback).Run(std::move(result));
+  // The extension was successfully enabled. Now try to lanch.
+  FinallyLaunch(std::move(launch_params), std::move(callback),
+                std::move(result));
 }
 
 void LacrosExtensionAppsController::ExecuteContextMenuCommand(
@@ -203,8 +194,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
   // Find the extension.
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success =
-      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
+  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -225,18 +215,42 @@ void LacrosExtensionAppsController::SetPermission(
 void LacrosExtensionAppsController::FinishedEnableFlow(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback,
+    crosapi::mojom::LaunchResultPtr result,
     void* key,
     bool success) {
   DCHECK(enable_flows_.find(key) != enable_flows_.end());
   enable_flows_.erase(key);
 
   if (!success) {
-    crosapi::mojom::LaunchResultPtr result =
-        crosapi::mojom::LaunchResult::New();
     std::move(callback).Run(std::move(result));
     return;
   }
 
-  // The extension was successfully enabled. Try to launch it again.
-  Launch(std::move(launch_params), std::move(callback));
+  // The extension was successfully enabled. Now try to lanch.
+  FinallyLaunch(std::move(launch_params), std::move(callback),
+                std::move(result));
+}
+
+void LacrosExtensionAppsController::FinallyLaunch(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchCallback callback,
+    crosapi::mojom::LaunchResultPtr result) {
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success = lacros_extensions_util::DemuxId(launch_params->app_id,
+                                                 &profile, &extension);
+  if (!success) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
+  params.app_id = extension->id();
+
+  OpenApplication(profile, std::move(params));
+
+  // TODO(https://crbug.com/1225848): Store the resulting instance token, which
+  // will be used to close the instance at a later point in time.
+  result->instance_id = base::UnguessableToken::Create();
+  std::move(callback).Run(std::move(result));
 }

@@ -20,6 +20,27 @@ namespace {
 // The delimiter separates the profile basename from the extension id.
 constexpr char kDelimiter[] = "###";
 
+}  // namespace
+
+const extensions::Extension* MaybeGetExtension(
+    Profile* profile,
+    const std::string& extension_id) {
+  DCHECK(profile);
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  DCHECK(registry);
+  return registry->GetInstalledExtension(extension_id);
+}
+
+std::string MuxId(const Profile* profile,
+                  const extensions::Extension* extension) {
+  return MuxId(profile, extension->id());
+}
+
+std::string MuxId(const Profile* profile, const std::string& extension_id) {
+  return profile->GetBaseName().value() + kDelimiter + extension_id;
+}
+
 bool DemuxId(const std::string& muxed_id,
              Profile** output_profile,
              const extensions::Extension** output_extension) {
@@ -46,27 +67,6 @@ bool DemuxId(const std::string& muxed_id,
   *output_profile = matching_profile;
   *output_extension = extension;
   return true;
-}
-
-}  // namespace
-
-const extensions::Extension* MaybeGetExtension(
-    Profile* profile,
-    const std::string& extension_id) {
-  DCHECK(profile);
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
-  return registry->GetInstalledExtension(extension_id);
-}
-
-std::string MuxId(const Profile* profile,
-                  const extensions::Extension* extension) {
-  return MuxId(profile, extension->id());
-}
-
-std::string MuxId(const Profile* profile, const std::string& extension_id) {
-  return profile->GetBaseName().value() + kDelimiter + extension_id;
 }
 
 bool DemuxPlatformAppId(const std::string& muxed_id,
