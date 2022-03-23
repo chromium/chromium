@@ -782,11 +782,6 @@ const char kEnableNavigationPredictorDescription[] =
     "Enables navigation predictor feature that predicts the next likely "
     "navigation using a set of heuristics.";
 
-const char kEnablePreconnectToSearchName[] =
-    "Enables preconnections to default search engine";
-const char kEnablePreconnectToSearchDescription[] =
-    "Enables the feature that preconnects to the user's default search engine.";
-
 const char kEnableRawDrawName[] = "Enable raw draw";
 const char kEnableRawDrawDescription[] =
     "When enabled, web content will be rastered on output surface directly.";

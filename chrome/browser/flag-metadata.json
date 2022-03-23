@@ -2563,11 +2563,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-preconnect-to-search",
-    "owners": [ "tbansal", "ryansturm", "instant-nav@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-preinstalled-web-app-duplication-fixer",
     "owners": [ "alancutter" ],
     "expiry_milestone": 104

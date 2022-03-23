@@ -3882,10 +3882,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kNavigationPredictor)},
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    {"enable-preconnect-to-search",
-     flag_descriptions::kEnablePreconnectToSearchName,
-     flag_descriptions::kEnablePreconnectToSearchDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPreconnectToSearch)},
     {"enable-google-srp-isolated-prerender-probing",
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingName,
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingDescription, kOsAll,
