@@ -137,6 +137,8 @@ public class MessagesMetrics {
                 return "InstantApps";
             case MessageIdentifier.ABOUT_THIS_SITE:
                 return "AboutThisSite";
+            case MessageIdentifier.TRANSLATE:
+                return "Translate";
             default:
                 return "Unknown";
         }

@@ -61031,6 +61031,7 @@ Called by update_use_counter_css.py.-->
   <int value="26" label="ArCoreUpgrade"/>
   <int value="27" label="InstantApps"/>
   <int value="28" label="AboutThisSite"/>
+  <int value="29" label="Translate"/>
 </enum>
 
 <enum name="MessageLoopProblems">
@@ -90339,6 +90340,7 @@ Full version information for the fingerprint enum values:
   <int value="7" label="Never translate site"/>
   <int value="8" label="Close UI explicitly"/>
   <int value="9" label="Close UI by lost focus"/>
+  <int value="10" label="Close UI by auto-dismiss timer firing"/>
 </enum>
 
 <enum name="TranslationStatus">

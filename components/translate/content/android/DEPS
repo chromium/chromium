@@ -1,5 +1,8 @@
 include_rules = [
-  "+components/metrics",
   "+components/browser_ui/widget/android",
+  "+components/messages/android",
+  "+components/metrics",
   "+components/translate/core/browser",
+  "+content/public/android",
+  "+content/public/browser",
 ]

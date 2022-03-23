@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -53,6 +54,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
+#include "components/translate/content/android/translate_message.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -251,14 +253,27 @@ bool ChromeTranslateClient::ShowTranslateUI(
 // Translate uses a bubble UI on desktop and an infobar on Android (here)
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
 #if BUILDFLAG(IS_ANDROID)
-  // Infobar UI.
   DCHECK(!TranslateService::IsTranslateBubbleEnabled());
-  translate::TranslateInfoBarDelegate::Create(
-      step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      translate_manager_->GetWeakPtr(),
-      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
-      web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
-      source_language, target_language, error_type, triggered_from_menu);
+
+  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
+    // Message UI.
+    if (!translate_message_) {
+      translate_message_ = std::make_unique<translate::TranslateMessage>(
+          web_contents(), translate_manager_->GetWeakPtr(),
+          base::BindOnce(&ChromeTranslateClient::OnTranslateMessageDismissed,
+                         base::Unretained(this)));
+    }
+    translate_message_->ShowTranslateStep(step, source_language,
+                                          target_language);
+  } else {
+    // Infobar UI.
+    translate::TranslateInfoBarDelegate::Create(
+        step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
+        translate_manager_->GetWeakPtr(),
+        infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+        web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
+        source_language, target_language, error_type, triggered_from_menu);
+  }
 
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(true);
 #else
@@ -418,5 +433,11 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
                                       error_type, is_user_gesture);
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeTranslateClient::OnTranslateMessageDismissed() {
+  translate_message_.reset();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeTranslateClient);

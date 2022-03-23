@@ -339,6 +339,7 @@ include_rules = [
   "+components/tab_count_metrics",
   "+components/tab_groups",
   "+components/tracing/common",
+  "+components/translate/content/android",
   "+components/translate/content/browser",
   "+components/translate/content/common",
   "+components/translate/core/browser",

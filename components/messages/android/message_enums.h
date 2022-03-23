@@ -101,6 +101,7 @@ enum class MessageIdentifier {
   AR_CORE_UPGRADE = 26,
   INSTANT_APPS = 27,
   ABOUT_THIS_SITE = 28,
+  TRANSLATE = 29,
 
   // Insert new values before this line.
   COUNT

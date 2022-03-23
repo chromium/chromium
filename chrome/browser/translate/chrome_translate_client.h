@@ -33,6 +33,7 @@ class LanguageState;
 class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
+class TranslateMessage;
 
 struct LanguageDetectionDetails;
 }  // namespace translate
@@ -141,6 +142,10 @@ class ChromeTranslateClient
       bool is_user_gesture);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnTranslateMessageDismissed();
+#endif
+
   std::unique_ptr<translate::ContentTranslateDriver> translate_driver_;
   std::unique_ptr<translate::PerFrameContentTranslateDriver>
       per_frame_translate_driver_;
@@ -150,6 +155,8 @@ class ChromeTranslateClient
   // Whether to trigger a manual translation when ready.
   // See ChromeTranslateClient::ManualTranslateOnReady
   bool manual_translate_on_ready_ = false;
+
+  std::unique_ptr<translate::TranslateMessage> translate_message_;
 #endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

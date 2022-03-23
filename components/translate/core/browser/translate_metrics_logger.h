@@ -126,7 +126,8 @@ enum class UIInteraction {
   kNeverTranslateSite = 7,
   kCloseUIExplicitly = 8,
   kCloseUILostFocus = 9,
-  kMaxValue = kCloseUILostFocus,
+  kCloseUITimerRanOut = 10,
+  kMaxValue = kCloseUITimerRanOut,
 };
 
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome

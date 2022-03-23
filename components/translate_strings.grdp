@@ -94,6 +94,16 @@
       <message name="IDS_TRANSLATE_SNACKBAR_CANCEL" desc="A text label on the translate snackbar widget to cancel this selection. [CHAR_LIMIT=16]" formatter_data="android_java">
         Cancel
       </message>
+
+      <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page." formatter_data="android_java">
+        Translate page?
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE" desc="A text label on the translate message popup that announces to the user that Chrome has finished translating the page." formatter_data="android_java">
+        Page translated
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know what the source and target languages are for translating the page." formatter_data="android_java">
+        <ph name="source_language">%1$s<ex>French</ex></ph> to <ph name="target_language">%2$s<ex>English</ex></ph>
+      </message>
   </if>
 
   <!-- Translate Notifications -->

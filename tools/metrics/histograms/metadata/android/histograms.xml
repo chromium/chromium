@@ -99,6 +99,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SharedHighlighting"/>
   <variant name=".SyncError"/>
   <variant name=".TailoredSecurityEnabled"/>
+  <variant name=".Translate"/>
   <variant name=".UpdatePassword"/>
   <variant name=".VrServicesUpgrade"/>
 </variants>
