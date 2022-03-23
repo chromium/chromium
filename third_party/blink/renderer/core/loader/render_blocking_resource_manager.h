@@ -58,6 +58,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   void AddImperativeFontLoading(FontFace*);
   void RemoveImperativeFontLoading();
+  void EnsureStartFontPreloadTimer();
   void FontPreloadingTimerFired(TimerBase*);
 
   void Trace(Visitor* visitor) const;
@@ -68,6 +69,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Exposed to unit tests only.
   void SetFontPreloadTimeoutForTest(base::TimeDelta timeout);
   void DisableFontPreloadTimeoutForTest();
+  bool FontPreloadTimerIsActiveForTest() const;
 
   Member<Document> document_;
 

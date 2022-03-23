@@ -39,6 +39,9 @@ class RenderBlockingResourceManagerTest : public SimTest {
   void SetFontPreloadTimeout(base::TimeDelta timeout) {
     GetRenderBlockingResourceManager().SetFontPreloadTimeoutForTest(timeout);
   }
+  bool FontPreloadTimerIsActive() {
+    return GetRenderBlockingResourceManager().FontPreloadTimerIsActiveForTest();
+  }
 
   Element* GetTarget() { return GetDocument().getElementById("target"); }
 
@@ -588,6 +591,43 @@ TEST_F(RenderBlockingResourceManagerTest, ScriptInsertedBodyUnblocksRendering) {
   EXPECT_EQ(100, GetDocument().body()->OffsetWidth());
 
   main_resource.Finish();
+}
+
+// https://crbug.com/1308083
+TEST_F(RenderBlockingResourceManagerTest, ParserBlockingScriptBeforeFont) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/font.woff2",
+                                      "font/woff2");
+  SimSubresourceRequest script_resource("https://example.com/script.js",
+                                        "application/javascript");
+
+  LoadURL("https://example.com");
+
+  // Make sure timer doesn't fire in case the test runs slow.
+  SetFontPreloadTimeout(base::TimeDelta::Max());
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <script src="script.js"></script>
+    <link rel="preload" as="font" type="font/woff2"
+          href="font.woff2" crossorigin>
+    <div>
+      Lorem ipsum
+    </div>
+  )HTML");
+
+  // Rendering is still blocked.
+  EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
+
+  // Parser is blocked by the synchronous script, so <link> isn't inserted yet.
+  EXPECT_FALSE(GetDocument().QuerySelector("link"));
+
+  // Preload scanner should have started font preloading and also the timer.
+  // This should happen before the parser sets up the preload link element.
+  EXPECT_TRUE(FontPreloadTimerIsActive());
+
+  script_resource.Complete();
+  font_resource.Complete();
 }
 
 }  // namespace blink
