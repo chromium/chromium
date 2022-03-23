@@ -105,6 +105,8 @@ export class TestWallpaperProvider extends
   private googlePhotosPhotosResumeToken_: string|undefined;
   private googlePhotosPhotosByAlbumId_:
       Record<string, GooglePhotosPhoto[]|undefined> = {};
+  private googlePhotosPhotosByAlbumIdResumeTokens_:
+      Record<string, string|undefined> = {};
   localImages: FilePath[]|null;
   localImageData: Record<string, string>;
   currentWallpaper: CurrentWallpaper;
@@ -178,8 +180,9 @@ export class TestWallpaperProvider extends
         albumId ? this.googlePhotosPhotosByAlbumId_[albumId] :
                   this.googlePhotosPhotos_ :
         undefined;
-    response.resumeToken =
-        albumId ? undefined : this.googlePhotosPhotosResumeToken_;
+    response.resumeToken = albumId ?
+        this.googlePhotosPhotosByAlbumIdResumeTokens_[albumId] :
+        this.googlePhotosPhotosResumeToken_;
     return Promise.resolve({response});
   }
 
@@ -285,6 +288,12 @@ export class TestWallpaperProvider extends
   setGooglePhotosPhotosByAlbumId(
       albumId: string, googlePhotosPhotos: GooglePhotosPhoto[]|undefined) {
     this.googlePhotosPhotosByAlbumId_[albumId] = googlePhotosPhotos;
+  }
+
+  setGooglePhotosPhotosByAlbumIdResumeToken(
+      albumId: string, googlePhotosPhotosResumeToken: string|undefined) {
+    this.googlePhotosPhotosByAlbumIdResumeTokens_[albumId] =
+        googlePhotosPhotosResumeToken;
   }
 
   setImages(images: WallpaperImage[]) {

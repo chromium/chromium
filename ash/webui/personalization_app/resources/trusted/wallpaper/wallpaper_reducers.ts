@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {Actions} from '../personalization_actions.js';
@@ -124,7 +124,7 @@ function loadingReducer(
     case WallpaperActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
       return {...state, refreshWallpaper: false};
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
-      assert(state.googlePhotos.photosByAlbumId[action.albumId] === undefined);
+      assert(!state.googlePhotos.photosByAlbumId[action.albumId]);
       return {
         ...state,
         googlePhotos: {
@@ -135,7 +135,7 @@ function loadingReducer(
           },
         },
       };
-    case WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUM:
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM:
       assert(state.googlePhotos.photosByAlbumId[action.albumId] === true);
       return {
         ...state,
@@ -345,19 +345,61 @@ function googlePhotosReducer(
     _: PersonalizationState): WallpaperState['googlePhotos'] {
   switch (action.name) {
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
-      // The list of photos for an album should be loaded only once.
+      // The list of photos for an album should be loaded only while additional
+      // photos exist.
       assert(state.albums?.some(album => album.id === action.albumId));
-      assert(state.photosByAlbumId[action.albumId] === undefined);
+      assert(
+          state.photosByAlbumId[action.albumId] === undefined ||
+          state.resumeTokens.photosByAlbumId[action.albumId]);
       return state;
-    case WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUM:
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM:
       assert(state.albums?.some(album => album.id === action.albumId));
       assert(action.albumId !== undefined);
       assert(action.photos !== undefined);
+      // Case: First batch of photos.
+      if (!Array.isArray(state.photosByAlbumId[action.albumId])) {
+        return {
+          ...state,
+          photosByAlbumId: {
+            ...state.photosByAlbumId,
+            [action.albumId]: action.photos,
+          },
+          resumeTokens: {
+            ...state.resumeTokens,
+            photosByAlbumId: {
+              ...state.resumeTokens.photosByAlbumId,
+              [action.albumId]: action.resumeToken,
+            },
+          },
+        };
+      }
+      // Case: Subsequent batches of photos.
+      if (Array.isArray(action.photos)) {
+        return {
+          ...state,
+          photosByAlbumId: {
+            ...state.photosByAlbumId,
+            [action.albumId]:
+                [...state.photosByAlbumId[action.albumId]!, ...action.photos],
+          },
+          resumeTokens: {
+            ...state.resumeTokens,
+            photosByAlbumId: {
+              ...state.resumeTokens.photosByAlbumId,
+              [action.albumId]: action.resumeToken,
+            },
+          },
+        };
+      }
+      // Case: Error.
       return {
         ...state,
-        photosByAlbumId: {
-          ...state.photosByAlbumId,
-          [action.albumId]: action.photos,
+        resumeTokens: {
+          ...state.resumeTokens,
+          photosByAlbumId: {
+            ...state.resumeTokens.photosByAlbumId,
+            [action.albumId]: action.resumeToken,
+          },
         },
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:

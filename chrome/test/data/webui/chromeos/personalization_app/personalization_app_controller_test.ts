@@ -119,7 +119,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // SET_GOOGLE_PHOTOS_ENABLED.
@@ -137,7 +137,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // BEGIN_LOAD_GOOGLE_PHOTOS_COUNT.
@@ -155,7 +155,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // SET_GOOGLE_PHOTOS_COUNT.
@@ -173,7 +173,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS.
@@ -191,7 +191,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
@@ -209,7 +209,7 @@ suite('Personalization app controller', () => {
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // APPEND_GOOGLE_PHOTOS_ALBUMS.
@@ -227,7 +227,7 @@ suite('Personalization app controller', () => {
                 albums: expectedAlbums,
                 photos: undefined,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
             // APPEND_GOOGLE_PHOTOS_PHOTOS.
@@ -245,7 +245,7 @@ suite('Personalization app controller', () => {
                 albums: expectedAlbums,
                 photos: expectedPhotos,
                 photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null},
+                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
               },
             },
           ],
@@ -291,9 +291,10 @@ suite('Personalization app controller', () => {
             albumId: album.id,
           },
           {
-            name: 'set_google_photos_album',
+            name: 'append_google_photos_album',
             albumId: album.id,
             photos: photos,
+            resumeToken: null,
           },
         ],
         personalizationStore.actions);
@@ -321,10 +322,10 @@ suite('Personalization app controller', () => {
               ],
               photos: undefined,
               photosByAlbumId: {},
-              resumeTokens: {albums: null, photos: null},
+              resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
             },
           },
-          // SET_GOOGLE_PHOTOS_ALBUM
+          // APPEND_GOOGLE_PHOTOS_ALBUM
           {
             'wallpaper.loading.googlePhotos': {
               enabled: false,
@@ -347,7 +348,11 @@ suite('Personalization app controller', () => {
               photosByAlbumId: {
                 [album.id]: photos,
               },
-              resumeTokens: {albums: null, photos: null},
+              resumeTokens: {
+                albums: null,
+                photos: null,
+                photosByAlbumId: {[album.id]: null},
+              },
             },
           },
         ],

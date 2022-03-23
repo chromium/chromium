@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '/common/styles.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';

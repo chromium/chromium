@@ -4,9 +4,9 @@
 
 import {GooglePhotosAlbum, GooglePhotosPhoto, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {GooglePhotosPhotosByAlbumId} from 'chrome://personalization/trusted/wallpaper/google_photos_photos_by_album_id_element.js';
-import {initializeGooglePhotosData} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
+import {fetchGooglePhotosAlbum, initializeGooglePhotosData} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 import {WallpaperGridItem} from 'chrome://personalization/trusted/wallpaper/wallpaper_grid_item_element.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -27,6 +27,12 @@ export function GooglePhotosPhotosByAlbumIdTest() {
         googlePhotosPhotosByAlbumIdElement!.shadowRoot!.querySelectorAll(
             selector);
     return matches ? [...matches] : null;
+  }
+
+  /** Scrolls the specified |element| to the bottom. */
+  async function scrollToBottom(element: HTMLElement) {
+    element.scrollTop = element.scrollHeight;
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement!);
   }
 
   setup(() => {
@@ -269,6 +275,114 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, false);
     assertEquals(photoEls[1]!.selected, false);
+  });
+
+  test('incrementally loads photos', async () => {
+    personalizationStore.setReducersEnabled(true);
+
+    const photosCount = 200;
+    const album: GooglePhotosAlbum =
+        {id: '1', title: '', photoCount: photosCount, preview: {url: ''}};
+
+    // Set photos count returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosCount(photosCount);
+
+    // Set albums returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosAlbums([album]);
+
+    // Set initial list of photos returned by |wallpaperProvider|.
+    let nextPhotoId = 1;
+    wallpaperProvider.setGooglePhotosPhotosByAlbumId(
+        album.id, Array.from({length: photosCount / 2}).map(() => {
+          return {
+            id: `id-${nextPhotoId}`,
+            name: `name-${nextPhotoId}`,
+            date: {data: []},
+            url: {url: `url-${nextPhotoId++}`},
+          };
+        }));
+
+    // Set initial photos resume token returned  by |wallpaperProvider|. When
+    // resume token is defined, it indicates additional photos exist.
+    const resumeToken = 'resumeToken';
+    wallpaperProvider.setGooglePhotosPhotosByAlbumIdResumeToken(
+        album.id, resumeToken);
+
+    // Initialize Google Photos data in |personalizationStore|.
+    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, /*albumId=*/ null, /*resumeToken=*/ null]);
+
+    // Reset |wallpaperProvider| expectations.
+    wallpaperProvider.resetResolver('fetchGooglePhotosPhotos');
+
+    // Initialize Google Photos album in |personalizationStore|.
+    await fetchGooglePhotosAlbum(
+        wallpaperProvider, personalizationStore, album.id);
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, album.id, /*resumeToken=*/ null]);
+
+    // Reset |wallpaperProvider| expectations.
+    wallpaperProvider.resetResolver('fetchGooglePhotosPhotos');
+
+    // Set the next list of photos returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosPhotosByAlbumId(
+        album.id, Array.from({length: photosCount / 2}).map(() => {
+          return {
+            id: `id-${nextPhotoId}`,
+            name: `name-${nextPhotoId}`,
+            date: {data: []},
+            url: {url: `url-${nextPhotoId++}`},
+          };
+        }));
+
+    // Set the next photos resume token returned by |wallpaperProvider|. When
+    // resume token is undefined, it indicates no additional photos exist.
+    wallpaperProvider.setGooglePhotosPhotosByAlbumIdResumeToken(
+        album.id, undefined);
+
+    // Restrict the viewport so that |googlePhotosPhotosByAlbumIdElement| will
+    // lazily create photos instead of creating them all at once.
+    const style = document.createElement('style');
+    style.appendChild(document.createTextNode(`
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+    `));
+    document.head.appendChild(style);
+
+    // Initialize |googlePhotosPhotosByAlbumIdElement|.
+    googlePhotosPhotosByAlbumIdElement =
+        initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+
+    // Select |album|.
+    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+
+    // Scroll to the bottom of the grid.
+    const gridScrollThreshold =
+        googlePhotosPhotosByAlbumIdElement.$.gridScrollThreshold;
+    scrollToBottom(gridScrollThreshold);
+
+    // Wait for and verify that the next batch of photos have been requested.
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, album.id, /*resumeToken=*/ resumeToken]);
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+
+    // Reset |wallpaperProvider| expectations.
+    wallpaperProvider.resetResolver('fetchGooglePhotosPhotos');
+
+    // Scroll to the bottom of the grid.
+    scrollToBottom(gridScrollThreshold);
+
+    // Verify that no next batch of photos has been requested.
+    assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
   });
 
   test('selects photo', async () => {

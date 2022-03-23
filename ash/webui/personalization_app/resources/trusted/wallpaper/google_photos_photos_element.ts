@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import './styles.js';
 import '../../common/styles.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
@@ -65,7 +65,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       pendingSelected_: Object,
       photos_: Array,
-      photosByRow_: Array,
+
+      photosByRow_: {
+        type: Array,
+        value: [],
+      },
 
       photosBySection_: {
         type: Array,
@@ -108,7 +112,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
    * so as to be rendered in a grid.
    */
-  private photosByRow_: GooglePhotosPhoto[][]|null;
+  private photosByRow_: GooglePhotosPhotosRow[];
 
   /**
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
@@ -159,7 +163,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
     // Ignore this event if photos are already being loading or if there is no
     // resume token (indicating there are no additional photos to load).
-    if (this.photosLoading_ === true || this.photosResumeToken_ === null) {
+    if (this.photosLoading_ === true || !this.photosResumeToken_) {
       return;
     }
 
@@ -240,39 +244,19 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Invoked on changes to |photosBySection_|. */
   private onPhotosBySectionChanged_(
       photosBySection: GooglePhotosPhotos['photosBySection_']) {
-    if (!isNonEmptyArray(photosBySection)) {
-      this.photosByRow_ = null;
-      return;
-    }
-
-    const photosByRow = photosBySection.flatMap(section => section.rows);
-
-    // Case: First batch of photos.
-    if (this.photosByRow_ === null || this.photosByRow_ === undefined) {
-      this.photosByRow_ = photosByRow;
-      return;
-    }
-
-    // Case: Subsequent batches of photos.
     // NOTE: |photosByRow_| is updated in place to avoid resetting the scroll
-    // position of the grid.
-    photosByRow.forEach((row, i) => {
-      if (i < this.photosByRow_!.length) {
-        this.set(`photosByRow_.${i}`, row);
-      } else {
-        this.push('photosByRow_', row);
-      }
-    });
-
-    while (this.photosByRow_.length > photosByRow.length) {
-      this.pop('photosByRow_');
-    }
+    // position of the grid which would otherwise occur during reassignment.
+    this.updateList(
+        /*propertyPath=*/ 'photosByRow_', /*identityGetter=*/
+        (row: GooglePhotosPhotosRow) => row.map(photo => photo.id).join('_'),
+        /*newList=*/ photosBySection?.flatMap(section => section.rows) ?? [],
+        /*identityBasedUpdate=*/ true);
   }
 
   /** Invoked on changes to |photosResumeToken_|. */
   private onPhotosResumeTokenChanged_(
       photosResumeToken: GooglePhotosPhotos['photosResumeToken_']) {
-    if (photosResumeToken?.length) {
+    if (photosResumeToken) {
       this.$.gridScrollThreshold.clearTriggers();
     }
   }
