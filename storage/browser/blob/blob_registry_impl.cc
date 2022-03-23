@@ -501,12 +501,10 @@ bool BlobRegistryImpl::BlobUnderConstruction::ContainsCycles(
 BlobRegistryImpl::BlobRegistryImpl(
     base::WeakPtr<BlobStorageContext> context,
     base::WeakPtr<BlobUrlRegistry> url_registry,
-    scoped_refptr<base::TaskRunner> url_registry_runner,
     scoped_refptr<FileSystemContext> file_system_context)
     : context_(std::move(context)),
-      file_system_context_(std::move(file_system_context)),
       url_registry_(std::move(url_registry)),
-      url_registry_runner_(std::move(url_registry_runner)) {}
+      file_system_context_(std::move(file_system_context)) {}
 
 BlobRegistryImpl::~BlobRegistryImpl() {
   // BlobBuilderFromStream needs to be aborted before it can be destroyed, but
@@ -654,22 +652,11 @@ void BlobRegistryImpl::URLStoreForOrigin(
         "BlobRegistryImpl::URLStoreForOrigin");
     return;
   }
-  url_registry_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const url::Origin& origin,
-             mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore>
-                 receiver,
-             base::WeakPtr<BlobUrlRegistry> url_registry) {
-            auto self_owned_associated_receiver =
-                mojo::MakeSelfOwnedAssociatedReceiver(
-                    std::make_unique<BlobURLStoreImpl>(origin,
-                                                       std::move(url_registry)),
-                    std::move(receiver));
-            if (g_url_store_creation_hook)
-              g_url_store_creation_hook->Run(self_owned_associated_receiver);
-          },
-          origin, std::move(receiver), url_registry_));
+  auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<BlobURLStoreImpl>(origin, url_registry_),
+      std::move(receiver));
+  if (g_url_store_creation_hook)
+    g_url_store_creation_hook->Run(self_owned_associated_receiver);
 }
 
 // static

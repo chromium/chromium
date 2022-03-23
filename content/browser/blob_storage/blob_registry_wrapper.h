@@ -31,10 +31,15 @@ class BlobRegistryWrapper
   static scoped_refptr<BlobRegistryWrapper> Create(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       scoped_refptr<storage::FileSystemContext> file_system_context,
-      base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
+      scoped_refptr<BlobRegistryWrapper> registry_for_fallback_url_registry =
+          nullptr);
 
   void Bind(int process_id,
             mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver);
+
+  // TODO(mek): Make this be owned by StoragePartition directly, and living
+  // on the UI thread.
+  storage::BlobUrlRegistry* url_registry() { return url_registry_.get(); }
 
  private:
   BlobRegistryWrapper();
@@ -45,9 +50,10 @@ class BlobRegistryWrapper
   void InitializeOnIOThread(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       scoped_refptr<storage::FileSystemContext> file_system_context,
-      base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
+      scoped_refptr<BlobRegistryWrapper> registry_for_fallback_url_registry);
 
   std::unique_ptr<storage::BlobRegistryImpl> blob_registry_;
+  std::unique_ptr<storage::BlobUrlRegistry> url_registry_;
 };
 
 }  // namespace content
