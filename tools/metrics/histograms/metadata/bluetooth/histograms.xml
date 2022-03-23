@@ -1212,6 +1212,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.StackName" enum="BluetoothStackName"
+    expires_after="2023-03-16">
+  <owner>michaelfsun@google.com</owner>
+  <owner>chromeos-bt-kpi@google.com</owner>
+  <summary>
+    Records the name of the Bluetooth stack when Ash starts up. The stack may be
+    different depending on build configurations and flags.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="2022-06-26">
   <owner>cmumford@chromium.org</owner>

@@ -15,13 +15,23 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace bluetooth_utility {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BluetoothStackName { kBlueZ = 0, kFloss = 1, kMaxValue = kFloss };
+
 void ReportAvailability(BluetoothAvailability availability) {
   UMA_HISTOGRAM_ENUMERATION("Bluetooth.Availability.v2", availability,
                             BLUETOOTH_AVAILABILITY_COUNT);
+}
+
+void ReportStackName(BluetoothStackName name) {
+  UMA_HISTOGRAM_ENUMERATION("Bluetooth.StackName", name);
 }
 
 void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter) {
@@ -56,9 +66,20 @@ void ReportBluetoothAvailability() {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // This is for tests that have not initialized bluez or dbus thread manager.
-  // Outside of tests these are initialized earlier during browser startup.
-  if (!bluez::BluezDBusManager::IsInitialized())
+  bool is_initialized;
+
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    ReportStackName(BluetoothStackName::kFloss);
+    is_initialized = floss::FlossDBusManager::IsInitialized();
+  } else {
+    ReportStackName(BluetoothStackName::kBlueZ);
+    is_initialized = bluez::BluezDBusManager::IsInitialized();
+  }
+
+  // This is for tests that have not initialized bluez/floss or dbus thread
+  // manager. Outside of tests these are initialized earlier during browser
+  // startup.
+  if (!is_initialized)
     return;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

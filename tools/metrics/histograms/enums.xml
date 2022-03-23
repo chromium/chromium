@@ -9301,6 +9301,11 @@ Called by update_bad_message_reasons.py.-->
       label="CordlessTelephony; 00001109-0000-1000-8000-00805f9b34fb"/>
 </enum>
 
+<enum name="BluetoothStackName">
+  <int value="0" label="BlueZ"/>
+  <int value="1" label="Floss"/>
+</enum>
+
 <enum name="BluetoothStatus">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
