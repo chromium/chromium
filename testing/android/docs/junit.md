@@ -62,7 +62,7 @@ This works even for static and final methods.
 
 #### Useful Tips
 
-* Use `@RunWith(LocalRobolectricTestRunner.class)` for all Chromium Robolectric tests.
+* Use `@RunWith(BaseRobolectricTestRunner.class)` for all Chromium Robolectric tests.
 * You can specify the Android SDK to run your test with with `@Config(sdk = ??)`.
 
 > Currently, only SDK levels 18, 21, and 25 are supported in Chromium
@@ -81,11 +81,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
-// Be sure to specify to run tests with the LocalRobolectricTestRunner. The
+// Be sure to specify to run tests with a RobolectricTestRunner. The
 // default JUnit test runner won't load the Robolectric Android code properly.
-@RunWith(LocalRobolectricTestRunner.class)
+// BaseRobolectricTestRunner will do some common initializations. If this is
+// not desired, then LocalRobolectricTestRunner could be used.
+@RunWith(BaseRobolectricTestRunner.class)
 // Can specify some Robolectric related configs here.
 // More about configuring Robolectric at http://robolectric.org/configuring/.
 // SDK will default to the latest we support in Chromium.
