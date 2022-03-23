@@ -148,7 +148,6 @@
 <translation id="1771761307086386028">Помери надесно</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="1787955149152357925">Искључено</translation>
-<translation id="1804572139604454141">Снимање је прекинуто због изузетно мало простора на диску</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="1812997170047690955">Шта је на екрану?</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
@@ -466,6 +465,7 @@
 <translation id="3798670284305777884">Звучник (интерни)</translation>
 <translation id="3799080171973636491">Притиснули сте тастерску пречицу за лупу за цео екран. Желите ли да је укључите?</translation>
 <translation id="380165613292957338">Здраво, како могу да помогнем?</translation>
+<translation id="3804737937830804242">Скупите камеру</translation>
 <translation id="3826099427150913765">Пређи на лозинку</translation>
 <translation id="383058930331066723">Режим уштеде батерије је укључен</translation>
 <translation id="3835880383832568924">Да бисте видели ажурирања, отворите апликацију Пречице</translation>
@@ -1006,6 +1006,7 @@
 <translation id="7302889331339392448">Титл уживо је искључен.</translation>
 <translation id="7303365578352795231">Одговор се даје на другом уређају.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Проширите камеру</translation>
 <translation id="731589979057211264">Журка на полици је укључена.</translation>
 <translation id="7319740667687257810">Покретач, делимичан приказ</translation>
 <translation id="7346909386216857016">Важи</translation>

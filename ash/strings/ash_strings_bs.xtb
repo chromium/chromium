@@ -148,7 +148,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1771761307086386028">Listaj udesno</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutno je odabran datum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
-<translation id="1804572139604454141">Snimanje je prekinuto zbog jako malo slobodnog prostora na disku</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -466,6 +465,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799080171973636491">Pritisnite prečicu na tastaturi za povećalo preko cijelog ekrana. Želite li ga uključiti?</translation>
 <translation id="380165613292957338">Zdravo, kako vam mogu pomoći?</translation>
+<translation id="3804737937830804242">Zažmi fotoaparat</translation>
 <translation id="3826099427150913765">Prebaci na lozinku</translation>
 <translation id="383058930331066723">Način rada uštede baterije je uključen</translation>
 <translation id="3835880383832568924">Da vidite ažuriranja, otvorite aplikaciju Prečice</translation>
@@ -1006,6 +1006,7 @@ Nova instalacija</translation>
 <translation id="7302889331339392448">Automatski titlovi su isključeni.</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Proširi fotoaparat</translation>
 <translation id="731589979057211264">Shelf Party je uključen.</translation>
 <translation id="7319740667687257810">Pokretač, djelimični prikaz</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>

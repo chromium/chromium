@@ -468,6 +468,7 @@
 Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van toepassing wees. Jy kan toestemmings vir Android-programme in <ph name="APPS_LINK_BEGIN" />Programinstellings<ph name="APPS_LINK_END" /> beheer.</translation>
 <translation id="1448779317883494811">Kwasnutsding</translation>
 <translation id="1449191289887455076">Druk “<ph name="CURRENTKEY" />” weer om toewysing te bevestig en <ph name="RESPONSE" />.</translation>
+<translation id="1450646399865399771">Het netwerkopstelling vir "<ph name="NETWORK_NAME" />" van <ph name="DEVICE_NAME" /> af ontvang</translation>
 <translation id="1451375123200651445">Webbladsy, enkellêer</translation>
 <translation id="1453561711872398978">Stuur
     <ph name="BEGIN_LINK" />ontfoutloglêers<ph name="END_LINK" /> (aanbeveel)</translation>
@@ -1008,6 +1009,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1938351510777341717">Eksterne bevel</translation>
 <translation id="1940546824932169984">Gekoppelde toestelle</translation>
 <translation id="1941410638996203291">Begintyd <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Weergawe: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Lees en verander al jou data op alle webwerwe</translation>
 <translation id="1942600407708803723">Skakel af wanneer omhulsel toe is</translation>
 <translation id="1944528062465413897">Bluetooth-saambindkode:</translation>
@@ -1082,6 +1084,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="202352106777823113">Die aflaai het te lank gevat en is deur die netwerk gestop.</translation>
 <translation id="2024195579772565064">Vee soekenjin uit</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> het omgeval. Klik hierdie ballon om hierdie uitbreiding te herlaai.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> deel tans 'n wi-fi-netwerk met jou.</translation>
 <translation id="2028449514182362831">Kenmerke wat bewegingsensors nodig het, sal nie werk nie</translation>
 <translation id="202918510990975568">Voer jou wagwoord in om sekuriteit en aanmelding op te stel</translation>
 <translation id="2030455719695904263">Stuurpaneel</translation>
@@ -1109,7 +1112,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2048182445208425546">Kry toegang tot jou netwerkverkeer</translation>
 <translation id="2048554637254265991">Kon nie die houerbestuurder begin nie. Probeer weer.</translation>
 <translation id="2048653237708779538">Handeling is nie beskikbaar nie</translation>
-<translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2053312383184521053">Rustoestand-data</translation>
 <translation id="2054240652864153171">Vee werfdata uit vir <ph name="SITE_NAME" /> wat op <ph name="PARTITION_SITE_NAME" /> verdeel is?</translation>
@@ -1519,6 +1521,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2439626940657133600">Laai tans <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Bekyk bron</translation>
+<translation id="2441719842399509963">Stel terug na verstek</translation>
 <translation id="244231003699905658">Ongeldige adres. Gaan die adres na en probeer weer.</translation>
 <translation id="2442916515643169563">Teksskadu</translation>
 <translation id="2443487764245141020">Werwe sal dalk ook 'n identifiseerder gebruik om jou toestel te herken</translation>
@@ -2159,6 +2162,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3054766768827382232">As jy datatoegangbeskerming deaktiveer, kan dit randtoestelle se werkverrigting verbeter. Dit kan egter jou persoonlike data deur ongemagtigde gebruik blootstel.</translation>
 <translation id="3055113921564083271">Belangstellings wat jy verwyder het</translation>
 <translation id="3055590424724986000">Met 'n verskaffer van jou keuse</translation>
+<translation id="3057660594186523687">Kon nie netwerkopstelling vir "<ph name="NETWORK_NAME" />" van <ph name="DEVICE_NAME" /> af ontvang nie</translation>
 <translation id="3058498974290601450">Jy kan sinkronisering enige tyd in Instellings aanskakel</translation>
 <translation id="3058517085907878899">Gee toestel 'n naam</translation>
 <translation id="3059195548603439580">Soek jy na stelselkomponente? Besoek</translation>
@@ -2584,6 +2588,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3507888235492474624">Soek weer na Bluetooth-toestelle</translation>
 <translation id="3508492320654304609">Jou aanmelddata kon nie uitgevee word nie</translation>
 <translation id="3508920295779105875">Kies 'n ander vouer …</translation>
+<translation id="3509379002674019679">Skep, stoor en bestuur jou wagwoorde sodat jy maklik by webwerwe en programme kan aanmeld.</translation>
 <translation id="3511200754045804813">Soek weer</translation>
 <translation id="3511307672085573050">Kopieer skakeladres</translation>
 <translation id="351152300840026870">Vastebreedte-lettertipe</translation>
@@ -5427,6 +5432,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6374469231428023295">Probeer weer</translation>
 <translation id="6374635887697228982">Kry afslag?</translation>
 <translation id="6377268785556383139">1 resultaat vir "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Maak in wi-fi-netwerk oop</translation>
 <translation id="6380143666419481200">Aanvaar en gaan voort</translation>
 <translation id="6382616130475191723">Word toegelaat om <ph name="SITE_NAME" /> te lees en te verander</translation>
 <translation id="6382958439467370461">Geen onaktiewe kortpaaie nie</translation>
@@ -5544,6 +5550,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="648927581764831596">Niks beskikbaar nie</translation>
 <translation id="6490471652906364588">USB C-toestel (poort aan regterkant)</translation>
 <translation id="6491376743066338510">Kon nie magtig nie</translation>
+<translation id="6492526860459984042">Ontvang tans netwerkopstelling vir "<ph name="NETWORK_NAME" />" van <ph name="DEVICE_NAME" /> af</translation>
 <translation id="6494327278868541139">Wys besonderhede oor gevorderde beskerming</translation>
 <translation id="6494445798847293442">Nie 'n Sertifiseringoutoriteit nie</translation>
 <translation id="6494974875566443634">Pasmaking</translation>
@@ -5803,6 +5810,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
 <translation id="6758056191028427665">Sê vir ons hoe ons vaar.</translation>
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
+<translation id="6761431452438552910">Maak seker dat jou Bluetooth-toestel in saambindmodus en naby is. Bind net saam met toestelle wat jy vertrou.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Aan</translation>
 <translation id="676560328519657314">Jou betaalmetodes in Google Pay</translation>

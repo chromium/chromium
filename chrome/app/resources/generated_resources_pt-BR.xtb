@@ -469,6 +469,7 @@
 As permissões que você já concedeu a apps podem ser aplicadas a essa conta. Você pode controlar as permissões para apps Android nas <ph name="APPS_LINK_BEGIN" />Configurações de apps<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
 <translation id="1449191289887455076">Pressione "<ph name="CURRENTKEY" />" novamente para confirmar a atribuição e <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">A configuração de rede de "<ph name="NETWORK_NAME" />" foi recebida do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Página da Web, arquivo único</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />
     registros de depuração<ph name="END_LINK" /> (recomendado)</translation>
@@ -1009,6 +1010,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
 <translation id="1941410638996203291">Horário de início: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Versão: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Ler e mudar seus dados em qualquer site</translation>
 <translation id="1942600407708803723">Desligar quando a capa for fechada</translation>
 <translation id="1944528062465413897">Código de pareamento Bluetooth:</translation>
@@ -1083,6 +1085,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="202352106777823113">O download estava demorando muito e foi interrompido pela rede.</translation>
 <translation id="2024195579772565064">Excluir mecanismo de pesquisa</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> travou. Clique neste balão para recarregar a extensão.</translation>
+<translation id="2027138361022454492">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você.</translation>
 <translation id="2028449514182362831">Recursos que precisam de sensores de movimento não funcionarão</translation>
 <translation id="202918510990975568">Insira sua senha para configurar a segurança e o login</translation>
 <translation id="2030455719695904263">Trackpad</translation>
@@ -1110,7 +1113,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2048182445208425546">Acesse seu tráfego de rede</translation>
 <translation id="2048554637254265991">Erro ao iniciar o administrador de contêiner. Tente novamente.</translation>
 <translation id="2048653237708779538">Ação indisponível</translation>
-<translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2053312383184521053">Dados em estado de inatividade</translation>
 <translation id="2054240652864153171">Limpar os dados do site <ph name="SITE_NAME" /> particionados em <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -2161,6 +2163,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3054766768827382232">A desativação pode melhorar o desempenho dos periféricos, mas também pode expor seus dados pessoais ao uso não autorizado.</translation>
 <translation id="3055113921564083271">Interesses que você removeu</translation>
 <translation id="3055590424724986000">Com o provedor da sua escolha</translation>
+<translation id="3057660594186523687">Falha ao receber a configuração de rede de "<ph name="NETWORK_NAME" />" do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Ative a sincronização quando quiser nas configurações</translation>
 <translation id="3058517085907878899">Nomear dispositivo</translation>
 <translation id="3059195548603439580">Procurando componentes do sistema? Acesse</translation>
@@ -2587,6 +2590,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3507888235492474624">Procurar dispositivos Bluetooth novamente</translation>
 <translation id="3508492320654304609">Não foi possível excluir os dados de login</translation>
 <translation id="3508920295779105875">Escolher outra pasta...</translation>
+<translation id="3509379002674019679">Crie, salve e gerencie suas senhas para que você possa fazer login em sites e apps com facilidade.</translation>
 <translation id="3511200754045804813">Verificar novamente</translation>
 <translation id="3511307672085573050">Copiar &amp;endereço do link</translation>
 <translation id="351152300840026870">Fonte de largura pré-determinada</translation>
@@ -5430,6 +5434,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6374635887697228982">Receber descontos?</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Abrir em redes Wi-Fi</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6382616130475191723">Receberam permissão para ler e modificar <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Não há atalhos inativos</translation>
@@ -5547,6 +5552,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="648927581764831596">Nenhum disponível</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta da direita)</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
+<translation id="6492526860459984042">Recebendo a configuração de rede de "<ph name="NETWORK_NAME" />" do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Mostrar detalhes da proteção reforçada</translation>
 <translation id="6494445798847293442">Não é uma Autoridade de certificação</translation>
 <translation id="6494974875566443634">Personalização</translation>
@@ -5806,6 +5812,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Modo anônimo)</translation>
 <translation id="6758056191028427665">Diga como estamos nos saindo.</translation>
 <translation id="6759193508432371551">Configuração original</translation>
+<translation id="6761431452438552910">Confira se o dispositivo Bluetooth está por perto e no modo de pareamento. Faça o pareamento apenas com dispositivos confiáveis.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Ativado</translation>
 <translation id="676560328519657314">Suas formas de pagamento no Google Pay</translation>

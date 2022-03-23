@@ -469,6 +469,7 @@
 Permissions that you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN" />Apps settings<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Brush tool</translation>
 <translation id="1449191289887455076">Press '<ph name="CURRENTKEY" />' again to confirm assignment and <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Received network configuration for '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Web page, Single File</translation>
 <translation id="1453561711872398978">Send <ph name="BEGIN_LINK" />
     debug logs<ph name="END_LINK" /> (recommended)</translation>
@@ -1009,6 +1010,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940546824932169984">Connected devices</translation>
 <translation id="1941410638996203291">Start time <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Read and change all your data on all websites</translation>
 <translation id="1942600407708803723">Shut down when cover is closed</translation>
 <translation id="1944528062465413897">Bluetooth pairing code</translation>
@@ -1083,6 +1085,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="202352106777823113">The download was taking too long and was stopped by the network.</translation>
 <translation id="2024195579772565064">Delete search engine</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> has crashed. Click this balloon to reload the extension.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> is sharing a Wi-Fi network with you.</translation>
 <translation id="2028449514182362831">Features that need motion sensors won't work</translation>
 <translation id="202918510990975568">Enter your password to configure security and sign-in</translation>
 <translation id="2030455719695904263">Trackpad</translation>
@@ -1110,7 +1113,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2048182445208425546">Access your network traffic</translation>
 <translation id="2048554637254265991">Error starting the container manager. Please try again.</translation>
 <translation id="2048653237708779538">Action not available</translation>
-<translation id="204914487372604757">Create shortcut</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2053312383184521053">Idle State Data</translation>
 <translation id="2054240652864153171">Clear site data for <ph name="SITE_NAME" /> partitioned on <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -2166,6 +2168,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3054766768827382232">Disabling can make your peripherals perform better, but may expose your personal data by unauthorised usage.</translation>
 <translation id="3055113921564083271">Interests that you removed</translation>
 <translation id="3055590424724986000">With a provider of your choice</translation>
+<translation id="3057660594186523687">Failed to receive network configuration for '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3058517085907878899">Name device</translation>
 <translation id="3059195548603439580">Looking for system components? Visit</translation>
@@ -2591,6 +2594,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3507888235492474624">Re-scan Bluetooth devices</translation>
 <translation id="3508492320654304609">Your sign-in data couldn't be deleted</translation>
 <translation id="3508920295779105875">Choose Another Folder...</translation>
+<translation id="3509379002674019679">Create, save and manage your passwords so that you can easily sign in to sites and apps.</translation>
 <translation id="3511200754045804813">Re-scan</translation>
 <translation id="3511307672085573050">Copy Link Addr&amp;ess</translation>
 <translation id="351152300840026870">Fixed-width font</translation>
@@ -5446,6 +5450,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6374635887697228982">Get discounts?</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6378392501584240055">Open in Wi-Fi networks</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
 <translation id="6382616130475191723">Allowed to read and change <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">No inactive shortcuts</translation>
@@ -5563,6 +5568,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="648927581764831596">None available</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491376743066338510">Authorisation failed</translation>
+<translation id="6492526860459984042">Receiving network configuration for '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
 <translation id="6494974875566443634">Customisation</translation>
@@ -5825,6 +5831,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
 <translation id="6759193508432371551">Factory reset</translation>
+<translation id="6761431452438552910">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust.</translation>
 <translation id="676158322851696513">‘<ph name="EXTENSION_NAME" />’</translation>
 <translation id="6762833852331690540">On</translation>
 <translation id="676560328519657314">Your payment methods in Google Pay</translation>

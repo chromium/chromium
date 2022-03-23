@@ -148,7 +148,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1787955149152357925">Af</translation>
-<translation id="1804572139604454141">Opname het geëindig weens kritiek min skyfspasie</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1812997170047690955">Wat wys op my skerm?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -467,6 +466,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799080171973636491">Jy het die sleutelbordkortpad vir die volskermvergrootglas gedruk. Wil jy dit aanskakel?</translation>
 <translation id="380165613292957338">Hallo, hoe kan ek help?</translation>
+<translation id="3804737937830804242">Vou kamera in</translation>
 <translation id="3826099427150913765">Skakel oor na wagwoord</translation>
 <translation id="383058930331066723">Batterybespaardermodus is aan</translation>
 <translation id="3835880383832568924">Maak die Kortpaaie-program oop om die opdaterings te sien</translation>
@@ -1007,6 +1007,7 @@ Nuwe installasie</translation>
 <translation id="7302889331339392448">Intydse onderskrifte is af.</translation>
 <translation id="7303365578352795231">Antwoord tans op 'n ander toestel.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Vou kamera uit</translation>
 <translation id="731589979057211264">Rakgroep is aan</translation>
 <translation id="7319740667687257810">Lanseerder, gedeeltelike aansig</translation>
 <translation id="7346909386216857016">OK, het dit</translation>

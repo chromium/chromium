@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Bina-back up ang <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Alisin ang exception para sa <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentation ng Google</translation>
+<translation id="4277536868133419688">Naka-on ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="4290535918735525311">1 folder ang naibahagi sa Linux</translation>
 <translation id="4299729908419173967">Brazilian</translation>
 <translation id="4302605047395093221">Kakailanganin ng sinumang gumagamit ng device na ito na ilagay ang PIN para makakonekta sa mobile network na ito</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Higit pa...</translation>
 <translation id="4579744207439506346">Idinagdag ang <ph name="ENTRY_NAME" /> sa pagpipilian.</translation>
 <translation id="4594543368593301662">Ipinapakita ang mga resulta para sa <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Na-reset ang filter.</translation>
 <translation id="4603392156942865207">Kinokopya ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Ini-install ang profile ng mobile, Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Italyano</translation>
 <translation id="5473333559083690127">Muling ilagay ang bagong PIN</translation>
 <translation id="5489067830765222292">Latvian</translation>
+<translation id="5489965683297092283">Naka-off ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>

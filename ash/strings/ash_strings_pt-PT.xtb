@@ -148,7 +148,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
 <translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desativado</translation>
-<translation id="1804572139604454141">A gravação terminou porque o espaço em disco está criticamente baixo.</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1812997170047690955">O que está no meu ecrã?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -466,6 +465,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3798670284305777884">Altifalante (interno)</translation>
 <translation id="3799080171973636491">Premiu o atalho de teclado da lupa de ecrã inteiro. Pretende ativá-la?</translation>
 <translation id="380165613292957338">Olá, como posso ajudar?</translation>
+<translation id="3804737937830804242">Reduza a câmara</translation>
 <translation id="3826099427150913765">Mudar para palavra-passe</translation>
 <translation id="383058930331066723">O modo de Poupança de bateria está ativado.</translation>
 <translation id="3835880383832568924">Para ver as atualizações, abra a app Atalhos</translation>
@@ -1006,6 +1006,7 @@ Nova instalação</translation>
 <translation id="7302889331339392448">As Legendas instantâneas estão desativadas.</translation>
 <translation id="7303365578352795231">A responder noutro dispositivo…</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Expanda a câmara</translation>
 <translation id="731589979057211264">O Shelf Party está ativado.</translation>
 <translation id="7319740667687257810">Launcher, vista parcial</translation>
 <translation id="7346909386216857016">OK</translation>

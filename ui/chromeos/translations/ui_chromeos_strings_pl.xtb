@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Tworzę kopie zapasowe – <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Usuń wyjątek dla hosta <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentacja Google</translation>
+<translation id="4277536868133419688">Filtr <ph name="FILTER_NAME" /> jest włączony.</translation>
 <translation id="4290535918735525311">Folder udostępniono Linuksowi</translation>
 <translation id="4299729908419173967">brazylijski</translation>
 <translation id="4302605047395093221">Aby połączyć się z tą siecią komórkową, każda osoba używająca tego urządzenia będzie musiała wpisać kod PIN</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Więcej</translation>
 <translation id="4579744207439506346">Do zaznaczenia dodano element <ph name="ENTRY_NAME" />.</translation>
 <translation id="4594543368593301662">Wyświetlam wyniki dla: <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filtr został zresetowany.</translation>
 <translation id="4603392156942865207">Kopiuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Wykonawca</translation>
 <translation id="4642769377300286600">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Włoski</translation>
 <translation id="5473333559083690127">Ponownie wpisz nowy kod PIN</translation>
 <translation id="5489067830765222292">Łotewski</translation>
+<translation id="5489965683297092283">Filtr <ph name="FILTER_NAME" /> jest wyłączony.</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>

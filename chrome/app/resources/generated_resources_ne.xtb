@@ -464,6 +464,7 @@
 तपाईंले एपहरूलाई दिइसक्नुभएका अनुमति यो खाताका हकमा पनि लागू हुन सक्छ। तपाईं <ph name="APPS_LINK_BEGIN" />एपका सेटिङ<ph name="APPS_LINK_END" />मा गई Android एपहरूलाई दिइएको अनुमति नियन्त्रण गर्न सक्नुहुन्छ।</translation>
 <translation id="1448779317883494811">ब्रस टुल</translation>
 <translation id="1449191289887455076">की तोक्ने काम पुष्टि गरेर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
+<translation id="1450646399865399771"><ph name="DEVICE_NAME" /> बाट '<ph name="NETWORK_NAME" />' को नेटवर्क कन्फिगुरेसन प्राप्त गरियो</translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डिबगसम्बन्धी लगहरू<ph name="END_LINK" /> पठाउनुहोस् (सिफारिस गरिएको)</translation>
@@ -993,6 +994,7 @@
 <translation id="1938351510777341717">बाह्य आदेश</translation>
 <translation id="1940546824932169984">कनेक्ट गरिएका डिभाइस</translation>
 <translation id="1941410638996203291">सुरु हुने समय: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">संस्करण: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न तथा बदल्न</translation>
 <translation id="1942600407708803723">कभर बन्द गरिएको बेला बन्द गर्नुहोस्</translation>
 <translation id="1944528062465413897">ब्लुटुथबाट जोडा बनाउन प्रयोग गर्नु पर्ने कोड:</translation>
@@ -1067,6 +1069,7 @@
 <translation id="202352106777823113">डाउनलोड गर्न अत्यन्त लामो समय लियो र सञ्जालबाट रोकिएको थियो।</translation>
 <translation id="2024195579772565064">सर्च इन्जिन मेटाउनुहोस्</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> क्र्यास भएको छ। एक्स्टेन्सनलाई पुन: लोड गर्न यो बलुनलाई क्लिक गर्नुहोस्।</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> ले तपाईंसँग कुनै Wi-Fi नेटवर्क सेयर गर्दै छ।</translation>
 <translation id="2028449514182362831">मोसन सेन्सरहरू प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
 <translation id="202918510990975568">सुरक्षा तथा साइन इन गर्ने प्रक्रिया कन्फिगर गर्न आफ्नो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="2030455719695904263">ट्र्याकप्याड</translation>
@@ -1094,7 +1097,6 @@
 <translation id="2048182445208425546">तपाईँको सञ्जाल ट्राफिक पहुँच गर्नुहोस्</translation>
 <translation id="2048554637254265991">कन्टेनर म्यानेजर सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2048653237708779538">कारबाही उपलब्ध छैन</translation>
-<translation id="204914487372604757">सर्टकट सिर्जना गर्नुहोस्</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति लगत</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> मा पार्टिसन गरिएको <ph name="SITE_NAME" /> को साइट डेटा मेटाउने हो?</translation>
@@ -1501,6 +1503,7 @@
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड गरिँदै छ</translation>
 <translation id="2440604414813129000">स्रो&amp;त हेर्नुहोस्</translation>
+<translation id="2441719842399509963">रिसेट गरी डिफल्ट बनाउनुहोस्</translation>
 <translation id="244231003699905658">अमान्य ठेगाना कृपया उक्त ठेगानाको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2442916515643169563">पाठको छायाँ</translation>
 <translation id="2443487764245141020">साइटहरूले कुनै आइडेन्टिफायर प्रयोग गरी तपाईंको डिभाइस पहिचान गर्नु पर्ने पनि हुन सक्छ</translation>
@@ -2142,6 +2145,7 @@
 <translation id="3054766768827382232">तपाईंले डेटा प्रयोग गर्न रोक लगाउने सुविधा अफ गर्नुभयो भने तपाईंका सहायक यन्त्रले अझ राम्रोसँग काम गर्न सक्छन् तर यिनले तपाईंको व्यक्तिगत जानकारी अनधिकृत रूपले प्रयोग गरी ती जानकारी खुलासा गर्न सक्छन्।</translation>
 <translation id="3055113921564083271">तपाईंले हटाएका रुचिहरू</translation>
 <translation id="3055590424724986000">तपाईंको रोजाइको सेवा प्रदायकमार्फत</translation>
+<translation id="3057660594186523687"><ph name="DEVICE_NAME" /> बाट '<ph name="NETWORK_NAME" />' को नेटवर्क कन्फिगुरेसन प्राप्त गर्न सकिएन</translation>
 <translation id="3058498974290601450">तपाईं सेटिङहरूमा गई जुनसुकै बेला सिंक सक्रिय गर्न सक्नुहुन्छ</translation>
 <translation id="3058517085907878899">डिभाइसको नाम राख्नुहोस्</translation>
 <translation id="3059195548603439580">सिस्टमका कम्पोनेन्टहरू खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
@@ -2567,6 +2571,7 @@
 <translation id="3507888235492474624">ब्लुटुथ यन्त्रहरू पुनः स्क्यान गर्नुहोस्</translation>
 <translation id="3508492320654304609">तपाईंको साइन इन गर्न चाहिने डेटा मेट्न सकिएन</translation>
 <translation id="3508920295779105875">अर्को फोल्डर रोज्नुहोस्...</translation>
+<translation id="3509379002674019679">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="3511200754045804813">पुन: स्क्यान गर्नुहोस्</translation>
 <translation id="3511307672085573050">लिङ्क ठेगा&amp;नाको कपी गर्नुहोस्</translation>
 <translation id="351152300840026870">निश्चित-चौडाइ फन्ट</translation>
@@ -5406,6 +5411,7 @@
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6374635887697228982">छुट प्राप्त गर्ने हो?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' को १ परिणाम</translation>
+<translation id="6378392501584240055">Wi-Fi नेटवर्कको सूची खोल्नुहोस्</translation>
 <translation id="6380143666419481200">स्वीकार्नुहोस् र जारी राख्नुहोस्</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> मा भएको जानकारी पढ्ने तथा परिवर्तन गर्ने अनुमति पाएका एक्स्टेन्सनहरू</translation>
 <translation id="6382958439467370461">कुनै पनि निष्क्रिय सर्टकट छैन</translation>
@@ -5523,6 +5529,7 @@
 <translation id="648927581764831596">कुनै पनि उपलब्ध छैन</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="6491376743066338510">अनुमति दिन सकिएन</translation>
+<translation id="6492526860459984042"><ph name="DEVICE_NAME" /> बाट '<ph name="NETWORK_NAME" />' को नेटवर्क कन्फिगुरेसन प्राप्त गरिँदै छ</translation>
 <translation id="6494327278868541139">परिष्कृत सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकारी होइन</translation>
 <translation id="6494974875566443634">व्यक्तिगत सेटिङ</translation>
@@ -5782,6 +5789,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
 <translation id="6758056191028427665">हामी कस्तो काम गर्दैछौं भन्नेबारे प्रतिक्रिया दिनुहोस्।</translation>
 <translation id="6759193508432371551">कारखाना रिसेट</translation>
+<translation id="6761431452438552910">ब्लुटुथ डिभाइसमा कनेक्ट गर्ने मोड अन गरिएको छ र सो डिभाइस तपाईंको वरपर छ भन्ने कुरा सुनिश्चित गर्नुहोस्। आफूले विश्वास गर्ने डिभाइसहरूमा मात्र कनेक्ट गर्नुहोस्।</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">सक्रिय छ</translation>
 <translation id="676560328519657314">Google Pay मा रहेका तपाईंका भुक्तानी विधिहरू</translation>

@@ -107,7 +107,7 @@
 <translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> Go</translation>
-<translation id="2138109643290557664">Flottement</translation>
+<translation id="2138109643290557664">Animation flottante</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157959690810728433">Test ajouté à la file d'attente</translation>
@@ -547,7 +547,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
-<translation id="7281657306185710294">Air frais</translation>
+<translation id="7281657306185710294">Brise légère</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
 <translation id="7297226631177386107">Impossible de se connecter aux sites HTTPS via le pare-feu</translation>
 <translation id="7302860742311162920">ICCID</translation>

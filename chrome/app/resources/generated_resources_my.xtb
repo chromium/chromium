@@ -1107,7 +1107,6 @@
 <translation id="2048182445208425546">သင်၏ ကွန်ရက် အသုံးပြုမှုကို ရယူသုံးရန်</translation>
 <translation id="2048554637254265991">ကွန်တိန်နာမန်နေဂျာကို စတင်ရာတွင် အမှားရှိသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2048653237708779538">လုပ်ဆောင်ချက် မရနိုင်ပါ</translation>
-<translation id="204914487372604757">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2053312383184521053">မလှုပ်မရှား အခြေအနေ ဒေတာ</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> တွင် ပိုင်းခြားထားသည့် <ph name="SITE_NAME" /> အတွက် ဝဘ်ဆိုက် ဒေတာကို ဖယ်ရှားမလား။</translation>
@@ -4934,7 +4933,7 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> ကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="5884474295213649357">ဤတဘ်သည် USB စက်ပစ္စည်းတစ်ခုသို့ ချိတ်ဆက်ထားသည်။</translation>
 <translation id="5886009770935151472">လက်ချောင်း ၁</translation>
-<translation id="5888843733007437002">နမူနာပုံစံများ ကြည့်ရှုခြင်း။ ရွှေ့ရန် တဘ်ကိုနှိပ်ပါ။</translation>
+<translation id="5888843733007437002">နမူနာပုံစံများကို ကြည့်နေသည်။ ရွှေ့ရန် တဘ်ကိုနှိပ်ပါ။</translation>
 <translation id="5889282057229379085">ကြားခံ CAများ၏ အများဆုံး အရေအတွက်: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">ဦးစားပေး Wi-Fi ကွန်ရက်များ</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>

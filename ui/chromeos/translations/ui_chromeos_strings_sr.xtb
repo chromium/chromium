@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Праве се резервне копије (<ph name="FILE_COUNT" />)</translation>
 <translation id="4218274196133425560">Уклони изузетак за <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google презентација</translation>
+<translation id="4277536868133419688">Филтер <ph name="FILTER_NAME" /> је укључен.</translation>
 <translation id="4290535918735525311">1 директоријум се дели са Linux-ом</translation>
 <translation id="4299729908419173967">португалски (Бразил)</translation>
 <translation id="4302605047395093221">Свако ко користи овај уређај мора да унесе PIN да би се повезао на ову мобилну мрежу</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Још...</translation>
 <translation id="4579744207439506346">Ставка <ph name="ENTRY_NAME" /> је додата у избор.</translation>
 <translation id="4594543368593301662">Приказују се резултати за: <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Филтер је ресетован.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> се копира у директоријум <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Извођач</translation>
 <translation id="4642769377300286600">Инсталира се профил за мобилне уређаје, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">италијански</translation>
 <translation id="5473333559083690127">Поново унесите нови PIN</translation>
 <translation id="5489067830765222292">летонски</translation>
+<translation id="5489965683297092283">Филтер <ph name="FILTER_NAME" /> је искључен.</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Тачке</translation>

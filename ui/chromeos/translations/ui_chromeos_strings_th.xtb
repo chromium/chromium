@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">กำลังสำรอง <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">นำข้อยกเว้นออกสำหรับ <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">งานนำเสนอของ Google</translation>
+<translation id="4277536868133419688">ตัวกรอง <ph name="FILTER_NAME" /> เปิดอยู่</translation>
 <translation id="4290535918735525311">แชร์กับ Linux แล้ว 1 โฟลเดอร์</translation>
 <translation id="4299729908419173967">บราซิล</translation>
 <translation id="4302605047395093221">ทุกคนที่ใช้อุปกรณ์นี้จะต้องป้อน PIN เพื่อเชื่อมต่อกับเครือข่ายมือถือนี้</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">เพิ่มเติม...</translation>
 <translation id="4579744207439506346">เพิ่ม <ph name="ENTRY_NAME" /> ไปยังรายการที่เลือกแล้ว</translation>
 <translation id="4594543368593301662">กำลังแสดงผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
+<translation id="4599600860674643278">รีเซ็ตตัวกรองแล้ว</translation>
 <translation id="4603392156942865207">กำลังคัดลอก <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">ศิลปิน</translation>
 <translation id="4642769377300286600">กำลังติดตั้งโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">อิตาลี</translation>
 <translation id="5473333559083690127">ป้อน PIN ใหม่อีกครั้ง</translation>
 <translation id="5489067830765222292">ลัตเวีย</translation>
+<translation id="5489965683297092283">ตัวกรอง <ph name="FILTER_NAME" /> ปิดอยู่</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5500122897333236901">ไอซ์แลนดิก</translation>
 <translation id="5508696409934741614">จุด</translation>

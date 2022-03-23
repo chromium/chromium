@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> ब्याकअप गर्दै</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> को अपवाद हटाउनुहोस्</translation>
 <translation id="4261901459838235729">Google प्रस्तुती</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर अन छ।</translation>
 <translation id="4290535918735525311">Linux सँग १ फोल्डर आदान प्रदान गरियो</translation>
 <translation id="4299729908419173967">ब्राजिलियन</translation>
 <translation id="4302605047395093221">यो मोबाइल नेटवर्कमा कनेक्ट गर्न यो डिभाइस प्रयोग गर्ने व्यक्तिले PIN हाल्नु पर्ने हुन्छ</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">थप...</translation>
 <translation id="4579744207439506346">चयनमा <ph name="ENTRY_NAME" /> थपियो।</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> का परिणामहरू देखाउँदै।</translation>
+<translation id="4599600860674643278">फिल्टर रिसेट गरियो।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> कपी गरिँदै छ</translation>
 <translation id="4631887759990505102">कलाकार</translation>
 <translation id="4642769377300286600">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_PROVIDER_NAME" /> ले उपलब्ध गराएको <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क हो।</translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">इटालियन</translation>
 <translation id="5473333559083690127">नयाँ PIN फेरि हाल्नुहोस्</translation>
 <translation id="5489067830765222292">लात्भियाली</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> फिल्टर अफ छ।</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5500122897333236901">आइसलैंडको</translation>
 <translation id="5508696409934741614">डटहरू</translation>

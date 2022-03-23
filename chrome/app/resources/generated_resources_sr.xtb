@@ -468,6 +468,7 @@
 Дозволе које сте већ дали апликацијама могу да важе за овај налог. Можете да контролишете дозволе за Android апликације у <ph name="APPS_LINK_BEGIN" />подешавањима апликација<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Алатка за четкице</translation>
 <translation id="1449191289887455076">Поново притисните <ph name="CURRENTKEY" /> да бисте потврдили доделу и <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Примљена је мрежна конфигурација за мрежу <ph name="NETWORK_NAME" /> са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Веб-страница, једна датотека</translation>
 <translation id="1453561711872398978">Шаљи <ph name="BEGIN_LINK" />евиденције о отклањању грешака<ph name="END_LINK" /> (препоручено)</translation>
 <translation id="1454223536435069390">С&amp;ними екран</translation>
@@ -995,6 +996,7 @@
 <translation id="1938351510777341717">Спољна команда</translation>
 <translation id="1940546824932169984">Повезани уређаји</translation>
 <translation id="1941410638996203291">Време почетка <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">да чита и мења све ваше податке на свим веб-сајтовима</translation>
 <translation id="1942600407708803723">Искључи се када се поклопац затвори</translation>
 <translation id="1944528062465413897">Кôд за упаривање са Bluetooth уређајем:</translation>
@@ -1069,6 +1071,7 @@
 <translation id="202352106777823113">Преузимање је трајало предуго па га је мрежа зауставила.</translation>
 <translation id="2024195579772565064">Избришите претраживач</translation>
 <translation id="2025632980034333559">Додатак <ph name="APP_NAME" /> је отказао. Кликните на овај облачић да бисте га поново учитали.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> дели WiFi мрежу са вама.</translation>
 <translation id="2028449514182362831">Функције којима су потребни сензори покрета неће радити</translation>
 <translation id="202918510990975568">Унесите лозинку да бисте конфигурисали безбедност и пријављивање</translation>
 <translation id="2030455719695904263">Додирна табла</translation>
@@ -1096,7 +1099,6 @@
 <translation id="2048182445208425546">Приступ мрежном саобраћају</translation>
 <translation id="2048554637254265991">Грешка при покретању менаџера контејнера. Пробајте поново.</translation>
 <translation id="2048653237708779538">Радња није доступна</translation>
-<translation id="204914487372604757">Направи пречицу</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2053312383184521053">Подаци о стању мировања</translation>
 <translation id="2054240652864153171">Желите да обришете податке о сајтовима за <ph name="SITE_NAME" /> издељене на <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -2144,6 +2146,7 @@
 <translation id="3054766768827382232">Ако је онемогућите, периферни уређаји могу да имају бољи учинак, али лични подаци могу да буду откривени неовлашћеним коришћењем.</translation>
 <translation id="3055113921564083271">Интересовања која сте уклонили</translation>
 <translation id="3055590424724986000">Помоћу добављача услуге по свом избору</translation>
+<translation id="3057660594186523687">Пријем мрежне конфигурације за мрежу <ph name="NETWORK_NAME" /> са уређаја <ph name="DEVICE_NAME" /> није успео</translation>
 <translation id="3058498974290601450">Можете да укључите синхронизацију у подешавањима у било ком тренутку</translation>
 <translation id="3058517085907878899">Дајте назив уређају</translation>
 <translation id="3059195548603439580">Тражите компоненте система? Посетите</translation>
@@ -2569,6 +2572,7 @@
 <translation id="3507888235492474624">Поново скенирајте Bluetooth уређаје</translation>
 <translation id="3508492320654304609">Брисање података за пријављивање није успело</translation>
 <translation id="3508920295779105875">Одабери други директоријум...</translation>
+<translation id="3509379002674019679">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације.</translation>
 <translation id="3511200754045804813">Поново скенирај</translation>
 <translation id="3511307672085573050">Копирај адр&amp;есу линка</translation>
 <translation id="351152300840026870">Фонт фиксне ширине</translation>
@@ -5410,6 +5414,7 @@
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6374635887697228982">Желите да остварите попусте?</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6378392501584240055">Отвори у WiFi мрежама</translation>
 <translation id="6380143666419481200">Прихвати и настави</translation>
 <translation id="6382616130475191723">Дозвољено им је читање и мењање сајта <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Нема неактивних пречица</translation>
@@ -5527,6 +5532,7 @@
 <translation id="648927581764831596">Није доступно</translation>
 <translation id="6490471652906364588">Уређај са USB прикључком типа C (десни порт)</translation>
 <translation id="6491376743066338510">Провера овлашћења није успела</translation>
+<translation id="6492526860459984042">Прима се мрежна конфигурација за мрежу <ph name="NETWORK_NAME" /> са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Прикажи детаље о напредној заштити</translation>
 <translation id="6494445798847293442">Није ауторитет за издавање сертификата</translation>
 <translation id="6494974875566443634">Прилагођавање</translation>
@@ -5786,6 +5792,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (без архивирања)</translation>
 <translation id="6758056191028427665">Поделите утиске о нашем учинку.</translation>
 <translation id="6759193508432371551">Враћање фабричких подешавања</translation>
+<translation id="6761431452438552910">Проверите да ли је Bluetooth уређај у режиму упаривања и у близини. Упарујте само са уређајима у које имате поверења.</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6762833852331690540">Укључено</translation>
 <translation id="676560328519657314">Начини плаћања на Google Pay-у</translation>

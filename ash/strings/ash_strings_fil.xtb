@@ -148,7 +148,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Naka-off</translation>
-<translation id="1804572139604454141">Natapos ang pag-record dahil sa sobrang kaunting espasyo sa disk</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="1812997170047690955">Ano ang nasa screen ko?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -466,6 +465,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">Napindot mo ang keyboard shortcut para sa full-screen magnifier. Gusto mo ba itong i-on?</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
+<translation id="3804737937830804242">I-collapse ang camera</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
 <translation id="3835880383832568924">Para makita ang mga update, buksan ang Shortcuts app</translation>
@@ -1006,6 +1006,7 @@ Kaka-install lang</translation>
 <translation id="7302889331339392448">Naka-off ang Instant Caption</translation>
 <translation id="7303365578352795231">Sinasagot sa ibang device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Palawakin ang camera</translation>
 <translation id="731589979057211264">Naka-on ang Shelf Party.</translation>
 <translation id="7319740667687257810">Launcher, hindi kumpletong view</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>

@@ -148,7 +148,6 @@
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, одоогоор <ph name="DATE" />-г сонгосон.</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
-<translation id="1804572139604454141">Дискийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1812997170047690955">Миний дэлгэцэд юу байна вэ?</translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
@@ -467,6 +466,7 @@
 <translation id="3798670284305777884">Чанга яригч (дотоод)</translation>
 <translation id="3799080171973636491">Та бүтэн дэлгэц томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
 <translation id="380165613292957338">Сайн байна уу, танд хэрхэн туслах вэ?</translation>
+<translation id="3804737937830804242">Камерыг хураах</translation>
 <translation id="3826099427150913765">Нууц үг рүү сэлгэх</translation>
 <translation id="383058930331066723">Батарей хэмнэгчийн горим асаалттай байна</translation>
 <translation id="3835880383832568924">Шинэчлэлтийг харахын тулд Товчлол аппыг нээнэ үү</translation>
@@ -793,6 +793,7 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5909862606227538307">Идэвхгүй дэлгэц.</translation>
+<translation id="5911231045062997865">Lacros цонхыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
@@ -1007,6 +1008,7 @@
 <translation id="7302889331339392448">Шууд тайлбар унтраалттай байна.</translation>
 <translation id="7303365578352795231">Өөр төхөөрөмж дээр хариулж байна.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Камерыг дэлгэх</translation>
 <translation id="731589979057211264">Shelf Party асаалттай байна.</translation>
 <translation id="7319740667687257810">Эхлүүлэгч, хэсэгчлэн харах</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
