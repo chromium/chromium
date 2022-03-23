@@ -27,6 +27,7 @@
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
+#include "chrome/browser/mac/purge_stale_screen_capture_permission.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
@@ -121,6 +122,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   [app_controller mainMenuCreated];
 
   chrome::DeveloperIDCertificateReauthorizeInApp();
+  chrome::PurgeStaleScreenCapturePermission();
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
