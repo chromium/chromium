@@ -170,6 +170,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::USER_DATA_REQUEST_FAILED:
       out << "USER_DATA_REQUEST_FAILED";
       break;
+    case ProcessedActionStatusProto::JS_FORCED_ROUNDTRIP:
+      out << "JS_FORCED_ROUNDTRIP";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.
