@@ -6,16 +6,12 @@
  * @fileoverview Basic facillities to handle events from a single automation
  * node.
  */
-
-goog.provide('BaseAutomationHandler');
-
-goog.scope(function() {
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
-BaseAutomationHandler = class {
+export class BaseAutomationHandler {
   /**
    * @param {AutomationNode|undefined} node
    */
@@ -133,11 +129,10 @@ BaseAutomationHandler = class {
         evt.eventFromAction !== ActionType.DO_DEFAULT &&
         evt.eventFromAction !== ActionType.SHOW_CONTEXT_MENU;
   }
-};
+}
 
 /**
  * Controls announcement of non-user-initiated events.
  * @type {boolean}
  */
 BaseAutomationHandler.announceActions = false;
-});  // goog.scope

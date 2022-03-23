@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
+import {BaseAutomationHandler} from './base_automation_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

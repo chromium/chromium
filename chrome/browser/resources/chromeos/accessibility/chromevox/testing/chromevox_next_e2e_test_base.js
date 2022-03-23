@@ -25,9 +25,6 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
       }.bind(this));
     }
 
-    // For tests, enable announcement of events we trigger via automation.
-    BaseAutomationHandler.announceActions = true;
-
     this.originalOutputContextValues_ = {};
     for (const role in OutputRoleInfo) {
       this.originalOutputContextValues_[role] =
@@ -116,10 +113,16 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
+        'BaseAutomationHandler',
+        '/chromevox/background/base_automation_handler.js');
+    await importModule(
         'CommandHandler', '/chromevox/background/command_handler.js');
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
+
+    // For tests, enable announcement of events we trigger via automation.
+    BaseAutomationHandler.announceActions = true;
   }
 
   /** @override */

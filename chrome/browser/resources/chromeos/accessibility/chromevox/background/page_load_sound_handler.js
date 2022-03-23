@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles page loading sounds based on automation events.
  */
+import {BaseAutomationHandler} from './base_automation_handler.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
