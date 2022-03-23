@@ -7,10 +7,53 @@
 
 #import <UIKit/UIKit.h>
 
+// Sign-in status.
+typedef NS_ENUM(NSUInteger, SigninScreenConsumerSigninStatus) {
+  // Sign-in is available.
+  SigninScreenConsumerSigninStatusAvailable,
+  // Sign-in is forced.
+  SigninScreenConsumerSigninStatusForced,
+  // Sign-in is disabled.
+  SigninScreenConsumerSigninStatusDisabled,
+};
+
+// List of sign-in screens.
+typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
+  // Show sign-in only.
+  SigninScreenConsumerScreenIntentSigninOnly,
+  // Show sign-in with welcome screen with terms of service and metric
+  // reporting.
+  SigninScreenConsumerScreenIntentWelcomeAndSignin,
+  // Show sign-in with welcome screen with terms of service but without metric
+  // reporting.
+  SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin,
+};
+
 // Handles sign-in screen UI updates.
 @protocol SigninScreenConsumer <NSObject>
 
-// TODO(crbug.com/1290848): Need implementation.
+// Shows details (an icon and a footer) that Chrome is managed.
+// This property needs to be set before the view is loaded.
+@property(nonatomic, assign) BOOL managedEnabled;
+// Sets if the screen intent see SigninScreenConsumerScreenIntent.
+// This property needs to be set before the view is loaded.
+@property(nonatomic, assign) SigninScreenConsumerScreenIntent screenIntent;
+// Sets the sign-in status, see SigninScreenConsumerSigninStatus.
+// This property needs to be set before the view is loaded.
+@property(nonatomic, assign) SigninScreenConsumerSigninStatus signinStatus;
+
+// Sets the |userName|, |email|, |givenName| and |avatar| of the selected
+// identity. The |userName| and |givenName| can be nil. Notifies the UI that an
+// identity is available.
+- (void)setSelectedIdentityUserName:(NSString*)userName
+                              email:(NSString*)email
+                          givenName:(NSString*)givenName
+                             avatar:(UIImage*)avatar;
+// Notifies the consumer that no identity is available and that the UI should be
+// updated accordingly.
+- (void)noIdentityAvailable;
+// Sets the UI as interactable or not.
+- (void)setUIEnabled:(BOOL)UIEnabled;
 
 @end
 

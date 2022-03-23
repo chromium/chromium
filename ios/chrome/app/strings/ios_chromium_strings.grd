@@ -289,13 +289,19 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE" desc="The text of the launch screen presented to the user on First Run when the browser is managed [iOS only]">
         Your organization is setting up Chromium...
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in">
-        To get the most out of Chromium, sign in to Chromium with your Google Account
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
+        To get the most out of Chromium, sign in to Chromium with your Google Account.
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED" desc="Subtitle of the screen suggesting to the user to sign in when their Sign In is managed by their administrator.">
           Sign in to Chromium
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED" desc="Subtitle of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
+        Your organization requires you to sign in to use Chromium.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" desc="In Title Case: Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
+          Sign In to Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. [iOS only]">
         Make Chromium Your Own
       </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX" desc="Checkbox to accept the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
@@ -322,7 +328,7 @@ Things to consider:
         Get More Done with Chromium
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE" desc="The subtitle of the welcome screen presented to the user on First Run [iOS only]">
-        Get more done with a simple, secure and faster-than-ever Chromium
+        Get more done with a simple, secure and faster-than-ever Chromium.
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE_ENTERPRISE" desc="The subtitle of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
         Chromium is simple, secure and faster-than-ever
@@ -335,6 +341,12 @@ Things to consider:
       </message>
       <message name="IDS_IOS_FIRSTRUN_WELCOME_TO_CHROME" desc="Title on the Welcome to Chromium screen presented to the user on First Run. [iOS only]">
         Welcome to Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_MICE_TERMS_OF_SERVICE" desc="The terms of service disclaimer of the welcome screen presented to the user on First Run [iOS only]">
+        By using Chromium, you agree to the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms of Service<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Make sure 'usage' and 'crash' are translated consistently with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). The ‘Manage’ link opens a dialog to change the corresponding setting. [iOS only]">
+        To help improve the app, Chromium sends usage and crash reports to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Manage<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
         Help Improve Chromium's Features and Performance

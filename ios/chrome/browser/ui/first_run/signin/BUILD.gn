@@ -26,7 +26,17 @@ source_set("signin_ui") {
     "signin_screen_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/elements:elements_internal",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run/resources:signin_banner",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   public_deps =

@@ -67,6 +67,16 @@
 
 #pragma mark - SigninScreenViewControllerDelegate
 
-// TODO(crbug.com/1290848): Need implementation.
+- (void)showAccountPickerFromPoint:(CGPoint)point {
+  NOTIMPLEMENTED();
+}
+
+- (void)showTOSDialog {
+  NOTIMPLEMENTED();
+}
+
+- (void)showUMADialog {
+  NOTIMPLEMENTED();
+}
 
 @end

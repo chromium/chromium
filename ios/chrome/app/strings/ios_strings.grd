@@ -953,13 +953,16 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         Read More
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS" desc="Label of the button which the user can tap to continue the process using the selected account (referred by the first name of the account owner)">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE" desc="In Title Case: Button on the very first screen of Chrome to continue into Chrome. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS" desc="In Title Case: Button to sign into Chrome with the displayed account and without having to reenter a password. Jessica is replaced with the user’s given name, or the user’s full name if the given name is not available. Ensure consistency with related OneGoogle sign-in buttons (TC ID 5569230012177947065). [iOS only]">
         Continue as <ph name="FIRST_RUN_ACCOUNT_NAME">$1<ex>Jessica</ex></ph>
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="Label of the button which can be used to not sign in and go to the next screen">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="In Title Case: Button on the very first screen of Chrome to continue without signing into Chrome. [iOS only]">
         Don't Sign In
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="Label of the button suggesting to the user to sign in if they don't have any account on the device">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="In Title Case: Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
         Sign In…
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
@@ -983,7 +986,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON" desc="The label on the continue button of the welcome screen presented to the user on First Run [iOS only]">
         Accept and Continue
       </message>
-      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE" desc="The terms of service disclaimer of the welcome screen presented to the user on First Run [iOS only]">
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED" desc="Text to indicate that Chrome is managed by the user’s organization. [iOS only]">
+        Your browser is managed by your organization.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service. [iOS only]">
         By continuing, you agree to the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms of Service<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD" desc="The title of the welcome screen presented to the user on First Run when on iPad [iOS only]">

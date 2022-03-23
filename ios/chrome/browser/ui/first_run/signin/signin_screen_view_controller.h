@@ -13,7 +13,14 @@
 // Delegate of sign-in screen view controller.
 @protocol SigninScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
-// TODO(crbug.com/1290848): Need implementation.
+// Called when the user taps to see the account picker.
+- (void)showAccountPickerFromPoint:(CGPoint)point;
+
+// Called when the user taps on "terms of service" link.
+- (void)showTOSDialog;
+
+// Called when the user taps on "Manage" related to metric reporting.
+- (void)showUMADialog;
 
 @end
 

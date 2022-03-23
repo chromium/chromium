@@ -56,6 +56,16 @@ imageset("legacy_forced_signin_screen_banner") {
   ]
 }
 
+imageset("signin_banner") {
+  sources = [
+    "signin_banner.imageset/Contents.json",
+    "signin_banner.imageset/signin_banner_dark@2x.png",
+    "signin_banner.imageset/signin_banner_dark@3x.png",
+    "signin_banner.imageset/signin_banner_light@2x.png",
+    "signin_banner.imageset/signin_banner_light@3x.png",
+  ]
+}
+
 imageset("sync_screen_banner") {
   sources = [
     "sync_screen_banner.imageset/Contents.json",
