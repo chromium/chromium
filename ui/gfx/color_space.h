@@ -391,7 +391,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   RangeID range_ = RangeID::INVALID;
 
   // Only used if primaries_ is PrimaryID::CUSTOM.
-  float custom_primary_matrix_[9] = {0, 0, 0, 0, 0, 0, 0, 0};
+  float custom_primary_matrix_[9] = {0};
 
   // Parameters for the transfer function. The interpretation depends on
   // |transfer_|. Only TransferParamCount() of these parameters are used, all
@@ -399,7 +399,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // - CUSTOM and CUSTOM_HDR: Entries A through G of the skcms_TransferFunction
   //   structure in alphabetical order.
   // - SMPTEST2084: SDR white point.
-  float transfer_params_[7] = {0, 0, 0, 0, 0, 0, 0};
+  float transfer_params_[7] = {0};
 
   friend struct IPC::ParamTraits<gfx::ColorSpace>;
   friend struct mojo::StructTraits<gfx::mojom::ColorSpaceDataView,
