@@ -21202,6 +21202,71 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       post_reset_site_instance->IsRelatedSiteInstance(initial_site_instance));
 }
 
+// Test that unload timing of old document is accessible after same-origin
+// navigation, but not after cross-origin navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, UnloadTiming) {
+  // With BackForwardCache, old document doesn't fire unload handlers as the
+  // page is stored in BackForwardCache on navigation.
+  DisableBackForwardCacheForTesting(contents(),
+                                    BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
+  GURL initial_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  // Navigate to a page with an iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0u);
+
+  // Navigate the subframe same-origin.
+  ASSERT_TRUE(NavigateFrameToURL(child, url_a));
+
+  // The unloadEventStart and unloadEventEnd timings should be set.
+  EXPECT_TRUE(ExecJs(
+      child,
+      "var navigationTiming = performance.getEntriesByType('navigation')"));
+  ASSERT_EQ(1, EvalJs(child, "navigationTiming.length"));
+  EXPECT_NE(0, EvalJs(child, "navigationTiming[0].unloadEventStart"));
+  EXPECT_NE(0, EvalJs(child, "navigationTiming[0].unloadEventEnd"));
+
+  // Navigate the subframe cross-origin.
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, url_b));
+    capturer.Wait();
+  }
+  // The unloadEventStart and unloadEventEnd timings should not be set.
+  EXPECT_TRUE(ExecJs(
+      child,
+      "var navigationTiming = performance.getEntriesByType('navigation')"));
+  ASSERT_EQ(1, EvalJs(child, "navigationTiming.length"));
+  EXPECT_EQ(0, EvalJs(child, "navigationTiming[0].unloadEventStart"));
+  EXPECT_EQ(0, EvalJs(child, "navigationTiming[0].unloadEventEnd"));
+
+  // Navigate the main frame same-origin.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  // The unloadEventStart and unloadEventEnd timings should be set.
+  EXPECT_TRUE(ExecJs(
+      root,
+      "var navigationTiming = performance.getEntriesByType('navigation')"));
+  ASSERT_EQ(1, EvalJs(root, "navigationTiming.length"));
+  EXPECT_NE(0, EvalJs(root, "navigationTiming[0].unloadEventStart"));
+  EXPECT_NE(0, EvalJs(root, "navigationTiming[0].unloadEventEnd"));
+
+  // Navigate the main frame cross-origin.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  // The unloadEventStart and unloadEventEnd timings should not be set.
+  EXPECT_TRUE(ExecJs(
+      root,
+      "var navigationTiming = performance.getEntriesByType('navigation')"));
+  ASSERT_EQ(1, EvalJs(root, "navigationTiming.length"));
+  EXPECT_EQ(0, EvalJs(root, "navigationTiming[0].unloadEventStart"));
+  EXPECT_EQ(0, EvalJs(root, "navigationTiming[0].unloadEventEnd"));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,

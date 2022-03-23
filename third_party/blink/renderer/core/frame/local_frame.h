@@ -689,6 +689,9 @@ class CORE_EXPORT LocalFrame final
 
   LoaderFreezeMode GetLoaderFreezeMode();
 
+  // Swaps `this` LocalFrame in to replace the current frame  (e.g. in the case
+  // of subframes, `Owner()->frame()`, or in the case of the main frame,
+  // `GetPage()->Frame()`). Must only be called on provisional frames.
   bool SwapIn();
 
 #if !BUILDFLAG(IS_ANDROID)

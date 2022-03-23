@@ -1186,7 +1186,8 @@ void LocalFrameMojoHandler::ClosePage(
   // when unloading itself.
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       frame_->GetDocument());
-  frame_->Loader().DispatchUnloadEvent(/*unload_timing_info=*/nullptr);
+  frame_->Loader().DispatchUnloadEvent(
+      false /* need_unload_info_for_new_document */);
 
   std::move(completion_callback).Run();
 }

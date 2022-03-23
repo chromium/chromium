@@ -287,6 +287,8 @@ struct UnloadEventTiming {
 // Used to gather the unload event timing of an unloading document, to be used
 // in a new document (if it's same-origin).
 struct UnloadEventTimingInfo {
+  explicit UnloadEventTimingInfo(
+      scoped_refptr<SecurityOrigin> new_document_origin);
   // The origin of the new document that replaces the older document.
   const scoped_refptr<SecurityOrigin> new_document_origin;
   // The unload timing of the old document. This is only set from

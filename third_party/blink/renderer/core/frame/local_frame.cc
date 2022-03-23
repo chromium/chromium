@@ -513,7 +513,10 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       GetDocument());
 
-  loader_.DispatchUnloadEvent(/*unload_timing_info=*/nullptr);
+  // If the frame is detached for a frame swap, the new document that is being
+  // swapped in might need the unload info of the old document.
+  bool need_unload_info_for_new_document = (type == FrameDetachType::kSwap);
+  loader_.DispatchUnloadEvent(need_unload_info_for_new_document);
   if (evict_cached_session_storage_on_freeze_or_unload_) {
     // Evicts the cached data of Session Storage to avoid reusing old data in
     // the cache after the session storage has been modified by another renderer
@@ -608,7 +611,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 }
 
 bool LocalFrame::DetachDocument() {
-  return Loader().DetachDocument(/*unload_timing_info=*/nullptr);
+  return Loader().DetachDocument();
 }
 
 void LocalFrame::CheckCompleted() {
@@ -2493,6 +2496,7 @@ void LocalFrame::SetContextPaused(bool is_paused) {
 }
 
 bool LocalFrame::SwapIn() {
+  DCHECK(IsProvisional());
   WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
   return client->SwapIn(WebFrame::FromCoreFrame(GetProvisionalOwnerFrame()));
 }
@@ -3098,6 +3102,8 @@ void LocalFrame::RebindTextInputHostForTesting() {
 Frame* LocalFrame::GetProvisionalOwnerFrame() {
   DCHECK(IsProvisional());
   if (Owner()) {
+    // Since `this` is a provisional frame, its owner's `ContentFrame()` will
+    // be the old LocalFrame.
     return Owner()->ContentFrame();
   }
   return GetPage()->MainFrame();

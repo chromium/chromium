@@ -240,7 +240,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
  private:
   // Frame protected overrides:
-  bool DetachImpl(FrameDetachType) override;
+  bool DetachImpl(FrameDetachType type) override;
 
   // ChildFrameCompositor:
   void SetCcLayer(scoped_refptr<cc::Layer> layer,
