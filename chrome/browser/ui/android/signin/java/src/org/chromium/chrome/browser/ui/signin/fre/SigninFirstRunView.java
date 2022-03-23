@@ -10,8 +10,8 @@ import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -22,7 +22,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** View that wraps signin first run welcome screen and caches references to UI elements. **/
-public class SigninFirstRunView extends LinearLayout {
+public class SigninFirstRunView extends RelativeLayout {
     private ViewGroup mContent;
     private TextView mTitle;
     private TextView mSubtitle;

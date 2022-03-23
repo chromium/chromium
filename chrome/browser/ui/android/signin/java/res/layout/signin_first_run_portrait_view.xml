@@ -8,14 +8,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/signin_fre_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/fre_footer_viewgroup"
         android:fillViewport="true"
         android:requiresFadingEdge="vertical">
 
@@ -99,16 +98,26 @@
         </LinearLayout>
     </ScrollView>
 
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/signin_fre_footer"
+    <!-- The footer is hidden during native and policy load. The FrameLayout
+         acts as an anchor point for the ScrollView above so it can properly
+         calculate it's height. -->
+    <FrameLayout
+        android:id="@+id/fre_footer_viewgroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-        android:text="@string/signin_fre_footer"
-        app:leading="@dimen/text_size_small_leading" />
+        android:layout_alignParentBottom="true">
+
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/signin_fre_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:text="@string/signin_fre_footer"
+            app:leading="@dimen/text_size_small_leading" />
+    </FrameLayout>
 </org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>
