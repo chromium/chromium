@@ -15,9 +15,10 @@ function buy() { // eslint-disable-line no-unused-vars
 /**
  * Launch PaymentRequest with a show promise that resolves with an empty
  * dictionary. The payment method to be used is the current url of the page.
+ * @return {string} - The error message, if any.
  */
-function buyWithCurrentUrlMethod() { // eslint-disable-line no-unused-vars
-    buyWithMethods(window.location.href);
+async function buyWithCurrentUrlMethod() { // eslint-disable-line no-unused-vars
+    return buyWithMethods(window.location.href);
 }
 
 /**

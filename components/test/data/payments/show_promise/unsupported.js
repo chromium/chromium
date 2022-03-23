@@ -7,10 +7,11 @@
 /**
  * Launch PaymentRequest with a show promise and an unsupported payment method
  * identifier.
+ * @return {string} - The error message, if any.
  */
-function buy() { // eslint-disable-line no-unused-vars
+async function buy() { // eslint-disable-line no-unused-vars
   try {
-    new PaymentRequest([{supportedMethods: 'foo'}], {
+    await new PaymentRequest([{supportedMethods: 'foo'}], {
       total:
           {label: 'PENDING TOTAL', amount: {currency: 'USD', value: '99.99'}},
     })
@@ -21,11 +22,11 @@ function buy() { // eslint-disable-line no-unused-vars
               amount: {currency: 'USD', value: '1.00'},
             },
           });
-        }))
-        .catch(function(error) {
-          print(error);
-        });
+        }));
   } catch (error) {
+    // Error is both printed and returned as the Java test reads it from the
+    // page and the C++ browser test reads the return value.
     print(error);
+    return error.toString();
   }
 }

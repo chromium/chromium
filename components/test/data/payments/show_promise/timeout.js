@@ -6,17 +6,18 @@
 
 /**
  * Launch PaymentRequest with a show promise and don't resolve or reject it.
+ * @return {string} - The error message, if any.
  */
-function buy() { // eslint-disable-line no-unused-vars
+async function buy() { // eslint-disable-line no-unused-vars
   try {
-    new PaymentRequest(
+    await new PaymentRequest(
         [{supportedMethods: window.location.href}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}}})
-        .show(new Promise(function(resolve) { /* Intentionally empty. */ }))
-        .catch(function(error) {
-          print(error);
-        });
+        .show(new Promise(function(resolve) { /* Intentionally empty. */ }));
   } catch (error) {
+    // Error is both printed and returned as the Java test reads it from the
+    // page and the C++ browser test reads the return value.
     print(error);
+    return error.toString();
   }
 }
