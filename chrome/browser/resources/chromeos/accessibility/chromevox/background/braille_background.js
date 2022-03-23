@@ -5,6 +5,7 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
+import {BrailleKeyEventRewriter} from '../braille/braille_key_event_rewriter.js';
 
 /**
  * @implements {BrailleInterface}

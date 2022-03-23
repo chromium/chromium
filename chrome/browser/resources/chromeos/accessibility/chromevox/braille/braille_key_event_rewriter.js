@@ -6,16 +6,11 @@
  * @fileoverview Rewrites a braille key event.
  */
 
-goog.provide('BrailleKeyEventRewriter');
-
-goog.require('Output');
-goog.require('BrailleKeyEvent');
-
 /**
  * A class that transforms a sequence of braille key events into a standard key
  * event.
  */
-BrailleKeyEventRewriter = class {
+export class BrailleKeyEventRewriter {
   constructor() {
     /** @private {Object} */
     this.incrementalKey_ = null;
@@ -76,4 +71,4 @@ BrailleKeyEventRewriter = class {
     this.incrementalKey_ = null;
     return false;
   }
-};
+}
