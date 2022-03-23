@@ -15,14 +15,14 @@ namespace {
 
 class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
-  DevtoolsFlexInfo LayoutForDevtools(const String& body_content) {
+  const DevtoolsFlexInfo* LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
     LayoutNGFlexibleBox* flex =
         To<LayoutNGFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
     EXPECT_NE(flex, nullptr);
     flex->SetNeedsLayoutForDevtools();
     UpdateAllLifecyclePhasesForTest();
-    return *flex->FlexLayoutData();
+    return flex->FlexLayoutData();
   }
 };
 
@@ -57,59 +57,63 @@ TEST_F(NGFlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBasic) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px;" id=flexbox>
       <div style="flex-grow: 1; height: 50px;"></div>
       <div style="flex-grow: 1"></div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
-  EXPECT_EQ(devtools.lines[0].items.size(), 2u);
-  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
+  EXPECT_EQ(devtools->lines[0].items.size(), 2u);
+  EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
+  EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWrap) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; flex-wrap: wrap;" id=flexbox>
       <div style="min-width: 100px; height: 50px;"></div>
       <div style="flex: 1 0 20px; height: 90px;"></div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 2u);
-  EXPECT_EQ(devtools.lines[0].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 100, 50));
-  EXPECT_EQ(devtools.lines[1].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[1].items[0].rect, PhysicalRect(0, 50, 100, 90));
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 2u);
+  EXPECT_EQ(devtools->lines[0].items.size(), 1u);
+  EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(0, 0, 100, 50));
+  EXPECT_EQ(devtools->lines[1].items.size(), 1u);
+  EXPECT_EQ(devtools->lines[1].items[0].rect, PhysicalRect(0, 50, 100, 90));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsCoordinates) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; flex-wrap: wrap; border-top: 2px solid; padding-top: 3px; border-left: 3px solid; padding-left: 5px; margin-left: 19px;" id=flexbox>
       <div style="margin-left: 5px; min-width: 95px; height: 50px;"></div>
       <div style="flex: 1 0 20px; height: 90px;"></div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 2u);
-  EXPECT_EQ(devtools.lines[0].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(8, 5, 100, 50));
-  EXPECT_EQ(devtools.lines[1].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[1].items[0].rect, PhysicalRect(8, 55, 100, 90));
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 2u);
+  EXPECT_EQ(devtools->lines[0].items.size(), 1u);
+  EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(8, 5, 100, 50));
+  EXPECT_EQ(devtools->lines[1].items.size(), 1u);
+  EXPECT_EQ(devtools->lines[1].items[0].rect, PhysicalRect(8, 55, 100, 90));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOverflow) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; border-left: 1px solid; border-right: 3px solid;" id=flexbox>
       <div style="min-width: 150px; height: 75px;"></div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(1, 0, 150, 75));
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(1, 0, 150, 75));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
   // Devtools' heuristic algorithm shows two lines for this case, but layout
   // knows there's only one line.
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
   <style>
   .item {
     flex: 0 0 50px;
@@ -121,12 +125,13 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
     <div class=item style="position: relative; top: 60px; left: -10px"></div>
   </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
   LoadAhem();
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; align-items: baseline; flex-wrap: wrap; width: 250px; margin: 10px;" id=flexbox>
       <div style="width: 100px; margin: 10px; font: 10px/2 Ahem;">Test</div>
       <div style="width: 100px; margin: 10px; font: 10px/1 Ahem;">Test</div>
@@ -134,46 +139,50 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
       <div style="width: 100px; margin: 10px; font: 10px/1 Ahem;">Test</div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 2u);
-  EXPECT_EQ(devtools.lines[0].items.size(), 2u);
-  EXPECT_GT(devtools.lines[0].items[0].baseline,
-            devtools.lines[0].items[1].baseline);
-  EXPECT_EQ(devtools.lines[1].items.size(), 2u);
-  EXPECT_EQ(devtools.lines[1].items[0].baseline,
-            devtools.lines[1].items[1].baseline);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 2u);
+  EXPECT_EQ(devtools->lines[0].items.size(), 2u);
+  EXPECT_GT(devtools->lines[0].items[0].baseline,
+            devtools->lines[0].items[1].baseline);
+  EXPECT_EQ(devtools->lines[1].items.size(), 2u);
+  EXPECT_EQ(devtools->lines[1].items[0].baseline,
+            devtools->lines[1].items[1].baseline);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex;" id=flexbox><img></div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrap) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px">
         <div style="height: 90%"></div>
       </div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrapOrtho) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px; writing-mode: vertical-lr;">
         <div style="width: 90%"></div>
       </div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px; writing-mode: vertical-lr;">
         <div style="width: 90%"></div>
@@ -181,11 +190,12 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
       </div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
-  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex;" id=flexbox>
       <div style="columns: 1">
         <div style="display:flex;"></div>
@@ -194,7 +204,8 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
       </div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  DCHECK(devtools);
+  EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
@@ -212,8 +223,9 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   EXPECT_NE(flexbox, nullptr);
   if (!flexbox->IsLayoutNGFlexibleBox())
     return;
-  DevtoolsFlexInfo devtools = LayoutForDevtools(body_content);
-  EXPECT_EQ(devtools.lines.size(), 1u);
+  // We don't currently set DevtoolsFlexInfo when fragmenting.
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(body_content);
+  DCHECK(!devtools);
 }
 
 // Current:  item is at top of container.
