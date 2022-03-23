@@ -163,17 +163,6 @@ static inline float CornerRectIntercept(float y,
          sqrt(1 - (y * y) / (corner_rect.height() * corner_rect.height()));
 }
 
-gfx::RectF FloatRoundedRect::RadiusCenterRect() const {
-  gfx::InsetsF maximum_radius_insets(
-      std::max(radii_.TopLeft().height(), radii_.TopRight().height()),
-      std::max(radii_.TopRight().width(), radii_.BottomRight().width()),
-      std::max(radii_.BottomLeft().height(), radii_.BottomRight().height()),
-      std::max(radii_.TopLeft().width(), radii_.BottomLeft().width()));
-  gfx::RectF center_rect(rect_);
-  center_rect.Inset(maximum_radius_insets);
-  return center_rect;
-}
-
 bool FloatRoundedRect::XInterceptsAtY(float y,
                                       float& min_x_intercept,
                                       float& max_x_intercept) const {

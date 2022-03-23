@@ -165,9 +165,6 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // https://drafts.csswg.org/css-shapes/#shape-margin-property.
   void OutsetForShapeMargin(float outset);
 
-  // Returns a quickly computed rect enclosed by the rounded rect.
-  gfx::RectF RadiusCenterRect() const;
-
   constexpr gfx::RectF TopLeftCorner() const {
     return gfx::RectF(rect_.x(), rect_.y(), radii_.TopLeft().width(),
                       radii_.TopLeft().height());

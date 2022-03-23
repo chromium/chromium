@@ -161,25 +161,6 @@ TEST(FloatRoundedRectTest, ellipticalCorners) {
   EXPECT_FALSE(r.XInterceptsAtY(101, min_x_intercept, max_x_intercept));
 }
 
-TEST(FloatRoundedRectTest, radiusCenterRect) {
-  gfx::SizeF corner_rect(10, 10);
-  FloatRoundedRect r0(gfx::RectF(0, 0, 100, 50),
-                      FloatRoundedRect::Radii(corner_rect, corner_rect,
-                                              corner_rect, corner_rect));
-  EXPECT_EQ(gfx::RectF(10, 10, 80, 30), r0.RadiusCenterRect());
-
-  // "Degenerate" cases all return an empty rectangle.
-  gfx::RectF collapsed_rect(0, 0, 100, 50);
-  collapsed_rect.Inset(200);
-  FloatRoundedRect r1(collapsed_rect);
-  EXPECT_TRUE(r1.RadiusCenterRect().IsEmpty());
-
-  FloatRoundedRect::Radii radii_with_too_large_corner(
-      gfx::SizeF(55, 55), gfx::SizeF(), gfx::SizeF(), gfx::SizeF());
-  FloatRoundedRect r2(gfx::RectF(0, 0, 100, 50), radii_with_too_large_corner);
-  EXPECT_TRUE(r2.RadiusCenterRect().IsEmpty());
-}
-
 TEST(FloatRoundedRectTest, IntersectsQuadIsInclusive) {
   FloatRoundedRect::Radii corner_radii(5);
 
