@@ -22582,7 +22582,7 @@
       'name': 'CloudReportingUploadFrequency',
       'owners':  ['zmin@chromium.org', 'file://components/enterprise/browser/reporting/OWNERS'],
       'type': 'int',
-      'schema': { 'type': 'integer', 'minimum': 3 , 'maximum': 168},
+      'schema': { 'type': 'integer', 'minimum': 3 , 'maximum': 24},
       'future_on': ['chrome.*', 'chrome_os', 'android', 'ios'],
       'tags': ['admin-sharing', 'google-sharing'],
       'features': {

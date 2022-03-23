@@ -16,7 +16,7 @@
 namespace enterprise_reporting {
 namespace {
 constexpr int kMinimumReportFrequencyInHour = 3;
-constexpr int kMaximumReportFrequencyInour = 24 * 7;
+constexpr int kMaximumReportFrequencyInour = 24;
 
 }  // namespace
 
