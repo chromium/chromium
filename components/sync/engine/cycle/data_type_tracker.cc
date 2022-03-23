@@ -97,18 +97,24 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
 
 bool CanGetCommitsFromExtensions(ModelType model_type) {
   switch (model_type) {
-    case BOOKMARKS:
-    case EXTENSION_SETTINGS:
-    case APP_SETTINGS:
-      // Only for the types above, extensions can trigger a commit via a js API.
+    // For these types, extensions can trigger unlimited commits via a js API.
+    case BOOKMARKS:                  // chrome.bookmarks API.
+    case EXTENSION_SETTINGS:         // chrome.storage.sync API.
+    case APP_SETTINGS:               // chrome.storage.sync API.
+    case HISTORY_DELETE_DIRECTIVES:  // chrome.history and chrome.browsingData.
       return true;
-    case AUTOFILL:
+    // For these types, extensions can delete existing data using a js API.
+    // However, as they cannot generate new entities, the number of deletions is
+    // limited by the number of entities previously manually added by the user.
+    // Thus, there's no need to apply quota to these deletions.
+    case PASSWORDS:         // chrome.browsingData API.
+    case AUTOFILL:          // chrome.browsingData API.
+    case AUTOFILL_PROFILE:  // chrome.browsingData API.
+    // All the remaining types are not affected by any extension js API.
     case USER_EVENTS:
     case SESSIONS:
     case PREFERENCES:
     case SHARING_MESSAGE:
-    case PASSWORDS:
-    case AUTOFILL_PROFILE:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
@@ -117,7 +123,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:
-    case HISTORY_DELETE_DIRECTIVES:
     case DICTIONARY:
     case DEVICE_INFO:
     case PRIORITY_PREFERENCES:
