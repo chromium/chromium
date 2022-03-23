@@ -161,9 +161,6 @@ constexpr SkAlpha kGoogleGreyAlpha600 = 0x8C;  //  55%
 constexpr SkAlpha kGoogleGreyAlpha700 = 0xB5;  //  71%
 constexpr SkAlpha kGoogleGreyAlpha800 = 0xDB;  //  86%
 
-// TODO(pkasting): Remove.
-constexpr SkColor kChromeIconGrey = kGoogleGrey700;
-
 // An alpha value for designating a control's disabled state. In specs this is
 // sometimes listed as 0.38a.
 constexpr SkAlpha kDisabledControlAlpha = 0x61;

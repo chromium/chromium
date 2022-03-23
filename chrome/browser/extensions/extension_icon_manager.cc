@@ -88,6 +88,6 @@ void ExtensionIconManager::OnImageLoaded(const std::string& extension_id,
 void ExtensionIconManager::EnsureDefaultIcon() {
   if (default_icon_.IsEmpty()) {
     default_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kChromeIconGrey));
+        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kGoogleGrey700));
   }
 }
