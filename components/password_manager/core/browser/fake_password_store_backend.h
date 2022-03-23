@@ -22,8 +22,18 @@ using PasswordMap = std::
 // Fake password store backend to be used in tests.
 class FakePasswordStoreBackend : public PasswordStoreBackend {
  public:
+  using UpdateAlwaysSucceeds =
+      base::StrongAlias<struct UpdateAlwaysSucceedsTab, bool>;
+
+  // The default Fake password store is a profile store that treats update calls
+  // like the built-in backend and only updates existing credentials. If the
+  // backend should behave like the Android backend which uses an underlying
+  // "upsert" mechanism to create non-existing credentials, use the constructor
+  // that allows to pass `UpdateAlwaysSucceeds(true)`.
   FakePasswordStoreBackend();
   explicit FakePasswordStoreBackend(IsAccountStore is_account_store);
+  FakePasswordStoreBackend(IsAccountStore is_account_store,
+                           UpdateAlwaysSucceeds update_always_succeeds);
   ~FakePasswordStoreBackend() override;
 
   void Clear();
@@ -84,6 +94,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
 
   const IsAccountStore is_account_store_{false};
+  const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
   // Number of calls of FillMatchingLogins() method.
   int fill_matching_logins_calls_ = 0;

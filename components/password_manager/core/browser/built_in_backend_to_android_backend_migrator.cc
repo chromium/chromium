@@ -123,6 +123,7 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   // to move local-only data that aren't synced to GMSCore and do the rolling
   // migration to ensure deletions aren’t resurrected.
   if (is_initial_migration_needed &&
+      sync_delegate_->IsSyncingPasswordsEnabled() &&
       features::RequiresInitialMigrationForUnifiedPasswordManager()) {
     metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
         is_initial_migration_needed ? "InitialMigration" : "RollingMigration");
@@ -178,6 +179,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
 void BuiltInBackendToAndroidBackendMigrator::
     MigrateNonSyncableDataToAndroidBackend(
         LoginsResultOrError built_in_backend_logins_or_error) {
+  DCHECK(sync_delegate_->IsSyncingPasswordsEnabled());
   if (absl::holds_alternative<PasswordStoreBackendError>(
           built_in_backend_logins_or_error)) {
     MigrationFinished(/*is_success=*/false);
