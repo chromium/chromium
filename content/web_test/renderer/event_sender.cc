@@ -2745,8 +2745,6 @@ void EventSender::UpdateLifecycleToPrePaint() {
 }
 
 float EventSender::DeviceScaleFactorForEvents() {
-  if (!blink::Platform::Current()->IsUseZoomForDSFEnabled())
-    return 1;
   return web_frame_widget_->GetOriginalScreenInfo().device_scale_factor;
 }
 

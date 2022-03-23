@@ -11,7 +11,6 @@
 #include "content/public/android/content_jni_headers/GestureListenerManagerImpl_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -210,11 +209,6 @@ void GestureListenerManager::DidOverscroll(
     return;
   float x = params.accumulated_overscroll.x();
   float y = params.accumulated_overscroll.y();
-  if (!IsUseZoomForDSFEnabled()) {
-    float dip_scale = web_contents_->GetNativeView()->GetDipScale();
-    x *= dip_scale;
-    y *= dip_scale;
-  }
   return Java_GestureListenerManagerImpl_didOverscroll(env, j_obj, x, y);
 }
 

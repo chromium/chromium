@@ -37,7 +37,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_render_widget_host.h"
@@ -521,12 +520,10 @@ class RenderViewImplBlinkSettingsTest : public RenderViewImplTest {
   void SetUp() override {}
 };
 
-// This test class enables UseZoomForDSF based on the platform default value.
 class RenderViewImplScaleFactorTest : public RenderViewImplTest {
  protected:
   void SetUp() override {
     render_thread_ = std::make_unique<MockRenderThread>();
-    SetUseZoomForDSFEnabled(content::IsUseZoomForDSFEnabled());
     RenderViewImplTest::SetUp();
   }
 
@@ -586,28 +583,6 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
  private:
   gfx::Size min_size_for_autoresize_;
   gfx::Size max_size_for_autoresize_;
-};
-
-// This test class forces UseZoomForDSF to be on for all platforms.
-class RenderViewImplEnableZoomForDSFTest
-    : public RenderViewImplScaleFactorTest {
- protected:
-  void SetUp() override {
-    render_thread_ = std::make_unique<MockRenderThread>();
-    SetUseZoomForDSFEnabled(true);
-    RenderViewImplTest::SetUp();
-  }
-};
-
-// This test class forces UseZoomForDSF to be off for all platforms.
-class RenderViewImplDisableZoomForDSFTest
-    : public RenderViewImplScaleFactorTest {
- protected:
-  void SetUp() override {
-    render_thread_ = std::make_unique<MockRenderThread>();
-    SetUseZoomForDSFEnabled(false);
-    RenderViewImplTest::SetUp();
-  }
 };
 
 TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
@@ -1098,8 +1073,7 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
 // RenderWidget, that the device scale is set correctly for that RenderWidget
 // the WebView and frames.
 // See crbug.com/737777#c37.
-TEST_F(RenderViewImplEnableZoomForDSFTest,
-       DeviceScaleCorrectAfterCrossOriginNav) {
+TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   const float device_scale = 3.0f;
   SetDeviceScaleFactor(device_scale);
   EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
@@ -1246,8 +1220,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
 // Verify that the renderer process doesn't crash when device scale factor
 // changes after a cross-process navigation has commited.
 // See https://crbug.com/571603.
-TEST_F(RenderViewImplEnableZoomForDSFTest,
-       SetZoomLevelAfterCrossProcessNavigation) {
+TEST_F(RenderViewImplScaleFactorTest, SetZoomLevelAfterCrossProcessNavigation) {
   LoadHTML("Hello world!");
 
   // Unload the main frame after which it should become a WebRemoteFrame.
@@ -3076,14 +3049,6 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
   EXPECT_EQ(5.5f, web_view_->MaximumPageScaleFactor());
 }
 
-TEST_F(RenderViewImplDisableZoomForDSFTest,
-       ConverViewportToWindowWithoutZoomForDSF) {
-  SetDeviceScaleFactor(2.f);
-  gfx::Rect rect(20, 10, 200, 100);
-  gfx::Rect rect_in_dips = main_frame_widget()->BlinkSpaceToEnclosedDIPs(rect);
-  EXPECT_EQ(rect, rect_in_dips);
-}
-
 TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF1) {
   SetDeviceScaleFactor(1.f);
 
@@ -3141,8 +3106,7 @@ TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF2) {
   // Don't disable here to test that emulation is being shutdown properly.
 }
 
-TEST_F(RenderViewImplEnableZoomForDSFTest,
-       ConverViewportToWindowWithZoomForDSF) {
+TEST_F(RenderViewImplScaleFactorTest, ConvertViewportToWindow) {
   SetDeviceScaleFactor(1.f);
   {
     gfx::Rect rect(20, 10, 200, 100);
@@ -3163,7 +3127,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
 }
 
 #if BUILDFLAG(IS_MAC) || defined(USE_AURA)
-TEST_F(RenderViewImplEnableZoomForDSFTest,
+TEST_F(RenderViewImplScaleFactorTest,
        DISABLED_GetCompositionCharacterBoundsTest) {  // http://crbug.com/582016
   SetDeviceScaleFactor(1.f);
 #if BUILDFLAG(IS_WIN)
@@ -3218,19 +3182,7 @@ const char kAutoResizeTestPage[] =
 
 }  // namespace
 
-TEST_F(RenderViewImplEnableZoomForDSFTest, AutoResizeWithZoomForDSF) {
-  EnableAutoResize(gfx::Size(5, 5), gfx::Size(1000, 1000));
-  LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_1x = MainWidgetSizeInDIPS();
-  ASSERT_FALSE(size_at_1x.IsEmpty());
-
-  SetDeviceScaleFactor(2.f);
-  LoadHTML(kAutoResizeTestPage);
-  gfx::Size size_at_2x = MainWidgetSizeInDIPS();
-  EXPECT_EQ(size_at_1x, size_at_2x);
-}
-
-TEST_F(RenderViewImplScaleFactorTest, AutoResizeWithoutZoomForDSF) {
+TEST_F(RenderViewImplScaleFactorTest, AutoResize) {
   EnableAutoResize(gfx::Size(5, 5), gfx::Size(1000, 1000));
   LoadHTML(kAutoResizeTestPage);
   gfx::Size size_at_1x = MainWidgetSizeInDIPS();

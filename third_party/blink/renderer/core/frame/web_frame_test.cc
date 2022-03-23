@@ -1749,19 +1749,13 @@ TEST_F(WebFrameTest, DeviceScaleFactorUsesDefaultWithoutViewportTag) {
       ->SetDeviceScaleFactorForTesting(2.f);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
-  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
-    EXPECT_EQ(
-        1,
-        web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
-    auto* frame =
-        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
-    DCHECK(frame);
-    EXPECT_EQ(2, frame->DevicePixelRatio());
-  } else {
-    EXPECT_EQ(
-        2,
-        web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
-  }
+  EXPECT_EQ(
+      1,
+      web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
+  auto* frame =
+      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+  DCHECK(frame);
+  EXPECT_EQ(2, frame->DevicePixelRatio());
 
   // Device scale factor should be independent of page scale.
   web_view_helper.GetWebView()->SetDefaultPageScaleLimits(1, 2);
@@ -2906,16 +2900,11 @@ TEST_F(WebFrameTest, targetDensityDpiDevice) {
                     ->GetLayoutSize()
                     .height(),
                 1.0f);
-    if (Platform::Current()->IsUseZoomForDSFEnabled()) {
-      EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
-      auto* frame =
-          To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
-      DCHECK(frame);
-      EXPECT_EQ(device_scale_factors[i], frame->DevicePixelRatio());
-    } else {
-      EXPECT_NEAR(1.0f / device_scale_factors[i],
-                  web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
-    }
+    EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+    auto* frame =
+        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+    DCHECK(frame);
+    EXPECT_EQ(device_scale_factors[i], frame->DevicePixelRatio());
   }
 }
 
@@ -2998,16 +2987,12 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOne) {
                   ->GetLayoutSize()
                   .height(),
               1.0f);
-  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+
     EXPECT_NEAR(0.25f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
     auto* frame =
         To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
     DCHECK(frame);
     EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
-  } else {
-    EXPECT_NEAR(1.0f / device_scale_factor,
-                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
-  }
 }
 
 TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
@@ -3049,17 +3034,13 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
                   ->GetLayoutSize()
                   .height(),
               4.0f);
-  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+
     EXPECT_NEAR(kPageZoom, web_view_helper.GetWebView()->PageScaleFactor(),
                 0.01f);
     auto* frame =
         To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
     DCHECK(frame);
     EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
-  } else {
-    EXPECT_NEAR(1.0f / device_scale_factor,
-                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
-  }
 }
 
 TEST_F(WebFrameTest, NoWideViewportAndNoViewportWithInitialPageScaleOverride) {
@@ -3170,16 +3151,12 @@ TEST_F(WebFrameTest,
                   ->GetLayoutSize()
                   .height(),
               1.0f);
-  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+
     EXPECT_NEAR(2.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
     auto* frame =
         To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
     DCHECK(frame);
     EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
-  } else {
-    EXPECT_NEAR(1.0f / device_scale_factor,
-                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
-  }
 }
 
 TEST_F(WebFrameTest, NoUserScalableQuirkIgnoresViewportScaleForWideViewport) {

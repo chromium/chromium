@@ -607,11 +607,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   }
 #endif
 
-  // Whether zoom for dsf is enabled. When true, inputs to blink would all be
-  // scaled by the device scale factor so that layout is done in device pixel
-  // space.
-  virtual bool IsUseZoomForDSFEnabled() { return true; }
-
   // Whether LCD text is enabled.
   virtual bool IsLcdTextEnabled() { return false; }
 

@@ -68,7 +68,7 @@ class AccessibilityHitTestingWinBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     AccessibilityHitTestingWinBrowserTest,
-    ::testing::Combine(::testing::Values(1, 2), ::testing::Bool()),
+    ::testing::Values(1, 2),
     AccessibilityHitTestingBrowserTest::TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingWinBrowserTest, AccHitTest) {

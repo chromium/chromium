@@ -18,7 +18,6 @@
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -188,8 +187,7 @@ gfx::Point TouchPassthroughManager::ToCSSPoint(
 
   // Scale by the device scale factor.
   float dsf = rfh_->AccessibilityGetDeviceScaleFactor();
-  if (IsUseZoomForDSFEnabled())
-    result = ScaleToRoundedPoint(result, 1.0 / dsf);
+  result = ScaleToRoundedPoint(result, 1.0 / dsf);
 
   // Offset by the top controls height.
   RenderWidgetHostImpl* rwhi = rfh_->GetRenderWidgetHost();

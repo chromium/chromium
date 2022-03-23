@@ -15,7 +15,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"

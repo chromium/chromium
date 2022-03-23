@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
@@ -30,8 +29,7 @@ namespace content {
 
 CrossProcessFrameConnector::CrossProcessFrameConnector(
     RenderFrameProxyHost* frame_proxy_in_parent_renderer)
-    : use_zoom_for_device_scale_factor_(IsUseZoomForDSFEnabled()),
-      frame_proxy_in_parent_renderer_(frame_proxy_in_parent_renderer) {
+    : frame_proxy_in_parent_renderer_(frame_proxy_in_parent_renderer) {
   // Skip for tests.
   if (!frame_proxy_in_parent_renderer_) {
     screen_infos_ = display::ScreenInfos(display::ScreenInfo());
@@ -523,31 +521,19 @@ void CrossProcessFrameConnector::SetLocalFrameSize(
     const gfx::Size& local_frame_size) {
   has_size_ = true;
   const float dsf = screen_infos_.current().device_scale_factor;
-  if (use_zoom_for_device_scale_factor_) {
-    local_frame_size_in_pixels_ = local_frame_size;
-    local_frame_size_in_dip_ =
-        gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
-  } else {
-    local_frame_size_in_dip_ = local_frame_size;
-    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(local_frame_size, dsf);
-  }
+  local_frame_size_in_pixels_ = local_frame_size;
+  local_frame_size_in_dip_ =
+      gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
 }
 
 void CrossProcessFrameConnector::SetScreenSpaceRect(
     const gfx::Rect& screen_space_rect) {
   gfx::Rect old_rect = screen_space_rect_in_pixels_;
   const float dsf = screen_infos_.current().device_scale_factor;
-
-  if (use_zoom_for_device_scale_factor_) {
-    screen_space_rect_in_pixels_ = screen_space_rect;
-    screen_space_rect_in_dip_ = gfx::Rect(
-        gfx::ScaleToFlooredPoint(screen_space_rect.origin(), 1.f / dsf),
-        gfx::ScaleToCeiledSize(screen_space_rect.size(), 1.f / dsf));
-  } else {
-    screen_space_rect_in_dip_ = screen_space_rect;
-    screen_space_rect_in_pixels_ =
-        gfx::ScaleToEnclosingRect(screen_space_rect, dsf);
-  }
+  screen_space_rect_in_pixels_ = screen_space_rect;
+  screen_space_rect_in_dip_ =
+      gfx::Rect(gfx::ScaleToFlooredPoint(screen_space_rect.origin(), 1.f / dsf),
+                gfx::ScaleToCeiledSize(screen_space_rect.size(), 1.f / dsf));
 
   if (view_ && frame_proxy_in_parent_renderer_) {
     view_->SetBounds(screen_space_rect_in_dip_);

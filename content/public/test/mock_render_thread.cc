@@ -229,10 +229,6 @@ const blink::UserAgentMetadata& MockRenderThread::GetUserAgentMetadata() {
   return kUserAgentMetadata;
 }
 
-bool MockRenderThread::IsUseZoomForDSF() {
-  return zoom_for_dsf_;
-}
-
 #if BUILDFLAG(IS_WIN)
 void MockRenderThread::PreCacheFont(const LOGFONT& log_font) {
 }
@@ -243,10 +239,6 @@ void MockRenderThread::ReleaseCachedFonts() {
 
 void MockRenderThread::SetFieldTrialGroup(const std::string& trial_name,
                                           const std::string& group_name) {}
-
-void MockRenderThread::SetUseZoomForDSFEnabled(bool zoom_for_dsf) {
-  zoom_for_dsf_ = zoom_for_dsf;
-}
 
 void MockRenderThread::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {

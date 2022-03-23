@@ -78,7 +78,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -3924,15 +3923,14 @@ void SynchronizeVisualPropertiesInterceptor::SynchronizeVisualProperties(
   last_pinch_gesture_active_ = visual_properties.is_pinch_gesture_active;
 
   gfx::Rect screen_space_rect_in_dip = visual_properties.screen_space_rect;
-  if (IsUseZoomForDSFEnabled()) {
-    const float dsf =
-        visual_properties.screen_infos.current().device_scale_factor;
-    screen_space_rect_in_dip =
-        gfx::Rect(gfx::ScaleToFlooredPoint(
-                      visual_properties.screen_space_rect.origin(), 1.f / dsf),
-                  gfx::ScaleToCeiledSize(
-                      visual_properties.screen_space_rect.size(), 1.f / dsf));
-  }
+  const float dsf =
+      visual_properties.screen_infos.current().device_scale_factor;
+  screen_space_rect_in_dip =
+      gfx::Rect(gfx::ScaleToFlooredPoint(
+                    visual_properties.screen_space_rect.origin(), 1.f / dsf),
+                gfx::ScaleToCeiledSize(
+                    visual_properties.screen_space_rect.size(), 1.f / dsf));
+
   // Track each rect updates.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

@@ -168,7 +168,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_synchronized_scrolling =
       base::FeatureList::IsEnabled(::features::kSynchronizedScrolling);
   Platform* platform = Platform::Current();
-  settings.use_zoom_for_dsf = platform->IsUseZoomForDSFEnabled();
   settings.percent_based_scrolling =
       ::features::IsPercentBasedScrollingEnabled();
   settings.compositor_threaded_scrollbar_scrolling =
@@ -307,7 +306,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_elastic_overscroll = platform->IsElasticOverscrollEnabled();
   settings.resource_settings.use_gpu_memory_buffer_resources =
       cmd.HasSwitch(switches::kEnableGpuMemoryBufferCompositorResources);
-  settings.use_painted_device_scale_factor = settings.use_zoom_for_dsf;
+  settings.use_painted_device_scale_factor = true;
 
   // Build LayerTreeSettings from command line args.
   if (cmd.HasSwitch(cc::switches::kBrowserControlsShowThreshold)) {

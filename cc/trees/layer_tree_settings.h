@@ -127,9 +127,6 @@ class CC_EXPORT LayerTreeSettings {
   // deadlines.
   bool wait_for_all_pipeline_stages_before_draw = false;
 
-  // Determines whether the zoom needs to be applied to the device scale factor.
-  bool use_zoom_for_dsf = false;
-
   // Determines whether mouse interactions on composited scrollbars are handled
   // on the compositor thread.
   bool compositor_threaded_scrollbar_scrolling = true;

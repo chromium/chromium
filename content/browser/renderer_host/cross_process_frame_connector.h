@@ -332,11 +332,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
     child_frame_crash_shown_closure_for_testing_ = std::move(closure);
   }
 
-  void set_use_zoom_for_device_scale_factor_for_testing(
-      bool use_zoom_for_device_scale_factor) {
-    use_zoom_for_device_scale_factor_ = use_zoom_for_device_scale_factor;
-  }
-
  protected:
   friend class MockCrossProcessFrameConnector;
   friend class SitePerProcessBrowserTestBase;
@@ -377,9 +372,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   viz::LocalSurfaceId local_surface_id_;
 
   bool has_size_ = false;
-
-  // This allows a test override for UseZoomForDSF().
-  bool use_zoom_for_device_scale_factor_;
 
   uint32_t capture_sequence_number_ = 0u;
 

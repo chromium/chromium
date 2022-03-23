@@ -89,7 +89,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/auth.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -1286,8 +1285,6 @@ void AwContents::SmoothScroll(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   float scale = browser_view_renderer_.page_scale_factor();
-  if (!content::IsUseZoomForDSFEnabled())
-    scale *= browser_view_renderer_.dip_scale();
 
   DCHECK_GE(duration_ms, 0);
   render_view_host_ext_->SmoothScroll(target_x / scale, target_y / scale,
@@ -1312,10 +1309,7 @@ void AwContents::OnWebLayoutContentsSizeChanged(
   if (!obj)
     return;
   gfx::Size contents_size_css =
-      content::IsUseZoomForDSFEnabled()
-          ? ScaleToRoundedSize(contents_size,
-                               1 / browser_view_renderer_.dip_scale())
-          : contents_size;
+      ScaleToRoundedSize(contents_size, 1 / browser_view_renderer_.dip_scale());
   Java_AwContents_onWebLayoutContentsSizeChanged(
       env, obj, contents_size_css.width(), contents_size_css.height());
 }

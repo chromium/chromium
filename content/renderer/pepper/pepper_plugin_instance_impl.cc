@@ -24,7 +24,6 @@
 #include "cc/layers/texture_layer.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/event_conversion.h"
@@ -1155,14 +1154,10 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.device_scale = container_->DeviceScaleFactor();
   view_data_.css_scale =
       container_->PageZoomFactor() * container_->PageScaleFactor();
-  if (IsUseZoomForDSFEnabled()) {
-    WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
+  WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
 
-    viewport_to_dip_scale_ =
-        1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
-  } else {
-    viewport_to_dip_scale_ = 1.0f;
-  }
+  viewport_to_dip_scale_ =
+      1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
   ConvertRectToDIP(&view_data_.rect);
   ConvertRectToDIP(&view_data_.clip_rect);
   view_data_.css_scale *= viewport_to_dip_scale_;

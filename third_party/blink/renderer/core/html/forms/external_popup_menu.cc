@@ -63,9 +63,7 @@ float GetDprForSizeAdjustment(const Element& owner_element) {
 #ifndef OS_ANDROID
   LocalFrame* frame = owner_element.GetDocument().GetFrame();
   const Page* page = frame ? frame->GetPage() : nullptr;
-  if (Platform::Current()->IsUseZoomForDSFEnabled() && page) {
-    dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
-  }
+  dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
 #endif
   return dpr;
 }

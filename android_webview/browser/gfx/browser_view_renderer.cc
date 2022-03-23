@@ -29,7 +29,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -654,11 +653,8 @@ void BrowserViewRenderer::SetDipScale(float dip_scale) {
 
 gfx::Point BrowserViewRenderer::max_scroll_offset() const {
   DCHECK_GT(dip_scale_, 0.f);
-  float scale = content::IsUseZoomForDSFEnabled()
-                    ? page_scale_factor_
-                    : dip_scale_ * page_scale_factor_;
   return gfx::ToCeiledPoint(
-      gfx::ScalePoint(max_scroll_offset_unscaled_, scale));
+      gfx::ScalePoint(max_scroll_offset_unscaled_, page_scale_factor_));
 }
 
 void BrowserViewRenderer::ScrollTo(const gfx::Point& scroll_offset) {
@@ -775,8 +771,7 @@ void BrowserViewRenderer::UpdateRootLayerState(
     return;
 
   gfx::SizeF scrollable_size_dip = scrollable_size;
-  if (content::IsUseZoomForDSFEnabled())
-    scrollable_size_dip.Scale(1 / dip_scale_);
+  scrollable_size_dip.Scale(1 / dip_scale_);
 
   TRACE_EVENT_INSTANT1(
       "android_webview", "BrowserViewRenderer::UpdateRootLayerState",

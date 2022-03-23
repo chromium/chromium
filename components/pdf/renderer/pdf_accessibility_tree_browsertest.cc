@@ -1934,7 +1934,6 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
   float new_zoom = 1.5f;
   viewport_info_.zoom = new_zoom;
   viewport_info_.scale = new_device_scale;
-  SetUseZoomForDSFEnabled(true);
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
 
   rect = para_node->data().relative_bounds.bounds;
@@ -1942,15 +1941,6 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
   ASSERT_TRUE(transform);
   transform->TransformRect(&rect);
   CompareRect({{186.75f, 509.25f}, {189.00f, 29.25f}}, rect);
-
-  SetUseZoomForDSFEnabled(false);
-  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
-
-  rect = para_node->data().relative_bounds.bounds;
-  transform = root_node->data().relative_bounds.transform.get();
-  ASSERT_TRUE(transform);
-  transform->TransformRect(&rect);
-  CompareRect({{124.5f, 339.5f}, {126.0f, 19.5f}}, rect);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {

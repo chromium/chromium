@@ -28,7 +28,6 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,7 +50,6 @@ using content::BrowserAccessibilityDelegate;
 using content::BrowserAccessibilityManager;
 using content::BrowserAccessibilityManagerMac;
 using content::ContentClient;
-using content::IsUseZoomForDSFEnabled;
 using content::OneShotAccessibilityTreeSearch;
 using ui::AXNodeData;
 using ui::AXActionHandlerRegistry;
@@ -1189,12 +1187,8 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return NSZeroRect;
 
-  // Convert to DIPs if UseZoomForDSF is enabled.
-  auto rect =
-      IsUseZoomForDSFEnabled()
-          ? ScaleToRoundedRect(layout_rect,
-                               1.f / _owner->manager()->device_scale_factor())
-          : layout_rect;
+  auto rect = ScaleToRoundedRect(
+      layout_rect, 1.f / _owner->manager()->device_scale_factor());
 
   // Get the delegate for the topmost BrowserAccessibilityManager, because
   // that's the only one that can convert points to their origin in the screen.
@@ -2645,12 +2639,9 @@ bool content::IsNSRange(id value) {
   auto rect = _owner->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
                                     ui::AXClippingBehavior::kClipped);
 
-  // Convert to DIPs if UseZoomForDSF is enabled.
   // TODO(vmpstr): GetBoundsRect() call above should account for this instead.
   auto result_rect =
-      IsUseZoomForDSFEnabled()
-          ? ScaleToRoundedRect(rect, 1.f / manager->device_scale_factor())
-          : rect;
+      ScaleToRoundedRect(rect, 1.f / manager->device_scale_factor());
 
   return gfx::ScreenRectToNSRect(result_rect);
 }
@@ -2802,21 +2793,15 @@ bool content::IsNSRange(id value) {
   auto offset_in_blink_space =
       manager->GetViewBoundsInScreenCoordinates().OffsetFromOrigin();
 
-  // If UseZoomForDSF is enabled, blink space is physical, so we scale the
+  // Blink space is physical, so we scale the
   // point first then add the offset. Otherwise, it's in DIPs so we add the
   // offset first and then scale.
   // TODO(vmpstr): GetViewBoundsInScreenCoordinates should return consistent
   // space.
   gfx::Point screen_point_in_physical_space;
-  if (IsUseZoomForDSFEnabled()) {
-    screen_point_in_physical_space = ScaleToRoundedPoint(
-        screen_point_in_dips, manager->device_scale_factor());
-    screen_point_in_physical_space += offset_in_blink_space;
-  } else {
-    screen_point_in_dips += offset_in_blink_space;
-    screen_point_in_physical_space = ScaleToRoundedPoint(
-        screen_point_in_dips, manager->device_scale_factor());
-  }
+  screen_point_in_physical_space =
+      ScaleToRoundedPoint(screen_point_in_dips, manager->device_scale_factor());
+  screen_point_in_physical_space += offset_in_blink_space;
 
   BrowserAccessibility* hit =
       manager->CachingAsyncHitTest(screen_point_in_physical_space);

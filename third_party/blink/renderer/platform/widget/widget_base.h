@@ -60,8 +60,7 @@ class WebRenderWidgetSchedulingState;
 // class. For simplicity purposes this class will be a member of those classes.
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"
-// which is scaled DSF baked in if UseZoomForDSF is enabled, otherwise they
-// are equivalent to DIPs.
+// which is scaled DSF baked in.
 class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                                    public LayerTreeViewDelegate {
  public:
@@ -325,9 +324,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect);
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rectF);
 
-  // Returns whether Zoom for DSF is enabled for the widget.
-  bool UseZoomForDsf() { return use_zoom_for_dsf_; }
-
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver);
 
@@ -402,8 +398,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   const bool never_composited_;
   // Indicates this is for a child local root.
   const bool is_for_child_local_root_;
-  // When true, the device scale factor is a part of blink coordinates.
-  const bool use_zoom_for_dsf_;
   // Set true by initialize functions, used to check that only one is called.
   bool initialized_ = false;
 

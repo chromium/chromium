@@ -417,8 +417,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   float page_scale_ = 1.f;
 
-  bool use_zoom_for_dsf_enabled_;
-
   // Current max number of events to fire, mockable for unit tests
   int max_content_changed_events_to_fire_ = kMaxContentChangedEventsToFire;
 

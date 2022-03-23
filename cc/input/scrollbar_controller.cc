@@ -726,16 +726,7 @@ float ScrollbarController::GetScrollDistanceForScrollbarPart(
 }
 
 float ScrollbarController::ScreenSpaceScaleFactor() const {
-  // TODO(arakeri): When crbug.com/716231 is fixed, this needs to be updated.
-  // If use_zoom_for_dsf is false, the click deltas and thumb drag ratios
-  // shouldn't be scaled. For example: On Mac, when the use_zoom_for_dsf is
-  // false and the device_scale_factor is 2, the scroll delta for pointer clicks
-  // on arrows would be incorrectly calculated as 80px instead of 40px. This is
-  // also necessary to ensure that hit testing works as intended.
-  return layer_tree_host_impl_->settings().use_zoom_for_dsf
-             ? layer_tree_host_impl_->active_tree()
-                   ->painted_device_scale_factor()
-             : 1.f;
+  return layer_tree_host_impl_->active_tree()->painted_device_scale_factor();
 }
 
 gfx::PointF ScrollbarController::GetScrollbarRelativePosition(
@@ -755,15 +746,8 @@ gfx::PointF ScrollbarController::GetScrollbarRelativePosition(
   gfx::Transform inverse_screen_space_transform(
       gfx::Transform::kSkipInitialization);
 
-  // If use_zoom_for_dsf is false, the ScreenSpaceTransform needs to be scaled
-  // down by the DSF to ensure that position_in_widget is transformed correctly.
-  const float scale =
-      !layer_tree_host_impl_->settings().use_zoom_for_dsf
-          ? 1.f / layer_tree_host_impl_->active_tree()->device_scale_factor()
-          : 1.f;
   gfx::Transform scaled_screen_space_transform(
       scrollbar->ScreenSpaceTransform());
-  scaled_screen_space_transform.PostScale(scale, scale);
   if (!scaled_screen_space_transform.GetInverse(
           &inverse_screen_space_transform))
     return gfx::PointF(0, 0);

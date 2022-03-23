@@ -68,12 +68,10 @@ class TestingPlatformSupport : public Platform {
   std::string GetDataResourceString(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
-  bool IsUseZoomForDSFEnabled() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);
-  void SetUseZoomForDSF(bool enabled);
 
   // Overrides the handling of GetInterface on the platform's associated
   // interface provider.
@@ -97,7 +95,6 @@ class TestingPlatformSupport : public Platform {
 
  private:
   bool is_threaded_animation_enabled_ = false;
-  bool is_zoom_for_dsf_enabled_ = true;
 };
 
 // ScopedTestingPlatformSupport<MyTestingPlatformSupport> can be used to

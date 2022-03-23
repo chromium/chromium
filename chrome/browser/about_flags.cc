@@ -830,14 +830,6 @@ const FeatureEntry::Choice kVerboseLoggingInNaclChoices[] = {
 };
 #endif  // ENABLE_NACL
 
-const FeatureEntry::Choice kEnableUseZoomForDSFChoices[] = {
-    {flag_descriptions::kEnableUseZoomForDsfChoiceDefault, "", ""},
-    {flag_descriptions::kEnableUseZoomForDsfChoiceEnabled,
-     switches::kEnableUseZoomForDSF, "true"},
-    {flag_descriptions::kEnableUseZoomForDsfChoiceDisabled,
-     switches::kEnableUseZoomForDSF, "false"},
-};
-
 const FeatureEntry::Choice kSiteIsolationOptOutChoices[] = {
     {flag_descriptions::kSiteIsolationOptOutChoiceDefault, "", ""},
     {flag_descriptions::kSiteIsolationOptOutChoiceOptOut,
@@ -3869,9 +3861,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolation-by-default", flag_descriptions::kIsolationByDefaultName,
      flag_descriptions::kIsolationByDefaultDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIsolationByDefault)},
-    {"enable-use-zoom-for-dsf", flag_descriptions::kEnableUseZoomForDsfName,
-     flag_descriptions::kEnableUseZoomForDsfDescription, kOsAll,
-     MULTI_VALUE_TYPE(kEnableUseZoomForDSFChoices)},
     {"enable-login-detection", flag_descriptions::kEnableLoginDetectionName,
      flag_descriptions::kEnableLoginDetectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(login_detection::kLoginDetection)},

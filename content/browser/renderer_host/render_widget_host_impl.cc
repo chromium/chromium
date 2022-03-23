@@ -103,7 +103,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -178,15 +177,6 @@ bool g_check_for_pending_visual_properties_ack = true;
 bool ShouldDisableHangMonitor() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableHangMonitor);
-}
-
-// Returns the cached result of IsUseZoomForDSFEnabled().
-// IsUseZoomForDSFEnabled() calls base::CommandLine::HasSwitch() which
-// is relatively heavyweight when invoked repeatedly (some functions that
-// check this setting can be called frequently). https://crbug.com/1220717 .
-bool ShouldUseZoomForDSF() {
-  static bool is_use_zoom_for_DSF_enabled = IsUseZoomForDSFEnabled();
-  return is_use_zoom_for_DSF_enabled;
 }
 
 // <process id, routing id>
@@ -1046,11 +1036,6 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   float bottom_controls_min_height =
       rvh_delegate_view->GetBottomControlsMinHeight();
   float browser_controls_dsf_multiplier = 1.f;
-  // The top and bottom control sizes are physical pixels but the IPC wants
-  // DIPs *when not using page zoom for DSF* because blink layout is working
-  // in DIPs then.
-  if (!ShouldUseZoomForDSF())
-    browser_controls_dsf_multiplier = current_screen_info.device_scale_factor;
   visual_properties.browser_controls_params.top_controls_height =
       top_controls_height / browser_controls_dsf_multiplier;
   visual_properties.browser_controls_params.top_controls_min_height =
@@ -1111,14 +1096,6 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
-    if (!ShouldUseZoomForDSF()) {
-      // If UseZoomForDSF is not used, the coordinates were not scaled by DSF
-      // when coming from the renderer.
-      visual_properties.compositor_viewport_pixel_rect =
-          gfx::ScaleToEnclosingRect(
-              visual_properties.compositor_viewport_pixel_rect,
-              current_screen_info.device_scale_factor);
-    }
   }
 
   // These properties come from the top-level main frame's renderer. The
@@ -1283,10 +1260,8 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
       delegate_->DidChangeScreenOrientation();
   }
 
-  if (ShouldUseZoomForDSF()) {
-    input_router_->SetDeviceScaleFactor(
-        visual_properties->screen_infos.current().device_scale_factor);
-  }
+  input_router_->SetDeviceScaleFactor(
+      visual_properties->screen_infos.current().device_scale_factor);
 
   // If we do not have a valid viz::LocalSurfaceId then we are a child frame
   // waiting on the id to be propagated from our parent. We cannot create a hash
@@ -3578,10 +3553,7 @@ void RenderWidgetHostImpl::SetupInputRouter() {
 
   // input_router_ recreated, need to update the force_enable_zoom_ state.
   input_router_->SetForceEnableZoom(force_enable_zoom_);
-
-  if (ShouldUseZoomForDSF()) {
-    input_router_->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
-  }
+  input_router_->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
 }
 
 void RenderWidgetHostImpl::SetForceEnableZoom(bool enabled) {
@@ -3790,8 +3762,7 @@ gfx::Size RenderWidgetHostImpl::GetRootWidgetViewportSize() {
 gfx::PointF RenderWidgetHostImpl::ConvertWindowPointToViewport(
     const gfx::PointF& window_point) {
   gfx::PointF viewport_point = window_point;
-  if (ShouldUseZoomForDSF())
-    viewport_point.Scale(GetScaleFactorForView(GetView()));
+  viewport_point.Scale(GetScaleFactorForView(GetView()));
   return viewport_point;
 }
 

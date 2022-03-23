@@ -3527,11 +3527,6 @@ void Internals::setVisualViewportOffset(int x, int y) {
   if (!GetFrame())
     return;
   gfx::PointF offset(x, y);
-
-  // `setVisualViewportOffset()` inputs are in physical pixels, but
-  // `SetLocation()` gets positions in DIPs when --use-zoom-for-dsf disabled.
-  if (!Platform::Current()->IsUseZoomForDSFEnabled())
-    offset.Scale(1 / GetFrame()->DevicePixelRatio());
   GetFrame()->GetPage()->GetVisualViewport().SetLocation(offset);
 }
 

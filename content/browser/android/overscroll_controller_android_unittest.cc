@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/layer.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -99,12 +98,11 @@ class OverscrollControllerAndroidUnitTest : public testing::Test {
     params.latest_overscroll_delta = gfx::Vector2dF(0, 1);
     params.current_fling_velocity = gfx::Vector2dF(0, 1);
     params.causal_event_viewport_point = gfx::PointF(100, 100);
-    if (IsUseZoomForDSFEnabled()) {
-      params.accumulated_overscroll.Scale(dip_scale_);
-      params.latest_overscroll_delta.Scale(dip_scale_);
-      params.current_fling_velocity.Scale(dip_scale_);
-      params.causal_event_viewport_point.Scale(dip_scale_);
-    }
+    params.accumulated_overscroll.Scale(dip_scale_);
+    params.latest_overscroll_delta.Scale(dip_scale_);
+    params.current_fling_velocity.Scale(dip_scale_);
+    params.causal_event_viewport_point.Scale(dip_scale_);
+
     return params;
   }
 
@@ -176,11 +174,9 @@ TEST_F(OverscrollControllerAndroidUnitTest,
   params.accumulated_overscroll = gfx::Vector2dF(1, 1);
   params.latest_overscroll_delta = gfx::Vector2dF(1, 1);
   params.current_fling_velocity = gfx::Vector2dF(1, 1);
-  if (IsUseZoomForDSFEnabled()) {
-    params.accumulated_overscroll.Scale(dip_scale_);
-    params.latest_overscroll_delta.Scale(dip_scale_);
-    params.current_fling_velocity.Scale(dip_scale_);
-  }
+  params.accumulated_overscroll.Scale(dip_scale_);
+  params.latest_overscroll_delta.Scale(dip_scale_);
+  params.current_fling_velocity.Scale(dip_scale_);
 
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(false));
   EXPECT_CALL(*refresh_, IsAwaitingScrollUpdateAck()).WillOnce(Return(false));

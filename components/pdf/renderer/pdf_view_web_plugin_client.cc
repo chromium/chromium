@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "printing/buildflags/buildflags.h"
@@ -59,10 +58,6 @@ std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
 PdfViewWebPluginClient::CreateAccessibilityDataHandler(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler) {
   return std::make_unique<PdfAccessibilityTree>(render_frame_, action_handler);
-}
-
-bool PdfViewWebPluginClient::IsUseZoomForDSFEnabled() const {
-  return content::IsUseZoomForDSFEnabled();
 }
 
 }  // namespace pdf

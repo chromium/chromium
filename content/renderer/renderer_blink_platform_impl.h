@@ -134,7 +134,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsZeroCopySynchronousSwDrawEnabledForAndroidWebView() override;
   SkCanvas* SynchronousCompositorGetSkCanvasForAndroidWebView() override;
 #endif
-  bool IsUseZoomForDSFEnabled() override;
   bool IsLcdTextEnabled() override;
   bool IsElasticOverscrollEnabled() override;
   bool IsScrollAnimatorEnabled() override;

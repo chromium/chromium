@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Locale;
@@ -335,10 +334,8 @@ public class AndroidScrollIntegrationTest {
 
         double expectedScrollXCss = targetScrollXCss;
         double expectedScrollYCss = targetScrollYCss;
-        if (UseZoomForDSFPolicy.isUseZoomForDSFEnabled()) {
-            expectedScrollXCss = (double) targetScrollXPix / deviceDIPScale;
-            expectedScrollYCss = (double) targetScrollYPix / deviceDIPScale;
-        }
+        expectedScrollXCss = (double) targetScrollXPix / deviceDIPScale;
+        expectedScrollYCss = (double) targetScrollYPix / deviceDIPScale;
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
                 onscrollObserver.register(testContainerView.getWebContents(), "onscrollObserver"));
@@ -482,10 +479,6 @@ public class AndroidScrollIntegrationTest {
         Assert.assertNotEquals(0, maxScrollYPix % dragStepSize);
         double maxScrollXCss = maxScrollXPix / deviceDIPScale;
         double maxScrollYCss = maxScrollYPix / deviceDIPScale;
-        if (!UseZoomForDSFPolicy.isUseZoomForDSFEnabled()) {
-            maxScrollXCss = Math.round(maxScrollXCss);
-            maxScrollYCss = Math.round(maxScrollYCss);
-        }
 
         setMaxScrollOnMainSync(testContainerView, maxScrollXPix, maxScrollYPix);
 

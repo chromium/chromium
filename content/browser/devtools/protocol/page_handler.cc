@@ -53,7 +53,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -131,10 +130,8 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
       gfx::ScaleSize(gfx::SizeF(surface_size), 1 / device_scale_factor);
   float top_offset_dip = top_controls_visible_height;
   gfx::PointF root_scroll_offset_dip = root_scroll_offset;
-  if (IsUseZoomForDSFEnabled()) {
-    top_offset_dip /= device_scale_factor;
-    root_scroll_offset_dip.Scale(1 / device_scale_factor);
-  }
+  top_offset_dip /= device_scale_factor;
+  root_scroll_offset_dip.Scale(1 / device_scale_factor);
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =
       Page::ScreencastFrameMetadata::Create()
           .SetPageScaleFactor(page_scale_factor)
@@ -822,9 +819,7 @@ void PageHandler::CaptureScreenshot(
     modified_params.viewport_offset.SetPoint(clip.fromJust()->GetX(),
                                              clip.fromJust()->GetY());
     modified_params.viewport_scale = clip.fromJust()->GetScale() * dpfactor;
-    if (IsUseZoomForDSFEnabled()) {
-      modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
-    }
+    modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
   }
 
   absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;

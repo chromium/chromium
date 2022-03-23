@@ -17,7 +17,6 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/common/ax_serialization_utils.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -480,14 +479,6 @@ gfx::Rect BrowserAccessibility::GetHypertextRangeBoundsRect(
     // Convert to screen coordinates.
     bounds.Offset(
         manager()->GetViewBoundsInScreenCoordinates().OffsetFromOrigin());
-  }
-
-  if (coordinate_system == ui::AXCoordinateSystem::kScreenPhysicalPixels) {
-    // Convert to physical pixels.
-    if (!IsUseZoomForDSFEnabled()) {
-      bounds =
-          gfx::ScaleToEnclosingRect(bounds, manager()->device_scale_factor());
-    }
   }
 
   return bounds;
@@ -983,9 +974,6 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     }
     bounds.Offset(
         manager()->GetViewBoundsInScreenCoordinates().OffsetFromOrigin());
-    if (coordinate_system == ui::AXCoordinateSystem::kScreenPhysicalPixels &&
-        !IsUseZoomForDSFEnabled())
-      bounds.Scale(manager()->device_scale_factor());
   }
 
   if (offscreen_result) {

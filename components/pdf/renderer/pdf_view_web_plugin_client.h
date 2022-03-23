@@ -36,7 +36,6 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
   CreateAccessibilityDataHandler(
       chrome_pdf::PdfAccessibilityActionHandler* action_handler) override;
-  bool IsUseZoomForDSFEnabled() const override;
 
  private:
   content::RenderFrame* const render_frame_;

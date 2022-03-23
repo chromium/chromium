@@ -77,7 +77,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
@@ -681,8 +680,6 @@ void RenderThreadImpl::Init() {
       !command_line.HasSwitch(cc::switches::kDisableThreadedAnimation);
 
   is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
-
-  is_zoom_for_dsf_enabled_ = content::IsUseZoomForDSFEnabled();
 
   if (command_line.HasSwitch(switches::kDisableLCDText)) {
     is_lcd_text_enabled_ = false;
@@ -1322,10 +1319,6 @@ blink::WebString RenderThreadImpl::GetReducedUserAgent() {
 
 const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
   return user_agent_metadata_;
-}
-
-bool RenderThreadImpl::IsUseZoomForDSF() {
-  return is_zoom_for_dsf_enabled_;
 }
 
 void RenderThreadImpl::WriteIntoTrace(

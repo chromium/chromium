@@ -1152,10 +1152,7 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
 
 void PropagatePageZoomToNewlyAttachedFrame(blink::WebView* web_view,
                                            float device_scale_factor) {
-  if (RenderThread::Get()->IsUseZoomForDSF())
-    web_view->SetZoomFactorForDeviceScaleFactor(device_scale_factor);
-  else
-    web_view->SetZoomLevel(web_view->ZoomLevel());
+  web_view->SetZoomFactorForDeviceScaleFactor(device_scale_factor);
 }
 
 void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,

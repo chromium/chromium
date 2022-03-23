@@ -350,9 +350,8 @@ TEST_P(ScrollbarsTest, ScrollbarsUpdatedOnOverlaySettingsChange) {
   EXPECT_FALSE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
 }
 
-TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
+TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeF) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
-  platform->SetUseZoomForDSF(true);
   frame_test_helpers::WebViewHelper web_view_helper;
   // Needed so visual viewport supplies its own scrollbars. We don't support
   // this setting changing after initialization, so we must set it through

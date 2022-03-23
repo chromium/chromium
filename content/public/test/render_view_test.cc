@@ -25,7 +25,6 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
@@ -853,10 +852,6 @@ void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
           true /* is_synchronously_committed */,
           blink::mojom::SameDocumentNavigationType::kFragment,
           false /* is_client_redirect */);
-}
-
-void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
-  render_thread_->SetUseZoomForDSFEnabled(enabled);
 }
 
 blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {

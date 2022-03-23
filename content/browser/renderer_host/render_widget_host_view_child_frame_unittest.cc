@@ -59,11 +59,7 @@ const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
 
 class MockFrameConnector : public CrossProcessFrameConnector {
  public:
-  explicit MockFrameConnector(bool use_zoom_for_device_scale_factor)
-      : CrossProcessFrameConnector(nullptr) {
-    set_use_zoom_for_device_scale_factor_for_testing(
-        use_zoom_for_device_scale_factor);
-  }
+  explicit MockFrameConnector() : CrossProcessFrameConnector(nullptr) {}
   ~MockFrameConnector() override = default;
 
   void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
@@ -111,10 +107,6 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   RenderWidgetHostViewChildFrameTest() {}
 
   void SetUp() override {
-    SetUpEnvironment(false /* use_zoom_for_device_scale_factor */);
-  }
-
-  void SetUpEnvironment(bool use_zoom_for_device_scale_factor) {
     browser_context_ = std::make_unique<TestBrowserContext>();
 
 // ImageTransportFactory doesn't exist on Android.
@@ -158,8 +150,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     EXPECT_EQ(screen_info, view_->GetScreenInfo());
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
-    test_frame_connector_ =
-        new MockFrameConnector(use_zoom_for_device_scale_factor);
+    test_frame_connector_ = new MockFrameConnector();
     test_frame_connector_->SetView(view_);
     view_->SetFrameConnector(test_frame_connector_);
   }
@@ -271,24 +262,8 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
             intersection_state->occlusion_state);
 }
 
-class RenderWidgetHostViewChildFrameZoomForDSFTest
-    : public RenderWidgetHostViewChildFrameTest {
- public:
-  RenderWidgetHostViewChildFrameZoomForDSFTest() {}
-
-  RenderWidgetHostViewChildFrameZoomForDSFTest(
-      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
-  RenderWidgetHostViewChildFrameZoomForDSFTest& operator=(
-      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
-
-  void SetUp() override {
-    SetUpEnvironment(true /* use_zoom_for_device_scale_factor */);
-  }
-};
-
 // Tests that moving the child around does not affect the physical backing size.
-TEST_F(RenderWidgetHostViewChildFrameZoomForDSFTest,
-       CompositorViewportPixelSize) {
+TEST_F(RenderWidgetHostViewChildFrameTest, CompositorViewportPixelSize) {
   display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 2.0f;
 

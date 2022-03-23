@@ -75,7 +75,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -341,15 +340,13 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
   RenderFrameHostImpl* frame_host = host()->frame_tree()->GetMainFrame();
   if (!frame_host || !frame_host->GetPage().virtual_keyboard_overlays_content())
     return;
-  gfx::Rect keyboard_rect_with_scale;
-  if (!keyboard_rect.IsEmpty()) {
-    float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
-    keyboard_rect_with_scale = ScaleToEnclosedRect(keyboard_rect, scale);
+  gfx::Rect keyboard_rect_copy = keyboard_rect;
+  if (!keyboard_rect_copy.IsEmpty()) {
     // Intersect the keyboard rect with the `this` bounds which will be sent
     // to the renderer.
-    keyboard_rect_with_scale.Intersect(GetViewBounds());
+    keyboard_rect_copy.Intersect(GetViewBounds());
   }
-  frame_host->NotifyVirtualKeyboardOverlayRect(keyboard_rect_with_scale);
+  frame_host->NotifyVirtualKeyboardOverlayRect(keyboard_rect_copy);
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
@@ -449,19 +446,16 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   gfx::SizeF scrollable_viewport_size_dip = metadata.scrollable_viewport_size;
   gfx::PointF root_scroll_offset_dip =
       metadata.root_scroll_offset.value_or(gfx::PointF());
-  if (IsUseZoomForDSFEnabled()) {
-    float pix_to_dip = 1 / dip_scale;
-    root_layer_size_dip.Scale(pix_to_dip);
-    scrollable_viewport_size_dip.Scale(pix_to_dip);
-    root_scroll_offset_dip.Scale(pix_to_dip);
-  }
+  float pix_to_dip = 1 / dip_scale;
+  root_layer_size_dip.Scale(pix_to_dip);
+  scrollable_viewport_size_dip.Scale(pix_to_dip);
+  root_scroll_offset_dip.Scale(pix_to_dip);
 
-  float to_pix = IsUseZoomForDSFEnabled() ? 1.f : dip_scale;
   // Note that the height of browser control is not affected by page scale
   // factor. Thus, |top_content_offset| in CSS pixels is also in DIPs.
   float top_content_offset =
       metadata.top_controls_height * metadata.top_controls_shown_ratio;
-  float top_shown_pix = top_content_offset * to_pix;
+  float top_shown_pix = top_content_offset;
 
   if (ime_adapter_android_) {
     ime_adapter_android_->UpdateFrameInfo(metadata.selection.start, dip_scale,
@@ -477,9 +471,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
                                  scrollable_viewport_size_dip);
 
   // ViewAndroid::content_offset() must be in dip.
-  float top_content_offset_dip = IsUseZoomForDSFEnabled()
-                                     ? top_content_offset / dip_scale
-                                     : top_content_offset;
+  float top_content_offset_dip = top_content_offset / dip_scale;
   view_.UpdateFrameInfo({scrollable_viewport_size_dip, top_content_offset_dip});
   bool controls_changed = UpdateControls(
       view_.GetDipScale(), metadata.top_controls_height,
@@ -707,8 +699,7 @@ void RenderWidgetHostViewAndroid::OnRootScrollOffsetChanged(
   if (!gesture_listener_manager_)
     return;
   gfx::PointF root_scroll_offset_dip = root_scroll_offset;
-  if (IsUseZoomForDSFEnabled())
-    root_scroll_offset_dip.Scale(1 / view_.GetDipScale());
+  root_scroll_offset_dip.Scale(1 / view_.GetDipScale());
   gesture_listener_manager_->OnRootScrollOffsetChanged(root_scroll_offset_dip);
 }
 
@@ -1472,19 +1463,18 @@ bool RenderWidgetHostViewAndroid::UpdateControls(
     float bottom_controls_height,
     float bottom_controls_shown_ratio,
     float bottom_controls_min_height_offset) {
-  float to_pix = IsUseZoomForDSFEnabled() ? 1.f : dip_scale;
-  float top_controls_pix = top_controls_height * to_pix;
+  float top_controls_pix = top_controls_height;
   // |top_content_offset| is in physical pixels if --use-zoom-for-dsf is
   // enabled. Otherwise, it is in DIPs.
   // Note that the height of browser control is not affected by page scale
   // factor. Thus, |top_content_offset| in CSS pixels is also in DIPs.
   float top_content_offset = top_controls_height * top_controls_shown_ratio;
-  float top_shown_pix = top_content_offset * to_pix;
+  float top_shown_pix = top_content_offset;
   float top_translate = top_shown_pix - top_controls_pix;
   bool top_changed =
       !cc::MathUtil::IsFloatNearlyTheSame(top_shown_pix, prev_top_shown_pix_);
 
-  float top_min_height_offset_pix = top_controls_min_height_offset * to_pix;
+  float top_min_height_offset_pix = top_controls_min_height_offset;
   top_changed |= !cc::MathUtil::IsFloatNearlyTheSame(
       top_min_height_offset_pix, prev_top_controls_min_height_offset_pix_);
 
@@ -1499,14 +1489,13 @@ bool RenderWidgetHostViewAndroid::UpdateControls(
   prev_top_controls_translate_ = top_translate;
   prev_top_controls_min_height_offset_pix_ = top_min_height_offset_pix;
 
-  float bottom_controls_pix = bottom_controls_height * to_pix;
+  float bottom_controls_pix = bottom_controls_height;
   float bottom_shown_pix = bottom_controls_pix * bottom_controls_shown_ratio;
   bool bottom_changed = !cc::MathUtil::IsFloatNearlyTheSame(
       bottom_shown_pix, prev_bottom_shown_pix_);
   float bottom_translate = bottom_controls_pix - bottom_shown_pix;
 
-  float bottom_min_height_offset_pix =
-      bottom_controls_min_height_offset * to_pix;
+  float bottom_min_height_offset_pix = bottom_controls_min_height_offset;
   bottom_changed |= !cc::MathUtil::IsFloatNearlyTheSame(
       bottom_min_height_offset_pix,
       prev_bottom_controls_min_height_offset_pix_);

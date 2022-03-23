@@ -20,7 +20,6 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -266,19 +265,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_child_frame_root->GetRole());
   ASSERT_EQ(1U, ax_child_frame_root->PlatformChildCount());
 
-  // Get the relative iframe rect in blink pixels, i.e. if use-zoom-for-dsf is
-  // enabled, this will be in physical pixels else we'll account for the device
-  // scale factor here.
+  // Get the relative iframe rect in blink pixels.
   gfx::Rect iframe_rect_root_relative_blink_pixels = ax_iframe->GetBoundsRect(
       ui::AXCoordinateSystem::kRootFrame, ui::AXClippingBehavior::kUnclipped);
   gfx::Rect iframe_rect_root_relative_physical_pixels;
-  if (IsUseZoomForDSFEnabled()) {
-    iframe_rect_root_relative_physical_pixels =
-        iframe_rect_root_relative_blink_pixels;
-  } else {
-    iframe_rect_root_relative_physical_pixels = gfx::ScaleToEnclosingRect(
-        iframe_rect_root_relative_blink_pixels, device_scale_factor_);
-  }
+  iframe_rect_root_relative_physical_pixels =
+      iframe_rect_root_relative_blink_pixels;
 
   // Get the view bounds in screen coordinate DIPs, then ensure the offsetting
   // done by ui::AXCoordinateSystem::kScreenPhysicalPixels produces the correct

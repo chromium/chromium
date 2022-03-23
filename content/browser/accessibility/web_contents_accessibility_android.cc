@@ -26,7 +26,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_assistant_structure.h"
@@ -192,8 +191,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     WebContents* web_contents)
     : java_ref_(env, obj),
       web_contents_(static_cast<WebContentsImpl*>(web_contents)),
-      frame_info_initialized_(false),
-      use_zoom_for_dsf_enabled_(IsUseZoomForDSFEnabled()) {
+      frame_info_initialized_(false) {
   // We must initialize this after weak_ptr_factory_ because it can result in
   // calling UpdateBrowserAccessibilityManager() which accesses
   // weak_ptr_factory_.
@@ -211,8 +209,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     jlong ax_tree_update_ptr)
     : java_ref_(env, obj),
       web_contents_(nullptr),
-      frame_info_initialized_(false),
-      use_zoom_for_dsf_enabled_(IsUseZoomForDSFEnabled()) {
+      frame_info_initialized_(false) {
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_snapshot(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
   manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
@@ -723,8 +720,7 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(
   if (!node)
     return nullptr;
 
-  float dip_scale =
-      use_zoom_for_dsf_enabled_ ? 1 / root_manager->device_scale_factor() : 1.0;
+  float dip_scale = 1 / root_manager->device_scale_factor();
   gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
       node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
   int rect[4] = {absolute_rect.x(), absolute_rect.y(), absolute_rect.right(),
@@ -757,8 +753,7 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     return;
 
   ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
-  float dip_scale =
-      use_zoom_for_dsf_enabled_ ? 1 / root_manager->device_scale_factor() : 1.0;
+  float dip_scale = 1 / root_manager->device_scale_factor();
   gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
       node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
       dip_scale);
@@ -1466,8 +1461,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(
     return nullptr;
   }
 
-  float dip_scale =
-      use_zoom_for_dsf_enabled_ ? 1 / root_manager->device_scale_factor() : 1.0;
+  float dip_scale = 1 / root_manager->device_scale_factor();
 
   gfx::Rect object_bounds = node->GetUnclippedRootFrameBoundsRect();
   int coords[4 * len];

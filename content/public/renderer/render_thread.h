@@ -116,9 +116,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual blink::WebString GetReducedUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;
 
-  // Returns whether or not the use-zoom-for-dsf flag is enabled.
-  virtual bool IsUseZoomForDSF() = 0;
-
   // Write a representation of the current Renderer process into a trace.
   virtual void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost>

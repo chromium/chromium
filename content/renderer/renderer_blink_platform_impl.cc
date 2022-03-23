@@ -527,11 +527,6 @@ RendererBlinkPlatformImpl::SynchronousCompositorGetSkCanvasForAndroidWebView() {
 }
 #endif
 
-bool RendererBlinkPlatformImpl::IsUseZoomForDSFEnabled() {
-  RenderThread* thread = RenderThread::Get();
-  return thread ? thread->IsUseZoomForDSF() : true;
-}
-
 bool RendererBlinkPlatformImpl::IsLcdTextEnabled() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
   return thread ? thread->IsLcdTextEnabled() : false;

@@ -48,15 +48,12 @@ class MockFrameConnector : public CrossProcessFrameConnector {
  public:
   MockFrameConnector(RenderWidgetHostViewChildFrame* view,
                      RenderWidgetHostViewBase* parent_view,
-                     RenderWidgetHostViewBase* root_view,
-                     bool use_zoom_for_device_scale_factor)
+                     RenderWidgetHostViewBase* root_view)
       : CrossProcessFrameConnector(nullptr),
         parent_view_(parent_view),
         root_view_(root_view) {
     view_ = view;
     view_->SetFrameConnector(this);
-    set_use_zoom_for_device_scale_factor_for_testing(
-        use_zoom_for_device_scale_factor);
   }
 
   MockFrameConnector(const MockFrameConnector&) = delete;
@@ -283,8 +280,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
     child.frame_connector = std::make_unique<MockFrameConnector>(
-        child.view.get(), parent_view, view_root_.get(),
-        false /* use_zoom_for_device_scale_factor */);
+        child.view.get(), parent_view, view_root_.get());
 
     EXPECT_EQ(child.view.get(),
               rwhier()->FindViewFromFrameSinkId(child.view->GetFrameSinkId()));

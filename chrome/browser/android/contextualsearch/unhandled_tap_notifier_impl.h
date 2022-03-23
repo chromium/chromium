@@ -22,8 +22,7 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
   // |scale_factor| (when needed) and call the given |callback| when Mojo
   // ShowUnhandledTapUIIfNeeded messages are received for the
   // unhandled_tap_notifier service.
-  UnhandledTapNotifierImpl(float device_scale_factor,
-                           UnhandledTapCallback callback);
+  explicit UnhandledTapNotifierImpl(UnhandledTapCallback callback);
 
   UnhandledTapNotifierImpl(const UnhandledTapNotifierImpl&) = delete;
   UnhandledTapNotifierImpl& operator=(const UnhandledTapNotifierImpl&) = delete;
@@ -35,16 +34,12 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
       blink::mojom::UnhandledTapInfoPtr unhandled_tap_info) override;
 
  private:
-  // Scale factor between pixels and DPs.
-  float device_scale_factor_;
-
   // Callback to call when an unhandled tap notification takes place.
   UnhandledTapCallback unhandled_tap_callback_;
 };
 
 // static
 void CreateUnhandledTapNotifierImpl(
-    float device_scale_factor,
     UnhandledTapCallback callback,
     mojo::PendingReceiver<blink::mojom::UnhandledTapNotifier> receiver);
 

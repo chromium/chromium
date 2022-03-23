@@ -189,9 +189,6 @@ class RenderViewTest : public testing::Test {
   void OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                                 bool is_new_navigation);
 
-  // Enables to use zoom for device scale.
-  void SetUseZoomForDSFEnabled(bool zoom_for_dsf);
-
   blink::WebFrameWidget* GetWebFrameWidget();
 
   // Allows a subclass to override the various content client implementations.

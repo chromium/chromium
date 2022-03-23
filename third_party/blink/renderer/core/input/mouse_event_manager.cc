@@ -70,30 +70,14 @@ void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,
       !mouse_event.is_raw_movement_event &&
       mouse_event.GetType() == WebInputEvent::Type::kMouseMove &&
       last_position) {
-    // Current movementX/Y is in physical pixel when zoom-for-dsf is enabled
-    // which matches layout coordinates. If we don't have zoom-for-dsf, we
-    // apply the device-scale-factor to align with the current behavior.
-    float device_scale_factor = 1;
-    if (!Platform::Current()->IsUseZoomForDSFEnabled()) {
-      if (dom_window && dom_window->GetFrame()) {
-        LocalFrame* frame = dom_window->GetFrame();
-        if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
-          ChromeClient& chrome_client = frame->GetChromeClient();
-          device_scale_factor =
-              chrome_client.GetScreenInfo(*frame).device_scale_factor;
-        }
-      }
-    }
     // movementX/Y is type int for now, so we need to truncated the coordinates
     // before calculate movement.
     initializer->setMovementX(
-        base::saturated_cast<int>(mouse_event.PositionInScreen().x() *
-                                  device_scale_factor) -
-        base::saturated_cast<int>(last_position->x() * device_scale_factor));
+        base::saturated_cast<int>(mouse_event.PositionInScreen().x()) -
+        base::saturated_cast<int>(last_position->x()));
     initializer->setMovementY(
-        base::saturated_cast<int>(mouse_event.PositionInScreen().y() *
-                                  device_scale_factor) -
-        base::saturated_cast<int>(last_position->y() * device_scale_factor));
+        base::saturated_cast<int>(mouse_event.PositionInScreen().y()) -
+        base::saturated_cast<int>(last_position->y()));
   }
 }
 

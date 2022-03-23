@@ -31,7 +31,7 @@ class AccessibilityHitTestingMacBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     AccessibilityHitTestingMacBrowserTest,
-    ::testing::Combine(::testing::Values(1, 2), ::testing::Bool()),
+    ::testing::Values(1, 2),
     AccessibilityHitTestingBrowserTest::TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingMacBrowserTest,

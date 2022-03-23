@@ -23,7 +23,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -1062,15 +1061,14 @@ gfx::Rect BrowserAccessibilityManager::GetViewBoundsInScreenCoordinates()
     // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
     // The bounds returned by the delegate are always in device-independent
     // pixels (DIPs), meaning physical pixels divided by device scale factor
-    // (DSF). However, if UseZoomForDSF is enabled, then Blink does not apply
-    // DSF when going from physical to screen pixels. In that case, we need to
-    // multiply DSF back in to get to Blink's notion of "screen pixels."
+    // (DSF). However, Blink does not apply DSF when going from physical to
+    // screen pixels. In that case, we need to multiply DSF back in to get to
+    // Blink's notion of "screen pixels."
     //
     // TODO(vmpstr): This should return physical coordinates always to avoid
     // confusion in the calling code. The calling code should be responsible
     // for converting to whatever space necessary.
-    if (IsUseZoomForDSFEnabled() && device_scale_factor() > 0.0 &&
-        device_scale_factor() != 1.0) {
+    if (device_scale_factor() > 0.0 && device_scale_factor() != 1.0) {
       bounds = ScaleToEnclosingRect(bounds, device_scale_factor());
     }
     return bounds;
@@ -1711,11 +1709,7 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
   if (root_manager && root_manager != this)
     return root_manager->CachingAsyncHitTest(physical_pixel_point);
 
-  gfx::Point blink_screen_point =
-      IsUseZoomForDSFEnabled()
-          ? physical_pixel_point
-          : ScaleToRoundedPoint(physical_pixel_point,
-                                1.0 / device_scale_factor());
+  gfx::Point blink_screen_point = physical_pixel_point;
 
   gfx::Rect screen_view_bounds = GetViewBoundsInScreenCoordinates();
 

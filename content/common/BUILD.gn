@@ -276,7 +276,6 @@ source_set("common") {
       "android/surface_wrapper.h",
       "android/sync_compositor_statics.cc",
       "android/sync_compositor_statics.h",
-      "android/use_zoom_for_dsf_policy_android.cc",
       "cursors/webcursor_android.cc",
       "font_list_android.cc",
     ]

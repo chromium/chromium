@@ -17411,7 +17411,6 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   LayerTreeSettings settings = DefaultSettings();
   settings.percent_based_scrolling = true;
-  settings.use_zoom_for_dsf = true;
   settings.use_painted_device_scale_factor = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 

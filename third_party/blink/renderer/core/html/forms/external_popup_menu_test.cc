@@ -230,8 +230,6 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 #endif
 
 TEST_F(ExternalPopupMenuTest, MAYBE_PopupAccountsForDeviceScaleFactor) {
-  content::TestBlinkWebUnitTestSupport::SetUseZoomForDsfEnabled(true);
-
   RegisterMockedURLLoad("select_mid_screen.html");
   LoadFrame("select_mid_screen.html");
 

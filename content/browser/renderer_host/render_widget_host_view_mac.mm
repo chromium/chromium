@@ -47,7 +47,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_visibility_state.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1887,8 +1886,7 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
   // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
   // which means we have to scale the point by device scale factor.
   gfx::PointF root_point = root_point_in_dips;
-  if (IsUseZoomForDSFEnabled())
-    root_point.Scale(GetDeviceScaleFactor());
+  root_point.Scale(GetDeviceScaleFactor());
 
   gfx::PointF transformed_point;
   RenderWidgetHostImpl* widget_host =
@@ -2248,12 +2246,10 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
             baseline_point_in_layout_space);
       }
     }
-    // If zoom-for-dsf is enabled, then layout space is physical pixels. Scale
+    // Layout space is physical pixels. Scale
     // it to get DIPs, which is what ns_view_ expects.
-    if (IsUseZoomForDSFEnabled()) {
-      updated_baseline_point = gfx::ScaleToRoundedPoint(
-          updated_baseline_point, 1.f / GetDeviceScaleFactor());
-    }
+    updated_baseline_point = gfx::ScaleToRoundedPoint(
+        updated_baseline_point, 1.f / GetDeviceScaleFactor());
     ns_view_->ShowDictionaryOverlay(std::move(attributed_string),
                                     updated_baseline_point);
   }

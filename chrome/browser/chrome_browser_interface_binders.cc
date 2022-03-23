@@ -340,7 +340,6 @@ void BindUnhandledTapWebContentsObserver(
     return;
 
   contextual_search::CreateUnhandledTapNotifierImpl(
-      unhandled_tap_notifier_observer->device_scale_factor(),
       unhandled_tap_notifier_observer->unhandled_tap_callback(),
       std::move(receiver));
 }

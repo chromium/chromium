@@ -347,8 +347,6 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
     // Enable navigator.connection API.
     // TODO(derekjchow): Remove this switch when enabled by default.
     {switches::kEnableNetworkInformationDownlinkMax, ""},
-    // TODO(halliwell): Remove after fixing b/35422666.
-    {switches::kEnableUseZoomForDSF, "false"},
     // TODO(halliwell): Revert after fix for b/63101386.
     {switches::kDisallowNonExactResourceReuse, ""},
     // Disable pinch zoom gesture.

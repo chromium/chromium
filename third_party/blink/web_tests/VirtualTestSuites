@@ -215,14 +215,6 @@
     "args": ["--force-device-scale-factor=2"]
   },
   {
-    "prefix": "scalefactor200withoutzoom",
-    "bases": ["external/wpt/element-timing",
-              "external/wpt/largest-contentful-paint",
-              "inspector-protocol/page/get-layout-metrics-css.js"],
-    "args": ["--force-device-scale-factor=2",
-             "--enable-use-zoom-for-dsf=false"]
-  },
-  {
     "prefix": "jxl-enabled",
     "bases": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js",
               "images/jxl"],

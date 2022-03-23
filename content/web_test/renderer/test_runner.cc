@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/renderer/render_thread_impl.h"
@@ -1724,12 +1723,7 @@ void TestRunnerBindings::SetBackingScaleFactor(
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
 
-  WrapV8Callback(std::move(v8_callback))
-      .Run({
-          // TODO(oshima): remove this callback argument when all platforms are
-          // migrated to use-zoom-for-dsf by default.
-          v8::Boolean::New(isolate, IsUseZoomForDSFEnabled()),
-      });
+  WrapV8Closure(std::move(v8_callback)).Run();
 }
 
 void TestRunnerBindings::SetColorProfile(const std::string& name,

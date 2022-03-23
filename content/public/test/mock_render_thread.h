@@ -85,14 +85,12 @@ class MockRenderThread : public RenderThread {
   blink::WebString GetFullUserAgent() override;
   blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
-  bool IsUseZoomForDSF() override;
 #if BUILDFLAG(IS_WIN)
   void PreCacheFont(const LOGFONT& log_font) override;
   void ReleaseCachedFonts() override;
 #endif
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
-  void SetUseZoomForDSFEnabled(bool zoom_for_dsf);
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
@@ -154,7 +152,6 @@ class MockRenderThread : public RenderThread {
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
 
   std::unique_ptr<mojom::RenderMessageFilter> mock_render_message_filter_;
-  bool zoom_for_dsf_ = false;
 };
 
 }  // namespace content

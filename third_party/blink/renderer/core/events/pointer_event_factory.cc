@@ -87,19 +87,7 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
       !web_pointer_event.is_raw_movement_event &&
       (web_pointer_event.GetType() == WebInputEvent::Type::kPointerMove ||
        web_pointer_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)) {
-    // Current movementX/Y is in physical pixel when zoom-for-dsf is enabled
-    // which matches layout coordinates. If we don't have zoom-for-dsf, we
-    // apply the device-scale-factor to align with the current behavior.
     float device_scale_factor = 1;
-    if (!Platform::Current()->IsUseZoomForDSFEnabled() && dom_window &&
-        dom_window->GetFrame()) {
-      LocalFrame* frame = dom_window->GetFrame();
-      if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
-        ChromeClient& chrome_client = frame->GetPage()->GetChromeClient();
-        device_scale_factor =
-            chrome_client.GetScreenInfo(*frame).device_scale_factor;
-      }
-    }
 
     // movementX/Y is type int for pointerevent, so we still need to truncated
     // the coordinates before calculate movement.

@@ -10,13 +10,9 @@
 
 namespace content {
 
-// First parameter of the tuple = device scale factor
-// Second parameter = whether use-zoom-for-dsf is enabled
-using AccessibilityZoomTestParam = std::tuple<double, bool>;
-
 class AccessibilityHitTestingBrowserTest
     : public AccessibilityContentBrowserTest,
-      public ::testing::WithParamInterface<AccessibilityZoomTestParam> {
+      public ::testing::WithParamInterface<double> {
  public:
   AccessibilityHitTestingBrowserTest();
   ~AccessibilityHitTestingBrowserTest() override;
@@ -24,8 +20,7 @@ class AccessibilityHitTestingBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   struct TestPassToString {
-    std::string operator()(
-        const ::testing::TestParamInfo<AccessibilityZoomTestParam>& info) const;
+    std::string operator()(const ::testing::TestParamInfo<double>& info) const;
   };
 
  protected:

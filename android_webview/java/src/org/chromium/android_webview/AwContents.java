@@ -106,7 +106,6 @@ import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
-import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -4127,12 +4126,6 @@ public class AwContents implements SmartClipProvider {
                 float eventX = event.getX();
                 float eventY = event.getY();
                 float touchMajor = Math.max(event.getTouchMajor(), event.getTouchMinor());
-                if (!UseZoomForDSFPolicy.isUseZoomForDSFEnabled()) {
-                    float dipScale = getDeviceScaleFactor();
-                    eventX /= dipScale;
-                    eventY /= dipScale;
-                    touchMajor /= dipScale;
-                }
                 AwContentsJni.get().requestNewHitTestDataAt(
                         mNativeAwContents, AwContents.this, eventX, eventY, touchMajor);
             }

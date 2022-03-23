@@ -10,7 +10,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/android/content_jni_headers/SelectPopup_jni.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 using base::android::AttachCurrentThread;
@@ -120,8 +119,7 @@ void SelectPopup::ShowMenu(
   // |bounds| is in physical pixels if --use-zoom-for-dsf is enabled.
   // Otherwise, it is in DIP pixels.
   gfx::RectF bounds_dip = gfx::RectF(bounds);
-  if (IsUseZoomForDSFEnabled())
-    bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
+  bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
   view->SetAnchorRect(popup_view, bounds_dip);
   Java_SelectPopup_show(
       env, j_obj, popup_view, reinterpret_cast<jlong>(popup_client_.get()),
