@@ -3278,20 +3278,14 @@ bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
   // special code here (but there should be no need for it).
   DCHECK_EQ(sibling_that_may_be_deleted->ChildrenInline(), ChildrenInline());
 
-  // All children are removed from the flow thread automatically eventually (via
-  // WillBeRemovedFromTree()), but that's a bit too late in this case. We're
-  // about to merge and remove anonymous blocks, and there may be column
-  // spanners inside an inline in these anonymous blocks. If these move around
-  // without telling the flow thread right away, and we *then* remove the
-  // now-needless anonymous block, the flow thread will get confused and
-  // crash. So just remove it from the flow thread before moving stuff around.
-  if (UNLIKELY(sibling_that_may_be_deleted->IsInsideFlowThread()))
-    sibling_that_may_be_deleted->RemoveFromLayoutFlowThread();
-
-  // Take all the children out of the |next| block and put them in
-  // the |prev| block.
+  // Take all the children out of the |next| block and put them in the |prev|
+  // block. If there are paint layers involved, or if we're part of a flow
+  // thread, we need to notify the layout tree about the movement.
+  bool full_remove_insert = sibling_that_may_be_deleted->HasLayer() ||
+                            HasLayer() ||
+                            sibling_that_may_be_deleted->IsInsideFlowThread();
   sibling_that_may_be_deleted->MoveAllChildrenIncludingFloatsTo(
-      this, sibling_that_may_be_deleted->HasLayer() || HasLayer());
+      this, full_remove_insert);
   // Delete the now-empty block's lines and nuke it.
   sibling_that_may_be_deleted->DeleteLineBoxTree();
   sibling_that_may_be_deleted->Destroy();
