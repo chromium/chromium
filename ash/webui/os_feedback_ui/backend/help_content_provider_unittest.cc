@@ -58,8 +58,8 @@ class HelpContentProviderTest : public testing::Test {
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    provider_ =
-        std::make_unique<HelpContentProvider>(test_shared_loader_factory_);
+    provider_ = std::make_unique<HelpContentProvider>(
+        "en", test_shared_loader_factory_);
   }
   ~HelpContentProviderTest() override = default;
 
@@ -121,9 +121,9 @@ TEST_F(HelpContentProviderTest, ConvertToHelpContentType) {
 // Test the ConvertSearchRequestToJson utility function.
 TEST_F(HelpContentProviderTest, ConvertSearchRequestToJson) {
   auto request = SearchRequest::New(u"how do", 10);
-  EXPECT_EQ(R"({"helpcenter":"chromeos","language":"en",)"
+  EXPECT_EQ(R"({"helpcenter":"chromeos","language":"zh",)"
             R"("max_results":"10","query":"how do"})",
-            ConvertSearchRequestToJson(request));
+            ConvertSearchRequestToJson("zh", request));
 }
 
 // Test the PopulateSearchResponse utility function with empty json string.

@@ -156,18 +156,18 @@ HelpContentPtr GetHelpContent(const base::Value::Dict& data) {
 }  // namespace
 
 std::string ConvertSearchRequestToJson(
+    const std::string& app_locale,
     const os_feedback_ui::mojom::SearchRequestPtr& request) {
   base::Value::Dict request_dict;
 
   request_dict.Set("helpcenter", "chromeos");
   request_dict.Set("query", request->query);
-  // TODO(xiangdongkong): use UI language.
-  request_dict.Set("language", "en");
+  request_dict.Set("language", app_locale);
   request_dict.Set("max_results", base::NumberToString(request->max_results));
 
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
-  DVLOG(2) << "HelpContentProvider request body: " << request_content;
+  VLOG(2) << request_content;
   return request_content;
 }
 
@@ -221,13 +221,16 @@ void PopulateSearchResponse(const base::Value& search_result,
 }
 
 HelpContentProvider::HelpContentProvider(
+    const std::string& app_locale,
     content::BrowserContext* browser_context)
-    : url_loader_factory_(browser_context->GetDefaultStoragePartition()
+    : app_locale_(app_locale),
+      url_loader_factory_(browser_context->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()) {}
 
 HelpContentProvider::HelpContentProvider(
+    const std::string& app_locale,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    : app_locale_(app_locale), url_loader_factory_(url_loader_factory) {}
 
 HelpContentProvider::~HelpContentProvider() = default;
 
@@ -238,8 +241,8 @@ void HelpContentProvider::GetHelpContents(
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
-  url_loader->AttachStringForUpload(ConvertSearchRequestToJson(request),
-                                    "application/json");
+  url_loader->AttachStringForUpload(
+      ConvertSearchRequestToJson(app_locale_, request), "application/json");
   url_loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&HelpContentProvider::OnHelpContentSearchResponse,

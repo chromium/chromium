@@ -33,6 +33,7 @@ using GetHelpContentsCallback =
 // Convert a search request to a JSON string as the payload to be sent to the
 // search API.
 std::string ConvertSearchRequestToJson(
+    const std::string& app_locale,
     const os_feedback_ui::mojom::SearchRequestPtr& request);
 
 // Convert the result_type string to HelpContentType.
@@ -65,8 +66,10 @@ void PopulateSearchResponse(
 // GetHelpContents.
 class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
  public:
-  explicit HelpContentProvider(content::BrowserContext* browser_context);
-  explicit HelpContentProvider(
+  HelpContentProvider(const std::string& app_locale,
+                      content::BrowserContext* browser_context);
+  HelpContentProvider(
+      const std::string& app_locale,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   HelpContentProvider(const HelpContentProvider&) = delete;
   HelpContentProvider& operator=(const HelpContentProvider&) = delete;
@@ -91,6 +94,7 @@ class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
   void OnResponseJsonParsed(GetHelpContentsCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
+  std::string app_locale_;
   // Decoder for data decoding service.
   data_decoder::DataDecoder data_decoder_;
   // URLLoaderFactory used for network requests.

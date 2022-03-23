@@ -9,6 +9,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("os_feedback_ui") {
   sources = [
+    "os_feedback_delegate.h",
     "os_feedback_ui.cc",
     "os_feedback_ui.h",
     "os_feedback_untrusted_ui.cc",
