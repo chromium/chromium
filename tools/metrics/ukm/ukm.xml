@@ -8939,7 +8939,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="InputEvent">
-  <owner>hbsong@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Metrics associated with user input events. This event is recorded in Blink
     and may not be recorded for the same page visits as events like PageLoad.
@@ -16757,7 +16759,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Responsiveness.UserInteraction">
-  <owner>hbsong@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Metrics that are associated with user interactions and recorded when users
     interact with web pages. Currently we are interested in keyboard, tap, click
