@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -80,10 +78,6 @@ bool TerminalSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 
 bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
   return true;
-}
-
-bool TerminalSystemAppDelegate::HasTitlebarTerminalSelectNewTabButton() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH);
 }
 
 gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {

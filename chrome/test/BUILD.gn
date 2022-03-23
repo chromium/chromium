@@ -5306,7 +5306,6 @@ test("unit_tests") {
       "../browser/performance_manager/policies/working_set_trimmer_policy_chromeos_unittest.cc",
       "../browser/support_tool/ash/ui_hierarchy_data_collector_unittest.cc",
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
-      "../browser/ui/web_applications/terminal_system_app_menu_model_chromeos_unittest.cc",
       "../browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos_unittest.cc",
     ]
 

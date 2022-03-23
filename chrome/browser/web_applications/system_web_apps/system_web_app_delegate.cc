@@ -127,12 +127,6 @@ bool SystemWebAppDelegate::ShouldShowTabContextMenuShortcut(
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool SystemWebAppDelegate::HasTitlebarTerminalSelectNewTabButton() const {
-  return false;
-}
-#endif
-
 bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   return false;
 }

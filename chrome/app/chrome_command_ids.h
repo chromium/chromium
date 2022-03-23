@@ -81,11 +81,6 @@
 #define IDC_WEB_APP_MENU_APP_INFO    34063
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Terminal system app commands
-#define IDC_TERMINAL_LINUX   34070
-#define IDC_TERMINAL_SSH     34071
-#define IDC_TERMINAL_HOME    34072
-
 // Move window to other user commands
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_2 34080
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_3 34081
