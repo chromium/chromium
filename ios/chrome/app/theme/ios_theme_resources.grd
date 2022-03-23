@@ -27,15 +27,11 @@
            SAME CONDITIONALS. -->
       <structure type="chrome_scaled_image" name="IDR_IOS_CHECKMARK" file="checkmark.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_ERROR" file="error.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_AUTOLOGIN" file="infobar_autologin.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_CLOSE" file="infobar_close.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_RESTORE_SESSION" file="infobar_restore_session.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_SAVE_PASSWORD" file="infobar_save_password.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_SEND_TAB_TO_SELF" file="infobar_send_tab_to_self.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_TRANSLATE" file="infobar_translate.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_HTTPS_VALID" file="omnibox_https_valid.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND" file="omnibox/append_ios.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_PAYMENTS_WARNING" file="payments_warning.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_PROMO_INFO" file="promo_info.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_SETTINGS_INFO_24" file="settings_info_24.png" />
     </structures>
