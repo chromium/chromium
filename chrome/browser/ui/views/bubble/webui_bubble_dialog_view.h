@@ -19,6 +19,9 @@ class WebView;
 }  // namespace views
 
 // A Views bubble host for a BubbleContentsWrapper.
+// NOTE: The anchor rect takes precedence over the anchor view in this class.
+// This is the opposite of the behaviour specified in the
+// BubbleDialogDelegateView base class.
 class WebUIBubbleDialogView : public views::WidgetObserver,
                               public views::BubbleDialogDelegateView,
                               public BubbleContentsWrapper::Host {
@@ -55,6 +58,15 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
     return contents_wrapper_;
   }
   void ResetWebUIContentsForTesting();
+
+  // TODO(ffred): This is necessary because the default behaviour of the bubble
+  // dialog is that anchor view positioning takes precedent over anchor rect.
+  // This will not work because the anchor rect is used to explicitly specify
+  // the positioning of the bubble and the anchor view cannot be null.
+  //
+  // That being said, the base class should reconsider its behaviour so that
+  // this type of override is not necessary.
+  gfx::Rect GetAnchorRect() const override;
 
   virtual void Redraw() {}
 

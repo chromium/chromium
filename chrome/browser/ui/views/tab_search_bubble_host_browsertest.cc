@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
  public:
@@ -56,6 +61,27 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
   RunUntilBubbleWidgetDestroyed();
 }
 
+IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
+                       BubbleShowCorrectlyInFullscreen) {
+  browser()
+      ->exclusive_access_manager()
+      ->fullscreen_controller()
+      ->ToggleBrowserFullscreenMode();
+
+  gfx::Rect rect(gfx::Point(20, 4), gfx::Size());
+  bubble_manager()->ShowBubble(rect);
+
+  bubble_manager()->bubble_view_for_testing()->ShowUI();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsVisible());
+
+  gfx::Rect bound =
+      bubble_manager()->bubble_view_for_testing()->GetAnchorRect();
+  EXPECT_EQ(bound, rect);
+
+  tab_search_bubble_host()->CloseTabSearchBubble();
+  RunUntilBubbleWidgetDestroyed();
+}
+
 // On macOS, most accelerators are handled by CommandDispatcher.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
@@ -75,3 +101,26 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
   RunUntilBubbleWidgetDestroyed();
 }
 #endif
+
+class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
+ public:
+  FullscreenTabSearchBubbleDialogTest() = default;
+
+  FullscreenTabSearchBubbleDialogTest(
+      const FullscreenTabSearchBubbleDialogTest&) = delete;
+  FullscreenTabSearchBubbleDialogTest& operator=(
+      const FullscreenTabSearchBubbleDialogTest&) = delete;
+
+  void ShowUi(const std::string& name) override {
+    browser()
+        ->exclusive_access_manager()
+        ->fullscreen_controller()
+        ->ToggleBrowserFullscreenMode();
+    BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser());
+    view->CreateTabSearchBubble();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
