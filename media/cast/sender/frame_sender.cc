@@ -110,7 +110,7 @@ void FrameSender::ScheduleNextRtcpReport() {
       CastEnvironment::MAIN, FROM_HERE,
       base::BindOnce(&FrameSender::SendRtcpReport, weak_factory_.GetWeakPtr(),
                      true),
-      base::Milliseconds(kRtcpReportIntervalMs));
+      kRtcpReportInterval);
 }
 
 void FrameSender::SendRtcpReport(bool schedule_future_reports) {

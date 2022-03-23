@@ -333,7 +333,7 @@ void FrameReceiver::ScheduleNextRtcpReport() {
   cast_environment_->PostDelayedTask(
       CastEnvironment::MAIN, FROM_HERE,
       base::BindOnce(&FrameReceiver::SendNextRtcpReport, AsWeakPtr()),
-      base::Milliseconds(kRtcpReportIntervalMs));
+      kRtcpReportInterval);
 }
 
 void FrameReceiver::SendNextRtcpReport() {

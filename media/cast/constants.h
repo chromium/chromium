@@ -13,15 +13,14 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
+
 namespace media {
 namespace cast {
 
 // Integer constants set either by the Cast Streaming Protocol Spec or due to
 // design limitations.
 enum Specifications {
-  // Target number of milliseconds between the sending of RTCP reports.  Both
-  // senders and receivers regularly send RTCP reports to their peer.
-  kRtcpReportIntervalMs = 500,
 
   // This is an important system-wide constant.  This limits how much history
   // the implementation must retain in order to process the acknowledgements of
@@ -36,6 +35,10 @@ enum Specifications {
   // per second for video.
   kVideoFrequency = 90000,
 };
+
+// Target time interval between the sending of RTCP reports.  Both
+// senders and receivers regularly send RTCP reports to their peer.
+constexpr base::TimeDelta kRtcpReportInterval = base::Milliseconds(500);
 
 // Success/in-progress/failure status codes reported to clients to indicate
 // readiness state.

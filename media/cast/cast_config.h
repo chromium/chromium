@@ -71,8 +71,7 @@ enum class RtpPayloadType {
 };
 
 // Desired end-to-end latency.
-// TODO(https://crbug.com/1304761): default playout delay should be 400ms.
-constexpr base::TimeDelta kDefaultTargetPlayoutDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kDefaultTargetPlayoutDelay = base::Milliseconds(400);
 
 enum SuggestedDefaults {
   // Audio encoder bitrate.  Zero means "auto," which asks the encoder to select

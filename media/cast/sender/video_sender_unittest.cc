@@ -330,7 +330,7 @@ TEST_F(VideoSenderTest, RtcpTimer) {
 
   // Make sure that we send at least one RTCP packet.
   base::TimeDelta max_rtcp_timeout =
-      base::Milliseconds(1 + kRtcpReportIntervalMs * 3 / 2);
+      base::Milliseconds(1) + kRtcpReportInterval * 3 / 2;
 
   RunTasks(max_rtcp_timeout.InMilliseconds());
   EXPECT_LE(1, transport_->number_of_rtp_packets());
@@ -414,7 +414,9 @@ TEST_F(VideoSenderTest, StopSendingInTheAbsenceOfAck) {
   // than 4 frames in flight.
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
   video_sender_->InsertRawVideoFrame(video_frame, testing_clock_.NowTicks());
-  RunTasks(33);
+  // Give time for the frame to be processed plus handling some of the playout
+  // delay.
+  RunTasks(300);
 
   // Send 3 more frames and record the number of packets sent.
   for (int i = 0; i < 3; ++i) {
