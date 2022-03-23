@@ -97,6 +97,8 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
 
+  options.fSharpenMipmappedTextures = true;
+
   // fSupportBilerpFromGlyphAtlas is needed for Raw Draw.
   options.fSupportBilerpFromGlyphAtlas = features::IsUsingRawDraw();
 

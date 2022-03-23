@@ -3806,9 +3806,20 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list, base::FilePath(FILE_PATH_LITERAL("trilinear_filtering.png")),
-      cc::ExactPixelComparator(true)));
+  // Skia is configured to bias the mipmap LOD by -0.5. However, the GLES 2
+  // implementation that this test runs against doesn't support the bias. So GL
+  // renderer and SkiaGL differ from SkiaVk.
+  if (renderer_type() == RendererType::kSkiaVk) {
+    EXPECT_TRUE(this->RunPixelTest(
+        &pass_list,
+        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering_skia_vk.png")),
+        cc::ExactPixelComparator(true)));
+  } else {
+    EXPECT_TRUE(this->RunPixelTest(
+        &pass_list,
+        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering.png")),
+        cc::ExactPixelComparator(true)));
+  }
 }
 
 class SoftwareRendererPixelTest : public VizPixelTest {
