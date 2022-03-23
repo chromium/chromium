@@ -58,6 +58,7 @@
   E_CPONLY(kColorButtonForegroundDisabled) \
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundUnchecked) \
+  E_CPONLY(kColorCustomFrameCaptionForeground) \
   E_CPONLY(kColorDebugBoundsOutline) \
   E_CPONLY(kColorDebugContentOutline) \
   E_CPONLY(kColorDialogBackground) \

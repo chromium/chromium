@@ -371,8 +371,10 @@ void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
 
   gfx::Rect rect = title_bounds_;
   rect.set_x(GetMirroredXForRect(title_bounds_));
-  canvas->DrawStringRect(delegate->GetWindowTitle(), GetWindowTitleFontList(),
-                         SK_ColorWHITE, rect);
+  canvas->DrawStringRect(
+      delegate->GetWindowTitle(), GetWindowTitleFontList(),
+      GetColorProvider()->GetColor(ui::kColorCustomFrameCaptionForeground),
+      rect);
 }
 
 void CustomFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
