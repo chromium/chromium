@@ -5086,7 +5086,7 @@
   {
     "name": "reduce-display-notifications",
     "owners": [ "baileyberro", "zentaro" ],
-    "expiry_milestone": 82
+    "expiry_milestone": 112
   },
   {
     "name": "reduce-horizontal-fling-velocity",
