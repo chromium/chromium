@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -47,6 +48,11 @@ bool CanQueryTailoredSecurity(Profile* profile) {
 
   if (profile->GetPrefs()->GetBoolean(
           prefs::kAccountTailoredSecurityShownNotification)) {
+    return false;
+  }
+
+  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          profile->GetPrefs())) {
     return false;
   }
 
@@ -100,6 +106,11 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
 
   if (profile->GetPrefs()->GetBoolean(
           prefs::kAccountTailoredSecurityShownNotification)) {
+    return;
+  }
+
+  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          profile->GetPrefs())) {
     return;
   }
 

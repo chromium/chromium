@@ -50,6 +50,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/search_engines",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
