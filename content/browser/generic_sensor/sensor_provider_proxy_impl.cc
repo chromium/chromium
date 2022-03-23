@@ -83,7 +83,7 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
 }
 
 void SensorProviderProxyImpl::OnPermissionRequestCompleted(
-    device::mojom::SensorType type,
+    SensorType type,
     GetSensorCallback callback,
     blink::mojom::PermissionStatus status) {
   if (status != blink::mojom::PermissionStatus::GRANTED || !sensor_provider_) {
