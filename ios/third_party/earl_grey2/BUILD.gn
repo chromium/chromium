@@ -122,6 +122,8 @@ source_set("common_lib") {
     "src/CommonLib/GREYLogger.m",
     "src/CommonLib/GREYObjcRuntime.h",
     "src/CommonLib/GREYObjcRuntime.m",
+    "src/CommonLib/GREYSetup.h",
+    "src/CommonLib/GREYSetup.m",
     "src/CommonLib/GREYStopwatch.h",
     "src/CommonLib/GREYStopwatch.m",
     "src/CommonLib/GREYSwizzler.h",
