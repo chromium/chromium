@@ -154,15 +154,6 @@ Time Time::NowFromSystemTime() {
       std::memory_order_relaxed)();
 }
 
-// static
-Time Time::FromDeltaSinceWindowsEpoch(TimeDelta delta) {
-  return Time(delta.InMicroseconds());
-}
-
-TimeDelta Time::ToDeltaSinceWindowsEpoch() const {
-  return Microseconds(us_);
-}
-
 time_t Time::ToTimeT() const {
   if (is_null())
     return 0;  // Preserve 0 so we can tell it doesn't exist.

@@ -110,6 +110,10 @@ struct DateTime;
 namespace base {
 
 class PlatformThreadHandle;
+class TimeDelta;
+
+template <typename T>
+constexpr TimeDelta Microseconds(T n);
 
 // TimeDelta ------------------------------------------------------------------
 
@@ -589,8 +593,13 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   //       base::Microseconds(LoadFromDatabase()));
   //
   // Do not use `FromInternalValue()` or `ToInternalValue()` for this purpose.
-  static Time FromDeltaSinceWindowsEpoch(TimeDelta delta);
-  TimeDelta ToDeltaSinceWindowsEpoch() const;
+  static constexpr Time FromDeltaSinceWindowsEpoch(TimeDelta delta) {
+    return Time(delta.InMicroseconds());
+  }
+
+  constexpr TimeDelta ToDeltaSinceWindowsEpoch() const {
+    return Microseconds(us_);
+  }
 
   // Converts to/from time_t in UTC and a Time class.
   static constexpr Time FromTimeT(time_t tt);
