@@ -42,12 +42,8 @@ LayoutRect BoxShape::ShapeMarginLogicalBoundingBox() const {
 
 FloatRoundedRect BoxShape::ShapeMarginBounds() const {
   FloatRoundedRect margin_bounds = bounds_;
-  // TODO(crbug.com/1305037): This is different from other callers of Outset(),
-  // because it always wants expansion by radial distance (always produces
-  // rounding) rather than the rules used for other cases of rounded rect
-  // expansion (with sharp corner reservation / cubic reduction of the radius).
   if (ShapeMargin() > 0)
-    margin_bounds.Outset(ShapeMargin());
+    margin_bounds.OutsetForShapeMargin(ShapeMargin());
   return margin_bounds;
 }
 

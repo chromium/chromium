@@ -146,6 +146,16 @@ void FloatRoundedRect::Radii::OutsetForMarginOrShadow(float outset) {
   OutsetCornerForMarginOrShadow(bottom_right_, outset);
 }
 
+void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
+  // We're not sure the following is fully correct for non-circular corners,
+  // but it's definitely close.
+  gfx::SizeF outset_size(outset, outset);
+  top_left_ += outset_size;
+  top_right_ += outset_size;
+  bottom_left_ += outset_size;
+  bottom_right_ += outset_size;
+}
+
 static inline float CornerRectIntercept(float y,
                                         const gfx::RectF& corner_rect) {
   DCHECK_GT(corner_rect.height(), 0);
@@ -223,6 +233,14 @@ void FloatRoundedRect::OutsetForMarginOrShadow(float size) {
     return;
   rect_.Outset(size);
   radii_.OutsetForMarginOrShadow(size);
+}
+
+void FloatRoundedRect::OutsetForShapeMargin(float outset) {
+  DCHECK_GE(outset, 0);
+  if (outset == 0.f)
+    return;
+  rect_.Outset(outset);
+  radii_.OutsetForShapeMargin(outset);
 }
 
 bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {

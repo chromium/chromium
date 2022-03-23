@@ -352,6 +352,21 @@ TEST(FloatRoundedRectTest, InsetToBeNonRenderable) {
   EXPECT_EQ(pie, small_pie);
 }
 
+TEST(FloatRoundedRectTest, OutsetForShapeMargin) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), gfx::SizeF(5, 10),
+                     gfx::SizeF(15, 0), gfx::SizeF(0, 30), gfx::SizeF(0, 0));
+  r.OutsetForShapeMargin(0);
+  EXPECT_EQ(
+      FloatRoundedRect(gfx::RectF(0, 0, 100, 100), gfx::SizeF(5, 10),
+                       gfx::SizeF(15, 0), gfx::SizeF(0, 30), gfx::SizeF(0, 0)),
+      r);
+  r.OutsetForShapeMargin(5);
+  EXPECT_EQ(
+      FloatRoundedRect(gfx::RectF(-5, -5, 110, 110), gfx::SizeF(10, 15),
+                       gfx::SizeF(20, 5), gfx::SizeF(5, 35), gfx::SizeF(5, 5)),
+      r);
+}
+
 TEST(FloatRoundedRectTest, ToString) {
   gfx::SizeF corner_rect(1, 2);
   FloatRoundedRect rounded_rect(
