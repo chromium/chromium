@@ -104,15 +104,6 @@ Currently supported additional index fields are:
 *   `profile.form_factor`
 *   `profile.system_ram`
 
-### Aggregation by Metrics in the Same Event
-
-Aggregation can occur against other metrics of the same event by listing
-"metrics._foo_" as an index field. That other metric must also have `history`,
-`statistics`, and `**enumeration**` tags.
-
-**NOTE:** There is currently a limitation that only _one_ (1) `index` tag can
-include such a reference.
-
 ### Enumeration Proportions
 
 Proportions are calculated against the number of "page loads" (meaning per
