@@ -2110,7 +2110,7 @@ void PaintLayer::UpdateFilterReferenceBox() {
   if (!HasFilterThatMovesPixels())
     return;
   PhysicalRect result = LocalBoundingBox();
-  ExpandRectForSelfPaintingDescendants(*this, result);
+  ExpandRectForSelfPaintingDescendants(result);
   gfx::RectF reference_box(result);
   if (!ResourceInfo() || ResourceInfo()->FilterReferenceBox() != reference_box)
     GetLayoutObject().SetNeedsPaintPropertyUpdate();
@@ -2251,7 +2251,6 @@ PhysicalRect PaintLayer::FragmentsBoundingBox(
 }
 
 void PaintLayer::ExpandRectForSelfPaintingDescendants(
-    const PaintLayer& composited_layer,
     PhysicalRect& result) const {
   // If we're locked, then the subtree does not contribute painted output.
   // Furthermore, we might not have up-to-date sizing and position information
@@ -2272,8 +2271,34 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
 
   PaintLayerPaintOrderIterator iterator(this, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
-    result.Unite(
-        child_layer->BoundingBoxForCompositingInternal(composited_layer, this));
+    if (!child_layer->IsSelfPaintingLayer())
+      continue;
+
+    // The layer created for the LayoutFlowThread is just a helper for painting
+    // and hit-testing, and should not contribute to the bounding box. The
+    // LayoutMultiColumnSets will contribute the correct size for the layout
+    // content of the multicol container.
+    if (child_layer->GetLayoutObject().IsLayoutFlowThread())
+      continue;
+
+    PhysicalRect added_rect = child_layer->LocalBoundingBox();
+    child_layer->ExpandRectForSelfPaintingDescendants(added_rect);
+
+    // Only enlarge by the filter outsets if we know the filter is going to be
+    // rendered in software.  Accelerated filters will handle their own outsets.
+    if (child_layer->PaintsWithFilters())
+      added_rect = child_layer->MapRectForFilter(added_rect);
+
+    if (child_layer->Transform()) {
+      added_rect = PhysicalRect::EnclosingRect(
+          child_layer->Transform()->MapRect(gfx::RectF(added_rect)));
+    }
+
+    PhysicalOffset delta;
+    child_layer->ConvertToLayerCoords(this, delta);
+    added_rect.Move(delta);
+
+    result.Unite(added_rect);
   }
 }
 
@@ -2291,64 +2316,6 @@ bool PaintLayer::KnownToClipSubtree() const {
     return true;
   }
   return false;
-}
-
-PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
-    const PaintLayer& composited_layer,
-    const PaintLayer* stacking_parent) const {
-  DCHECK_GE(GetLayoutObject().GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kInPrePaint);
-  if (!IsSelfPaintingLayer())
-    return PhysicalRect();
-
-  // FIXME: This could be improved to do a check like
-  // hasVisibleNonCompositingDescendantLayers() (bug 92580).
-  if (this != &composited_layer && !HasVisibleContent() &&
-      !HasVisibleDescendant())
-    return PhysicalRect();
-
-  if (GetLayoutObject().IsEffectiveRootScroller() || IsRootLayer()) {
-    // In root layer scrolling mode, the main GraphicsLayer is the size of the
-    // layout viewport. In non-RLS mode, it is the union of the layout viewport
-    // and the document's layout overflow rect.
-    gfx::Rect result = gfx::Rect();
-    if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView())
-      result = gfx::Rect(gfx::Point(), frame_view->Size());
-    return PhysicalRect(result);
-  }
-
-  // The layer created for the LayoutFlowThread is just a helper for painting
-  // and hit-testing, and should not contribute to the bounding box. The
-  // LayoutMultiColumnSets will contribute the correct size for the layout
-  // content of the multicol container.
-  if (GetLayoutObject().IsLayoutFlowThread())
-    return PhysicalRect();
-
-  PhysicalRect result = LocalBoundingBox();
-  ExpandRectForSelfPaintingDescendants(composited_layer, result);
-
-  // Only enlarge by the filter outsets if we know the filter is going to be
-  // rendered in software.  Accelerated filters will handle their own outsets.
-  if (PaintsWithFilters())
-    result = MapRectForFilter(result);
-
-  if (Transform()) {
-    result =
-        PhysicalRect::EnclosingRect(Transform()->MapRect(gfx::RectF(result)));
-  }
-
-  if (ShouldFragmentCompositedBounds(&composited_layer)) {
-    ConvertFromFlowThreadToVisualBoundingBoxInAncestor(&composited_layer,
-                                                       result);
-    return result;
-  }
-
-  if (stacking_parent) {
-    PhysicalOffset delta;
-    ConvertToLayerCoords(stacking_parent, delta);
-    result.Move(delta);
-  }
-  return result;
 }
 
 bool PaintLayer::SupportsSubsequenceCaching() const {

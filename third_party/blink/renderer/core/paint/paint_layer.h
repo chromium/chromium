@@ -807,14 +807,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     needs_paint_phase_float_ |= layer.needs_paint_phase_float_;
   }
 
-  void ExpandRectForSelfPaintingDescendants(const PaintLayer& composited_layer,
-                                            PhysicalRect& result) const;
-
-  // The return value is in the space of |stackingParent|, if non-null, or
-  // |this| otherwise.
-  PhysicalRect BoundingBoxForCompositingInternal(
-      const PaintLayer& composited_layer,
-      const PaintLayer* stacking_parent) const;
+  void ExpandRectForSelfPaintingDescendants(PhysicalRect& result) const;
 
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
