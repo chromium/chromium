@@ -39,6 +39,11 @@ class FormGroup {
   // returned value. For user-visible strings, use GetInfo() instead.
   virtual std::u16string GetRawInfo(ServerFieldType type) const = 0;
 
+  // Same as |GetRawInfo()|, but as an integer. This is only supported for types
+  // that stores their data as an integer internally to avoid unnecessary
+  // conversions.
+  virtual int GetRawInfoAsInt(ServerFieldType type) const;
+
   // Finalization routine that should be called after importing a FormGroup.
   // Returns true if the finalization was successful.
   bool FinalizeAfterImport();
@@ -52,7 +57,13 @@ class FormGroup {
       const std::u16string& value,
       structured_address::VerificationStatus status) = 0;
 
-  // Convenience wrapper to allow passing the status as an integer.
+  // Convenience wrapper to allow passing the |value| as an integer.
+  virtual void SetRawInfoAsIntWithVerificationStatus(
+      ServerFieldType type,
+      int value,
+      structured_address::VerificationStatus status);
+
+  // Convenience wrapper to allow passing the |status| as an integer.
   void SetRawInfoWithVerificationStatusInt(ServerFieldType type,
                                            const std::u16string& value,
                                            int status);
@@ -61,6 +72,9 @@ class FormGroup {
   // |structured_address::VerificationStatus::kNoStatus| to
   // |SetRawInfoWithVerificationStatus|.
   void SetRawInfo(ServerFieldType type, const std::u16string& value);
+
+  // Same as |SetRawInfo()| without a verification status, but with an integer.
+  void SetRawInfoAsInt(ServerFieldType type, int value);
 
   // Returns true iff the string associated with |type| is nonempty (without
   // canonicalizing its value).

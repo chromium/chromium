@@ -19,19 +19,30 @@ bool operator==(const Birthdate& a, const Birthdate& b) {
 std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
   DCHECK_EQ(AutofillType(type).group(), FieldTypeGroup::kBirthdateField);
 
-  auto ToStringOrEmpty = [](int n) {
-    return n != 0 ? base::NumberToString16(n) : std::u16string();
-  };
-
   switch (type) {
     case BIRTHDATE_DAY:
-      return ToStringOrEmpty(day_);
     case BIRTHDATE_MONTH:
-      return ToStringOrEmpty(month_);
-    case BIRTHDATE_YEAR_4_DIGITS:
-      return ToStringOrEmpty(year_);
+    case BIRTHDATE_YEAR_4_DIGITS: {
+      int value = GetRawInfoAsInt(type);
+      return value != 0 ? base::NumberToString16(value) : std::u16string();
+    }
     default:
+      NOTREACHED();
       return std::u16string();
+  }
+}
+
+int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
+  switch (type) {
+    case BIRTHDATE_DAY:
+      return day_;
+    case BIRTHDATE_MONTH:
+      return month_;
+    case BIRTHDATE_YEAR_4_DIGITS:
+      return year_;
+    default:
+      NOTREACHED();
+      return 0;
   }
 }
 
@@ -40,13 +51,28 @@ void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                  VerificationStatus status) {
   DCHECK_EQ(AutofillType(type).group(), FieldTypeGroup::kBirthdateField);
 
-  // If |value| is not a number, |StringToInt()| sets it to 0, which will clear
-  // the field.
-  int int_value;
-  base::StringToInt(value, &int_value);
+  switch (type) {
+    case BIRTHDATE_DAY:
+    case BIRTHDATE_MONTH:
+    case BIRTHDATE_YEAR_4_DIGITS: {
+      // If |value| is not a number, |StringToInt()| sets it to 0, which will
+      // clear the field.
+      int int_value;
+      base::StringToInt(value, &int_value);
+      SetRawInfoAsIntWithVerificationStatus(type, int_value, status);
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+}
 
-  auto ValueIfInRangeOrZero = [int_value](int lower_bound, int upper_bound) {
-    return lower_bound <= int_value && int_value <= upper_bound ? int_value : 0;
+void Birthdate::SetRawInfoAsIntWithVerificationStatus(
+    ServerFieldType type,
+    int value,
+    VerificationStatus status) {
+  auto ValueIfInRangeOrZero = [value](int lower_bound, int upper_bound) {
+    return lower_bound <= value && value <= upper_bound ? value : 0;
   };
   // Set the appropriate field to |int_value| if it passes some rudimentary
   // validation. Otherwise clear it.

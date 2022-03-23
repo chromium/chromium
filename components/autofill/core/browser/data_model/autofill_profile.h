@@ -71,9 +71,17 @@ class AutofillProfile : public AutofillDataModel {
                         ServerFieldTypeSet* matching_types) const override;
 
   std::u16string GetRawInfo(ServerFieldType type) const override;
+
+  int GetRawInfoAsInt(ServerFieldType type) const override;
+
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
       const std::u16string& value,
+      structured_address::VerificationStatus status) override;
+
+  void SetRawInfoAsIntWithVerificationStatus(
+      ServerFieldType type,
+      int value,
       structured_address::VerificationStatus status) override;
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;

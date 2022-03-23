@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/form_group.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -47,6 +48,11 @@ void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
     if (!GetInfo(AutofillType(type), app_locale).empty())
       non_empty_types->insert(type);
   }
+}
+
+int FormGroup::GetRawInfoAsInt(ServerFieldType type) const {
+  NOTREACHED();
+  return 0;
 }
 
 bool FormGroup::HasRawInfo(ServerFieldType type) const {
@@ -133,8 +139,11 @@ bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-void FormGroup::SetRawInfo(ServerFieldType type, const std::u16string& value) {
-  SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+void FormGroup::SetRawInfoAsIntWithVerificationStatus(
+    ServerFieldType type,
+    int value,
+    VerificationStatus status) {
+  SetRawInfoWithVerificationStatus(type, base::NumberToString16(value), status);
 }
 
 void FormGroup::SetRawInfoWithVerificationStatusInt(ServerFieldType type,
@@ -142,6 +151,15 @@ void FormGroup::SetRawInfoWithVerificationStatusInt(ServerFieldType type,
                                                     int status) {
   SetRawInfoWithVerificationStatus(type, value,
                                    static_cast<VerificationStatus>(status));
+}
+
+void FormGroup::SetRawInfo(ServerFieldType type, const std::u16string& value) {
+  SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+}
+
+void FormGroup::SetRawInfoAsInt(ServerFieldType type, int value) {
+  SetRawInfoAsIntWithVerificationStatus(type, value,
+                                        VerificationStatus::kNoStatus);
 }
 
 VerificationStatus FormGroup::GetVerificationStatusImpl(
