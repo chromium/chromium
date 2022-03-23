@@ -70,6 +70,10 @@ void ActionView::RemoveEditMenu() {
   display_overlay_controller_->RemoveActionEditMenu();
 }
 
+void ActionView::ShowErrorMsg(base::StringPiece error_msg) {
+  display_overlay_controller_->AddEditErrorMsg(this, error_msg);
+}
+
 void ActionView::AddEditButton() {
   if (!editable_ || menu_entry_)
     return;

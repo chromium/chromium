@@ -29,6 +29,12 @@ constexpr char kFontSytle[] = "Google Sans";
 constexpr int kViewFontSize = 16;
 constexpr int kUnFocusFontSize = 16;
 constexpr int kFocusFontSize = 20;
+
+// UI strings.
+// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
+// after UX/UI strings are confirmed.
+constexpr base::StringPiece kEditErrorSameKey("Same key");
+
 }  // namespace
 
 std::string GetDisplayText(const ui::DomCode code) {
@@ -66,6 +72,11 @@ gfx::Size ActionLabel::CalculatePreferredSize() const {
 }
 
 void ActionLabel::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() == ui::ET_KEY_PRESSED)
+    return;
+  if (base::UTF8ToUTF16(GetDisplayText(event->code())) == GetText())
+    static_cast<ActionTag*>(parent())->ShowErrorMsg(kEditErrorSameKey);
+
   // TODO(cuicuiruan): Change the key mapping according to the key input.
 }
 
@@ -73,7 +84,6 @@ void ActionLabel::OnFocus() {
   SetToEditFocus();
   SelectAll();
   Label::OnFocus();
-  static_cast<ActionTag*>(parent())->OnActionLabelFocused();
 }
 
 void ActionLabel::OnBlur() {

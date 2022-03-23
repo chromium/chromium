@@ -129,8 +129,8 @@ void ActionTag::SetDisplayMode(DisplayMode mode) {
   }
 }
 
-void ActionTag::OnActionLabelFocused() {
-  static_cast<ActionView*>(parent())->RemoveEditMenu();
+void ActionTag::ShowErrorMsg(base::StringPiece error_msg) {
+  static_cast<ActionView*>(parent())->ShowErrorMsg(error_msg);
 }
 
 gfx::Size ActionTag::CalculatePreferredSize() const {

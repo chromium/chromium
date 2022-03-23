@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_TAG_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_TAG_H_
 
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/views/view.h"
@@ -17,6 +18,8 @@ namespace input_overlay {
 class ActionTag : public views::View {
  public:
   ActionTag();
+  ActionTag(const ActionTag&) = delete;
+  ActionTag& operator=(const ActionTag&) = delete;
   ~ActionTag() override;
 
   static std::unique_ptr<ActionTag> CreateTextActionTag(std::string text);
@@ -24,7 +27,7 @@ class ActionTag : public views::View {
       std::string mouse_action);
 
   void SetDisplayMode(DisplayMode mode);
-  void OnActionLabelFocused();
+  void ShowErrorMsg(base::StringPiece error_msg);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_mode_exit_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
@@ -44,10 +46,12 @@ DisplayOverlayController::DisplayOverlayController(
   // launching and showing the educational dialog. Redo the logic here when the
   // educational dialog is ready.
   SetDisplayMode(DisplayMode::kView);
+  ash::Shell::Get()->AddPreTargetHandler(this);
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
   RemoveOverlayIfAny();
+  ash::Shell::Get()->RemovePreTargetHandler(this);
 }
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
@@ -279,7 +283,6 @@ DisplayOverlayController::GetOverlayMenuEntryBounds() {
 }
 
 void DisplayOverlayController::AddActionEditMenu(ActionView* anchor) {
-  RemoveActionEditMenu();
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);
   if (!overlay_widget)
@@ -298,6 +301,37 @@ void DisplayOverlayController::RemoveActionEditMenu() {
     return;
   action_edit_menu_->parent()->RemoveChildViewT(action_edit_menu_);
   action_edit_menu_ = nullptr;
+}
+
+void DisplayOverlayController::AddEditErrorMsg(ActionView* action_view,
+                                               base::StringPiece error_msg) {
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  if (!overlay_widget)
+    return;
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+  if (!parent_view)
+    return;
+  auto error = std::make_unique<ErrorView>(this, action_view, error_msg);
+  error_ = parent_view->AddChildView(std::move(error));
+}
+
+void DisplayOverlayController::RemoveEditErrorMsg() {
+  if (!error_)
+    return;
+  error_->parent()->RemoveChildViewT(error_);
+  error_ = nullptr;
+}
+
+void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED)
+    ProcessPressedEvent(*event);
+}
+
+void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
+  if (event->type() == ui::ET_TOUCH_PRESSED)
+    ProcessPressedEvent(*event);
 }
 
 bool DisplayOverlayController::HasMenuView() const {
@@ -332,6 +366,26 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
   if (!touch_injector_)
     return false;
   return touch_injector_->touch_injector_enable();
+}
+
+void DisplayOverlayController::ProcessPressedEvent(
+    const ui::LocatedEvent& event) {
+  if (!action_edit_menu_ && !error_)
+    return;
+
+  if (action_edit_menu_) {
+    auto bounds = action_edit_menu_->GetBoundsInScreen();
+    auto root_location = event.root_location();
+    if (!bounds.Contains(root_location))
+      RemoveActionEditMenu();
+  }
+
+  if (error_) {
+    auto bounds = error_->GetBoundsInScreen();
+    auto root_location = event.root_location();
+    if (!bounds.Contains(root_location))
+      RemoveEditErrorMsg();
+  }
 }
 
 }  // namespace input_overlay

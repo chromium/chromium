@@ -45,6 +45,8 @@ class ActionView : public views::View {
   gfx::Point GetEditMenuPosition(gfx::Size menu_size);
   void RemoveEditMenu();
 
+  void ShowErrorMsg(base::StringPiece error_msg);
+
  protected:
   // Reference to the action of this UI.
   raw_ptr<Action> action_ = nullptr;
