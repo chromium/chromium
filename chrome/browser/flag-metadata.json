@@ -5745,6 +5745,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "translate-message-ui",
+    "owners": [ "sclittle", "chrome-language@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "trim-on-memory-pressure",
     "owners": [ "bgeffon" ],
     "expiry_milestone": 90
