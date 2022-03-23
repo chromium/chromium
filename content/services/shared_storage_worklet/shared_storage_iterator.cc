@@ -4,6 +4,7 @@
 
 #include "content/services/shared_storage_worklet/shared_storage_iterator.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"

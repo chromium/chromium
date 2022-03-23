@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/task_traits.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
 #include "content/browser/background_sync/background_sync_manager.h"

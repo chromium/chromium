@@ -9,6 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/task/bind_post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_process_host.h"

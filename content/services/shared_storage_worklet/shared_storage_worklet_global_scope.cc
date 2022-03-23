@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/services/shared_storage_worklet/console.h"
 #include "content/services/shared_storage_worklet/module_script_downloader.h"
 #include "content/services/shared_storage_worklet/shared_storage.h"

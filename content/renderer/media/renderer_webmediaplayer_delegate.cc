@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"

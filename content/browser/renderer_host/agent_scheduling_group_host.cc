@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

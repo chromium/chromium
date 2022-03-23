@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
