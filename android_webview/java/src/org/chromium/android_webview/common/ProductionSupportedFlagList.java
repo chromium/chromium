@@ -11,7 +11,6 @@ import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
-import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.components.webrtc.ComponentsWebRtcFeatures;
 import org.chromium.content_public.common.ContentFeatures;
@@ -127,20 +126,6 @@ public final class ProductionSupportedFlagList {
                             + "feature flag until the true runtime cost can be measured."),
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
                     "Enables display cutout (notch) support in WebView for Android P and above."),
-            Flag.baseFeature(PowerSchedulerFeatures.WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES,
-                    "Forces WebView to do rendering work on LITTLE CPU cores on big.LITTLE "
-                            + "architectures"),
-            Flag.baseFeature(PowerSchedulerFeatures.WEBVIEW_POWER_SCHEDULER_THROTTLE_IDLE,
-                    "Restricts all of WebView's out-of-process renderer threads to use only LITTLE "
-                            + "CPU cores on big.LITTLE architectures when the power mode is idle. "
-                            + "WebViewCpuAffinityRestrictToLittleCores, if set, takes precedence "
-                            + "over this flag."),
-            Flag.baseFeature(PowerSchedulerFeatures.POWER_SCHEDULER,
-                    "Enables the Power Scheduler. Defaults to throttling when idle or in no-op "
-                            + "animations, if at least 250ms of CPU time were spent "
-                            + "in the first 500ms after entering idle/no-op animation mode. "
-                            + "Can be further configured via field trial parameters, "
-                            + "see power_scheduler.h/cc for details."),
             Flag.baseFeature(BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                     "Accelerate all canvases in webview."),
             Flag.baseFeature(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,

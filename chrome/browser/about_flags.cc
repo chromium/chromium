@@ -222,7 +222,6 @@
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/external_intents/android/external_intents_features.h"
-#include "components/power_scheduler/power_scheduler_features.h"
 #include "components/translate/content/android/translate_message.h"
 #include "components/webapps/browser/android/features.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -6964,13 +6963,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kConsolidatedSiteStorageControls)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cpu-affinity-restrict-to-little-cores",
-     flag_descriptions::kCpuAffinityRestrictToLittleCoresName,
-     flag_descriptions::kCpuAffinityRestrictToLittleCoresDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         power_scheduler::features::kCpuAffinityRestrictToLittleCores)},
-
     {"enable-surface-control", flag_descriptions::kAndroidSurfaceControlName,
      flag_descriptions::kAndroidSurfaceControlDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidSurfaceControl)},

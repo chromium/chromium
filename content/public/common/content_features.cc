@@ -1170,7 +1170,7 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Takes advantage of specifying which big.LITTLE cores to schedule different
-// threads on. Note this conflicts with PowerScheduler feature.
+// threads on.
 const base::Feature kBigLittleScheduling{"BigLittleScheduling",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

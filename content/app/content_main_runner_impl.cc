@@ -172,7 +172,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
-#include "components/power_scheduler/power_scheduler.h"
 #include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"
 #endif
@@ -1105,11 +1104,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     // Requires base::PowerMonitor to be initialized first.
     AndroidBatteryMetrics::GetInstance();
-
-    // For child processes, this requires allowing of the
-    // sched_setaffinity() syscall in the sandbox (baseline_policy_android.cc).
-    // When this call is removed, the sandbox allowlist should be updated too.
-    power_scheduler::PowerScheduler::GetInstance()->Setup();
 #endif
 
     if (should_start_minimal_browser)

@@ -32,10 +32,6 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/power_scheduler/power_scheduler.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -112,10 +108,6 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
 
 #if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();
-  // For child processes, this requires allowing of the sched_setaffinity()
-  // syscall in the sandbox (baseline_policy_android.cc). When this call is
-  // removed, the sandbox allowlist should be updated too.
-  power_scheduler::PowerScheduler::GetInstance()->Setup();
 #endif
 
   // We can't recover from failing to start the IO thread.

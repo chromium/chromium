@@ -144,7 +144,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/crash/android/pure_java_exception_handler.h"
-#include "components/power_scheduler/power_scheduler.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 // Diagnostics is only available on non-android platforms.
@@ -654,14 +653,6 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // impact non-Chrome embedders like WebView, Cronet etc. This only enables
   // it if not already overridden by command line, field trial etc.
   net::HttpCache::SplitCacheFeatureEnableByDefault();
-
-#if BUILDFLAG(IS_ANDROID)
-  // For child processes, this requires allowlisting of the sched_setaffinity()
-  // syscall in the sandbox (baseline_policy_android.cc). When this call is
-  // removed, the sandbox allowlist should be updated too.
-  power_scheduler::PowerScheduler::GetInstance()
-      ->InitializePolicyFromFeatureList();
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Threading features.

@@ -726,6 +726,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.CpuAffinityExperiments.ProcessAffinityMode"
     enum="CpuAffinityMode" expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -738,6 +741,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.CpuAffinityExperiments.ProcessAffinityUpdateSuccess"
     enum="BooleanSuccess" expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1614,6 +1620,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.PowerScheduler.ThrottlingDuration" units="ms"
     expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1626,6 +1635,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode"
     enum="CpuAffinityMode" expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
