@@ -221,8 +221,10 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
         // 2. Detect element kind. (regular element, custom element, or else.)
         bool is_custom_element =
             CustomElement::IsValidName(AtomicString(name), false);
-        bool is_regular = element->IsHTMLElement() && !is_custom_element &&
-                          !To<HTMLElement>(element)->IsHTMLUnknownElement();
+        bool is_unknown_element =
+            element->IsHTMLElement() &&
+            To<HTMLElement>(element)->IsHTMLUnknownElement();
+        bool is_regular = !is_custom_element && !is_unknown_element;
 
         // 3. If |kind| is `regular` and if |name| is not contained in the
         // baseline element allow list, then 'drop'

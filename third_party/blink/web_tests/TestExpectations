@@ -7554,6 +7554,7 @@ crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriv
 
 # Sanitizer API: Namespace-based tests will partially fail until namespace support is complete.
 crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure ]
+crbug.com/1225606 virtual/mathml-disabled/sanitizer-api-math-namespace-designator.html [ Failure ]
 
 # Flaky failures in finding the reference file on Mac
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/color-custom-property-animation.https.html [ Failure Pass ]
