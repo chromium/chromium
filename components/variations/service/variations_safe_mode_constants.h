@@ -20,7 +20,7 @@ extern const base::FilePath::CharType kVariationsFilename[];
 extern const char kExtendedSafeModeTrial[];
 extern const char kControlGroup[];
 extern const char kDefaultGroup[];
-extern const char kSignalAndWriteViaFileUtilGroup[];
+extern const char kEnabledGroup[];
 
 }  // namespace variations
 

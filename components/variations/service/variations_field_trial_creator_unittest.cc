@@ -1320,8 +1320,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   // Assign the client to a specific experiment group before creating the
   // TestVariationsFieldTrialCreator so that the CleanExitBeacon uses the
   // desired group.
-  int active_group =
-      SetUpExtendedSafeModeExperiment(kSignalAndWriteViaFileUtilGroup);
+  int active_group = SetUpExtendedSafeModeExperiment(kEnabledGroup);
   TestVariationsFieldTrialCreator field_trial_creator(
       local_state(), &variations_service_client, &safe_seed_manager, channel,
       user_data_dir_path());

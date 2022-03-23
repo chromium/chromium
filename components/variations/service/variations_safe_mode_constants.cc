@@ -12,6 +12,6 @@ const base::FilePath::CharType kVariationsFilename[] =
 const char kExtendedSafeModeTrial[] = "ExtendedVariationsSafeMode5";
 const char kControlGroup[] = "Control5";
 const char kDefaultGroup[] = "Default5";
-const char kSignalAndWriteViaFileUtilGroup[] = "SignalAndWriteViaFileUtil5";
+const char kEnabledGroup[] = "SignalAndWriteViaFileUtil5";
 
 }  // namespace variations

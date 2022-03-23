@@ -297,7 +297,7 @@ INSTANTIATE_TEST_SUITE_P(
 // reasons (a) doesn't crash and (b) correctly records the  BeaconFileState
 // metric.
 TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   BadBeaconTestParams params = GetParam();
 
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
@@ -318,7 +318,7 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session exited cleanly.
 TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
@@ -342,7 +342,7 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session did not exit cleanly.
 TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
@@ -456,17 +456,16 @@ INSTANTIATE_TEST_SUITE_P(
                                   .experiment_group = variations::kControlGroup,
                                   .exited_cleanly = true,
                                   .stage = absl::nullopt},
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_CleanExit",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
-            .exited_cleanly = true,
-            .stage = absl::nullopt},
+        MonitoringStageTestParams{.test_name = "ExperimentGroup_CleanExit",
+                                  .experiment_group = variations::kEnabledGroup,
+                                  .exited_cleanly = true,
+                                  .stage = absl::nullopt},
         // Verify that BeaconMonitoringStage::kMissing is emitted when the
         // beacon file does not have a monitoring stage. This can happen because
         // the monitoring stage was added in a later milestone.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_Missing",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
+            .experiment_group = variations::kEnabledGroup,
             .exited_cleanly = false,
             .stage = BeaconMonitoringStage::kMissing},
         // Verify that BeaconMonitoringStage::kExtended is emitted when the
@@ -474,7 +473,7 @@ INSTANTIATE_TEST_SUITE_P(
         // detected due to the Extended Variations Safe Mode experiment.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_Extended",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
+            .experiment_group = variations::kEnabledGroup,
             .exited_cleanly = false,
             .stage = BeaconMonitoringStage::kExtended},
         // Verify that BeaconMonitoringStage::kStatusQuo is emitted when the
@@ -553,7 +552,7 @@ INSTANTIATE_TEST_SUITE_P(
         // kNotMonitoring stage.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_CleanExit_AsynchronousWrite",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
+            .experiment_group = variations::kEnabledGroup,
             .exited_cleanly = true,
             .is_extended_safe_mode = false,
             .stage = BeaconMonitoringStage::kNotMonitoring},
@@ -562,7 +561,7 @@ INSTANTIATE_TEST_SUITE_P(
         // results in a beacon file with the kExtended stage.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_SynchronousWrite",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
+            .experiment_group = variations::kEnabledGroup,
             .exited_cleanly = false,
             .is_extended_safe_mode = true,
             .stage = BeaconMonitoringStage::kExtended},
@@ -571,7 +570,7 @@ INSTANTIATE_TEST_SUITE_P(
         // results in a beacon file with the kStatusQuo stage.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_AsynchronousWrite",
-            .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
+            .experiment_group = variations::kEnabledGroup,
             .exited_cleanly = false,
             .is_extended_safe_mode = false,
             .stage = BeaconMonitoringStage::kStatusQuo}),
@@ -597,10 +596,10 @@ TEST_P(MonitoringStageWritingTest, CheckMonitoringStage) {
 
   // Check that experiment group clients have a beacon file and that control
   // group clients do not.
-  EXPECT_EQ(group == variations::kSignalAndWriteViaFileUtilGroup,
+  EXPECT_EQ(group == variations::kEnabledGroup,
             base::PathExists(expected_beacon_file_path));
 
-  if (group == variations::kSignalAndWriteViaFileUtilGroup) {
+  if (group == variations::kEnabledGroup) {
     // For experiment group clients, check the beacon file contents.
     std::string beacon_file_contents;
     ASSERT_TRUE(base::ReadFileToString(expected_beacon_file_path,
@@ -643,10 +642,9 @@ TEST_F(CleanExitBeaconTest,
 // VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode().
 TEST_F(CleanExitBeaconTest,
        WriteBeaconValue_SynchronousWriteDcheck_ExperimentGroup) {
-  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
-  ASSERT_EQ(
-      variations::kSignalAndWriteViaFileUtilGroup,
-      base::FieldTrialList::FindFullName(variations::kExtendedSafeModeTrial));
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
+  ASSERT_EQ(variations::kEnabledGroup, base::FieldTrialList::FindFullName(
+                                           variations::kExtendedSafeModeTrial));
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
   EXPECT_DCHECK_DEATH(

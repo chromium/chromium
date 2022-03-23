@@ -199,7 +199,7 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
   sub_test.AppendSwitch(::switches::kSingleProcessTests);
   sub_test.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
 
-  const std::string group_name = kSignalAndWriteViaFileUtilGroup;
+  const std::string group_name = kEnabledGroup;
   // Select the extended variations safe mode field trial group. The "*"
   // prefix forces the experiment/trial state to "active" at startup.
   sub_test.AppendSwitchASCII(

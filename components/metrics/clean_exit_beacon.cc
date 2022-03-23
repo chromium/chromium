@@ -39,8 +39,8 @@ namespace {
 
 using ::variations::kControlGroup;
 using ::variations::kDefaultGroup;
+using ::variations::kEnabledGroup;
 using ::variations::kExtendedSafeModeTrial;
-using ::variations::kSignalAndWriteViaFileUtilGroup;
 using ::variations::prefs::kVariationsCrashStreak;
 
 const char kMonitoringStageKey[] = "monitoring_stage";
@@ -67,7 +67,7 @@ void RecordMonitoringStage(base::Value* beacon_file_contents) {
     }
   } else {
     DCHECK_NE(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
-              kSignalAndWriteViaFileUtilGroup);
+              kEnabledGroup);
     // Clients that are not in the experiment group always emit kStatusQuo.
     stage = BeaconMonitoringStage::kStatusQuo;
   }
@@ -168,16 +168,15 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // 4. The file contents are in the expected format with the expected info.
 //
 // The file is not expected to exist for clients that have never been in the
-// Extended Variations Safe Mode experiment group,
-// kSignalAndWriteViaFileUtilGroup. The file may not exist for all experiment
-// group clients because there are some are some edge cases. First,
-// MaybeGetFileContents() is called before clients are assigned to an Extended
-// Variations Safe Mode group, so a client that is later assigned to the
-// experiment group will not have the file in the first session after updating
-// to or installing a Chrome version with the experiment. Second, Android Chrome
-// experiment group clients with repeated background sessions may never write a
-// beacon file. Finally, it is possible for a user to delete the file or to
-// reset their variations state with kResetVariationState.
+// Extended Variations Safe Mode experiment group, kEnabledGroup. The file may
+// not exist for all experiment group clients because there are some are some
+// edge cases. First, MaybeGetFileContents() is called before clients are
+// assigned to an Extended Variations Safe Mode group, so a client that is later
+// assigned to the experiment group will not have the file in the first session
+// after updating to or installing a Chrome version with the experiment. Second,
+// Android Chrome experiment group clients with repeated background sessions may
+// never write a beacon file. Finally, it is possible for a user to delete the
+// file or to reset their variations state with kResetVariationState.
 //
 // Note that not all beacon files are expected to have a monitoring stage as
 // this info was added in M100.
@@ -259,7 +258,7 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
 
   int group_probability = channel == version_info::Channel::STABLE ? 1 : 50;
   trial->AppendGroup(kControlGroup, group_probability);
-  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, group_probability);
+  trial->AppendGroup(kEnabledGroup, group_probability);
   return trial->group_name();
 }
 
@@ -289,7 +288,7 @@ void CleanExitBeacon::Initialize() {
     group = SetUpExtendedSafeModeTrial(channel_);
   }
 
-  if (group == kSignalAndWriteViaFileUtilGroup)
+  if (group == kEnabledGroup)
     beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
 
   std::unique_ptr<base::Value> beacon_file_contents =
@@ -318,9 +317,8 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
   absl::optional<bool> beacon_file_beacon_value;
-  bool use_beacon_file =
-      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial) ==
-      kSignalAndWriteViaFileUtilGroup;
+  bool use_beacon_file = base::FieldTrialList::FindFullName(
+                             kExtendedSafeModeTrial) == kEnabledGroup;
   if (use_beacon_file) {
     if (beacon_file_contents) {
       beacon_file_beacon_value = absl::make_optional(
@@ -359,7 +357,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
 
   if (is_extended_safe_mode) {
-    DCHECK_EQ(group_name, kSignalAndWriteViaFileUtilGroup);
+    DCHECK_EQ(group_name, kEnabledGroup);
     DCHECK(!exited_cleanly);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
         "Variations.ExtendedSafeMode.WritePrefsTime");
@@ -385,7 +383,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
     local_state_->CommitPendingWrite();  // Schedule a write.
-    if (group_name == kSignalAndWriteViaFileUtilGroup) {
+    if (group_name == kEnabledGroup) {
       // Clients in this group write to the Variations Safe Mode file whenever
       // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
       // pref because the file is used in the next session.
@@ -488,7 +486,7 @@ void CleanExitBeacon::WriteBeaconFile(
     bool exited_cleanly,
     BeaconMonitoringStage monitoring_stage) const {
   DCHECK_EQ(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
-            kSignalAndWriteViaFileUtilGroup);
+            kEnabledGroup);
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetBoolKey(prefs::kStabilityExitedCleanly, exited_cleanly);
   dict.SetIntKey(kVariationsCrashStreak,

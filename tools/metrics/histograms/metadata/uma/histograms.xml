@@ -107,10 +107,10 @@ chromium-metrics-reviews@google.com.
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Emitted by clients in the |kSignalAndWriteViaFileUtilGroup| of the Extended
-    Variations Safe Mode experiment when the CleanExitBeacon is initialized.
-    Reports the combined state of distinct beacons stored the beacon file and in
-    Local State.
+    Emitted by clients in the |kEnabledGroup| of the Extended Variations Safe
+    Mode experiment when the CleanExitBeacon is initialized. Reports the
+    combined state of distinct beacons stored the beacon file and in Local
+    State.
   </summary>
 </histogram>
 

@@ -56,7 +56,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
       base::StrCat({"--", ::switches::kForceFieldTrials,
                     "=*",  // * -> Force active on startup.
                     variations::kExtendedSafeModeTrial, "/",
-                    variations::kSignalAndWriteViaFileUtilGroup, "/"})};
+                    variations::kEnabledGroup, "/"})};
   return config;
 }
 
