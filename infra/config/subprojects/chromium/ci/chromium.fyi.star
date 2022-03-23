@@ -1347,6 +1347,19 @@ fyi_ios_builder(
         },
     },
 )
+
+fyi_ios_builder(
+    name = "ios-m1-simulator",
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|iOSM1",
+        short_name = "iosM1",
+    ),
+    os = os.MAC_11,
+    cpu = cpu.ARM64,
+    schedule = "0 1,5,9,13,17,21 * * *",
+    triggered_by = [],
+)
+
 fyi_ios_builder(
     name = "ios-reclient",
     console_view_entry = consoles.console_view_entry(
@@ -1409,7 +1422,6 @@ fyi_ios_builder(
         short_name = "sdk14",
     ),
     os = os.MAC_11,
-    cpu = cpu.ARM64,
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
 )

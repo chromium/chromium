@@ -6992,48 +6992,6 @@
       },
     },
 
-    'ios14_sdk_simulator_tests': {
-      'ios_common_tests': {
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_6S_14_5',
-        ],
-      },
-      'ios_crash_unittests': {
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_6S_14_5',
-        ],
-      },
-      'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_7_14_5',
-          'SIM_IPAD_AIR_2_14_5',
-          'SIM_IPHONE_X_14_5',
-        ]
-      },
-      'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_X_14_5',
-          'SIM_IPAD_AIR_2_14_5',
-          'SIM_IPAD_PRO_2ND_GEN_14_5',
-        ]
-      },
-      'ios_screen_size_dependent_tests': {
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_6S_PLUS_14_5',
-          'SIM_IPHONE_6S_14_5',
-          'SIM_IPHONE_SE_1ST_GEN_14_5',
-          'SIM_IPAD_AIR_2_14_5',
-        ],
-      },
-    },
-
     'ios15_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [
@@ -7217,6 +7175,48 @@
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_SE_1ST_GEN_14_4',
           'SIM_IPAD_AIR_2_14_4',
+        ],
+      },
+    },
+
+    'ios_m1_simulator_tests': {
+      'ios_common_tests': {
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_6S_14_5',
+        ],
+      },
+      'ios_crash_unittests': {
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_6S_14_5',
+        ],
+      },
+      'ios_eg2_tests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_7_14_5',
+          'SIM_IPAD_AIR_2_14_5',
+          'SIM_IPHONE_X_14_5',
+        ]
+      },
+      'ios_eg2_cq_tests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_X_14_5',
+          'SIM_IPAD_AIR_2_14_5',
+          'SIM_IPAD_PRO_2ND_GEN_14_5',
+        ]
+      },
+      'ios_screen_size_dependent_tests': {
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_6S_PLUS_14_5',
+          'SIM_IPHONE_6S_14_5',
+          'SIM_IPHONE_SE_1ST_GEN_14_5',
+          'SIM_IPAD_AIR_2_14_5',
         ],
       },
     },

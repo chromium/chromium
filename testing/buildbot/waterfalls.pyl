@@ -3124,6 +3124,24 @@
           'isolated_scripts': 'ios_asan_tests',
         }
       },
+      # ios-m1-sim compiles with xcode version n on M1 mac, and runs
+      # testers with xcode n during an xcode roll.
+      'ios-m1-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_m1_simulator_tests'
+        },
+      },
       # TODO(crbug.com/1254986): remove this after the migration.
       'ios-reclient': {
         'additional_compile_targets': [
@@ -3222,15 +3240,12 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_11_arm64',
+          'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_13_main',
           'xctest',
         ],
-        'test_suites': {
-          'isolated_scripts': 'ios14_sdk_simulator_tests'
-        },
       },
       'ios15-beta-simulator': {
         'additional_compile_targets': [

@@ -251,6 +251,12 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-m1-simulator",
+    os = os.MAC_11,
+    cpu = cpu.ARM64,
+)
+
+ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
@@ -319,7 +325,6 @@ ios_builder(
 ios_builder(
     name = "ios14-sdk-simulator",
     os = os.MAC_11,
-    cpu = cpu.ARM64,
 )
 
 ios_builder(
