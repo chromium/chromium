@@ -13,16 +13,16 @@
 <body>
 <script>
 promise_test(async () => {
-  const frame = attachFencedFrameContext({ html: '<button id="button">Open File</button>'});
+  const frame = attachFencedFrameContext();
   const result = await frame.execute(async () => {
-    await test_driver.click(button);
+    await simulateGesture();
     try {
       const dir = await window.showDirectoryPicker();
       return 'opened directory picker';
     } catch (e) {
       if (e.name === 'NotAllowedError' && e.message === 'Fenced frames are not allowed to show a file picker.') {
         return 'Access to the directory picker was disallowed';
-      } 
+      }
       return `showDirectoryPicker failed with unknown error ${e.name} ${e.message}`;
     }
   });
