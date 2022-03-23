@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_
 
 #include <memory>
 
@@ -15,14 +15,14 @@
 
 class ReadAnythingPageHandler;
 
-class ReadAnythingSidePanelUI
-    : public ui::MojoBubbleWebUIController,
-      public read_anything::mojom::PageHandlerFactory {
+// WebUI that holds the distilled page contents.
+class ReadAnythingUI : public ui::MojoBubbleWebUIController,
+                       public read_anything::mojom::PageHandlerFactory {
  public:
-  explicit ReadAnythingSidePanelUI(content::WebUI* web_ui);
-  ReadAnythingSidePanelUI(const ReadAnythingSidePanelUI&) = delete;
-  ReadAnythingSidePanelUI& operator=(const ReadAnythingSidePanelUI&) = delete;
-  ~ReadAnythingSidePanelUI() override;
+  explicit ReadAnythingUI(content::WebUI* web_ui);
+  ReadAnythingUI(const ReadAnythingUI&) = delete;
+  ReadAnythingUI& operator=(const ReadAnythingUI&) = delete;
+  ~ReadAnythingUI() override;
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -43,4 +43,4 @@ class ReadAnythingSidePanelUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_

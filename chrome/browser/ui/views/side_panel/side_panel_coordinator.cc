@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_side_panel_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -346,14 +346,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
 
 std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
     Browser* browser) {
-  return std::make_unique<SidePanelWebUIViewT<ReadAnythingSidePanelUI>>(
-      browser, base::RepeatingClosure(),
-      base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
-      std::make_unique<BubbleContentsWrapperT<ReadAnythingSidePanelUI>>(
-          GURL(chrome::kChromeUIReadAnythingSidePanelURL), browser->profile(),
-          IDS_READ_ANYTHING_TITLE,
-          /*webui_resizes_host=*/false,
-          /*esc_closes_ui=*/false));
+  return std::make_unique<ReadAnythingContainerView>(browser);
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {

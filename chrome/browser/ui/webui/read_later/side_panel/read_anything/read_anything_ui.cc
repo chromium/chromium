@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_side_panel_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_ui.h"
 
 #include <string>
 #include <utility>
@@ -22,7 +22,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
-ReadAnythingSidePanelUI::ReadAnythingSidePanelUI(content::WebUI* web_ui)
+ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIReadAnythingSidePanelHost);
@@ -39,16 +39,17 @@ ReadAnythingSidePanelUI::ReadAnythingSidePanelUI(content::WebUI* web_ui)
                                 source);
 }
 
-ReadAnythingSidePanelUI::~ReadAnythingSidePanelUI() = default;
+ReadAnythingUI::~ReadAnythingUI() = default;
 
-WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingSidePanelUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingUI)
 
-void ReadAnythingSidePanelUI::BindInterface(
+void ReadAnythingUI::BindInterface(
     mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver) {
   read_anything_page_factory_receiver_.reset();
   read_anything_page_factory_receiver_.Bind(std::move(receiver));
 }
-void ReadAnythingSidePanelUI::CreatePageHandler(
+
+void ReadAnythingUI::CreatePageHandler(
     mojo::PendingRemote<read_anything::mojom::Page> page,
     mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver) {
   DCHECK(page);
