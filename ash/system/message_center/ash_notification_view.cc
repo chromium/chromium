@@ -167,9 +167,12 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
       .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetVisible(false)
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(notification.title())
-                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT))
+      .AddChild(
+          views::Builder<views::Label>()
+              .SetText(notification.title())
+              .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                         message_center::kTitleFontSize,
+                                         gfx::Font::Weight::MEDIUM)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(notification.message())
                     .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
@@ -453,15 +456,14 @@ AshNotificationView::AshNotificationView(
           .SetBackgroundColor(absl::nullopt)
           .SetDrawOverflowIndicator(false)
           .ClipHeightTo(0, std::numeric_limits<int>::max())
-          .SetContents(
-              views::Builder<GroupedNotificationsContainer>()
-                  .CopyAddressTo(&grouped_notifications_container_)
-                  .SetParentNotificationView(this)
-                  .SetOrientation(Orientation::kVertical)
-                  .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
-                  .SetBetweenChildSpacing(
-                      IsExpanded() ? kGroupedNotificationsExpandedSpacing
-                                   : kGroupedNotificationsCollapsedSpacing))
+          .SetContents(views::Builder<GroupedNotificationsContainer>()
+                           .CopyAddressTo(&grouped_notifications_container_)
+                           .SetParentNotificationView(this)
+                           .SetOrientation(Orientation::kVertical)
+                           .SetInsideBorderInsets(
+                               kGroupedNotificationContainerCollapsedInsets)
+                           .SetBetweenChildSpacing(
+                               kGroupedNotificationsCollapsedSpacing))
           .Build());
 
   AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
@@ -710,10 +712,13 @@ const char* AshNotificationView::GetClassName() const {
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
+  // Grouped parent views should always use the expanded paddings, even if they
+  // are collapsed.
+  bool use_expanded_padding = expanded || is_grouped_parent_view_;
   static_cast<views::BoxLayout*>(control_buttons_container_->GetLayoutManager())
       ->set_inside_border_insets(
-          expanded ? kControlButtonsContainerExpandedPadding
-                   : kControlButtonsContainerCollapsedPadding);
+          use_expanded_padding ? kControlButtonsContainerExpandedPadding
+                               : kControlButtonsContainerCollapsedPadding);
 
   bool is_single_expanded_notification =
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
@@ -739,9 +744,11 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   // Custom padding for app icon and expand button. These 2 views should always
   // use the same padding value so that they are vertical aligned.
   app_icon_view_->SetBorder(views::CreateEmptyBorder(
-      expanded ? gfx::Insets() : kAppIconExpandButtonCollapsedPadding));
+      use_expanded_padding ? gfx::Insets()
+                           : kAppIconExpandButtonCollapsedPadding));
   expand_button_container_->SetInteriorMargin(
-      expanded ? gfx::Insets() : kAppIconExpandButtonCollapsedPadding);
+      use_expanded_padding ? gfx::Insets()
+                           : kAppIconExpandButtonCollapsedPadding);
 
   expand_button_->SetExpanded(expanded);
 
@@ -751,11 +758,15 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
           0, CalculateMaxHeightForGroupedNotifications());
     }
 
-    static_cast<views::BoxLayout*>(
-        grouped_notifications_container_->GetLayoutManager())
-        ->set_between_child_spacing(
-            expanded ? kGroupedNotificationsExpandedSpacing
-                     : kGroupedNotificationsCollapsedSpacing);
+    auto* grouped_notifications_container_layout_manager =
+        static_cast<views::BoxLayout*>(
+            grouped_notifications_container_->GetLayoutManager());
+    grouped_notifications_container_layout_manager->set_inside_border_insets(
+        expanded ? kGroupedNotificationContainerExpandedInsets
+                 : kGroupedNotificationContainerCollapsedInsets);
+    grouped_notifications_container_layout_manager->set_between_child_spacing(
+        expanded ? kGroupedNotificationsExpandedSpacing
+                 : kGroupedNotificationsCollapsedSpacing);
 
     int notification_count = 0;
     for (auto* child : grouped_notifications_container_->children()) {

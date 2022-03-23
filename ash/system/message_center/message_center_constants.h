@@ -15,9 +15,13 @@ constexpr int kGroupedCollapsedSummaryTitleLength = 150;
 constexpr int kGroupedCollapsedSummaryMessageLength = 250;
 constexpr gfx::Insets kGroupedCollapsedSummaryInsets(0, 40, 0, 16);
 
-constexpr int kGroupedNotificationsExpandedSpacing = 20;
-constexpr int kGroupedNotificationsCollapsedSpacing = 6;
-constexpr gfx::Insets kGroupedNotificationContainerInsets(8, 0);
+constexpr int kGroupedNotificationsExpandedSpacing = 18;
+constexpr int kGroupedNotificationsCollapsedSpacing = 12;
+constexpr gfx::Insets kGroupedNotificationContainerCollapsedInsets(10,
+                                                                   0,
+                                                                   10,
+                                                                   0);
+constexpr gfx::Insets kGroupedNotificationContainerExpandedInsets(4, 0, 8, 0);
 
 constexpr int kMessagePopupCornerRadius = 16;
 
