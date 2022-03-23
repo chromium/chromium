@@ -14,6 +14,7 @@ using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
+class DefaultModelManager;
 class HistogramSignalHandler;
 class UserActionSignalHandler;
 class UkmDataManager;
@@ -26,7 +27,9 @@ class SignalFilterProcessor {
   SignalFilterProcessor(SegmentInfoDatabase* segment_database,
                         UserActionSignalHandler* user_action_signal_handler,
                         HistogramSignalHandler* histogram_signal_handler,
-                        UkmDataManager* ukm_data_manager);
+                        UkmDataManager* ukm_data_manager,
+                        DefaultModelManager* default_model_manager,
+                        const std::vector<OptimizationTarget>& segment_ids);
   ~SignalFilterProcessor();
 
   // Disallow copy/assign.
@@ -52,6 +55,8 @@ class SignalFilterProcessor {
   raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   raw_ptr<UkmDataManager> ukm_data_manager_;
+  raw_ptr<DefaultModelManager> default_model_manager_;
+  std::vector<OptimizationTarget> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};
 };

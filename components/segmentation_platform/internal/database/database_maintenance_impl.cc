@@ -24,6 +24,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
@@ -93,20 +94,22 @@ DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
     base::Clock* clock,
     SegmentInfoDatabase* segment_info_database,
     SignalDatabase* signal_database,
-    SignalStorageConfig* signal_storage_config)
+    SignalStorageConfig* signal_storage_config,
+    DefaultModelManager* default_model_manager)
     : segment_ids_(segment_ids),
       clock_(clock),
       segment_info_database_(segment_info_database),
       signal_database_(signal_database),
-      signal_storage_config_(signal_storage_config) {}
+      signal_storage_config_(signal_storage_config),
+      default_model_manager_(default_model_manager) {}
 
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
   std::vector<OptimizationTarget> segment_ids(segment_ids_.begin(),
                                               segment_ids_.end());
-  segment_info_database_->GetSegmentInfoForSegments(
-      segment_ids,
+  default_model_manager_->GetAllSegmentInfoFromBothModels(
+      segment_ids, segment_info_database_,
       base::BindOnce(&DatabaseMaintenanceImpl::OnSegmentInfoCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -274,6 +274,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     // The SignalFilterProcessor needs to read the segment information from the
     // database before starting to listen to the updated signals.
     segment_db_->LoadCallback(true);
+    task_environment_.RunUntilIdle();
     //  We should have started recording 1 value histogram, once.
     EXPECT_EQ(
         1,
@@ -309,6 +310,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     // The SignalFilterProcessor needs to read the segment information from the
     // database before starting to listen to the updated signals.
     segment_db_->LoadCallback(true);
+    task_environment_.RunUntilIdle();
     //  We should have started recording 1 value histogram, twice.
     EXPECT_EQ(
         2,

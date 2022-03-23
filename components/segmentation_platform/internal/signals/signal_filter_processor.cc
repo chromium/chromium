@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -84,17 +85,23 @@ SignalFilterProcessor::SignalFilterProcessor(
     SegmentInfoDatabase* segment_database,
     UserActionSignalHandler* user_action_signal_handler,
     HistogramSignalHandler* histogram_signal_handler,
-    UkmDataManager* ukm_data_manager)
+    UkmDataManager* ukm_data_manager,
+    DefaultModelManager* default_model_manager,
+    const std::vector<OptimizationTarget>& segment_ids)
     : segment_database_(segment_database),
       user_action_signal_handler_(user_action_signal_handler),
       histogram_signal_handler_(histogram_signal_handler),
-      ukm_data_manager_(ukm_data_manager) {}
+      ukm_data_manager_(ukm_data_manager),
+      default_model_manager_(default_model_manager),
+      segment_ids_(segment_ids) {}
 
 SignalFilterProcessor::~SignalFilterProcessor() = default;
 
 void SignalFilterProcessor::OnSignalListUpdated() {
-  segment_database_->GetAllSegmentInfo(base::BindOnce(
-      &SignalFilterProcessor::FilterSignals, weak_ptr_factory_.GetWeakPtr()));
+  default_model_manager_->GetAllSegmentInfoFromBothModels(
+      segment_ids_, segment_database_,
+      base::BindOnce(&SignalFilterProcessor::FilterSignals,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SignalFilterProcessor::FilterSignals(

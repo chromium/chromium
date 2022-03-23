@@ -27,6 +27,7 @@ class Time;
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+class DefaultModelManager;
 class SignalDatabase;
 class SignalStorageConfig;
 
@@ -42,7 +43,8 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
       base::Clock* clock,
       SegmentInfoDatabase* segment_info_database,
       SignalDatabase* signal_database,
-      SignalStorageConfig* signal_storage_config);
+      SignalStorageConfig* signal_storage_config,
+      DefaultModelManager* default_model_manager);
   ~DatabaseMaintenanceImpl() override;
 
   // DatabaseMaintenance overrides.
@@ -91,6 +93,9 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   raw_ptr<SegmentInfoDatabase> segment_info_database_;
   raw_ptr<SignalDatabase> signal_database_;
   raw_ptr<SignalStorageConfig> signal_storage_config_;
+
+  // Default model provider.
+  raw_ptr<DefaultModelManager> default_model_manager_;
 
   base::WeakPtrFactory<DatabaseMaintenanceImpl> weak_ptr_factory_{this};
 };
