@@ -37603,6 +37603,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4183" label="BlockingAttributeRenderToken"/>
   <int value="4184" label="ComputePressureObserver_Unobserve"/>
   <int value="4185" label="ComputePressureObserver_Disconnect"/>
+  <int value="4186" label="ComputePressureObserver_TakeRecords"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

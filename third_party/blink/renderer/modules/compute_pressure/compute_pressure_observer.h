@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_update_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -17,6 +18,13 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+
+namespace {
+
+// https://wicg.github.io/compute-pressure/#ref-for-dfn-max-queued-records-1
+constexpr wtf_size_t kMaxQueuedRecords = 10;
+
+}  // namespace
 
 class ExceptionState;
 class ScriptState;
@@ -42,12 +50,12 @@ class ComputePressureObserver final
                                          ComputePressureObserverOptions*,
                                          ExceptionState&);
 
-  static Vector<V8ComputePressureSource> supportedSources();
-
   // ComputePressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, V8ComputePressureSource, ExceptionState&);
-  void unobserve(V8ComputePressureSource);
+  void unobserve(V8ComputePressureSource source);
   void disconnect();
+  HeapVector<Member<ComputePressureRecord>> takeRecords();
+  static Vector<V8ComputePressureSource> supportedSources();
 
   ComputePressureObserver(const ComputePressureObserver&) = delete;
   ComputePressureObserver operator=(const ComputePressureObserver&) = delete;
@@ -77,6 +85,10 @@ class ComputePressureObserver final
 
   // The quantization scheme sent to the browser-side implementation.
   Member<ComputePressureObserverOptions> normalized_options_;
+
+  // Last received records from the platform collector.
+  // The records are only collected when there is a change in the status.
+  HeapVector<Member<ComputePressureRecord>, kMaxQueuedRecords> records_;
 
   // Connection to the browser-side implementation.
   HeapMojoRemote<mojom::blink::ComputePressureHost> compute_pressure_host_;

@@ -3504,6 +3504,7 @@ enum WebFeature {
   kBlockingAttributeRenderToken = 4183,
   kComputePressureObserver_Unobserve = 4184,
   kComputePressureObserver_Disconnect = 4185,
+  kComputePressureObserver_TakeRecords = 4186,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

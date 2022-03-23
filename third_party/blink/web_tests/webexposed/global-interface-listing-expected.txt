@@ -1256,6 +1256,7 @@ interface ComputePressureObserver
     method constructor
     method disconnect
     method observe
+    method takeRecords
     method unobserve
 interface ComputedAccessibleNode
     attribute @@toStringTag

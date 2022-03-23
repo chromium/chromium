@@ -12,7 +12,7 @@ generate_token.py http://127.0.0.1:8000 ComputePressure --expire-timestamp=20000
 'use strict'
 test(t => {
   OriginTrialsHelper.check_properties_exist(this, {
-    'ComputePressureObserver': ['observe', 'unobserve', 'disconnect'],
+    'ComputePressureObserver': ['observe', 'unobserve', 'disconnect', 'takeRecords'],
   });
 }, 'Compute Pressure API interfaces and properties in Origin-Trial enabled document.');
 test(t => {

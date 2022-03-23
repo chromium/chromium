@@ -176,11 +176,20 @@ void ComputePressureObserver::unobserve(V8ComputePressureSource source) {
   // requested source.
   // 2. observer records from the source need to be removed from `records_`
   // 3. receiver_.reset is only necessary when no source is being observed.
+
+  // For now 'cpu' is the only source.
+
+  switch (source.AsEnum()) {
+    case V8ComputePressureSource::Enum::kCpu:
+      records_.clear();
+      break;
+  }
   receiver_.reset();
 }
 
 void ComputePressureObserver::disconnect() {
   receiver_.reset();
+  records_.clear();
 }
 
 void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
@@ -188,6 +197,7 @@ void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
   visitor->Trace(normalized_options_);
   visitor->Trace(compute_pressure_host_);
   visitor->Trace(receiver_);
+  visitor->Trace(records_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
@@ -198,11 +208,27 @@ void ComputePressureObserver::OnUpdate(
   record->setCpuUtilization(state->cpu_utilization);
   record->setCpuSpeed(state->cpu_speed);
 
+  // This should happen infrequently since `records_` is supposed
+  // to be emptied at every callback invoking or takeRecords().
+  if (records_.size() >= kMaxQueuedRecords)
+    records_.erase(records_.begin());
+
+  records_.push_back(record);
+  DCHECK_LE(records_.size(), kMaxQueuedRecords);
+
   observer_callback_->InvokeAndReportException(this, record, this);
 }
 
 void ComputePressureObserver::ContextDestroyed() {
   receiver_.reset();
+}
+
+HeapVector<Member<ComputePressureRecord>>
+ComputePressureObserver::takeRecords() {
+  // This method clears records_.
+  HeapVector<Member<ComputePressureRecord>, kMaxQueuedRecords> records;
+  records.swap(records_);
+  return records;
 }
 
 void ComputePressureObserver::ContextLifecycleStateChanged(
