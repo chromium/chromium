@@ -214,7 +214,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   arrow_nudge_animation_->SetCircleImage(
       kArrowButtonSizeDp / 2, AshColorProvider::Get()->GetControlsLayerColor(
                                   AshColorProvider::ControlsLayerType::
-                                      kControlBackgroundColorInactive));
+                                      kHairlineBorderColor));
 
   arrow_nudge_animation_->set_on_tap_or_click_callback(base::BindRepeating(
       &LoginAuthFactorsView::RelayArrowButtonPressed, base::Unretained(this)));
