@@ -723,7 +723,12 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
 
 QuotaError QuotaDatabase::RazeAndReopen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
+  // Try creating a database one last time if there isn't one.
+  if (!db_) {
+    if (!db_file_path_.empty())
+      sql::Database::Delete(db_file_path_);
+    return EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  }
 
   // Abort the long-running transaction.
   db_->RollbackTransaction();
