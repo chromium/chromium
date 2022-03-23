@@ -28,6 +28,7 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -97,6 +98,15 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
     unsigned channel_count,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  // TODO(crbug.com/1307461): Currently creating a platform destination requires
+  // a valid frame/document. This assumption is incorrect.
+  if (!blink::WebLocalFrame::FrameForCurrentContext()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot change channel count on a detached document.");
+    return;
+  }
 
   // The channelCount for the input to this node controls the actual number of
   // channels we send to the audio hardware. It can only be set if the number
