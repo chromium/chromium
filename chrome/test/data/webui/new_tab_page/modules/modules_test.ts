@@ -100,6 +100,62 @@ suite('NewTabPageModulesModulesTest', () => {
       });
     });
 
+    [true, false].forEach(visible => {
+      test(`first run experience shows if modules ${visible}`, async () => {
+        // Arrange.
+        const fooDescriptor =
+            new ModuleDescriptor('foo', 'Foo', initNullModule);
+        const barDescriptor =
+            new ModuleDescriptor('bar', 'Bar', initNullModule);
+        const bazDescriptor =
+            new ModuleDescriptor('baz', 'Baz', initNullModule);
+        moduleRegistry.setResultFor(
+            'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
+        // Act.
+        const modulesElement = await createModulesElement([
+          {
+            descriptor: fooDescriptor,
+            element: createElement(),
+          },
+          {
+            descriptor: barDescriptor,
+            element: createElement(),
+          }
+        ]);
+        callbackRouterRemote.setDisabledModules(
+            !visible, [barDescriptor.id, bazDescriptor.id]);
+        callbackRouterRemote.setModulesFreVisibility(visible);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Assert.
+        const moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        const moduleWrapperContainers =
+            modulesElement.shadowRoot!.querySelectorAll('.module-container');
+        assertEquals(2, moduleWrappers.length);
+        assertEquals(2, moduleWrapperContainers.length);
+        assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+        if (visible) {
+          assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+        } else {
+          assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
+        }
+        assertNotStyle(moduleWrappers[1]!, 'display', 'none');
+        assertStyle(moduleWrapperContainers[1]!, 'display', 'none');
+        assertNotStyle(moduleWrappers[0]!, 'cursor', 'grab');
+        assertNotStyle(moduleWrappers[1]!, 'cursor', 'grab');
+        const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
+        assertEquals(1, metrics.count(`${histogram}.foo`, visible));
+        assertEquals(1, metrics.count(`${histogram}.bar`, false));
+        assertEquals(1, metrics.count(`${histogram}.baz`, false));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
+        assertEquals(1, handler.getCallCount('updateDisabledModules'));
+        assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
+        assertEquals(1, handler.getCallCount('updateModulesFreVisibility'));
+      });
+    });
+
     test(`clicking customize chrome link sends event`, async () => {
       // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
@@ -110,6 +166,8 @@ suite('NewTabPageModulesModulesTest', () => {
           element: createElement(),
         },
       ]);
+      callbackRouterRemote.setModulesFreVisibility(true);
+      await callbackRouterRemote.$.flushForTesting();
       const customizeModule = capture(modulesElement, 'customize-module');
       render(modulesElement);
 

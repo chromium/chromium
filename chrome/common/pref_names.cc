@@ -1926,6 +1926,8 @@ const char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 const char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
 const char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
+// Whether Modular NTP Desktop v1 First Run Experience is visible.
+const char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
 // List of promos that the user has dismissed while on the NTP.
 const char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.

@@ -75,6 +75,7 @@ class MockPage : public new_tab_page::mojom::Page {
 
   MOCK_METHOD1(SetTheme, void(new_tab_page::mojom::ThemePtr));
   MOCK_METHOD2(SetDisabledModules, void(bool, const std::vector<std::string>&));
+  MOCK_METHOD1(SetModulesFreVisibility, void(bool));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };
@@ -671,4 +672,26 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
 
   handler_->GetModulesOrder(callback.Get());
   EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz"));
+}
+
+TEST_F(NewTabPageHandlerTest, UpdateModulesFreVisibility) {
+  bool expected_visibility = true;
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible,
+                                   expected_visibility);
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            expected_visibility);
+
+  expected_visibility = false;
+  EXPECT_CALL(mock_page_, SetModulesFreVisibility)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](bool arg) { EXPECT_EQ(expected_visibility, arg); }));
+
+  handler_->SetModulesFreVisible(expected_visibility);
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            expected_visibility);
+
+  mock_page_.FlushForTesting();
 }

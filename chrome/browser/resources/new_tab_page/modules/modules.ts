@@ -71,16 +71,6 @@ export class ModulesElement extends PolymerElement {
         value: null,
       },
 
-      /**
-       * When the first run experience (FRE) is disabled and modules are
-       * enabled, we show the modules without a FRE.
-       */
-      showFre_: {
-        reflectToAttribute: true,
-        type: Boolean,
-        computed: `computeShowFre_(modulesLoaded_)`,
-      },
-
       modulesLoaded_: Boolean,
       modulesVisibilityDetermined_: Boolean,
 
@@ -92,16 +82,31 @@ export class ModulesElement extends PolymerElement {
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
-      dragEnabled_: {
+      modulesFreVisible_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        value: false,
+      },
+
+      /**
+       * When the first run experience (FRE) is disabled and modules are
+       * enabled, we show the modules without a FRE.
+       */
+      showModulesFre_: {
         reflectToAttribute: true,
+        type: Boolean,
+        computed: `computeShowModulesFre_(modulesFreVisible_, modulesLoaded_)`,
       },
 
       /** @private {boolean} */
       modulesRedesignedLayoutEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
+        reflectToAttribute: true,
+      },
+
+      dragEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
         reflectToAttribute: true,
       },
     };
@@ -115,13 +120,15 @@ export class ModulesElement extends PolymerElement {
   private disabledModules_: {all: boolean, ids: string[]};
   private removedModuleData_: {message: string, undo: () => void}|null;
   private modulesFirstRunExperienceEnabled_: boolean;
-  private showFre_: boolean;
   private modulesLoaded_: boolean;
   private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
+  private modulesFreVisible_: boolean;
+  private showModulesFre_: boolean;
   private dragEnabled_: boolean;
 
   private setDisabledModulesListenerId_: number|null = null;
+  private setModulesFreVisibilityListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -133,7 +140,14 @@ export class ModulesElement extends PolymerElement {
                   this.disabledModules_ = {all, ids};
                   this.modulesVisibilityDetermined_ = true;
                 });
+    this.setModulesFreVisibilityListenerId_ =
+        NewTabPageProxy.getInstance()
+            .callbackRouter.setModulesFreVisibility.addListener(
+                (visible: boolean) => {
+                  this.modulesFreVisible_ = visible;
+                });
     NewTabPageProxy.getInstance().handler.updateDisabledModules();
+    NewTabPageProxy.getInstance().handler.updateModulesFreVisibility();
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
   }
 
@@ -141,6 +155,8 @@ export class ModulesElement extends PolymerElement {
     super.disconnectedCallback();
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
         assert(this.setDisabledModulesListenerId_!));
+    NewTabPageProxy.getInstance().callbackRouter.removeListener(
+        assert(this.setModulesFreVisibilityListenerId_!));
     this.eventTracker_.removeAll();
   }
 
@@ -149,10 +165,10 @@ export class ModulesElement extends PolymerElement {
     this.renderModules_();
   }
 
-  private computeShowFre_(): boolean {
+  private computeShowModulesFre_(): boolean {
     return (
         loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
-        this.modulesLoaded_);
+        this.modulesLoaded_ && this.modulesFreVisible_);
   }
 
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {
@@ -367,6 +383,10 @@ export class ModulesElement extends PolymerElement {
   private onCustomizeModuleFre_() {
     this.dispatchEvent(
         new Event('customize-module', {bubbles: true, composed: true}));
+  }
+
+  private onModulesFreOptIn_() {
+    NewTabPageProxy.getInstance().handler.setModulesFreVisible(false);
   }
 
   /**

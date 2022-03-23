@@ -399,6 +399,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules, true);
   registry->RegisterListPref(prefs::kNtpModulesOrder, true);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
+  registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -650,6 +651,16 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
                });
 
   std::move(callback).Run(std::move(module_ids));
+}
+
+void NewTabPageHandler::UpdateModulesFreVisibility() {
+  page_->SetModulesFreVisibility(
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible));
+}
+
+void NewTabPageHandler::SetModulesFreVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, visible);
+  UpdateModulesFreVisibility();
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

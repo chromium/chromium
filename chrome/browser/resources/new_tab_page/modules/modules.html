@@ -5,7 +5,7 @@
     --ntp-module-container-padding-top: 16px;
   }
 
-  :host([show-fre_]) #freAndModulesContainer {
+  :host([show-modules-fre_]) #freAndModulesContainer {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
     padding: 20px;
@@ -96,7 +96,7 @@
   }
 </style>
 <div id="freAndModulesContainer">
-  <template is="dom-if" if="[[showFre_]]">
+  <template is="dom-if" if="[[showModulesFre_]]">
     <div id="firstRunExperience">
       <div id="firstRunExperienceTitle">
         $i18n{modulesFirstRunExperienceTitle}
@@ -108,7 +108,7 @@
       <div class="first-run-experience-body">
         $i18nRaw{modulesFirstRunExperienceBodyLine2}
       </div>
-      <cr-button class="action-button">
+      <cr-button class="action-button" on-click="onModulesFreOptIn_">
         $i18n{modulesFirstRunOptInButton}
       </cr-button>
       <cr-button class="cancel-button">
