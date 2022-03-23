@@ -8,15 +8,11 @@
  *
  */
 
-goog.provide('CompositeTts');
-
-goog.require('TtsInterface');
-
 /**
  * A Composite Tts
  * @implements {TtsInterface}
  */
-CompositeTts = class {
+export class CompositeTts {
   constructor() {
     /**
      * @type {Array<TtsInterface>}
@@ -36,6 +32,10 @@ CompositeTts = class {
   }
 
   /**
+   * @param {string} textString
+   * @param {QueueMode} queueMode
+   * @param {Object=} properties
+   * @return {TtsInterface}
    * @override
    */
   speak(textString, queueMode, properties) {
@@ -128,4 +128,4 @@ CompositeTts = class {
       engine.resetTextToSpeechSettings();
     });
   }
-};
+}
