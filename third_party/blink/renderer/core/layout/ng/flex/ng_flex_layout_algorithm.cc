@@ -72,7 +72,9 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
                  MainAxisContentExtent(LayoutUnit::Max()),
                  child_percentage_size_,
                  &Node().GetDocument()) {
-  if (Node().GetLayoutBox()->NeedsDevtoolsInfo())
+  // TODO(layout-dev): Devtools support when there are multiple fragments.
+  if (Node().GetLayoutBox()->NeedsDevtoolsInfo() &&
+      !InvolvedInBlockFragmentation(container_builder_))
     layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
 }
 
@@ -1011,8 +1013,7 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
       continue;
     }
 
-    // TODO(almaher): How should devtools be handled for multiple fragments?
-    if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
+    if (UNLIKELY(layout_info_for_devtools_))
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
 
     flex_line_outputs->push_back(NGFlexLine(line->line_items_.size()));
@@ -1613,15 +1614,12 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
   DCHECK(flex_item);
   NGLayoutResult::EStatus status = NGLayoutResult::kSuccess;
 
-  // TODO(almaher): How should devtools be handled for multiple fragments?
   if (UNLIKELY(layout_info_for_devtools_)) {
     // If this is a "devtools layout", execution speed isn't critical but we
     // have to not adversely affect execution speed of a regular layout.
     PhysicalRect item_rect;
     item_rect.size = fragment_size;
 
-    // TODO(almaher): Is using |total_block_size_| correct in the case of
-    // fragmentation?
     LogicalSize logical_flexbox_size =
         LogicalSize(container_builder_.InlineSize(), total_block_size_);
     PhysicalSize flexbox_size = ToPhysicalSize(
