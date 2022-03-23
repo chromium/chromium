@@ -1063,16 +1063,6 @@ void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
 void ArcAppListPrefs::OnDefaultAppsReady() {
   VLOG(1) << "Default apps ready";
 
-  // Deprecated. Convert uninstalled packages info to hidden default apps and
-  // erase pending perf entry afterward.
-  // TODO (khmel): Remove in M73
-  const std::vector<std::string> uninstalled_package_names =
-      GetPackagesFromPrefs(false /* check_arc_alive */, false /* installed */);
-  for (const auto& uninstalled_package_name : uninstalled_package_names) {
-    default_apps_->SetAppsHiddenForPackage(uninstalled_package_name);
-    RemovePackageFromPrefs(uninstalled_package_name);
-  }
-
   SetDefaultAppsFilterLevel();
   default_apps_ready_ = true;
   if (!default_apps_ready_callback_.is_null())
