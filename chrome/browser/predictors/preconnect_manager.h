@@ -224,6 +224,8 @@ class PreconnectManager {
   void OnProxyLookupFinished(PreresolveJobId job_id, bool success);
   void FinishPreresolveJob(PreresolveJobId job_id, bool success);
   void AllPreresolvesForUrlFinished(PreresolveInfo* info);
+
+  // NOTE: Returns a non-null pointer outside of unittesting contexts.
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   base::WeakPtr<Delegate> delegate_;
