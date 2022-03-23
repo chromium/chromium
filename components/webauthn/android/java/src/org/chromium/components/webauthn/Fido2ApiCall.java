@@ -215,10 +215,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
                     List<WebAuthnCredentialDetails> credentials;
-                    if (data.readInt() == 0) {
-                        mCompletionSource.setException(new NullPointerException());
-                        return false;
-                    }
                     try {
                         mCompletionSource.setResult(Fido2Api.parseCredentialList(data));
                     } catch (IllegalArgumentException e) {

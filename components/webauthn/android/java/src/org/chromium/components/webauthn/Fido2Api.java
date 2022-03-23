@@ -1015,6 +1015,15 @@ public final class Fido2Api {
         ArrayList<WebAuthnCredentialDetails> credentials = new ArrayList<>();
         for (int i = 0; i < numCredentials; i++) {
             WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+
+            // The array is as written by `Parcel.writeArray`. Each element of the array is prefixed
+            // by the class name of that element. The class names will be
+            // "com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo" but that
+            // isn't checked here to avoid depending on the name of the class.
+            if (parcel.readInt() != 4 /* VAL_PARCELABLE */) {
+                throw new IllegalArgumentException();
+            }
+            parcel.readString(); // ignore class name
             Pair<Integer, Integer> header = readHeader(parcel);
             if (header.first != OBJECT_MAGIC) {
                 throw new IllegalArgumentException();
