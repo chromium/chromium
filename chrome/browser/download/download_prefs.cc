@@ -209,6 +209,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
   download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
+  download_bubble_enabled_.Init(prefs::kDownloadBubbleEnabled, prefs);
 
   pref_change_registrar_.Add(
       prefs::kDownloadExtensionsToOpenByPolicy,
@@ -278,6 +279,7 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kSaveFileType,
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
+  registry->RegisterBooleanPref(prefs::kDownloadBubbleEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingForTrustedSourcesEnabled,
                                 true);
 

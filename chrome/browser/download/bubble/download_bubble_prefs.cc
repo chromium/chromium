@@ -8,6 +8,8 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -18,10 +20,12 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
     return false;
   }
 
+  PrefService* prefs = profile->GetPrefs();
+
   // TODO(crbug.com/1307021): Enable download bubble for enhanced protection
   // users, advanced protection users and enterprise connector users once it
   // supports deep scanning.
-  if (safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+  if (safe_browsing::IsEnhancedProtectionEnabled(*prefs)) {
     return false;
   }
 
@@ -42,8 +46,13 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
     return false;
   }
 
-  // TODO(crbug.com/1307021): Create an enterprise policy DownloadBubbleEnabled
-  // and check here.
+  // If the download bubble policy is managed by enterprise admins and it is
+  // set to false, disable download bubble.
+  if (prefs->IsManagedPreference(prefs::kDownloadBubbleEnabled) &&
+      !prefs->GetBoolean(prefs::kDownloadBubbleEnabled)) {
+    return false;
+  }
+
   return true;
 }
 

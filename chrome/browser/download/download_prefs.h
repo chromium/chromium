@@ -164,6 +164,7 @@ class DownloadPrefs {
   FilePathPrefMember save_file_path_;
   IntegerPrefMember save_file_type_;
   IntegerPrefMember download_restriction_;
+  BooleanPrefMember download_bubble_enabled_;
   BooleanPrefMember safebrowsing_for_trusted_sources_enabled_;
 
   PrefChangeRegistrar pref_change_registrar_;

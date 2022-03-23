@@ -7,11 +7,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +34,7 @@ class DownloadBubblePrefsTest : public testing::Test {
   }
 
  protected:
-  Profile* profile_;
+  TestingProfile* profile_;
   base::test::ScopedFeatureList feature_list_;
 
  private:
@@ -62,6 +65,17 @@ TEST_F(DownloadBubblePrefsTest, AdvancedProtectionEnabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(profile_)
       ->SetAdvancedProtectionStatusForTesting(true);
+  EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
+}
+
+TEST_F(DownloadBubblePrefsTest, DownloadBubbleEnabledManaged) {
+  feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(true));
+  EXPECT_TRUE(IsDownloadBubbleEnabled(profile_));
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
 }
 

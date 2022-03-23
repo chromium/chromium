@@ -28,6 +28,7 @@ extern const char kPreinstalledApps[];
 extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];
 extern const char kDownloadRestrictions[];
+extern const char kDownloadBubbleEnabled[];
 extern const char kForceEphemeralProfiles[];
 extern const char kHomePageIsNewTabPage[];
 extern const char kHomePage[];

@@ -4496,6 +4496,35 @@
       'label': '''Set media disk cache size''',
     },
     {
+      'name': 'DownloadBubbleEnabled',
+      'owners': ['file://components/safe_browsing/OWNERS', 'bhatiarohit@chromium.org', 'xinghuilu@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*: 101-', 'chrome_os: 101-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable download bubble UI',
+        },
+        {
+          'value': False,
+          'caption': 'Disable download bubble UI',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 970,
+      'caption': '''Enable download bubble UI''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled or leaving it unset shows the new download bubble UI in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+      Setting the policy to Disabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> keeps showing the old download shelf UI.''',
+    },
+    {
       'name': 'DownloadRestrictions',
       'owners': ['mad@chromium.org', 'zmin@chromium.org'],
       'type': 'int-enum',
@@ -31528,6 +31557,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 969,
+  'highest_id_currently_used': 970,
   'highest_atomic_group_id_currently_used': 42
 }

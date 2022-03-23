@@ -28999,6 +28999,7 @@ Called by update_document_policy_enum.py.-->
   <int value="967" label="SetTimeoutWithout1MsClampEnabled"/>
   <int value="968" label="AllowChromeDataInBackups"/>
   <int value="969" label="FirstPartySetsOverrides"/>
+  <int value="970" label="DownloadBubbleEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

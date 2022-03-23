@@ -49,6 +49,10 @@ const char kDisableScreenshots[] = "disable_screenshots";
 // 4 - Block malicious downloads
 const char kDownloadRestrictions[] = "download_restrictions";
 
+// A boolean specifying whether the new download bubble UI is enabled. If it is
+// set to false, the old download shelf UI will be shown instead.
+const char kDownloadBubbleEnabled[] = "download_bubble_enabled";
+
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 const char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
