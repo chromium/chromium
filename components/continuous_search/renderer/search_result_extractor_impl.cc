@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/continuous_search/common/title_validator.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"

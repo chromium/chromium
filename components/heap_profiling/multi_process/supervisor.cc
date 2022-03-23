@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 #include "components/services/heap_profiling/heap_profiling_service.h"

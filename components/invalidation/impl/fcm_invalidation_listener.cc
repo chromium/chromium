@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_service.h"

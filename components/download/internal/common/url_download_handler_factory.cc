@@ -5,6 +5,7 @@
 #include "components/download/public/common/url_download_handler_factory.h"
 
 #include "base/synchronization/lock.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/common/resource_downloader.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_utils.h"

@@ -5,6 +5,7 @@
 #include "components/content_capture/renderer/content_capture_sender.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/content_capture/common/content_capture_data.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "content/public/renderer/render_frame.h"

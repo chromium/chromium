@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
 namespace offline_pages {

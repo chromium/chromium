@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/payments/content/payment_event_response_util.h"
 #include "components/payments/content/payment_handler_host.h"
 #include "components/payments/content/payment_request_converter.h"

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/common/stream_handle_input_stream.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

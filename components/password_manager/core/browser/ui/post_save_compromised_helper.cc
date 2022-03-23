@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

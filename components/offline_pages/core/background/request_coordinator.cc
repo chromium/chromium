@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_client.h"
