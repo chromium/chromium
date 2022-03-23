@@ -61,17 +61,14 @@
     "args": [
           "--enable-unsafe-webgpu",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--use-gpu-in-tests"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser.",
-          "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "helps match the test behavior with the browser"
     ]
   },
   {
@@ -80,17 +77,14 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--use-gpu-in-tests"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser.",
-          "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "helps match the test behavior with the browser"
     ]
   },
   {
@@ -99,17 +93,14 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation=partial",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--use-gpu-in-tests"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser.",
-          "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "helps match the test behavior with the browser"
     ]
   }
 ]
