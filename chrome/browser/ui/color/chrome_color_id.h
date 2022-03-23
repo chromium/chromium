@@ -178,6 +178,12 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* Payments promo code colors. */ \
+  E_CPONLY(kColorPromoCodeBackground) \
+  E_CPONLY(kColorPromoCodeForeground) \
+  E_CPONLY(kColorPromoCodeForegroundHovered) \
+  E_CPONLY(kColorPromoCodeForegroundPressed) \
+  E_CPONLY(kColorPromoCodeInkDrop) \
   /* PWA colors. */ \
   E_CPONLY(kColorPwaBackground) \
   E_CPONLY(kColorPwaMenuButtonIcon) \

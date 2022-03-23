@@ -313,6 +313,16 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPipWindowHangUpButtonForeground] = {gfx::kGoogleRed300};
   mixer[kColorPipWindowSkipAdButtonBackground] = {gfx::kGoogleGrey700};
   mixer[kColorPipWindowSkipAdButtonBorder] = {kColorPipWindowForeground};
+  mixer[kColorPromoCodeBackground] = {
+      dark_mode ? SkColorSetA(gfx::kGoogleGreen300, 0x1F)
+                : gfx::kGoogleGreen050};
+  mixer[kColorPromoCodeForeground] = {dark_mode ? gfx::kGoogleGreen300
+                                                : gfx::kGoogleGreen800};
+  mixer[kColorPromoCodeForegroundHovered] = {dark_mode ? gfx::kGoogleGreen200
+                                                       : gfx::kGoogleGreen900};
+  mixer[kColorPromoCodeForegroundPressed] = {kColorPromoCodeForegroundHovered};
+  mixer[kColorPromoCodeInkDrop] = {dark_mode ? gfx::kGoogleGreen300
+                                             : gfx::kGoogleGreen600};
   mixer[kColorQrCodeBackground] = {SK_ColorWHITE};
   mixer[kColorQrCodeBorder] = {ui::kColorMidground};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
