@@ -264,6 +264,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
       @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
       @selector(testSearchSuggestedActionsPageSwitch),
+      @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
       /* Add new tests for tab search above this line. */};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
@@ -1918,6 +1919,31 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       assertWithMatcher:grey_minimumVisiblePercent(0.6)];
   [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that a search with no results in incognito mode will show the empty
+// state.
+- (void)testEmptyStateAfterNoResultsSearchForIncognitoTabGrid {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Search with a word that will produce no results and verify that the header
+  // has 0 found results and that the empty state is visible.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"text\n")];
+  [[EarlGrey selectElementWithMatcher:SearchOpenTabsHeaderWithValue(0)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTabGridIncognitoTabsEmptyStateIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Helper Methods
