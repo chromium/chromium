@@ -122,8 +122,10 @@ class UtilityProcessSandboxBrowserTest
       }
 
       case Sandbox::kAudio:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       case Sandbox::kHardwareVideoDecoding:
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       case Sandbox::kIme:
       case Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -168,6 +170,15 @@ class UtilityProcessSandboxBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(UtilityProcessSandboxBrowserTest, VerifySandboxType) {
+#if BUILDFLAG(IS_LINUX)
+  if (GetParam() == Sandbox::kHardwareVideoDecoding) {
+    // TODO(b/195769334): On Linux, this test fails with
+    // Sandbox::kHardwareVideoDecoding because the pre-sandbox hook needs Ozone
+    // which is not available in the utility process that this test starts. We
+    // need to remove the Ozone dependency and re-enable this test.
+    GTEST_SKIP();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
   RunUtilityProcess();
 }
 

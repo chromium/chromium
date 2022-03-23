@@ -6,6 +6,7 @@ module media.stable.mojom;
 
 import "media/mojo/mojom/stable/stable_video_decoder_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // This API is a stable version of VideoDecoder. This is used both by LaCrOS and
 // by out-of-process video decoding to allow the GPU process to forward video
@@ -105,9 +106,23 @@ interface StableVideoDecoder {
   Reset@4() => ();
 };
 
+// Only Chrome-for-Linux and ash-chrome should host the implementation of a
+// StableVideoDecoderFactory.
+[EnableIf=is_linux_or_chromeos_ash]
+const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
+ = sandbox.mojom.Sandbox.kHardwareVideoDecoding;
+[EnableIfNot=is_linux_or_chromeos_ash]
+const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
+ = sandbox.mojom.Sandbox.kNoSandbox;
+
+// A StableVideoDecoderFactory service is intended to be hosted in a utility
+// process in either ash-chrome or Chrome-for-Linux. It allows the browser
+// process to bind a StableVideoDecoder on behalf of some client which can be,
+// e.g., the lacros-chrome browser process or a renderer process in ash-chrome.
 // Next min method ID: 1
-[Stable, Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
+[ServiceSandbox=kStableVideoDecoderFactoryServiceSandbox, Stable,
+Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
 interface StableVideoDecoderFactory {
-  // Used to create StableVideoDecoder interfaces.
+  // Creates a StableVideoDecoder and should be called by the browser process.
   CreateStableVideoDecoder@0(pending_receiver<StableVideoDecoder> receiver);
 };

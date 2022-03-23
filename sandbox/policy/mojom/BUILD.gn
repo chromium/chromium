@@ -24,6 +24,9 @@ mojom("mojom") {
       "is_linux_or_chromeos",
     ]
   }
+  if (is_linux || is_chromeos_ash) {
+    enabled_features += [ "is_linux_or_chromeos_ash" ]
+  }
   if (enable_cros_libassistant) {
     enabled_features += [ "enable_cros_libassistant" ]
   }

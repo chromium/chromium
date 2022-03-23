@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 
-assert(is_chromeos_ash)
+assert(is_linux || is_chromeos_ash)
 
 source_set("sandbox") {
   sources = [

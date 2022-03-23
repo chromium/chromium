@@ -11,10 +11,16 @@ mojom("stable_video_decoder") {
     "stable_video_decoder_types.mojom",
   ]
 
+  enabled_features = []
+  if (is_linux || is_chromeos_ash) {
+    enabled_features += [ "is_linux_or_chromeos_ash" ]
+  }
+
   public_deps = [
     ":native_pixmap_handle",
     "//media/mojo/mojom:encryption_pattern",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
