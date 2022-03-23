@@ -7775,3 +7775,6 @@ crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 crbug.com/1277696 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
 crbug.com/1191990 [ Mac ] http/tests/serviceworker/clients-openwindow.html [ Pass Timeout ]
+
+# Sheriff 2022-03-23: More flaky tests.
+crbug.com/1309483 [ Win7 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
