@@ -5,6 +5,7 @@
 #include "ui/display/display_list.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "ui/display/display_observer.h"
 
 namespace display {

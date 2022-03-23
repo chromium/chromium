@@ -18,6 +18,7 @@
 #include "base/metrics/sample_vector.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"

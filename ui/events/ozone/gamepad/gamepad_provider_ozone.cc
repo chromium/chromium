@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
 #include "ui/events/ozone/gamepad/gamepad_observer.h"
 
 namespace ui {

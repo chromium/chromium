@@ -5,6 +5,7 @@
 #include "ui/views/focus/widget_focus_manager.h"
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 
 namespace views {
 

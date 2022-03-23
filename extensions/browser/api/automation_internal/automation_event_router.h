@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"

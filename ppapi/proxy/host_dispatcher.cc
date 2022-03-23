@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ppapi/c/ppb_var.h"
 #include "ppapi/c/private/ppb_proxy_private.h"

@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_local.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_observer.h"

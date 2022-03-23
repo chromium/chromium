@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_client_session_cache.h"

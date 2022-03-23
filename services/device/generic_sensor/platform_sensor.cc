@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"

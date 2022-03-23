@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_registry.h"
 
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_registry_observer.h"

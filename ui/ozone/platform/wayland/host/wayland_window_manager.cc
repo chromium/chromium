@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
+#include "base/observer_list.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {

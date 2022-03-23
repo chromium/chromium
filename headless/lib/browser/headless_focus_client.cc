@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_focus_client.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window.h"
 

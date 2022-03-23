@@ -4,6 +4,7 @@
 
 #include "ui/views/bubble/tooltip_icon.h"
 
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"

@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 

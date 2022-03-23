@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 
+#include "base/observer_list.h"
+
 namespace blink {
 
 WebGraphicsContext3DProviderWrapper::~WebGraphicsContext3DProviderWrapper() {

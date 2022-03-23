@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/transient_window_controller.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/wm/core/transient_window_manager.h"
 

@@ -5,6 +5,7 @@
 #include "ui/wm/core/focus_controller.h"
 
 #include "base/auto_reset.h"
+#include "base/observer_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"

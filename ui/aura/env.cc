@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"

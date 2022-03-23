@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_config.h"
 
+#include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"

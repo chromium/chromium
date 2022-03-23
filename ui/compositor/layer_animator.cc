@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"

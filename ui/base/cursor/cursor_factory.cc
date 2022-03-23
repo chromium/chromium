@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"

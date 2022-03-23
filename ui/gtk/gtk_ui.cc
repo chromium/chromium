@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
+#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "printing/buildflags/buildflags.h"          // nogncheck

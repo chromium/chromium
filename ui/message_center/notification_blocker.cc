@@ -4,6 +4,7 @@
 
 #include "ui/message_center/notification_blocker.h"
 
+#include "base/observer_list.h"
 #include "ui/message_center/message_center.h"
 
 namespace message_center {

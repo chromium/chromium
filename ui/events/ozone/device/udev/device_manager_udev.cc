@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"

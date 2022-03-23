@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

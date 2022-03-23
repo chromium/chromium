@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"

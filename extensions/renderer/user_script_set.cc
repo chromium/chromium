@@ -11,6 +11,7 @@
 
 #include "base/debug/alias.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"

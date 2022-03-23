@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "base/version.h"

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/warning_service.h"
 
+#include "base/observer_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/warning_service_factory.h"

@@ -4,6 +4,8 @@
 
 #include "ui/gl/gpu_switching_manager.h"
 
+#include "base/observer_list.h"
+
 namespace ui {
 
 // static

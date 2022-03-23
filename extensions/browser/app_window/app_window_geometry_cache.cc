@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs.h"

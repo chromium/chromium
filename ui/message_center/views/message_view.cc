@@ -5,6 +5,7 @@
 #include "ui/message_center/views/message_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

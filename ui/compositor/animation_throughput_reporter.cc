@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "cc/animation/animation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/callback_layer_animation_observer.h"

@@ -4,6 +4,7 @@
 
 #include "ui/aura/client/default_capture_client.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"

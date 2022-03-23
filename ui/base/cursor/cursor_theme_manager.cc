@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/observer_list.h"
 
 namespace ui {
 

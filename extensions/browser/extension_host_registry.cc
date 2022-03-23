@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/extension_host.h"

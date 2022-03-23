@@ -5,6 +5,7 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"

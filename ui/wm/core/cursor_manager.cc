@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/cursor/cursor_size.h"

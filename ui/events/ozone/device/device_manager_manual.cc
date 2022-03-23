@@ -9,6 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"

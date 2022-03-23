@@ -9,6 +9,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/observer_list.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"

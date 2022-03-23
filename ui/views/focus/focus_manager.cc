@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"

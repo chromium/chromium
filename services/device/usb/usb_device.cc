@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/observer_list.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "services/device/usb/webusb_descriptors.h"

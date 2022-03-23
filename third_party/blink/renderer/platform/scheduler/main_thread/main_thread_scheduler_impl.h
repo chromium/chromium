@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
+#include "base/observer_list.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/task_queue.h"

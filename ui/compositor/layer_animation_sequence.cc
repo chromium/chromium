@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/animation/animation_id_provider.h"

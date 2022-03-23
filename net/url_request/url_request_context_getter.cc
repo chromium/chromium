@@ -6,6 +6,7 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter_observer.h"

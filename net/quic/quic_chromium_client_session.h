@@ -21,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"

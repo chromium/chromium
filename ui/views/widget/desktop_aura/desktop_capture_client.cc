@@ -5,6 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_capture_client.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"

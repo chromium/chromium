@@ -4,6 +4,7 @@
 
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 
+#include "base/observer_list.h"
 #include "base/version.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"

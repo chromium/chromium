@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
+
 namespace network {
 
 ProxyConfigServiceMojo::ProxyConfigServiceMojo(

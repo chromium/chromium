@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/observer_list.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 
 namespace net {

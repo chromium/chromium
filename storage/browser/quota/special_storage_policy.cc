@@ -4,6 +4,8 @@
 
 #include "storage/browser/quota/special_storage_policy.h"
 
+#include "base/observer_list.h"
+
 namespace storage {
 
 SpecialStoragePolicy::Observer::~Observer() = default;

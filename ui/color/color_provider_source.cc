@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/color/color_provider_source.h"
+#include "base/observer_list.h"
 #include "ui/color/color_provider_source_observer.h"
 
 namespace ui {

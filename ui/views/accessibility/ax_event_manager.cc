@@ -5,6 +5,7 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 
 namespace views {

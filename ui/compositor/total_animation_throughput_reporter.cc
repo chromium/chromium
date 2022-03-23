@@ -5,6 +5,7 @@
 #include "ui/compositor/total_animation_throughput_reporter.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "ui/compositor/compositor.h"
 
 namespace ui {

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 

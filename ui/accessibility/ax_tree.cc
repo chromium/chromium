@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
