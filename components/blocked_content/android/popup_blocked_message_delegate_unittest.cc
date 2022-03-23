@@ -87,6 +87,7 @@ void PopupBlockedMessageDelegateTest::SetUp() {
   popup_blocked_message_delegate_ =
       PopupBlockedMessageDelegate::FromWebContents(web_contents());
   NavigateAndCommit(GURL(kPageUrl));
+  message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
 }
