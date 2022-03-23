@@ -102,23 +102,6 @@ class FakeFactory(object):
 
 
 class LintTest(LoggingTestCase):
-    def test_all_configurations(self):
-        host = MockHost()
-        host.ports_parsed = []
-        host.port_factory = FakeFactory(
-            host,
-            (FakePort(host, 'a', 'path-to-a'), FakePort(
-                host, 'b', 'path-to-b'), FakePort(host, 'b-win', 'path-to-b')))
-
-        options = optparse.Values({
-            'platform': 'a',
-            'additional_expectations': []
-        })
-        failures, warnings = lint_test_expectations.lint(host, options)
-        self.assertEqual(failures, [])
-        self.assertEqual(warnings, [])
-        self.assertEqual(host.ports_parsed, ['a', 'b', 'b-win'])
-
     @unittest.skip(
         'crbug.com/986447, re-enable after merging crrev.com/c/1918294')
     def test_lint_test_files(self):
@@ -256,7 +239,7 @@ class LintTest(LoggingTestCase):
             'testexpectations': test_expectations
         }
         port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['test2'], args=['--foo'])
+            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test2'], args=['--foo'])
         ]
         host.filesystem.write_text_file(
             host.filesystem.join(port.web_tests_dir(), 'test2', 'foo.html'),
@@ -275,7 +258,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        self.assertEquals(len(failures), 6)
+        self.assertEquals(len(failures), 18)
         expected_non_existence = [
             'test1/*',
             'test2/bar.html',
@@ -286,7 +269,7 @@ class LintTest(LoggingTestCase):
         ]
         for i in range(len(failures)):
             self.assertIn('Test does not exist', failures[i])
-            self.assertIn(expected_non_existence[i], failures[i])
+            self.assertIn(expected_non_existence[i%6], failures[i])
 
     def test_only_wpt_in_android_override_files(self):
         options = optparse.Values({
@@ -347,7 +330,10 @@ class LintTest(LoggingTestCase):
         port = host.port_factory.get(options.platform, options=options)
         port.virtual_test_suites = lambda: [
             VirtualTestSuite(
-                prefix='foo', bases=['test', 'external/wpt'], args=['--foo'])
+                prefix='foo',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=['test', 'external/wpt'],
+                args=['--foo'])
         ]
         test_expectations = (
             '# tags: [ mac win ]\n'
@@ -376,7 +362,7 @@ class LintTest(LoggingTestCase):
         failures, warnings = lint_test_expectations.lint(host, options)
         self.assertEqual(failures, [])
 
-        self.assertEquals(len(warnings), 1)
+        self.assertEquals(len(warnings), 3)
         self.assertRegexpMatches(warnings[0], ':5 .*redundant with.* line 4$')
 
     def test_never_fix_tests(self):
@@ -390,7 +376,10 @@ class LintTest(LoggingTestCase):
         port = host.port_factory.get(options.platform, options=options)
         port.virtual_test_suites = lambda: [
             VirtualTestSuite(
-                prefix='foo', bases=['test', 'test1'], args=['--foo'])
+                prefix='foo',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=['test', 'test1'],
+                args=['--foo'])
         ]
         test_expectations = ('# tags: [ mac win ]\n'
                              '# results: [ Skip Pass ]\n'
@@ -411,7 +400,7 @@ class LintTest(LoggingTestCase):
         failures, warnings = lint_test_expectations.lint(host, options)
         self.assertEqual(warnings, [])
 
-        self.assertEquals(len(failures), 4)
+        self.assertEquals(len(failures), 12)
         self.assertRegexpMatches(failures[0], ':7 .*must override')
         self.assertRegexpMatches(failures[1], ':8 .*must override')
         self.assertRegexpMatches(failures[2], ':9 Only one of')
@@ -430,8 +419,8 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_readme(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['test'], args=['--foo']),
-            VirtualTestSuite(prefix='bar', bases=['test'], args=['--bar']), ]
+            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--foo']),
+            VirtualTestSuite(prefix='bar', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--bar']), ]
         fs = self.host.filesystem
         fs.maybe_make_directory(fs.join(WEB_TEST_DIR, 'test'))
 
@@ -449,7 +438,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_redundant(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['test/sub', 'test'], args=['--foo']),
+            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test/sub', 'test'], args=['--foo']),
         ]
 
         self.host.filesystem.exists = lambda _: True
@@ -460,7 +449,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_non_redundant(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['test_a', 'test'], args=['--foo']),
+            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test_a', 'test'], args=['--foo']),
         ]
 
         self.host.filesystem.exists = lambda _: True
@@ -471,7 +460,10 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_non_existent_base(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['base1', 'base2', 'base3.html'], args=['-foo']),
+            VirtualTestSuite(prefix='foo',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=['base1', 'base2', 'base3.html'],
+                             args=['-foo']),
         ]
 
         fs = self.host.filesystem

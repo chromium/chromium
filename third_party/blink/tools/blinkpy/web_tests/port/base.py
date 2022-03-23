@@ -2040,7 +2040,8 @@ class Port(object):
                         raise ValueError(
                             '{} contains entries with the same prefix: {!r}. Please combine them'
                             .format(path_to_virtual_test_suites, json_config))
-                    self._virtual_test_suites.append(vts)
+                    if self.operating_system() in [x.lower() for x in vts.platforms]:
+                        self._virtual_test_suites.append(vts)
             except ValueError as error:
                 raise ValueError('{} is not a valid JSON file: {}'.format(
                     path_to_virtual_test_suites, error))
@@ -2363,13 +2364,15 @@ class Port(object):
 
 
 class VirtualTestSuite(object):
-    def __init__(self, prefix=None, bases=None, args=None):
+    def __init__(self, prefix=None, platforms=None, bases=None, args=None):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
+        assert isinstance(platforms, list)
         assert isinstance(bases, list)
         assert args
         assert isinstance(args, list)
         self.full_prefix = 'virtual/' + prefix + '/'
+        self.platforms = platforms
         self.bases = bases
         self.args = args
 

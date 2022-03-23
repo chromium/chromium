@@ -106,7 +106,8 @@ class BaselineOptimizerTest(unittest.TestCase):
         baseline_name = 'mock-test-expected.' + suffix
         self.fs.write_text_file(
             self.fs.join(web_tests_dir, 'VirtualTestSuites'),
-            '[{"prefix": "gpu", "bases": ["fast/canvas"], "args": ["--foo"]}]')
+            '[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
+            '"bases": ["fast/canvas"], "args": ["--foo"]}]')
 
         for dirname, contents in results_by_directory.items():
             self.fs.write_text_file(

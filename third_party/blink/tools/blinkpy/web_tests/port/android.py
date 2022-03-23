@@ -572,6 +572,9 @@ class AndroidPort(base.Port):
         super(AndroidPort, self).start_http_server(additional_dirs,
                                                    number_of_drivers)
 
+    def operating_system(self):
+        return self._operating_system
+
     def create_driver(self, worker_number, no_timeout=False):
         return ChromiumAndroidDriver(
             self,

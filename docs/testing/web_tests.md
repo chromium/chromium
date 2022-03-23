@@ -278,6 +278,7 @@ repainting using the following virtual test suite:
 ```json
 {
   "prefix": "blocking_repaint",
+  "platforms": ["Linux", "Mac", "Win"],
   "bases": ["compositing", "fast/repaint"],
   "args": ["--blocking-repaint"]
 }
@@ -309,6 +310,10 @@ entry for the virtual test.
 
 This will also let any real tests under `web_tests/virtual/blocking_repaint`
 directory run with the `--blocking-repaint` flag.
+
+The "platforms" configuration can be used to skip tests on some platforms. If
+a virtual test suites uses more than 5% of total test time, we should consider
+to skip the test suites on some platforms.
 
 The "prefix" value should be unique. Multiple directories with the same flags
 should be listed in the same "bases" list. The "bases" list can be empty,

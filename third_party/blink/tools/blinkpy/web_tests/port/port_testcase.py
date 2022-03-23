@@ -398,5 +398,6 @@ class PortTestCase(LoggingTestCase):
         # use a real SystemHost(). We don't care what virtual_test_suites() returns as long
         # as it is iterable.
         port = self.make_port(host=SystemHost(), port_name=self.full_port_name)
+        port.operating_system = lambda: 'linux'
         self.assertTrue(
             isinstance(port.virtual_test_suites(), collections.Iterable))

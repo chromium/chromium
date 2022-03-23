@@ -308,6 +308,9 @@ class FuchsiaPort(base.Port):
         super(FuchsiaPort, self).start_http_server(additional_dirs,
                                                    number_of_drivers)
 
+    def operating_system(self):
+        return self._operating_system
+
     def path_to_apache(self):
         return self._host_port.path_to_apache()
 
