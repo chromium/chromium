@@ -53,6 +53,9 @@ void AttributionDataHostManagerImpl::RecordRegisteredDataPerDataHost(
   int count = receiver_data.num_data_registered;
   DCHECK_GE(count, 0);
 
+  if (count == 0)
+    return;
+
   if (receiver_data.source_declared_destination_origin.opaque()) {
     base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
                                   count, 101);
