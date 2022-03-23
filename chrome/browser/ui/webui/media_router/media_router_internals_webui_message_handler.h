@@ -28,9 +28,9 @@ class MediaRouterInternalsWebUIMessageHandler
   void RegisterMessages() override;
 
   // Handlers for JavaScript messages.
-  void HandleGetState(const base::ListValue* args);
-  void HandleGetProviderState(const base::ListValue* args);
-  void HandleGetLogs(const base::ListValue* args);
+  void HandleGetState(const base::Value::List& args);
+  void HandleGetProviderState(const base::Value::List& args);
+  void HandleGetLogs(const base::Value::List& args);
 
   void OnProviderState(base::Value callback_id, mojom::ProviderStatePtr state);
 

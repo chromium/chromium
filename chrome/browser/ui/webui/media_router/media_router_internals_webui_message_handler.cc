@@ -36,40 +36,39 @@ MediaRouterInternalsWebUIMessageHandler::
     ~MediaRouterInternalsWebUIMessageHandler() = default;
 
 void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getState", base::BindRepeating(
                       &MediaRouterInternalsWebUIMessageHandler::HandleGetState,
                       base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getProviderState",
       base::BindRepeating(
           &MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLogs", base::BindRepeating(
                      &MediaRouterInternalsWebUIMessageHandler::HandleGetLogs,
                      base::Unretained(this)));
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetState(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, router_->GetState());
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  base::Value callback_id = args->GetListDeprecated()[0].Clone();
-  if (args->GetListDeprecated().size() != 2 ||
-      !args->GetListDeprecated()[1].is_string()) {
+  base::Value callback_id = args[0].Clone();
+  if (args.size() != 2 || !args[1].is_string()) {
     RejectJavascriptCallback(callback_id, base::Value("Invalid arguments"));
     return;
   }
 
   absl::optional<mojom::MediaRouteProviderId> provider_id =
-      ProviderIdFromString(args->GetListDeprecated()[1].GetString());
+      ProviderIdFromString(args[1].GetString());
   if (!provider_id) {
     RejectJavascriptCallback(callback_id,
                              base::Value("Unknown MediaRouteProviderId"));
@@ -82,9 +81,9 @@ void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetLogs(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, router_->GetLogs());
 }
 
