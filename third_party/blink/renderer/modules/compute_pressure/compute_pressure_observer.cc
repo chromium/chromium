@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_observer_update.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_source.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -119,6 +120,12 @@ ComputePressureObserver* ComputePressureObserver::Create(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   return MakeGarbageCollected<ComputePressureObserver>(execution_context,
                                                        callback, options);
+}
+
+// static
+Vector<V8ComputePressureSource> ComputePressureObserver::supportedSources() {
+  return Vector<V8ComputePressureSource>(
+      {V8ComputePressureSource(V8ComputePressureSource::Enum::kCpu)});
 }
 
 ScriptPromise ComputePressureObserver::observe(

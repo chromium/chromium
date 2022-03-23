@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/wicg/compute-pressure/
+// https://wicg.github.io/compute-pressure/#dom-computepressuresource
+enum ComputePressureSource {
+  "cpu"
+};
+
+// https://wicg.github.io/compute-pressure/#ref-for-dom-computepressureobserver-9
 [
     Exposed=Window,
     RuntimeEnabled=ComputePressure,
@@ -21,4 +26,10 @@
   ] Promise<void> observe();
 
   [CallWith=ScriptState, MeasureAs=ComputePressureObserver_Stop] void stop();
+
+  [
+    SameObject,
+    SaveSameObject
+  ] static readonly attribute FrozenArray<ComputePressureSource> supportedSources;
+
 };

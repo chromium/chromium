@@ -23,6 +23,7 @@ class ScriptState;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ComputePressureObserverOptions;
+class V8ComputePressureSource;
 
 class ComputePressureObserver final
     : public ScriptWrappable,
@@ -40,6 +41,8 @@ class ComputePressureObserver final
                                          V8ComputePressureUpdateCallback*,
                                          ComputePressureObserverOptions*,
                                          ExceptionState&);
+
+  static Vector<V8ComputePressureSource> supportedSources();
 
   // ComputePressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, ExceptionState&);

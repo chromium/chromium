@@ -1251,6 +1251,7 @@ interface CompressionStream
     getter writable
     method constructor
 interface ComputePressureObserver
+    static getter supportedSources
     attribute @@toStringTag
     method constructor
     method observe
