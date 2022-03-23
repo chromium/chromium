@@ -234,7 +234,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           }
 
           state_ = kTryPreprocessCurrentSlice;
-          if (curr_slice_hdr_->slice_pic_parameter_set_id != curr_pps_id_) {
+          if (curr_slice_hdr_->irap_pic) {
             bool need_new_buffers = false;
             if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
                             &need_new_buffers)) {
