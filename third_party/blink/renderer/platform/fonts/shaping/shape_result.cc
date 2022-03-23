@@ -1718,17 +1718,21 @@ void ShapeResult::ComputePositionData() const {
     float total_advance = run_advance;
     for (const auto& glyph_data : run->glyph_data_) {
       DCHECK_GE(run->start_index_, start_offset);
-      unsigned character_index =
+      const unsigned logical_index =
           run->start_index_ + glyph_data.character_index - start_offset;
 
       // Make |character_index| to the visual offset.
-      DCHECK_LT(character_index, num_characters_);
-      if (rtl)
-        character_index = num_characters_ - character_index - 1;
+      DCHECK_LT(logical_index, num_characters_);
+      const unsigned character_index =
+          rtl ? num_characters_ - logical_index - 1 : logical_index;
 
       // If this glyph is the first glyph of a new cluster, set the data.
       // Otherwise, |data[character_index]| is already set. Do not overwrite.
-      DCHECK_LT(character_index, num_characters_);
+      if (character_index >= num_characters_) {
+        // We are not sure why we reach here. See http://crbug.com/1286882
+        NOTREACHED();
+        continue;
+      }
       if (next_character_index <= character_index) {
         if (next_character_index < character_index) {
           // Multiple glyphs may have the same character index and not all
