@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# NOTE: The "create_js_source_maps" build rule must come after the
+# "preprocess_if_expr" build rule(s) in the BUILD.gn file. If you are getting
+# "Target not found in this context" errors, check that the deps
+# names are correct and that they are defined earlier in the same BUILD.gn file.
+template("create_js_source_maps") {
+  action_foreach(target_name) {
+    script =
+        "//tools/code_coverage/create_js_source_maps/create_js_source_maps.py"
+    args = []
+    inputs = [
+      "//tools/code_coverage/create_js_source_maps/create_js_source_maps.js",
+    ]
+    sources = []
+    deps = invoker.deps
+    foreach(dependency, deps) {
+      foreach(preprocess_output, get_target_outputs(dependency)) {
+        if (get_path_info(preprocess_output, "extension") == "ts" ||
+            get_path_info(preprocess_output, "extension") == "js") {
+          sources += [ preprocess_output ]
+        }
+      }
+    }
+    outputs = [ "$target_gen_dir/{{source}}.map" ]
+    args = [ "{{source}}" ]
+  }
+}
