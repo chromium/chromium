@@ -44,12 +44,11 @@ class EmuTarget(target.Target):
     return os.environ.copy()
 
   def Start(self):
-    if common.IsRunningUnattended():
-      if not self._HasNetworking():
-        # Bots may accumulate stale manually-added targets with the same address
-        # as the one to be added here. Preemtively remove any unknown targets at
-        # this address before starting the emulator and adding it as a target.
-        self._ffx_runner.remove_stale_targets('127.0.0.1')
+    if common.IsRunningUnattended() and not self._HasNetworking():
+      # Bots may accumulate stale manually-added targets with the same address
+      # as the one to be added here. Preemtively remove any unknown targets at
+      # this address before starting the emulator and adding it as a target.
+      self._ffx_runner.remove_stale_targets('127.0.0.1')
     emu_command = self._BuildCommand()
     logging.debug(' '.join(emu_command))
 
@@ -89,8 +88,11 @@ class EmuTarget(target.Target):
 
   def Stop(self):
     try:
-      self.Shutdown()
+      self._DisconnectFromTarget()
+      self._Shutdown()
     finally:
+      self.LogProcessStatistics('proc_stat_end_log')
+      self.LogSystemStatistics('system_statistics_end_log')
       super(EmuTarget, self).Stop()
 
   def GetPkgRepo(self):
@@ -99,26 +101,9 @@ class EmuTarget(target.Target):
 
     return self._pkg_repo
 
-  def Shutdown(self):
-    if not self._emu_process:
-      logging.error('%s did not start' % (self.EMULATOR_NAME))
-      return
-    returncode = self._emu_process.poll()
-    if returncode == None:
-      logging.info('Shutting down %s' % (self.EMULATOR_NAME))
-      self._emu_process.kill()
-    elif returncode == 0:
-      logging.info('%s quit unexpectedly without errors' % self.EMULATOR_NAME)
-    elif returncode < 0:
-      logging.error('%s was terminated by signal %d' %
-                    (self.EMULATOR_NAME, -returncode))
-    else:
-      logging.error('%s quit unexpectedly with exit code %d' %
-                    (self.EMULATOR_NAME, returncode))
-
-    self.LogProcessStatistics('proc_stat_end_log')
-    self.LogSystemStatistics('system_statistics_end_log')
-    self._DisconnectFromTarget()
+  def _Shutdown(self):
+    """Shuts down the emulator."""
+    raise NotImplementedError()
 
   def _HasNetworking(self):
     """Returns `True` if the emulator will be started with networking (e.g.,
@@ -127,9 +112,8 @@ class EmuTarget(target.Target):
     raise NotImplementedError()
 
   def _IsEmuStillRunning(self):
-    if not self._emu_process:
-      return False
-    return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
+    """Returns `True` if the emulator is still running."""
+    raise NotImplementedError()
 
   def _GetEndpoint(self):
     raise NotImplementedError()

@@ -93,6 +93,7 @@ class Target(object):
   def Start(self):
     """Handles the instantiation and connection process for the Fuchsia
     target instance."""
+    raise NotImplementedError()
 
   def IsStarted(self):
     """Returns True if the Fuchsia target instance is ready to accept

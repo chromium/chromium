@@ -36,15 +36,20 @@ def main():
       logging.info('If you haven\'t set up tuntap, you may be prompted '
                    'for your sudo password to set up tuntap.')
     fvdl_target.Start()
-    logging.info('Emulator successfully started up! If you are running '
-                 'multiple fuchsia devices, specify the port the ip address '
-                 'via the --host flag.')
-    if fvdl_target._with_network:
-      logging.info('You can now use the "-d" flag when running '
-                   'Chrome Fuchsia tests to target this emulator.')
-    while fvdl_target._IsEmuStillRunning():
-      time.sleep(10)
-      pass
+    logging.info(
+        'Emulator successfully started. You can now run Chrome '
+        'Fuchsia tests with "%s" to target this emulator.',
+        fvdl_target.GetFfxTarget().format_runner_options())
+    logging.info('Type Ctrl-C in this terminal to shut down the emulator.')
+    try:
+      while fvdl_target._IsEmuStillRunning():
+        time.sleep(10)
+    except KeyboardInterrupt:
+      logging.info('Ctrl-C received; shutting down the emulator.')
+      pass  # Silently shut down the emulator
+    except SystemExit:
+      logging.info('SIGTERM received; shutting down the emulator.')
+      pass  # Silently shut down the emulator
 
 
 def AddLongRunningArgs(arg_parser):

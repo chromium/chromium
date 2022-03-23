@@ -208,8 +208,9 @@ class DeviceTarget(target.Target):
     except subprocess.CalledProcessError:
       return False
 
-    logging.info('Found device "%s" at %s:%d.' %
-                 (self._node_name, self._host, self._port))
+    logging.info(
+        'Found device "%s" at %s.' %
+        (self._node_name, ffx_session.format_host_port(self._host, self._port)))
 
     # TODO(crbug.com/1307220): Remove this once the telemetry scripts can handle
     # specifying the port for a device that is not listening on localhost.
@@ -345,11 +346,25 @@ class DeviceTarget(target.Target):
       self._ffx_target = ffx_session.FfxTarget(self._ffx_runner,
                                                self._node_name)
     else:
-      # The target may not be known by ffx, so tell it how to find it.
-      self._target_context = self._ffx_runner.scoped_target_context(
-          self._host, self._port)
-      self._ffx_target = self._target_context.__enter__()
-      self._ffx_target.wait(ATTACH_RETRY_SECONDS)
+      # The target may not be known by ffx. Probe to see if it has already been
+      # added.
+      ffx_target = ffx_session.FfxTarget(
+          self._ffx_runner,
+          ffx_session.format_host_port(self._host, self._port))
+      try:
+        ffx_target.get_ssh_address()
+        # If we could lookup the address, the target must be reachable. Do not
+        # open a new scoped_target_context, as that will `ffx target add` now
+        # and then `ffx target remove` later, which will break subsequent
+        # interactions with a persistent emulator.
+        self._ffx_target = ffx_target
+      except subprocess.CalledProcessError:
+        # The target is not known, so take on responsibility of adding and
+        # removing it.
+        self._target_context = self._ffx_runner.scoped_target_context(
+            self._host, self._port)
+        self._ffx_target = self._target_context.__enter__()
+        self._ffx_target.wait(ATTACH_RETRY_SECONDS)
     return super(DeviceTarget, self)._ConnectToTarget()
 
   def _DisconnectFromTarget(self):
@@ -387,10 +402,10 @@ class DeviceTarget(target.Target):
 
   def Stop(self):
     try:
+      self._DisconnectFromTarget()
       # End multiplexed ssh connection, ensure that ssh logging stops before
       # tests/scripts return.
       if self.IsStarted():
         self.RunCommand(['-O', 'exit'])
     finally:
-      self._DisconnectFromTarget()
       super(DeviceTarget, self).Stop()

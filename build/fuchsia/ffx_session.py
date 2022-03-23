@@ -30,6 +30,34 @@ def get_ffx_path():
                       common.GetHostArchFromPlatform(), 'ffx')
 
 
+def parse_host_port(host_port_pair):
+  """Parses a host name or IP address and a port number from a string of any of
+  the following forms:
+  - hostname:port
+  - IPv4addy:port
+  - [IPv6addy]:port
+
+  Returns:
+    A tuple of the string host name/address and integer port number.
+
+  Raises:
+    ValueError if `host_port_pair` does not contain a colon or if the substring
+      following the last colon cannot be converted to an int.
+  """
+  host, port = host_port_pair.rsplit(':', 1)
+  # Strip the brackets if the host looks like an IPv6 address.
+  if len(host) > 2 and host[0] == '[' and host[-1] == ']':
+    host = host[1:-1]
+  return (host, int(port))
+
+
+def format_host_port(host, port):
+  """Formats a host name or IP address and port number into a host:port string.
+  """
+  # Wrap `host` in brackets if it looks like an IPv6 address
+  return ('[%s]:%d' if ':' in host else '%s:%d') % (host, port)
+
+
 class FfxRunner():
   """A helper to run `ffx` commands."""
 
@@ -234,7 +262,7 @@ class FfxRunner():
     Yields:
       An FfxTarget for interacting with the target.
     """
-    target_identifier = '%s:%d' % (address, port)
+    target_identifier = format_host_port(address, port)
     self.run_ffx(['target', 'add', target_identifier])
     try:
       yield FfxTarget(self, target_identifier)
@@ -258,8 +286,8 @@ class FfxRunner():
       if target['nodename'] and address in target['addresses']:
         if FfxTarget(self, target['nodename']).get_ssh_address()[1] == port:
           return target['nodename']
-    raise Exception('Failed to determine node name for target at %s:%s' %
-                    (address, port))
+    raise Exception('Failed to determine node name for target at %s' %
+                    format_host_port(address, port))
 
 
 class FfxTarget():
@@ -272,6 +300,17 @@ class FfxTarget():
     """
     self._ffx_runner = ffx_runner
     self._target_args = ('--target', target_identifier)
+
+  def format_runner_options(self):
+    """Returns a string holding options suitable for use with the runner scripts
+    to run tests on this target."""
+    try:
+      # First try extracting host:port from the target_identifier.
+      return '-d --host %s --port %d' % parse_host_port(self._target_args[1])
+    except ValueError:
+      # Must be a simple node name.
+      pass
+    return '-d --node-name %s' % self._target_args[1]
 
   def wait(self, timeout=None):
     """Waits for ffx to establish a connection with the target.
@@ -293,14 +332,11 @@ class FfxTarget():
 
     Raises:
       subprocess.CalledProcessError if the address cannot be obtained.
+      ValueError if `ffx get-ssh-address` outputs an unexpected value.
     """
     command = list(self._target_args)
     command.extend(('target', 'get-ssh-address'))
-    host, port = self._ffx_runner.run_ffx(command).rsplit(':', 1)
-    # Strip the brackets if the host looks like an IPv6 address.
-    if len(host) > 2 and host[0] == '[' and host[-1] == ']':
-      host = host[1:-1]
-    return (host, int(port))
+    return parse_host_port(self._ffx_runner.run_ffx(command))
 
   def open_ffx(self, command):
     """Runs `ffx` for the target with some arguments.

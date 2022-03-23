@@ -185,8 +185,30 @@ class QemuTarget(emu_target.EmuTarget):
     qemu_command.append('-nographic')
     return qemu_command
 
+  def _Shutdown(self):
+    if not self._emu_process:
+      logging.error('%s did not start' % (self.EMULATOR_NAME))
+      return
+    returncode = self._emu_process.poll()
+    if returncode == None:
+      logging.info('Shutting down %s' % (self.EMULATOR_NAME))
+      self._emu_process.kill()
+    elif returncode == 0:
+      logging.info('%s quit unexpectedly without errors' % self.EMULATOR_NAME)
+    elif returncode < 0:
+      logging.error('%s was terminated by signal %d' %
+                    (self.EMULATOR_NAME, -returncode))
+    else:
+      logging.error('%s quit unexpectedly with exit code %d' %
+                    (self.EMULATOR_NAME, returncode))
+
   def _HasNetworking(self):
     return False
+
+  def _IsEmuStillRunning(self):
+    if not self._emu_process:
+      return False
+    return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
 
   def _GetEndpoint(self):
     if not self._IsEmuStillRunning():

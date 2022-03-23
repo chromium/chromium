@@ -31,7 +31,7 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                           cpu_cores=10)
     common.EnsurePathExists = mock.MagicMock(return_value='image')
     boot_data.ProvisionSSH = mock.MagicMock()
-    FvdlTarget.Shutdown = mock.MagicMock()
+    FvdlTarget._Shutdown = mock.MagicMock()
 
   def testBasicEmuCommand(self):
     with FvdlTarget.CreateFromArgs(self.args) as target:
