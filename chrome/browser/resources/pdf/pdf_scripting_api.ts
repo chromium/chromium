@@ -29,12 +29,6 @@ export type SerializedKeyEvent = {
   metaKey: boolean,
 };
 
-type ThumbnailData = {
-  imageData: ArrayBuffer,
-  width: number,
-  height: number,
-};
-
 /**
  * Turn a dictionary received from postMessage into a key event.
  * @param dict A dictionary representing the key event.
@@ -89,7 +83,6 @@ export class PDFScriptingAPI {
   private viewportChangedCallback_: ViewportChangedCallback;
   private loadCompleteCallback_: (completed: boolean) => void;
   private selectedTextCallback_: ((text: string) => void)|null;
-  private thumbnailCallback_: ((data: ThumbnailData) => void)|null;
   private keyEventCallback_: (e: KeyboardEvent) => void;
 
   private plugin_: Window|null;
@@ -131,13 +124,6 @@ export class PDFScriptingAPI {
           if (this.selectedTextCallback_) {
             this.selectedTextCallback_(data.selectedText);
             this.selectedTextCallback_ = null;
-          }
-          break;
-        }
-        case 'getThumbnailReply': {
-          if (this.thumbnailCallback_) {
-            this.thumbnailCallback_(event.data as ThumbnailData);
-            this.thumbnailCallback_ = null;
           }
           break;
         }
@@ -267,26 +253,6 @@ export class PDFScriptingAPI {
     }
     this.selectedTextCallback_ = callback;
     this.sendMessage_({type: 'getSelectedText'});
-    return true;
-  }
-
-  /**
-   * Get the thumbnail data for a page. The data will be passed to a callback.
-   * May only be called after document loaded.
-   * @param page the page number.
-   * @param callback a callback to be called with the thumbnail data.
-   * @return Whether the function is successful, false if there is an
-   *     outstanding request for thumbnail data that has not been answered.
-   */
-  getThumbnail(page: number, callback: (data: ThumbnailData) => void): boolean {
-    if (this.thumbnailCallback_) {
-      return false;
-    }
-    this.thumbnailCallback_ = callback;
-    this.sendMessage_({
-      type: 'getThumbnail',
-      page: page,
-    });
     return true;
   }
 

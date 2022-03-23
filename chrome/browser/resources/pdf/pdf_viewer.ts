@@ -54,12 +54,6 @@ type NavigateMessageData = {
   disposition: WindowOpenDisposition,
 };
 
-type GetThumbnailMessageData = {
-  type: string,
-  messageId: string,
-  page: number,
-};
-
 type ZoomBounds = {
   min: number,
   max: number,
@@ -663,12 +657,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'getSelectedText':
         this.pluginController_!.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
-        break;
-      case 'getThumbnail':
-        const getThumbnailData = message.data as GetThumbnailMessageData;
-        const page = getThumbnailData.page;
-        this.pluginController_!.requestThumbnail(page).then(
-            this.sendScriptingMessage.bind(this));
         break;
       case 'print':
         this.pluginController_!.print();

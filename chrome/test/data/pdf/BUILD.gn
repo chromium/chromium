@@ -45,6 +45,7 @@ ts_library("build_ts") {
     "nobeep_test.ts",
     "page_change_test.ts",
     "params_parser_test.ts",
+    "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
     "scroll_with_form_field_focused_test.js",
     "test_util.js",

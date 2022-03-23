@@ -1091,6 +1091,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, BasicPlugin) {
   RunTestsInJsModule("basic_plugin_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, PluginController) {
+  RunTestsInJsModule("plugin_controller_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Viewport) {
   RunTestsInJsModule("viewport_test.js", "test.pdf");
 }
