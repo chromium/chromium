@@ -119,24 +119,5 @@ void FakeMultideviceFeatureAccessManager::SetNotificationSetupOperationStatus(
       new_status);
 }
 
-void FakeMultideviceFeatureAccessManager::SetCombinedSetupOperationStatus(
-    CombinedAccessSetupOperation::Status new_status) {
-  if (new_status ==
-      CombinedAccessSetupOperation::Status::kCompletedSuccessfully) {
-    SetCameraRollAccessStatusInternal(AccessStatus::kAccessGranted);
-  }
-  MultideviceFeatureAccessManager::SetCombinedSetupOperationStatus(new_status);
-}
-
-void FakeMultideviceFeatureAccessManager::
-    SetFeatureSetupRequestSupportedInternal(bool supported) {
-  is_feature_setup_request_supported_ = supported;
-}
-
-bool FakeMultideviceFeatureAccessManager::GetFeatureSetupRequestSupported()
-    const {
-  return is_feature_setup_request_supported_;
-}
-
 }  // namespace phonehub
 }  // namespace ash

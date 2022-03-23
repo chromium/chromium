@@ -56,8 +56,7 @@ NotificationAccessSetupOperation::~NotificationAccessSetupOperation() {
   std::move(destructor_callback_).Run();
 }
 
-void NotificationAccessSetupOperation::NotifyNotificationStatusChanged(
-    Status new_status) {
+void NotificationAccessSetupOperation::NotifyStatusChanged(Status new_status) {
   base::UmaHistogramEnumeration("PhoneHub.NotificationAccessSetup.AllStatuses",
                                 new_status);
   if (new_status == Status::kCompletedSuccessfully) {
@@ -69,7 +68,7 @@ void NotificationAccessSetupOperation::NotifyNotificationStatusChanged(
   }
   current_status_ = new_status;
 
-  delegate_->OnNotificationStatusChange(new_status);
+  delegate_->OnStatusChange(new_status);
 }
 
 std::ostream& operator<<(std::ostream& stream,
