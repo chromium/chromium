@@ -45,10 +45,6 @@
         <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
 
-        <!-- Custom semantic names -->
-        <!-- Supports dynamic colors now. -->
-        <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
-
         <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to
              prevent crashes when the DynamicColorCTAAndroid flag is disabled. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg</item>
@@ -136,10 +132,6 @@
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-
-        <!-- Custom semantic names -->
-        <!-- Supports dynamic colors now. -->
-        <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
 
         <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to
              prevent crashes when the DynamicColorCTAAndroid flag is disabled. -->

@@ -15,14 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.google.android.material.color.MaterialColors;
-
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
@@ -188,9 +187,8 @@ public class ThemeUtils {
             Context context, @ColorInt int toolbarColor, boolean isIncognito) {
         final Resources res = context.getResources();
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
-            return isIncognito
-                    ? res.getColor(R.color.divider_line_bg_color_light)
-                    : MaterialColors.getColor(context, R.attr.divider_line_bg_color_dynamic, TAG);
+            return isIncognito ? res.getColor(R.color.divider_line_bg_color_light)
+                               : SemanticColorUtils.getDividerLineBgColor(context);
         }
 
         final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
