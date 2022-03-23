@@ -171,6 +171,7 @@ ScriptPromise DocumentTransition::start(ScriptState* script_state,
   // callbacks from previous requests.
   last_prepare_sequence_id_ = next_sequence_id_++;
 
+  style_tracker_->AddSharedElementsFromCSS();
   bool capture_succeeded = style_tracker_->Capture();
   if (!capture_succeeded) {
     exception_state.ThrowDOMException(
@@ -311,6 +312,7 @@ void DocumentTransition::NotifyPostCaptureCallbackResolved(bool success) {
     return;
   }
 
+  style_tracker_->AddSharedElementsFromCSS();
   bool start_succeeded = style_tracker_->Start();
   if (!start_succeeded) {
     CancelPendingTransition(kAbortedFromInvalidConfigAtStart);

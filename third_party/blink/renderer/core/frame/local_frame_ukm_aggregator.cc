@@ -339,6 +339,7 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     case DocumentUpdateReason::kAccessibility:
     case DocumentUpdateReason::kBaseColor:
     case DocumentUpdateReason::kDisplayLock:
+    case DocumentUpdateReason::kDocumentTransition:
     case DocumentUpdateReason::kIntersectionObservation:
     case DocumentUpdateReason::kOverlay:
     case DocumentUpdateReason::kPagePopup:

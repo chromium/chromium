@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -155,6 +156,49 @@ void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
   }
 
   pending_shared_element_tags_.erase(element);
+}
+
+void DocumentTransitionStyleTracker::AddSharedElementsFromCSS() {
+  DCHECK(document_ && document_->View());
+
+  // We need our paint layers, and z-order lists which is done during
+  // compositing inputs update.
+  document_->View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kDocumentTransition);
+
+  AddSharedElementsFromCSSRecursive(
+      document_->GetLayoutView()->PaintingLayer());
+}
+
+void DocumentTransitionStyleTracker::AddSharedElementsFromCSSRecursive(
+    PaintLayer* root) {
+  // We want to call AddSharedElements in the order in which
+  // PaintLayerPaintOrderIterator would cause us to paint the elements.
+  // Specifically, parents are added before their children, and lower z-index
+  // children are added before higher z-index children. Given that, what we
+  // need to do is to first add `root`'s element, and then recurse using the
+  // PaintLayerPaintOrderIterator which will return values in the correct
+  // z-index order.
+  //
+  // Note that the order of calls to AddSharedElement determines the DOM order
+  // of pseudo-elements constructed to represent the shared elements, which by
+  // default will also represent the paint order of the pseudo-elements (unless
+  // changed by something like z-index on the pseudo-elements).
+  //
+  // TODO(vmpstr): If root object is the layout view, we shouldn't append it as
+  // a shared element. It's unlikely to work correctly here.
+  auto& root_object = root->GetLayoutObject();
+  auto& root_style = root_object.StyleRef();
+  if (root_style.PageTransitionTag()) {
+    DCHECK(root_object.GetNode()->IsElementNode());
+    AddSharedElement(DynamicTo<Element>(root_object.GetNode()),
+                     root_style.PageTransitionTag());
+  }
+
+  PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
+  while (auto* child = child_iterator.Next()) {
+    AddSharedElementsFromCSSRecursive(child);
+  }
 }
 
 bool DocumentTransitionStyleTracker::FlattenAndVerifyElements(
@@ -342,6 +386,7 @@ bool DocumentTransitionStyleTracker::Start() {
   if (found_new_tags) {
     VectorOf<AtomicString> new_tags;
     new_tags.push_back(RootTag());
+    // TODO(vmpstr): We probably want to sort this on `element_index`.
     for (auto& [tag, data] : element_data_map_)
       new_tags.push_back(tag);
 

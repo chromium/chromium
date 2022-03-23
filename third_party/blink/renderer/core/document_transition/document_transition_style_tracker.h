@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
+class PaintLayer;
 class PseudoElement;
 
 // This class manages the integration between DocumentTransition and the style
@@ -39,6 +40,7 @@ class DocumentTransitionStyleTracker
 
   void AddSharedElement(Element*, const AtomicString&);
   void RemoveSharedElement(Element*);
+  void AddSharedElementsFromCSS();
 
   // Indicate that capture was requested. This verifies that the combination of
   // set elements and tags is valid. Returns true if capture phase started, and
@@ -158,6 +160,8 @@ class DocumentTransitionStyleTracker
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
   bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
+
+  void AddSharedElementsFromCSSRecursive(PaintLayer*);
 
   Member<Document> document_;
   State state_ = State::kIdle;
