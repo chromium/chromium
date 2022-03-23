@@ -19,13 +19,13 @@ const MAX_SCAN_SIZE = 720;
 // TODO(b/172879638): Change 1.0 to match the final UI spec.
 const ACTIVE_SCAN_RATIO = 1.0;
 
+const BARCODE_WORKER = Comlink.wrap<BarcodeWorker>(
+    new Worker('/js/models/barcode_worker.js', {type: 'module'}));
+
 /**
  * A barcode scanner to detect barcodes from a camera stream.
  */
 export class BarcodeScanner {
-  private readonly worker = Comlink.wrap<BarcodeWorker>(
-      new Worker('/js/models/barcode_worker.js', {type: 'module'}));
-
   private intervalId: number|null = null;
 
   /**
@@ -99,7 +99,7 @@ export class BarcodeScanner {
    */
   private async scan(): Promise<string|null> {
     const frame = await this.grabFrameForScan();
-    const value = await this.worker.detect(Comlink.transfer(frame, [frame]));
+    const value = await BARCODE_WORKER.detect(Comlink.transfer(frame, [frame]));
     return value;
   }
 }
