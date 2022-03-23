@@ -21,6 +21,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "url/gurl.h"
 
@@ -81,7 +83,7 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
 
   // Prepare the URLRequest for sending the command.
   DCHECK(!request_.get());
-  context_ = std::make_unique<TestURLRequestContext>();
+  context_ = CreateTestURLRequestContextBuilder()->Build();
   request_ = context_->CreateRequest(url, DEFAULT_PRIORITY, this,
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
 

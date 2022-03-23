@@ -84,6 +84,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -559,7 +560,7 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
  protected:
   // testing::Test implementation:
   void SetUp() override {
-    request_context_ = std::make_unique<TestURLRequestContext>();
+    request_context_ = CreateTestURLRequestContextBuilder()->Build();
     resolve_context_ = std::make_unique<ResolveContext>(
         request_context_.get(), true /* enable_caching */);
     CreateResolver();
@@ -6285,11 +6286,11 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Unavailable_Fail) {
 TEST_F(HostResolverManagerDnsTest,
        SecureDnsMode_Automatic_UnavailableByContext) {
   // Create and register two separate contexts.
-  TestURLRequestContext request_context1;
-  TestURLRequestContext request_context2;
-  ResolveContext resolve_context1(&request_context1,
+  auto request_context1 = CreateTestURLRequestContextBuilder()->Build();
+  auto request_context2 = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext resolve_context1(request_context1.get(),
                                   false /* enable_caching */);
-  ResolveContext resolve_context2(&request_context2,
+  ResolveContext resolve_context2(request_context2.get(),
                                   false /* enable_caching */);
   resolver_->RegisterResolveContext(&resolve_context1);
   resolver_->RegisterResolveContext(&resolve_context2);

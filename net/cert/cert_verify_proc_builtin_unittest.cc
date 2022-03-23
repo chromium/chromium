@@ -29,6 +29,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/gtest_util.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,7 +132,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     verify_proc_ = CreateCertVerifyProcBuiltin(
         cert_net_fetcher_, std::move(mock_system_trust_store));
 
-    context_ = std::make_unique<net::TestURLRequestContext>();
+    context_ = CreateTestURLRequestContextBuilder()->Build();
 
     cert_net_fetcher_->SetURLRequestContext(context_.get());
   }
@@ -181,7 +183,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   };
 
   CertVerifier::Config config_;
-  std::unique_ptr<net::TestURLRequestContext> context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   MockSystemTrustStore* mock_system_trust_store_;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;

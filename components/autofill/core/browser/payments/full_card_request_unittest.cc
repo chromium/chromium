@@ -95,9 +95,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
 class FullCardRequestTest : public testing::Test {
  public:
   FullCardRequestTest()
-      : request_context_(new net::TestURLRequestContextGetter(
-            base::ThreadTaskRunnerHandle::Get())),
-        test_shared_loader_factory_(
+      : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     payments_client_ = std::make_unique<PaymentsClient>(
@@ -164,7 +162,6 @@ class FullCardRequestTest : public testing::Test {
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
   TestAutofillClient autofill_client_;
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<PaymentsClient> payments_client_;

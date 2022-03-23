@@ -14,16 +14,18 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_fetcher_delegate.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 
 namespace cr_fuchsia {
 
 base::Value GetDevToolsListFromPort(uint16_t port) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/list", port));
-  net::TestURLRequestContext request_context;
+  auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   net::TestDelegate delegate;
 
-  std::unique_ptr<net::URLRequest> request(request_context.CreateRequest(
+  std::unique_ptr<net::URLRequest> request(request_context->CreateRequest(
       url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   delegate.RunUntilComplete();

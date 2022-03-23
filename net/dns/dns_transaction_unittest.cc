@@ -56,6 +56,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/third_party/uri_template/uri_template.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_test_util.h"
@@ -910,7 +912,7 @@ class DnsTransactionTestBase : public testing::Test {
     // and an arbitrary fallback period.
     config_.fallback_period = kFallbackPeriod;
 
-    request_context_ = std::make_unique<TestURLRequestContext>();
+    request_context_ = CreateTestURLRequestContextBuilder()->Build();
     resolve_context_ = std::make_unique<ResolveContext>(
         request_context_.get(), false /* enable_caching */);
 
@@ -948,7 +950,7 @@ class DnsTransactionTestBase : public testing::Test {
 
   base::circular_deque<int> transaction_ids_;
   std::unique_ptr<TestSocketFactory> socket_factory_;
-  std::unique_ptr<TestURLRequestContext> request_context_;
+  std::unique_ptr<URLRequestContext> request_context_;
   std::unique_ptr<ResolveContext> resolve_context_;
   scoped_refptr<DnsSession> session_;
   std::unique_ptr<DnsTransactionFactory> transaction_factory_;
@@ -2597,8 +2599,8 @@ TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.count(), 5);
-  EXPECT_EQ(observer.dict_count(), 3);
+  EXPECT_EQ(observer.count(), 14);
+  EXPECT_EQ(observer.dict_count(), 6);
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback
@@ -3569,8 +3571,8 @@ TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunners_SeparateContexts) {
                       DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
                       false /* enqueue_transaction_id */);
 
-  TestURLRequestContext request_context2;
-  ResolveContext context2(&request_context2, false /* enable_caching */);
+  auto request_context2 = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context2(request_context2.get(), false /* enable_caching */);
   context2.InvalidateCachesAndPerSessionData(session_.get(),
                                              false /* network_change */);
 

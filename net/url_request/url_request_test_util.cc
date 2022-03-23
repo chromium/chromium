@@ -69,118 +69,6 @@ class TestRequestId : public base::SupportsUserData::Data {
 
 }  // namespace
 
-TestURLRequestContext::TestURLRequestContext() : TestURLRequestContext(false) {}
-
-TestURLRequestContext::TestURLRequestContext(bool delay_initialization)
-    : context_storage_(this) {
-  if (!delay_initialization)
-    Init();
-}
-
-TestURLRequestContext::~TestURLRequestContext() {
-  DCHECK(initialized_);
-  AssertNoURLRequests();
-}
-
-void TestURLRequestContext::Init() {
-  DCHECK(!initialized_);
-  initialized_ = true;
-
-  if (!host_resolver())
-    context_storage_.set_host_resolver(
-        std::unique_ptr<HostResolver>(new MockCachingHostResolver(
-            /*cache_invalidation_num=*/0,
-            /*default_result=*/net::MockHostResolverBase::RuleResolver::
-                GetLocalhostResult())));
-  if (!proxy_resolution_service())
-    context_storage_.set_proxy_resolution_service(
-        ConfiguredProxyResolutionService::CreateDirect());
-  if (!cert_verifier()) {
-    context_storage_.set_cert_verifier(
-        CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
-  }
-  if (!transport_security_state()) {
-    context_storage_.set_transport_security_state(
-        std::make_unique<TransportSecurityState>());
-  }
-  if (!ct_policy_enforcer()) {
-    context_storage_.set_ct_policy_enforcer(
-        std::make_unique<DefaultCTPolicyEnforcer>());
-  }
-  if (!ssl_config_service()) {
-    context_storage_.set_ssl_config_service(
-        std::make_unique<SSLConfigServiceDefaults>());
-  }
-  if (!http_auth_handler_factory()) {
-    context_storage_.set_http_auth_handler_factory(
-        HttpAuthHandlerFactory::CreateDefault());
-  }
-  if (!http_server_properties()) {
-    context_storage_.set_http_server_properties(
-        std::make_unique<HttpServerProperties>());
-  }
-  if (!quic_context()) {
-    context_storage_.set_quic_context(std::make_unique<QuicContext>());
-  }
-  // In-memory cookie store.
-  if (!cookie_store()) {
-    context_storage_.set_cookie_store(std::make_unique<CookieMonster>(
-        nullptr /* store */, nullptr /* netlog */,
-        false /* first_party_sets_enabled */));
-  }
-
-  if (!http_user_agent_settings()) {
-    context_storage_.set_http_user_agent_settings(
-        std::make_unique<StaticHttpUserAgentSettings>("en-us,fr",
-                                                      std::string()));
-  }
-  if (http_transaction_factory()) {
-    // Make sure we haven't been passed an object we're not going to use.
-    EXPECT_FALSE(client_socket_factory_);
-  } else {
-    HttpNetworkSessionParams session_params;
-    if (http_network_session_params_)
-      session_params = *http_network_session_params_;
-
-    HttpNetworkSessionContext session_context;
-    session_context.client_socket_factory = client_socket_factory();
-    session_context.host_resolver = host_resolver();
-    session_context.cert_verifier = cert_verifier();
-    session_context.ct_policy_enforcer = ct_policy_enforcer();
-    session_context.transport_security_state = transport_security_state();
-    session_context.proxy_resolution_service = proxy_resolution_service();
-    session_context.proxy_delegate = proxy_delegate();
-    session_context.http_user_agent_settings = http_user_agent_settings();
-    session_context.ssl_config_service = ssl_config_service();
-    session_context.http_auth_handler_factory = http_auth_handler_factory();
-    session_context.http_server_properties = http_server_properties();
-    session_context.quic_context = quic_context();
-    session_context.net_log = net_log();
-#if BUILDFLAG(ENABLE_REPORTING)
-    session_context.network_error_logging_service =
-        network_error_logging_service();
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-    context_storage_.set_http_network_session(
-        std::make_unique<HttpNetworkSession>(session_params, session_context));
-    context_storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
-        context_storage_.http_network_session(),
-        HttpCache::DefaultBackend::InMemory(0), true /* is_main_cache */));
-  }
-  if (!job_factory()) {
-    context_storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
-  }
-}
-
-std::unique_ptr<URLRequest> TestURLRequestContext::CreateFirstPartyRequest(
-    const GURL& url,
-    RequestPriority priority,
-    URLRequest::Delegate* delegate,
-    NetworkTrafficAnnotationTag traffic_annotation) const {
-  auto req = CreateRequest(url, priority, delegate, traffic_annotation);
-  req->set_site_for_cookies(SiteForCookies::FromUrl(url));
-  return req;
-}
-
 std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder() {
   auto builder = std::make_unique<URLRequestContextBuilder>();
   builder->set_host_resolver(std::make_unique<MockCachingHostResolver>(
@@ -213,19 +101,19 @@ TestURLRequestContextGetter::TestURLRequestContextGetter(
 
 TestURLRequestContextGetter::TestURLRequestContextGetter(
     const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner,
-    std::unique_ptr<TestURLRequestContext> context)
+    std::unique_ptr<URLRequestContext> context)
     : network_task_runner_(network_task_runner), context_(std::move(context)) {
   DCHECK(network_task_runner_.get());
 }
 
 TestURLRequestContextGetter::~TestURLRequestContextGetter() = default;
 
-TestURLRequestContext* TestURLRequestContextGetter::GetURLRequestContext() {
+URLRequestContext* TestURLRequestContextGetter::GetURLRequestContext() {
   if (is_shut_down_)
     return nullptr;
 
   if (!context_.get())
-    context_ = std::make_unique<TestURLRequestContext>();
+    context_ = CreateTestURLRequestContextBuilder()->Build();
   return context_.get();
 }
 

@@ -240,8 +240,6 @@ FakeGCMClient* GCMDriverTest::GetGCMClient() {
 }
 
 void GCMDriverTest::CreateDriver() {
-  scoped_refptr<net::URLRequestContextGetter> request_context =
-      new net::TestURLRequestContextGetter(io_thread_.task_runner());
   GCMClient::ChromeBuildInfo chrome_build_info;
   chrome_build_info.product_category_for_subtypes = "com.chrome.macosx";
   driver_ = std::make_unique<GCMDriverDesktop>(

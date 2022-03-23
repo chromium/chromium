@@ -17,6 +17,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -175,12 +177,11 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   }
   store_->AddLogin(https_form);
 
-  auto request_context = base::MakeRefCounted<net::TestURLRequestContextGetter>(
-      base::ThreadTaskRunnerHandle::Get());
+  auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   mojo::Remote<network::mojom::NetworkContext> network_context_remote;
   auto network_context = std::make_unique<network::NetworkContext>(
       nullptr, network_context_remote.BindNewPipeAndPassReceiver(),
-      request_context->GetURLRequestContext(),
+      request_context.get(),
       /*cors_exempt_header_list=*/std::vector<std::string>());
 
   if (test.is_hsts_enabled) {
@@ -280,13 +281,11 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
       continue;
     }
 
-    auto request_context =
-        base::MakeRefCounted<net::TestURLRequestContextGetter>(
-            base::ThreadTaskRunnerHandle::Get());
+    auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
     mojo::Remote<network::mojom::NetworkContext> network_context_remote;
     auto network_context = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote.BindNewPipeAndPassReceiver(),
-        request_context->GetURLRequestContext(),
+        request_context.get(),
         /*cors_exempt_header_list=*/std::vector<std::string>());
 
     MockCredentialsCleanerObserver observer;

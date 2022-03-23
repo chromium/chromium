@@ -19,6 +19,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
@@ -147,12 +149,13 @@ class URLRequestTestJobBackedByFileEventsTest : public TestWithTaskEnvironment {
                           std::string* observed_content);
 
   base::ScopedTempDir directory_;
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContext> context_;
   TestDelegate delegate_;
 };
 
 URLRequestTestJobBackedByFileEventsTest::
-    URLRequestTestJobBackedByFileEventsTest() = default;
+    URLRequestTestJobBackedByFileEventsTest()
+    : context_(CreateTestURLRequestContextBuilder()->Build()) {}
 
 void URLRequestTestJobBackedByFileEventsTest::TearDown() {
   // Gives a chance to close the opening file.
@@ -227,7 +230,7 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
     std::string* observed_content) {
   const GURL kUrl("http://intercepted-url/");
 
-  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
       kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
   TestScopedURLInterceptor interceptor(
       kUrl, std::make_unique<TestURLRequestTestJobBackedByFile>(

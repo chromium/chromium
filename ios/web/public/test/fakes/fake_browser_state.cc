@@ -11,8 +11,8 @@
 #include "ios/web/test/test_url_constants.h"
 #include "ios/web/webui/url_data_manager_ios_backend.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 
 namespace web {
@@ -22,13 +22,16 @@ namespace {
 class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
   TestContextURLRequestContextGetter(web::BrowserState* browser_state) {
-    job_factory_.SetProtocolHandler(
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->SetProtocolHandler(
         kTestWebUIScheme,
         web::URLDataManagerIOSBackend::CreateProtocolHandler(browser_state));
-    context_.set_job_factory(&job_factory_);
+    context_ = context_builder->Build();
   }
 
-  net::URLRequestContext* GetURLRequestContext() override { return &context_; }
+  net::URLRequestContext* GetURLRequestContext() override {
+    return context_.get();
+  }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner()
       const override {
@@ -38,8 +41,7 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
  private:
   ~TestContextURLRequestContextGetter() override {}
 
-  net::TestURLRequestContext context_;
-  net::URLRequestJobFactory job_factory_;
+  std::unique_ptr<net::URLRequestContext> context_;
 };
 
 }  // namespace

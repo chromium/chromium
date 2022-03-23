@@ -26,6 +26,8 @@
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,21 +45,21 @@ TEST(NetLogUtil, GetNetConstants) {
 TEST(NetLogUtil, GetNetInfo) {
   base::test::TaskEnvironment task_environment;
 
-  TestURLRequestContext context;
-  HttpCache* http_cache = context.http_transaction_factory()->GetCache();
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  HttpCache* http_cache = context->http_transaction_factory()->GetCache();
 
   // Get NetInfo when there's no cache backend (It's only created on first use).
   EXPECT_FALSE(http_cache->GetCurrentBackend());
-  base::Value net_info_without_cache(GetNetInfo(&context));
+  base::Value net_info_without_cache(GetNetInfo(context.get()));
   EXPECT_FALSE(http_cache->GetCurrentBackend());
   EXPECT_GT(net_info_without_cache.DictSize(), 0u);
 
   // Force creation of a cache backend, and get NetInfo again.
   disk_cache::Backend* backend = nullptr;
-  EXPECT_EQ(OK, context.http_transaction_factory()->GetCache()->GetBackend(
+  EXPECT_EQ(OK, context->http_transaction_factory()->GetCache()->GetBackend(
                     &backend, TestCompletionCallback().callback()));
   EXPECT_TRUE(http_cache->GetCurrentBackend());
-  base::Value net_info_with_cache = GetNetInfo(&context);
+  base::Value net_info_with_cache = GetNetInfo(context.get());
   EXPECT_GT(net_info_with_cache.DictSize(), 0u);
 
   EXPECT_EQ(net_info_without_cache.DictSize(), net_info_with_cache.DictSize());
@@ -79,8 +81,8 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
   field_trial->AppendGroup("Active", 100);
   EXPECT_EQ(field_trial->group_name(), "Active");
 
-  TestURLRequestContext context;
-  base::Value net_info(GetNetInfo(&context));
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  base::Value net_info(GetNetInfo(context.get()));
 
   // Verify that the returned information reflects the new trial.
   ASSERT_TRUE(net_info.is_dict());
@@ -117,8 +119,8 @@ TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
 
     // Verify that the provider is present in the list of disabled providers iff
     // we disabled it.
-    TestURLRequestContext context;
-    base::Value net_info(GetNetInfo(&context));
+    auto context = CreateTestURLRequestContextBuilder()->Build();
+    base::Value net_info(GetNetInfo(context.get()));
     ASSERT_TRUE(net_info.is_dict());
     const base::Value::List* disabled_doh_providers_list =
         net_info.GetDict().FindList(kNetInfoDohProvidersDisabledDueToFeature);
@@ -136,19 +138,17 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsOneContext) {
 
   // Using same context for each iteration makes sure deleted requests don't
   // appear in the list, or result in crashes.
-  TestURLRequestContext context(true);
-  context.set_net_log(NetLog::Get());
-  context.Init();
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   TestDelegate delegate;
   for (size_t num_requests = 0; num_requests < 5; ++num_requests) {
     std::vector<std::unique_ptr<URLRequest>> requests;
     for (size_t i = 0; i < num_requests; ++i) {
-      requests.push_back(context.CreateRequest(GURL("about:life"),
-                                               DEFAULT_PRIORITY, &delegate,
-                                               TRAFFIC_ANNOTATION_FOR_TESTS));
+      requests.push_back(context->CreateRequest(GURL("about:life"),
+                                                DEFAULT_PRIORITY, &delegate,
+                                                TRAFFIC_ANNOTATION_FOR_TESTS));
     }
     std::set<URLRequestContext*> contexts;
-    contexts.insert(&context);
+    contexts.insert(context.get());
     RecordingNetLogObserver net_log_observer;
     CreateNetLogEntriesForActiveObjects(contexts, &net_log_observer);
     auto entry_list = net_log_observer.GetEntries();
@@ -167,13 +167,11 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsMultipleContexts) {
 
   TestDelegate delegate;
   for (size_t num_requests = 0; num_requests < 5; ++num_requests) {
-    std::vector<std::unique_ptr<TestURLRequestContext>> contexts;
+    std::vector<std::unique_ptr<URLRequestContext>> contexts;
     std::vector<std::unique_ptr<URLRequest>> requests;
     std::set<URLRequestContext*> context_set;
     for (size_t i = 0; i < num_requests; ++i) {
-      contexts.push_back(std::make_unique<TestURLRequestContext>(true));
-      contexts[i]->set_net_log(NetLog::Get());
-      contexts[i]->Init();
+      contexts.push_back(CreateTestURLRequestContextBuilder()->Build());
       context_set.insert(contexts[i].get());
       requests.push_back(
           contexts[i]->CreateRequest(GURL("about:hats"), DEFAULT_PRIORITY,
