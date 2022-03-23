@@ -84,9 +84,13 @@
     font-weight: 500;
   }
 
-  a {
+  #learnMoreLink {
+    background: none;
+    border: none;
     color: var(--cr-link-color);
     cursor: pointer;
+    margin: 0;
+    padding: 0;
   }
 
   .dialog-description {
@@ -180,9 +184,9 @@
       <div id="trialsDescription" class="cr-row continuation">
         <div class="secondary">
           $i18n{privacySandboxTrialsSummary}
-          <a id="learnMoreLink" on-click="onLearnMoreClick_">
+          <button id="learnMoreLink" on-click="onLearnMoreClick_">
             $i18n{privacySandboxTrialsSummaryLearnMore}
-          </a>
+          </button>
         </div>
       </div>
       <cr-link-row id="adPersonalizationRow"
