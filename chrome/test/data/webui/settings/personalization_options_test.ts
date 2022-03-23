@@ -243,7 +243,10 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     testElement.remove();
   });
 
-  test('Spellcheck toggle', function() {
+  // <if expr="chromeos">
+  test('Spellcheck controls without SyncSettingsCategorization', function() {
+    loadTimeData.overrideValues({syncSettingsCategorizationEnabled: false});
+
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
@@ -252,6 +255,63 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     };
     flush();
     assertFalse(testElement.$.spellCheckControl.hidden);
+    assertTrue(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+
+    testElement.prefs = {
+      profile: {password_manager_leak_detection: {value: true}},
+      safebrowsing:
+          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      spellcheck: {dictionaries: {value: []}}
+    };
+    flush();
+    assertTrue(testElement.$.spellCheckControl.hidden);
+    assertTrue(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+
+    testElement.prefs = {
+      profile: {password_manager_leak_detection: {value: true}},
+      safebrowsing:
+          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      browser: {enable_spellchecking: {value: false}},
+      spellcheck: {
+        dictionaries: {value: ['en-US']},
+        use_spelling_service: {value: false}
+      }
+    };
+    flush();
+    testElement.$.spellCheckControl.click();
+    assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
+    assertTrue(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+  });
+  // </if>
+
+  test('Spellcheck toggle', function() {
+    // <if expr="chromeos">
+    // On ChromeOS spellcheck toggle is shown in OS settings only.
+    loadTimeData.overrideValues({
+      syncSettingsCategorizationEnabled: true,
+      isOSSettings: true,
+    });
+    // </if>
+
+    testElement.prefs = {
+      profile: {password_manager_leak_detection: {value: true}},
+      safebrowsing:
+          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      spellcheck: {dictionaries: {value: ['en-US']}}
+    };
+    flush();
+    assertFalse(testElement.$.spellCheckControl.hidden);
+    // <if expr="chromeos">
+    assertTrue(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+    // </if>
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -276,4 +336,35 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     testElement.$.spellCheckControl.click();
     assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
   });
+
+  // Spellcheck link is shown on Chrome OS in Browser settings only.
+  // <if expr="chromeos">
+  test('Spellcheck link', function() {
+    loadTimeData.overrideValues({
+      syncSettingsCategorizationEnabled: true,
+      isOSSettings: false,
+    });
+    testElement.prefs = {
+      profile: {password_manager_leak_detection: {value: true}},
+      safebrowsing:
+          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      spellcheck: {dictionaries: {value: ['en-US']}}
+    };
+    flush();
+    assertFalse(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+
+    testElement.prefs = {
+      profile: {password_manager_leak_detection: {value: true}},
+      safebrowsing:
+          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      spellcheck: {dictionaries: {value: []}}
+    };
+    flush();
+    assertTrue(
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+                                   '#spellCheckLink')!.hidden);
+  });
+  // </if>
 });

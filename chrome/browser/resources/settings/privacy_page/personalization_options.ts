@@ -246,14 +246,43 @@ export class SettingsPersonalizationOptionsElement extends
       this.setPrefValue('browser.enable_spellchecking', true);
     }
   }
-  // </if>
 
-  private showSpellCheckControl_(): boolean {
+  private showSpellCheckControlToggle_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        !loadTimeData.getBoolean('isOSSettings')) {
+      // The toggle should be hidden in Ash Browser settings page
+      // (it shows a link to the OS Settings page instead).
+      return false;
+    }
+    // </if>
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
         (this.getPref('spellcheck.dictionaries').value as Array<string>)
                 .length > 0);
   }
+
+  // <if expr="chromeos">
+  private showSpellCheckControlLink_(): boolean {
+    if (!loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      return false;
+    }
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      return false;  // Should be hidden in OS settings.
+    }
+    return (
+        !!(this.prefs as {spellcheck?: any}).spellcheck &&
+        (this.getPref('spellcheck.dictionaries').value as Array<string>)
+                .length > 0);
+  }
+
+  private onUseSpellingServiceLinkClick_() {
+    const chromeOSSyncSettingsPath =
+        loadTimeData.getString('chromeOSSyncSettingsPath');
+    window.location.href = `chrome://os-settings/${chromeOSSyncSettingsPath}`;
+  }
+  // </if><!-- chromeos -->
+  // </if><!-- _google_chrome -->
 
   private shouldShowDriveSuggest_(): boolean {
     // <if expr="chromeos">

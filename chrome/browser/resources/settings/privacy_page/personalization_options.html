@@ -85,8 +85,20 @@
         on-settings-boolean-control-change="onUseSpellingServiceToggle_"
         label="$i18n{spellingPref}"
         sub-label="$i18n{spellingDescription}"
-        hidden="[[!showSpellCheckControl_(prefs.spellcheck.dictionaries)]]">
+        hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
     </settings-toggle-button>
+
+<if expr="chromeos">
+    <!-- On ChromeOS the toggle for spellcheck is shown in the OS settings,
+         and Ash Browser settings show a link to the OS settings instead. -->
+    <cr-link-row id="spellCheckLink"
+        class="hr"
+        label="$i18n{spellingPref}"
+        sub-label="$i18n{spellingDescription}"
+        hidden="[[!showSpellCheckControlLink_(prefs.spellcheck.dictionaries)]]"
+        on-click="onUseSpellingServiceLinkClick_" external>
+    </cr-link-row>
+</if><!-- chromeos -->
 </if><!-- _google_chrome -->
     <template is="dom-if" if="[[shouldShowDriveSuggest_(
         syncStatus, syncStatus.signedIn, syncStatus.statusAction)]]" restamp>
