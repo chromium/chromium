@@ -117,12 +117,12 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::InfoBarDismissed() {
-  OnInfobarClosed(PaymentsBubbleClosedReason::kClosed);
+  OnInfobarClosed(PaymentsBubbleClosedReason::kCancelled);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
 }
 
 bool AutofillVirtualCardEnrollmentInfoBarDelegateMobile::Cancel() {
-  OnInfobarClosed(PaymentsBubbleClosedReason::kClosed);
+  OnInfobarClosed(PaymentsBubbleClosedReason::kCancelled);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
   return true;
 }
