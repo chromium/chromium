@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
     expires_after="2022-08-21">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     The number of available devices when making a request on desktop which is
     triggered by calling the WebOTP API. This is logged once per API call.
@@ -607,9 +607,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
-    expires_after="2022-05-01">
+    expires_after="2022-08-21">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether the remote client name is empty. This could happen on early
     version of Chrome. This is logged once per notification when asking for user
@@ -618,9 +618,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
-    expires_after="2022-07-17">
+    expires_after="2022-08-21">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether the phone is on and unlocked when we show the notification
     to users. False if either the phone is locked or the phone does not have a
@@ -629,9 +629,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2022-08-21">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether a user taps/dismisses the notification after Chrome is
     destroyed. This could happen if the user manually swipes away Chrome from
