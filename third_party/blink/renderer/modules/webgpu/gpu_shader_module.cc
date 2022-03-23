@@ -7,6 +7,7 @@
 #include <dawn/webgpu.h>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_uint32array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

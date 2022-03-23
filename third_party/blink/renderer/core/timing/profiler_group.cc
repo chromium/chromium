@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_init_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
