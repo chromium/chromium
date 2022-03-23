@@ -236,6 +236,13 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
                                            Scrollbar& scrollbar,
                                            const gfx::Vector2d& paint_offset,
                                            const CullRect& cull_rect) {
+  // Don't paint overlay scrollbars when printing otherwise all scrollbars will
+  // be visible and cover contents.
+  if (scrollbar.IsOverlayScrollbar() &&
+      GetScrollableArea().GetLayoutBox()->GetDocument().Printing()) {
+    return;
+  }
+
   // TODO(crbug.com/1020913): We should not round paint_offset but should
   // consider subpixel accumulation when painting scrollbars.
   gfx::Rect visual_rect = scrollbar.FrameRect();
