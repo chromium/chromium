@@ -13,6 +13,9 @@
 #define CROSS_PLATFORM_COLOR_IDS \
   /* Core color concepts */ \
   /* Use the 3 param macro so kColorAccent is set to the correct value. */ \
+  /* The kColorAccent color id is used in color_provider_css_colors_test.ts. \
+  If changing the variable name, the variable name in the test needs to be \
+  changed as well. */ \
   E_CPONLY(kColorAccent, kUiColorsStart, kUiColorsStart) \
   E_CPONLY(kColorAlertHighSeverity) \
   E_CPONLY(kColorAlertLowSeverity) \

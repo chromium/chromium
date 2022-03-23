@@ -118,7 +118,7 @@ void ThemeSource::StartDataRequest(
       for (ui::ColorId id = start; id < end; ++id) {
         const SkColor color = color_provider.GetColor(id);
         std::string css_id_to_color_mapping = base::StringPrintf(
-            "%s: %s; ",
+            "%s:%s;",
             ui::ConvertColorProviderColorIdToCSSColorId(color_id_name(id))
                 .c_str(),
             ui::ConvertSkColorToCSSColor(color).c_str());

@@ -12,6 +12,9 @@
 // clang-format off
 #define COMMON_CHROME_COLOR_IDS \
   /* App menu colors. */ \
+  /* The kColorAppMenuHighlightSeverityLow color id is used in \
+  color_provider_css_colors_test.ts. If changing the variable name, the \
+  variable name in the test needs to be changed as well. */ \
   E(kColorAppMenuHighlightSeverityLow, \
     ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW, \
     kChromeColorsStart) \
