@@ -1907,6 +1907,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Prefetch.LinkPrefetchMimeType"
+    enum="LinkPrefetchMimeType" expires_after="2022-09-01">
+  <owner>jbroman@chromium.org</owner>
+  <summary>
+    Categorizes MIME types of responses to &quot;prefetch&quot; links. Intended
+    to gather data about whether this feature is used mainly for documents,
+    subresources, or both. Emitted once per resource fetched (which may be more
+    than one per page).
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
     expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
