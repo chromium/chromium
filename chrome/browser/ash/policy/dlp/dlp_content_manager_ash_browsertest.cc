@@ -41,6 +41,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/exo/shell_surface.h"
+#include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
@@ -820,6 +823,50 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
+}
+
+// Tests that screenshare is correctly paused for visibility changes of
+// Lacros-like windows (Exo surfaces).
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareExoSurface) {
+  SetupReporting();
+
+  // Create a Lacros-like Exo surface.
+  exo::WMHelperChromeOS wm_helper;
+  std::unique_ptr<exo::ShellSurface> shell_surface =
+      exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
+  shell_surface->root_surface()->window()->TrackOcclusionState();
+
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  manager->OnWindowRestrictionChanged(
+      shell_surface->GetWidget()->GetNativeWindow(), kScreenShareRestricted);
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
+
+  // Run for fullscreen and window share.
+  const auto root_media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN,
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+  const auto window_media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_WINDOW,
+      shell_surface->GetWidget()->GetNativeWindow());
+  for (const auto media_id : {root_media_id, window_media_id}) {
+    // Hide the confidential data.
+    shell_surface->GetWidget()->Hide();
+
+    // Setup callbacks to expect a single PAUSE call.
+    EXPECT_CALL(stop_cb, Run()).Times(0);
+    EXPECT_CALL(state_change_cb,
+                Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+        .Times(1);
+    manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                  stop_cb.Get(), state_change_cb.Get(),
+                                  base::DoNothing());
+    // Show the confidential data.
+    shell_surface->GetWidget()->Show();
+    manager->OnScreenShareStopped(kLabel, media_id);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,

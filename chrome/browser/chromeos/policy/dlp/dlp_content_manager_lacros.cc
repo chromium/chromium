@@ -290,7 +290,7 @@ void DlpContentManagerLacros::OnWindowDestroying(aura::Window* window) {
 void DlpContentManagerLacros::UpdateRestrictions(aura::Window* window) {
   DlpContentRestrictionSet new_restrictions;
   for (auto* web_contents : window_webcontents_[window]) {
-    if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
+    if (web_contents->GetNativeView()->IsVisible()) {
       new_restrictions.UnionWith(confidential_web_contents_[web_contents]);
     }
   }

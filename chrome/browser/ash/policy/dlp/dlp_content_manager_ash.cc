@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
+#include "components/exo/surface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -66,6 +67,30 @@ void InterruptVideoRecording() {
     ShowDlpVideoCaptureStoppedNotification();
 }
 
+bool IsAnyChildVisible(aura::Window* window) {
+  if (window->GetOcclusionState() == aura::Window::OcclusionState::VISIBLE)
+    return true;
+  for (auto* child : window->children()) {
+    if (IsAnyChildVisible(child))
+      return true;
+  }
+  return false;
+}
+
+// Retrieves a child representing ExoSurface.
+aura::Window* FindSurface(aura::Window* window) {
+  if (!window)
+    return nullptr;
+  if (exo::Surface::AsSurface(window))
+    return window;
+  for (auto* child : window->children()) {
+    auto* found_window = FindSurface(child);
+    if (found_window)
+      return found_window;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 static DlpContentManagerAsh* g_dlp_content_manager = nullptr;
@@ -78,11 +103,11 @@ DlpContentManagerAsh* DlpContentManagerAsh::Get() {
 }
 
 void DlpContentManagerAsh::OnWindowOcclusionChanged(aura::Window* window) {
-  // Stop video captures that now might include restricted content.
-  CheckRunningVideoCapture();
+  MaybeChangeOnScreenRestrictions();
 }
 
 void DlpContentManagerAsh::OnWindowDestroying(aura::Window* window) {
+  surface_observers_.erase(window);
   window_observers_.erase(window);
   confidential_windows_.erase(window);
   MaybeChangeOnScreenRestrictions();
@@ -245,6 +270,11 @@ void DlpContentManagerAsh::OnWindowRestrictionChanged(
     const DlpContentRestrictionSet& restrictions) {
   confidential_windows_[window] = restrictions;
   window_observers_[window] = std::make_unique<DlpWindowObserver>(window, this);
+  auto* surface = FindSurface(window);
+  if (surface) {
+    surface_observers_[window] =
+        std::make_unique<DlpWindowObserver>(surface, this);
+  }
   MaybeChangeOnScreenRestrictions();
 }
 
@@ -382,7 +412,7 @@ DlpContentManagerAsh::GetConfidentialContentsOnScreen(
     }
   }
   for (auto& entry : confidential_windows_) {
-    if (!entry.first->IsVisible())
+    if (!entry.first->IsVisible() || !IsAnyChildVisible(entry.first))
       continue;
     if (entry.first->is_destroying()) {
       // The window can be in the process of being destroyed during this
@@ -563,23 +593,24 @@ DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
         info.confidential_contents.ClearAndAdd(entry.first);
       }
     }
-    // Check whether the captured window is a confidential Lacros window.
-    auto window_entry = confidential_windows_.find(window);
-    if (window_entry != confidential_windows_.end()) {
-      if (window_entry->second.GetRestrictionLevel(
+    // Check whether the captured window has a confidential Lacros window.
+    for (auto& entry : confidential_windows_) {
+      if (!window->Contains(entry.first))
+        continue;
+      if (entry.second.GetRestrictionLevel(
               DlpContentRestriction::kScreenShare) ==
           info.restriction_info.level) {
         info.confidential_contents.Add(
-            window_entry->first, window_entry->second.GetRestrictionUrl(
-                                     DlpContentRestriction::kScreenShare));
-      } else if (window_entry->second.GetRestrictionLevel(
+            entry.first, entry.second.GetRestrictionUrl(
+                             DlpContentRestriction::kScreenShare));
+      } else if (entry.second.GetRestrictionLevel(
                      DlpContentRestriction::kScreenShare) >
                  info.restriction_info.level) {
-        info.restriction_info = window_entry->second.GetRestrictionLevelAndUrl(
+        info.restriction_info = entry.second.GetRestrictionLevelAndUrl(
             DlpContentRestriction::kScreenShare);
         info.confidential_contents.ClearAndAdd(
-            window_entry->first, window_entry->second.GetRestrictionUrl(
-                                     DlpContentRestriction::kScreenShare));
+            entry.first, entry.second.GetRestrictionUrl(
+                             DlpContentRestriction::kScreenShare));
       }
     }
   }

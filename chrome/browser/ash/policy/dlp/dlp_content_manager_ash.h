@@ -187,6 +187,10 @@ class DlpContentManagerAsh : public DlpContentManager,
   // Map of observers for currently known Lacros Windows.
   base::flat_map<aura::Window*, std::unique_ptr<DlpWindowObserver>>
       window_observers_;
+  // Map of observers for Lacros surfaces that are being notified for visibility
+  // changes.
+  base::flat_map<aura::Window*, std::unique_ptr<DlpWindowObserver>>
+      surface_observers_;
 
   // Set of restriction applied to the currently visible content.
   DlpContentRestrictionSet on_screen_restrictions_;
