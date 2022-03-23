@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
+#include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -147,6 +148,28 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
 
   void ReadCompleted(std::string preferred_apps_string);
 
+  // Runs |task| after the PreferredAppsList is fully initialized. |task| will
+  // be run immediately if preferred apps are already initialized.
+  void RunAfterPreferredAppsReady(base::OnceClosure task);
+
+  void AddPreferredAppImpl(apps::mojom::AppType app_type,
+                           const std::string& app_id,
+                           apps::mojom::IntentFilterPtr intent_filter,
+                           apps::mojom::IntentPtr intent,
+                           bool from_publisher);
+  void RemovePreferredAppImpl(apps::mojom::AppType app_type,
+                              const std::string& app_id);
+  void RemovePreferredAppForFilterImpl(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::IntentFilterPtr intent_filter);
+  void SetSupportedLinksPreferenceImpl(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
+  void RemoveSupportedLinksPreferenceImpl(apps::mojom::AppType app_type,
+                                          const std::string& app_id);
+
   // publishers_ is a std::map, not a mojo::RemoteSet, since we want to
   // be able to find *the* publisher for a given apps::mojom::AppType.
   std::map<apps::mojom::AppType, mojo::Remote<apps::mojom::Publisher>>
@@ -175,6 +198,8 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   base::OnceClosure read_completed_for_testing_;
 
   base::OnceClosure write_completed_for_testing_;
+
+  base::queue<base::OnceClosure> pending_preferred_apps_tasks_;
 
   base::WeakPtrFactory<AppServiceMojomImpl> weak_ptr_factory_{this};
 };

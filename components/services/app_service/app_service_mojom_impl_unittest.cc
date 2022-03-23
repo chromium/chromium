@@ -481,6 +481,41 @@ TEST_F(AppServiceMojomImplTest, PreferredApps) {
             sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
 }
 
+// Tests that writing a preferred app value before the PreferredAppsList is
+// initialized queues the write for after initialization.
+TEST_F(AppServiceMojomImplTest, PreferredAppsWriteBeforeInit) {
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  base::RunLoop run_loop_read;
+  AppServiceMojomImpl impl(temp_dir_.GetPath(), run_loop_read.QuitClosure());
+  GURL filter_url("https://www.abc.com/");
+
+  std::string kAppId1 = "aaa";
+  std::string kAppId2 = "bbb";
+
+  impl.AddPreferredApp(apps::mojom::AppType::kArc, kAppId1,
+                       apps_util::CreateIntentFilterForMimeType("image/png"),
+                       nullptr,
+                       /*from_publisher=*/false);
+
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+  filters.push_back(apps_util::CreateIntentFilterForUrlScope(filter_url));
+  impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId2,
+                                   std::move(filters));
+
+  // Wait for the preferred apps list initialization to read from disk.
+  run_loop_read.Run();
+
+  // Both changes to the PreferredAppsList should have been applied.
+  ASSERT_EQ(
+      kAppId1,
+      impl.GetPreferredAppsForTesting().FindPreferredAppForIntent(
+          apps_util::CreateShareIntentFromFiles(
+              {GURL("filesystem:chrome://foo/image.png")}, {"image/png"})));
+  ASSERT_EQ(kAppId2, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
+                         filter_url));
+}
+
 TEST_F(AppServiceMojomImplTest, PreferredAppsPersistency) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
