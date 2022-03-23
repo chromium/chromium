@@ -436,6 +436,6 @@ void ChromeDesksTemplatesDelegate::GetLacrosChromeUrls(
   browser_manager->GetTabStripModelUrls(
       window_unique_id,
       base::BindOnce(&ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned,
-                     base::Unretained(this), std::move(callback),
+                     weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(app_launch_info)));
 }

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom-forward.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -68,6 +69,8 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
       GetAppLaunchDataCallback callback,
       const std::string& window_unique_id,
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
+
+  base::WeakPtrFactory<ChromeDesksTemplatesDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_CHROME_DESKS_TEMPLATES_DELEGATE_H_
