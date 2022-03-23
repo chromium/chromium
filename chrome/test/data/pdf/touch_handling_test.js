@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-
 function sendTouchStart(touches) {
   let id = 0;
   const touchList = touches.map(function(xy) {
@@ -36,7 +34,7 @@ function createContextMenuEvent() {
   });
 }
 
-const tests = [
+chrome.test.runTests([
   // Test suppression of the context menu on single touch.
   function testContextMenuSingleTouch() {
     sendTouchStart([{x: 10, y: 10}]);
@@ -77,9 +75,4 @@ const tests = [
   //   // 10k is the value for the action_timeout_ms_ in Chrome test_timeouts.cc
   //   }, 10000);
   // }
-];
-
-const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCompleteCallback(function() {
-  chrome.test.runTests(tests);
-});
+]);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Bookmark, ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail, PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {Bookmark, ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
@@ -13,7 +13,7 @@ interface TestBookmarksElement extends HTMLElement {
   bookmarks: Bookmark[];
 }
 
-const tests = [
+chrome.test.runTests([
   /**
    * Test that the correct bookmarks were loaded for
    * test-bookmarks-with-zoom.pdf.
@@ -150,9 +150,4 @@ const tests = [
 
     chrome.test.succeed();
   }
-];
-
-const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCompleteCallback(function() {
-  chrome.test.runTests(tests);
-});
+]);

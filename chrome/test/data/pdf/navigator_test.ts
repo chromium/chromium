@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
@@ -99,7 +99,7 @@ async function doNavigationUrlTests(
       mockViewportChangedCallback, navigatorDelegate);
 }
 
-const tests = [
+chrome.test.runTests([
   /**
    * Test navigation within the page, opening a url in the same tab and
    * opening a url in a new tab.
@@ -255,9 +255,4 @@ const tests = [
 
     chrome.test.succeed();
   }
-];
-
-const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCompleteCallback(function() {
-  chrome.test.runTests(tests);
-});
+]);

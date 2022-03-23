@@ -7,7 +7,7 @@ import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjb
 /**
  * These tests require that the PDF plugin be available to run correctly.
  */
-const tests = [
+chrome.test.runTests([
   /**
    * Test that the page is sized to the size of the document.
    */
@@ -38,9 +38,4 @@ const tests = [
     chrome.test.assertEq('test.pdf', document.title);
     chrome.test.succeed();
   },
-];
-
-const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCompleteCallback(function() {
-  chrome.test.runTests(tests);
-});
+]);
