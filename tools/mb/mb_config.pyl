@@ -69,9 +69,9 @@
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-dbg': 'debug_bot_x86',
       'win32-archive-tagged': 'x86_official_optimize_goma',
-      'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression',
-      'win-archive-dbg': 'debug_bot',
-      'win-archive-tagged': 'official_optimize_goma',
+      'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
+      'win-archive-dbg': 'debug_bot_reclient',
+      'win-archive-tagged': 'official_optimize_reclient',
       'win-official': 'official_optimize_goma',
     },
 
@@ -766,7 +766,7 @@
       'Win Builder (dbg)': 'gpu_tests_debug_bot_x86_no_symbols',
       'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols',
       'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
-      'Win x64 Builder (dbg)': 'gpu_tests_debug_bot',
+      'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Windows deterministic': 'release_bot_x86_minimal_symbols',
     },
 

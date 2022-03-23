@@ -130,7 +130,8 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "win-archive-rel": {
@@ -140,13 +141,15 @@
       "is_debug": false,
       "skip_archive_compression": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "win-archive-tagged": {
     "gn_args": {
       "is_official_build": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "win-official": {
