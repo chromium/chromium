@@ -48,7 +48,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLacros : public SelectFileDialog {
                       void* params) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
-  void ListenerDestroyed() override {}
+  void ListenerDestroyed() override;
 
  private:
   // Private because SelectFileDialog is ref-counted.
