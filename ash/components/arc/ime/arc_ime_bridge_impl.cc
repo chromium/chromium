@@ -154,7 +154,7 @@ void ArcImeBridgeImpl::OnCursorRectChangedDeprecated(
     bool is_screen_coordinates) {
   delegate_->OnCursorRectChanged(
       rect, is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
-                                  : mojom::CursorCoordinateSpace::WINDOW);
+                                  : mojom::CursorCoordinateSpace::NOTIFICATION);
 }
 
 void ArcImeBridgeImpl::OnCursorRectChanged(
@@ -180,7 +180,7 @@ void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingTextDeprecated(
   delegate_->OnCursorRectChangedWithSurroundingText(
       rect, text_range, base::UTF8ToUTF16(text_in_range), selection_range,
       is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
-                            : mojom::CursorCoordinateSpace::WINDOW);
+                            : mojom::CursorCoordinateSpace::NOTIFICATION);
 }
 
 void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(

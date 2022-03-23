@@ -201,6 +201,7 @@ class ArcImeService : public KeyedService,
 
   double GetDeviceScaleFactorForKeyboard() const;
   double GetDeviceScaleFactorForFocusedWindow() const;
+  double GetDefaultDeviceScaleFactor() const;
 
   gfx::Point GetDisplayOriginForFocusedWindow() const;
 

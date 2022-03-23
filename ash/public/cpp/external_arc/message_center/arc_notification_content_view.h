@@ -47,6 +47,7 @@ class ArcNotificationContentView
  public:
   METADATA_HEADER(ArcNotificationContentView);
 
+  static int GetNotificationContentViewWidth();
 
   ArcNotificationContentView(ArcNotificationItem* item,
                              const message_center::Notification& notification,

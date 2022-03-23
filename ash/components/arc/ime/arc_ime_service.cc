@@ -14,6 +14,7 @@
 #include "ash/components/arc/ime/key_event_result_receiver.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -717,19 +718,32 @@ void ArcImeService::InvalidateSurroundingTextAndSelectionRange() {
 bool ArcImeService::UpdateCursorRect(
     const gfx::Rect& rect,
     mojom::CursorCoordinateSpace coordinate_space) {
-  // Divide by the scale factor. To convert from Android pixels to Chrome DIP.
-  gfx::Rect converted(gfx::ScaleToEnclosingRect(
-      rect, 1 / GetDeviceScaleFactorForFocusedWindow()));
-
-  // If the supplied coordinates are relative to the window, add the offset of
-  // the window showing the ARC app.
-  if (coordinate_space == mojom::CursorCoordinateSpace::WINDOW) {
+  gfx::Rect converted;
+  if (coordinate_space == mojom::CursorCoordinateSpace::NOTIFICATION) {
     if (!focused_arc_window_)
       return false;
-    converted.Offset(focused_arc_window_->GetToplevelWindow()
-                         ->GetBoundsInScreen()
-                         .OffsetFromOrigin());
+
+    // Rect is always scaled by the default device scale factor for
+    // notification windows.
+    converted =
+        gfx::ScaleToEnclosingRect(rect, 1.0 / GetDefaultDeviceScaleFactor());
+
+    // Convert the rect from a "notification display" coordinate into the window
+    // coordinate. Because notification are aligned in horizontally on the
+    // Android side, we just divide x coordinate by the width of the
+    // notification window.
+    converted.set_x(
+        converted.x() %
+        ash::ArcNotificationContentView::GetNotificationContentViewWidth());
+
+    // Convert the window coordinate into the screen coordinate.
+    converted.Offset(
+        focused_arc_window_->GetBoundsInScreen().OffsetFromOrigin());
   } else if (focused_arc_window_) {
+    // Convert from Android pixels to Chrome DIP.
+    converted = gfx::ScaleToEnclosingRect(
+        rect, 1.0 / GetDeviceScaleFactorForFocusedWindow());
+
     if (coordinate_space == mojom::CursorCoordinateSpace::DISPLAY) {
       // Convert into the screen coordinate.
       const gfx::Point display_origin = GetDisplayOriginForFocusedWindow();
@@ -788,6 +802,14 @@ double ArcImeService::GetDeviceScaleFactorForFocusedWindow() const {
     return 1.0;
   return exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
       focused_arc_window_);
+}
+
+double ArcImeService::GetDefaultDeviceScaleFactor() const {
+  if (g_override_default_device_scale_factor.has_value())
+    return g_override_default_device_scale_factor.value();
+  if (!exo::WMHelper::HasInstance())
+    return 1.0;
+  return exo::WMHelper::GetInstance()->GetDefaultDeviceScaleFactor();
 }
 
 gfx::Point ArcImeService::GetDisplayOriginForFocusedWindow() const {

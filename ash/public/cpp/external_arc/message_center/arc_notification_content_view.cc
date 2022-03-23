@@ -251,6 +251,13 @@ class ArcNotificationContentView::SlideHelper {
   bool slide_in_progress_ = false;
 };
 
+// static
+int ArcNotificationContentView::GetNotificationContentViewWidth() {
+  return features::IsNotificationsRefreshEnabled()
+             ? kNotificationInMessageCenterWidth
+             : message_center::kNotificationWidth;
+}
+
 ArcNotificationContentView::ArcNotificationContentView(
     ArcNotificationItem* item,
     const message_center::Notification& notification,
@@ -261,9 +268,7 @@ ArcNotificationContentView::ArcNotificationContentView(
       mouse_enter_exit_handler_(new MouseEnterExitHandler(this)),
       message_view_(message_view),
       control_buttons_view_(message_view),
-      notification_width_(features::IsNotificationsRefreshEnabled()
-                              ? kNotificationInMessageCenterWidth
-                              : message_center::kNotificationWidth) {
+      notification_width_(GetNotificationContentViewWidth()) {
   DCHECK(message_view);
 
   // |notification_width_| must be 360 (or 344 for refreshed notifications),

@@ -46,8 +46,8 @@ enum CursorCoordinateSpace {
   SCREEN,
   // (0, 0) is the top-left of the current display.
   DISPLAY,
-  // (0, 0) is the top-left of the current window.
-  WINDOW,
+  // (0, 0) is the top-left of the notification display.
+  NOTIFICATION,
 };
 
 // Represents a single segment of text currently composed by IME.
