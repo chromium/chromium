@@ -836,15 +836,13 @@ int PdfViewPluginBase::PrintBegin(const blink::WebPrintParams& print_params) {
   if (!ret)
     return 0;
 
-  const bool can_print =
-      engine()->HasPermission(DocumentPermission::kPrintHighQuality) ||
-      (print_params.rasterize_pdf &&
-       engine()->HasPermission(DocumentPermission::kPrintLowQuality));
-
-  if (!can_print)
+  if (!engine()->HasPermission(DocumentPermission::kPrintLowQuality))
     return 0;
 
   print_params_ = print_params;
+  if (!engine()->HasPermission(DocumentPermission::kPrintHighQuality))
+    print_params_->rasterize_pdf = true;
+
   engine()->PrintBegin();
   return ret;
 }
