@@ -184,7 +184,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                           base::DoNothing()),
       vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
-  back_button->SetID(VIEW_ID_BACK_BUTTON);
+  back_button->SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON);
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());

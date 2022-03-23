@@ -67,6 +67,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void WebContentsDestroyed() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
+  void AnnouncePageOpened(std::u16string announcement);
+
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
 
   // The presenter that controls the Page Info UI.
