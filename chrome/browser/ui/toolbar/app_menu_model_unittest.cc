@@ -31,6 +31,13 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/user_manager/fake_user_manager.h"
+#endif
+
 namespace {
 
 // Error class has a menu item.
@@ -86,6 +93,20 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
 
   ~AppMenuModelTest() override = default;
 
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* user_manager = static_cast<user_manager::FakeUserManager*>(
+        user_manager::UserManager::Get());
+    const auto account_id = AccountId::FromUserEmail("test@test");
+    auto* user = user_manager->AddUser(account_id);
+    user_manager->UserLoggedIn(account_id, user->username_hash(),
+                               /*browser_restart=*/false,
+                               /*is_child=*/false);
+    user_manager->set_local_state(g_browser_process->local_state());
+#endif
+  }
+
   // Don't handle accelerators.
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {
@@ -137,6 +158,14 @@ TEST_F(AppMenuModelTest, Basics) {
   detector->NotifyUpgrade();
   EXPECT_TRUE(detector->notify_upgrade());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Forcibly enable Lacros Profile migration,
+  // so that IDC_LACROS_DATA_MIGRATION can get visible.
+  base::test::ScopedFeatureList feature_list(
+      ash::features::kLacrosProfileMigrationForAnyUser);
+  crosapi::browser_util::SetLacrosEnabledForTest(true);
+#endif
+
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
                                                  &fake_delegate);
@@ -151,6 +180,9 @@ TEST_F(AppMenuModelTest, Basics) {
   // Verify that the upgrade item is visible if supported.
   EXPECT_EQ(browser_defaults::kShowUpgradeMenuItem,
             model.IsCommandIdVisible(IDC_UPGRADE_DIALOG));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(model.IsCommandIdVisible(IDC_LACROS_DATA_MIGRATION));
+#endif
 
   // Execute a couple of the items and make sure it gets back to our delegate.
   // We can't use CountEnabledExecutable() here because the encoding menu's

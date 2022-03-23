@@ -85,10 +85,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/ash/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -791,6 +794,30 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);
       break;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case IDC_LACROS_DATA_MIGRATION: {
+      auto* user_manager = user_manager::UserManager::Get();
+      const auto* user = user_manager->GetPrimaryUser();
+      DCHECK(user);
+      // Unset local state holding the internal state of the previous migration
+      // attempts used to avoid the infinite loop of the migration.
+      // Because user explicitly triggered the migration so we should try to
+      // run it always.
+      ash::BrowserDataMigratorImpl::ClearMigrationStep(
+          user_manager->GetLocalState());
+      ash::BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
+          user_manager->GetLocalState(), user->username_hash());
+      ash::BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
+          user->GetAccountId(), user->username_hash(),
+          base::BindOnce(
+              [](bool result, const absl::optional<uint64_t>& required_size) {
+                if (!result && required_size.has_value())
+                  ash::OpenBrowserDataMigrationErrorDialog(*required_size);
+              }));
+      break;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     case IDC_HELP_PAGE_VIA_KEYBOARD:
       ShowHelp(browser_, HELP_SOURCE_KEYBOARD);
       break;
@@ -1162,6 +1189,9 @@ void BrowserCommandController::InitCommandState() {
 
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_.UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  command_updater_.UpdateCommandEnabled(IDC_LACROS_DATA_MIGRATION, true);
+#endif
 
   // Distill current page.
   command_updater_.UpdateCommandEnabled(IDC_DISTILL_PAGE,

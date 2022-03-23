@@ -224,6 +224,10 @@
 #define IDC_CHROME_TIPS                40263
 #define IDC_CHROME_WHATS_NEW           40264
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define IDC_LACROS_DATA_MIGRATION      40265
+#endif
+
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
 #define IDC_SPELLCHECK_SUGGESTION_0     41000

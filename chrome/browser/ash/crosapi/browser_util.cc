@@ -438,6 +438,25 @@ bool IsLacrosEnabledForMigration(const User* user,
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
+bool IsProfileMigrationAvailable() {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* user = user_manager->GetPrimaryUser();
+  // |user| may be nullptr on unittests.
+  if (!user || !IsProfileMigrationEnabled(user->GetAccountId()))
+    return false;
+
+  if (!IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit))
+    return false;
+
+  // If migration is already completed, it is not necessary to run again.
+  if (IsProfileMigrationCompletedForUser(user_manager->GetLocalState(),
+                                         user->username_hash())) {
+    return false;
+  }
+
+  return true;
+}
+
 bool IsLacrosSupportFlagAllowed() {
   return IsLacrosAllowedToBeEnabled() &&
          (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);

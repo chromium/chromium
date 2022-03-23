@@ -201,6 +201,12 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
 
+  // Resets the number of migration attempts for the user stored in
+  // `kMigrationAttemptCountPref.
+  static void ClearMigrationAttemptCountForUser(
+      PrefService* local_state,
+      const std::string& user_id_hash);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            ManipulateMigrationAttemptCount);
@@ -244,12 +250,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // `kMigrationAttemptCountPref.
   static int GetMigrationAttemptCountForUser(PrefService* local_state,
                                              const std::string& user_id_hash);
-
-  // Resets the number of migration attempts for the user stored in
-  // `kMigrationAttemptCountPref.
-  static void ClearMigrationAttemptCountForUser(
-      PrefService* local_state,
-      const std::string& user_id_hash);
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.

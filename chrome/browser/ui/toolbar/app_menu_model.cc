@@ -124,6 +124,13 @@ std::u16string GetUpgradeDialogMenuItemName() {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns the menu item name for Lacros data migration.
+std::u16string GetLacrosDataMigrationMenuItemName() {
+  return l10n_util::GetStringUTF16(IDS_LACROS_DATA_MIGRATION_RELAUNCH);
+}
+#endif
+
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
 absl::optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
@@ -315,6 +322,8 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
          command_id == IDC_FULLSCREEN ||
 #elif BUILDFLAG(IS_WIN)
          command_id == IDC_PIN_TO_START_SCREEN ||
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+         command_id == IDC_LACROS_DATA_MIGRATION ||
 #endif
          command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
 }
@@ -337,6 +346,9 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
       // TODO(scottmg): Remove http://crbug.com/558054.
       return l10n_util::GetStringUTF16(string_id);
     }
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    case IDC_LACROS_DATA_MIGRATION:
+      return GetLacrosDataMigrationMenuItemName();
 #endif
     case IDC_INSTALL_PWA:
       return GetInstallPWAAppMenuItemName(browser_).value();
@@ -350,8 +362,16 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
 }
 
 ui::ImageModel AppMenuModel::GetIconForCommandId(int command_id) const {
+  bool upgrade_icon_requested = false;
   if (command_id == IDC_UPGRADE_DIALOG) {
     DCHECK(browser_defaults::kShowUpgradeMenuItem);
+    upgrade_icon_requested = true;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_id == IDC_LACROS_DATA_MIGRATION)
+    upgrade_icon_requested = true;
+#endif
+  if (upgrade_icon_requested) {
     DCHECK(app_menu_icon_controller_);
     return ui::ImageModel::FromVectorIcon(
         kBrowserToolsUpdateIcon,
@@ -380,6 +400,11 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     case IDC_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
       break;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case IDC_LACROS_DATA_MIGRATION:
+      LogMenuAction(MENU_ACTION_LACROS_DATA_MIGRATION);
+      break;
+#endif
     case IDC_NEW_TAB:
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.NewTab", delta);
@@ -743,6 +768,14 @@ bool AppMenuModel::IsCommandIdVisible(int command_id) const {
       return app_menu_icon_controller_->GetTypeAndSeverity().type ==
              AppMenuIconController::IconType::UPGRADE_NOTIFICATION;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case IDC_LACROS_DATA_MIGRATION: {
+      if (!app_menu_icon_controller_)
+        return false;
+      return app_menu_icon_controller_->GetTypeAndSeverity().type ==
+             AppMenuIconController::IconType::UPGRADE_NOTIFICATION;
+    }
+#endif
     default:
       return true;
   }
@@ -791,9 +824,19 @@ void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
   DCHECK_EQ(0, GetItemCount());
 
-  if (IsCommandIdVisible(IDC_UPGRADE_DIALOG))
+  bool need_separator = false;
+  if (IsCommandIdVisible(IDC_UPGRADE_DIALOG)) {
     AddItem(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName());
-  if (AddGlobalErrorMenuItems() || IsCommandIdVisible(IDC_UPGRADE_DIALOG))
+    need_separator = true;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsCommandIdVisible(IDC_LACROS_DATA_MIGRATION)) {
+    AddItem(IDC_LACROS_DATA_MIGRATION, GetLacrosDataMigrationMenuItemName());
+    need_separator = true;
+  }
+#endif
+
+  if (AddGlobalErrorMenuItems() || need_separator)
     AddSeparator(ui::NORMAL_SEPARATOR);
 
   AddItemWithStringId(IDC_NEW_TAB, browser_->profile()->IsIncognitoProfile()

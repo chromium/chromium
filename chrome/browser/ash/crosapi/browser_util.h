@@ -276,6 +276,9 @@ void ClearLacrosAvailabilityCacheForTest();
 
 bool IsProfileMigrationEnabled(const AccountId& account_id);
 
+// Returns true if the profile migration can run, but not yet completed.
+bool IsProfileMigrationAvailable();
+
 // Checks if profile migration has been completed. This is reset if profile
 // migration is initiated for example due to lacros data directory being wiped.
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
