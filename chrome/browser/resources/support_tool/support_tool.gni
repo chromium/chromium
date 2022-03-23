@@ -3,7 +3,12 @@
 # found in the LICENSE file.
 
 # Files holding a Polymer element definition and have an equivalent .html file.
-web_component_files = [ "support_tool.ts" ]
+web_component_files = [
+  "support_tool.ts",
+  "issue_details.ts",
+  "data_collectors.ts",
+  "spinner_page.ts",
+]
 
 # Files that are passed as input to html_to_wrapper().
 html_files = []
@@ -18,3 +23,5 @@ foreach(f, html_files) {
 }
 
 ts_files = web_component_files + [ "browser_proxy.ts" ]
+
+css_wrapper_files = [ "support_tool_shared_css.ts" ]

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -15,10 +16,7 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 generate_grd("build_grd") {
   grd_prefix = "support_tool"
   out_grd = resources_grd_file
-  input_files = [
-    "support_tool_container.html",
-    "support_tool.html",
-  ]
+  input_files = html_files + [ "support_tool_container.html" ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
@@ -42,6 +40,10 @@ copy("copy") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
 }
@@ -51,13 +53,14 @@ ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
   extra_deps = [
     ":copy",
+    ":css_wrapper_files",
     ":html_wrapper_files",
   ]
 }

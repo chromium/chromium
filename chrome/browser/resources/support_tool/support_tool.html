@@ -2,74 +2,40 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<style include="md-select cr-input-style">
-  .entry-view {
-    margin-inline-start: 40px;
-  }
-
-  h2 {
-    color: var(--cr-text-color-primary);
-    font-size: 20px;
-    font-weight: normal;
-    margin-bottom: 18px;
-    margin-top: 72px;
-  }
-
-  .support-tool-title {
-    color: var(--cr-title-text-color);
-    font-size: 14px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-  }
-
-  #support-case-id {
-    height: 32px;
-    width: 248px;
-  }
-
-  .md-select {
-    height: 32px;
-    margin-bottom: 30px;
-    width: 248px;
-  }
-
-  #description {
-    /*TODO(b/222669536): Style the description better when UX reviewer of mocks
-    gives their input.*/
-    background-color: var(--cr-input-background-color);
-    border: none;
-    border-radius: var(--cr-input-border-radius, 4px);
-    caret-color: var(--cr-input-focus-color);
-    color: var(--cr-input-color);
+<style include="support-tool-shared">
+  :host {
+    block-size: fit-content;
     display: block;
-    font-family: inherit;
-    height: 120px;
-    margin-top: 8px;
-    outline: none;
-    padding-bottom: 8px;
-    padding-inline-start: 10px;
-    padding-top: 8px;
-    resize: none;
-    width: 520px;
+    margin-inline-start: 40px;
+    margin-top: 72px;
+    width: fit-content;
+  }
+
+  cr-button {
+    margin-inline-start: 12px;
   }
 </style>
 
-<div class="entry-view">
-  <h2>Collect diagnostics data for support</h2>
-  <div class="support-tool-title">Support Case ID</div>
-  <cr-input id="support-case-id" value="{{caseId_}}"
-    spellcheck="false" maxlength="20">
-  </cr-input>
-  <div class="support-tool-title">Email</div>
-  <select class="md-select" value="{{selectedEmail_::change}}">
-    <option value=""></option>
-    <template is="dom-repeat" items="[[emails_]]">
-      <option value="[[item]]">[[item]]</option>
-    </template>
-  </select>
-  <div class="support-tool-title">Describe the issue</div>
-  <textarea id="description" value="{{issueDescription_::input}}"
-      spellcheck="true"
-      placeholder="Provide a clear desciption of the issue and steps to reproduce the issue (if possible)">
-  </textarea>
+<div id="support-tool-pages">
+  <iron-pages selected="[[selectedPage_]]" attr-for-selected="page-index">
+    <issue-details id="issueDetails"
+        page-index="[[supportToolPageIndex_.ISSUE_DETAILS]]">
+    </issue-details>
+    <data-collectors id="dataCollectors"
+        page-index="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
+    </data-collectors>
+    <spinner-page id="spinnerPage"
+        page-index="[[supportToolPageIndex_.SPINNER]]">
+    </spinner-page>
+  </iron-pages>
+</div>
+<div class="navigation-buttons" id="continueButtonContainer"
+    hidden$="[[shouldHideContinueButtonContainer_(selectedPage_)]]">
+  <cr-button id="backButton" hidden$="[[shouldHideBackButton_(selectedPage_)]]"
+      on-click="onBackClick_">
+    Back
+  </cr-button>
+  <cr-button on-click="onContinueClick_" class="action-button">
+    Continue
+  </cr-button>
 </div>

@@ -2,16 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './data_collectors.js';
+import './issue_details.js';
+import './spinner_page.js';
+import './support_tool_shared_css.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {DataCollectorsElement} from './data_collectors.js';
+import {IssueDetailsElement} from './issue_details.js';
+import {SpinnerPageElement} from './spinner_page.js';
 import {getTemplate} from './support_tool.html.js';
+
+enum SupportToolPageIndex {
+  ISSUE_DETAILS,
+  DATA_COLLECTOR_SELECTION,
+  SPINNER,
+}
+
+export interface SupportToolElement {
+  $: {
+    issueDetails: IssueDetailsElement,
+    dataCollectors: DataCollectorsElement,
+    spinnerPage: SpinnerPageElement,
+  };
+}
 
 export class SupportToolElement extends PolymerElement {
   static get is() {
@@ -24,37 +40,41 @@ export class SupportToolElement extends PolymerElement {
 
   static get properties() {
     return {
-      caseId_: {
-        type: String,
-        value: () => loadTimeData.getString('caseId'),
+      selectedPage_: {
+        type: SupportToolPageIndex,
+        value: SupportToolPageIndex.ISSUE_DETAILS,
       },
-      emails_: {
-        type: Array,
-        value: () => [],
-      },
-      issueDescription_: {
-        type: String,
-        value: '',
-      },
-      selectedEmail_: {
-        type: String,
-        value: '',
+      supportToolPageIndex_: {
+        readonly: true,
+        type: Object,
+        value: SupportToolPageIndex,
       },
     };
   }
 
-  private caseId_: string;
-  private emails_: string[];
-  private issueDescription_: string;
-  private selectedEmail_: string;
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private selectedPage_: SupportToolPageIndex;
 
-  override connectedCallback() {
-    super.connectedCallback();
+  private onContinueClick_() {
+    this.selectedPage_ = this.selectedPage_ + 1;
+    // TODO(b/219730597): If selected page is data collections page, send signal
+    // to chrome using BrowserProxy to start data collection with the data we
+    // gathered in IssueDetailsElement and DataCollectorsElement. This part will
+    // be added in follow-up CL.
+  }
 
-    this.browserProxy_.getEmailAddresses().then((emails: string[]) => {
-      this.emails_ = emails;
-    });
+  private onBackClick_() {
+    this.selectedPage_ = this.selectedPage_ - 1;
+  }
+
+  private shouldHideBackButton_(): boolean {
+    // Back button will only be shown on data collectors selection page.
+    return this.selectedPage_ !== SupportToolPageIndex.DATA_COLLECTOR_SELECTION;
+  }
+
+  private shouldHideContinueButtonContainer_(): boolean {
+    // Continue button container will only be shown in issue details page and
+    // data collectors selection page.
+    return this.selectedPage_ >= SupportToolPageIndex.SPINNER;
   }
 }
 

@@ -12,7 +12,7 @@ import 'chrome://support-tool/support_tool.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {BrowserProxy, BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
 import {SupportToolElement} from 'chrome://support-tool/support_tool.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -57,11 +57,22 @@ suite('SupportToolTest', function() {
     await waitAfterNextRender(supportTool);
   });
 
-  test('initialize fields', () => {
+  test('start data collection', () => {
+    const ironPages = supportTool.shadowRoot!.querySelector('iron-pages');
+    // The selected page index must be 0, which means initial page is
+    // IssueDetails.
+    assertEquals(ironPages!.selected, 0);
+    // Only continue button container must be visible in initial page.
+    assertFalse(
+        supportTool.shadowRoot!.getElementById(
+                                   'continueButtonContainer')!.hidden);
+    // Check the contents of issue details page.
+    const issueDetails = supportTool.$.issueDetails;
     assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-input')!.value, 'testcaseid');
-    const emailOptions = supportTool.shadowRoot!.querySelectorAll('option')!;
-    // SupportToolElement adds empty string to the email addresses options as a
+        issueDetails.shadowRoot!.querySelector('cr-input')!.value,
+        'testcaseid');
+    const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option')!;
+    // IssueDetailsElement adds empty string to the email addresses options as a
     // default value.
     assertEquals(EMAIL_ADDRESSES.length + 1, emailOptions.length);
   });
