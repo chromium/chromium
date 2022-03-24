@@ -12,6 +12,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {disableAllButtons} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -54,19 +55,13 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   /** @protected */
   onExitToLoginButtonClicked_() {
     this.shimlessRmaService_.criticalErrorExitToLogin();
-    this.dispatchEvent(new CustomEvent(
-        'disable-all-buttons',
-        {bubbles: true, composed: true, detail: true},
-        ));
+    disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 
   /** @protected */
   onRebootButtonClicked_() {
     this.shimlessRmaService_.criticalErrorReboot();
-    this.dispatchEvent(new CustomEvent(
-        'disable-all-buttons',
-        {bubbles: true, composed: true, detail: true},
-        ));
+    disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 }
 

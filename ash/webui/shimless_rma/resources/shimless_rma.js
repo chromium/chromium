@@ -279,6 +279,16 @@ export class ShimlessRma extends ShimlessRmaBase {
       },
 
       /**
+       * Show busy state overlay while waiting for the service response.
+       * @protected
+       */
+      showBusyStateOverlay_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
        * After the next button is clicked, true until the next state is
        * processed.
        * @protected
@@ -331,12 +341,8 @@ export class ShimlessRma extends ShimlessRmaBase {
      * @private {?Function}
      */
     this.transitionState_ = (e) => {
-      // If already in a busy state, ignore requests.
-      if (this.allButtonsDisabled_) {
-        return;
-      }
-
-      this.setAllButtonsDisabled_(/*disabled=*/ true);
+      this.setAllButtonsState_(
+          /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
       e.detail().then((stateResult) => this.processStateResult_(stateResult));
     };
 
@@ -353,12 +359,29 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
 
     /**
-     * The disableAllButtons callback is used by page elements to control the
-     * disabled state of all buttons.
+     * The enableAllButtons callback is used by page elements to enable all
+     * buttons.
+     * @private {?Function}
+     */
+    this.enableAllButtonsCallback_ = () => {
+      this.setAllButtonsState_(
+          /* shouldDisableButtons= */ false, /* showBusyStateOverlay= */ false);
+    };
+
+    /**
+     * The disableAllButtons callback is used by page elements to disable all
+     * buttons and optionally show a busy overlay.
      * @private {?Function}
      */
     this.disableAllButtonsCallback_ = (e) => {
-      this.setAllButtonsDisabled_(e.detail);
+      const customEvent =
+          /**
+             @type {!CustomEvent<{showBusyStateOverlay: boolean}>}
+           */
+          (e);
+      this.setAllButtonsState_(
+          /* shouldDisableButtons= */ true,
+          customEvent.detail.showBusyStateOverlay);
     };
 
     /**
@@ -382,6 +405,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'set-next-button-label', this.setNextButtonLabelCallback_);
     window.addEventListener(
         'disable-all-buttons', this.disableAllButtonsCallback_);
+    window.addEventListener(
+        'enable-all-buttons', this.enableAllButtonsCallback_);
   }
 
   /** @override */
@@ -394,6 +419,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'set-next-button-label', this.setNextButtonLabelCallback_);
     window.removeEventListener(
         'disable-all-buttons', this.disableAllButtonsCallback_);
+    window.removeEventListener(
+        'enable-all-buttons', this.enableAllButtonsCallback_);
   }
 
   /** @override */
@@ -469,7 +496,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         component = null;
       }
     } else if (pageInfo == this.currentPage_) {
-      this.setAllButtonsDisabled_(/*disabled=*/ false);
+      this.setAllButtonsState_(
+          /* shouldDisableButtons= */ false, /* showBusyStateOverlay= */ false);
       // Make sure all button states are correct.
       this.notifyPath('currentPage_.buttonNext');
       this.notifyPath('currentPage_.buttonBack');
@@ -485,7 +513,8 @@ export class ShimlessRma extends ShimlessRmaBase {
 
     this.hideAllComponents_();
     component.hidden = false;
-    this.setAllButtonsDisabled_(/*disabled=*/ false);
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ false, /* showBusyStateOverlay= */ false);
   }
 
   /**
@@ -529,10 +558,15 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   /**
    * @protected
-   * @param {boolean} disabled
+   * @param {boolean} shouldDisableButtons
+   * @param {boolean} showBusyStateOverlay
    */
-  setAllButtonsDisabled_(disabled) {
-    this.allButtonsDisabled_ = disabled;
+  setAllButtonsState_(shouldDisableButtons, showBusyStateOverlay) {
+    // `showBusyStateOverlay` should only be true when disabling all buttons.
+    assert(!showBusyStateOverlay || shouldDisableButtons);
+
+    this.allButtonsDisabled_ = shouldDisableButtons;
+    this.showBusyStateOverlay_ = showBusyStateOverlay;
     const component =
         this.shadowRoot.querySelector(`#${this.currentPage_.componentIs}`);
     if (!component) {
@@ -554,7 +588,8 @@ export class ShimlessRma extends ShimlessRmaBase {
   /** @protected */
   onBackButtonClicked_() {
     this.backButtonClicked_ = true;
-    this.setAllButtonsDisabled_(/*disabled=*/ true);
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
     this.shimlessRmaService_.transitionPreviousState().then(
         (stateResult) => this.processStateResult_(stateResult));
   }
@@ -571,7 +606,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'onNextButtonClick not a function for ' +
             this.currentPage_.componentIs);
     this.nextButtonClicked_ = true;
-    this.setAllButtonsDisabled_(/*disabled=*/ true);
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
     page.onNextButtonClick()
         .then((stateResult) => {
           this.processStateResult_(stateResult);
@@ -579,14 +615,17 @@ export class ShimlessRma extends ShimlessRmaBase {
         // TODO(gavindodd): Better error handling.
         .catch((err) => {
           this.nextButtonClicked_ = false;
-          this.setAllButtonsDisabled_(/*disabled=*/ false);
+          this.setAllButtonsState_(
+              /* shouldDisableButtons= */ false,
+              /* showBusyStateOverlay= */ false);
         });
   }
 
   /** @protected */
   onCancelButtonClicked_() {
     this.cancelButtonClicked_ = true;
-    this.setAllButtonsDisabled_(/*disabled=*/ false);
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
     this.shimlessRmaService_.abortRma().then((result) => {
       this.cancelButtonClicked_ = false;
       this.handleStandardAndCriticalError_(result.error);

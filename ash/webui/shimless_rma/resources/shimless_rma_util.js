@@ -23,3 +23,29 @@ export function enableNextButton(element) {
       {bubbles: true, composed: true, detail: false},
       ));
 }
+
+/**
+ * Disables all inputs on the page.
+ * @param {!HTMLElement} element
+ * @param {boolean} showBusyStateOverlay
+ */
+export function disableAllButtons(element, showBusyStateOverlay) {
+  element.dispatchEvent(new CustomEvent(
+      'disable-all-buttons',
+      {bubbles: true, composed: true, detail: {showBusyStateOverlay}},
+      ));
+}
+
+/**
+ * Enables all inputs on the page.
+ * @param {!HTMLElement} element
+ */
+export function enableAllButtons(element) {
+  element.dispatchEvent(new CustomEvent(
+      'enable-all-buttons',
+      {
+        bubbles: true,
+        composed: true,
+      },
+      ));
+}

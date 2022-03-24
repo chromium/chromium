@@ -16,7 +16,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton} from './shimless_rma_util.js';
+import {disableAllButtons, enableAllButtons, enableNextButton} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -250,11 +250,11 @@ export class OnboardingUpdatePageElement extends
 
   /** @private */
   onUpdateInProgressChange_() {
-    const shouldDisableAllButtons = this.updateInProgress_;
-    this.dispatchEvent(new CustomEvent(
-        'disable-all-buttons',
-        {bubbles: true, composed: true, detail: shouldDisableAllButtons},
-        ));
+    if (this.updateInProgress_) {
+      disableAllButtons(this, /*showBusyStateOverlay=*/ false);
+    } else {
+      enableAllButtons(this);
+    }
   }
 }
 

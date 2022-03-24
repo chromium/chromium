@@ -95,7 +95,7 @@ export function onboardingUpdatePageTest() {
     return initializeUpdatePage(version)
         .then(() => {
           component.addEventListener('disable-all-buttons', (e) => {
-            component.allButtonsDisabled = e.detail;
+            component.allButtonsDisabled = true;
           });
 
           return flushTasks();
@@ -179,7 +179,10 @@ export function onboardingUpdatePageTest() {
     return initializeUpdatePage(version).then(() => {
       let allButtonsDisabled = false;
       component.addEventListener('disable-all-buttons', (e) => {
-        allButtonsDisabled = e.detail;
+        allButtonsDisabled = true;
+      });
+      component.addEventListener('enable-all-buttons', (e) => {
+        allButtonsDisabled = false;
       });
 
       return clickPerformUpdateButton()

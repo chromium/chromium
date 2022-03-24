@@ -9,6 +9,7 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {RmadErrorCode, State, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {disableAllButtons, enableAllButtons} from 'chrome://shimless-rma/shimless_rma_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -177,7 +178,7 @@ export function shimlessRMAAppTest() {
     await flushTasks();
 
     assertEquals(1, abortRmaCount);
-    assertFalse(initialPage.allButtonsDisabled);
+    assertTrue(initialPage.allButtonsDisabled);
   });
 
   test('NextButtonClickedOnReady', async () => {
@@ -404,25 +405,26 @@ export function shimlessRMAAppTest() {
     const nextButton = component.shadowRoot.querySelector('#next');
     const backButton = component.shadowRoot.querySelector('#back');
     const cancelButton = component.shadowRoot.querySelector('#cancel');
+    const busyStateOverlay = /** @type {!HTMLElement} */ (
+        component.shadowRoot.querySelector('#busyStateOverlay'));
 
     assertFalse(nextButton.disabled);
     assertFalse(backButton.disabled);
     assertFalse(cancelButton.disabled);
 
-    component.dispatchEvent(new CustomEvent(
-        'disable-all-buttons',
-        {bubbles: true, composed: true, detail: true},
-        ));
+    disableAllButtons(component, /*showBusyStateOverlay=*/ false);
     assertTrue(nextButton.disabled);
     assertTrue(backButton.disabled);
     assertTrue(cancelButton.disabled);
+    assertFalse(isVisible(busyStateOverlay));
 
-    component.dispatchEvent(new CustomEvent(
-        'disable-all-buttons',
-        {bubbles: true, composed: true, detail: false},
-        ));
+    disableAllButtons(component, /*showBusyStateOverlay=*/ true);
+    assertTrue(isVisible(busyStateOverlay));
+
+    enableAllButtons(component);
     assertFalse(nextButton.disabled);
     assertFalse(backButton.disabled);
     assertFalse(cancelButton.disabled);
+    assertFalse(isVisible(busyStateOverlay));
   });
 }

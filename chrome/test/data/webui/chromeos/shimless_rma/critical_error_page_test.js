@@ -65,14 +65,12 @@ export function criticalErrorPageTest() {
   test('ClickExitToLoginButton', async () => {
     await initializeCriticalErrorPage();
     assertTrue(!!component);
-    component.addEventListener('disable-all-buttons', (e) => {
-      component.allButtonsDisabled = e.detail;
-    });
 
     const resolver = new PromiseResolver();
     let allButtonsDisabled = false;
     component.addEventListener('disable-all-buttons', (e) => {
-      allButtonsDisabled = e.detail;
+      allButtonsDisabled = true;
+      component.allButtonsDisabled = allButtonsDisabled;
       resolver.resolve();
     });
 
@@ -88,14 +86,12 @@ export function criticalErrorPageTest() {
   test('ClickRebootButton', async () => {
     await initializeCriticalErrorPage();
     assertTrue(!!component);
-    component.addEventListener('disable-all-buttons', (e) => {
-      component.allButtonsDisabled = e.detail;
-    });
 
     const resolver = new PromiseResolver();
     let allButtonsDisabled = false;
     component.addEventListener('disable-all-buttons', (e) => {
-      allButtonsDisabled = e.detail;
+      allButtonsDisabled = true;
+      component.allButtonsDisabled = allButtonsDisabled;
       resolver.resolve();
     });
 
