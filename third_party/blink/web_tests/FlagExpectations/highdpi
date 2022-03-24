@@ -862,7 +862,4 @@ crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mappin
 
 crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
 
-crbug.com/1309502 virtual/scalefactor200withzoom/fast/hidpi/static/calendar-picker-appearance.html [ Timeout ]
-crbug.com/1309502 virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Timeout ]
-crbug.com/1309502 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout ]
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass ]
+crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass ]
