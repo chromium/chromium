@@ -26,12 +26,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 /**
@@ -40,11 +40,10 @@ import org.chromium.url.GURL;
  * {@link CustomTabActivityNavigationController#navigate} is tested in integration with other
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {
-    ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE,
+        shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
-
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();

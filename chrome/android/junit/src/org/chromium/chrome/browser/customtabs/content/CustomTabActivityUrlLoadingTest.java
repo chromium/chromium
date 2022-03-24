@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -39,13 +40,12 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Integration tests involving several classes in Custom Tabs content layer, checking that urls are
  * properly loaded in Custom Tabs in different conditions.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.DisableFeatures({ChromeFeatureList.CCT_EXTERNAL_LINK_HANDLING})
 public class CustomTabActivityUrlLoadingTest {
