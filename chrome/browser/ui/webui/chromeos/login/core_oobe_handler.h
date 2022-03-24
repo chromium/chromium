@@ -118,7 +118,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
   void HandleSkipToLoginForTesting();
-  void HandleLaunchHelpApp(double help_topic_id);
+  void HandleLaunchHelpApp(int help_topic_id);
   void HandleToggleResetScreen();
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.

@@ -36,21 +36,6 @@
 namespace chromeos {
 namespace {
 
-std::vector<std::string> ConvertToVector(const base::Value& list) {
-  std::vector<std::string> string_list;
-  if (!list.is_list()) {
-    return string_list;
-  }
-
-  for (const base::Value& value : list.GetListDeprecated()) {
-    if (value.is_string()) {
-      string_list.push_back(value.GetString());
-    }
-  }
-
-  return string_list;
-}
-
 bool ShouldDoSamlRedirect(const std::string& email) {
   if (email.empty())
     return false;
@@ -248,14 +233,12 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   CHECK_EQ(params.size(), 6u);
   std::string gaia_id, email, password;
   bool using_saml;
-  ::login::StringList services = ::login::StringList();
-  const base::DictionaryValue* password_attributes;
   gaia_id = params[0].GetString();
   email = params[1].GetString();
   password = params[2].GetString();
   using_saml = params[3].GetBool();
-  services = ConvertToVector(params[4]);
-  params[5].GetAsDictionary(&password_attributes);
+  const auto services = ::login::ConvertToStringList(params[4].GetList());
+  const auto& password_attributes = params[5].GetDict();
 
   if (gaia::CanonicalizeEmail(email) != gaia::CanonicalizeEmail(email_)) {
     // The authenticated user email doesn't match the current user's email.
@@ -283,7 +266,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
           user_manager::known_user::GetAccountId(email, gaia_id,
                                                  AccountType::GOOGLE),
           using_saml, false /* using_saml_api */, password,
-          SamlPasswordAttributes::FromJs(*password_attributes),
+          SamlPasswordAttributes::FromJs(password_attributes),
           /*sync_trusted_vault_keys=*/absl::nullopt,
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), nullptr)) {

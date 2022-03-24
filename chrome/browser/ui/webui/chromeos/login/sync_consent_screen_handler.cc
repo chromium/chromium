@@ -197,17 +197,15 @@ void SyncConsentScreenHandler::Initialize() {}
 void SyncConsentScreenHandler::RegisterMessages() {
   AddCallback("login.SyncConsentScreen.nonSplitSettingsContinue",
               &SyncConsentScreenHandler::HandleNonSplitSettingsContinue);
-  AddCallback("login.SyncConsentScreen.acceptAndContinue",
-              &SyncConsentScreenHandler::HandleAcceptAndContinue);
-  AddCallback("login.SyncConsentScreen.declineAndContinue",
-              &SyncConsentScreenHandler::HandleDeclineAndContinue);
 }
 
 void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
     const bool opted_in,
     const bool review_sync,
-    const login::StringList& consent_description,
+    const base::Value::List& consent_description_list,
     const std::string& consent_confirmation) {
+  auto consent_description =
+      login::ConvertToStringList(consent_description_list);
   std::vector<int> consent_description_ids;
   int consent_confirmation_id;
   GetConsentIDs(known_strings_, consent_description, consent_confirmation,
@@ -220,20 +218,6 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
     test_delegate->OnConsentRecordedStrings(consent_description,
                                             consent_confirmation);
   }
-}
-
-void SyncConsentScreenHandler::HandleAcceptAndContinue(
-    const login::StringList& consent_description,
-    const std::string& consent_confirmation) {
-  NOTREACHED();
-  // TODO(https://crbug.com/1278325): Remove this.
-}
-
-void SyncConsentScreenHandler::HandleDeclineAndContinue(
-    const login::StringList& consent_description,
-    const std::string& consent_confirmation) {
-  NOTREACHED();
-  // TODO(https://crbug.com/1278325): Remove this.
 }
 
 }  // namespace chromeos

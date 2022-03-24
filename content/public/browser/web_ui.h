@@ -180,6 +180,18 @@ inline const std::string& WebUI::GetValue<const std::string&>(
   return value.GetString();
 }
 
+template <>
+inline const base::Value::Dict& WebUI::GetValue<const base::Value::Dict&>(
+    const base::Value& value) {
+  return value.GetDict();
+}
+
+template <>
+inline const base::Value::List& WebUI::GetValue<const base::Value::List&>(
+    const base::Value& value) {
+  return value.GetList();
+}
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEB_UI_H_

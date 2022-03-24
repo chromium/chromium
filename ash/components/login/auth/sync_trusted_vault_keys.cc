@@ -55,15 +55,15 @@ ParseSingleTrustedRecoveryMethod(const base::Value& js_object) {
 
 template <typename T>
 std::vector<T> ParseList(
-    const base::Value* list,
+    const base::Value::List* list,
     const base::RepeatingCallback<absl::optional<T>(const base::Value&)>&
         entry_parser) {
-  if (list == nullptr || !list->is_list()) {
+  if (list == nullptr) {
     return {};
   }
 
   std::vector<T> parsed_list;
-  for (const base::Value& list_entry : list->GetListDeprecated()) {
+  for (const base::Value& list_entry : *list) {
     absl::optional<T> parsed_entry = entry_parser.Run(list_entry);
     if (parsed_entry.has_value()) {
       parsed_list.push_back(std::move(*parsed_entry));
@@ -103,15 +103,15 @@ SyncTrustedVaultKeys::~SyncTrustedVaultKeys() = default;
 
 // static
 SyncTrustedVaultKeys SyncTrustedVaultKeys::FromJs(
-    const base::DictionaryValue& js_object) {
+    const base::Value::Dict& js_object) {
   SyncTrustedVaultKeys result;
-  const std::string* gaia_id = js_object.FindStringKey(kGaiaIdDictKey);
+  const std::string* gaia_id = js_object.FindString(kGaiaIdDictKey);
   if (gaia_id) {
     result.gaia_id_ = *gaia_id;
   }
 
   const std::vector<KeyMaterialAndVersion> encryption_keys =
-      ParseList(js_object.FindListKey(kEncryptionKeysDictKey),
+      ParseList(js_object.FindList(kEncryptionKeysDictKey),
                 base::BindRepeating(&ParseSingleEncryptionKey));
 
   for (const KeyMaterialAndVersion& key : encryption_keys) {
@@ -122,7 +122,7 @@ SyncTrustedVaultKeys SyncTrustedVaultKeys::FromJs(
   }
 
   result.trusted_recovery_methods_ =
-      ParseList(js_object.FindListKey(kTrustedRecoveryMethodsDictKey),
+      ParseList(js_object.FindList(kTrustedRecoveryMethodsDictKey),
                 base::BindRepeating(&ParseSingleTrustedRecoveryMethod));
 
   return result;

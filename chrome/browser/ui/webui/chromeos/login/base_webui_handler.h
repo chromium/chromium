@@ -20,7 +20,6 @@
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 }  // namespace base
 
 namespace login {
@@ -115,10 +114,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
                    void (T::*method)(Args...)) {
     base::RepeatingCallback<void(Args...)> callback =
         base::BindRepeating(method, base::Unretained(static_cast<T*>(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
-        function_name,
-        base::BindRepeating(&BaseWebUIHandler::OnCallback<Args...>,
-                            base::Unretained(this), function_name, callback));
+    web_ui()->RegisterHandlerCallback(function_name, callback);
   }
 
   // Called when the page is ready and handler can do initialization.
@@ -145,13 +141,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
  private:
   friend class OobeUI;
-
-  template <typename... Args>
-  void OnCallback(const std::string& function_name,
-                  const base::RepeatingCallback<void(Args...)>& callback,
-                  const base::ListValue* args) {
-    ::login::CallbackWrapper<Args...>(callback, args);
-  }
 
   // Keeps whether page is ready.
   bool page_is_ready_ = false;

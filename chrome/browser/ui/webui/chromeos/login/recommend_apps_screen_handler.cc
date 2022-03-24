@@ -167,9 +167,7 @@ void RecommendAppsScreenHandler::HandleSkip() {
     screen_->OnSkip();
 }
 
-void RecommendAppsScreenHandler::HandleInstall(
-    const base::ListValue* apps_arg) {
-  base::Value::List apps = apps_arg->GetList().Clone();
+void RecommendAppsScreenHandler::HandleInstall(const base::Value::List& apps) {
   if (recommended_app_count_ != 0) {
     int selected_app_count = static_cast<int>(apps.size());
     int selected_recommended_percentage =
@@ -188,7 +186,7 @@ void RecommendAppsScreenHandler::HandleInstall(
 
   RecordUmaScreenAction(RecommendAppsScreenAction::APP_SELECTED);
   pref_service_->Set(arc::prefs::kArcFastAppReinstallPackages,
-                     base::Value(std::move(apps)));
+                     base::Value(apps.Clone()));
 
   arc::ArcFastAppReinstallStarter* fast_app_reinstall_starter =
       arc::ArcSessionManager::Get()->fast_app_resintall_starter();

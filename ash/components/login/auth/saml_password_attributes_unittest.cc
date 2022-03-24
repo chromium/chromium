@@ -28,26 +28,26 @@ void ExpectEmpty(const SamlPasswordAttributes& attrs) {
 }  // namespace
 
 TEST(SamlPasswordAttributesTest, FromJs) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   SamlPasswordAttributes attrs = SamlPasswordAttributes::FromJs(dict);
   ExpectEmpty(attrs);
 
-  dict.SetStringKey("modifiedTime", "");
-  dict.SetStringKey("expirationTime", "");
-  dict.SetStringKey("passwordChangeUrl", "");
+  dict.Set("modifiedTime", "");
+  dict.Set("expirationTime", "");
+  dict.Set("passwordChangeUrl", "");
   attrs = SamlPasswordAttributes::FromJs(dict);
   ExpectEmpty(attrs);
 
-  dict.SetStringKey("modifiedTime", kModifiedStr);
-  dict.SetStringKey("expirationTime", kExpirationStr);
-  dict.SetStringKey("passwordChangeUrl", kPasswordChangeUrl);
+  dict.Set("modifiedTime", kModifiedStr);
+  dict.Set("expirationTime", kExpirationStr);
+  dict.Set("passwordChangeUrl", kPasswordChangeUrl);
   attrs = SamlPasswordAttributes::FromJs(dict);
 
   EXPECT_EQ(base::Time::FromJsTime(kModified), attrs.modified_time());
   EXPECT_EQ(base::Time::FromJsTime(kExpiration), attrs.expiration_time());
   EXPECT_EQ(kPasswordChangeUrl, attrs.password_change_url());
 
-  dict.SetStringKey("passwordChangeUrl", "");
+  dict.Set("passwordChangeUrl", "");
   attrs = SamlPasswordAttributes::FromJs(dict);
 
   EXPECT_EQ(base::Time::FromJsTime(kModified), attrs.modified_time());

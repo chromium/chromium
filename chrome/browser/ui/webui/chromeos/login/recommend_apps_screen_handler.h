@@ -78,7 +78,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
 
   void HandleSkip();
   void HandleRetry();
-  void HandleInstall(const base::ListValue* args);
+  void HandleInstall(const base::Value::List& args);
 
   ash::RecommendAppsScreen* screen_ = nullptr;
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/browser_process.h"

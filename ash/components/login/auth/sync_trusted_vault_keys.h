@@ -9,10 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
+#include "base/values.h"
 
 namespace ash {
 
@@ -29,7 +26,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) SyncTrustedVaultKeys {
   // Initialize an instance of this class with data received from javascript.
   // The input data must be of type SyncTrustedVaultKeys as defined in
   // authenticator.js.
-  static SyncTrustedVaultKeys FromJs(const base::DictionaryValue& js_object);
+  static SyncTrustedVaultKeys FromJs(const base::Value::Dict& js_object);
 
   const std::string& gaia_id() const;
 

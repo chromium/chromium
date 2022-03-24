@@ -213,9 +213,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const std::string& email,
       const std::string& password,
       bool using_saml,
-      const ::login::StringList& services,
-      const base::DictionaryValue* password_attributes,
-      const base::DictionaryValue* sync_trusted_vault_keys);
+      const base::Value::List& services_list,
+      const base::Value::Dict& password_attributes,
+      const base::Value::Dict& sync_trusted_vault_keys);
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,
@@ -250,7 +250,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Called to deliver the result of the security token PIN request. Called with
   // an empty string when the request is canceled.
   void HandleSecurityTokenPinEntered(const std::string& user_input);
-  void HandleOnFatalError(int error_code, const base::DictionaryValue* params);
+  void HandleOnFatalError(int error_code, const base::Value::Dict& params);
 
   // Called when the user is removed.
   void HandleUserRemoved(const std::string& email);

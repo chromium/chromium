@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screen_manager.h"
 
+#include <iostream>
 #include <utility>
 
 #include "base/memory/ptr_util.h"

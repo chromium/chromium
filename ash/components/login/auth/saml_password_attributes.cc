@@ -52,21 +52,21 @@ void SamlPasswordAttributes::RegisterProfilePrefs(
 
 // static
 SamlPasswordAttributes SamlPasswordAttributes::FromJs(
-    const base::DictionaryValue& js_object) {
+    const base::Value::Dict& js_object) {
   base::Time modified_time;
-  const std::string* string_value = js_object.FindStringPath(kModifiedTimeKey);
+  const std::string* string_value = js_object.FindString(kModifiedTimeKey);
   if (string_value) {
     modified_time = ReadJsTime(*string_value);
   }
 
   base::Time expiration_time;
-  string_value = js_object.FindStringPath(kExpirationTimeKey);
+  string_value = js_object.FindString(kExpirationTimeKey);
   if (string_value) {
     expiration_time = ReadJsTime(*string_value);
   }
 
   std::string password_change_url;
-  string_value = js_object.FindStringPath(kPasswordChangeUrlKey);
+  string_value = js_object.FindString(kPasswordChangeUrlKey);
   if (string_value) {
     password_change_url = *string_value;
   }

@@ -57,20 +57,20 @@ TEST(SyncTrustedVaultKeysTest, DefaultConstructor) {
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithEmptyDictionary) {
-  EXPECT_THAT(SyncTrustedVaultKeys::FromJs(base::DictionaryValue()),
+  EXPECT_THAT(SyncTrustedVaultKeys::FromJs(base::Value::Dict()),
               HasEmptyValue());
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithInvalidDictionary) {
-  base::DictionaryValue value;
-  value.SetStringKey("foo", "bar");
+  base::Value::Dict value;
+  value.Set("foo", "bar");
   EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value), HasEmptyValue());
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithGaiaId) {
   const std::string kGaiaId = "user1";
-  base::DictionaryValue value;
-  value.SetStringKey("obfuscatedGaiaId", kGaiaId);
+  base::Value::Dict value;
+  value.Set("obfuscatedGaiaId", kGaiaId);
   EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value).gaia_id(), Eq(kGaiaId));
 }
 
@@ -86,8 +86,8 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeys) {
   key_values.push_back(
       MakeKeyValue(kEncryptionKeyMaterial2, kEncryptionKeyVersion2));
 
-  base::DictionaryValue root_value;
-  root_value.SetKey("encryptionKeys", base::Value(std::move(key_values)));
+  base::Value::Dict root_value;
+  root_value.Set("encryptionKeys", base::Value(std::move(key_values)));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
@@ -108,8 +108,8 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeysWithMissingVersion) {
       MakeKeyValue(kEncryptionKeyMaterial1, kEncryptionKeyVersion1));
   key_values.push_back(MakeKeyValueWithoutVersion(kEncryptionKeyMaterial2));
 
-  base::DictionaryValue root_value;
-  root_value.SetKey("encryptionKeys", base::Value(std::move(key_values)));
+  base::Value::Dict root_value;
+  root_value.Set("encryptionKeys", base::Value(std::move(key_values)));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
@@ -130,9 +130,8 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedRecoveryMethods) {
   key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial1, kMethodType1));
   key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial2, kMethodType2));
 
-  base::DictionaryValue root_value;
-  root_value.SetKey("trustedRecoveryMethods",
-                    base::Value(std::move(key_values)));
+  base::Value::Dict root_value;
+  root_value.Set("trustedRecoveryMethods", base::Value(std::move(key_values)));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);

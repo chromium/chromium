@@ -86,6 +86,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/login/base_screen_handler_utils.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
@@ -119,19 +120,14 @@ const char kAuthIframeParentName[] = "signin-frame";
 const char kEndpointGen[] = "1.0";
 
 absl::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
-    const base::DictionaryValue* js_object,
+    const base::Value::Dict& js_object,
     const std::string& gaia_id) {
   if (!base::FeatureList::IsEnabled(
           ::syncer::kSyncTrustedVaultPassphraseRecovery)) {
     return absl::nullopt;
   }
 
-  // |js_object| is not expected to be null, but as extra precaution, guard
-  // against crashes.
-  if (!js_object)
-    return absl::nullopt;
-
-  SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(*js_object);
+  SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(js_object);
   if (parsed_keys.gaia_id() != gaia_id)
     return absl::nullopt;
 
@@ -781,9 +777,9 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     const std::string& email,
     const std::string& password,
     bool using_saml,
-    const ::login::StringList& services,
-    const base::DictionaryValue* password_attributes,
-    const base::DictionaryValue* sync_trusted_vault_keys) {
+    const base::Value::List& services_list,
+    const base::Value::Dict& password_attributes,
+    const base::Value::Dict& sync_trusted_vault_keys) {
   if (!LoginDisplayHost::default_host())
     return;
 
@@ -794,6 +790,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
                                   login_request_variant_);
   }
+  const auto services = ::login::ConvertToStringList(services_list);
 
   // Execute delayed allowlist check that is based on user type.
   const user_manager::UserType user_type =
@@ -836,7 +833,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           login::GetUsertypeFromServicesString(services),
           GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
           using_saml_api_, password,
-          SamlPasswordAttributes::FromJs(*password_attributes),
+          SamlPasswordAttributes::FromJs(password_attributes),
           GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
                                                 gaia_id),
           *extension_provided_client_cert_usage_observer_, user_context.get(),
@@ -1001,13 +998,14 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
   }
 }
 
-void GaiaScreenHandler::HandleOnFatalError(
-    int error_code,
-    const base::DictionaryValue* params) {
+void GaiaScreenHandler::HandleOnFatalError(int error_code,
+                                           const base::Value::Dict& params) {
+  const base::Value params_value = base::Value(params.Clone());
   LoginDisplayHost::default_host()
       ->GetWizardController()
-      ->ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error(error_code),
-                                   params);
+      ->ShowSignInFatalErrorScreen(
+          static_cast<SignInFatalErrorScreen::Error>(error_code),
+          &params_value);
 }
 
 void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {

@@ -4,118 +4,18 @@
 
 #include "components/login/base_screen_handler_utils.h"
 
-#include "base/strings/utf_string_conversions.h"
+#include <string>
+#include <vector>
+
 #include "base/values.h"
-#include "components/account_id/account_id.h"
 
 namespace login {
 
-namespace {
-
-// Helpers to let ParseListString produce output of appropriate type.
-void ConvertFromUTF8(const std::string& in, std::string& out) {
-  out = in;
+StringList ConvertToStringList(const base::Value::List& list) {
+  StringList result;
+  for (const auto& val : list)
+    result.push_back(val.GetString());
+  return result;
 }
-
-void ConvertFromUTF8(const std::string& in, std::u16string& out) {
-  out = base::UTF8ToUTF16(in);
-}
-
-template <typename StringListType>
-bool ParseStringList(const base::Value* value, StringListType* out_value) {
-  if (!value->is_list())
-    return false;
-  base::Value::ConstListView list = value->GetListDeprecated();
-  out_value->resize(list.size());
-  for (size_t i = 0; i < list.size(); ++i) {
-    if (!list[i].is_string())
-      return false;
-    ConvertFromUTF8(list[i].GetString(), (*out_value)[i]);
-  }
-  return true;
-}
-
-}  // namespace
-
-bool ParseValue(const base::Value* value, bool* out_value) {
-  if (out_value && value->is_bool()) {
-    *out_value = value->GetBool();
-    return true;
-  }
-  return value->is_bool();
-}
-
-bool ParseValue(const base::Value* value, int* out_value) {
-  if (out_value && value->is_int()) {
-    *out_value = value->GetInt();
-    return true;
-  }
-  return value->is_int();
-}
-
-bool ParseValue(const base::Value* value, double* out_value) {
-  if (out_value && (value->is_double() || value->is_int())) {
-    *out_value = value->GetDouble();
-    return true;
-  }
-  return value->is_double() || value->is_int();
-}
-
-bool ParseValue(const base::Value* value, std::string* out_value) {
-  if (out_value && value->is_string()) {
-    *out_value = value->GetString();
-    return true;
-  }
-  return value->is_string();
-}
-
-bool ParseValue(const base::Value* value, std::u16string* out_value) {
-  if (out_value && value->is_string()) {
-    *out_value = base::UTF8ToUTF16(value->GetString());
-    return true;
-  }
-  return value->is_string();
-}
-
-bool ParseValue(const base::Value* value,
-                const base::DictionaryValue** out_value) {
-  if (out_value && value->is_dict()) {
-    *out_value = static_cast<const base::DictionaryValue*>(value);
-    return true;
-  }
-  return value->is_dict();
-}
-
-bool ParseValue(const base::Value* value, StringList* out_value) {
-  return ParseStringList(value, out_value);
-}
-
-bool ParseValue(const base::Value* value, String16List* out_value) {
-  return ParseStringList(value, out_value);
-}
-
-bool ParseValue(const base::Value* value, AccountId* out_value) {
-  if (!value->is_string())
-    return false;
-
-  std::string serialized = value->GetString();
-  if (AccountId::Deserialize(serialized, out_value))
-    return true;
-
-  *out_value = AccountId::FromUserEmail(serialized);
-  LOG(ERROR) << "Failed to deserialize, parse as email, valid="
-             << out_value->is_valid();
-  return true;
-}
-
-bool ParseValue(const base::Value* value, const base::ListValue** out_value) {
-  if (out_value && value->is_list()) {
-    *out_value = static_cast<const base::ListValue*>(value);
-    return true;
-  }
-  return false;
-}
-
-ParsedValueContainer<AccountId>::ParsedValueContainer() = default;
 
 }  // namespace login

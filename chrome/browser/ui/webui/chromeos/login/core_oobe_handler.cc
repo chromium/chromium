@@ -317,7 +317,7 @@ void CoreOobeHandler::OnOobeConfigurationChanged() {
   CallJS("cr.ui.Oobe.updateOobeConfiguration", std::move(configuration));
 }
 
-void CoreOobeHandler::HandleLaunchHelpApp(double help_topic_id) {
+void CoreOobeHandler::HandleLaunchHelpApp(int help_topic_id) {
   if (!help_app_.get())
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
