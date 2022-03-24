@@ -823,11 +823,6 @@
     "includes": [4180],
   },
 
-  "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {
-    "includes": [4200],
-    "messages": [4220],
-  },
-
   "device/bluetooth/bluetooth_strings.grd": {
     "messages": [4240],
   },

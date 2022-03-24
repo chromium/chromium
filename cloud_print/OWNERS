@@ -1,7 +1,0 @@
-set noparent
-
-# Cloud Print is temporarily owned by the Chrome Print team.
-file://printing/OWNERS
-
-# Translation artifacts:
-per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

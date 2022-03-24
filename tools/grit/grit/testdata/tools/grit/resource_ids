@@ -157,9 +157,6 @@
     "META": {"join": 2},
     "includes": [21500],
   },
-  "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {
-    "messages": [22500],
-  },
   "chrome/browser/resources/quota_internals_resources.grd": {
     "includes": [23000],
   },

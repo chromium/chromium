@@ -6422,13 +6422,6 @@ static_library("browser") {
         "printing/pwg_raster_converter.cc",
         "printing/pwg_raster_converter.h",
       ]
-
-      if (is_win) {
-        sources += [
-          "printing/print_dialog_cloud_win.cc",
-          "printing/print_dialog_cloud_win.h",
-        ]
-      }
     } else {
       # Partial - only printing support.
       sources += [

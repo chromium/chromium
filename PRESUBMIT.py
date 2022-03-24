@@ -2298,7 +2298,6 @@ def CheckSpamLogging(input_api, output_api):
             r"dll_hash_main\.cc$",
             r"^chrome[\\/]installer[\\/]setup[\\/].*",
             r"^chromecast[\\/]",
-            r"^cloud_print[\\/]",
             r"^components[\\/]browser_watcher[\\/]"
             r"dump_stability_report_main_win.cc$",
             r"^components[\\/]media_control[\\/]renderer[\\/]"

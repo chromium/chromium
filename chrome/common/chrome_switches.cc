@@ -115,22 +115,6 @@ const char kCheckForUpdateIntervalSec[]     = "check-for-update-interval";
 // Comma-separated list of SSL cipher suites to disable.
 const char kCipherSuiteBlacklist[]          = "cipher-suite-blacklist";
 
-// Tells chrome to display the cloud print dialog and upload the specified file
-// for printing.
-const char kCloudPrintFile[]                = "cloud-print-file";
-
-// Specifies the mime type to be used when uploading data from the file
-// referenced by cloud-print-file. Defaults to "application/pdf" if
-// unspecified.
-const char kCloudPrintFileType[]            = "cloud-print-file-type";
-
-// Used with kCloudPrintFile to specify a title for the resulting print job.
-const char kCloudPrintJobTitle[]            = "cloud-print-job-title";
-
-// Used with kCloudPrintFile to specify a JSON print ticket for the resulting
-// print job. Defaults to null if unspecified.
-const char kCloudPrintPrintTicket[]         = "cloud-print-print-ticket";
-
 // Comma-separated list of BrowserThreads that cause browser process to crash if
 // the given browser thread is not responsive. UI/IO are the BrowserThreads that
 // are supported.

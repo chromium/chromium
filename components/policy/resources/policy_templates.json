@@ -26584,7 +26584,7 @@
     },
     {
       'name': 'LocalDiscoveryEnabled',
-      'owners': ['file://cloud_print/OWNERS', 'weili@chromium.org'],
+      'owners': ['thestig@chromium.org', 'weili@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:81-87', 'chrome_os:81-87'],

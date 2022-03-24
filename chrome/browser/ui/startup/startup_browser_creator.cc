@@ -121,9 +121,6 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#include "chrome/browser/printing/print_dialog_cloud_win.h"
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -859,16 +856,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // instead.
   Profile* privacy_safe_profile =
       GetPrivateProfileIfRequested(command_line, profile_info);
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  // If we are just displaying a print dialog we shouldn't open browser
-  // windows.
-  if (command_line.HasSwitch(switches::kCloudPrintFile) && can_use_profile &&
-      print_dialog_cloud::CreatePrintDialogFromCommandLine(privacy_safe_profile,
-                                                           command_line)) {
-    silent_launch = true;
-  }
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   if (command_line.HasSwitch(switches::kValidateCrx)) {
     if (process_startup == chrome::startup::IsProcessStartup::kNo) {
