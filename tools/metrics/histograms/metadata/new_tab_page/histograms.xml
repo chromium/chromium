@@ -1162,6 +1162,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.LoadedModulesCount" units="count"
+    expires_after="2022-07-01">
+  <owner>danpeng@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of rendered modules in the NTP. Only logged on the 1P NTP. Note
+    that even if the user has Google as their default search engine, Incognito
+    and Guest mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.LoadedWith.{NtpModule}" enum="NtpModules"
+    expires_after="2022-07-01">
+  <owner>danpeng@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    This records the what other modules are loaded with {NtpModule} together.
+    Logged when the module is loaded. Only logged on the 1P NTP. Note that even
+    if the user has Google as their default search engine, Incognito and Guest
+    mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+  <token key="NtpModule">
+    <variant name="chrome_cart" summary="the Chrome Cart module"/>
+    <variant name="drive" summary="the Drive module"/>
+    <variant name="photos" summary="the Photos module"/>
+    <variant name="recipe_tasks" summary="the Recipe module"/>
+    <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Modules.Restored" units="count"
     expires_after="2022-07-01">
   <owner>danpeng@google.com</owner>

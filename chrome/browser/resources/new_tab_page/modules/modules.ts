@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
-import {ModuleHeight} from './module_descriptor.js';
+import {Module, ModuleHeight} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
 import {getTemplate} from './modules.html.js';
@@ -264,8 +264,26 @@ export class ModulesElement extends PolymerElement {
         moduleContainer.appendChild(moduleWrapper);
         return moduleContainer;
       });
+
+      chrome.metricsPrivate.recordSmallCount(
+          'NewTabPage.Modules.LoadedModulesCount', modules.length);
+
+      this.logModuleLoadedWithModules_(modules);
       this.appendModuleContainers_(moduleContainers);
       this.onModulesLoaded_();
+    }
+  }
+
+  private logModuleLoadedWithModules_(modules: Module[]) {
+    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+
+    for (const moduleDescriptorId of moduleDescriptorIds) {
+      moduleDescriptorIds.forEach(id => {
+        if (id !== moduleDescriptorId) {
+          chrome.metricsPrivate.recordSparseHashable(
+              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+        }
+      });
     }
   }
 

@@ -5950,6 +5950,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="NewTabPage.LogoShown"/>
 </histogram_suffixes>
 
+<!-- TODO(crbug.com/1309706): Migrate these histograms to use the patterned histograms instead. -->
+
 <histogram_suffixes name="NewTabPageModules" separator=".">
   <suffix name="chrome_cart" label="Module ID for Chrome Cart"/>
   <suffix name="drive" label="Module ID for Google Drive module"/>

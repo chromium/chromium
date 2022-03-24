@@ -583,6 +583,53 @@ suite('NewTabPageModulesModulesTest', () => {
     // Assert: no crash.
   });
 
+  test('record number of loaded modules', async () => {
+    // Arrange.
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+    moduleRegistry.setResultFor(
+        'getDescriptors', [fooDescriptor, barDescriptor]);
+    await createModulesElement([
+      {
+        descriptor: fooDescriptor,
+        element: createElement(),
+      },
+      {
+        descriptor: barDescriptor,
+        element: createElement(),
+      }
+    ]);
+
+    // Assert.
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 2),
+        'Rendered count is 2 should be recored once');
+  });
+
+  test('record module loaded with other modules', async () => {
+    // Arrange.
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+    moduleRegistry.setResultFor(
+        'getDescriptors', [fooDescriptor, barDescriptor]);
+    await createModulesElement([
+      {
+        descriptor: fooDescriptor,
+        element: createElement(),
+      },
+      {
+        descriptor: barDescriptor,
+        element: createElement(),
+      }
+    ]);
+
+    // Assert.
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadedWith.foo', 'bar'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.LoadedWith.foo', 'foo'));
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadedWith.bar', 'foo'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.LoadedWith.bar', 'bar'));
+  });
+
   suite('modules drag and drop', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
