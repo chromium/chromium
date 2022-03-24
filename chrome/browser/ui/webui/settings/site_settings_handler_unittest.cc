@@ -55,7 +55,9 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -114,14 +116,12 @@ const struct PatternContentTypeTestCase {
     {{"http://127.0.0.1", "location"}, {true, ""}},  // Localhost is secure.
     {{"http://[::1]", "location"}, {true, ""}}};
 
-apps::mojom::AppPtr MakeApp(const std::string& app_id,
-                            apps::mojom::AppType app_type,
-                            const std::string& publisher_id,
-                            apps::mojom::Readiness readiness,
-                            apps::mojom::InstallReason install_reason) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
-  app->app_type = app_type;
+apps::AppPtr MakeApp(const std::string& app_id,
+                     apps::AppType app_type,
+                     const std::string& publisher_id,
+                     apps::Readiness readiness,
+                     apps::InstallReason install_reason) {
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
   app->publisher_id = publisher_id;
   app->readiness = readiness;
   app->install_reason = install_reason;
@@ -131,13 +131,20 @@ apps::mojom::AppPtr MakeApp(const std::string& app_id,
 void InstallWebApp(Profile* profile, const GURL& start_url) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
-  std::vector<apps::mojom::AppPtr> deltas;
-  deltas.push_back(MakeApp(
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
-      apps::mojom::AppType::kWeb, start_url.spec(),
-      apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSync));
-  cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
-               /*should_notify_initialized=*/true);
+  std::vector<apps::AppPtr> deltas;
+  deltas.push_back(
+      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
+              apps::InstallReason::kSync));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    cache.OnApps(std::move(deltas), apps::AppType::kWeb,
+                 /*should_notify_initialized=*/true);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_deltas;
+    mojom_deltas.push_back(apps::ConvertAppToMojomApp(deltas[0]));
+    cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kWeb,
+                 /*should_notify_initialized=*/true);
+  }
 }
 
 }  // namespace
