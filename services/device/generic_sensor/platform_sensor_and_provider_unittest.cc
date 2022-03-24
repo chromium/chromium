@@ -196,7 +196,7 @@ TEST_F(PlatformSensorAndProviderTest, PlatformSensorSignificanceChecks) {
       AddNewReadingAndExpectNoReadingChangedEvent(client.get(), reading);
 
     fake_sensor->GetLatestReading(&reading);
-    EXPECT_EQ(reading.als.value, test_case.expected_als_value);
+    EXPECT_DOUBLE_EQ(reading.als.value, test_case.expected_als_value);
   }
 }
 
