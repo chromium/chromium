@@ -4,7 +4,9 @@
 
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 
+#include <stdint.h>
 #include <memory>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +36,19 @@ class RgbKeyboardManagerTest : public testing::Test {
 TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {
   EXPECT_EQ(manager_->GetRgbKeyboardCapabilities(),
             RgbKeyboardCapabilities::kNone);
+}
+
+TEST_F(RgbKeyboardManagerTest, SetStaticRgbValues) {
+  const uint8_t expected_r = 1;
+  const uint8_t expected_g = 2;
+  const uint8_t expected_b = 3;
+
+  manager_->SetStaticBackgroundColor(expected_r, expected_g, expected_b);
+  const std::vector<uint8_t> rgb_values = manager_->recently_sent_rgb();
+
+  EXPECT_EQ(expected_r, rgb_values[0]);
+  EXPECT_EQ(expected_g, rgb_values[1]);
+  EXPECT_EQ(expected_b, rgb_values[2]);
 }
 
 }  // namespace ash

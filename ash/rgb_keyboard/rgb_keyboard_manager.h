@@ -5,6 +5,9 @@
 #ifndef ASH_RGB_KEYBOARD_RGB_KEYBOARD_MANAGER_H_
 #define ASH_RGB_KEYBOARD_RGB_KEYBOARD_MANAGER_H_
 
+#include <stdint.h>
+#include <vector>
+
 #include "ash/ash_export.h"
 
 namespace ash {
@@ -29,9 +32,18 @@ class ASH_EXPORT RgbKeyboardManager {
   ~RgbKeyboardManager();
 
   RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
+  void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
 
   // Returns the global instance if initialized. May return null.
   static RgbKeyboardManager* Get();
+
+  std::vector<uint8_t> recently_sent_rgb() const {
+    return recently_sent_rgb_for_testing_;
+  }
+
+ private:
+  // TODO(jimmyxgong): Remove this after DBus client is available.
+  std::vector<uint8_t> recently_sent_rgb_for_testing_;
 };
 
 }  // namespace ash
