@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -105,7 +106,13 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NoCookiesBlocked) {
 
 // Test opening cookie controls bubble and clicking on "not working" link.
 // Check that accepting the bubble unblocks 3p cookies for this origin.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NotWorkingClicked) {
+// TODO(https://crbug.com/1309497): Flaky on win and mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_NotWorkingClicked DISABLED_NotWorkingClicked
+#else
+#define MAYBE_NotWorkingClicked NotWorkingClicked
+#endif
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, MAYBE_NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
