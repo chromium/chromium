@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -27,6 +28,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -103,6 +105,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final float THRESHOLD_MEDIUM = 120.f;
     private static final float THRESHOLD_SMALL = 96.f;
+    private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
+            DateUtils.MINUTE_IN_MILLIS;
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -141,6 +145,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mInReorderMode;
     private float mLastReorderX;
     private long mLastReorderScrollTime;
+
+    // Tab switch efficiency
+    private Long mTabScrollStartTime;
+    private Long mMostRecentTabScroll;
 
     // UI State
     private StripLayoutTab mInteractingTab;
@@ -795,6 +803,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 if (!mIsStripScrollInProgress) {
                     mIsStripScrollInProgress = true;
                     RecordUserAction.record("MobileToolbarSlideTabs");
+                    onStripScrollStart();
                 }
                 updateScrollOffsetPosition((int) (mScrollOffset + deltaX));
             }
@@ -818,6 +827,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mUpdateHost.requestUpdate();
     }
 
+    private void onStripScrollStart() {
+        long currentTime = SystemClock.elapsedRealtime();
+
+        // If last scroll is within the max allowed interval, do not reset start time.
+        if (mMostRecentTabScroll != null
+                && currentTime - mMostRecentTabScroll
+                        <= TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL) {
+            mMostRecentTabScroll = currentTime;
+            return;
+        }
+
+        mTabScrollStartTime = currentTime;
+        mMostRecentTabScroll = currentTime;
+    }
     /**
      * Called on touch fling event. This is called before the onUpOrCancel event.
      * @param time      The current time of the app in ms.
@@ -987,8 +1010,27 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             RecordUserAction.record("MobileToolbarCloseTab");
             clickedTab.getCloseButton().handleClick(time);
         } else {
+            RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
+            recordTabSwitchTimeHistogram();
             clickedTab.handleClick(time);
         }
+    }
+
+    private void recordTabSwitchTimeHistogram() {
+        if (mTabScrollStartTime == null || mMostRecentTabScroll == null) return;
+
+        long endTime = SystemClock.elapsedRealtime();
+        long duration = endTime - mTabScrollStartTime;
+        long timeFromLastInteraction = endTime - mMostRecentTabScroll;
+
+        // Discard sample if last scroll was over the max allowed interval.
+        if (timeFromLastInteraction <= TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.TabStrip.TimeToSwitchTab", duration);
+        }
+
+        mTabScrollStartTime = null;
+        mMostRecentTabScroll = null;
     }
 
     /**
