@@ -254,8 +254,6 @@ void ChromeOmniboxClient::OnResultChanged(
     bool default_match_changed,
     bool should_prerender,
     const BitmapFetchedCallback& on_bitmap_fetched) {
-  auto now = base::TimeTicks::Now();
-
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
 
@@ -283,11 +281,9 @@ void ChromeOmniboxClient::OnResultChanged(
     }
 
     request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(),
-        base::BindOnce(
-            &ChromeOmniboxClient::OnBitmapFetched, weak_factory_.GetWeakPtr(),
-            on_bitmap_fetched, result_index,
-            bitmap_fetcher_service->IsCached(match.ImageUrl()), now)));
+        match.ImageUrl(), base::BindOnce(&ChromeOmniboxClient::OnBitmapFetched,
+                                         weak_factory_.GetWeakPtr(),
+                                         on_bitmap_fetched, result_index)));
   }
 }
 
@@ -466,15 +462,7 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
 
 void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
                                           int result_index,
-                                          bool is_cached,
-                                          base::TimeTicks start_time,
                                           const SkBitmap& bitmap) {
-  auto time_delta = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency", time_delta);
-  if (is_cached)
-    UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency.Cached", time_delta);
-  else
-    UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency.Uncached", time_delta);
   callback.Run(result_index, bitmap);
 }
 

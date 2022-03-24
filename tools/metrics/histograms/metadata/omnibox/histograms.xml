@@ -76,6 +76,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.BitmapFetchLatency" units="ms"
     expires_after="2022-09-11">
+  <obsolete>
+    3/2022; feature launched.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" -->
 
   <owner>manukh@chromium.org</owner>
@@ -1123,6 +1126,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SuggestRequest.Success.PrefetchImagesCount"
     units="count" expires_after="2022-05-01">
+  <obsolete>
+    3/2022; feature launched.
+  </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

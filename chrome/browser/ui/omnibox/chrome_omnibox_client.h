@@ -99,8 +99,6 @@ class ChromeOmniboxClient : public OmniboxClient {
 
   void OnBitmapFetched(const BitmapFetchedCallback& callback,
                        int result_index,
-                       bool is_cached,
-                       base::TimeTicks start_time,
                        const SkBitmap& bitmap);
 
   raw_ptr<ChromeOmniboxEditController> controller_;

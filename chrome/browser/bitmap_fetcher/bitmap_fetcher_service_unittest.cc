@@ -73,7 +73,6 @@ class BitmapFetcherServiceTest : public testing::Test {
     image.allocN32Pixels(2, 2);
     image.eraseColor(SK_ColorGREEN);
 
-    fetcher->SetStartTimeForTesting();
     fetcher->OnImageDecoded(image);
   }
 
@@ -81,7 +80,6 @@ class BitmapFetcherServiceTest : public testing::Test {
     BitmapFetcher* fetcher =
         const_cast<BitmapFetcher*>(service_->FindFetcherForUrl(url));
     ASSERT_TRUE(fetcher);
-    fetcher->SetStartTimeForTesting();
     fetcher->OnImageDecoded(SkBitmap());
   }
 

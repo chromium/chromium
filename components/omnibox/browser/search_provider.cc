@@ -1597,11 +1597,6 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
       suggestion.answer()->AddImageURLsTo(&prefetch_image_urls);
   }
 
-  UMA_HISTOGRAM_EXACT_LINEAR(
-      "Omnibox.SuggestRequest.Success.PrefetchImagesCount",
-      prefetch_image_urls.size(),
-      AutocompleteResult::kMaxAutocompletePositionValue);
-
   for (const GURL& url : prefetch_image_urls)
     client()->PrefetchImage(url);
 }

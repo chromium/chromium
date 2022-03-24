@@ -179,7 +179,6 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, OnImageDecodedTest) {
 
   BitmapFetcher fetcher(url, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  fetcher.SetStartTimeForTesting();
   fetcher.OnImageDecoded(image);
 
   // Ensure image is marked as succeeded.

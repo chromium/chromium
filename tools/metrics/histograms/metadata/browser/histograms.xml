@@ -50,6 +50,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.BitmapFetcher.Decode" units="ms"
     expires_after="2022-09-18">
+  <obsolete>
+    3/2022; feature launched.
+  </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -58,6 +61,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.BitmapFetcher.Fetch" units="ms"
     expires_after="2022-03-06">
+  <obsolete>
+    3/2022; feature launched.
+  </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
