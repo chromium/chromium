@@ -85,8 +85,6 @@ const CGFloat kImageViewLeadingMargin = 16.0f;
 const CGFloat kImageViewTrailingMargin = 12.0f;
 // Height and Width of imageView.
 const CGFloat kImageViewSize = 60.0f;
-// Alpha of imageView background.
-const CGFloat kImageViewAlpha = 0.3f;
 // Corner radius of imageView.
 const CGFloat kImageViewCornerRadius = 13.0f;
 
@@ -230,8 +228,6 @@ UILabel* BubbleTitleLabelWithText(NSString* text) {
 // Returns a image view used for the BubbleViews's imageView.
 UIImageView* BubbleImageViewWithImage(UIImage* image) {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
-  [imageView setBackgroundColor:UIColor.blackColor];
-  [imageView setAlpha:kImageViewAlpha];
   [imageView.layer setCornerRadius:kImageViewCornerRadius];
   [imageView.layer setMasksToBounds:YES];
   [imageView setContentMode:UIViewContentModeCenter];
@@ -507,11 +503,13 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   NSArray<NSLayoutConstraint*>* constraints = @[
     [imageView.widthAnchor constraintEqualToConstant:kImageViewSize],
     [imageView.heightAnchor constraintEqualToConstant:kImageViewSize],
-    [imageView.topAnchor constraintEqualToAnchor:background.topAnchor
-                                        constant:kBubbleVerticalPadding],
+    [imageView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:background.topAnchor
+                                    constant:kBubbleVerticalPadding],
     [background.bottomAnchor
         constraintGreaterThanOrEqualToAnchor:imageView.bottomAnchor
                                     constant:kBubbleVerticalPadding],
+    [imageView.centerYAnchor constraintEqualToAnchor:background.centerYAnchor],
     [imageView.leadingAnchor constraintEqualToAnchor:background.leadingAnchor
                                             constant:kImageViewLeadingMargin],
     [self.label.leadingAnchor constraintEqualToAnchor:imageView.trailingAnchor
