@@ -95,16 +95,17 @@ void PrintBackendServiceManager::SetCrashKeys(const std::string& printer_name) {
 }
 
 uint32_t PrintBackendServiceManager::RegisterQueryClient() {
-  return RegisterClient(ClientType::kQuery, kEmptyPrinterName);
+  return *RegisterClient(ClientType::kQuery, kEmptyPrinterName);
 }
 
-uint32_t PrintBackendServiceManager::RegisterQueryWithUiClient() {
+absl::optional<uint32_t>
+PrintBackendServiceManager::RegisterQueryWithUiClient() {
   return RegisterClient(ClientType::kQueryWithUi, kEmptyPrinterName);
 }
 uint32_t PrintBackendServiceManager::RegisterPrintDocumentClient(
     const std::string& printer_name) {
   DCHECK_NE(printer_name, kEmptyPrinterName);
-  return RegisterClient(ClientType::kPrintDocument, printer_name);
+  return *RegisterClient(ClientType::kPrintDocument, printer_name);
 }
 
 void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
@@ -407,7 +408,7 @@ std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
 #endif
 }
 
-uint32_t PrintBackendServiceManager::RegisterClient(
+absl::optional<uint32_t> PrintBackendServiceManager::RegisterClient(
     ClientType client_type,
     const std::string& printer_name) {
   uint32_t client_id = ++last_client_id_;
@@ -421,7 +422,8 @@ uint32_t PrintBackendServiceManager::RegisterClient(
       break;
     case ClientType::kQueryWithUi:
 #if !BUILDFLAG(IS_LINUX)
-      DCHECK_EQ(query_with_ui_clients_.size(), 0u);
+      if (!query_with_ui_clients_.empty())
+        return absl::nullopt;
 #endif
       query_with_ui_clients_.insert(client_id);
       break;

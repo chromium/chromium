@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "Out-of-process printing must be enabled."
@@ -56,8 +57,10 @@ class PrintBackendServiceManager {
   uint32_t RegisterQueryClient();
 
   // Register as a client of PrintBackendServiceManager for print queries which
-  // require a system print dialog UI.
-  uint32_t RegisterQueryWithUiClient();
+  // require a system print dialog UI.  If a platform cannot support concurrent
+  // queries of this type then this will return `absl::nullopt` if another
+  // client is already registered.
+  absl::optional<uint32_t> RegisterQueryWithUiClient();
 
   // Register as a client of PrintBackendServiceManager for printing a document
   // to a specific printer.
@@ -232,8 +235,8 @@ class PrintBackendServiceManager {
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
   // Common helper for registering clients.
-  uint32_t RegisterClient(ClientType client_type,
-                          const std::string& printer_name);
+  absl::optional<uint32_t> RegisterClient(ClientType client_type,
+                                          const std::string& printer_name);
 
   // Get the total number of clients registered.
   size_t GetClientsRegisteredCount() const;
