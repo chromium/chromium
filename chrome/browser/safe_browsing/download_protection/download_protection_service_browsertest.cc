@@ -68,7 +68,14 @@ const uint8_t DownloadProtectionServiceBrowserTest::kBZipDigest[] = {
     0xe2, 0x8c, 0x38, 0x6c, 0xb2, 0x11, 0x91, 0xf3, 0x77, 0xa7, 0x2c,
     0x11, 0x92, 0xe0, 0x25, 0xb0, 0xe5, 0xc7, 0x70, 0x3b, 0x23};
 
-IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
+// TODO(crbug.com/1309879): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_VerifyZipHash DISABLED_VerifyZipHash
+#else
+#define MAYBE_VerifyZipHash VerifyZipHash
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
+                       MAYBE_VerifyZipHash) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
