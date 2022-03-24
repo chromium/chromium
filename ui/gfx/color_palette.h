@@ -26,9 +26,6 @@ constexpr SkColor kGoogleBlue700 = SkColorSetRGB(0x19, 0x67, 0xD2);
 constexpr SkColor kGoogleBlue800 = SkColorSetRGB(0x18, 0x5A, 0xBC);
 constexpr SkColor kGoogleBlue900 = SkColorSetRGB(0x17, 0x4E, 0xA6);
 
-constexpr SkColor kGoogleBlueDark400 = SkColorSetRGB(0x6B, 0xA5, 0xED);
-constexpr SkColor kGoogleBlueDark600 = SkColorSetRGB(0x25, 0x81, 0xDF);
-
 constexpr SkColor kGoogleRed050 = SkColorSetRGB(0xFC, 0xE8, 0xE6);
 constexpr SkColor kGoogleRed100 = SkColorSetRGB(0xFA, 0xD2, 0xCF);
 constexpr SkColor kGoogleRed200 = SkColorSetRGB(0xF6, 0xAE, 0xA9);
@@ -40,10 +37,6 @@ constexpr SkColor kGoogleRed700 = SkColorSetRGB(0xC5, 0x22, 0x1F);
 constexpr SkColor kGoogleRed800 = SkColorSetRGB(0xB3, 0x14, 0x12);
 constexpr SkColor kGoogleRed900 = SkColorSetRGB(0xA5, 0x0E, 0x0E);
 
-constexpr SkColor kGoogleRedDark500 = SkColorSetRGB(0xE6, 0x6A, 0x5E);
-constexpr SkColor kGoogleRedDark600 = SkColorSetRGB(0xD3, 0x3B, 0x30);
-constexpr SkColor kGoogleRedDark800 = SkColorSetRGB(0xB4, 0x1B, 0x1A);
-
 constexpr SkColor kGoogleGreen050 = SkColorSetRGB(0xE6, 0xF4, 0xEA);
 constexpr SkColor kGoogleGreen100 = SkColorSetRGB(0xCE, 0xEA, 0xD6);
 constexpr SkColor kGoogleGreen200 = SkColorSetRGB(0xA8, 0xDA, 0xB5);
@@ -54,9 +47,6 @@ constexpr SkColor kGoogleGreen600 = SkColorSetRGB(0x1E, 0x8E, 0x3E);
 constexpr SkColor kGoogleGreen700 = SkColorSetRGB(0x18, 0x80, 0x38);
 constexpr SkColor kGoogleGreen800 = SkColorSetRGB(0x13, 0x73, 0x33);
 constexpr SkColor kGoogleGreen900 = SkColorSetRGB(0x0D, 0x65, 0x2D);
-
-constexpr SkColor kGoogleGreenDark500 = SkColorSetRGB(0x41, 0xAF, 0x6A);
-constexpr SkColor kGoogleGreenDark600 = SkColorSetRGB(0x28, 0x99, 0x4F);
 
 constexpr SkColor kGoogleYellow050 = SkColorSetRGB(0xFE, 0xF7, 0xE0);
 constexpr SkColor kGoogleYellow100 = SkColorSetRGB(0xFE, 0xEF, 0xC3);
