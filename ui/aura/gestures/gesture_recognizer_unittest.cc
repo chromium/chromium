@@ -29,6 +29,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
+#include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
@@ -1746,6 +1747,75 @@ TEST_F(GestureRecognizerTest, GestureTapFollowedByScroll) {
   EXPECT_FALSE(delegate->scroll_update());
   EXPECT_FALSE(delegate->scroll_end());
   EXPECT_TRUE(delegate->fling());
+}
+
+// Verifies that destroying a gesture provider aura instance before a touch
+// event is ACKed works as expected (see https://crbug.com/1292264).
+TEST_F(GestureRecognizerTest, DestroyGestureProviderAuraBeforeAck) {
+  TimedEvents tes;
+  const int kTouchId = 4;
+  std::unique_ptr<GestureEventConsumeDelegate> delegate(
+      new GestureEventConsumeDelegate());
+  std::unique_ptr<aura::Window> window1(CreateTestWindowWithDelegate(
+      delegate.get(), /*id=*/-2345, /*bounds=*/gfx::Rect(0, 0, 50, 50),
+      /*parent=*/root_window()));
+
+  // Touch press then release on `window1`.
+  constexpr gfx::Point touch_location(/*x=*/10, /*y=*/20);
+  ui::TouchEvent press(
+      ui::ET_TOUCH_PRESSED, touch_location, /*time_stamp=*/tes.Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  delegate->Reset();
+  DispatchEventUsingWindowDispatcher(&press);
+  EXPECT_TRUE(delegate->tap_down());
+  delegate->Reset();
+  ui::TouchEvent release(
+      ui::ET_TOUCH_RELEASED, touch_location,
+      /*time_stamp=*/press.time_stamp() + base::Milliseconds(50),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  DispatchEventUsingWindowDispatcher(&release);
+  EXPECT_FALSE(delegate->tap_down());
+
+  // Verify that the gesture provider for `window1` is created.
+  auto* gesture_recognizer = static_cast<ui::GestureRecognizerImpl*>(
+      aura::Env::GetInstance()->gesture_recognizer());
+  const auto& consumer_provider_mappings =
+      gesture_recognizer->consumer_gesture_provider_;
+  EXPECT_NE(consumer_provider_mappings.cend(),
+            consumer_provider_mappings.find(window1.get()));
+
+  // Create a second window for handling touch events.
+  std::unique_ptr<QueueTouchEventDelegate> delegate2(
+      new QueueTouchEventDelegate(host()->dispatcher()));
+  const int kTouchId2 = 4;
+  std::unique_ptr<aura::Window> window2(CreateTestWindowWithDelegate(
+      delegate2.get(), /*id=*/-1234, /*bounds=*/gfx::Rect(100, 100, 500, 500),
+      root_window()));
+  delegate2->set_window(window2.get());
+
+  // Send a press event on `window2`. Verify that the gesture provider for
+  // `window2` is created.
+  ui::TouchEvent press2(
+      ui::ET_TOUCH_PRESSED, /*location=*/gfx::Point(200, 200),
+      /*time_stamp=*/tes.Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId2));
+  DispatchEventUsingWindowDispatcher(&press2);
+  EXPECT_NE(consumer_provider_mappings.cend(),
+            consumer_provider_mappings.find(window2.get()));
+
+  // Verify that `press2` is associated with a gesture provider raw pointer.
+  const auto& event_provider_mappings =
+      gesture_recognizer->event_to_gesture_provider_;
+  EXPECT_NE(event_provider_mappings.cend(),
+            event_provider_mappings.find(press2.unique_event_id()));
+
+  // Before ACKing `press2`, replacing the gesture provider of `window2` with a
+  // new value through event transferal.
+  aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+      window1.get(), window2.get(), ui::TransferTouchesBehavior::kCancel);
+
+  // ACK the press event.
+  delegate2->ReceivedAck();
 }
 
 TEST_F(GestureRecognizerTest, AsynchronousGestureRecognition) {
