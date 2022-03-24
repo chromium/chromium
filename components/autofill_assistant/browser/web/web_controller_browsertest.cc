@@ -2417,6 +2417,27 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   EXPECT_THAT(end_state, DOCUMENT_COMPLETE);
 }
 
+// Regression test for b/226551550
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitDocumentReadyFails) {
+  ClientStatus status;
+
+  // This makes the devtools action fail.
+  ElementFinder::Result bad_element;
+  bad_element.dom_object.object_data.node_frame_id = "doesnotexist";
+
+  DocumentReadyState end_state;
+  base::RunLoop run_loop;
+  web_controller_->WaitForDocumentReadyState(
+      bad_element, DOCUMENT_COMPLETE,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
+                     base::Unretained(this), run_loop.QuitClosure(), &status,
+                     &end_state));
+  run_loop.Run();
+
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, status.proto_status()) << "Status: " << status;
+  EXPECT_THAT(end_state, DOCUMENT_UNKNOWN_READY_STATE);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementRect) {
   RectF document_element_rect;
   Selector document_element({"#full_height_section"});

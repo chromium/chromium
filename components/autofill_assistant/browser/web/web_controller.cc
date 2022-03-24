@@ -864,8 +864,8 @@ void WebController::OnWaitForDocumentReadyState(
         WebControllerErrorInfoProto::WAIT_FOR_DOCUMENT_READY_STATE, &status);
   }
 
-  int ready_state;
-  SafeGetIntValue(result->GetResult(), &ready_state);
+  int ready_state = 0;
+  SafeGetIntValue(result ? result->GetResult() : nullptr, &ready_state);
   std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state),
                           base::TimeTicks::Now() - wait_start_time);
 }
