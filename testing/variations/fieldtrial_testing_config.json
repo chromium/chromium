@@ -7062,10 +7062,9 @@
             ],
             "experiments": [
                 {
-                    "name": "ReleaseHiddenTilesAndRequiredTilesOnly_1",
+                    "name": "Enabled_2",
                     "enable_features": [
-                        "UiCompositorReleaseTileResourcesForHiddenLayers",
-                        "UiCompositorRequiredTilesOnly"
+                        "UiCompositorReleaseTileResourcesForHiddenLayers"
                     ]
                 }
             ]
