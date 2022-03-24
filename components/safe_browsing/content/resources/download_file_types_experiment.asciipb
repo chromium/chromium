@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 49
+version_id: 50
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1766,6 +1766,16 @@ file_types {
 file_types {
   extension: "webloc"
   uma_value: 395
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_MAC
+    danger_level: DANGEROUS
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "inetloc"
+  uma_value: 398
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC

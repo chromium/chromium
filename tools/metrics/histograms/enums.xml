@@ -80119,6 +80119,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="395" label="WEBLOC"/>
   <int value="396" label="XSD"/>
   <int value="397" label="AVIF"/>
+  <int value="398" label="INETLOC"/>
 </enum>
 
 <enum name="SBClientDownloadIsSignedBinary">
