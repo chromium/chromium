@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/live_caption/views/caption_bubble.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -17,6 +18,10 @@
 #include "ui/native_theme/native_theme_observer.h"
 
 class PrefChangeRegistrar;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace ui {
 class NativeTheme;
@@ -45,7 +50,8 @@ class LiveCaptionController : public KeyedService,
                               public ui::NativeThemeObserver {
  public:
   explicit LiveCaptionController(PrefService* profile_prefs,
-                                 PrefService* global_prefs);
+                                 PrefService* global_prefs,
+                                 content::BrowserContext* browser_context);
   ~LiveCaptionController() override;
   LiveCaptionController(const LiveCaptionController&) = delete;
   LiveCaptionController& operator=(const LiveCaptionController&) = delete;
@@ -65,7 +71,9 @@ class LiveCaptionController : public KeyedService,
 
   // Alerts the CaptionBubbleController that there is an error in the speech
   // recognition service.
-  void OnError(CaptionBubbleContext* caption_bubble_context);
+  void OnError(CaptionBubbleContext* caption_bubble_context,
+               CaptionBubbleErrorType error_type,
+               OnErrorClickedCallback error_clicked_callback);
 
   // Alerts the CaptionBubbleController that the audio stream has ended.
   void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);
@@ -102,6 +110,7 @@ class LiveCaptionController : public KeyedService,
 
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<PrefService> global_prefs_;
+  raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   absl::optional<ui::CaptionStyle> caption_style_;

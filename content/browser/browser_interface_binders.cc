@@ -1093,6 +1093,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(
           &EmptyBinderForFrame<
               media::mojom::SpeechRecognitionClientBrowserInterface>));
+  map->Add<media::mojom::MediaFoundationRendererNotifier>(base::BindRepeating(
+      &EmptyBinderForFrame<media::mojom::MediaFoundationRendererNotifier>));
   map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::MediaPlayerObserverClient>));
 #endif

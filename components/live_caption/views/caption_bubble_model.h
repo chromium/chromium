@@ -7,12 +7,16 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace captions {
 
 class CaptionBubble;
 class CaptionBubbleContext;
+
+enum CaptionBubbleErrorType { GENERIC, MEDIA_FOUNDATION_RENDERER_UNSUPPORTED };
+using OnErrorClickedCallback = base::RepeatingCallback<void()>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Model
@@ -53,7 +57,8 @@ class CaptionBubbleModel {
   void CommitPartialText();
 
   // Set that the bubble has an error and alert the observer.
-  void OnError();
+  void OnError(CaptionBubbleErrorType error_type,
+               OnErrorClickedCallback error_clicked_callback);
 
   // Mark the bubble as closed, clear the partial and final text, and alert the
   // observer.

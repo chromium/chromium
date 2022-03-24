@@ -125,6 +125,7 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
+#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
@@ -582,6 +583,20 @@ void BindSpeechRecognitionRecognizerClientHandler(
                                                        std::move(receiver));
   }
 }
+
+void BindMediaFoundationRendererNotifierHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
+        receiver) {
+  Profile* profile = Profile::FromBrowserContext(
+      frame_host->GetProcess()->GetBrowserContext());
+  PrefService* profile_prefs = profile->GetPrefs();
+  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
+      media::IsLiveCaptionFeatureEnabled()) {
+    captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
+                                                        std::move(receiver));
+  }
+}
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -713,6 +728,8 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindSpeechRecognitionClientBrowserInterfaceHandler));
   map->Add<media::mojom::SpeechRecognitionRecognizerClient>(
       base::BindRepeating(&BindSpeechRecognitionRecognizerClientHandler));
+  map->Add<media::mojom::MediaFoundationRendererNotifier>(
+      base::BindRepeating(&BindMediaFoundationRendererNotifierHandler));
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

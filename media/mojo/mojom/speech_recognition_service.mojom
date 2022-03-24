@@ -223,3 +223,15 @@ struct SpeechRecognitionOptions {
   // and Dictation via OnDeviceSpeechRecognizer in Chrome OS.
   string? language;
 };
+
+// This interface is used to notify the browser that the renderer is using the
+// Media Foundation Renderer which uses MediaFoundation to render audio
+// directly. Live Caption will not work in this case because Chrome is unable
+// to tap into the audio rendering pipeline. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaFoundationRendererNotifier {
+  // Notify the browser than a Media Foundation Renderer has been created. The
+  // browser will use this event to notify the user that some features
+  // incompatible with the Media Foundation Renderer may not work.
+  MediaFoundationRendererCreated();
+};

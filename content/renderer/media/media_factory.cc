@@ -124,6 +124,7 @@
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -673,11 +674,16 @@ MediaFactory::CreateRendererFactorySelector(
                             render_thread->GetDCOMPTextureFactory(),
                             render_thread->GetMediaThreadTaskRunner());
 
+    mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
+        media_foundation_renderer_notifier;
+    interface_broker_->GetInterface(
+        media_foundation_renderer_notifier.BindNewPipeAndPassReceiver());
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             media_log, std::move(dcomp_texture_creation_cb),
-            CreateMojoRendererFactory()));
+            CreateMojoRendererFactory(),
+            std::move(media_foundation_renderer_notifier)));
 
     if (use_mf_for_clear) {
       // We want to use Media Foundation even for non-explicit Media Foundation

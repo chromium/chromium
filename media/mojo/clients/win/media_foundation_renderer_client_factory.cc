@@ -11,8 +11,10 @@
 #include "media/mojo/clients/mojo_renderer_factory.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace media {
@@ -20,10 +22,14 @@ namespace media {
 MediaFoundationRendererClientFactory::MediaFoundationRendererClientFactory(
     MediaLog* media_log,
     GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
-    std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory)
+    std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
+    mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
+        media_foundation_renderer_notifier)
     : media_log_(media_log),
       get_dcomp_texture_cb_(std::move(get_dcomp_texture_cb)),
-      mojo_renderer_factory_(std::move(mojo_renderer_factory)) {
+      mojo_renderer_factory_(std::move(mojo_renderer_factory)),
+      media_foundation_renderer_notifier_(
+          std::move(media_foundation_renderer_notifier)) {
   DVLOG_FUNC(1);
 }
 
@@ -77,6 +83,11 @@ MediaFoundationRendererClientFactory::CreateRenderer(
           std::move(renderer_extension_receiver),
           std::move(client_extension_remote), media_task_runner,
           video_renderer_sink);
+
+  // Notify the browser that a Media Foundation Renderer has been created. Live
+  // Caption supports muted media so this is run regardless of whether the media
+  // is audible.
+  media_foundation_renderer_notifier_->MediaFoundationRendererCreated();
 
   // mojo_renderer's ownership is passed to MediaFoundationRendererClient.
   return std::make_unique<MediaFoundationRendererClient>(

@@ -8,9 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "components/live_caption/views/caption_bubble.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace captions {
 
@@ -27,7 +32,7 @@ class CaptionBubbleContext;
 //
 class CaptionBubbleController {
  public:
-  CaptionBubbleController() = default;
+  explicit CaptionBubbleController() = default;
   virtual ~CaptionBubbleController() = default;
   CaptionBubbleController(const CaptionBubbleController&) = delete;
   CaptionBubbleController& operator=(const CaptionBubbleController&) = delete;
@@ -42,7 +47,9 @@ class CaptionBubbleController {
       const media::SpeechRecognitionResult& result) = 0;
 
   // Called when the speech service has an error.
-  virtual void OnError(CaptionBubbleContext* caption_bubble_context) = 0;
+  virtual void OnError(CaptionBubbleContext* caption_bubble_context,
+                       CaptionBubbleErrorType error_type,
+                       OnErrorClickedCallback error_clicked_callback) = 0;
 
   // Called when the audio stream has ended.
   virtual void OnAudioStreamEnd(

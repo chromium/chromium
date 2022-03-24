@@ -14,6 +14,7 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/views/caption_bubble.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/soda/constants.h"
@@ -37,9 +38,13 @@ const char* const kCaptionStylePrefsToObserve[] = {
 
 namespace captions {
 
-LiveCaptionController::LiveCaptionController(PrefService* profile_prefs,
-                                             PrefService* global_prefs)
-    : profile_prefs_(profile_prefs), global_prefs_(global_prefs) {}
+LiveCaptionController::LiveCaptionController(
+    PrefService* profile_prefs,
+    PrefService* global_prefs,
+    content::BrowserContext* browser_context)
+    : profile_prefs_(profile_prefs),
+      global_prefs_(global_prefs),
+      browser_context_(browser_context) {}
 
 LiveCaptionController::~LiveCaptionController() {
   if (enabled_) {
@@ -203,10 +208,13 @@ bool LiveCaptionController::DispatchTranscription(
 }
 
 void LiveCaptionController::OnError(
-    CaptionBubbleContext* caption_bubble_context) {
+    CaptionBubbleContext* caption_bubble_context,
+    CaptionBubbleErrorType error_type,
+    OnErrorClickedCallback error_clicked_callback) {
   if (!caption_bubble_controller_)
     return;
-  caption_bubble_controller_->OnError(caption_bubble_context);
+  caption_bubble_controller_->OnError(caption_bubble_context, error_type,
+                                      std::move(error_clicked_callback));
 }
 
 void LiveCaptionController::OnAudioStreamEnd(

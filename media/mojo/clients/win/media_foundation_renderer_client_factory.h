@@ -11,6 +11,8 @@
 #include "media/base/renderer_factory.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -26,7 +28,9 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   MediaFoundationRendererClientFactory(
       MediaLog* media_log,
       GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
-      std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
+      std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
+      mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
+          media_foundation_renderer_notifier);
   ~MediaFoundationRendererClientFactory() override;
 
   std::unique_ptr<media::Renderer> CreateRenderer(
@@ -47,6 +51,8 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
 
   GetDCOMPTextureWrapperCB get_dcomp_texture_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
+  mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
+      media_foundation_renderer_notifier_;
 };
 
 }  // namespace media

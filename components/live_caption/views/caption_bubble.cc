@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/buildflags.h"
@@ -42,6 +43,8 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -165,6 +168,31 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
 }  // namespace
 
 namespace captions {
+
+#if BUILDFLAG(IS_WIN)
+class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
+ public:
+  explicit MediaFoundationRendererErrorMessageView(
+      CaptionBubble* caption_bubble)
+      : caption_bubble_(caption_bubble) {}
+
+  // views::View:
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    switch (action_data.action) {
+      case ax::mojom::Action::kDoDefault:
+        caption_bubble_->OnContentSettingsLinkClicked();
+        return true;
+      default:
+        break;
+    }
+    return views::StyledLabel::HandleAccessibleAction(action_data);
+  }
+
+ private:
+  CaptionBubble* const caption_bubble_;  // Not owned.
+};
+#endif
+
 // CaptionBubble implementation of BubbleFrameView. This class takes care
 // of making the caption draggable.
 class CaptionBubbleFrameView : public views::BubbleFrameView {
@@ -467,20 +495,72 @@ void CaptionBubble::Init() {
   title->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
   title->GetViewAccessibility().OverrideIsIgnored(true);
 
-  auto error_text = std::make_unique<views::Label>();
-  error_text->SetBackgroundColor(SK_ColorTRANSPARENT);
-  error_text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  error_text->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_ERROR));
-
-  auto error_icon = std::make_unique<views::ImageView>();
-
-  auto error_message = std::make_unique<views::View>();
-  error_message
+  // Define an error message that will be displayed in the caption bubble if a
+  // generic error is encountered.
+  auto generic_error_text = std::make_unique<views::Label>();
+  generic_error_text->SetBackgroundColor(SK_ColorTRANSPARENT);
+  generic_error_text->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  generic_error_text->SetText(
+      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_ERROR));
+  auto generic_error_message = std::make_unique<views::View>();
+  generic_error_message
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
           kErrorMessageBetweenChildSpacingDip))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  error_message->SetVisible(false);
+  generic_error_message->SetVisible(false);
+  auto generic_error_icon = std::make_unique<views::ImageView>();
+
+#if BUILDFLAG(IS_WIN)
+  // Define an error message that will be displayed in the caption bubble if the
+  // renderer is using hardware-based decryption.
+  auto media_foundation_renderer_error_message =
+      std::make_unique<views::View>();
+  media_foundation_renderer_error_message
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kErrorMessageBetweenChildSpacingDip))
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  media_foundation_renderer_error_message->SetVisible(false);
+  auto media_foundation_renderer_error_icon =
+      std::make_unique<views::ImageView>();
+  const std::u16string link =
+      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
+  size_t offset;
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR, link, &offset);
+  auto media_foundation_renderer_error_text =
+      std::make_unique<MediaFoundationRendererErrorMessageView>(this);
+  media_foundation_renderer_error_text->SetText(text);
+  media_foundation_renderer_error_text->SetAutoColorReadabilityEnabled(false);
+  media_foundation_renderer_error_text->SetFocusBehavior(FocusBehavior::ALWAYS);
+
+  // Make the whole text view behave as a link for accessibility.
+  media_foundation_renderer_error_text->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kLink);
+
+  auto custom_view = std::make_unique<views::Link>(link);
+  custom_view->SetCallback(base::BindRepeating(
+      &CaptionBubble::OnContentSettingsLinkClicked, base::Unretained(this)));
+  custom_view->SetFontList(GetFontList());
+  custom_view->SetEnabledColor(gfx::kGoogleBlue300);
+
+  views::StyledLabel::RangeStyleInfo error_message_style;
+  error_message_style.override_color = SK_ColorWHITE;
+  error_message_style.custom_font = GetFontList();
+  media_foundation_renderer_error_text->AddStyleRange(gfx::Range(0, offset),
+                                                      error_message_style);
+
+  views::StyledLabel::RangeStyleInfo link_style = error_message_style;
+  link_style.custom_view = custom_view.get();
+
+  media_foundation_renderer_error_text->AddCustomView(std::move(custom_view));
+  media_foundation_renderer_error_text->AddStyleRange(
+      gfx::Range(offset + link.length(), text.length()), error_message_style);
+  media_foundation_renderer_error_text->AddStyleRange(
+      gfx::Range(offset, offset + link.length()), link_style);
+#endif
 
   views::Button::PressedCallback expand_or_collapse_callback =
       base::BindRepeating(&CaptionBubble::ExpandOrCollapseButtonPressed,
@@ -511,9 +591,23 @@ void CaptionBubble::Init() {
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
 
-  error_icon_ = error_message->AddChildView(std::move(error_icon));
-  error_text_ = error_message->AddChildView(std::move(error_text));
-  error_message_ = content_container->AddChildView(std::move(error_message));
+  generic_error_icon_ =
+      generic_error_message->AddChildView(std::move(generic_error_icon));
+  generic_error_text_ =
+      generic_error_message->AddChildView(std::move(generic_error_text));
+  generic_error_message_ =
+      content_container->AddChildView(std::move(generic_error_message));
+
+#if BUILDFLAG(IS_WIN)
+  media_foundation_renderer_error_icon_ =
+      media_foundation_renderer_error_message->AddChildView(
+          std::move(media_foundation_renderer_error_icon));
+  media_foundation_renderer_error_text_ =
+      media_foundation_renderer_error_message->AddChildView(
+          std::move(media_foundation_renderer_error_text));
+  media_foundation_renderer_error_message_ = content_container->AddChildView(
+      std::move(media_foundation_renderer_error_message));
+#endif
 
   expand_button_ = content_container->AddChildView(std::move(expand_button));
   collapse_button_ =
@@ -634,17 +728,38 @@ void CaptionBubble::OnTextChanged() {
     inactivity_timer_->Reset();
 }
 
-void CaptionBubble::OnErrorChanged() {
+void CaptionBubble::OnErrorChanged(CaptionBubbleErrorType error_type,
+                                   OnErrorClickedCallback callback) {
   DCHECK(model_);
+  error_clicked_callback_ = std::move(callback);
   bool has_error = model_->HasError();
   label_->SetVisible(!has_error);
-  error_message_->SetVisible(has_error);
   expand_button_->SetVisible(!has_error && !is_expanded_);
   collapse_button_->SetVisible(!has_error && is_expanded_);
 
-  // The error is only 1 line, so redraw the bubble.
+#if BUILDFLAG(IS_WIN)
+  if (error_type ==
+      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED) {
+    media_foundation_renderer_error_message_->SetVisible(has_error);
+    generic_error_message_->SetVisible(false);
+  } else {
+    generic_error_message_->SetVisible(has_error);
+    media_foundation_renderer_error_message_->SetVisible(false);
+  }
+#else
+  generic_error_message_->SetVisible(has_error);
+#endif
+
   Redraw();
 }
+
+#if BUILDFLAG(IS_WIN)
+void CaptionBubble::OnContentSettingsLinkClicked() {
+  if (error_clicked_callback_) {
+    error_clicked_callback_.Run();
+  }
+}
+#endif
 
 void CaptionBubble::OnIsExpandedChanged() {
   expand_button_->SetVisible(!is_expanded_);
@@ -728,10 +843,7 @@ double CaptionBubble::GetTextScaleFactor() {
   }
   return textScaleFactor;
 }
-
-void CaptionBubble::SetTextSizeAndFontFamily() {
-  double textScaleFactor = GetTextScaleFactor();
-
+const gfx::FontList CaptionBubble::GetFontList() {
   std::vector<std::string> font_names;
   if (caption_style_) {
     std::string font_family =
@@ -743,19 +855,37 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   font_names.push_back(kSecondaryFont);
   font_names.push_back(kTertiaryFont);
 
-  const gfx::FontList font_list =
-      gfx::FontList(font_names, gfx::Font::FontStyle::NORMAL,
-                    kFontSizePx * textScaleFactor, gfx::Font::Weight::NORMAL);
+  const gfx::FontList font_list = gfx::FontList(
+      font_names, gfx::Font::FontStyle::NORMAL,
+      kFontSizePx * GetTextScaleFactor(), gfx::Font::Weight::NORMAL);
+  return font_list;
+}
+
+void CaptionBubble::SetTextSizeAndFontFamily() {
+  double textScaleFactor = GetTextScaleFactor();
+  const gfx::FontList font_list = GetFontList();
+
   label_->SetFontList(font_list);
   title_->SetFontList(font_list.DeriveWithStyle(gfx::Font::FontStyle::ITALIC));
-  error_text_->SetFontList(font_list);
+  generic_error_text_->SetFontList(font_list);
 
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
   label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
-  error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
-  error_icon_->SetImageSize(gfx::Size(kErrorImageSizeDip * textScaleFactor,
-                                      kErrorImageSizeDip * textScaleFactor));
+  generic_error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
+  generic_error_icon_->SetImageSize(
+      gfx::Size(kErrorImageSizeDip * textScaleFactor,
+                kErrorImageSizeDip * textScaleFactor));
+
+#if BUILDFLAG(IS_WIN)
+  media_foundation_renderer_error_icon_->SetImageSize(
+      gfx::Size(kErrorImageSizeDip * textScaleFactor,
+                kErrorImageSizeDip * textScaleFactor));
+  media_foundation_renderer_error_text_->SizeToFit(
+      kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
+  media_foundation_renderer_error_text_->SetLineHeight(kLineHeightDip *
+                                                       textScaleFactor);
+#endif
 }
 
 void CaptionBubble::SetTextColor() {
@@ -765,10 +895,14 @@ void CaptionBubble::SetTextColor() {
                                           &text_color);
   label_->SetEnabledColor(text_color);
   title_->SetEnabledColor(text_color);
-  error_text_->SetEnabledColor(text_color);
+  generic_error_text_->SetEnabledColor(text_color);
 
-  error_icon_->SetImage(
+  generic_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+#if BUILDFLAG(IS_WIN)
+  media_foundation_renderer_error_icon_->SetImage(
+      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+#endif
   views::SetImageFromVectorIcon(back_to_tab_button_, vector_icons::kLaunchIcon,
                                 kButtonDip, text_color);
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
@@ -801,9 +935,7 @@ void CaptionBubble::UpdateContentSize() {
   double text_scale_factor = GetTextScaleFactor();
   int width = kMaxWidthDip * text_scale_factor;
   int content_height =
-      (model_ && model_->HasError())
-          ? kLineHeightDip * text_scale_factor
-          : kLineHeightDip * GetNumLinesVisible() * text_scale_factor;
+      kLineHeightDip * GetNumLinesVisible() * text_scale_factor;
   // The title takes up 1 line.
   int label_height = title_->GetVisible()
                          ? content_height - kLineHeightDip * text_scale_factor

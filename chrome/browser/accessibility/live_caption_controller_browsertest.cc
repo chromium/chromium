@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/ranges/ranges.h"
@@ -136,7 +137,9 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
   void OnError() { OnErrorOnProfile(browser()->profile()); }
 
   void OnErrorOnProfile(Profile* profile) {
-    GetControllerForProfile(profile)->OnError(GetCaptionBubbleContextBrowser());
+    GetControllerForProfile(profile)->OnError(GetCaptionBubbleContextBrowser(),
+                                              CaptionBubbleErrorType::GENERIC,
+                                              base::RepeatingClosure());
   }
 
   void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->profile()); }

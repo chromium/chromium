@@ -7,11 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -72,7 +74,9 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnError(context_.get());
+    live_caption_controller->OnError(context_.get(),
+                                     CaptionBubbleErrorType::GENERIC,
+                                     base::RepeatingClosure());
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionStopped() {

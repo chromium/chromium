@@ -48,6 +48,7 @@ if (!is_android) {
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]
+
     }  # toolkit_views
   }
 }  # !is_android

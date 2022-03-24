@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
@@ -100,17 +101,18 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::View* GetErrorMessage() {
-    return controller_ ? controller_->caption_bubble_->error_message_.get()
-                       : nullptr;
+    return controller_
+               ? controller_->caption_bubble_->generic_error_message_.get()
+               : nullptr;
   }
 
   views::Label* GetErrorText() {
-    return controller_ ? controller_->caption_bubble_->error_text_.get()
+    return controller_ ? controller_->caption_bubble_->generic_error_text_.get()
                        : nullptr;
   }
 
   views::ImageView* GetErrorIcon() {
-    return controller_ ? controller_->caption_bubble_->error_icon_.get()
+    return controller_ ? controller_->caption_bubble_->generic_error_icon_.get()
                        : nullptr;
   }
 
@@ -166,7 +168,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void OnError() { OnError(GetCaptionBubbleContext()); }
 
   void OnError(CaptionBubbleContext* caption_bubble_context) {
-    GetController()->OnError(caption_bubble_context);
+    GetController()->OnError(caption_bubble_context,
+                             CaptionBubbleErrorType::GENERIC,
+                             base::RepeatingClosure());
   }
 
   void OnAudioStreamEnd() {
