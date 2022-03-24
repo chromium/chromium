@@ -151,6 +151,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
   // Proxy calls for WebAppFileHandlerManager.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);
   const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id) const;
+  absl::optional<GURL> GetMatchingFileHandlerURL(
+      const AppId& app_id,
+      const std::vector<base::FilePath>& launch_files);
 
   // Proxy calls for WebAppProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
@@ -164,9 +167,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual std::vector<custom_handlers::ProtocolHandler>
   GetDisallowedHandlersForProtocol(const std::string& protocol);
 
-  WebAppFileHandlerManager& file_handler_manager() {
-    return *file_handler_manager_;
-  }
+  // Getter for testing WebAppFileHandlerManager
+  WebAppFileHandlerManager& file_handler_manager_for_testing();
 
   UrlHandlerManager& url_handler_manager_for_testing();
 
@@ -204,6 +206,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
  protected:
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
+  WebAppFileHandlerManager* file_handler_manager() {
+    return file_handler_manager_.get();
+  }
   WebAppProtocolHandlerManager* protocol_handler_manager() {
     return protocol_handler_manager_.get();
   }
@@ -214,7 +219,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
       std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
     shortcut_manager_ = std::move(shortcut_manager);
   }
-  bool has_file_handler_manager() { return !!file_handler_manager_; }
   void set_file_handler_manager(
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager) {
     file_handler_manager_ = std::move(file_handler_manager);
