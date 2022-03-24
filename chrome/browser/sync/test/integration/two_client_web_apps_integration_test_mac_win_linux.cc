@@ -915,9 +915,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_69SiteA_24 \
   DISABLED_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_69SiteA_24
 #else
@@ -967,9 +965,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_30SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22 \
   DISABLED_WebAppIntegration_30SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22
 #else
@@ -992,9 +988,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_31SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_1SiteA_24 \
   DISABLED_WebAppIntegration_31SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_1SiteA_24
 #else
@@ -1019,9 +1013,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_31SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22 \
   DISABLED_WebAppIntegration_31SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22
 #else
@@ -1044,9 +1036,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_1SiteA_24 \
   DISABLED_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_46SiteA_12SiteA_1SiteA_24
 #else
@@ -1071,9 +1061,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22 \
   DISABLED_WebAppIntegration_47SiteA_24_12SiteA_40Client2_45SiteA_1SiteA_22
 #else
@@ -1096,9 +1084,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_29SiteA_11SiteA_40Client2_45SiteA_46SiteA_11SiteA_1SiteA_22 \
   DISABLED_WebAppIntegration_29SiteA_11SiteA_40Client2_45SiteA_46SiteA_11SiteA_1SiteA_22
 #else
@@ -1122,9 +1108,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1301414): Mac shims failing to launch on Mac debug and ASAN.
-// #if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(https://crbug.com/1309739): Failing on regular Mac now too.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_WebAppIntegration_29SiteA_11SiteA_40Client2_45SiteA_1SiteA_22 \
   DISABLED_WebAppIntegration_29SiteA_11SiteA_40Client2_45SiteA_1SiteA_22
 #else
