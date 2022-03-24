@@ -111,16 +111,18 @@ export class CustomizeModulesElement extends I18nMixin
                   });
                 });
     NewTabPageProxy.getInstance().handler.updateDisabledModules();
-    this.set(
-        'discountToggleEligible_',
-        loadTimeData.getBoolean('ruleBasedDiscountEnabled'));
-    if (!this.discountToggleEligible_) {
-      return;
+
+    if (this.modules_.some(module => module.id === 'chrome_cart')) {
+      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
+          ({toggleVisible}) => {
+            this.set('discountToggleEligible_', toggleVisible);
+          });
+
+      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+        this.set('discountToggle_.enabled', enabled);
+        this.discountToggle_.initiallyEnabled = enabled;
+      });
     }
-    ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
-      this.set('discountToggle_.enabled', enabled);
-      this.discountToggle_.initiallyEnabled = enabled;
-    });
   }
 
   override disconnectedCallback() {

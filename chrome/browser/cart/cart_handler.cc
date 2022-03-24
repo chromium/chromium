@@ -116,6 +116,11 @@ void CartHandler::GetDiscountConsentCardVisible(
   cart_service_->ShouldShowDiscountConsent(std::move(callback));
 }
 
+void CartHandler::GetDiscountToggleVisible(
+    GetDiscountToggleVisibleCallback callback) {
+  std::move(callback).Run(cart_service_->ShouldShowDiscountToggle());
+}
+
 void CartHandler::OnDiscountConsentAcknowledged(bool accept) {
   cart_service_->AcknowledgeDiscountConsent(accept);
 }

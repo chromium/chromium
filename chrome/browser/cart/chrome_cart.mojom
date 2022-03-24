@@ -44,6 +44,8 @@ interface CartHandler {
   GetDiscountURL(url.mojom.Url cart_url) => (url.mojom.Url discount_url);
   // Returns whether to show discount consent card in the module.
   GetDiscountConsentCardVisible() => (bool consent_visible);
+  // Returns whether to show the discount toggle in the customize setting page.
+  GetDiscountToggleVisible() => (bool toggle_visible);
   // TODO(crbug.com/1298116): Merge OnDiscountConsentAcknowledged and
   //                          OnDiscountConsentDismissed.
   // Stores in profile prefs that user has acknowledged
