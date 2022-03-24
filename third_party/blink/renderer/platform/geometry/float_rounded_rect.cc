@@ -147,8 +147,10 @@ void FloatRoundedRect::Radii::OutsetForMarginOrShadow(float outset) {
 }
 
 void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
-  // We're not sure the following is fully correct for non-circular corners,
-  // but it's definitely close.
+  // TODO(crbug.com/1309478): This isn't correct for non-circular
+  // corners (that is, corners that have x and y radii that are not
+  // equal).  But it's not clear to me if the correct result for that
+  // case is even an ellipse.
   gfx::SizeF outset_size(outset, outset);
   top_left_ += outset_size;
   top_right_ += outset_size;
