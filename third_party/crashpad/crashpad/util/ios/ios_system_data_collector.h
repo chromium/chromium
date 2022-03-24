@@ -17,6 +17,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#include <functional>
 #include <string>
 
 namespace crashpad {
@@ -41,28 +42,25 @@ class IOSSystemDataCollector {
   int DaylightOffsetSeconds() const { return daylight_offset_seconds_; }
   const std::string& StandardName() const { return standard_name_; }
   const std::string& DaylightName() const { return daylight_name_; }
+  bool IsApplicationActive() const { return active_; }
 
   // Currently unused by minidump.
   int Orientation() const { return orientation_; }
 
- private:
-  // Notification handlers.
-  void InstallHandlers();
-  static void SystemTimeZoneDidChangeNotificationHandler(
-      CFNotificationCenterRef center,
-      void* observer,
-      CFStringRef name,
-      const void* object,
-      CFDictionaryRef userInfo);
-  void SystemTimeZoneDidChangeNotification();
+  // A completion callback that takes a bool indicating that the application has
+  // become active or inactive.
+  using ActiveApplicationCallback = std::function<void(bool)>;
 
-  static void OrientationDidChangeNotificationHandler(
-      CFNotificationCenterRef center,
-      void* observer,
-      CFStringRef name,
-      const void* object,
-      CFDictionaryRef userInfo);
+  void SetActiveApplicationCallback(ActiveApplicationCallback callback) {
+    active_application_callback_ = callback;
+  }
+
+ private:
+  // Notification handlers for time zone, orientation and active state.
+  void InstallHandlers();
+  void SystemTimeZoneDidChangeNotification();
   void OrientationDidChangeNotification();
+  void ApplicationDidChangeActiveNotification();
 
   int major_version_;
   int minor_version_;
@@ -72,6 +70,7 @@ class IOSSystemDataCollector {
   bool is_extension_;
   std::string machine_description_;
   int orientation_;
+  bool active_;
   int processor_count_;
   std::string cpu_vendor_;
   bool has_next_daylight_saving_time_;
@@ -80,6 +79,7 @@ class IOSSystemDataCollector {
   int daylight_offset_seconds_;
   std::string standard_name_;
   std::string daylight_name_;
+  ActiveApplicationCallback active_application_callback_;
 };
 
 }  // namespace internal

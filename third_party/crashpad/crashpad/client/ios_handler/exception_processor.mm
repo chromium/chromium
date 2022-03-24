@@ -53,6 +53,8 @@
 #include "client/annotation.h"
 #include "client/simulate_crash_ios.h"
 
+namespace crashpad {
+
 namespace {
 
 // From 10.15.0 objc4-779.1/runtime/objc-exception.mm.
@@ -132,16 +134,67 @@ std::string GetTraceString() {
   return FormatStackTrace(addresses, 1024);
 }
 
-crashpad::ObjcExceptionDelegate* g_exception_delegate;
-objc_exception_preprocessor g_next_preprocessor;
-NSUncaughtExceptionHandler* g_next_uncaught_exception_handler;
+//! \brief Helper class to own the complex types used by the Objective-C
+//!     exception preprocessor.
+class ExceptionPreprocessorState {
+ public:
+  ExceptionPreprocessorState(const ExceptionPreprocessorState&) = delete;
+  ExceptionPreprocessorState& operator=(const ExceptionPreprocessorState&) =
+      delete;
+
+  static ExceptionPreprocessorState* Get() {
+    static ExceptionPreprocessorState* instance = []() {
+      return new ExceptionPreprocessorState();
+    }();
+    return instance;
+  }
+
+  // Inform the delegate of the uncaught exception and remove the global
+  // uncaught exception handler so we don't record this twice.
+  void HandleUncaughtException(NativeCPUContext* cpu_context) {
+    exception_delegate_->HandleUncaughtNSExceptionWithContext(cpu_context);
+
+    NSSetUncaughtExceptionHandler(next_uncaught_exception_handler_);
+    next_uncaught_exception_handler_ = nullptr;
+  }
+
+  id MaybeCallNextPreprocessor(id exception) {
+    return next_preprocessor_ ? next_preprocessor_(exception) : exception;
+  }
+
+  // Register the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
+  void Install(ObjcExceptionDelegate* delegate);
+
+  // Restore the objc_setExceptionPreprocessor and NSUncaughtExceptionHandler.
+  void Uninstall();
+
+  NSException* last_exception() { return last_exception_; }
+  void set_last_exception(NSException* exception) {
+    [last_exception_ release];
+    last_exception_ = [exception retain];
+  }
+
+  ObjcExceptionDelegate* exception_delegate() { return exception_delegate_; }
+
+ private:
+  ExceptionPreprocessorState() = default;
+  ~ExceptionPreprocessorState() = default;
+
+  // Recorded last NSException in case the exception is caught and thrown again
+  // (without using objc_exception_rethrow.)
+  NSException* last_exception_ = nil;
+
+  ObjcExceptionDelegate* exception_delegate_ = nullptr;
+  objc_exception_preprocessor next_preprocessor_ = nullptr;
+  NSUncaughtExceptionHandler* next_uncaught_exception_handler_ = nullptr;
+};
 
 static void SetNSExceptionAnnotations(NSException* exception,
                                       std::string& name,
                                       std::string& reason) {
   @try {
     name = base::SysNSStringToUTF8(exception.name);
-    static crashpad::StringAnnotation<256> nameKey("exceptionName");
+    static StringAnnotation<256> nameKey("exceptionName");
     nameKey.Set(name);
   } @catch (id name_exception) {
     LOG(ERROR) << "Unable to read uncaught Objective-C exception name.";
@@ -149,7 +202,7 @@ static void SetNSExceptionAnnotations(NSException* exception,
 
   @try {
     reason = base::SysNSStringToUTF8(exception.reason);
-    static crashpad::StringAnnotation<512> reasonKey("exceptionReason");
+    static StringAnnotation<512> reasonKey("exceptionReason");
     reasonKey.Set(reason);
   } @catch (id reason_exception) {
     LOG(ERROR) << "Unable to read uncaught Objective-C exception reason.";
@@ -157,7 +210,7 @@ static void SetNSExceptionAnnotations(NSException* exception,
 
   @try {
     if (exception.userInfo) {
-      static crashpad::StringAnnotation<512> userInfoKey("exceptionUserInfo");
+      static StringAnnotation<512> userInfoKey("exceptionUserInfo");
       userInfoKey.Set(base::SysNSStringToUTF8(
           [NSString stringWithFormat:@"%@", exception.userInfo]));
     }
@@ -170,21 +223,24 @@ static void ObjcUncaughtExceptionHandler(NSException* exception) {
   std::string name, reason;
   SetNSExceptionAnnotations(exception, name, reason);
   NSArray<NSNumber*>* addressArray = [exception callStackReturnAddresses];
+
+  ObjcExceptionDelegate* exception_delegate =
+      ExceptionPreprocessorState::Get()->exception_delegate();
   if ([addressArray count] > 0) {
-    static crashpad::StringAnnotation<256> nameKey("UncaughtNSException");
+    static StringAnnotation<256> nameKey("UncaughtNSException");
     nameKey.Set("true");
     std::vector<uint64_t> addresses;
     for (NSNumber* address in addressArray)
       addresses.push_back([address unsignedLongLongValue]);
-    g_exception_delegate->HandleUncaughtNSException(&addresses[0],
-                                                    addresses.size());
+    exception_delegate->HandleUncaughtNSException(&addresses[0],
+                                                  addresses.size());
   } else {
     LOG(WARNING) << "Uncaught Objective-C exception name: " << name
                  << " reason: " << reason << " with no "
                  << " -callStackReturnAddresses.";
-    crashpad::NativeCPUContext cpu_context;
-    crashpad::CaptureContext(&cpu_context);
-    g_exception_delegate->HandleUncaughtNSExceptionWithContext(&cpu_context);
+    NativeCPUContext cpu_context;
+    CaptureContext(&cpu_context);
+    exception_delegate->HandleUncaughtNSExceptionWithContext(&cpu_context);
   }
 }
 
@@ -197,15 +253,13 @@ static __attribute__((noinline)) id HANDLE_UNCAUGHT_NSEXCEPTION(
   SetNSExceptionAnnotations(exception, name, reason);
   LOG(WARNING) << "Handling Objective-C exception name: " << name
                << " reason: " << reason << " with sinkhole: " << sinkhole;
-  crashpad::NativeCPUContext cpu_context;
-  crashpad::CaptureContext(&cpu_context);
-  g_exception_delegate->HandleUncaughtNSExceptionWithContext(&cpu_context);
+  NativeCPUContext cpu_context;
+  CaptureContext(&cpu_context);
 
-  // Remove the uncaught exception handler so we don't record this twice.
-  NSSetUncaughtExceptionHandler(g_next_uncaught_exception_handler);
-  g_next_uncaught_exception_handler = nullptr;
-
-  return g_next_preprocessor ? g_next_preprocessor(exception) : exception;
+  ExceptionPreprocessorState* preprocessor_state =
+      ExceptionPreprocessorState::Get();
+  preprocessor_state->HandleUncaughtException(&cpu_context);
+  return preprocessor_state->MaybeCallNextPreprocessor(exception);
 }
 
 // Returns true if |path| equals |sinkhole| on device. Simulator paths prepend
@@ -226,13 +280,23 @@ bool ModulePathMatchesSinkhole(const char* path, const char* sinkhole) {
 }
 
 id ObjcExceptionPreprocessor(id exception) {
+  // Some sinkholes don't use objc_exception_rethrow when they should, which
+  // would otherwise prevent the exception_preprocessor from getting called
+  // again. Because of this, track the most recently seen exception and
+  // ignore it.
+  ExceptionPreprocessorState* preprocessor_state =
+      ExceptionPreprocessorState::Get();
+  if ([preprocessor_state->last_exception() isEqual:exception]) {
+    return preprocessor_state->MaybeCallNextPreprocessor(exception);
+  }
+  preprocessor_state->set_last_exception(exception);
+
   static bool seen_first_exception;
 
-  static crashpad::StringAnnotation<256> firstexception("firstexception");
-  static crashpad::StringAnnotation<256> lastexception("lastexception");
-  static crashpad::StringAnnotation<1024> firstexception_bt(
-      "firstexception_bt");
-  static crashpad::StringAnnotation<1024> lastexception_bt("lastexception_bt");
+  static StringAnnotation<256> firstexception("firstexception");
+  static StringAnnotation<256> lastexception("lastexception");
+  static StringAnnotation<1024> firstexception_bt("firstexception_bt");
+  static StringAnnotation<1024> lastexception_bt("lastexception_bt");
   auto* key = seen_first_exception ? &lastexception : &firstexception;
   auto* bt_key = seen_first_exception ? &lastexception_bt : &firstexception_bt;
   NSString* value = [NSString
@@ -470,36 +534,41 @@ id ObjcExceptionPreprocessor(id exception) {
   }
 
   // Forward to the next preprocessor.
-  return g_next_preprocessor ? g_next_preprocessor(exception) : exception;
+  return preprocessor_state->MaybeCallNextPreprocessor(exception);
+}
+
+void ExceptionPreprocessorState::Install(ObjcExceptionDelegate* delegate) {
+  DCHECK(!next_preprocessor_);
+  exception_delegate_ = delegate;
+
+  // Preprocessor.
+  next_preprocessor_ =
+      objc_setExceptionPreprocessor(&ObjcExceptionPreprocessor);
+
+  // Uncaught processor.
+  next_uncaught_exception_handler_ = NSGetUncaughtExceptionHandler();
+  NSSetUncaughtExceptionHandler(&ObjcUncaughtExceptionHandler);
+}
+
+void ExceptionPreprocessorState::Uninstall() {
+  DCHECK(next_preprocessor_);
+  objc_setExceptionPreprocessor(next_preprocessor_);
+  next_preprocessor_ = nullptr;
+
+  NSSetUncaughtExceptionHandler(next_uncaught_exception_handler_);
+  next_uncaught_exception_handler_ = nullptr;
+
+  exception_delegate_ = nullptr;
 }
 
 }  // namespace
 
-namespace crashpad {
-
 void InstallObjcExceptionPreprocessor(ObjcExceptionDelegate* delegate) {
-  DCHECK(!g_next_preprocessor);
-
-  // Preprocessor.
-  g_next_preprocessor =
-      objc_setExceptionPreprocessor(&ObjcExceptionPreprocessor);
-
-  // Uncaught processor.
-  g_exception_delegate = delegate;
-  g_next_uncaught_exception_handler = NSGetUncaughtExceptionHandler();
-  NSSetUncaughtExceptionHandler(&ObjcUncaughtExceptionHandler);
+  ExceptionPreprocessorState::Get()->Install(delegate);
 }
 
 void UninstallObjcExceptionPreprocessor() {
-  DCHECK(g_next_preprocessor);
-
-  objc_setExceptionPreprocessor(g_next_preprocessor);
-  g_exception_delegate = nullptr;
-
-  NSSetUncaughtExceptionHandler(g_next_uncaught_exception_handler);
-  g_next_uncaught_exception_handler = nullptr;
-
-  g_next_preprocessor = nullptr;
+  ExceptionPreprocessorState::Get()->Uninstall();
 }
 
 }  // namespace crashpad

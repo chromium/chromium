@@ -14,6 +14,7 @@
 
 #include "client/crashpad_client.h"
 
+#include <signal.h>
 #include <unistd.h>
 
 #include <ios>
@@ -24,6 +25,7 @@
 #include "base/mac/scoped_mach_port.h"
 #include "client/ios_handler/exception_processor.h"
 #include "client/ios_handler/in_process_handler.h"
+#include "util/ios/raw_logging.h"
 #include "util/mach/exc_server_variants.h"
 #include "util/mach/exception_ports.h"
 #include "util/mach/mach_extensions.h"
@@ -249,8 +251,7 @@ class CrashHandler : public Thread,
     // inherit the task exception ports, and this process isn’t prepared to
     // handle them
     if (task != mach_task_self()) {
-      LOG(WARNING) << "task 0x" << std::hex << task << " != 0x"
-                   << mach_task_self();
+      CRASHPAD_RAW_LOG("MachException task != mach_task_self()");
       return KERN_FAILURE;
     }
 
@@ -264,7 +265,31 @@ class CrashHandler : public Thread,
                         old_state_count);
 
     // Respond with KERN_FAILURE so the system will continue to handle this
-    // exception as a crash.
+    // exception. xnu will turn this Mach exception into a signal and take the
+    // default action to terminate the process. However, if sigprocmask is
+    // called before this Mach exception returns (such as by another thread
+    // calling abort, see: Libc-1506.40.4/stdlib/FreeBSD/abort.c), the Mach
+    // exception will be converted into a signal but delivery will be blocked.
+    // Since concurrent exceptions lead to the losing thread sleeping
+    // indefinitely, if the abort thread never returns, the thread that
+    // triggered this Mach exception will repeatedly trap and the process will
+    // never terminate. If the abort thread didn’t have a user-space signal
+    // handler that slept forever, the abort would terminate the process even if
+    // all other signals had been blocked. Instead, unblock all signals
+    // corresponding to all Mach exceptions Crashpad is registered for before
+    // returning KERN_FAILURE. There is still racy behavior possible with this
+    // call to sigprocmask, but the repeated calls to CatchMachException here
+    // will eventually lead to termination.
+    sigset_t unblock_set;
+    sigemptyset(&unblock_set);
+    sigaddset(&unblock_set, SIGILL);  // EXC_BAD_INSTRUCTION
+    sigaddset(&unblock_set, SIGTRAP);  // EXC_BREAKPOINT
+    sigaddset(&unblock_set, SIGFPE);  // EXC_ARITHMETIC
+    sigaddset(&unblock_set, SIGBUS);  // EXC_BAD_ACCESS
+    sigaddset(&unblock_set, SIGSEGV);  // EXC_BAD_ACCESS
+    if (sigprocmask(SIG_UNBLOCK, &unblock_set, nullptr) != 0) {
+      CRASHPAD_RAW_LOG("sigprocmask");
+    }
     return KERN_FAILURE;
   }
 
