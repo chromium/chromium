@@ -1746,6 +1746,14 @@ void AutomationInternalCustomBindings::Invalidate() {
   if (message_filter_)
     message_filter_->Detach();
 
+  auto& child_tree_id_reverse_map =
+      AutomationAXTreeWrapper::GetChildTreeIDReverseMap();
+  base::EraseIf(
+      child_tree_id_reverse_map,
+      [this](const std::pair<ui::AXTreeID, AutomationAXTreeWrapper*>& pair) {
+        return pair.second->owner() == this;
+      });
+
   tree_id_to_tree_wrapper_map_.clear();
 }
 
