@@ -14823,7 +14823,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.PasswordChangeTriggered">
-  <owner>selakovic@google.com</owner>
+  <owner>brunobraga@google.com</owner>
   <owner>chrome-duplex@google.com</owner>
   <summary>
     Metrics related to password change. The Password Checkup in Chrome Settings

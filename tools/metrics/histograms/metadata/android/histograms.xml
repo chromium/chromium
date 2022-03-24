@@ -282,7 +282,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.AutofillAssistant.DropOutReason{Intent}"
     enum="AutofillAssistantDropOutReason" expires_after="2022-06-08">
-  <owner>selakovic@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <owner>vizcay@google.com</owner>
   <owner>mcarlen@chromium.org</owner>
   <summary>
     Reports the drop out reason of an Autofill Assistant script during the
