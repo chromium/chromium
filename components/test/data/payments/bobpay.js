@@ -22,45 +22,37 @@ function buildPaymentRequest() {
 
 /**
  * Launches the PaymentRequest UI with Bob Pay as one of multiple payment
- * methods.
+ * methods. The result or error is both printed and returned as the Java test
+ * reads it from the page and the C++ browser test reads the return value.
+ * @return {string} - the response or error string.
  */
-function buy() { // eslint-disable-line no-unused-vars
+async function buy() { // eslint-disable-line no-unused-vars
+  let responseString;
   try {
-    buildPaymentRequest()
-        .show()
-        .then(function(resp) {
-          resp.complete('success')
-              .then(function() {
-                print(
-                    resp.methodName + '<br>' +
-                    JSON.stringify(resp.details, undefined, 2));
-              })
-              .catch(function(error) {
-                print('complete() rejected<br>' + error);
-              });
-        })
-        .catch(function(error) {
-          print('show() rejected<br>' + error);
-        });
+    const resp = await buildPaymentRequest().show();
+    await resp.complete('success');
+    responseString = resp.methodName + '\n' +
+        JSON.stringify(resp.details, undefined, 2);
   } catch (error) {
-    print('exception thrown<br>' + error);
+    responseString = error.toString();
   }
+  print(responseString);
+  return responseString;
 }
 
 /**
- * Queries CanMakePayment but does not show the PaymentRequest after.
+ * Queries CanMakePayment but does not show the PaymentRequest after. The result
+ * or error is both printed and returned as the Java test reads it from the page
+ * and the C++ browser test reads the return value.
+ * @return {string} - the result or error string.
  */
-function canMakePayment() { // eslint-disable-line no-unused-vars
+async function canMakePayment() { // eslint-disable-line no-unused-vars
   try {
-    buildPaymentRequest()
-        .canMakePayment()
-        .then(function(result) {
-          print(result);
-        })
-        .catch(function(error) {
-          print(error);
-        });
+    const result = await buildPaymentRequest().canMakePayment();
+    print(result);
+    return result.toString();
   } catch (error) {
     print('exception thrown<br>' + error);
+    return error.toString();
   }
 }
