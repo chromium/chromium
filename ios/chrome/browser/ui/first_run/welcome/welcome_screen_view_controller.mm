@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
 
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
-#import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"

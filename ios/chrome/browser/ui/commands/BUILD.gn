@@ -47,6 +47,7 @@ source_set("commands") {
     "text_zoom_commands.h",
     "thumb_strip_commands.h",
     "toolbar_commands.h",
+    "tos_commands.h",
     "whats_new_commands.h",
   ]
 

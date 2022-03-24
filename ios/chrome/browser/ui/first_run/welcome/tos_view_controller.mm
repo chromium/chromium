@@ -7,7 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #include "base/check.h"
-#import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
+#import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"

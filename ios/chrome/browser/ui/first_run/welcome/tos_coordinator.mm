@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
+#import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/welcome/tos_view_controller.h"
 #include "ios/chrome/browser/ui/util/terms_util.h"
 #import "ios/web/common/web_view_creation_util.h"

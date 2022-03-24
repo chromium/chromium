@@ -8,7 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#include "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
+#include "ios/chrome/browser/ui/commands/tos_commands.h"
 #include "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"

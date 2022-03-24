@@ -18,6 +18,7 @@ source_set("welcome") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run/uma",
@@ -33,7 +34,6 @@ source_set("welcome_ui") {
   sources = [
     "checkbox_button.h",
     "checkbox_button.mm",
-    "tos_commands.h",
     "tos_view_controller.h",
     "tos_view_controller.mm",
     "welcome_screen_mediator.h",
@@ -48,6 +48,7 @@ source_set("welcome_ui") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",
