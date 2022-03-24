@@ -129,16 +129,6 @@ struct MakeCredentialAuthenticatorResponse {
   // See https://www.iana.org/assignments/cose/cose.xhtml#algorithms
   int32 public_key_algo;
 
-  // Only supported by fido2 devices on android, will eventually supported by
-  // other platform.
-  // True if getClientExtensionResults() called on the returned
-  // PublicKeyCredential instance should contain an 'uvm' extension output.
-  // If so, |user_verification_methods| contains the actual value.
-  [EnableIf=is_android]
-  bool echo_user_verification_methods;
-  [EnableIf=is_android]
-  array<UvmEntry>? user_verification_methods;
-
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain a `credProps` extension
   // output. |has_cred_props_rk| indicates if the rk member in that extension
@@ -493,13 +483,6 @@ struct PublicKeyCredentialCreationOptions {
   // time is never supported currently, owing to a lack of hardware support.)
   // https://w3c.github.io/webauthn/#prf-extension
   bool prf_enable;
-
-  // Only supported by fido2 devices on android, will eventually supported by
-  // other platform.
-  // Whether the user verification method extension is requested by
-  // the RP. See https://w3c.github.io/webauthn/#sctn-uvm-extension
-  [EnableIf=is_android]
-  bool user_verification_methods;
 
   // The value of the `credentialProtectionPolicy` extension, or UNSPECIFIED if
   // none was provided.
