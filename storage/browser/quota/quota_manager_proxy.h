@@ -91,6 +91,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Synchronously gets the bucket with `bucket_name` for the `storage_key` for
+  // StorageType kTemporary and returns the BucketInfo. If one doesn't exist, it
+  // creates a new bucket with the specified policies. Returns a QuotaError if
+  // the operation has failed. This function calls the asynchronous
+  // GetOrCreateBucket function but blocks until completion.
+  //
+  // NOTE: this function cannot be called from the
+  // quota_manager_impl_task_runner. Additionally, the asychonrous version of
+  // this method `GetOrCreateBucket` is preferred; only use this synchronous
+  // version where asynchronous bucket retrieval is not possible.
+  virtual QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name);
+
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
   // used by FileSystem, and is expected to be removed when
   // StorageType::kSyncable and StorageType::kPersistent are deprecated.

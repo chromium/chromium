@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -778,6 +779,32 @@ TEST_F(QuotaManagerImplTest, GetOrCreateBucket) {
   bucket = GetOrCreateBucket(storage_key, bucket_name);
   EXPECT_TRUE(bucket.ok());
   EXPECT_EQ(bucket.value().id, created_bucket_id);
+}
+
+TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
+  base::RunLoop loop;
+  // Post the function call on a different thread to ensure that the
+  // production DCHECK in GetOrCreateBucketSync passes.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindLambdaForTesting([&]() {
+        StorageKey storage_key = ToStorageKey("http://b.com");
+        std::string bucket_name = "bucket_b";
+        // Ensure that the synchronous function returns a bucket.
+        auto bucket = quota_manager_impl_->proxy()->GetOrCreateBucketSync(
+            storage_key, bucket_name);
+        ASSERT_TRUE(bucket.ok());
+        BucketId created_bucket_id = bucket.value().id;
+
+        // Ensure that the synchronous function does not create a new bucket
+        // each time.
+        bucket = quota_manager_impl_->proxy()->GetOrCreateBucketSync(
+            storage_key, bucket_name);
+        EXPECT_TRUE(bucket.ok());
+        EXPECT_EQ(bucket.value().id, created_bucket_id);
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(QuotaManagerImplTest, GetBucket) {
