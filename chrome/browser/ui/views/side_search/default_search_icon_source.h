@@ -59,14 +59,9 @@ class DefaultSearchIconSource : public TemplateURLServiceObserver {
   // tab.
   raw_ptr<Browser> browser_;
 
-  // Called whenever the default search provider's icon changes. This can be
-  // called if the default search provider changes or the icon fetch misses in
-  // the favicon cache, resulting in a call back into `OnFaviconFetched()`.
+  // Called whenever the state of the TemplateURLService changes, resulting in a
+  // call back into `OnFaviconFetched()`.
   IconChangedSubscription icon_changed_subscription_;
-
-  // The ID of the current default TemplateURL instance. Keep track of this so
-  // we update the page action's favicon only when the default instance changes.
-  TemplateURLID default_template_url_id_ = kInvalidTemplateURLID;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
