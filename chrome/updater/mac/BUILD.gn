@@ -349,24 +349,22 @@ if (!is_component_build && enable_dsyms) {
   action_foreach("syms") {
     script = "//build/redirect_stdout.py"
     sources = _symbols_sources
+    dump_syms = "//third_party/breakpad:dump_syms($host_toolchain)"
     public_deps = [
       ":updater_bundle",
-      "//third_party/breakpad:dump_syms($host_toolchain)",
+      dump_syms,
     ]
     outputs =
         [ "$root_out_dir/{{source_file_part}}-$chrome_version_full.breakpad" ]
 
-    # Use an absolute path to dump_syms in case a user has it in their path.
-    args = rebase_path(outputs, root_out_dir) + [
-             rebase_path(
-                 get_label_info(
-                         "//third_party/breakpad:dump_syms($host_toolchain)",
-                         "root_out_dir") + "/dump_syms",
-                 root_out_dir),
+    args = rebase_path(outputs, root_build_dir) + [
+             rebase_path(get_label_info(dump_syms, "root_out_dir") + "/" +
+                             get_label_info(dump_syms, "name"),
+                         root_build_dir),
              "-g",
              rebase_path(
                  "$root_out_dir/{{source_file_part}}.dSYM/Contents/Resources/DWARF/{{source_file_part}}",
-                 root_out_dir),
+                 root_build_dir),
              "{{source}}",
            ]
   }
