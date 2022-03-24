@@ -666,7 +666,17 @@ void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
 void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
                                  AppType app_type,
                                  bool should_notify_initialized) {
-  // TODO(crbug.com/1253250): add RemovePreferredApp related code.
+  if (app_service_.is_connected()) {
+    for (const auto& delta : deltas) {
+      if (delta->readiness != Readiness::kUnknown &&
+          !apps_util::IsInstalled(delta->readiness)) {
+        // TODO(crbug.com/1253250): Remove dependency on mojom AppService.
+        app_service_->RemovePreferredApp(
+            ConvertAppTypeToMojomAppType(delta->app_type), delta->app_id);
+      }
+    }
+  }
+
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
 }
