@@ -570,6 +570,27 @@ user_manager::UserType GetUserType(const AccountId& id) {
   return user_manager::USER_TYPE_REGULAR;
 }
 
+// Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
+// original custom wallpaper. Verifies that the returned path exists. If a valid
+// path cannot be found, returns an empty FilePath. Must run on wallpaper
+// sequenced worker thread.
+base::FilePath PathWithFallback(const AccountId& account_id,
+                                const WallpaperInfo& info,
+                                const base::FilePath& wallpaper_path) {
+  if (base::PathExists(wallpaper_path))
+    return wallpaper_path;
+
+  // Falls back to the original file if the file with correct resolution does
+  // not exist. This may happen when the original custom wallpaper is small or
+  // browser shutdown before resized wallpaper saved.
+  base::FilePath valid_path =
+      WallpaperControllerImpl::GetCustomWallpaperDir(
+          WallpaperControllerImpl::kOriginalWallpaperSubDir)
+          .Append(info.location);
+
+  return base::PathExists(valid_path) ? valid_path : base::FilePath();
+}
+
 // Populates online wallpaper related info in |info|.
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
                                  const base::Value& info_dict) {
@@ -814,38 +835,6 @@ base::FilePath WallpaperControllerImpl::GetCustomWallpaperDir(
     const std::string& sub_dir) {
   DCHECK(!GlobalChromeOSCustomWallpapersDir().empty());
   return GlobalChromeOSCustomWallpapersDir().Append(sub_dir);
-}
-
-// static
-void WallpaperControllerImpl::SetWallpaperFromPath(
-    const AccountId& account_id,
-    const WallpaperInfo& info,
-    const base::FilePath& wallpaper_path,
-    bool show_wallpaper,
-    const scoped_refptr<base::SingleThreadTaskRunner>& reply_task_runner,
-    base::WeakPtr<WallpaperControllerImpl> weak_ptr) {
-  base::FilePath valid_path = wallpaper_path;
-  if (!base::PathExists(valid_path)) {
-    // Falls back to the original file if the file with correct resolution does
-    // not exist. This may happen when the original custom wallpaper is small or
-    // browser shutdown before resized wallpaper saved.
-    valid_path =
-        GetCustomWallpaperDir(kOriginalWallpaperSubDir).Append(info.location);
-  }
-
-  if (!base::PathExists(valid_path)) {
-    LOG(ERROR) << "The path " << valid_path.value()
-               << " doesn't exist. Falls back to default wallpaper.";
-    reply_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WallpaperControllerImpl::SetDefaultWallpaperImpl,
-                       weak_ptr, account_id, show_wallpaper));
-  } else {
-    reply_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WallpaperControllerImpl::StartDecodeFromPath, weak_ptr,
-                       account_id, valid_path, info, show_wallpaper));
-  }
 }
 
 SkColor WallpaperControllerImpl::GetProminentColor(
@@ -1121,9 +1110,15 @@ void WallpaperControllerImpl::AddFirstWallpaperAnimationEndCallback(
 
 void WallpaperControllerImpl::StartDecodeFromPath(
     const AccountId& account_id,
-    const base::FilePath& wallpaper_path,
     const WallpaperInfo& info,
-    bool show_wallpaper) {
+    bool show_wallpaper,
+    const base::FilePath& wallpaper_path) {
+  if (wallpaper_path.empty()) {
+    // Fallback to default if the path is empty.
+    SetDefaultWallpaperImpl(account_id, show_wallpaper);
+    return;
+  }
+
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
@@ -1524,12 +1519,12 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
   wallpaper_cache_map_[account_id] =
       CustomWallpaperElement(wallpaper_path, gfx::ImageSkia());
 
-  sequenced_task_runner_->PostTask(
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SetWallpaperFromPath, account_id, info, wallpaper_path,
-                     /*show_wallpaper=*/true,
-                     base::ThreadTaskRunnerHandle::Get(),
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&PathWithFallback, account_id, info, wallpaper_path),
+      base::BindOnce(&WallpaperControllerImpl::StartDecodeFromPath,
+                     weak_factory_.GetWeakPtr(), account_id, info,
+                     /*show_wallpaper=*/true));
 }
 
 void WallpaperControllerImpl::ShowSigninWallpaper() {

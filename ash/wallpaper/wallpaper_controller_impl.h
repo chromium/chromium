@@ -142,17 +142,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Returns custom wallpaper directory by appending corresponding |sub_dir|.
   static base::FilePath GetCustomWallpaperDir(const std::string& sub_dir);
 
-  // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
-  // original custom wallpaper. When |show_wallpaper| is true, shows the
-  // wallpaper immediately. Must run on wallpaper sequenced worker thread.
-  static void SetWallpaperFromPath(
-      const AccountId& account_id,
-      const WallpaperInfo& info,
-      const base::FilePath& wallpaper_path,
-      bool show_wallpaper,
-      const scoped_refptr<base::SingleThreadTaskRunner>& reply_task_runner,
-      base::WeakPtr<WallpaperControllerImpl> weak_ptr);
-
   // Returns the prominent color based on |color_profile|.
   SkColor GetProminentColor(color_utils::ColorProfile color_profile) const;
 
@@ -247,9 +236,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // A wrapper of |ReadAndDecodeWallpaper| used in |SetWallpaperFromPath|.
   void StartDecodeFromPath(const AccountId& account_id,
-                           const base::FilePath& wallpaper_path,
                            const WallpaperInfo& info,
-                           bool show_wallpaper);
+                           bool show_wallpaper,
+                           const base::FilePath& wallpaper_path);
 
   // WallpaperController:
   void SetClient(WallpaperControllerClient* client) override;

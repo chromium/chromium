@@ -55,6 +55,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -1342,6 +1343,86 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   controller_->ShowUserWallpaper(account_id_1);
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+}
+
+// Simulates the scenario where the wallpaper are not yet resized and only the
+// original size image is available.
+TEST_P(WallpaperControllerTest, ShowUserWallpaper_OriginalFallback) {
+  SetBypassDecode();
+  CreateDefaultWallpapers();
+
+  // Simulate the login screen.
+  ClearLogin();
+
+  // Set a wallpaper.
+  CreateAndSaveWallpapers(account_id_1);
+  RunAllTasksUntilIdle();
+
+  // Verify the wallpaper was set.
+  WallpaperInfo wallpaper_info;
+  ASSERT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+  ASSERT_EQ(WallpaperType::kCustomized, wallpaper_info.type);
+  ASSERT_EQ("user1@test.com-hash/user1@test.com-file", wallpaper_info.location);
+
+  // Move the wallpaper file to the original folder.
+  base::FilePath saved_wallpaper = custom_wallpaper_dir_.GetPath().Append(
+      "small/user1@test.com-hash/user1@test.com-file");
+  ASSERT_TRUE(base::PathExists(saved_wallpaper));
+  base::CreateDirectory(
+      WallpaperControllerImpl::GetCustomWallpaperDir("original")
+          .Append("user1@test.com-hash"));
+  ASSERT_TRUE(base::PathExists(
+      WallpaperControllerImpl::GetCustomWallpaperDir("original")));
+  ASSERT_TRUE(
+      base::Move(saved_wallpaper,
+                 WallpaperControllerImpl::GetCustomWallpaperDir("original")
+                     .Append(wallpaper_info.location)));
+  ASSERT_FALSE(base::PathExists(saved_wallpaper));
+  ClearDecodeFilePaths();
+
+  // Show wallpaper
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+
+  // Verify the wallpaper was found in the original folder.
+  EXPECT_FALSE(GetDecodeFilePaths().empty());
+  EXPECT_THAT(
+      GetDecodeFilePaths().back().value(),
+      testing::EndsWith("original/user1@test.com-hash/user1@test.com-file"));
+}
+
+// Simulates a missing wallpaper due (possibly) an outdated preference. In this
+// situation, we fallback to the default.
+TEST_P(WallpaperControllerTest, ShowUserWallpaper_MissingFile) {
+  CreateDefaultWallpapers();
+
+  // Simulate the login screen.
+  ClearLogin();
+
+  // Set a wallpaper.
+  CreateAndSaveWallpapers(account_id_1);
+  RunAllTasksUntilIdle();
+
+  // Verify the wallpaper was set.
+  WallpaperInfo wallpaper_info;
+  ASSERT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+  ASSERT_EQ(WallpaperType::kCustomized, wallpaper_info.type);
+  ASSERT_EQ("user1@test.com-hash/user1@test.com-file", wallpaper_info.location);
+
+  // Delete wallpaper file.
+  EXPECT_TRUE(base::DeleteFile(
+      user_data_dir_.GetPath().Append(wallpaper_info.location)));
+  ClearDecodeFilePaths();
+
+  // Show wallpaper
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+
+  // Verify the default wallpaper was used because the stored wallpaper was
+  // missing.
+  EXPECT_FALSE(GetDecodeFilePaths().empty());
+  EXPECT_THAT(GetDecodeFilePaths().back().value(),
+              testing::EndsWith(kDefaultSmallWallpaperName));
 }
 
 TEST_P(WallpaperControllerTest, RemovePolicyWallpaperNoOp) {
