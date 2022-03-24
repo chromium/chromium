@@ -252,6 +252,7 @@ ios_builder(
 
 ios_builder(
     name = "ios-m1-simulator",
+    mirrors = ["ci/ios-m1-simulator"],
     os = os.MAC_11,
     cpu = cpu.ARM64,
 )
