@@ -285,16 +285,26 @@ constexpr MessageInfo kChromeWebAppBadNavigate = {
 constexpr int kChromeExtensionIdIndices[] = {2, -1};
 constexpr MessageInfo kChromeExtensionId = {kChromeExtensionIdIndices, nullptr};
 
+// Proto Message: SiteInstanceGroup
+constexpr int kSiteInstanceGroupIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo const* kSiteInstanceGroupComplexMessages[] = {
+    nullptr, nullptr, &kRenderProcessHost};
+constexpr MessageInfo kSiteInstanceGroup = {kSiteInstanceGroupIndices,
+                                            kSiteInstanceGroupComplexMessages};
+
 // Proto Message: SiteInstance
-constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, -1};
-constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices, nullptr};
+constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
+constexpr MessageInfo const* kSiteInstanceComplexMessages[] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &kSiteInstanceGroup};
+constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices,
+                                       kSiteInstanceComplexMessages};
 
 // Proto Message: RenderViewHost
 constexpr int kRenderViewHostIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kRenderViewHost = {kRenderViewHostIndices, nullptr};
 
 // Proto Message: RenderFrameProxyHost
-constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, 6, -1};
 constexpr MessageInfo kRenderFrameProxyHost = {kRenderFrameProxyHostIndices,
                                                nullptr};
 
@@ -333,7 +343,7 @@ constexpr int kTrackEventIndices[] = {
     33,   34,   35,   36,   38,   39,   40,   41,   42,   43,   1001,
     1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012,
     1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1023, 1024,
-    1025, 1031, 1032, 1033, 1036, -1};
+    1025, 1031, 1032, 1033, 1034, 1036, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -394,6 +404,7 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kRendererMainThreadTaskExecution,
     &kEventLatency,
     &kProcessSingleton,
+    &kSiteInstanceGroup,
     nullptr};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
