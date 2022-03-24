@@ -771,10 +771,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
       .Times(1);
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<content::NavigationController>(
-          &contents->GetController()));
+  content::LoadStopObserver load_stop_observer(contents);
   // Run javascript function in the page which starts a timer to load the
   // malware image, and also starts a renderer-initiated top-level navigation to
   // a site that does not respond.  Should show interstitial and have first page
@@ -822,10 +819,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* rfh = contents->GetMainFrame();
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<content::NavigationController>(
-          &contents->GetController()));
+  content::LoadStopObserver load_stop_observer(contents);
   // Start a browser initiated top-level navigation to a site that does not
   // respond.
   ui_test_utils::NavigateToURLWithDisposition(

@@ -57,8 +57,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -538,9 +536,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
                        "document.body.appendChild(frame);";
   {
     TestFailProvisionalLoadObserver fail_observer(wc);
-    content::WindowedNotificationObserver load_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&wc->GetController()));
+    content::LoadStopObserver load_observer(wc);
     wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                                   base::NullCallback());
     load_observer.Wait();
@@ -559,9 +555,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
            "frame.id = 'target_frame';"
            "document.body.appendChild(frame);";
   {
-    content::WindowedNotificationObserver load_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&wc->GetController()));
+    content::LoadStopObserver load_observer(wc);
     wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                                   base::NullCallback());
     load_observer.Wait();
@@ -571,9 +565,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
            "f.src = '" + fail_url.spec() + "';";
   {
     TestFailProvisionalLoadObserver fail_observer(wc);
-    content::WindowedNotificationObserver load_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&wc->GetController()));
+    content::LoadStopObserver load_observer(wc);
     wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                                   base::NullCallback());
     load_observer.Wait();

@@ -443,9 +443,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   content::TestNavigationObserver block_observer(web_contents);
   block_observer.Wait();
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
   GoBack(web_contents);
   observer.Wait();
 
@@ -538,9 +536,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
 
   // Set the host as allowed.
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);

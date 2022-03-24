@@ -17,9 +17,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -123,10 +120,7 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
         !tab->IsLoading())
       return;
 
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<content::NavigationController>(controller));
-    observer.Wait();
+    content::LoadStopObserver(tab).Wait();
   }
 
   void WaitForAndVerifyThumbnail(Browser* browser, int tab_index) {

@@ -492,13 +492,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   content::RunAllPendingInMessageLoop();
 
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<content::NavigationController>(
-            &browser()
-                 ->tab_strip_model()
-                 ->GetActiveWebContents()
-                 ->GetController()));
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -511,13 +506,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<content::NavigationController>(
-            &browser()
-                 ->tab_strip_model()
-                 ->GetActiveWebContents()
-                 ->GetController()));
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -542,13 +532,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusOnReloadCrashedTab) {
       browser(), embedded_test_server()->GetURL(kSimplePage)));
   content::CrashTab(browser()->tab_strip_model()->GetActiveWebContents());
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<content::NavigationController>(
-            &browser()
-                 ->tab_strip_model()
-                 ->GetActiveWebContents()
-                 ->GetController()));
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }

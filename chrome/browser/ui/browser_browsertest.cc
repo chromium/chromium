@@ -97,8 +97,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -570,9 +568,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ClearPendingOnFailUnlessNTP) {
   // sticks around so that the user can edit it.
   GURL abort_url(embedded_test_server()->GetURL("/nocontent"));
   {
-    content::WindowedNotificationObserver stop_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&web_contents->GetController()));
+    content::LoadStopObserver stop_observer(web_contents);
     browser()->OpenURL(OpenURLParams(abort_url, Referrer(),
                                      WindowOpenDisposition::CURRENT_TAB,
                                      ui::PAGE_TRANSITION_TYPED, false));
@@ -588,9 +584,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ClearPendingOnFailUnlessNTP) {
 
   // Now navigating to a 204 URL should clear the pending entry.
   {
-    content::WindowedNotificationObserver stop_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&web_contents->GetController()));
+    content::LoadStopObserver stop_observer(web_contents);
     browser()->OpenURL(OpenURLParams(abort_url, Referrer(),
                                      WindowOpenDisposition::CURRENT_TAB,
                                      ui::PAGE_TRANSITION_TYPED, false));
@@ -1658,23 +1652,15 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ForwardDisabledOnForward) {
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File))));
 
-  content::WindowedNotificationObserver back_nav_load_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(&browser()
-                                                 ->tab_strip_model()
-                                                 ->GetActiveWebContents()
-                                                 ->GetController()));
+  content::LoadStopObserver back_nav_load_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   back_nav_load_observer.Wait();
   CommandUpdater* command_updater = browser()->command_controller();
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_FORWARD));
 
-  content::WindowedNotificationObserver forward_nav_load_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(&browser()
-                                                 ->tab_strip_model()
-                                                 ->GetActiveWebContents()
-                                                 ->GetController()));
+  content::LoadStopObserver forward_nav_load_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::GoForward(browser(), WindowOpenDisposition::CURRENT_TAB);
   // This check will happen before the navigation completes, since the browser
   // won't process the renderer's response until the Wait() call below.

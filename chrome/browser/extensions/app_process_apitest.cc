@@ -21,7 +21,6 @@
 #include "components/embedder_support/switches.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -414,11 +413,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   LOG(INFO) << "Enabling extension.";
   EnableExtension(app->id());
   LOG(INFO) << "Enabling extension - done.";
-  content::WindowedNotificationObserver reload_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver reload_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Reloading.";
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   reload_observer.Wait();
@@ -433,11 +429,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   LOG(INFO) << "Disabling extension.";
   DisableExtension(app->id());
   LOG(INFO) << "Disabling extension - done.";
-  content::WindowedNotificationObserver reload_observer2(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver reload_observer2(
+      browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Reloading.";
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   reload_observer2.Wait();
@@ -481,11 +474,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   LOG(INFO) << "Enabling extension.";
   EnableExtension(app->id());
   LOG(INFO) << "Enabling extension - done.";
-  content::WindowedNotificationObserver js_reload_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver js_reload_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location.reload().";
   ASSERT_TRUE(content::ExecuteScript(contents, "location.reload();"));
   js_reload_observer.Wait();
@@ -497,11 +487,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   LOG(INFO) << "Disabling extension.";
   DisableExtension(app->id());
   LOG(INFO) << "Disabling extension - done.";
-  content::WindowedNotificationObserver js_reload_observer2(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver js_reload_observer2(
+      browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location = location.";
   ASSERT_TRUE(content::ExecuteScript(contents, "location = location;"));
   js_reload_observer2.Wait();
@@ -659,11 +646,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
 
   // Crash the tab and reload it, chrome.app.isInstalled should still be true.
   content::CrashTab(browser()->tab_strip_model()->GetActiveWebContents());
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(

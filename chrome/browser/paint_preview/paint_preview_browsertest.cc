@@ -22,7 +22,6 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -143,10 +142,7 @@ class PaintPreviewBrowserTest
     // if the tab still has a pending navigation.
     auto* web_contents = GetWebContents();
     if (web_contents->IsLoading()) {
-      content::WindowedNotificationObserver load_stop_observer(
-          content::NOTIFICATION_LOAD_STOP,
-          content::Source<content::NavigationController>(
-              &web_contents->GetController()));
+      content::LoadStopObserver load_stop_observer(web_contents);
       load_stop_observer.Wait();
     }
   }

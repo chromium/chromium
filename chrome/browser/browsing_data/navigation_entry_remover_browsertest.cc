@@ -15,8 +15,6 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -64,9 +62,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
   }
 
   void GoBack(content::WebContents* web_contents) {
-    content::WindowedNotificationObserver load_stop_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver load_stop_observer(web_contents);
     web_contents->GetController().GoBack();
     load_stop_observer.Wait();
   }

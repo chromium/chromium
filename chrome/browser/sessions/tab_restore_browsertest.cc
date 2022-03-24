@@ -254,17 +254,15 @@ class TabRestoreTest : public InProcessBrowserTest {
   }
 
   void GoBack(Browser* browser) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser->tab_strip_model()->GetActiveWebContents());
     chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
 
   void GoForward(Browser* browser) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver observer(
+        browser->tab_strip_model()->GetActiveWebContents());
     chrome::GoForward(browser, WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -275,9 +273,7 @@ class TabRestoreTest : public InProcessBrowserTest {
         !tab->IsLoading())
       return;
 
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<content::NavigationController>(controller));
+    content::LoadStopObserver observer(tab);
     observer.Wait();
   }
 
@@ -857,9 +853,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
   // Navigate to another same-site URL.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1);
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(tab);
   static_cast<content::WebContentsDelegate*>(browser())->OpenURLFromTab(
       tab, content::OpenURLParams(http_url2, content::Referrer(),
                                   WindowOpenDisposition::CURRENT_TAB,

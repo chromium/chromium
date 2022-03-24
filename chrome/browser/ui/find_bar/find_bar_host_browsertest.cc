@@ -965,11 +965,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_TRUE(fully_visible);
 
   // Reload and make sure the find window goes away.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
   EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
@@ -1455,9 +1452,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, ActivateLinkNavigatesPage) {
   EXPECT_EQ(ordinal, 1);
 
   // End the find session, click on the link.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(&web_contents->GetController()));
+  content::LoadStopObserver observer(web_contents);
   find_tab_helper->StopFinding(find_in_page::SelectionAction::kActivate);
   observer.Wait();
 }

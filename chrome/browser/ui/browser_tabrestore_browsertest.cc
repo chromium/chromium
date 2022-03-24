@@ -108,10 +108,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
     EXPECT_EQ("about:blank", about_blank_contents->GetURL().spec());
     if (about_blank_contents->IsLoading() ||
         about_blank_contents->GetController().NeedsReload()) {
-      content::WindowedNotificationObserver load_stop_observer(
-          content::NOTIFICATION_LOAD_STOP,
-          content::Source<content::NavigationController>(
-              &about_blank_contents->GetController()));
+      content::LoadStopObserver load_stop_observer(about_blank_contents);
       load_stop_observer.Wait();
     }
   }
@@ -215,10 +212,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
     EXPECT_EQ("about:blank", about_blank_contents->GetURL().spec());
     if (about_blank_contents->IsLoading() ||
         about_blank_contents->GetController().NeedsReload()) {
-      content::WindowedNotificationObserver load_stop_observer(
-          content::NOTIFICATION_LOAD_STOP,
-          content::Source<content::NavigationController>(
-              &about_blank_contents->GetController()));
+      content::LoadStopObserver load_stop_observer(about_blank_contents);
       load_stop_observer.Wait();
     }
   }

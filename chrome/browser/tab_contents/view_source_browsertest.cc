@@ -20,8 +20,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -173,9 +171,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, DISABLED_TestViewSourceReload) {
   GURL url_viewsource(content::kViewSourceScheme + std::string(":") +
                       embedded_test_server()->GetURL(kTestHtml).spec());
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_viewsource));
   observer.Wait();
 
@@ -183,9 +180,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, DISABLED_TestViewSourceReload) {
       content::ExecuteScript(browser()->tab_strip_model()->GetWebContentsAt(0),
                              "window.location.reload();"));
 
-  content::WindowedNotificationObserver observer2(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer2(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
   observer2.Wait();
   ASSERT_TRUE(browser()->tab_strip_model()->GetWebContentsAt(0)->
                   GetController().GetActiveEntry()->IsViewSourceMode());

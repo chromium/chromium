@@ -177,11 +177,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, CrossProcessClientRedirect) {
 
   // Using JavaScript to navigate to app2 page,
   // after the non_app page has finished loading.
-  content::WindowedNotificationObserver observer1(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver observer1(
+      browser()->tab_strip_model()->GetActiveWebContents());
   std::string script = base::StringPrintf(
         "document.location.href=\"%s\";",
         base_url.Resolve("app2/main.html").spec().c_str());
@@ -283,11 +280,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, CookieIsolation) {
   // Check that isolation persists even if the tab crashes and is reloaded.
   chrome::SelectNumberedTab(browser(), 0);
   content::CrashTab(tab0);
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
   EXPECT_TRUE(HasCookie(tab0, "app1=3"));

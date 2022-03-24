@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -473,12 +472,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
 
   extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
   {
-    content::WindowedNotificationObserver notification_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&browser()
-                                                   ->tab_strip_model()
-                                                   ->GetActiveWebContents()
-                                                   ->GetController()));
+    content::LoadStopObserver notification_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     notification_observer.Wait();
   }
