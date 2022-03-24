@@ -118,9 +118,7 @@ class LinkLoader::FinishObserver final : public ResourceFinishObserver {
   Member<Resource> resource_;
 };
 
-LinkLoader::LinkLoader(LinkLoaderClient* client,
-                       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : client_(client) {
+LinkLoader::LinkLoader(LinkLoaderClient* client) : client_(client) {
   DCHECK(client_);
 }
 

@@ -49,7 +49,7 @@ class ResourceClient;
 // prerender.
 class CORE_EXPORT LinkLoader final : public SingleModuleClient {
  public:
-  LinkLoader(LinkLoaderClient*, scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit LinkLoader(LinkLoaderClient*);
   ~LinkLoader() override;
 
   void Abort();

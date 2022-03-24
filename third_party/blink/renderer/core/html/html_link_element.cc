@@ -76,8 +76,7 @@ void ParseUrlsListValue(const AtomicString& value,
 HTMLLinkElement::HTMLLinkElement(Document& document,
                                  const CreateElementFlags flags)
     : HTMLElement(html_names::kLinkTag, document),
-      link_loader_(
-          MakeGarbageCollected<LinkLoader>(this, GetLoadingTaskRunner())),
+      link_loader_(MakeGarbageCollected<LinkLoader>(this)),
       sizes_(MakeGarbageCollected<DOMTokenList>(*this, html_names::kSizesAttr)),
       rel_list_(MakeGarbageCollected<RelList>(this)),
       blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)),
