@@ -100,7 +100,7 @@ declare_args() {
   #   are too expensive to have on by default.
   # - enable_dangling_raw_ptr_checks: enable checking raw_ptr do not become
   #   dangling during their lifetime.
-  put_ref_count_in_previous_slot = false
+  put_ref_count_in_previous_slot = use_backup_ref_ptr
   never_remove_from_brp_pool_blocklist = use_backup_ref_ptr
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
