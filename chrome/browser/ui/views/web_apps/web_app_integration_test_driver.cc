@@ -832,7 +832,6 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(
 
 void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
     const std::string& site_mode) {
-#if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
@@ -859,9 +858,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
     app_banner_manager->WaitForInstallableCheck();
   }
   AfterStateChangeAction();
-#else
-  NOTREACHED() << "Not implemented on Chrome OS.";
-#endif
 }
 
 void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(
