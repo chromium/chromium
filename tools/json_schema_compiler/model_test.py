@@ -202,7 +202,8 @@ class ModelTest(unittest.TestCase):
     self.assertEqual([Platforms.CHROMEOS],
                      self.idl_namespace_chromeos.platforms)
     self.assertEqual(
-        [Platforms.CHROMEOS, Platforms.LINUX, Platforms.MAC, Platforms.WIN],
+        [Platforms.CHROMEOS, Platforms.FUCHSIA, Platforms.LINUX, Platforms.MAC,
+         Platforms.WIN],
         self.idl_namespace_all_platforms.platforms)
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
@@ -231,6 +232,9 @@ class ModelTest(unittest.TestCase):
 
     function_cros = self.function_platforms.functions['function_cros']
     self.assertEqual([Platforms.CHROMEOS], function_cros.platforms)
+
+    function_fuchsia = self.function_platforms.functions['function_fuchsia']
+    self.assertEqual([Platforms.FUCHSIA], function_fuchsia.platforms)
 
   def testPlatformsOnFunctionsJSON(self):
     test_function = self.function_platform_win_linux.functions['test']

@@ -4,7 +4,7 @@
 
 // Tests a variety of basic API definition features.
 
-[platforms=("chromeos", "linux", "mac", "win")]
+[platforms=("chromeos", "fuchsia", "linux", "mac", "win")]
 namespace idl_namespace_all_platforms {
 
 };

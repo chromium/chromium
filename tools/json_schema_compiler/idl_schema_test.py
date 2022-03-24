@@ -191,7 +191,7 @@ class IdlSchemaTest(unittest.TestCase):
   def testAllPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_all_platforms.idl')[0]
     self.assertEqual('idl_namespace_all_platforms', schema['namespace'])
-    expected = ['chromeos', 'linux', 'mac', 'win']
+    expected = ['chromeos', 'fuchsia', 'linux', 'mac', 'win']
     self.assertEqual(expected, schema['platforms'])
 
   def testNonSpecificPlatformsNamespace(self):

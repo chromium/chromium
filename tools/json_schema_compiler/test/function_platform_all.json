@@ -9,7 +9,7 @@
     "functions": [{
       "name": "test",
       "type": "function",
-      "platforms": ["win", "linux", "chromeos"],
+      "platforms": ["chromeos", "fuchsia", "linux", "win"],
       "parameters": []
     }]
   }

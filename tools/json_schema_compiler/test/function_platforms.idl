@@ -13,5 +13,8 @@ namespace function_platforms {
 
     [platforms=("chromeos")]
     static void function_cros();
+
+    [platforms=("fuchsia")]
+    static void function_fuchsia();
   };
 };
