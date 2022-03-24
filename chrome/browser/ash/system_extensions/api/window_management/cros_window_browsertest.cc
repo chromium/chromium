@@ -124,3 +124,59 @@ async function test() {
 
   RunTest(test_code);
 }
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, RepeatSetFullscreen) {
+  const char test_code[] = R"(
+async function test() {
+  let windows = await chromeos.windowManagement.windows();
+  if (windows[0].isFullscreen) {
+    throw new Error("Window started in fullscreen.");
+  }
+
+  windows[0].setFullscreen(false);
+  windows = await chromeos.windowManagement.windows();
+  if (windows[0].isFullscreen) {
+    throw new Error("setFullscreen(false) set window fullscreen");
+  }
+
+  windows[0].setFullscreen(true);
+  windows = await chromeos.windowManagement.windows();
+  if (!windows[0].isFullscreen) {
+    throw new Error("setFullscreen(true) failed");
+  }
+
+  windows[0].setFullscreen(true);
+  windows = await chromeos.windowManagement.windows();
+  if (!windows[0].isFullscreen) {
+    throw new Error("setFullscreen(true) unset window fullscreen");
+  }
+}
+  )";
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, FullscreenFromMinimised) {
+  const char test_code[] = R"(
+async function test() {
+  let windows = await chromeos.windowManagement.windows();
+  if (windows[0].isFullscreen) {
+    throw new Error("Window started in fullscreen.");
+  }
+
+  windows[0].minimize();
+  windows = await chromeos.windowManagement.windows();
+  if (!windows[0].isMinimised || windows[0].isVisible) {
+    throw new Error("minimize() did not minimize window");
+  }
+
+  windows[0].setFullscreen(true);
+  windows = await chromeos.windowManagement.windows();
+  if (!windows[0].isFullscreen || !windows[0].isVisible) {
+    throw new Error("setFullscreen(true) did not make window visible and fs");
+  }
+}
+  )";
+
+  RunTest(test_code);
+}
