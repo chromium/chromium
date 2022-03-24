@@ -95,9 +95,7 @@ void ChromeKioskAppInstaller::MaybeInstallSecondaryApps() {
     return;
 
   if (!AreSecondaryAppsInstalled() && !delegate_->IsNetworkReady()) {
-    RetryWhenNetworkIsAvailable(
-        base::BindOnce(&ChromeKioskAppInstaller::MaybeInstallSecondaryApps,
-                       weak_ptr_factory_.GetWeakPtr()));
+    ReportInstallFailure(InstallResult::kNetworkMissing);
     return;
   }
 
@@ -286,16 +284,10 @@ void ChromeKioskAppInstaller::ReportInstallSuccess() {
 
 void ChromeKioskAppInstaller::ReportInstallFailure(
     ChromeKioskAppInstaller::InstallResult error) {
-  SYSLOG(ERROR) << "App launch failed, error: " << static_cast<int>(error);
+  SYSLOG(ERROR) << "App install failed, error: " << static_cast<int>(error);
   DCHECK_NE(ChromeKioskAppInstaller::InstallResult::kSuccess, error);
 
   std::move(on_ready_callback_).Run(error);
-}
-
-void ChromeKioskAppInstaller::RetryWhenNetworkIsAvailable(
-    base::OnceClosure callback) {
-  DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
-                   std::move(callback));
 }
 
 void ChromeKioskAppInstaller::ObserveActiveInstallations() {

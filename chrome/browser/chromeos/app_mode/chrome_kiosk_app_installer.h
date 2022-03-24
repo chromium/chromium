@@ -63,7 +63,6 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
 
   void ReportInstallSuccess();
   void ReportInstallFailure(InstallResult result);
-  void RetryWhenNetworkIsAvailable(base::OnceClosure callback);
   void ObserveActiveInstallations();
 
   const extensions::Extension* GetPrimaryAppExtension() const;

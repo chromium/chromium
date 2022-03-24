@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -442,6 +443,23 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     if (!external_cache_->SimulateExtensionDownloadFinished(
             app_id, GetExtensionPath(app_id), version)) {
       return AssertionFailure() << " Finish download attempt failed";
+    }
+
+    return AssertionSuccess();
+  }
+
+  [[nodiscard]] AssertionResult PrecachePrimaryApp(const std::string& app_id,
+                                                   const std::string& version) {
+    if (!external_cache_)
+      return AssertionFailure() << "External cache not initialized";
+
+    base::test::TestFuture<const std::string&, bool> future;
+    external_cache_->PutExternalExtension(
+        app_id, base::FilePath(GetExtensionPath(app_id)), version,
+        future.GetCallback());
+
+    if (!std::get<1>(future.Get())) {
+      return AssertionFailure() << "Precaching extension failed";
     }
 
     return AssertionSuccess();
@@ -939,6 +957,126 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
 
   EXPECT_TRUE(kiosk_app_session_initialized_);
+}
+
+TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  primary_app_builder.set_version("1.0");
+  scoped_refptr<const extensions::Extension> primary_app =
+      primary_app_builder.Build();
+
+  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+
+  startup_app_launcher_->Initialize();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_app_launcher_->LaunchApp();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
+            startup_launch_delegate_.launch_state_changes());
+}
+
+TEST_F(StartupAppLauncherTest,
+       OfflineInstallPreCachedExtensionNotOfflineEnabled) {
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  primary_app_builder.set_version("1.0");
+  primary_app_builder.set_offline_enabled(false);
+  scoped_refptr<const extensions::Extension> primary_app =
+      primary_app_builder.Build();
+
+  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+
+  startup_app_launcher_->Initialize();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
+
+  // After install is complete we should realize that the app is not offline
+  // enabled and request a network connection.
+  startup_launch_delegate_.WaitForLaunchStates(
+      {LaunchState::kInitializingNetwork});
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInitializingNetwork}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_launch_delegate_.set_network_ready(true);
+  startup_app_launcher_->ContinueWithNetworkReady();
+
+  ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
+
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_app_launcher_->LaunchApp();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
+            startup_launch_delegate_.launch_state_changes());
+}
+
+TEST_F(StartupAppLauncherTest,
+       OfflineInstallPreCachedExtensionWithSecondaryApps) {
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  primary_app_builder.set_version("1.0");
+  primary_app_builder.set_offline_enabled(true);
+  primary_app_builder.AddSecondaryExtension(kSecondaryAppId);
+
+  TestKioskExtensionBuilder secondary_extension_builder(
+      Manifest::TYPE_PLATFORM_APP, kSecondaryAppId);
+
+  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+
+  startup_app_launcher_->Initialize();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
+
+  // After install is complete we should realize that the app needs to install
+  // secondary apps, so we need to get network set up
+  startup_launch_delegate_.WaitForLaunchStates(
+      {LaunchState::kInitializingNetwork});
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInitializingNetwork}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_launch_delegate_.set_network_ready(true);
+  startup_app_launcher_->ContinueWithNetworkReady();
+
+  ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_TRUE(FinishSecondaryExtensionInstall(secondary_extension_builder));
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+            startup_launch_delegate_.launch_state_changes());
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_app_launcher_->LaunchApp();
+
+  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
+            startup_launch_delegate_.launch_state_changes());
 }
 
 TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {

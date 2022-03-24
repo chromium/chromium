@@ -147,6 +147,16 @@ void StartupAppLauncher::MaybeInitializeNetwork() {
     BeginInstall();
 }
 
+bool StartupAppLauncher::RetryWhenNetworkIsAvailable() {
+  ++launch_attempt_;
+  if (launch_attempt_ < kMaxLaunchAttempt) {
+    state_ = LaunchState::kInitializingNetwork;
+    delegate_->InitializeNetwork();
+    return true;
+  }
+  return false;
+}
+
 void StartupAppLauncher::OnKioskExtensionLoadedInCache(
     const std::string& app_id) {
   OnKioskAppDataLoadStatusChanged(app_id);
@@ -259,8 +269,8 @@ void StartupAppLauncher::OnInstallComplete(
   switch (result) {
     case ChromeKioskAppInstaller::InstallResult::kSuccess:
       state_ = LaunchState::kReadyToLaunch;
-      // Updates to cached primary app crx will be ignored after this point, so
-      // there is no need to observe the kiosk app manager any longer.
+      // Updates to cached primary app crx will be ignored after this point,
+      // so there is no need to observe the kiosk app manager any longer.
       kiosk_app_manager_observation_.Reset();
       delegate_->OnAppPrepared();
       return;
@@ -274,15 +284,8 @@ void StartupAppLauncher::OnInstallComplete(
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       return;
     case ChromeKioskAppInstaller::InstallResult::kNetworkMissing:
-      ++launch_attempt_;
-      if (launch_attempt_ < kMaxLaunchAttempt) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&StartupAppLauncher::MaybeInitializeNetwork,
-                           weak_ptr_factory_.GetWeakPtr()));
-      } else {
+      if (!RetryWhenNetworkIsAvailable())
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-      }
       return;
   }
 }

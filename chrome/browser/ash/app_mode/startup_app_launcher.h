@@ -71,6 +71,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
 
   void MaybeInitializeNetwork();
+  bool RetryWhenNetworkIsAvailable();
   void OnKioskAppDataLoadStatusChanged(const std::string& app_id);
 
   // AppWindowRegistry::Observer:
