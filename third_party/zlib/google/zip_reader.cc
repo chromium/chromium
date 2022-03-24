@@ -59,6 +59,26 @@ std::ostream& operator<<(std::ostream& out, UnzipError error) {
 #undef SWITCH_ERR
 }
 
+bool IsValidFileNameCharacterOnWindows(char16_t c) {
+  if (c < 32)
+    return false;
+
+  switch (c) {
+    case '<':   // Less than
+    case '>':   // Greater than
+    case ':':   // Colon
+    case '"':   // Double quote
+    case '|':   // Vertical bar or pipe
+    case '?':   // Question mark
+    case '*':   // Asterisk
+    case '/':   // Forward slash
+    case '\\':  // Backslash
+      return false;
+  }
+
+  return true;
+}
+
 // A writer delegate that writes to a given string.
 class StringWriterDelegate : public WriterDelegate {
  public:
@@ -210,18 +230,10 @@ bool ZipReader::OpenEntry() {
     return false;
   }
 
-  entry_.path = base::FilePath::FromUTF16Unsafe(path_in_utf16);
+  // Normalize path.
+  Normalize(path_in_utf16);
+
   entry_.original_size = info.uncompressed_size;
-
-  // Directory entries in ZIP have a path ending with "/".
-  entry_.is_directory = base::EndsWith(path_in_utf16, u"/");
-
-  // Check the entry path for directory traversal issues. We consider entry
-  // paths unsafe if they are absolute or if they contain "..". On Windows,
-  // IsAbsolute() returns false for paths starting with "/".
-  entry_.is_unsafe = entry_.path.ReferencesParent() ||
-                     entry_.path.IsAbsolute() ||
-                     base::StartsWith(path_in_utf16, u"/");
 
   // The file content of this entry is encrypted if flag bit 0 is set.
   entry_.is_encrypted = info.flag & 1;
@@ -247,6 +259,73 @@ bool ZipReader::OpenEntry() {
 #endif
 
   return true;
+}
+
+void ZipReader::Normalize(base::StringPiece16 in) {
+  entry_.is_unsafe = true;
+
+  // Directory entries in ZIP have a path ending with "/".
+  entry_.is_directory = base::EndsWith(in, u"/");
+
+  std::u16string normalized_path;
+  if (base::StartsWith(in, u"/")) {
+    normalized_path = u"ROOT";
+    entry_.is_unsafe = false;
+  }
+
+  for (;;) {
+    // Consume initial path separators.
+    const base::StringPiece16::size_type i = in.find_first_not_of(u'/');
+    if (i == base::StringPiece16::npos)
+      break;
+
+    in.remove_prefix(i);
+    DCHECK(!in.empty());
+
+    // Isolate next path component.
+    const base::StringPiece16 part = in.substr(0, in.find_first_of(u'/'));
+    DCHECK(!part.empty());
+
+    in.remove_prefix(part.size());
+
+    if (!normalized_path.empty())
+      normalized_path += u'/';
+
+    if (part == u".") {
+      normalized_path += u"DOT";
+      entry_.is_unsafe = true;
+      continue;
+    }
+
+    if (part == u"..") {
+      normalized_path += u"UP";
+      entry_.is_unsafe = true;
+      continue;
+    }
+
+    // Windows has more restrictions than other systems when it comes to valid
+    // file paths. Replace Windows-invalid characters on all systems for
+    // consistency. In particular, this prevents a path component containing
+    // colon and backslash from being misinterpreted as an absolute path on
+    // Windows.
+    for (const char16_t c : part) {
+      normalized_path += IsValidFileNameCharacterOnWindows(c) ? c : 0xFFFD;
+    }
+
+    entry_.is_unsafe = false;
+  }
+
+  // If the entry is a directory, add the final path separator to the entry
+  // path.
+  if (entry_.is_directory && !normalized_path.empty()) {
+    normalized_path += u'/';
+    entry_.is_unsafe = false;
+  }
+
+  entry_.path = base::FilePath::FromUTF16Unsafe(normalized_path);
+
+  // By construction, we should always get a relative path.
+  DCHECK(!entry_.path.IsAbsolute()) << entry_.path;
 }
 
 bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
@@ -504,12 +583,26 @@ FileWriterDelegate::~FileWriterDelegate() {}
 
 bool FileWriterDelegate::PrepareOutput() {
   DCHECK(file_);
-  const bool ok = file_->IsValid();
-  if (ok) {
-    DCHECK_EQ(file_->GetLength(), 0)
-        << " The output file should be initially empty";
+
+  if (!file_->IsValid()) {
+    LOG(ERROR) << "File is not valid";
+    return false;
   }
-  return ok;
+
+  const int64_t length = file_->GetLength();
+  if (length < 0) {
+    PLOG(ERROR) << "Cannot get length of file handle "
+                << file_->GetPlatformFile();
+    return false;
+  }
+
+  if (length > 0) {
+    PLOG(ERROR) << "File handle " << file_->GetPlatformFile()
+                << " is not empty: Its length is " << length << " bytes";
+    return false;
+  }
+
+  return true;
 }
 
 bool FileWriterDelegate::WriteBytes(const char* data, int num_bytes) {
@@ -553,10 +646,25 @@ bool FilePathWriterDelegate::PrepareOutput() {
 
   owned_file_.Initialize(output_file_path_,
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  PLOG_IF(ERROR, !owned_file_.IsValid())
-      << "Cannot create file " << Redact(output_file_path_) << ": "
-      << base::File::ErrorToString(owned_file_.error_details());
-  return FileWriterDelegate::PrepareOutput();
+  if (!owned_file_.IsValid()) {
+    PLOG(ERROR) << "Cannot create file " << Redact(output_file_path_) << ": "
+                << base::File::ErrorToString(owned_file_.error_details());
+    return false;
+  }
+
+  const int64_t length = owned_file_.GetLength();
+  if (length < 0) {
+    PLOG(ERROR) << "Cannot get length of file " << Redact(output_file_path_);
+    return false;
+  }
+
+  if (length > 0) {
+    PLOG(ERROR) << "File " << Redact(output_file_path_)
+                << " is not empty: Its length is " << length << " bytes";
+    return false;
+  }
+
+  return true;
 }
 
 void FilePathWriterDelegate::OnError() {
