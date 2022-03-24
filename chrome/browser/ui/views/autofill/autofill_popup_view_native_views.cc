@@ -215,6 +215,14 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 #endif
   }
 
+  if (icon_str == "googlePasswordManager") {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    return ImageViewFromVectorIcon(kGooglePasswordManagerIcon);
+#else
+    return ImageViewFromVectorIcon(kKeyIcon);
+#endif
+  }
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon_str == "googlePay" || icon_str == "googlePayDark") {
     return nullptr;

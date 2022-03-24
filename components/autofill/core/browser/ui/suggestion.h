@@ -78,7 +78,8 @@ struct Suggestion {
   // passwords, this icon string shows whether the suggestion originates from
   // local or account store. It is also used on the settings entry for the
   // credit card Autofill popup to indicate if all credit cards are server
-  // cards.
+  // cards. It also holds Google Password Manager icon on the settings entry for
+  // the passwords Autofill popup.
   std::string trailing_icon;
   MatchMode match = PREFIX_MATCH;
   // Whether |value| should be displayed as secondary text.
