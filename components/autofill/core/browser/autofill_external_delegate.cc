@@ -432,7 +432,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestions->back().icon = "googlePay";
 #else
-    suggestions->back().store_indicator_icon =
+    suggestions->back().trailing_icon =
         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
             ? "googlePayDark"
             : "googlePay";

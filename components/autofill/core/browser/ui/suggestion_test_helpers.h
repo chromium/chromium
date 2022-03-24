@@ -87,13 +87,13 @@ SuggestionVectorIconsAre(const EltsAreMatcher& elts_are_matcher) {
                                                          &Suggestion::icon));
 }
 
-// Like SuggestionVectorIdsAre above, but tests the store_indicator_icon.
+// Like SuggestionVectorIdsAre above, but tests the trailing_icon.
 template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorStoreIndicatorIconsAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
       new SuggestionVectorMembersAreMatcher<std::string>(
-          elts_are_matcher, &Suggestion::store_indicator_icon));
+          elts_are_matcher, &Suggestion::trailing_icon));
 }
 
 }  // namespace autofill
