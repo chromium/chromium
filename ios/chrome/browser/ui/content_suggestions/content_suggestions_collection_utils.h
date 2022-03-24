@@ -51,6 +51,9 @@ CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection);
+// Returns the bottom padding for the header. This represents the spacing
+// between the fake omnibox and the content suggestions tiles.
+CGFloat headerBottomPadding();
 // Configure the |searchHintLabel| for the fake omnibox.  |hintLabelContainer|
 // is added to the |searchTapTarget| with autolayout and |searchHintLabel| is
 // added to |hintLabelContainer| with autoresizing.  This is done due to the

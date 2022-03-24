@@ -210,12 +210,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (CGFloat)pinnedOffsetY {
-  CGFloat headerHeight = content_suggestions::heightForLogoHeader(
-      self.logoIsShowing, self.logoVendor.isShowingDoodle, self.promoCanShow,
-      YES, [self topInset], self.traitCollection);
-
   CGFloat offsetY =
-      headerHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
+      [self headerHeight] - ntp_header::kScrolledToTopOmniboxBottomMargin;
   if (IsSplitToolbarMode(self)) {
     offsetY -= ToolbarExpandedHeight(
                    self.traitCollection.preferredContentSizeCategory) +

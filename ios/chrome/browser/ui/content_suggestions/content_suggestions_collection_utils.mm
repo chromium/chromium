@@ -128,16 +128,13 @@ CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection) {
-  CGFloat bottomPadding = ShouldShowReturnToMostRecentTabForStartSurface()
-                              ? kNTPShrunkLogoSearchFieldBottomPadding
-                              : kNTPSearchFieldBottomPadding;
   CGFloat headerHeight =
       doodleTopMargin(toolbarPresent, topInset, traitCollection) +
       doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
       searchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
-      bottomPadding;
+      headerBottomPadding();
   if (!IsRegularXRegularSizeClass(traitCollection)) {
     return headerHeight;
   }
@@ -152,6 +149,12 @@ CGFloat heightForLogoHeader(BOOL logoIsShowing,
   }
 
   return headerHeight;
+}
+
+CGFloat headerBottomPadding() {
+  return ShouldShowReturnToMostRecentTabForStartSurface()
+             ? kNTPShrunkLogoSearchFieldBottomPadding
+             : kNTPSearchFieldBottomPadding;
 }
 
 void configureSearchHintLabel(UILabel* searchHintLabel,

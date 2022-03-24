@@ -142,7 +142,6 @@ source_set("content_suggestions_ui") {
   deps = [
     ":constants",
     ":content_suggestions_constant",
-    ":content_suggestions_ui_util",
     ":feature_flags",
     ":public",
     "resources:content_suggestions_no_image",
@@ -177,7 +176,10 @@ source_set("content_suggestions_ui") {
     "//ios/web/common",
     "//ui/base",
   ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
+  public_deps = [
+    ":content_suggestions_ui_util",
+    "//ios/third_party/material_components_ios",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

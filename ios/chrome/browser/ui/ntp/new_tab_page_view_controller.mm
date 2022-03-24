@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
@@ -728,7 +729,8 @@
 
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.headerController.view.bottomAnchor],
+        constraintEqualToAnchor:self.headerController.view.bottomAnchor
+                       constant:-content_suggestions::headerBottomPadding()],
     [self.collectionView.topAnchor
         constraintEqualToAnchor:[self contentSuggestionsViewController]
                                     .view.bottomAnchor],
@@ -962,7 +964,8 @@
 // the Feed.
 - (CGFloat)offsetWhenScrolledIntoFeed {
   return -(self.headerController.view.frame.size.height -
-           [self stickyOmniboxHeight]);
+           [self stickyOmniboxHeight] -
+           content_suggestions::headerBottomPadding());
 }
 
 // The y-position content offset for when the fake omnibox
