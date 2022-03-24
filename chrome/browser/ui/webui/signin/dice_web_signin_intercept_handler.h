@@ -16,10 +16,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-namespace base {
-class ListValue;
-}
-
 // WebUI message handler for the Dice web signin intercept bubble.
 class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
                                       public signin::IdentityManager::Observer {
@@ -46,10 +42,10 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   const AccountInfo& primary_account();
   const AccountInfo& intercepted_account();
 
-  void HandleAccept(const base::ListValue* args);
-  void HandleCancel(const base::ListValue* args);
-  void HandleGuest(const base::ListValue* args);
-  void HandlePageLoaded(const base::ListValue* args);
+  void HandleAccept(const base::Value::List& args);
+  void HandleCancel(const base::Value::List& args);
+  void HandleGuest(const base::Value::List& args);
+  void HandlePageLoaded(const base::Value::List& args);
 
   // Gets the values sent to javascript.
   base::Value GetAccountInfoValue(const AccountInfo& info);

@@ -40,11 +40,11 @@ ProfileCustomizationHandler::~ProfileCustomizationHandler() = default;
 
 void ProfileCustomizationHandler::RegisterMessages() {
   profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialized",
       base::BindRepeating(&ProfileCustomizationHandler::HandleInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "done", base::BindRepeating(&ProfileCustomizationHandler::HandleDone,
                                   base::Unretained(this)));
 }
@@ -85,17 +85,16 @@ void ProfileCustomizationHandler::OnProfileNameChanged(
 }
 
 void ProfileCustomizationHandler::HandleInitialized(
-    const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
 }
 
-void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetListDeprecated().size());
-  std::u16string profile_name =
-      base::UTF8ToUTF16(args->GetListDeprecated()[0].GetString());
+void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  std::u16string profile_name = base::UTF8ToUTF16(args[0].GetString());
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   DCHECK(!profile_name.empty());

@@ -60,18 +60,18 @@ DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
 DiceWebSigninInterceptHandler::~DiceWebSigninInterceptHandler() = default;
 
 void DiceWebSigninInterceptHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "accept",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleAccept,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancel",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
                                    base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
@@ -115,23 +115,25 @@ const AccountInfo& DiceWebSigninInterceptHandler::intercepted_account() {
   return bubble_parameters_.intercepted_account;
 }
 
-void DiceWebSigninInterceptHandler::HandleAccept(const base::ListValue* args) {
+void DiceWebSigninInterceptHandler::HandleAccept(
+    const base::Value::List& args) {
   if (callback_)
     std::move(callback_).Run(SigninInterceptionUserChoice::kAccept);
 }
 
-void DiceWebSigninInterceptHandler::HandleCancel(const base::ListValue* args) {
+void DiceWebSigninInterceptHandler::HandleCancel(
+    const base::Value::List& args) {
   if (callback_)
     std::move(callback_).Run(SigninInterceptionUserChoice::kDecline);
 }
 
-void DiceWebSigninInterceptHandler::HandleGuest(const base::ListValue* args) {
+void DiceWebSigninInterceptHandler::HandleGuest(const base::Value::List& args) {
   if (callback_)
     std::move(callback_).Run(SigninInterceptionUserChoice::kGuest);
 }
 
 void DiceWebSigninInterceptHandler::HandlePageLoaded(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // Update the account info and the images.
@@ -153,7 +155,8 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   if (primary_account().given_name.empty())
     bubble_parameters_.primary_account.given_name = primary_account().email;
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  DCHECK(!args.empty());
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetInterceptionParametersValue());
 }
 

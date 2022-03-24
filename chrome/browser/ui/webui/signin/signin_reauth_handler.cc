@@ -25,13 +25,13 @@ SigninReauthHandler::SigninReauthHandler(
 SigninReauthHandler::~SigninReauthHandler() = default;
 
 void SigninReauthHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize", base::BindRepeating(&SigninReauthHandler::HandleInitialize,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "confirm", base::BindRepeating(&SigninReauthHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancel", base::BindRepeating(&SigninReauthHandler::HandleCancel,
                                     base::Unretained(this)));
 }
@@ -61,27 +61,25 @@ void SigninReauthHandler::OnGaiaReauthTypeDetermined(
   FireWebUIListener("reauth-type-determined");
 }
 
-void SigninReauthHandler::HandleInitialize(const base::ListValue* args) {
+void SigninReauthHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
 }
 
-void SigninReauthHandler::HandleConfirm(const base::ListValue* args) {
+void SigninReauthHandler::HandleConfirm(const base::Value::List& args) {
   if (controller_)
     controller_->OnReauthConfirmed(BuildConsent(args));
 }
 
-void SigninReauthHandler::HandleCancel(const base::ListValue* args) {
+void SigninReauthHandler::HandleCancel(const base::Value::List& args) {
   if (controller_)
     controller_->OnReauthDismissed();
 }
 
 sync_pb::UserConsentTypes::AccountPasswordsConsent
-SigninReauthHandler::BuildConsent(const base::ListValue* args) const {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  base::Value::ConstListView consent_description =
-      args->GetListDeprecated()[0].GetListDeprecated();
-  const std::string& consent_confirmation =
-      args->GetListDeprecated()[1].GetString();
+SigninReauthHandler::BuildConsent(const base::Value::List& args) const {
+  CHECK_EQ(2U, args.size());
+  base::Value::ConstListView consent_description = args[0].GetListDeprecated();
+  const std::string& consent_confirmation = args[1].GetString();
 
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
