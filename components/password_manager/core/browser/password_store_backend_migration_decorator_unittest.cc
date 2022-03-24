@@ -17,6 +17,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,8 +87,11 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
+  syncer::TestSyncService sync_service;
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
   base::RepeatingClosure sync_status_changed_closure;
+
+  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
 
   // Set up pref to indicate that initial migration is finished.
   prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
@@ -113,11 +117,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
 
-  // Invoke sync callback to simulate a change in sync status. Set expectation
-  // for sync to be turned off.
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
-  sync_status_changed_closure.Run();
+  // Invoke sync callback to simulate unselecting passwords in sync settings.
+  // Set expectation for sync to be turned off.
+  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                   /*types=*/{});
+  sync_service.FireStateChanged();
 
   RunUntilIdle();
 

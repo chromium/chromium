@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
 
@@ -42,6 +43,27 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   ~PasswordStoreBackendMigrationDecorator() override;
 
  private:
+  // Listens to changes in sync settings. Allows to track changes before
+  // they are applied and the sync is running.
+  class SyncObserver : public syncer::SyncServiceObserver {
+   public:
+    explicit SyncObserver(PrefService* prefs);
+
+    // Remembers the initial sync setting to track its changes later.
+    // Should be called after SyncService is initialized.
+    void CachePasswordSyncSettingOnStartup(syncer::SyncService* sync);
+
+   private:
+    // syncer::SyncServiceObserver implementation.
+    void OnStateChanged(syncer::SyncService* sync) override;
+
+    // Pref service.
+    const raw_ptr<PrefService> prefs_ = nullptr;
+
+    // Cached value of the password sync setting.
+    absl::optional<bool> is_password_sync_enabled_;
+  };
+
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -83,6 +105,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   void StartMigration();
 
   // React on sync changes to keep GMS Core local storage up-to-date.
+  // Called when the changed setting is applied.
   // TODO(https://crbug.com/) Remove this method when no longer needed.
   void SyncStatusChanged();
 
@@ -99,6 +122,9 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   const raw_ptr<SyncDelegate> sync_delegate_;
 
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
+
+  // Listener for sync settings changes.
+  SyncObserver sync_observer_;
 
   base::WeakPtrFactory<PasswordStoreBackendMigrationDecorator>
       weak_ptr_factory_{this};

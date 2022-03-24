@@ -9,9 +9,11 @@
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
@@ -32,7 +34,8 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      sync_delegate_(sync_delegate) {
+      sync_delegate_(sync_delegate),
+      sync_observer_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
@@ -42,6 +45,32 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
 
 PasswordStoreBackendMigrationDecorator::
     ~PasswordStoreBackendMigrationDecorator() = default;
+
+PasswordStoreBackendMigrationDecorator::SyncObserver::SyncObserver(
+    PrefService* prefs)
+    : prefs_(prefs) {}
+
+void PasswordStoreBackendMigrationDecorator::SyncObserver::
+    CachePasswordSyncSettingOnStartup(syncer::SyncService* sync) {
+  is_password_sync_enabled_ = sync_util::IsPasswordSyncEnabled(sync);
+}
+
+void PasswordStoreBackendMigrationDecorator::SyncObserver::OnStateChanged(
+    syncer::SyncService* sync) {
+  // Return early if setting didn't change.
+  if (sync_util::IsPasswordSyncEnabled(sync) ==
+      is_password_sync_enabled_.value()) {
+    return;
+  }
+
+  is_password_sync_enabled_ = sync_util::IsPasswordSyncEnabled(sync);
+  if (!is_password_sync_enabled_.value()) {
+    // Clear migration pref to force rerun of initial migration of passwords
+    // from Chrome to GMS Core local storage.
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       0);
+  }
+}
 
 void PasswordStoreBackendMigrationDecorator::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
@@ -194,7 +223,8 @@ void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
 
 void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  NOTIMPLEMENTED();
+  sync_observer_.CachePasswordSyncSettingOnStartup(sync_service);
+  sync_service->AddObserver(&sync_observer_);
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
@@ -206,18 +236,12 @@ void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
   if (!features::RequiresInitialMigrationForUnifiedPasswordManager())
     return;
 
-  if (sync_delegate_->IsSyncingPasswordsEnabled()) {
-    // During initial rollout, local passwords remain untouched. Only the use of
-    // a different local storage requires explicit migration.
-    if (features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
-      // Sync was enabled. Delete all the passwords from GMS Core local storage.
-      android_backend_->ClearAllLocalPasswords();
-    }
-  } else {
-    // Clear migration pref to force rerun of initial migration of passwords
-    // from Chrome to GMS Core local storage.
-    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                       0);
+  // Sync was enabled. Delete all the passwords from GMS Core local storage.
+  // During initial rollout, local passwords remain untouched. Only the use of
+  // a different local storage requires explicit migration.
+  if (sync_delegate_->IsSyncingPasswordsEnabled() &&
+      features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
+    android_backend_->ClearAllLocalPasswords();
   }
 }
 

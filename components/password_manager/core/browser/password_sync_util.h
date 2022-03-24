@@ -48,6 +48,9 @@ bool IsGaiaCredentialPage(const std::string& signon_realm);
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
+// If syncing passwords is enabled in settings.
+bool IsPasswordSyncEnabled(syncer::SyncService* sync_service);
+
 }  // namespace sync_util
 
 }  // namespace password_manager

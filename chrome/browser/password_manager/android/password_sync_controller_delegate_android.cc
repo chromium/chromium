@@ -7,9 +7,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/android_backend_error.h"
-#include "components/sync/base/user_selectable_type.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -23,12 +22,6 @@ std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
   return "PasswordManager.SyncControllerDelegateNotifiesCredentialManager." +
          suffix;
-}
-
-bool IsPasswordSyncEnabled(syncer::SyncService* sync_service) {
-  return sync_service->IsSyncFeatureEnabled() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
 }
 
 }  // namespace
@@ -140,13 +133,13 @@ void PasswordSyncControllerDelegateAndroid::OnStateChanged(
     syncer::SyncService* sync) {
   // Notify credential manager about current account on startup or if
   // password sync setting has changed.
-  if (IsPasswordSyncEnabled(sync) &&
+  if (sync_util::IsPasswordSyncEnabled(sync) &&
       (!credential_manager_sync_setting_.has_value() ||
        credential_manager_sync_setting_ == IsSyncEnabled(false))) {
     bridge_->NotifyCredentialManagerWhenSyncing();
     credential_manager_sync_setting_ = IsSyncEnabled(true);
   }
-  if (!IsPasswordSyncEnabled(sync) &&
+  if (!sync_util::IsPasswordSyncEnabled(sync) &&
       (!credential_manager_sync_setting_.has_value() ||
        credential_manager_sync_setting_ == IsSyncEnabled(true))) {
     bridge_->NotifyCredentialManagerWhenNotSyncing();

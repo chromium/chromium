@@ -96,5 +96,11 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
   return false;
 }
 
+bool IsPasswordSyncEnabled(syncer::SyncService* sync_service) {
+  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
+}
+
 }  // namespace sync_util
 }  // namespace password_manager
