@@ -230,6 +230,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
             mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
+            getPageDelegate().recordNativeAndPoliciesLoadedHistogram();
             mAllowCrashUpload = !mSigninFirstRunCoordinator.isMetricsReportingDisabledByPolicy();
         }
     }

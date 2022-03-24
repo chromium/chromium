@@ -88,6 +88,9 @@ public interface FirstRunPageDelegate {
      */
     void recordFreProgressHistogram(@MobileFreProgress int state);
 
+    /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. **/
+    void recordNativeAndPoliciesLoadedHistogram();
+
     /**
      * The supplier that supplies whether reading policy value is necessary.
      * See {@link PolicyLoadListener} for details.

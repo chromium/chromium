@@ -819,6 +819,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
+        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName);
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
@@ -868,6 +869,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWithChildAccount() {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
+        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         Assert.assertFalse(
@@ -888,6 +890,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
         });
+        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
         onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(isDisplayed()));
         onView(withText(R.string.continue_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
