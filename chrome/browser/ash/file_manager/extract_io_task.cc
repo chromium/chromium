@@ -85,22 +85,17 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
   progress_.state = State::kInProgress;
   progress_callback_.Run(progress_);
-  for (size_t index = 0; index < progress_.sources.size(); ++index) {
-    const EntryStatus& source = progress_.sources[index];
-    const base::FilePath source_file = source.url.path().BaseName();
-    // TODO(crbug.com/953256) Perform this check only once.
-    if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
+  if (!chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
+    progress_.state = State::kError;
+    Complete();
+  } else {
+    for (size_t index = 0; index < progress_.sources.size(); ++index) {
+      const EntryStatus& source = progress_.sources[index];
+      const base::FilePath source_file = source.url.path().BaseName();
       util::GenerateUnusedFilename(
           parent_folder_, source_file.RemoveExtension(), file_system_context_,
           base::BindOnce(&ExtractIOTask::ExtractArchive,
                          weak_ptr_factory_.GetWeakPtr(), index));
-    } else {
-      progress_.state = State::kError;
-      // We won't get a callback so reduce the count and maybe finalise.
-      DCHECK_GT(extractCount_, 0);
-      if (--extractCount_ == 0) {
-        Complete();
-      }
     }
   }
 }
