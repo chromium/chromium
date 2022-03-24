@@ -4280,9 +4280,12 @@ if (!is_android) {
 
       use_cfv2 = false
       additional_manifest_fragments = [
+        "//build/config/fuchsia/test/audio_capabilities.test-cmx",
         "//build/config/fuchsia/test/font_capabilities.test-cmx",
         "//build/config/fuchsia/test/jit_capabilities.test-cmx",
         "//build/config/fuchsia/test/network_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+        "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
       ]
 
       # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing

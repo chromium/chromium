@@ -32,8 +32,6 @@
 -All/ManifestUpdateManagerBrowserTest_UpdateDialog.Shortcut*
 -All/MediaEngagementAutoplayBrowserTest.Preloaded*
 -All/MediaEngagementAutoplayBrowserTest.Use*
--All/MediaHistoryBrowserTest.Do*
--All/MediaHistoryBrowserTest.Record*
 -All/NetworkRequestMetricsBrowserTest.Cancel*
 -All/NetworkRequestMetricsBrowserTest.Download/1
 -All/NetworkRequestMetricsBrowserTest.File*
@@ -46,7 +44,6 @@
 -All/PermissionPromptBubbleViewBrowserTest.Invoke*
 -All/PopupBrowserTest.Move*
 -All/RendererEventInjectionTest.TestRootTransform/0
--All/ReportingBrowserTest.Crash*
 -All/SearchPrefetchServiceEnabledBrowserTest.Back*
 -All/TabCapturePerformanceTest.Performance*
 -All/ViewSourceWithSplitCacheEnabledTest.NetworkIsolationKeyReusedForBackNavigation/0
@@ -58,7 +55,6 @@
 -AppSettingsAppTest.All
 -AppWindowApiTest.On*
 -AskGoogleForSuggestionsDialogTest.InvokeUi_default
--AudibleContentsTrackerTest.TestAudioNotifications
 -AuthenticatorDialogTest.Invoke*
 -AuthenticatorDialogViewTest.Invoke*
 -AutofillErrorDialogViewNativeViewsBrowserTest.Invoke*
@@ -272,9 +268,7 @@
 -LargeStickyAdViolationBrowserTest.NoLargeStickyAd_AdInterventionNotTriggered
 -LargeStickyAdViolationBrowserTestWithoutEnforcement.LargeStickyAd_NoAdInterventionTriggered
 -LoadImageBrowserTest.Load*
--LoadingPredictorBrowserTestWithOptimizationGuide.NavigationWithBothLocalPredictionAndOptimizationHint/2
 -LoadingPredictorBrowserTestWithProxy.Prepare*
--LoadingPredictorPrefetchCounterfactualBrowserTest.PrepareForPageLoadWithPredictionForPrefetchHasLocalHint/0
 -LocalCardMigrationBrowserTest.AcceptingDialogAddsLocalCardMigrationStrikes
 -LocalCardMigrationBrowserTest.CardIdentifierString
 -LocalCardMigrationBrowserTest.Clicking*
@@ -297,16 +291,8 @@
 -ManifestUpdateManagerHandleLinksBrowserTest.CheckFindsHandleLinksChange
 -ManifestUpdateManagerIconUpdatingBrowserTest.CheckFindsIconUrlChange
 -ManifestUpdateManagerLaunchHandlerBrowserTest.CheckFindsLaunchHandlerChange
--MediaEngagementBrowserTest.ClearBrowsingHistoryBeforePlayback
--MediaEngagementBrowserTest.Do*
--MediaEngagementBrowserTest.IFrame*
--MediaEngagementBrowserTest.MultipleElements
--MediaEngagementBrowserTest.Record*
--MediaEngagementBrowserTest.Session*
 -MediaEngagementPreloadBrowserTest.EnsureSingletonListIsLoaded
--MediaEngagementSessionRestoreBrowserTest.RestoredSession_Playback_MEI
 -MediaGalleriesInteractiveDialogTest.InvokeUi_DisplayDialog
--MediaHistoryForPrerenderBrowserTest.KeepRecordingMediaSession
 -MyIpAddressProxyScriptBrowserTest.Verify
 -NavigationPredictorBrowserTest.ClickAnchorElement
 -NavigationPredictorBrowserTest.MultipleNavigations
@@ -402,6 +388,7 @@
 -ProfileMainNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.Max*
 -ProfileMainNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.Max*
 -ProfileMainNetworkContext/NetworkContextConfigurationReportingAndNelBrowserTest.Persist*
+-ProfileMenuClickTest_WithUnconsentedPrimaryAccount.ProfileMenuClickTest_WithUnconsentedPrimaryAccount/1
 -ProfileMenuViewExtensionsTest.CloseIPH
 -ProfileNetworkContextServiceBrowsertest.DefaultCacheSize
 -ProfileNetworkContextServiceDiskCacheBrowsertest.DiskCacheLocation
@@ -434,12 +421,12 @@
 -RestartTest.SessionCookies
 -RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.Run*
 -RssLinksFetcherTest.Fetch*
--SSLUITest.TestBrokenHTTPSWithActiveInsecureContent
 -SafeBrowsingNetworkContext/NetworkContextConfigurationBrowserTest.CookiesEnabled/1
 -SafeBrowsingNetworkContext/NetworkContextConfigurationDataPacBrowserTest.Data*
 -SafeBrowsingNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.Http*
 -SafeBrowsingNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.Max*
--SafeBrowsingNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.Max*
+-SafeBrowsingNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-SafeBrowsingNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
 -SafetyTipPageInfoBubbleViewDialogTest.Invoke*
 -SaveCardBubbleControllerImplTest.Invoke*
 -SaveCardBubbleViewsFullFormBrowserTest.AlertAccessibleEvent
@@ -569,7 +556,6 @@
 -WebViewTest.NoPrerenderer
 -WebViewTest.Permissions*
 -WebViewTest.ReloadAfterCrash
--WebViewTest.Shim_TestRemoveWebviewOnExit
 -WebViewTest.TouchpadPinchSyntheticWheelEvents
 -WebViewWithZoomForDSFTest.Shim*
 -WebauthnDialogBrowserTest.Invoke*
