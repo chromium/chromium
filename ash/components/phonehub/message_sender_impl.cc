@@ -110,6 +110,15 @@ void MessageSenderImpl::SendShowNotificationAccessSetupRequest() {
               &request);
 }
 
+void MessageSenderImpl::SendFeatureSetupRequest(bool camera_roll,
+                                                bool notifications) {
+  proto::FeatureSetupRequest request;
+  request.set_camera_roll_setup_requested(camera_roll);
+  request.set_notification_setup_requested(notifications);
+
+  SendMessage(proto::MessageType::FEATURE_SETUP_REQUEST, &request);
+}
+
 void MessageSenderImpl::SendRingDeviceRequest(bool device_ringing_enabled) {
   proto::FindMyDeviceRingStatus ringing_enabled =
       device_ringing_enabled ? proto::FindMyDeviceRingStatus::RINGING

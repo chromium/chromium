@@ -102,7 +102,8 @@ void VerifyPageContentDict(
     bool expected_is_nearby_share_disallowed_by_policy_,
     bool expected_is_phone_hub_apps_access_granted_,
     bool expected_is_camera_roll_file_permission_granted_,
-    bool expected_is_camera_roll_access_status_granted_) {
+    bool expected_is_camera_roll_access_status_granted_,
+    bool expected_is_feature_setup_request_supported_) {
   const base::DictionaryValue* page_content_dict;
   EXPECT_TRUE(value->GetAsDictionary(&page_content_dict));
 
@@ -200,6 +201,10 @@ void VerifyPageContentDict(
 
   EXPECT_THAT(page_content_dict->FindIntKey("cameraRollAccessStatus"),
               Optional(expected_is_camera_roll_access_status_granted_ ? 2 : 1));
+
+  EXPECT_THAT(
+      page_content_dict->FindBoolKey("isPhoneHubFeatureCombinedSetupSupported"),
+      Optional(expected_is_feature_setup_request_supported_));
 }
 
 }  // namespace
@@ -263,6 +268,17 @@ class MultideviceHandlerTest : public testing::Test {
         {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
          chromeos::features::kEchePhoneHubPermissionsOnboarding},
         {});
+  }
+
+  void SetUpHandlerWithEmptyManagers() {
+    handler_.reset();
+    handler_ = std::make_unique<TestMultideviceHandler>(
+        prefs_.get(), fake_multidevice_setup_client_.get(), nullptr, nullptr,
+        nullptr, nullptr, nullptr);
+
+    handler_->set_web_ui(test_web_ui_.get());
+    handler_->RegisterMessages();
+    handler_->AllowJavascript();
   }
 
   void CallGetPageContentData() {
@@ -349,6 +365,26 @@ class MultideviceHandlerTest : public testing::Test {
   void CallCancelAppsSetup() {
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("cancelAppsSetup", &empty_args);
+  }
+
+  void CallAttemptCameraRollSetup(bool has_camera_roll_access_been_granted) {
+    fake_multidevice_feature_access_manager()
+        ->SetCameraRollAccessStatusInternal(
+            has_camera_roll_access_been_granted
+                ? phonehub::MultideviceFeatureAccessManager::AccessStatus::
+                      kAccessGranted
+                : phonehub::MultideviceFeatureAccessManager::AccessStatus::
+                      kAvailableButNotGranted);
+    base::ListValue args;
+    args.Append(/*camera_roll=*/true);
+    args.Append(/*notifications=*/false);
+    test_web_ui()->HandleReceivedMessage("attemptCombinedFeatureSetup", &args);
+  }
+
+  void CallCancelCameraRollSetup() {
+    base::ListValue empty_args;
+    test_web_ui()->HandleReceivedMessage("cancelCombinedFeatureSetup",
+                                         &empty_args);
   }
 
   void SimulateHostStatusUpdate(
@@ -608,7 +644,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   bool IsNotificationAccessSetupOperationInProgress() {
     return fake_multidevice_feature_access_manager()
-        ->IsSetupOperationInProgress();
+        ->IsNotificationSetupOperationInProgress();
   }
 
   void SimulateAppsOptInStatusChange(
@@ -637,12 +673,41 @@ class MultideviceHandlerTest : public testing::Test {
     return fake_apps_access_manager()->IsSetupOperationInProgress();
   }
 
+  void SimulateCameraRollOptInStatusChange(
+      phonehub::CombinedAccessSetupOperation::Status status) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    fake_multidevice_feature_access_manager()->SetCombinedSetupOperationStatus(
+        status);
+
+    bool completed_successfully =
+        status ==
+        phonehub::CombinedAccessSetupOperation::Status::kCompletedSuccessfully;
+    if (completed_successfully)
+      call_data_count_before_call++;
+
+    EXPECT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.onCombinedAccessSetupStatusChanged",
+              call_data.arg1()->GetString());
+    EXPECT_EQ(call_data.arg2()->GetInt(), static_cast<int32_t>(status));
+  }
+
+  bool IsCameraRollAccessSetupOperationInProgress() {
+    return fake_multidevice_feature_access_manager()
+        ->IsCombinedSetupOperationInProgress();
+  }
+
   const multidevice::RemoteDeviceRef test_device_;
 
   bool expected_is_nearby_share_disallowed_by_policy_ = false;
   bool expected_is_phone_hub_apps_access_granted_ = false;
   bool expected_is_camera_roll_file_permission_granted_ = true;
   bool expected_is_camera_roll_access_status_granted_ = false;
+  bool expected_is_feature_setup_request_supported_ = false;
 
  private:
   void VerifyPageContent(const base::Value* value) {
@@ -653,7 +718,8 @@ class MultideviceHandlerTest : public testing::Test {
         expected_is_nearby_share_disallowed_by_policy_,
         expected_is_phone_hub_apps_access_granted_,
         expected_is_camera_roll_file_permission_granted_,
-        expected_is_camera_roll_access_status_granted_);
+        expected_is_camera_roll_access_status_granted_,
+        expected_is_feature_setup_request_supported_);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -683,6 +749,15 @@ class MultideviceHandlerTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(MultideviceHandlerTest, PageContentDataRequestedWithNullManagers) {
+  SetUpHandlerWithEmptyManagers();
+
+  base::Value args(base::Value::Type::LIST);
+  args.Append("handlerFunctionName");
+  test_web_ui()->HandleReceivedMessage("getPageContentData",
+                                       &base::Value::AsListValue(args));
+}
 
 TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {
   using Status = phonehub::NotificationAccessSetupOperation::Status;
@@ -780,6 +855,57 @@ TEST_F(MultideviceHandlerTest, AppsSetupFlow) {
   // If access has already been granted, a setup operation should not occur.
   CallAttemptAppsSetup(/*has_access_been_granted=*/true);
   EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
+}
+
+TEST_F(MultideviceHandlerTest, CameraRollSetupFlow) {
+  using Status = phonehub::CombinedAccessSetupOperation::Status;
+  fake_multidevice_feature_access_manager()
+      ->SetFeatureSetupRequestSupportedInternal(true);
+
+  // Simulate success flow.
+  CallAttemptCameraRollSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(
+      Status::kSentMessageToPhoneAndWaitingForResponse);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kCompletedSuccessfully);
+  EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+
+  // Simulate cancel flow.
+  CallAttemptCameraRollSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  CallCancelCameraRollSetup();
+  EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+
+  // Simulate failure via time-out flow.
+  CallAttemptCameraRollSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kTimedOutConnecting);
+  EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+
+  // Simulate failure via connected then disconnected flow.
+  CallAttemptCameraRollSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsCameraRollAccessSetupOperationInProgress());
+
+  SimulateCameraRollOptInStatusChange(Status::kConnectionDisconnected);
+  EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+
+  // If access has already been granted, a setup operation should not occur.
+  CallAttemptCameraRollSetup(/*has_access_been_granted=*/true);
+  EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {

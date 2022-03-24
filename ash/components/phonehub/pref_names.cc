@@ -65,6 +65,11 @@ const char kScreenLockStatus[] = "cros.phonehub.screen_lock_status";
 // pref stores the vector value associated with Notification::AppMetadata.
 const char kRecentAppsHistory[] = "cros.phonehub.recent_apps_history";
 
+// Whether the phone supports setting up multiple features at the same time
+// using the FeatureSetupRequest.
+const char kFeatureSetupRequestSupported[] =
+    "cros.phonehub.feature_setup_request_supported";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace ash
