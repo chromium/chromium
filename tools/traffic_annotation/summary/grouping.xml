@@ -102,7 +102,9 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="download_recovery_component"/>
     </sender>
     <sender name="ChromeOS Printers Manager">
+      <traffic_annotation unique_id="printing_oauth2_first_token_request"/>
       <traffic_annotation unique_id="printing_oauth2_metadata_request"/>
+      <traffic_annotation unique_id="printing_oauth2_next_token_request"/>
       <traffic_annotation unique_id="printing_oauth2_registration_request"/>
     </sender>
   </group>
