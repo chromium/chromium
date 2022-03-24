@@ -229,6 +229,8 @@ void QueryTraceEvents(trace_analyzer::TraceAnalyzer* analyzer,
       trace_analyzer::Query::EventNameIs(std::string(event_name)) &&
       (trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
+       trace_analyzer::Query::EventPhaseIs(
+           TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_FLOW_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_INSTANT) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE));
