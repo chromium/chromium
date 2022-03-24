@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -22,6 +23,12 @@ static_library("hps") {
     "//chromeos/dbus/hps",
     "//chromeos/dbus/hps:hps_proto",
   ]
+}
+
+ts_library("hps_internals_ts") {
+  root_dir = "."
+  in_files = [ "resources/hps_internals.ts" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }
 
 source_set("unit_tests") {
