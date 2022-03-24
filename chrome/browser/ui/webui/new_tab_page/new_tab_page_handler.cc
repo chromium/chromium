@@ -400,6 +400,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpModulesOrder, true);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
+  registry->RegisterIntegerPref(prefs::kNtpModulesFreShownCount, 0);
+  registry->RegisterTimePref(prefs::kNtpModulesFreFirstShownTime, base::Time());
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -654,8 +656,35 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
 }
 
 void NewTabPageHandler::UpdateModulesFreVisibility() {
-  page_->SetModulesFreVisibility(
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible));
+  const auto ntp_modules_fre_first_shown_time =
+      profile_->GetPrefs()->GetTime(prefs::kNtpModulesFreFirstShownTime);
+  const auto ntp_modules_fre_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesFreShownCount);
+  const auto ntp_modules_fre_visible =
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible);
+
+  // Hide Modular NTP Desktop v1 First Run Experience after 8 impressions or 1
+  // day, whichever comes first.
+  if (ntp_modules_fre_shown_count >= 8 ||
+      (!ntp_modules_fre_first_shown_time.is_null() &&
+       (base::Time::Now() - ntp_modules_fre_first_shown_time) >
+           base::Days(1))) {
+    profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, false);
+    page_->SetModulesFreVisibility(false);
+  } else {
+    page_->SetModulesFreVisibility(ntp_modules_fre_visible);
+  }
+
+  // Count the number of times the user has seen the FRE.
+  if (ntp_modules_fre_visible == true) {
+    // Record time user first sees Modular NTP Desktop v1 First Run Experience
+    if (ntp_modules_fre_shown_count == 0) {
+      profile_->GetPrefs()->SetTime(prefs::kNtpModulesFreFirstShownTime,
+                                    base::Time::Now());
+    }
+    profile_->GetPrefs()->SetInteger(prefs::kNtpModulesFreShownCount,
+                                     ntp_modules_fre_shown_count + 1);
+  }
 }
 
 void NewTabPageHandler::SetModulesFreVisible(bool visible) {
