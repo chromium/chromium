@@ -227,13 +227,30 @@ There are a number of ways to post tasks to a thread pool or task runner.
 Normally you wouldn't have to worry about setting up a threading environment and
 keeping it running, since that is automatically done by Chromium's thread
 classes. However, since the main thread doesn't automatically start off with
-`TaskEnvironment`, there's a bit of extra setup involved. This setup code is
-available in the exercise solution files.
+`TaskEnvironment`, there's a bit of extra setup involved. The following setup
+code should be enough to create the necessary TaskEnvironment.
+Include `testonly=true` flag in the BUILD.gn file, along with
+`"//base/test:test_support"` set as a dependency.
 
 ### Important header files
 ```cpp
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/at_exit.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/command_line.h"
+```
+### Setup code:
+```cpp
+int main(int argc, char* argv[]) {
+  base::AtExitManager exit_manager;
+  base::CommandLine::Init(argc, argv);
+  TestTimeouts::Initialize();
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
+
+  // The rest of your code will go here.
 ```
 
 ### Exercise 3a: Sleep
@@ -241,6 +258,8 @@ available in the exercise solution files.
 Implement the Unix command-line utility `sleep` using only
 a `base::SequencedTaskRunnerHandle` (i.e., without using the `sleep` function
 or `base::PlatformThread::Sleep`).
+Hint: You will need to use `base::RunLoop` to prevent the main function from
+exiting prematurely.
 
 ### Exercise 3b: Integer factorization
 
