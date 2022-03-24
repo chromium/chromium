@@ -493,3 +493,66 @@ testcase.zipExtractCheckContent = async () => {
   await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
 };
+
+/**
+ * Tests that repeated extraction of a ZIP archive generates extra directories.
+ */
+testcase.zipExtractCheckDuplicates = async () => {
+  const entry = ENTRIES.zipArchive;
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Select the file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entry.nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Extract all' menu command.
+  const extract = '[command="#extract-all"]';
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
+      'fakeMouseClick failed');
+
+  const directory = entry.nameText.split('.')[0];
+  let directoryQuery = '#file-list [file-name="' + directory + '"]';
+  // Check: the extract directory should appear.
+  await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Extract all' menu command.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
+      'fakeMouseClick failed');
+
+  directoryQuery = '#file-list [file-name="' + directory + ' (1)"]';
+  // Check: the duplicate named extract directory should appear.
+  await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Double click the duplicate created directory to open it.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseDoubleClick', appId, [directoryQuery]),
+      'fakeMouseDoubleClick failed');
+
+  // Check: File content in the ZIP should appear.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="folder"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
+};
