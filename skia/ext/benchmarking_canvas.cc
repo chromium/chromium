@@ -111,7 +111,7 @@ std::unique_ptr<base::Value> AsValue(const SkRRect& rrect) {
 std::unique_ptr<base::Value> AsValue(const SkMatrix& matrix) {
   std::unique_ptr<base::ListValue> val(new base::ListValue());
   for (int i = 0; i < 9; ++i)
-    val->Append(AsValue(matrix[i]));
+    val->Append(base::Value::FromUniquePtrValue(AsValue(matrix[i])));
 
   return std::move(val);
 }
@@ -154,8 +154,10 @@ std::unique_ptr<base::Value> AsValue(const SkColorFilter& filter) {
   SkScalar color_matrix[20];
   if (filter.asAColorMatrix(color_matrix)) {
     std::unique_ptr<base::ListValue> color_matrix_val(new base::ListValue());
-    for (unsigned i = 0; i < 20; ++i)
-      color_matrix_val->Append(AsValue(color_matrix[i]));
+    for (unsigned i = 0; i < 20; ++i) {
+      color_matrix_val->Append(
+          base::Value::FromUniquePtrValue(AsValue(color_matrix[i])));
+    }
 
     val->SetKey("color_matrix",
                 base::Value::FromUniquePtrValue(std::move(color_matrix_val)));
@@ -322,7 +324,7 @@ std::unique_ptr<base::Value> AsListValue(const T array[], size_t count) {
   std::unique_ptr<base::ListValue> val(new base::ListValue());
 
   for (size_t i = 0; i < count; ++i)
-    val->Append(AsValue(array[i]));
+    val->Append(base::Value::FromUniquePtrValue(AsValue(array[i])));
 
   return std::move(val);
 }
@@ -358,14 +360,15 @@ public:
     base::TimeDelta ticks = base::TimeTicks::Now() - start_ticks_;
     op_record_->SetDouble("cmd_time", ticks.InMillisecondsF());
 
-    canvas_->op_records_.Append(std::move(op_record_));
+    canvas_->op_records_.Append(
+        base::Value::FromUniquePtrValue(std::move(op_record_)));
   }
 
   void addParam(const char name[], std::unique_ptr<base::Value> value) {
     std::unique_ptr<base::DictionaryValue> param(new base::DictionaryValue());
     param->SetKey(name, base::Value::FromUniquePtrValue(std::move(value)));
 
-    op_params_->Append(std::move(param));
+    op_params_->Append(base::Value::FromUniquePtrValue(std::move(param)));
   }
 
   const SkPaint* paint() const { return &filtered_paint_; }
