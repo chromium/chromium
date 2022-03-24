@@ -63,8 +63,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
-  void RecoverEncryptedData(const std::string& old_password) override;
-  void ResyncEncryptedData() override;
+  void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
+                            const std::string& old_password) override;
+  void ResyncEncryptedData(std::unique_ptr<UserContext> user_context) override;
 
  protected:
   ~AuthSessionAuthenticator() override;
@@ -89,13 +90,13 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
 
   // Function that would hash a key inside `context` so that it can be safely
   // passed to cryptohome over DBus.
-  // Hashing uses system salt and optionally key metadata from `reply`.
+  // Hashing uses system salt and optionally key metadata
+  // (`UserKeys` in `context`).
   // As this operation might require getting of system salt, it is an
   // asynchronous operation.
-  using KeyHashingCallback = base::OnceCallback<void(
-      std::unique_ptr<UserContext> context,
-      const user_data_auth::StartAuthSessionReply& reply,
-      ContextCallback continuation)>;
+  using KeyHashingCallback =
+      base::OnceCallback<void(std::unique_ptr<UserContext> context,
+                              ContextCallback continuation)>;
 
   // -------------------------------------------------------------------
   // ---- Various synchronous callbacks that are used to configure  ----
@@ -215,6 +216,35 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
                         std::unique_ptr<UserContext> context,
                         absl::optional<user_data_auth::UnmountReply> reply);
 
+  // Attempts to remove user home directory, and invokes `continuation`
+  // upon success.
+  void RemoveGeneric(ErrorHandlingCallback error_handler,
+                     ContextCallback continuation,
+                     std::unique_ptr<UserContext> context);
+
+  // Internal callback for Remove call.
+  void OnRemoveGeneric(ErrorHandlingCallback error_handler,
+                       ContextCallback continuation,
+                       std::unique_ptr<UserContext> context,
+                       absl::optional<user_data_auth::RemoveReply> reply);
+
+  // Attempts to update user's password and calls `continuation` upon success.
+  // It is assumed that `context` has new password stored as `replacement key`,
+  // and authentication key as a regular `key`.
+  void UpdateCredentialsGeneric(ErrorHandlingCallback error_handler,
+                                ContextCallback continuation,
+                                std::unique_ptr<UserContext> context);
+
+  // Internal callback for UpdateCredentials call.
+  void OnUpdateCredentialsGeneric(
+      ErrorHandlingCallback error_handler,
+      ContextCallback continuation,
+      std::unique_ptr<UserContext> context,
+      absl::optional<user_data_auth::UpdateCredentialReply> reply);
+
+  // Common part of login logic shared by user creation flow and flow when
+  // user have changed password elsewhere and decides to re-create cryptohome.
+  void CompleteLoginImpl(std::unique_ptr<UserContext> user_context);
   void LoginAsKioskImpl(const AccountId& app_account_id,
                         user_manager::UserType user_type,
                         bool force_dircrypto);

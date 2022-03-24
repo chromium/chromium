@@ -95,7 +95,6 @@ user_data_auth::MountRequest ConfigureKioskMount(
 
 void IgnoreHashing(
     std::unique_ptr<UserContext> context,
-    const user_data_auth::StartAuthSessionReply& reply,
     base::OnceCallback<void(std::unique_ptr<UserContext>)> consumer) {
   std::move(consumer).Run(std::move(context));
 }
@@ -112,7 +111,6 @@ void TransformGaiaPasswordWithSalt(
 
 void HashPassword(
     std::unique_ptr<UserContext> context,
-    const user_data_auth::StartAuthSessionReply& reply,
     base::OnceCallback<void(std::unique_ptr<UserContext>)> consumer) {
   if (context->GetKey()->GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN) {
     std::move(consumer).Run(std::move(context));
@@ -140,6 +138,9 @@ AuthSessionAuthenticator::~AuthSessionAuthenticator() = default;
 // Completes online authentication:
 // *  User is likely to be new
 // *  Provided password is assumed to be just verified by online flow
+// This method is also called in case of password change detection if user
+// decides to remove old cryptohome and start anew, which can only happen
+// as a result of prior CompleteLogin call.
 void AuthSessionAuthenticator::CompleteLogin(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(user_context);
@@ -149,7 +150,17 @@ void AuthSessionAuthenticator::CompleteLogin(
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
 
   PrepareForNewAttempt("CompleteLogin", "Regular user after online sign-in");
+  CompleteLoginImpl(std::move(user_context));
+}
 
+// Implementation part, shared by CompleteLogin and ResyncEncryptedData.
+void AuthSessionAuthenticator::CompleteLoginImpl(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
+             user_manager::USER_TYPE_ACTIVE_DIRECTORY);
   // For now we don't support empty passwords:
   if (user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     if (user_context->GetKey()->GetSecret().empty()) {
@@ -612,12 +623,103 @@ void AuthSessionAuthenticator::OnAuthFailure(const AuthFailure& error) {
 }
 
 void AuthSessionAuthenticator::RecoverEncryptedData(
+    std::unique_ptr<UserContext> user_context,
     const std::string& old_password) {
-  NOTIMPLEMENTED();
+  LOGIN_LOG(USER) << "Attempting to update password";
+  VLOG(1) << "AuthSessionAuthenticator::RecoverEncryptedData";
+
+  const cryptohome::KeyDefinition* password_key_def =
+      user_context->GetAuthFactorsData().FindOnlinePasswordKey();
+  DCHECK(password_key_def);
+  const std::string key_label = password_key_def->label;
+
+  if (!user_context->HasReplacementKey()) {
+    // Assume that there was an attempt to use the key, so it is was already
+    // hashed.
+    DCHECK(user_context->GetKey()->GetKeyType() !=
+           Key::KEY_TYPE_PASSWORD_PLAIN);
+    // Make sure that the key has correct label.
+    user_context->GetKey()->SetLabel(key_label);
+    user_context->SaveKeyForReplacement();
+  }
+
+  chromeos::Key auth_key(old_password);
+  auth_key.SetLabel(key_label);
+  user_context->SetKey(auth_key);
+
+  DCHECK(!user_context->GetAuthSessionId().empty());
+
+  // (1) Transform old password key (as a password)
+  // (2) Authenticate AuthSession
+  // (3) Replace key with the one that was validated by online sign-in
+  // (4) Mount directory
+  // (5) (Safe mode) Check ownership
+  // (#) Notify success
+  // (*) Errors are reported as COULD_NOT_MOUNT_CRYPTOHOME
+
+  // Callbacks are created in reverse order:
+
+  // (*)
+  auto error_handler_repeating = base::BindRepeating(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(),
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+  // (#)
+  auto success_notification = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+  // (5)
+  ContextCallback safe_mode_check = base::BindOnce(
+      &AuthSessionAuthenticator::RunSafeModeChecks, weak_factory_.GetWeakPtr(),
+      /*continuation=*/std::move(success_notification));
+  // (4.1)
+  ConfigureMountCallback mount_regular_cfg =
+      base::BindOnce(&ConfigureGenericMount);
+  // (4)
+  ContextCallback mount_existing = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_regular_cfg),
+      /*continuation=*/std::move(safe_mode_check));
+  // (3)
+  ContextCallback replace_key =
+      base::BindOnce(&AuthSessionAuthenticator::UpdateCredentialsGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*continuation=*/std::move(mount_existing));
+
+  // (2.1)
+  ErrorHandlingCallback auth_error_handler =
+      base::BindOnce(&AuthSessionAuthenticator::
+                         ExistingUserPasswordAuthenticationErrorHandling,
+                     weak_factory_.GetWeakPtr(),
+                     /*fallback=*/base::BindOnce(error_handler_repeating),
+                     /*verified_password=*/true);
+  // (2)
+  ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
+      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
+      weak_factory_.GetWeakPtr(),
+      /*error_handler=*/std::move(auth_error_handler),
+      /*key_transformer=*/base::BindOnce(&TransformToWildcardKey),
+      /*continuation=*/std::move(replace_key));
+
+  // (1)
+  HashPassword(std::move(user_context), std::move(existing_user_flow));
 }
 
-void AuthSessionAuthenticator::ResyncEncryptedData() {
-  NOTIMPLEMENTED();
+void AuthSessionAuthenticator::ResyncEncryptedData(
+    std::unique_ptr<UserContext> user_context) {
+  LOGIN_LOG(USER) << "Attempting to re-create cryptohome";
+  VLOG(1) << "AuthSessionAuthenticator::ResyncEncryptedData";
+  auto error_handler =
+      base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
+                     weak_factory_.GetWeakPtr(),
+                     /*default_reason=*/AuthFailure::DATA_REMOVAL_FAILED);
+
+  ContextCallback continuation = base::BindOnce(
+      &AuthSessionAuthenticator::CompleteLoginImpl, weak_factory_.GetWeakPtr());
+
+  RemoveGeneric(std::move(error_handler), std::move(continuation),
+                std::move(user_context));
 }
 
 void AuthSessionAuthenticator::PrepareForNewAttempt(
@@ -790,6 +892,14 @@ void AuthSessionAuthenticator::OnAuthSessionCreatedGeneric(
   CHECK(reply.has_value());
   context->SetAuthSessionId(reply->auth_session_id());
 
+  std::vector<cryptohome::KeyDefinition> key_definitions;
+  for (const auto& [label, key_data] : reply->key_label_data()) {
+    key_definitions.push_back(KeyDataToKeyDefinition(key_data));
+  }
+
+  AuthFactorsData auth_factors_data(std::move(key_definitions));
+  context->SetAuthFactorsData(std::move(auth_factors_data));
+
   ContextCallback consumer;
   if (reply->user_exists()) {
     consumer = std::move(existing_user_flow);
@@ -797,8 +907,7 @@ void AuthSessionAuthenticator::OnAuthSessionCreatedGeneric(
     LOGIN_LOG(EVENT) << "User is new";
     consumer = std::move(new_user_flow);
   }
-  std::move(key_hasher)
-      .Run(std::move(context), reply.value(), std::move(consumer));
+  std::move(key_hasher).Run(std::move(context), std::move(consumer));
 }
 
 void AuthSessionAuthenticator::AuthenticateSessionGeneric(
@@ -948,6 +1057,81 @@ void AuthSessionAuthenticator::OnUnmountGeneric(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "Unmount failed with error" << error;
+    std::move(error_callback).Run(std::move(context), error);
+    return;
+  }
+  CHECK(reply.has_value());
+  std::move(continuation).Run(std::move(context));
+}
+
+void AuthSessionAuthenticator::RemoveGeneric(
+    ErrorHandlingCallback error_handler,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context) {
+  VLOG(1) << "AuthSessionAuthenticator::Remove";
+
+  user_data_auth::RemoveRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  UserDataAuthClient::Get()->Remove(
+      request,
+      base::BindOnce(&AuthSessionAuthenticator::OnRemoveGeneric,
+                     weak_factory_.GetWeakPtr(), std::move(error_handler),
+                     std::move(continuation), std::move(context)));
+}
+
+void AuthSessionAuthenticator::OnRemoveGeneric(
+    ErrorHandlingCallback error_callback,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context,
+    absl::optional<user_data_auth::RemoveReply> reply) {
+  VLOG(1) << "AuthSessionAuthenticator::OnRemove";
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "Removal failed with error " << error;
+    std::move(error_callback).Run(std::move(context), error);
+    return;
+  }
+  CHECK(reply.has_value());
+  // Removing user directory invalidates session.
+  context->ResetAuthSessionId();
+  std::move(continuation).Run(std::move(context));
+}
+
+void AuthSessionAuthenticator::UpdateCredentialsGeneric(
+    ErrorHandlingCallback error_handler,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context) {
+  VLOG(1) << "AuthSessionAuthenticator::UpdateCredentials";
+
+  user_data_auth::UpdateCredentialRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_old_credential_label(context->GetKey()->GetLabel());
+  DCHECK(context->HasReplacementKey());
+  const Key* key = context->GetReplacementKey();
+  CHECK_NE(Key::KEY_TYPE_PASSWORD_PLAIN, key->GetKeyType());
+  cryptohome::KeyDefinitionToKey(
+      cryptohome::KeyDefinition::CreateForPassword(
+          key->GetSecret(), key->GetLabel(), cryptohome::PRIV_DEFAULT),
+      request.mutable_authorization()->mutable_key());
+
+  UserDataAuthClient::Get()->UpdateCredential(
+      request,
+      base::BindOnce(&AuthSessionAuthenticator::OnUpdateCredentialsGeneric,
+                     weak_factory_.GetWeakPtr(), std::move(error_handler),
+                     std::move(continuation), std::move(context)));
+}
+
+void AuthSessionAuthenticator::OnUpdateCredentialsGeneric(
+    ErrorHandlingCallback error_callback,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context,
+    absl::optional<user_data_auth::UpdateCredentialReply> reply) {
+  VLOG(1) << "AuthSessionAuthenticator::OnUpdateCredentials";
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "Update failed with error " << error;
     std::move(error_callback).Run(std::move(context), error);
     return;
   }

@@ -22,6 +22,11 @@ namespace cryptohome {
 std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
     const google::protobuf::RepeatedPtrField<KeyData>& key_data);
 
+// Converts the single key metadata from cryptohome::KeyData> to
+// cryptohome::KeyDefinition format.
+COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
+KeyDefinition KeyDataToKeyDefinition(const KeyData& key_data);
+
 // Creates an AuthorizationRequest from the given secret and label.
 COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
 AuthorizationRequest CreateAuthorizationRequest(const std::string& label,

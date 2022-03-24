@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/components/login/auth/auth_factors_data.h"
 #include "ash/components/login/auth/challenge_response_key.h"
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/auth/saml_password_attributes.h"
@@ -61,6 +62,10 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   // its hashed/transformed representation.
   const Key* GetKey() const;
   Key* GetKey();
+  // In password change scenario this is the key that would replace old Key
+  // used for authentication.
+  const Key* GetReplacementKey() const;
+
   // The plain-text user password. See https://crbug.com/386606.
   const Key* GetPasswordKey() const;
   Key* GetMutablePasswordKey();
@@ -70,6 +75,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   // contain empty keys.
   const std::vector<ChallengeResponseKey>& GetChallengeResponseKeys() const;
   std::vector<ChallengeResponseKey>* GetMutableChallengeResponseKeys();
+
+  const AuthFactorsData& GetAuthFactorsData() const;
 
   const std::string& GetAuthCode() const;
   const std::string& GetRefreshToken() const;
@@ -94,12 +101,25 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   bool CanLockManagedGuestSession() const;
 
   bool HasCredentials() const;
+  bool HasReplacementKey() const;
 
   // If this user is under advanced protection.
   bool IsUnderAdvancedProtection() const;
 
   void SetAccountId(const AccountId& account_id);
   void SetKey(const Key& key);
+
+  // This method is used in key replacement scenario, when user's online
+  // password was changed externally. Upon next online sign-in the new verified
+  // password is collected as Key/PasswordKey. But as cryptohome still has old
+  // key, old password is collected to access it and replace key.
+  //
+  // This method saves existing Key as ReplacementKey. PasswordKey is not
+  // affected, as it contains up-to-date password. As user can attempt to enter
+  // old password several times, this method would not overwrite ReplacementKey
+  // if it exists after previous attempts.
+  void SaveKeyForReplacement();
+
   // Saves the user's plaintext password for possible authentication by system
   // services:
   // - To networks. If the user's OpenNetworkConfiguration policy contains a
@@ -137,12 +157,14 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
       const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
   void SetCanLockManagedGuestSession(bool can_lock_managed_guest_session);
+  void SetAuthFactorsData(AuthFactorsData keys);
   // We need to pull input method used to log in into the user session to make
   // it consistent. This method will remember given input method to be used
   // when session starts.
   void SetLoginInputMethodIdUsed(const std::string& input_method_id);
   const std::string& GetLoginInputMethodIdUsed() const;
   void SetAuthSessionId(const std::string& authsession_id);
+  void ResetAuthSessionId();
   const std::string& GetAuthSessionId() const;
 
   void ClearSecrets();
@@ -151,6 +173,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   AccountId account_id_;
   Key key_;
   Key password_key_;
+  absl::optional<Key> replacement_key_ = absl::nullopt;
+  AuthFactorsData auth_factors_data_;
   std::vector<ChallengeResponseKey> challenge_response_keys_;
   std::string auth_code_;
   std::string refresh_token_;

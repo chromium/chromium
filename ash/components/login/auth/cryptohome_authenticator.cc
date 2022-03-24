@@ -658,10 +658,12 @@ void CryptohomeAuthenticator::MigrateKey(const UserContext& user_context,
                                          const std::string& old_password) {
   current_state_ = std::make_unique<AuthAttemptState>(
       std::make_unique<UserContext>(user_context));
-  RecoverEncryptedData(old_password);
+  RecoverEncryptedData(std::make_unique<UserContext>(user_context),
+                       old_password);
 }
 
 void CryptohomeAuthenticator::RecoverEncryptedData(
+    std::unique_ptr<UserContext> user_context,
     const std::string& old_password) {
   migrate_attempted_ = true;
   current_state_->ResetCryptohomeStatus();
@@ -678,7 +680,8 @@ void CryptohomeAuthenticator::RemoveEncryptedData() {
                                 scoped_refptr<CryptohomeAuthenticator>(this)));
 }
 
-void CryptohomeAuthenticator::ResyncEncryptedData() {
+void CryptohomeAuthenticator::ResyncEncryptedData(
+    std::unique_ptr<UserContext> user_context) {
   resync_attempted_ = true;
   current_state_->ResetCryptohomeStatus();
   task_runner_->PostTask(

@@ -95,6 +95,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       AuthenticateAuthSessionCallback callback) override;
   void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
                       AddCredentialsCallback callback) override;
+  void UpdateCredential(
+      const ::user_data_auth::UpdateCredentialRequest& request,
+      UpdateCredentialCallback callback) override;
   void PrepareGuestVault(
       const ::user_data_auth::PrepareGuestVaultRequest& request,
       PrepareGuestVaultCallback callback) override;

@@ -692,7 +692,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataResync) {
   state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->ResyncEncryptedData();
+  auth_->ResyncEncryptedData(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -705,7 +705,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveResyncFail) {
 
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->ResyncEncryptedData();
+  auth_->ResyncEncryptedData(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -736,7 +736,8 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataRecover) {
   state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->RecoverEncryptedData(std::string());
+  auth_->RecoverEncryptedData(std::make_unique<UserContext>(user_context_),
+                              std::string());
   run_loop_.Run();
 }
 
@@ -747,7 +748,8 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataRecoverButFail) {
 
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->RecoverEncryptedData(std::string());
+  auth_->RecoverEncryptedData(std::make_unique<UserContext>(user_context_),
+                              std::string());
   run_loop_.Run();
 }
 

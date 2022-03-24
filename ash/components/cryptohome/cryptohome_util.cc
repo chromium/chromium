@@ -75,79 +75,66 @@ void KeyDefProviderDataToKeyProviderDataEntry(
 
 }  // namespace
 
+KeyDefinition KeyDataToKeyDefinition(const KeyData& key_data) {
+  CHECK(key_data.has_type());
+  KeyDefinition result;
+  // Extract |type|, |label| and |revision|.
+  switch (key_data.type()) {
+    case KeyData::KEY_TYPE_PASSWORD:
+      result.type = KeyDefinition::TYPE_PASSWORD;
+      break;
+    case KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
+      result.type = KeyDefinition::TYPE_CHALLENGE_RESPONSE;
+      break;
+    case KeyData::KEY_TYPE_FINGERPRINT:
+      // KEY_TYPE_FINGERPRINT means the key is a request for fingerprint auth
+      // and does not really carry any auth information. KEY_TYPE_FINGERPRINT
+      // is not expected to be used in GetKeyData.
+      NOTREACHED();
+      break;
+    case KeyData::KEY_TYPE_KIOSK:
+      result.type = KeyDefinition::TYPE_PUBLIC_MOUNT;
+      break;
+  }
+  result.label = key_data.label();
+  result.revision = key_data.revision();
+
+  // Extract |privileges|.
+  const KeyPrivileges& privileges = key_data.privileges();
+  if (privileges.add())
+    result.privileges |= PRIV_ADD;
+  if (privileges.remove())
+    result.privileges |= PRIV_REMOVE;
+  if (privileges.update())
+    result.privileges |= PRIV_MIGRATE;
+
+  // Extract |policy|.
+  result.policy.low_entropy_credential =
+      key_data.policy().low_entropy_credential();
+  result.policy.auth_locked = key_data.policy().auth_locked();
+
+  // Extract |provider_data|.
+  for (auto& provider_datum : key_data.provider_data().entry()) {
+    // We have either of two
+    DCHECK_NE(provider_datum.has_number(), provider_datum.has_bytes());
+
+    if (provider_datum.has_number()) {
+      result.provider_data.push_back(KeyDefinition::ProviderData(
+          provider_datum.name(), provider_datum.number()));
+    } else {
+      result.provider_data.push_back(KeyDefinition::ProviderData(
+          provider_datum.name(), provider_datum.bytes()));
+    }
+  }
+  return result;
+}
+
 std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
     const RepeatedPtrField<KeyData>& key_data) {
   std::vector<KeyDefinition> key_definitions;
   for (RepeatedPtrField<KeyData>::const_iterator it = key_data.begin();
        it != key_data.end(); ++it) {
-    // Extract |type|, |label| and |revision|.
-    KeyDefinition key_definition;
-    CHECK(it->has_type());
-    switch (it->type()) {
-      case KeyData::KEY_TYPE_PASSWORD:
-        key_definition.type = KeyDefinition::TYPE_PASSWORD;
-        break;
-      case KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
-        key_definition.type = KeyDefinition::TYPE_CHALLENGE_RESPONSE;
-        break;
-      case KeyData::KEY_TYPE_FINGERPRINT:
-        // KEY_TYPE_FINGERPRINT means the key is a request for fingerprint auth
-        // and does not really carry any auth information. KEY_TYPE_FINGERPRINT
-        // is not expected to be used in GetKeyData.
-        NOTREACHED();
-        break;
-      case KeyData::KEY_TYPE_KIOSK:
-        key_definition.type = KeyDefinition::TYPE_PUBLIC_MOUNT;
-        break;
-    }
-    key_definition.label = it->label();
-    key_definition.revision = it->revision();
-
-    // Extract |privileges|.
-    const KeyPrivileges& privileges = it->privileges();
-    if (privileges.add())
-      key_definition.privileges |= PRIV_ADD;
-    if (privileges.remove())
-      key_definition.privileges |= PRIV_REMOVE;
-    if (privileges.update())
-      key_definition.privileges |= PRIV_MIGRATE;
-
-    // Extract |policy|.
-    key_definition.policy.low_entropy_credential =
-        it->policy().low_entropy_credential();
-    key_definition.policy.auth_locked = it->policy().auth_locked();
-
-    // Extract |provider_data|.
-    for (RepeatedPtrField<KeyProviderData::Entry>::const_iterator
-             provider_data_it = it->provider_data().entry().begin();
-         provider_data_it != it->provider_data().entry().end();
-         ++provider_data_it) {
-      // Extract |name|.
-      key_definition.provider_data.push_back(
-          KeyDefinition::ProviderData(provider_data_it->name()));
-      KeyDefinition::ProviderData& provider_data =
-          key_definition.provider_data.back();
-
-      int data_items = 0;
-
-      // Extract |number|.
-      if (provider_data_it->has_number()) {
-        provider_data.number =
-            std::make_unique<int64_t>(provider_data_it->number());
-        ++data_items;
-      }
-
-      // Extract |bytes|.
-      if (provider_data_it->has_bytes()) {
-        provider_data.bytes =
-            std::make_unique<std::string>(provider_data_it->bytes());
-        ++data_items;
-      }
-
-      DCHECK_EQ(1, data_items);
-    }
-
-    key_definitions.push_back(std::move(key_definition));
+    key_definitions.push_back(KeyDataToKeyDefinition(*it));
   }
   return key_definitions;
 }

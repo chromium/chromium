@@ -70,6 +70,10 @@ template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<AddAuthFactorReply>&);
 template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<UnmountReply>&);
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<RemoveReply>&);
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<UpdateCredentialReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const absl::optional<GetKeyDataReply>& reply) {

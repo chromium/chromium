@@ -49,8 +49,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) StubAuthenticator
   void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& failure) override;
-  void RecoverEncryptedData(const std::string& old_password) override;
-  void ResyncEncryptedData() override;
+  void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
+                            const std::string& old_password) override;
+  void ResyncEncryptedData(std::unique_ptr<UserContext> user_context) override;
 
   void SetExpectedCredentials(const UserContext& user_context);
 

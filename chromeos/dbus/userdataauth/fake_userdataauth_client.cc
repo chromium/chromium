@@ -304,6 +304,26 @@ void FakeUserDataAuthClient::AddCredentials(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeUserDataAuthClient::UpdateCredential(
+    const ::user_data_auth::UpdateCredentialRequest& request,
+    UpdateCredentialCallback callback) {
+  ::user_data_auth::UpdateCredentialReply reply;
+
+  const std::string auth_session_id = request.auth_session_id();
+
+  const auto it = auth_sessions_.find(auth_session_id);
+  if (it == auth_sessions_.end()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  } else if (!it->second.authenticated) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION);
+  } else {
+    reply.set_error(cryptohome_error_);
+  }
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeUserDataAuthClient::PrepareGuestVault(
     const ::user_data_auth::PrepareGuestVaultRequest& request,
     PrepareGuestVaultCallback callback) {

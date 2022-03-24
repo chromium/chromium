@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::AuthenticateAuthSessionReply>;
   using AddCredentialsCallback =
       DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
+  using UpdateCredentialCallback =
+      DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
+
   using PrepareGuestVaultCallback =
       DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
   using PrepareEphemeralVaultCallback =
@@ -209,6 +212,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void AddCredentials(
       const ::user_data_auth::AddCredentialsRequest& request,
       AddCredentialsCallback callback) = 0;
+
+  // Attempts to update credentials in the vault identified/authorized by auth
+  // session.
+  virtual void UpdateCredential(
+      const ::user_data_auth::UpdateCredentialRequest& request,
+      UpdateCredentialCallback callback) = 0;
 
   // This request is intended to happen when a user wants
   // to login to ChromeOS as a guest.

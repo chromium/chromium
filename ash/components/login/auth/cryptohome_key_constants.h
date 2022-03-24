@@ -13,6 +13,9 @@ COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 extern const char kCryptohomeGaiaKeyLabel[];
 
 COMPONENT_EXPORT(ASH_LOGIN_AUTH)
+extern const char kCryptohomeGaiaKeyLegacyLabelPrefix[];
+
+COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 extern const char kCryptohomePinLabel[];
 
 COMPONENT_EXPORT(ASH_LOGIN_AUTH)

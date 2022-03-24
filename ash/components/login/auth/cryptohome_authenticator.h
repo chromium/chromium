@@ -150,8 +150,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) CryptohomeAuthenticator
   // and also call back to the login UI.
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
-  void RecoverEncryptedData(const std::string& old_password) override;
-  void ResyncEncryptedData() override;
+  void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
+                            const std::string& old_password) override;
+  void ResyncEncryptedData(std::unique_ptr<UserContext> user_context) override;
 
   // Called after UnmountEx finishes.
   void OnUnmountEx(absl::optional<user_data_auth::UnmountReply> reply);

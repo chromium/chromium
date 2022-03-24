@@ -139,7 +139,9 @@ void StubAuthenticator::OnAuthFailure(const AuthFailure& failure) {
   consumer_->OnAuthFailure(failure);
 }
 
-void StubAuthenticator::RecoverEncryptedData(const std::string& old_password) {
+void StubAuthenticator::RecoverEncryptedData(
+    std::unique_ptr<UserContext> user_context,
+    const std::string& old_password) {
   if (old_password_ != old_password) {
     if (data_recovery_notifier_)
       data_recovery_notifier_.Run(DataRecoveryStatus::kRecoveryFailed);
@@ -155,7 +157,8 @@ void StubAuthenticator::RecoverEncryptedData(const std::string& old_password) {
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
 }
 
-void StubAuthenticator::ResyncEncryptedData() {
+void StubAuthenticator::ResyncEncryptedData(
+    std::unique_ptr<UserContext> user_context) {
   if (data_recovery_notifier_)
     data_recovery_notifier_.Run(DataRecoveryStatus::kResynced);
   task_runner_->PostTask(

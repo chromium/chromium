@@ -4,6 +4,7 @@
 
 #include "ash/components/login/auth/user_context.h"
 
+#include "ash/components/login/auth/auth_factors_data.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -64,6 +65,10 @@ const Key* UserContext::GetKey() const {
 
 Key* UserContext::GetKey() {
   return &key_;
+}
+
+const Key* UserContext::GetReplacementKey() const {
+  return &replacement_key_.value();
 }
 
 const Key* UserContext::GetPasswordKey() const {
@@ -168,6 +173,10 @@ bool UserContext::HasCredentials() const {
          !auth_code_.empty();
 }
 
+bool UserContext::HasReplacementKey() const {
+  return replacement_key_.has_value();
+}
+
 bool UserContext::IsUnderAdvancedProtection() const {
   return is_under_advanced_protection_;
 }
@@ -178,6 +187,12 @@ void UserContext::SetAccountId(const AccountId& account_id) {
 
 void UserContext::SetKey(const Key& key) {
   key_ = key;
+}
+
+void UserContext::SaveKeyForReplacement() {
+  if (replacement_key_.has_value())
+    return;
+  replacement_key_ = key_;
 }
 
 void UserContext::SetPasswordKey(const Key& key) {
@@ -281,6 +296,18 @@ void UserContext::SetAuthSessionId(const std::string& authsession_id) {
   authsession_id_ = authsession_id;
 }
 
+void UserContext::ResetAuthSessionId() {
+  authsession_id_.clear();
+}
+
+void UserContext::SetAuthFactorsData(AuthFactorsData data) {
+  auth_factors_data_ = std::move(data);
+}
+
+const AuthFactorsData& UserContext::GetAuthFactorsData() const {
+  return auth_factors_data_;
+}
+
 const std::string& UserContext::GetAuthSessionId() const {
   return authsession_id_;
 }
@@ -288,6 +315,7 @@ const std::string& UserContext::GetAuthSessionId() const {
 void UserContext::ClearSecrets() {
   key_.ClearSecret();
   password_key_.ClearSecret();
+  replacement_key_ = absl::nullopt;
   auth_code_.clear();
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();

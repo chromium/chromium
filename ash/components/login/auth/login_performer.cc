@@ -188,12 +188,16 @@ void LoginPerformer::LoginAsWebKioskAccount(
 
 void LoginPerformer::RecoverEncryptedData(const std::string& old_password) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  authenticator_->RecoverEncryptedData(old_password);
+  authenticator_->RecoverEncryptedData(
+      std::make_unique<UserContext>(user_context_), old_password);
+  user_context_.ClearSecrets();
 }
 
 void LoginPerformer::ResyncEncryptedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  authenticator_->ResyncEncryptedData();
+  authenticator_->ResyncEncryptedData(
+      std::make_unique<UserContext>(user_context_));
+  user_context_.ClearSecrets();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +234,7 @@ void LoginPerformer::NotifyPasswordChangeDetected(
     const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+  user_context_ = user_context;
   delegate_->OnPasswordChangeDetected(user_context);
 }
 
