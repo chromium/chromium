@@ -33,9 +33,6 @@ namespace {
 
 DesksTemplatesPresenter* g_instance = nullptr;
 
-// Used to generate unique IDs for desk template launches.
-int32_t g_launch_id = 0;
-
 // Toast names.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
@@ -290,10 +287,6 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   // variables to a local to prevent UAF. See https://crbug.com/1284138.
   base::OnceClosure on_update_ui_closure_for_testing =
       std::move(on_update_ui_closure_for_testing_);
-
-  // Generate a unique ID for this launch. It is used to tell different template
-  // launches apart.
-  entry->set_launch_id(++g_launch_id);
 
   // Launch the windows as specified in the template to a new desk.
   // Calling `CreateAndActivateNewDeskForTemplate` results in exiting overview

@@ -377,8 +377,6 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   // extension. Avoid further uses of this method and create or launch templates
   // by mocking clicks on the system UI.
   void SetTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
-    if (launch_template->launch_id() == 0)
-      launch_template->set_launch_id(1);
     DesksTemplatesClient::Get()->launch_template_for_test_ =
         std::move(launch_template);
   }
@@ -754,7 +752,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
-  desk_template->set_launch_id(1);
 
   // Close the chrome app window. We'll need to verify if it reopens later.
   views::Widget* app_widget =
@@ -774,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
   MockDesksTemplatesAppLaunchHandler* mock_app_launch_handler_ptr =
       mock_app_launch_handler.get();
   ScopedDesksTemplatesAppLaunchHandlerSetter scoped_launch_handler(
-      std::move(mock_app_launch_handler), desk_template->launch_id());
+      std::move(mock_app_launch_handler), /*launch_id=*/1);
 
   EXPECT_CALL(*mock_app_launch_handler_ptr,
               LaunchSystemWebAppOrChromeApp(_, extension_id, _));
@@ -924,7 +921,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   const int launches = 5;
   for (int i = 0; i < launches; i++) {
     auto launch_template = desk_template->Clone();
-    launch_template->set_launch_id(i + 1);
     SetAndLaunchTemplate(std::move(launch_template));
   }
 
