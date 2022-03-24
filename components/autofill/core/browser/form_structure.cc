@@ -692,24 +692,19 @@ void FormStructure::DetermineHeuristicTypes(
   // Then if there are enough active fields, and if we are dealing with either a
   // proper <form> or a <form>-less checkout, run the heuristics and server
   // prediction routines.
+  FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
-        fields_, current_page_language_, is_form_tag_, log_manager);
-    for (const auto& field : fields_) {
-      const auto iter = field_type_map.find(field->global_id());
-      if (iter != field_type_map.end()) {
-        field->set_heuristic_type(iter->second.BestHeuristicType());
-      }
-    }
-  } else if (ShouldRunPromoCodeHeuristics()) {
-    const FieldCandidatesMap field_type_map =
-        FormField::ParseFormFieldsForPromoCodes(fields_, current_page_language_,
+    field_type_map = FormField::ParseFormFields(fields_, current_page_language_,
                                                 is_form_tag_, log_manager);
+  } else if (ShouldRunPromoCodeHeuristics()) {
+    field_type_map = FormField::ParseFormFieldsForPromoCodes(
+        fields_, current_page_language_, is_form_tag_, log_manager);
+  }
+  if (!field_type_map.empty()) {
     for (const auto& field : fields_) {
-      const auto iter = field_type_map.find(field->global_id());
-      if (iter != field_type_map.end()) {
+      auto iter = field_type_map.find(field->global_id());
+      if (iter != field_type_map.end())
         field->set_heuristic_type(iter->second.BestHeuristicType());
-      }
     }
   }
 
