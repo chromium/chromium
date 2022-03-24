@@ -27,9 +27,27 @@ struct AdAuctionData {
 
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
-// https://github.com/shivanigithub/fenced-frame/blob/master/OpaqueSrc.md
+// https://github.com/shivanigithub/fenced-frame/blob/master/explainer/opaque_src.md
 class CONTENT_EXPORT FencedFrameURLMapping {
  public:
+  // The metadata for the shared storage runURLSelectionOperation's budget,
+  // which includes the shared storage's origin and the amount of budget to
+  // charge when a fenced frame that originates from the URN is navigating a top
+  // frame. Before the fenced frame results in a top navigation, this
+  // `SharedStorageBudgetMetadata` will be stored/associated with the URN inside
+  // the `FencedFrameURLMapping`.
+  struct CONTENT_EXPORT SharedStorageBudgetMetadata {
+    url::Origin origin;
+    double budget_to_charge = 0;
+  };
+
+  // The runURLSelectionOperation's url mapping result. It contains the mapped
+  // url and the `SharedStorageBudgetMetadata`.
+  struct CONTENT_EXPORT SharedStorageURNMappingResult {
+    GURL mapped_url;
+    SharedStorageBudgetMetadata metadata;
+  };
+
   // When the result of an ad auction is a main ad URL with a set of ad
   // component URLs (instead of just a single ad URL), a URN that maps to the
   // main ad URL needs to be loaded in a (parent) fenced frame, and then that
@@ -149,16 +167,26 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   void RemoveObserverForURN(const GURL& urn_uuid,
                             MappingResultObserver* observer);
 
-  // Called when the mapping decision is made for `urn_uuid`. On success,
-  // `mapped_url` will be the result url; on failure,`mapped_url` will be
-  // absl::nullopt. Should only be invoked with a `urn_uuid` pending to be
-  // mapped. This method will trigger the observers'
-  // OnFencedFrameURLMappingComplete() method associated with the `urn_uuid`,
-  // unregister those observers, and remove `urn_uuid` from
-  // `pending_urn_uuid_to_url_map_`. If the mapping succeeded, the `urn_uuid`
-  // will be added to `urn_uuid_to_url_map_`.
-  void OnURNMappingResultDetermined(const GURL& urn_uuid,
-                                    const absl::optional<GURL>& mapped_url);
+  // Called when the shared storage mapping decision is made for `urn_uuid`.
+  // Should only be invoked on a `urn_uuid` pending to be mapped. This method
+  // will trigger the observers' OnFencedFrameURLMappingComplete() method
+  // associated with the `urn_uuid`, unregister those observers, and move the
+  // `urn_uuid` from `pending_urn_uuid_to_url_map_` to `urn_uuid_to_url_map_`.
+  void OnSharedStorageURNMappingResultDetermined(
+      const GURL& urn_uuid,
+      const SharedStorageURNMappingResult& mapping_result);
+
+  // Get the `SharedStorageBudgetMetadata` associated with `urn_uuid`, and reset
+  // the current metadata to absl::nullopt. Precondition: `urn_uuid` exists in
+  // `urn_uuid_to_url_map_`.
+  //
+  // This method will be called when a fenced frame is navigating a top frame:
+  // if the fenced frame originates from a URN generated from the shared
+  // storage, then the shared storage origin's budget will be charged. For each
+  // URN, we only need to charge the budget once, thus the value here is
+  // released (i.e. returned and reset).
+  absl::optional<SharedStorageBudgetMetadata>
+  ReleaseSharedStorageBudgetMetadata(const GURL& urn_uuid);
 
   bool HasObserverForTesting(const GURL& urn_uuid,
                              MappingResultObserver* observer);
@@ -172,6 +200,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   struct MapInfo {
     MapInfo();
     explicit MapInfo(const GURL& url);
+    MapInfo(const GURL& url,
+            const SharedStorageBudgetMetadata& shared_storage_budget_metadata);
     MapInfo(const MapInfo&);
     MapInfo(MapInfo&&);
     ~MapInfo();
@@ -185,6 +215,13 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
     // to `mapped_url`.
     absl::optional<AdAuctionData> ad_auction_data;
+
+    // Contains the metadata needed for shared storage budget charging. Will be
+    // initialized to absl::nullopt if the associated URN is not generated from
+    // shared storage; also will be reset to absl::nullopt if the budget has
+    // already been charged for the associated URN.
+    absl::optional<SharedStorageBudgetMetadata> shared_storage_budget_metadata;
+
     // Ad component URLs if `mapped_url` is the result of a FLEDGE auction. When
     // a fenced frame navigates to `mapped_url`, these will be mapped to URNs
     // themselves, and those URNs will be provided to the fenced frame.

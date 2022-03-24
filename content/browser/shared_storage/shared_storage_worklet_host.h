@@ -112,7 +112,6 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
-      const std::vector<GURL>& urls,
       bool success,
       const std::string& error_message,
       uint32_t index);
@@ -163,11 +162,15 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // its keep-alive.
   base::WeakPtr<PageImpl> page_;
 
-  // A set of unresolved URNs. Inside `RunURLSelectionOperationOnWorklet()` a
-  // new URN is generated and is inserted to `unresolved_urns_`. When the
-  // corresponding `OnRunURLSelectionOperationOnWorkletFinished()` is called,
-  // the URN is removed from `unresolved_urns_`.
-  std::set<GURL> unresolved_urns_;
+  // The shared storage owner document's origin.
+  url::Origin shared_storage_origin_;
+
+  // A map of unresolved URNs to the candidate URL vector. Inside
+  // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is
+  // inserted into `unresolved_urns_`. When the corresponding
+  // `OnRunURLSelectionOperationOnWorkletFinished()` is called, the URN is
+  // removed from `unresolved_urns_`.
+  std::map<GURL, std::vector<GURL>> unresolved_urns_;
 
   // The number of unfinished worklet requests, including addModule and
   // runOperation.

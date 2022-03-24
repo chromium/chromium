@@ -95,6 +95,12 @@ FencedFrameURLMapping::MapInfo::MapInfo() = default;
 FencedFrameURLMapping::MapInfo::MapInfo(const GURL& mapped_url)
     : mapped_url(mapped_url) {}
 
+FencedFrameURLMapping::MapInfo::MapInfo(
+    const GURL& mapped_url,
+    const SharedStorageBudgetMetadata& shared_storage_budget_metadata)
+    : mapped_url(mapped_url),
+      shared_storage_budget_metadata(shared_storage_budget_metadata) {}
+
 FencedFrameURLMapping::MapInfo::MapInfo(const MapInfo&) = default;
 FencedFrameURLMapping::MapInfo::MapInfo(MapInfo&&) = default;
 FencedFrameURLMapping::MapInfo::~MapInfo() = default;
@@ -184,27 +190,41 @@ void FencedFrameURLMapping::RemoveObserverForURN(
   it->second.erase(observer_it);
 }
 
-void FencedFrameURLMapping::OnURNMappingResultDetermined(
+void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     const GURL& urn_uuid,
-    const absl::optional<GURL>& mapped_url) {
+    const SharedStorageURNMappingResult& mapping_result) {
   auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(it != pending_urn_uuid_to_url_map_.end());
 
   DCHECK(!IsMapped(urn_uuid));
 
-  if (mapped_url)
-    urn_uuid_to_url_map_.emplace(urn_uuid, mapped_url.value());
+  urn_uuid_to_url_map_.emplace(
+      urn_uuid, MapInfo(mapping_result.mapped_url, mapping_result.metadata));
 
   std::set<raw_ptr<MappingResultObserver>>& observers = it->second;
 
   for (raw_ptr<MappingResultObserver> observer : observers) {
     observer->OnFencedFrameURLMappingComplete(
-        mapped_url,
+        absl::make_optional<GURL>(mapping_result.mapped_url),
         /*ad_auction_data=*/absl::nullopt,
         /*pending_ad_components_map=*/absl::nullopt);
   }
 
   pending_urn_uuid_to_url_map_.erase(it);
+}
+
+absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+FencedFrameURLMapping::ReleaseSharedStorageBudgetMetadata(
+    const GURL& urn_uuid) {
+  auto it = urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(it != urn_uuid_to_url_map_.end());
+
+  absl::optional<SharedStorageBudgetMetadata> metadata =
+      it->second.shared_storage_budget_metadata;
+
+  it->second.shared_storage_budget_metadata.reset();
+
+  return metadata;
 }
 
 bool FencedFrameURLMapping::HasObserverForTesting(

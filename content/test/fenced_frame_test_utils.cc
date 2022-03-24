@@ -23,6 +23,20 @@ FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
   return FrameTreeNode::GloballyFindByID(inner_node_id);
 }
 
+void SimulateSharedStorageURNMappingComplete(
+    FencedFrameURLMapping& fenced_frame_url_mapping,
+    const GURL& urn_uuid,
+    const GURL& mapped_url,
+    const url::Origin& shared_storage_origin,
+    double budget_to_charge) {
+  FencedFrameURLMapping::SharedStorageBudgetMetadata metadata = {
+      .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
+
+  fenced_frame_url_mapping.OnSharedStorageURNMappingResultDetermined(
+      urn_uuid, FencedFrameURLMapping::SharedStorageURNMappingResult{
+                    .mapped_url = mapped_url, .metadata = metadata});
+}
+
 TestFencedFrameURLMappingResultObserver::
     TestFencedFrameURLMappingResultObserver() = default;
 

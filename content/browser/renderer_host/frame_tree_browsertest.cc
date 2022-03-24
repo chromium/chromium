@@ -1084,9 +1084,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
+// Test the scenario where the FF navigation is deferred and then resumed, and
+// the mapped url is a valid one. The navigation is expected to succeed.
 IN_PROC_BROWSER_TEST_P(
     FencedFrameTreeBrowserTest,
-    FencedFrameNavigationWithPendingMappedUUID_MappingSuccess) {
+    FencedFrameNavigationWithPendingMappedUUID_MappingSuccess_ValidURL) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
@@ -1135,7 +1137,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
   // Trigger the mapping to resume the deferred navigation.
-  url_mapping.OnURNMappingResultDetermined(urn_uuid, mapped_url);
+  SimulateSharedStorageURNMappingComplete(
+      url_mapping, urn_uuid, mapped_url,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
@@ -1146,9 +1151,11 @@ IN_PROC_BROWSER_TEST_P(
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 }
 
+// Test the scenario where the FF navigation is deferred and then resumed, and
+// the mapped url is invalid. The navigation is expected to fail.
 IN_PROC_BROWSER_TEST_P(
     FencedFrameTreeBrowserTest,
-    FencedFrameNavigationWithPendingMappedUUID_MappingFailure) {
+    FencedFrameNavigationWithPendingMappedUUID_MappingSuccess_InvalidURL) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
@@ -1172,6 +1179,8 @@ IN_PROC_BROWSER_TEST_P(
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
 
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
+  const GURL mapped_url =
+      https_server()->GetURL("a.test", "/fenced_frames/nonexistent-url.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
 
   TestFrameNavigationObserver observer(
@@ -1195,12 +1204,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
   // Trigger the mapping to resume the deferred navigation.
-  url_mapping.OnURNMappingResultDetermined(urn_uuid, absl::nullopt);
+  SimulateSharedStorageURNMappingComplete(
+      url_mapping, urn_uuid, mapped_url,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
+  // In NavigationRequest::OnResponseStarted(), for fenced frame, it manually
+  // fails the navigation with net::ERR_BLOCKED_BY_RESPONSE.
   observer.Wait();
-  EXPECT_EQ(observer.last_net_error_code(), InvalidUrnError());
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_BLOCKED_BY_RESPONSE);
 }
 
 IN_PROC_BROWSER_TEST_P(

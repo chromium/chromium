@@ -128,36 +128,66 @@ TEST(FencedFrameURLMappingTest, NonExistentUUID) {
   EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
 }
 
-TEST(FencedFrameURLMappingTest, PendingMappedUUID_MappingSuccess) {
+TEST(FencedFrameURLMappingTest, PendingMappedUUID) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  const GURL urn_uuid1 = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  const GURL urn_uuid2 = fenced_frame_url_mapping.GeneratePendingMappedURN();
 
-  TestFencedFrameURLMappingResultObserver observer;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
-  EXPECT_FALSE(observer.mapping_complete_observed());
+  TestFencedFrameURLMappingResultObserver observer1;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid1, &observer1);
+  EXPECT_FALSE(observer1.mapping_complete_observed());
 
-  fenced_frame_url_mapping.OnURNMappingResultDetermined(
-      urn_uuid, GURL("https://foo.com"));
+  TestFencedFrameURLMappingResultObserver observer2;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid2, &observer2);
+  EXPECT_FALSE(observer2.mapping_complete_observed());
 
-  EXPECT_TRUE(observer.mapping_complete_observed());
-  EXPECT_EQ(GURL("https://foo.com"), observer.mapped_url());
-  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
-}
+  url::Origin shared_storage_origin =
+      url::Origin::Create(GURL("https://bar.com"));
+  GURL mapped_url = GURL("https://foo.com");
 
-TEST(FencedFrameURLMappingTest, PendingMappedUUID_MappingFailure) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  // Two SharedStorageBudgetMetadata for the same origin can happen if the same
+  // blink::Document invokes window.sharedStorage.runURLSelectionOperation()
+  // twice. Each call will generate a distinct URN. And if the input urls have
+  // different size, the budget_to_charge (i.e. log(n)) will be also different.
+  SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid1,
+                                          mapped_url, shared_storage_origin,
+                                          /*budget_to_charge=*/2.0);
 
-  TestFencedFrameURLMappingResultObserver observer;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
-  EXPECT_FALSE(observer.mapping_complete_observed());
+  SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid2,
+                                          mapped_url, shared_storage_origin,
+                                          /*budget_to_charge=*/3.0);
 
-  fenced_frame_url_mapping.OnURNMappingResultDetermined(urn_uuid,
-                                                        absl::nullopt);
+  EXPECT_TRUE(observer1.mapping_complete_observed());
+  EXPECT_EQ(mapped_url, observer1.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer1.pending_ad_components_map());
 
-  EXPECT_TRUE(observer.mapping_complete_observed());
-  EXPECT_EQ(absl::nullopt, observer.mapped_url());
-  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
+  EXPECT_TRUE(observer2.mapping_complete_observed());
+  EXPECT_EQ(mapped_url, observer2.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer2.pending_ad_components_map());
+
+  absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+      metadata1_first_retrieval =
+          fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(
+              urn_uuid1);
+
+  EXPECT_TRUE(metadata1_first_retrieval);
+  EXPECT_EQ(metadata1_first_retrieval->origin, shared_storage_origin);
+  EXPECT_DOUBLE_EQ(metadata1_first_retrieval->budget_to_charge, 2.0);
+
+  EXPECT_FALSE(
+      fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(urn_uuid1));
+
+  absl::optional<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+      metadata2_first_retrieval =
+          fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(
+              urn_uuid2);
+
+  EXPECT_TRUE(metadata2_first_retrieval);
+  EXPECT_EQ(metadata2_first_retrieval->origin, shared_storage_origin);
+  EXPECT_DOUBLE_EQ(metadata2_first_retrieval->budget_to_charge, 3.0);
+
+  EXPECT_FALSE(
+      fenced_frame_url_mapping.ReleaseSharedStorageBudgetMetadata(urn_uuid2));
 }
 
 TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
@@ -169,8 +199,12 @@ TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
   EXPECT_FALSE(observer.mapping_complete_observed());
 
   fenced_frame_url_mapping.RemoveObserverForURN(urn_uuid, &observer);
-  fenced_frame_url_mapping.OnURNMappingResultDetermined(
-      urn_uuid, GURL("https://foo.com"));
+
+  SimulateSharedStorageURNMappingComplete(
+      fenced_frame_url_mapping, urn_uuid,
+      /*mapped_url=*/GURL("https://foo.com"),
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(observer.mapping_complete_observed());
 }
@@ -187,8 +221,11 @@ TEST(FencedFrameURLMappingTest, RegisterTwoObservers) {
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer2);
   EXPECT_FALSE(observer2.mapping_complete_observed());
 
-  fenced_frame_url_mapping.OnURNMappingResultDetermined(
-      urn_uuid, GURL("https://foo.com"));
+  SimulateSharedStorageURNMappingComplete(
+      fenced_frame_url_mapping, urn_uuid,
+      /*mapped_url=*/GURL("https://foo.com"),
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
 
   EXPECT_TRUE(observer1.mapping_complete_observed());
   EXPECT_EQ(GURL("https://foo.com"), observer1.mapped_url());

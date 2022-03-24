@@ -19,6 +19,13 @@ class FrameTreeNode;
 //    we're in the MPArch version of fenced frames
 FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node);
 
+void SimulateSharedStorageURNMappingComplete(
+    FencedFrameURLMapping& fenced_frame_url_mapping,
+    const GURL& urn_uuid,
+    const GURL& mapped_url,
+    const url::Origin& shared_storage_origin,
+    double budget_to_charge);
+
 // Tests can use this class to observe and check the URL mapping result.
 class TestFencedFrameURLMappingResultObserver
     : public FencedFrameURLMapping::MappingResultObserver {

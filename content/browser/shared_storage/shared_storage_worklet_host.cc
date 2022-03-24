@@ -18,6 +18,34 @@ namespace {
 
 constexpr base::TimeDelta kKeepAliveTimeout = base::Seconds(2);
 
+using SharedStorageURNMappingResult =
+    FencedFrameURLMapping::SharedStorageURNMappingResult;
+
+using SharedStorageBudgetMetadata =
+    FencedFrameURLMapping::SharedStorageBudgetMetadata;
+
+SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
+    bool url_selection_succeeded,
+    const url::Origin& shared_storage_origin,
+    const std::vector<GURL>& urls,
+    uint32_t index) {
+  DCHECK_GT(urls.size(), 0u);
+  DCHECK_LT(index, urls.size());
+  DCHECK(url_selection_succeeded || index == 0);
+
+  GURL mapped_url = urls[index];
+  double budget_to_charge =
+      (urls.size() > 1u)
+          ? (url_selection_succeeded ? std::log2(urls.size()) : 1.0)
+          : 0.0;
+
+  return SharedStorageURNMappingResult{
+      .mapped_url = mapped_url,
+      .metadata =
+          SharedStorageBudgetMetadata{.origin = shared_storage_origin,
+                                      .budget_to_charge = budget_to_charge}};
+}
+
 }  // namespace
 
 SharedStorageWorkletHost::SharedStorageWorkletHost(
@@ -27,7 +55,9 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       document_service_(document_service.GetWeakPtr()),
       page_(
           static_cast<PageImpl&>(document_service.render_frame_host().GetPage())
-              .GetWeakPtrImpl()) {}
+              .GetWeakPtrImpl()),
+      shared_storage_origin_(
+          document_service.render_frame_host().GetLastCommittedOrigin()) {}
 
 SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   if (!page_)
@@ -35,9 +65,17 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
 
   // If the worklet is destructed and there are still unresolved URNs (i.e. the
   // keep-alive timeout is reached), consider the mapping to be failed.
-  for (const GURL& urn_uuid : unresolved_urns_) {
-    page_->fenced_frame_urls_map().OnURNMappingResultDetermined(urn_uuid,
-                                                                absl::nullopt);
+  auto it = unresolved_urns_.begin();
+  while (it != unresolved_urns_.end()) {
+    const GURL& urn_uuid = it->first;
+    const std::vector<GURL>& urls = it->second;
+
+    page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
+        urn_uuid, CalculateSharedStorageURNMappingResult(
+                      /*url_selection_succeeded=*/false, shared_storage_origin_,
+                      urls, /*index=*/0));
+
+    it = unresolved_urns_.erase(it);
   }
 }
 
@@ -126,10 +164,10 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
 
   GURL urn_uuid = page_->fenced_frame_urls_map().GeneratePendingMappedURN();
 
-  bool insert_succeeded = unresolved_urns_.insert(urn_uuid).second;
+  bool emplace_succeeded = unresolved_urns_.emplace(urn_uuid, urls).second;
 
   // Assert that `urn_uuid` was not in the set before.
-  DCHECK(insert_succeeded);
+  DCHECK(emplace_succeeded);
 
   std::move(callback).Run(
       /*success=*/true, /*error_message=*/{},
@@ -139,7 +177,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
       name, urls, serialized_data,
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, urls));
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -295,11 +333,13 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
-    const std::vector<GURL>& urls,
     bool success,
     const std::string& error_message,
     uint32_t index) {
-  if (success && index >= urls.size()) {
+  std::vector<GURL> urls = unresolved_urns_.at(urn_uuid);
+  unresolved_urns_.erase(urn_uuid);
+
+  if ((success && index >= urls.size()) || (!success && index != 0)) {
     // This could indicate a compromised worklet environment, so let's terminate
     // it.
     mojo::ReportBadMessage(
@@ -316,13 +356,9 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   }
 
   if (page_) {
-    DCHECK(base::Contains(unresolved_urns_, urn_uuid));
-    unresolved_urns_.erase(urn_uuid);
-
-    absl::optional<GURL> selected_url =
-        success ? absl::make_optional<GURL>(urls[index]) : absl::nullopt;
-    page_->fenced_frame_urls_map().OnURNMappingResultDetermined(urn_uuid,
-                                                                selected_url);
+    page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
+        urn_uuid, CalculateSharedStorageURNMappingResult(
+                      success, shared_storage_origin_, urls, index));
   }
 
   DecrementPendingOperationsCount();

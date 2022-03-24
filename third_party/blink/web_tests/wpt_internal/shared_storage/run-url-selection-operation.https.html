@@ -34,16 +34,8 @@ promise_test(async () => {
     "test-url-selection-operation", [url0, url1], {data: {'mockResult': -1}});
   assert_true(uuid2.startsWith('urn:uuid:'));
   attachFencedFrame(uuid2);
-
-  // There is no API to observe load failure in the FencedFrame. Thus, set up
-  // a timeout. If the document loads, "loaded" will be sent to the server from
-  // the FencedFrame. Otherwise "failed-to-load" will be sent after 3 seconds.
-  step_timeout(() => {
-    writeValueToServer(ancestor_key, "failed_to_load");
-  }, 3000);
-
   const result2 = await nextValueFromServer(ancestor_key);
-  assert_equals(result2, "failed_to_load");
+  assert_equals(result2, "frame0_loaded");
 }, 'runURLSelectionOperation');
 
 </script>

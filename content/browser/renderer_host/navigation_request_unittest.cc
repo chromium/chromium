@@ -16,6 +16,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_navigation_throttle.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host.h"
@@ -364,7 +365,10 @@ TEST_F(NavigationRequestTest, FencedFrameNavigationToPendingMappedURN) {
 
   EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), urn_uuid);
 
-  fenced_frame_urls_map.OnURNMappingResultDetermined(urn_uuid, mapped_url);
+  SimulateSharedStorageURNMappingComplete(
+      fenced_frame_urls_map, urn_uuid, mapped_url,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
 
   // Expect that the url in the NavigationRequest is already mapped.
   EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), mapped_url);
