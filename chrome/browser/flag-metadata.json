@@ -1163,11 +1163,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "detected-source-language-option",
-    "owners": [ "cuianthony", "chrome-language@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "device-force-scheduled-reboot",
     "owners": [ "sanjaperisic"],
     "expiry_milestone": 102
