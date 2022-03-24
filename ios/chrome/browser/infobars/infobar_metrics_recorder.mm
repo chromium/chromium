@@ -116,7 +116,7 @@ const char kInfobarPermissionsModalEventHistogram[] =
     "Mobile.Messages.Modal.Event.InfobarTypePermissions";
 // Badge.
 const char kInfobarPermissionsBadgeTappedHistogram[] =
-    "Mobile.Messages.Badge.Tapped.InfobarTypeReadingList";
+    "Mobile.Messages.Badge.Tapped.InfobarTypePermissions";
 
 }  // namespace
 
