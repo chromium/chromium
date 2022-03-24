@@ -11,8 +11,6 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace dips {
-
 class DIPSStorage;
 
 // A boolean value that gets cleared when moved.
@@ -64,7 +62,5 @@ class DIPSState {
   absl::optional<base::Time> site_storage_time_;
   absl::optional<base::Time> user_interaction_time_;
 };
-
-}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_STATE_H_

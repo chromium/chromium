@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -13,7 +14,9 @@ namespace content {
 class BrowserContext;
 }
 
-namespace dips {
+namespace content_settings {
+class CookieSettings;
+}
 
 class DIPSService : public KeyedService {
  public:
@@ -22,16 +25,17 @@ class DIPSService : public KeyedService {
   static DIPSService* Get(content::BrowserContext* context);
 
   DIPSStorage* storage() { return &storage_; }
+  bool ShouldBlockThirdPartyCookies() const;
 
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
   explicit DIPSService(content::BrowserContext* context);
+  void Shutdown() override;
 
   raw_ptr<content::BrowserContext> browser_context_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   DIPSStorage storage_;
 };
-
-}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_SERVICE_H_

@@ -12,8 +12,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace dips {
-
 class DIPSService;
 
 class DIPSServiceFactory : public BrowserContextKeyedServiceFactory {
@@ -28,10 +26,10 @@ class DIPSServiceFactory : public BrowserContextKeyedServiceFactory {
   ~DIPSServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };
-
-}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_SERVICE_FACTORY_H_

@@ -60,6 +60,19 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="DIPSCookieMode">
+  <variant name=".Block3PC"
+      summary="in a NON-off-the-record profile, with third-party cookies
+               blocked"/>
+  <variant name=".OffTheRecord"
+      summary="in an off-the-record profile, with third-party cookies enabled"/>
+  <variant name=".OffTheRecord_Block3PC"
+      summary="in an off-the-record profile, with third-party cookies blocked"/>
+  <variant name=".Standard"
+      summary="in a NON-off-the-record profile, with third-party cookies
+               enabled"/>
+</variants>
+
 <variants name="GridTabSwitcherMessageTypes">
   <variant name="PriceAlertsMessageCard"
       summary="the promo message for price notifications"/>
@@ -9508,28 +9521,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.TimeFromInteractionToStorage" units="ms"
-    expires_after="2022-07-01">
+<histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
+    units="ms" expires_after="2022-07-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
   <summary>
     The amount of time after a user interacts with a site until the site
-    persists state (e.g. cookies) (where site = eTLD+1). Not recorded if state
-    is written before interaction takes place (see analogous histogram below).
+    persists state (e.g. cookies), {DIPSCookieMode} (where site = eTLD+1). Not
+    recorded if state is written before interaction takes place (see analogous
+    histogram below).
   </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
-<histogram name="Privacy.DIPS.TimeFromStorageToInteraction" units="ms"
-    expires_after="2022-07-01">
+<histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
+    units="ms" expires_after="2022-07-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
   <summary>
     The amount of time after a site persists state (e.g. cookies) until the user
-    interacts with the site (where site = eTLD+1). Not recorded if interaction
-    takes place before state is written (see analogous histogram above).
+    interacts with the site, {DIPSCookieMode} (where site = eTLD+1). Not
+    recorded if interaction takes place before state is written (see analogous
+    histogram above).
   </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
 <histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"

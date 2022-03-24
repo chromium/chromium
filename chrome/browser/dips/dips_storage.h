@@ -15,8 +15,6 @@
 
 class GURL;
 
-namespace dips {
-
 // Manages the storage of DIPSState values.
 //
 // This is currently in-memory only. It will be replaced with a SQLite
@@ -49,7 +47,5 @@ class DIPSStorage {
   std::map<std::string, StateValue> map_ GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_STORAGE_H_

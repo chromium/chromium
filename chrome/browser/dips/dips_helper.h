@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 #define CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 
+#include <ostream>
+
 #include "chrome/browser/dips/dips_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -13,9 +15,18 @@ namespace base {
 class Clock;
 }
 
-namespace dips {
-
 class DIPSService;
+
+enum class DIPSCookieMode {
+  kStandard,
+  kOffTheRecord,
+  kBlock3PC,  // block third-party cookies
+  kOffTheRecord_Block3PC
+};
+
+const char* DIPSCookieModeToString(DIPSCookieMode mode);
+
+std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
 // A WebContentsObserver subclass that listens for storage and user interaction
 // events that DIPSService is interested in.
@@ -39,6 +50,8 @@ class DIPSTabHelper : public content::WebContentsObserver,
   explicit DIPSTabHelper(content::WebContents* web_contents,
                          DIPSService* service);
 
+  DIPSCookieMode GetCookieMode() const;
+
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class content::WebContentsUserData<DIPSTabHelper>;
 
@@ -55,7 +68,5 @@ class DIPSTabHelper : public content::WebContentsObserver,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
-
-}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_HELPER_H_
