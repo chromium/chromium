@@ -165,7 +165,8 @@ void RecordToolTypeForActionDown(const ui::MotionEventAndroid& event) {
 }
 
 void WakeUpGpu(GpuProcessHost* host) {
-  host->gpu_service()->WakeUpGpu();
+  if (host)
+    host->gpu_service()->WakeUpGpu();
 }
 
 std::string CompressAndSaveBitmap(const std::string& dir,
