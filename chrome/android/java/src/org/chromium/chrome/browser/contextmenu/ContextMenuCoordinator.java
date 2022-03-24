@@ -309,9 +309,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         boolean shouldRemoveScrim =
                 isPopup && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE);
         final ContextMenuDialog dialog = new ContextMenuDialog(activity,
-                R.style.Theme_Chromium_AlertDialog, topMarginPx, bottomMarginPx, layout, view,
-                isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth, webContentView,
-                rect, ChromeAccessibilityUtil.get());
+                R.style.ThemeOverlay_BrowserUI_AlertDialog, topMarginPx, bottomMarginPx, layout,
+                view, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,
+                webContentView, rect, ChromeAccessibilityUtil.get());
         dialog.setContentView(layout);
 
         return dialog;

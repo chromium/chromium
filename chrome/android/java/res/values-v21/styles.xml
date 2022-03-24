@@ -12,7 +12,7 @@
         <!-- Set android alert dialog attributes because the context menu dialog is
              OS-dependent. Not setting alertDialogTheme pre-v21 because the window background
              causes bad visual states with alert dialog list. -->
-        <item name="android:alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
     </style>
     <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
 

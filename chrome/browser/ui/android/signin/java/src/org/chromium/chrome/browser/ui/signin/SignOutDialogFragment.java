@@ -80,7 +80,7 @@ public class SignOutDialogFragment
     }
 
     private Dialog createDialogForManagedAccount(String domain) {
-        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+        return new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(R.string.signout_managed_account_title)
                 .setPositiveButton(R.string.continue_button, this)
                 .setNegativeButton(R.string.cancel, this)
@@ -92,7 +92,7 @@ public class SignOutDialogFragment
     @SuppressWarnings("UseGetLayoutInflater")
     private Dialog createDialog() {
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog);
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         View body = inflater.inflate(R.layout.signout_wipe_storage_dialog, null);
         mWipeUserData = body.findViewById(R.id.remove_local_data);

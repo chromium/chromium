@@ -55,15 +55,15 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     @Override
     protected void addDialogView(PropertyModel model) {
         int styles[][] = {
-                {R.style.Theme_Chromium_ModalDialog_TextPrimaryButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_DialogWhenLarge},
-                {R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_DialogWhenLarge},
-                {R.style.Theme_Chromium_ModalDialog_FilledNegativeButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_Fullscreen,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_DialogWhenLarge}};
+                {R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge},
+                {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_DialogWhenLarge},
+                {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge}};
         int index = 0;
         if (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) {
             index = 1;

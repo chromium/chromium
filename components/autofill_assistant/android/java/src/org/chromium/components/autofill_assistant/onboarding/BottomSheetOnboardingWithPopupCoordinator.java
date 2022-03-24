@@ -159,7 +159,7 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
             cancelDialog = mContext.getString(R.string.cancel);
         }
 
-        mDialog = new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+        mDialog = new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                           .setPositiveButton(acceptDialog,
                                   (DialogInterface dialog, int unused) -> {
                                       // Hide the dialog, but don't hide the bottom sheet content,

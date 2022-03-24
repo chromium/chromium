@@ -325,7 +325,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         message.setText(messageResource);
 
         final AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(titleResource)
                         .setPositiveButton(
                                 R.string.clear_browsing_data_important_dialog_button, listener)

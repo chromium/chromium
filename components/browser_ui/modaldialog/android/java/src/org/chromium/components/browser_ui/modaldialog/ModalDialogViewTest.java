@@ -91,7 +91,7 @@ public class ModalDialogViewTest {
             mModalDialogView =
                     (ModalDialogView) LayoutInflater
                             .from(new ContextThemeWrapper(sActivity,
-                                    R.style.Theme_Chromium_ModalDialog_TextPrimaryButton))
+                                    R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton))
                             .inflate(R.layout.modal_dialog_view, null);
             sContentView.addView(mModalDialogView, MATCH_PARENT, WRAP_CONTENT);
 

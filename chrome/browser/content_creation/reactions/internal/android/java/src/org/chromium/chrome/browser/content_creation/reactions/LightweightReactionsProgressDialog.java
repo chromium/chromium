@@ -63,7 +63,8 @@ public class LightweightReactionsProgressDialog extends DialogFragment {
 
         AlertDialog alertDialog =
                 new AlertDialog
-                        .Builder(getActivity(), R.style.Theme_Chromium_AlertDialog_NoActionBar)
+                        .Builder(getActivity(),
+                                R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                         .setView(dialogView)
                         .create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

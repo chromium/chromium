@@ -145,8 +145,9 @@
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
 
-    <!-- Unlike |Theme.Chromium.AlertDialog|, this is a complete theme that can be used as an
-         activity theme on its own. This should be kept in sync with |Theme.Chromium.AlertDialog|.
+    <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
+         an activity theme on its own. This should be kept in sync with
+         |ThemeOverlay.BrowserUI.AlertDialog|.
          -->
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar"
         parent="Theme.MaterialComponents.DayNight.Dialog.Alert">

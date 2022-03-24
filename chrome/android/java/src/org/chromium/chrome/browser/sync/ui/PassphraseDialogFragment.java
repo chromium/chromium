@@ -124,7 +124,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                 getContext().getColor(R.color.input_underline_error_color), PorterDuff.Mode.SRC_IN);
 
         final AlertDialog d =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(v)
                         .setPositiveButton(R.string.submit,
                                 new Dialog.OnClickListener() {

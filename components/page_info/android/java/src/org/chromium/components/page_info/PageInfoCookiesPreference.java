@@ -103,7 +103,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         if (mDeleteDisabled || !mDataUsed) return;
 
         mConfirmationDialog =
-                new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
                         .setMessage(

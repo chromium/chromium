@@ -63,7 +63,7 @@ public class OtherFormsOfHistoryDialogFragment
 
         // Construct the dialog.
         AlertDialog dialog =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(view)
                         .setTitle(R.string.clear_browsing_data_history_dialog_title)
                         .setPositiveButton(R.string.ok_got_it, this)

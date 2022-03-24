@@ -63,7 +63,7 @@ public class ConfirmManagedSyncDataDialog extends DialogFragment {
         }
         String description = getString(
                 R.string.sign_in_managed_account_description, getArguments().getString(KEY_DOMAIN));
-        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+        return new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(R.string.sign_in_managed_account)
                 .setMessage(description)
                 .setPositiveButton(

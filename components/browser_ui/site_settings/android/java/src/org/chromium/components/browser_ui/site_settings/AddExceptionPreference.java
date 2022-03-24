@@ -150,7 +150,7 @@ public class AddExceptionPreference
         };
 
         AlertDialog.Builder alert =
-                new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog);
         AlertDialog alertDialog =
                 alert.setTitle(R.string.website_settings_add_site_dialog_title)
                         .setMessage(mDialogMessage)

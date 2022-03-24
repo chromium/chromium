@@ -48,12 +48,13 @@ public class AssistantInfoPopup {
 
     @CalledByNative
     public void show(Context context) {
-        AlertDialog.Builder builder = new AlertDialog
-                                              .Builder(context,
-                                                      org.chromium.components.autofill_assistant.R
-                                                              .style.Theme_Chromium_AlertDialog)
-                                              .setTitle(mTitle)
-                                              .setMessage(mText);
+        AlertDialog.Builder builder =
+                new AlertDialog
+                        .Builder(context,
+                                org.chromium.components.autofill_assistant.R.style
+                                        .ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(mTitle)
+                        .setMessage(mText);
 
         if (mPositiveButton != null) {
             builder.setPositiveButton(mPositiveButton.getLabel(),

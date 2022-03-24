@@ -30,7 +30,7 @@ public class WebApkOfflineDialog {
      */
     public void show(final Activity activity, String errorMessage) {
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(activity, R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         builder.setMessage(errorMessage)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

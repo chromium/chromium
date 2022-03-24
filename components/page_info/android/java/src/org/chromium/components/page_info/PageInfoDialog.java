@@ -271,7 +271,7 @@ public class PageInfoDialog {
         // Fetch the dim amount from styles.xml and default to 0.65 if not found.
         int[] attrs = {android.R.attr.backgroundDimAmount};
         TypedArray typedArray = mSheetDialog.getContext().obtainStyledAttributes(
-                R.style.Theme_Chromium_ModalDialog, attrs);
+                R.style.ThemeOverlay_BrowserUI_ModalDialog, attrs);
         float dimAmount = typedArray.getFloat(0, 0.65f);
 
         mSheetDialog.getWindow().setDimAmount(dimAmount);

@@ -62,7 +62,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
         instructionsView.setText(getInstructionsText());
 
         AlertDialog dialog =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(view)
                         .setTitle(R.string.sync_passphrase_type_custom_dialog_title)
                         .setPositiveButton(R.string.save, null)

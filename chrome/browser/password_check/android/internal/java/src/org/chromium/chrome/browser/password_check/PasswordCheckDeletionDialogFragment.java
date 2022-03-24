@@ -30,7 +30,7 @@ public class PasswordCheckDeletionDialogFragment extends PasswordCheckDialogFrag
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog
-                .Builder(getActivity(), R.style.Theme_Chromium_AlertDialog_NoActionBar)
+                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setTitle(R.string.password_entry_edit_delete_credential_dialog_title)
                 .setPositiveButton(
                         R.string.password_entry_edit_delete_credential_dialog_confirm, mHandler)

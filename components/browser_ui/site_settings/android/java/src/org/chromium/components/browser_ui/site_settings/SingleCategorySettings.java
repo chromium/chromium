@@ -1112,7 +1112,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         descriptions[1] =
                 getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.BLOCK));
 
-        return new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+        return new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setPositiveButton(R.string.cancel, null)
                 .setNegativeButton(R.string.remove,
                         (dialog, which) -> {

@@ -52,9 +52,10 @@ public class DownloadDateTimePickerDialogImpl
 
         // Setup the date picker. Use null DatePickerDialog.OnDateSetListener due to Android API
         // issue.
-        mDatePickerDialog = new DatePickerDialog(context,
-                R.style.Theme_DownloadDateTimePickerDialog, null, mCalendar.get(Calendar.YEAR),
-                mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+        mDatePickerDialog =
+                new DatePickerDialog(context, R.style.ThemeOverlay_DownloadDateTimePickerDialog,
+                        null, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.DAY_OF_MONTH));
         long minDate = DownloadDialogUtils.getLong(
                 model, DownloadDateTimePickerDialogProperties.MIN_TIME, INVALID_TIMESTAMP);
         long maxDate = DownloadDialogUtils.getLong(

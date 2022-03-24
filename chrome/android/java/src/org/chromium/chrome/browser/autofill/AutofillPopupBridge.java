@@ -127,12 +127,13 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @CalledByNative
     private void confirmDeletion(String title, String body) {
-        mDeletionDialog = new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
-                                  .setTitle(title)
-                                  .setMessage(body)
-                                  .setNegativeButton(R.string.cancel, null)
-                                  .setPositiveButton(R.string.ok, this)
-                                  .create();
+        mDeletionDialog =
+                new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(title)
+                        .setMessage(body)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, this)
+                        .create();
         mDeletionDialog.show();
     }
 

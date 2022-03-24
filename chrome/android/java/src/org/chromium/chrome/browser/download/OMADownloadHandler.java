@@ -552,7 +552,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
         };
         new AlertDialog
                 .Builder(ApplicationStatus.getLastTrackedFocusedActivity(),
-                        R.style.Theme_Chromium_AlertDialog)
+                        R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(R.string.proceed_oma_download_message)
                 .setPositiveButton(R.string.ok, clickListener)
                 .setNegativeButton(R.string.cancel, clickListener)
@@ -582,7 +582,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
         };
         new AlertDialog
                 .Builder(ApplicationStatus.getLastTrackedFocusedActivity(),
-                        R.style.Theme_Chromium_AlertDialog)
+                        R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(titleId)
                 .setPositiveButton(R.string.ok, clickListener)
                 .setCancelable(false)

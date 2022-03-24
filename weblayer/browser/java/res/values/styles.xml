@@ -8,7 +8,7 @@
 
     <style name="Theme.WebLayer.Settings" parent="Theme.WebLayer">
         <item name="preferenceTheme">@style/PreferenceTheme</item>
-        <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
 
         <!-- Text style attributes used by the preference_material.xml layout. -->
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>

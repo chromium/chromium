@@ -30,7 +30,7 @@ class DownloadTimePickerDialog extends TimePickerDialog {
 
     DownloadTimePickerDialog(
             Context context, @NonNull Controller controller, int hourOfDay, int minute) {
-        super(context, R.style.Theme_DownloadDateTimePickerDialog, null, hourOfDay, minute,
+        super(context, R.style.ThemeOverlay_DownloadDateTimePickerDialog, null, hourOfDay, minute,
                 false /*is24HourView*/);
         mHourOfDay = hourOfDay;
         mMinute = minute;

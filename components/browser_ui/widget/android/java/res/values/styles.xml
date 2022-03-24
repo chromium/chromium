@@ -4,11 +4,9 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
     <!-- AlertDialog styles -->
     <!-- This should be kept in sync with |Theme.BrowserUI.AlertDialog.NoActionBar|. -->
-    <style name="Base.Theme.Chromium.AlertDialog"
-        parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:textColorPrimary">@macro/default_text_color</item>
         <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
@@ -26,9 +24,11 @@
         <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
     </style>
-    <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
+    <!-- TODO(https://crbug.com/1242702): Remove this once the style in downstream that depends on
+         this is removed. -->
+    <style name="Theme.Chromium.AlertDialog" parent="ThemeOverlay.BrowserUI.AlertDialog" tools:ignore="UnusedResources"/>
 
-    <style name="Theme.Chromium.AlertDialog.NoActionBar">
+    <style name="ThemeOverlay.BrowserUI.AlertDialog.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>

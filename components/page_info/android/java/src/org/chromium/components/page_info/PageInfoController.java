@@ -353,7 +353,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         button.setOnClickListener((View v) -> {
             recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
             mForgetSiteDialog =
-                    new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                    new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                             .setTitle(R.string.page_info_forget_site_title)
                             .setMessage(R.string.page_info_forget_site_message)
                             .setPositiveButton(R.string.page_info_forget_site_confirmation_button,

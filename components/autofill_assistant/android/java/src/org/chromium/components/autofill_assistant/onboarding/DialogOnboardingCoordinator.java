@@ -63,7 +63,7 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
         mDialog = new AlertDialog
                           .Builder(getContext(),
                                   org.chromium.components.autofill_assistant.R.style
-                                          .Theme_Chromium_AlertDialog)
+                                          .ThemeOverlay_BrowserUI_AlertDialog)
                           .create();
 
         mDialog.setOnDismissListener((OnDismissListener) dialog

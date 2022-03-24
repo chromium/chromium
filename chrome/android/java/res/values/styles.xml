@@ -86,7 +86,7 @@
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
         <item name="toolbarStyle">@style/SettingsToolbarStyle</item>
         <item name="preferenceTheme">@style/PreferenceTheme</item>
-        <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
         <!-- Text style attributes used by the preference_material.xml layout. -->

@@ -63,7 +63,7 @@ public class SaveBitmapDelegate {
         if (!mWindowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
                 && !mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             AlertDialog.Builder builder =
-                    new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog);
+                    new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog);
             builder.setMessage(R.string.sharing_hub_storage_disabled_text)
                     .setNegativeButton(R.string.cancel,
                             new DialogInterface.OnClickListener() {

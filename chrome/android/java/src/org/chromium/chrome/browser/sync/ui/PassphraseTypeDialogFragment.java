@@ -97,7 +97,7 @@ public class PassphraseTypeDialogFragment
             }
         }
 
-        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+        return new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setNegativeButton(R.string.cancel, this)
                 .setTitle(R.string.sync_passphrase_type_title)
                 .setView(dialog)

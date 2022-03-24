@@ -151,7 +151,7 @@ public class AssistantViewInteractions {
         new AlertDialog
                 .Builder(context,
                         org.chromium.components.autofill_assistant.R.style
-                                .Theme_Chromium_AlertDialog)
+                                .ThemeOverlay_BrowserUI_AlertDialog)
                 .setView(contentView)
                 .setOnDismissListener(unused -> delegate.onGenericPopupDismissed(popupIdentifier))
                 .show();

@@ -94,13 +94,14 @@ public class AssistantDataOriginNotice {
     }
 
     private AlertDialog createAlertDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(mActivity, R.style.Theme_Chromium_AlertDialog)
-                                     .setTitle(mDialogTitle)
-                                     .setMessage(AssistantTextUtils.applyVisualAppearanceTags(
-                                             mDialogText, mActivity, this::onDataOriginLinkClicked))
-                                     .setPositiveButton(mDialogButtonText,
-                                             (DialogInterface dialogInterface, int unused) -> {})
-                                     .create();
+        AlertDialog dialog =
+                new AlertDialog.Builder(mActivity, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(mDialogTitle)
+                        .setMessage(AssistantTextUtils.applyVisualAppearanceTags(
+                                mDialogText, mActivity, this::onDataOriginLinkClicked))
+                        .setPositiveButton(mDialogButtonText,
+                                (DialogInterface dialogInterface, int unused) -> {})
+                        .create();
         return dialog;
     }
 }
