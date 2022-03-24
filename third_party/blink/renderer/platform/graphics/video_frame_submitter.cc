@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"

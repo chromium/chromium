@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/threading/sequence_local_storage_slot.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace blink {
 
