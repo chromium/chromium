@@ -123,7 +123,8 @@ bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
                                           const std::string& engine_id) {
   if (base::StartsWith(engine_id, "experimental_",
-                       base::CompareCase::SENSITIVE)) {
+                       base::CompareCase::SENSITIVE) ||
+      base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning)) {
     return true;
   }
 
