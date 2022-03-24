@@ -327,6 +327,13 @@ SPECIAL_CASES = {
         "License Android Compatible": "yes",
         "License File": "/third_party/swiftshader/LICENSE.txt",
     },
+    os.path.join('third_party', 'swiftshader', 'third_party', 'SPIRV-Tools'): {
+        "Name": "SPIRV-Tools",
+        "URL": "https://github.com/KhronosGroup/SPIRV-Tools",
+        "License": "Apache 2.0",
+        "License File":
+        "/third_party/swiftshader/third_party/SPIRV-Tools/LICENSE",
+    },
 }
 
 # Special value for 'License File' field used to indicate that the license file
