@@ -419,39 +419,9 @@ NOINLINE void RawResourceClientStateChecker::DidDownloadToBlob() {
 
 NOINLINE void RawResourceClientStateChecker::NotifyFinished(
     Resource* resource) {
-  // TODO(https://crbug.com/1158346): Remove these once the investigation is
-  // done.
-  std::string url_string = resource->Url().StrippedForUseAsHref().Utf8();
-  const int32_t destination =
-      static_cast<int32_t>(
-          resource->GetResourceRequest().GetRequestDestination()) +
-      0x400;
-  const int32_t context =
-      static_cast<int32_t>(resource->GetResourceRequest().GetRequestContext()) +
-      0x800;
-  const int32_t mark1 = 0xabababab;
-  char url[128];
-  memset(url, 0x7e, sizeof(url));
-  // We keep the first and last four bytes to make it easy to search for the
-  // url in the memory dump.
-  base::strlcpy(url + 4, url_string.c_str(), sizeof(url) - 8);
-  const int32_t mark2 = 0xcdcdcdcd;
-  base::debug::Alias(&destination);
-  base::debug::Alias(&context);
-  base::debug::Alias(&mark1);
-  base::debug::Alias(url);
-  base::debug::Alias(&mark2);
-
   SECURITY_CHECK(state_ != kNotAddedAsClient);
   SECURITY_CHECK(state_ != kDetached);
   SECURITY_CHECK(state_ != kNotifyFinished);
-
-  // TODO(https://crbug.com/1158346): Remove these CHECKs once the investigation
-  // is done.
-  if (!resource->ErrorOccurred()) {
-    SECURITY_CHECK(state_ != kStarted);
-    SECURITY_CHECK(state_ != kRedirectBlocked);
-  }
 
   SECURITY_CHECK(resource->ErrorOccurred() ||
                  (state_ == kResponseReceived || state_ == kDataReceived ||
