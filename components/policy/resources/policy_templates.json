@@ -10008,6 +10008,8 @@
       'tags': [],
       'desc': '''Setting the policy allows merging of selected policies when they come from different sources, with the same scopes and level.
 
+      Use the wildcard character '*' to allow merging of all list policies.
+
       If a policy is in the list and there's conflict between sources with:
 
       * The same scopes and level: The values merge into a new policy list.
@@ -10076,6 +10078,8 @@
       'caption': '''Allow merging dictionary policies from different sources''',
       'tags': [],
       'desc': '''Setting the policy allows merging of selected policies when they come from different sources, with the same scopes and level. This merging is in the first level keys of the dictionary from each source. The key coming from the highest priority source takes precedence.
+
+      Use the wildcard character '*' to allow merging of all supported dictionary policies.
 
       If a policy is in the list and there's conflict between sources with:
 
