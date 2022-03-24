@@ -33,6 +33,9 @@ SideSearchIconView::SideSearchIconView(
   image()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
+  SetLabel(l10n_util::GetStringUTF16(
+      IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
+  SetUpForInOutAnimation();
 }
 
 SideSearchIconView::~SideSearchIconView() = default;
@@ -49,16 +52,22 @@ void SideSearchIconView::UpdateImpl() {
 
   // Only show the page action button if the side panel is showable for this
   // active web contents and is not currently toggled open.
-  // TODO(tluk): Setup conditions for `AnimateIn()`.
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(active_contents);
   if (!tab_contents_helper)
     return;
 
+  const bool was_visible = GetVisible();
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
       !tab_contents_helper->toggled_open();
   SetVisible(should_show);
+
+  if (should_show && !was_visible &&
+      tab_contents_helper->should_show_page_action_label()) {
+    tab_contents_helper->set_should_show_page_action_label(false);
+    AnimateIn(absl::nullopt);
+  }
 }
 
 void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
