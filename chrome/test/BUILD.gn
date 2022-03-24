@@ -1877,7 +1877,6 @@ if (!is_android) {
       "../browser/policy/test/force_google_safe_search_policy_browsertest.cc",
       "../browser/policy/test/hsts_policy_browsertest.cc",
       "../browser/policy/test/jit_policy_browsertest.cc",
-      "../browser/policy/test/network_prediction_policy_browsertest.cc",
       "../browser/policy/test/policy_browsertest.cc",
       "../browser/policy/test/policy_statistics_collector_browsertest.cc",
       "../browser/policy/test/policy_test_google_browsertest.cc",

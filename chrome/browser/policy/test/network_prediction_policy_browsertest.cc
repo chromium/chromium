@@ -6,8 +6,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -16,7 +15,7 @@
 namespace policy {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Enabled by default.
   EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
