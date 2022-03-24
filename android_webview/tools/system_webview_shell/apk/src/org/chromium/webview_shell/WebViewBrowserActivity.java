@@ -356,6 +356,15 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         setUrlBarText(url);
         setUrlFail(false);
         loadUrlFromUrlBar(mUrlBar);
+
+        mMultiFileSelector = new MultiFileSelector();
+        mFileContents =
+                registerForActivityResult(mMultiFileSelector, new ActivityResultCallback<Uri[]>() {
+                    @Override
+                    public void onActivityResult(Uri[] result) {
+                        mFilePathCallback.onReceiveValue(result);
+                    }
+                });
     }
 
     @Override
@@ -493,14 +502,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
         });
 
-        mMultiFileSelector = new MultiFileSelector();
-        mFileContents =
-                registerForActivityResult(mMultiFileSelector, new ActivityResultCallback<Uri[]>() {
-                    @Override
-                    public void onActivityResult(Uri[] result) {
-                        mFilePathCallback.onReceiveValue(result);
-                    }
-                });
         mWebView = webview;
         getContainer().addView(
                 webview, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
