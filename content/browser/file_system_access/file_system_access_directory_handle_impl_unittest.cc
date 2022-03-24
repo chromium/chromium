@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,6 +26,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -73,10 +75,17 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
-  std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
-  GetHandleWithPermissions(const base::FilePath& path, bool read, bool write) {
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> GetHandleWithPermissions(
+      const base::FilePath& path,
+      bool read,
+      bool write,
+      const absl::optional<storage::BucketLocator> url_bucket_override =
+          absl::nullopt) {
     auto url = manager_->CreateFileSystemURLFromPath(
         FileSystemAccessEntryFactory::PathType::kLocal, path);
+    if (url_bucket_override.has_value()) {
+      url.SetBucket(url_bucket_override.value());
+    }
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
@@ -406,6 +415,33 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
         }).Then(loop.QuitClosure()));
     loop.Run();
   }
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
+  base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  base::FilePath file;
+  base::CreateTemporaryFileInDir(dir, &file);
+  auto base_name = storage::FilePathToString(file.BaseName());
+  storage::FileSystemURL file_url;
+
+  auto default_handle =
+      GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
+  EXPECT_EQ(default_handle->GetChildURL(base_name, &file_url)->file_error,
+            base::File::Error::FILE_OK);
+  EXPECT_FALSE(file_url.bucket());
+
+  const auto custom_bucket = storage::BucketLocator(
+      storage::BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+  auto custom_handle =
+      GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true,
+                               /*url_bucket_override=*/custom_bucket);
+  EXPECT_EQ(custom_handle->GetChildURL(base_name, &file_url)->file_error,
+            base::File::Error::FILE_OK);
+  EXPECT_TRUE(file_url.bucket());
+  EXPECT_EQ(file_url.bucket().value(), custom_bucket);
 }
 
 }  // namespace content

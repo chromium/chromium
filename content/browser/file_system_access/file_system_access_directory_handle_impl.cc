@@ -528,6 +528,10 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   *result = file_system_context()->CreateCrackedFileSystemURL(
       parent.storage_key(), parent.mount_type(),
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
+  // Child URLs inherit their parent's storage bucket.
+  if (parent.bucket()) {
+    result->SetBucket(parent.bucket().value());
+  }
   return file_system_access_error::Ok();
 }
 
