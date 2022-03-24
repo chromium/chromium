@@ -12,9 +12,9 @@
 // clang-format off
 #define COMMON_CHROME_COLOR_IDS \
   /* App menu colors. */ \
-  /* The kColorAppMenuHighlightSeverityLow color id is used in \
-  color_provider_css_colors_test.ts. If changing the variable name, the \
-  variable name in the test needs to be changed as well. */ \
+  /* The kColorAppMenuHighlightSeverityLow color id is used in */ \
+  /* color_provider_css_colors_test.ts. If changing the variable name, the */ \
+  /* variable name in the test needs to be changed as well. */ \
   E(kColorAppMenuHighlightSeverityLow, \
     ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW, \
     kChromeColorsStart) \
@@ -86,6 +86,11 @@
     ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND) \
   E(kColorFeaturePromoBubbleForeground, \
     ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND) \
+  /* Find bar colors. */ \
+  E_CPONLY(kColorFindBarBackground) \
+  E_CPONLY(kColorFindBarForeground) \
+  E_CPONLY(kColorFindBarMatchCount) \
+  E_CPONLY(kColorFindBarSeparator) \
   /* Flying Indicator colors. */ \
   E(kColorFlyingIndicatorBackground, \
     ThemeProperties::COLOR_FLYING_INDICATOR_BACKGROUND) \

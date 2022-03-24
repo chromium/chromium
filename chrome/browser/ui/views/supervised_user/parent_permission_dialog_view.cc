@@ -518,7 +518,6 @@ void ParentPermissionDialogView::CreateContents() {
       content_insets.right()));
   invalid_credential_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   invalid_credential_label->SetMultiLine(true);
-  invalid_credential_label->SetEnabledColor(gfx::kGoogleRed600);
   invalid_credential_label->SizeToFit(content_width);
 
   // Cache the pointer so we we can update the invalid credential label when we

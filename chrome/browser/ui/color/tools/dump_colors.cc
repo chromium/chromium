@@ -34,7 +34,8 @@ const char* enum_names[] = {
 #include "ui/color/color_mixers.h"
 #endif
 
-constexpr size_t kColorColumnWidth = 19 + 1;  // 'kGoogleGreenDark500 '
+// Longest color name, plus a space.  Currently, "SK_ColorTRANSPARENT ".
+constexpr size_t kColorColumnWidth = 19 + 1;
 
 std::string SkColorToString(SkColor color) {
   std::string color_string = ui::SkColorName(color);

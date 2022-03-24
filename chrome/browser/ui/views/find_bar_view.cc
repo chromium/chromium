@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -33,10 +34,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -442,8 +441,7 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const ui::ColorProvider* color_provider = GetColorProvider();
-  SkColor bg_color = SkColorSetA(
-      color_provider->GetColor(ui::kColorTextfieldBackground), 0xFF);
+  SkColor bg_color = color_provider->GetColor(kColorFindBarBackground);
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       bg_color);
@@ -454,21 +452,18 @@ void FindBarView::OnThemeChanged() {
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
 
-  const SkColor base_foreground_color =
-      color_provider->GetColor(ui::kColorTextfieldForeground);
-
   match_count_text_->SetBackgroundColor(bg_color);
   match_count_text_->SetEnabledColor(
-      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha700));
-  separator_->SetColor(
-      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha300));
+      color_provider->GetColor(kColorFindBarMatchCount));
+  separator_->SetColor(color_provider->GetColor(kColorFindBarSeparator));
 
-  views::SetImageFromVectorIcon(
-      find_previous_button_, vector_icons::kCaretUpIcon, base_foreground_color);
+  const SkColor fg_color = color_provider->GetColor(kColorFindBarForeground);
+  views::SetImageFromVectorIcon(find_previous_button_,
+                                vector_icons::kCaretUpIcon, fg_color);
   views::SetImageFromVectorIcon(find_next_button_, vector_icons::kCaretDownIcon,
-                                base_foreground_color);
+                                fg_color);
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                                base_foreground_color);
+                                fg_color);
 }
 
 BEGIN_METADATA(FindBarView, views::View)
