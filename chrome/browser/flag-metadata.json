@@ -1470,11 +1470,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "enable-android-dark-search",
-    "owners": [ "wylieb", "twellington", "fgorski" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-app-discovery-for-oobe",
     "owners": [ "melzhang", "tsergeant", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 110
