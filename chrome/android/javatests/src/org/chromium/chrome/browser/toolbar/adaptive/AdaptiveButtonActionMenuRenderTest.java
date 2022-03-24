@@ -79,7 +79,9 @@ public class AdaptiveButtonActionMenuRenderTest {
                     coordinator.buildMenuItems(), null);
 
             mView = coordinator.getContentViewForTesting();
-            ((ViewGroup) mView.getParent()).removeView(mView);
+            if (mView.getParent() != null) {
+                ((ViewGroup) mView.getParent()).removeView(mView);
+            }
 
             int popupWidth =
                     activity.getResources().getDimensionPixelSize(R.dimen.tab_switcher_menu_width);

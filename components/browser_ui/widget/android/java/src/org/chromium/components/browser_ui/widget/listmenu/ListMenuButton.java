@@ -47,6 +47,7 @@ public class ListMenuButton
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private boolean mPositionedAtEnd;
+    private boolean mIsAttachedToWindow;
 
     /**
      * Creates a new {@link ListMenuButton}.
@@ -128,6 +129,7 @@ public class ListMenuButton
      * Shows a popupWindow built by ListMenuButton
      */
     public void showMenu() {
+        if (!mIsAttachedToWindow) return;
         initPopupWindow();
         mPopupMenu.show();
         notifyPopupListeners(true);
@@ -218,8 +220,15 @@ public class ListMenuButton
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mIsAttachedToWindow = true;
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         dismiss();
+        mIsAttachedToWindow = false;
         super.onDetachedFromWindow();
     }
 
