@@ -174,16 +174,16 @@ void ClientHints::PersistClientHints(
   }
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  base::Value::ListStorage client_hints_list;
+  base::Value::List client_hints_list;
   client_hints_list.reserve(client_hints.size());
 
   for (const auto& entry : client_hints) {
-    client_hints_list.push_back(base::Value(static_cast<int>(entry)));
+    client_hints_list.Append(static_cast<int>(entry));
   }
 
-  auto client_hints_dictionary = std::make_unique<base::DictionaryValue>();
-  client_hints_dictionary->SetKey(kClientHintsSettingKey,
-                                  base::Value(std::move(client_hints_list)));
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(kClientHintsSettingKey,
+                              std::move(client_hints_list));
 
   const auto session_model =
       base::FeatureList::IsEnabled(blink::features::kDurableClientHintsCache)
@@ -194,7 +194,7 @@ void ClientHints::PersistClientHints(
   // when cookies are disabled for |primary_origin|.
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::FromUniquePtrValue(std::move(client_hints_dictionary)),
+      base::Value(std::move(client_hints_dictionary)),
       {base::Time(), session_model});
 
   // Record the time spent getting the client hints.

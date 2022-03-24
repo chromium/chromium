@@ -36,11 +36,15 @@ void GetAllowedClientHintsFromSource(
     DCHECK(rule.setting_value.is_dict());
 
     const base::Value* list_value =
-        rule.setting_value.FindKey(kClientHintsSettingKey);
+        rule.setting_value.GetDict().Find(kClientHintsSettingKey);
     if (list_value == nullptr)
       continue;
+
+    // We should guarantee client hints list value always be Type::List since we
+    // save the client hints as base::Value::List in the Prefs. For details,
+    // check components/client_hints/browser/client_hints.cc
     DCHECK(list_value->is_list());
-    for (const auto& client_hint : list_value->GetListDeprecated()) {
+    for (const auto& client_hint : list_value->GetList()) {
       DCHECK(client_hint.is_int());
       network::mojom::WebClientHintsType client_hint_mojo =
           static_cast<network::mojom::WebClientHintsType>(client_hint.GetInt());
