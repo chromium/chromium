@@ -279,7 +279,7 @@ if (!is_win) {
 # Mac --------------------------------------------------------------------------
 
 if (is_mac) {
-  if (current_toolchain == host_toolchain || target_os != "ios") {
+  if (current_toolchain == host_toolchain) {
     source_set("common") {
       sources = [
         "breakpad/src/common/dwarf/bytereader.cc",
