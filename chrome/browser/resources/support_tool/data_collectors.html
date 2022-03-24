@@ -2,7 +2,25 @@
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
-<style include="support-tool-shared"></style>
+<style include="support-tool-shared cr-shared-style">
+  .data-collector-checkbox {
+    padding-bottom: 4px;
+    padding-top: 4px;
+  }
+  .data-collector-list {
+    border-bottom: var(--cr-separator-line);
+    border-top: var(--cr-separator-line);
+    height: 254px;
+    width: 520px;
+  }
+</style>
 
 <h2>Collect diagnostics data for support</h2>
 <div class="support-tool-title">Select diagnostic data to export</div>
+<iron-list class="data-collector-list" items="[[dataCollectors_]]">
+  <template>
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}">
+      [[item.name]]
+    </cr-checkbox>
+  </template>
+</iron-list>

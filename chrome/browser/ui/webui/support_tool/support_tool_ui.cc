@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
-#include <string>
 
 #include <string>
 
+#include "base/base64url.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/support_tool/data_collection_module.pb.h"
+#include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/support_tool_resources.h"
@@ -24,6 +28,7 @@
 #include "url/gurl.h"
 
 const char kSupportCaseIDQuery[] = "case_id";
+const char kModuleQuery[] = "module";
 
 namespace {
 // Returns the support case ID that's extracted from `url` with query
@@ -50,6 +55,91 @@ content::WebUIDataSource* CreateSupportToolHTMLSource(const GURL& url) {
   return source;
 }
 
+// Returns the human readable name corresponding to `data_collector_type`.
+std::string GetDataCollectorName(
+    support_tool::DataCollectorType data_collector_type) {
+  // This function will return translatable strings in future. For now, return
+  // string constants until we have the translatable strings ready.
+  switch (data_collector_type) {
+    case support_tool::CHROME_INTERNAL:
+      return "Internal";
+    case support_tool::CRASH_IDS:
+      return "Crash IDs";
+    case support_tool::MEMORY_DETAILS:
+      return "Memory Details";
+    case support_tool::CHROMEOS_UI_HIERARCHY:
+      return "UI Hierarchy";
+    case support_tool::CHROMEOS_COMMAND_LINE:
+      return "Command Line";
+    case support_tool::CHROMEOS_DEVICE_EVENT:
+      return "Device Event";
+    case support_tool::CHROMEOS_IWL_WIFI_DUMP:
+      return "IWL WiFi Dump";
+    case support_tool::CHROMEOS_TOUCH_EVENTS:
+      return "Touch Events";
+    case support_tool::CHROMEOS_CROS_API:
+      return "CROS API";
+    case support_tool::CHROMEOS_LACROS:
+      return "Lacros";
+    case support_tool::CHROMEOS_REVEN:
+      return "Chrome OS Reven";
+    default:
+      return "Error: Undefined";
+  }
+}
+
+// Decodes `module_query` string and initializes contents of `module`.
+void InitDataCollectionModuleFromURLQuery(
+    support_tool::DataCollectionModule* module,
+    const std::string& module_query) {
+  std::string query_decoded;
+  if (!module_query.empty() &&
+      base::Base64UrlDecode(module_query,
+                            base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                            &query_decoded)) {
+    module->ParseFromString(query_decoded);
+  }
+}
+
+base::Value::Dict GetDataCollectorItemForType(
+    const support_tool::DataCollectionModule& module,
+    const support_tool::DataCollectorType& type) {
+  base::Value::Dict dict;
+  dict.Set("name", GetDataCollectorName(type));
+  dict.Set("protoEnum", type);
+  dict.Set("isIncluded",
+           base::Contains(module.included_data_collectors(), type));
+  return dict;
+}
+
+// Creates base::Value::List according to the format Support Tool UI
+// accepts and fills the contents with by decoding `module_query` to its
+// support_tool.pb components. Support Tool UI requests data collector items in
+// format:
+// type DataCollectorItem = {
+//  name: string,
+//  isIncluded: boolean,
+//  protoEnum: number,
+// }
+base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
+  base::Value::List data_collector_list;
+  support_tool::DataCollectionModule module;
+  InitDataCollectionModuleFromURLQuery(&module, module_query);
+  for (const auto& type : kDataCollectors) {
+    data_collector_list.Append(GetDataCollectorItemForType(module, type));
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const auto& type : kDataCollectorsChromeosAsh) {
+    data_collector_list.Append(GetDataCollectorItemForType(module, type));
+  }
+#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
+  for (const auto& type : kDataCollectorsChromeosHwDetails) {
+    data_collector_list.Append(GetDataCollectorItemForType(module, type));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return data_collector_list;
+}
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +164,12 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler {
 
   void HandleGetEmailAddresses(const base::Value::List& args);
 
+  void HandleGetDataCollectors(const base::Value::List& args);
+
+  void HandleStartDataCollection(const base::Value::List& args);
+
+  void HandleCancelDataCollection(const base::Value::List& args);
+
  private:
   base::Value::List GetAccountsList();
 
@@ -85,6 +181,19 @@ void SupportToolMessageHandler::RegisterMessages() {
       "getEmailAddresses",
       base::BindRepeating(&SupportToolMessageHandler::HandleGetEmailAddresses,
                           weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getDataCollectors",
+      base::BindRepeating(&SupportToolMessageHandler::HandleGetDataCollectors,
+                          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "startDataCollection",
+      base::BindRepeating(&SupportToolMessageHandler::HandleStartDataCollection,
+                          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "cancelDataCollection",
+      base::BindRepeating(
+          &SupportToolMessageHandler::HandleCancelDataCollection,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 base::Value::List SupportToolMessageHandler::GetAccountsList() {
@@ -110,6 +219,36 @@ void SupportToolMessageHandler::HandleGetEmailAddresses(
   const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id, base::Value(GetAccountsList()));
+}
+
+void SupportToolMessageHandler::HandleGetDataCollectors(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  std::string module_query;
+  net::GetValueForKeyInQuery(web_ui()->GetWebContents()->GetURL(), kModuleQuery,
+                             &module_query);
+
+  ResolveJavascriptCallback(
+      callback_id, base::Value(GetDataCollectorItemsInQuery(module_query)));
+}
+
+void SupportToolMessageHandler::HandleStartDataCollection(
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value::Dict* issue_details = args[0].GetIfDict();
+  DCHECK(issue_details);
+  const base::Value::List* data_collectors = args[1].GetIfList();
+  DCHECK(data_collectors);
+  // TODO(b/219730597): Create SupportToolHandler from `issue_details` and
+  // `data_collectors`. Will be added in follow-up CL.
+}
+
+void SupportToolMessageHandler::HandleCancelDataCollection(
+    const base::Value::List& args) {
+  // TODO(b/200511640): Cancel data collection.
 }
 
 ////////////////////////////////////////////////////////////////////////////////

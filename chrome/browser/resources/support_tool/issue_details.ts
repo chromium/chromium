@@ -10,7 +10,7 @@ import './support_tool_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl, IssueDetails} from './browser_proxy.js';
 import {getTemplate} from './issue_details.html.js';
 
 export class IssueDetailsElement extends PolymerElement {
@@ -55,6 +55,14 @@ export class IssueDetailsElement extends PolymerElement {
     this.browserProxy_.getEmailAddresses().then((emails: string[]) => {
       this.emails_ = emails;
     });
+  }
+
+  getIssueDetails(): IssueDetails {
+    return {
+      caseId: this.caseId_,
+      emailAddress: this.selectedEmail_,
+      issueDescription: this.issueDescription_
+    };
   }
 }
 

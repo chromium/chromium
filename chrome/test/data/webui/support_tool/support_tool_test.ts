@@ -10,14 +10,20 @@
 import 'chrome://support-tool/support_tool.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {BrowserProxy, BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
-import {SupportToolElement} from 'chrome://support-tool/support_tool.js';
+import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails} from 'chrome://support-tool/browser_proxy.js';
+import {SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 const EMAIL_ADDRESSES: string[] =
     ['testemail1@test.com', 'testemail2@test.com'];
+
+const DATA_COLLECTORS: DataCollectorItem[] = [
+  {name: 'data collector 1', isIncluded: false, protoEnum: 1},
+  {name: 'data collector 2', isIncluded: true, protoEnum: 2},
+  {name: 'data collector 3', isIncluded: false, protoEnum: 3},
+];
 
 /**
  * A test version of SupportToolBrowserProxy.
@@ -29,12 +35,30 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getEmailAddresses',
+      'getDataCollectors',
+      'startDataCollection',
+      'cancelDataCollection',
     ]);
   }
 
   getEmailAddresses() {
     this.methodCalled('getEmailAddresses');
     return Promise.resolve(EMAIL_ADDRESSES);
+  }
+
+  getDataCollectors() {
+    this.methodCalled('getDataCollectors');
+    return Promise.resolve(DATA_COLLECTORS);
+  }
+
+  startDataCollection(
+      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]) {
+    this.methodCalled(
+        'startDataCollection', [issueDetails, selectedDataCollectors]);
+  }
+
+  cancelDataCollection() {
+    this.methodCalled('cancelDataCollection');
   }
 }
 
@@ -57,16 +81,31 @@ suite('SupportToolTest', function() {
     await waitAfterNextRender(supportTool);
   });
 
-  test('start data collection', () => {
+  test('support tool pages navigation', () => {
     const ironPages = supportTool.shadowRoot!.querySelector('iron-pages');
     // The selected page index must be 0, which means initial page is
     // IssueDetails.
-    assertEquals(ironPages!.selected, 0);
+    assertEquals(ironPages!.selected, SupportToolPageIndex.ISSUE_DETAILS);
     // Only continue button container must be visible in initial page.
     assertFalse(
         supportTool.shadowRoot!.getElementById(
                                    'continueButtonContainer')!.hidden);
-    // Check the contents of issue details page.
+    // Click on continue button to move onto data collector selection page.
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    assertEquals(
+        ironPages!.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+    // Click on continue button to start data collection.
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    browserProxy.whenCalled('startDataCollection').then(function([
+      issueDetails, selectedDataCollectors
+    ]) {
+      assertEquals(issueDetails.caseId, 'testcaseid');
+      assertEquals(selectedDataCollectors, DATA_COLLECTORS);
+    });
+  });
+
+  test('issue details page', () => {
+    // Check the contents of data collectors page.
     const issueDetails = supportTool.$.issueDetails;
     assertEquals(
         issueDetails.shadowRoot!.querySelector('cr-input')!.value,
@@ -75,5 +114,19 @@ suite('SupportToolTest', function() {
     // IssueDetailsElement adds empty string to the email addresses options as a
     // default value.
     assertEquals(EMAIL_ADDRESSES.length + 1, emailOptions.length);
+  });
+
+  test('data collector selection page', () => {
+    // Check the contents of data collectors page.
+    const ironListItems =
+        supportTool.$.dataCollectors.shadowRoot!.querySelector(
+                                                    'iron-list')!.items!;
+    assertEquals(ironListItems.length, DATA_COLLECTORS.length);
+    for (let i = 0; i < ironListItems.length; i++) {
+      const listItem = ironListItems[i];
+      assertEquals(listItem.name, DATA_COLLECTORS[i]!.name);
+      assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
+      assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
+    }
   });
 });

@@ -63,4 +63,5 @@ ts_library("build_ts") {
     ":css_wrapper_files",
     ":html_wrapper_files",
   ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

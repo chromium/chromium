@@ -10,12 +10,13 @@ import './spinner_page.js';
 import './support_tool_shared_css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {DataCollectorsElement} from './data_collectors.js';
 import {IssueDetailsElement} from './issue_details.js';
 import {SpinnerPageElement} from './spinner_page.js';
 import {getTemplate} from './support_tool.html.js';
 
-enum SupportToolPageIndex {
+export enum SupportToolPageIndex {
   ISSUE_DETAILS,
   DATA_COLLECTOR_SELECTION,
   SPINNER,
@@ -53,13 +54,17 @@ export class SupportToolElement extends PolymerElement {
   }
 
   private selectedPage_: SupportToolPageIndex;
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private onContinueClick_() {
+    // If we are currently on data collectors selection page, send signal to
+    // start data collection.
+    if (this.selectedPage_ === SupportToolPageIndex.DATA_COLLECTOR_SELECTION) {
+      this.browserProxy_.startDataCollection(
+          this.$.issueDetails.getIssueDetails(),
+          this.$.dataCollectors.getDataCollectors());
+    }
     this.selectedPage_ = this.selectedPage_ + 1;
-    // TODO(b/219730597): If selected page is data collections page, send signal
-    // to chrome using BrowserProxy to start data collection with the data we
-    // gathered in IssueDetailsElement and DataCollectorsElement. This part will
-    // be added in follow-up CL.
   }
 
   private onBackClick_() {
