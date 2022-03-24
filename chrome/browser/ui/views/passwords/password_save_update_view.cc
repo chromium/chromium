@@ -69,6 +69,8 @@
 
 namespace {
 
+constexpr int kIconHeight = 20;
+
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
   // if the user changes the font size.
@@ -441,7 +443,9 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         is_update_bubble_ ? &Controller::OnNopeUpdateClicked
                           : &Controller::OnNeverForThisSiteClicked));
   }
-  SetShowIcon(false);
+
+  SetShowIcon(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerDesktop));
 
   SetFootnoteView(CreateFooterView());
   UpdateBubbleUIElements();
@@ -515,7 +519,16 @@ bool PasswordSaveUpdateView::IsDialogButtonEnabled(
 }
 
 ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
-  return ui::ImageModel();
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    return ui::ImageModel();
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(kGooglePasswordManagerIcon,
+                                        ui::kColorIcon, kIconHeight);
+#else
+  return ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, kIconHeight);
+#endif
 }
 
 void PasswordSaveUpdateView::AddedToWidget() {
