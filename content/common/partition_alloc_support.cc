@@ -376,8 +376,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 #if BUILDFLAG(IS_ANDROID)
   // Lower thread cache limits to avoid stranding too much memory in the caches.
   if (base::SysInfo::IsLowEndDevice()) {
-    base::internal::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        base::internal::ThreadCache::kDefaultMultiplier / 2.);
+    ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+        ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -387,17 +387,17 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
     largest_cached_size_ =
-        base::internal::ThreadCacheLimits::kLargeSizeThreshold;
+        ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold;
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
     // Devices almost always report less physical memory than what they actually
     // have, so anything above 3GiB will catch 4GiB and above.
     if (base::SysInfo::AmountOfPhysicalMemory() <= int64_t{3500} * 1024 * 1024)
       largest_cached_size_ =
-          base::internal::ThreadCacheLimits::kDefaultSizeThreshold;
+          ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif  // BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
 
-    base::internal::ThreadCache::SetLargestCachedSize(largest_cached_size_);
+    ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
 
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
@@ -428,7 +428,7 @@ void PartitionAllocSupport::OnForegrounded() {
       return;
   }
 
-  base::internal::ThreadCache::SetLargestCachedSize(largest_cached_size_);
+  ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
@@ -444,8 +444,8 @@ void PartitionAllocSupport::OnBackgrounded() {
 
   // Performance matters less for background renderers, don't pay the memory
   // cost.
-  base::internal::ThreadCache::SetLargestCachedSize(
-      base::internal::ThreadCacheLimits::kDefaultSizeThreshold);
+  ::partition_alloc::ThreadCache::SetLargestCachedSize(
+      ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold);
 
   // In renderers, memory reclaim uses the "idle time" task runner to run
   // periodic reclaim. This does not always run when the renderer is idle, and

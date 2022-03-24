@@ -28,7 +28,8 @@
 #define MEMORY_CONSTRAINED
 #endif
 
-namespace base {
+namespace partition_alloc::internal {
+
 namespace {
 
 // Change kTimeLimit to something higher if you need more time to capture a
@@ -118,7 +119,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
           PartitionOptions::UseConfigurablePool::kNo,
       });
     }
-    internal::ThreadCacheRegistry::Instance().PurgeAll();
+    ThreadCacheRegistry::Instance().PurgeAll();
     if (!use_alternate_bucket_dist)
       g_partition_root->SwitchToDenserBucketDistribution();
   }
@@ -131,22 +132,22 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 };
 
-class TestLoopThread : public PlatformThread::Delegate {
+class TestLoopThread : public base::PlatformThread::Delegate {
  public:
-  explicit TestLoopThread(OnceCallback<float()> test_fn)
+  explicit TestLoopThread(base::OnceCallback<float()> test_fn)
       : test_fn_(std::move(test_fn)) {
-    PA_CHECK(PlatformThread::Create(0, this, &thread_handle_));
+    PA_CHECK(base::PlatformThread::Create(0, this, &thread_handle_));
   }
 
   float Run() {
-    PlatformThread::Join(thread_handle_);
+    base::PlatformThread::Join(thread_handle_);
     return laps_per_second_;
   }
 
   void ThreadMain() override { laps_per_second_ = std::move(test_fn_).Run(); }
 
-  OnceCallback<float()> test_fn_;
-  PlatformThreadHandle thread_handle_;
+  base::OnceCallback<float()> test_fn_;
+  base::PlatformThreadHandle thread_handle_;
   std::atomic<float> laps_per_second_;
 };
 
@@ -181,7 +182,7 @@ float SingleBucket(Allocator* allocator) {
       reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(kAllocSize));
   size_t allocated_memory = kAllocSize;
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   MemoryAllocationPerfNode* cur = first;
   do {
     auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(
@@ -214,7 +215,7 @@ float SingleBucketWithFree(Allocator* allocator) {
   // Allocate an initial element to make sure the bucket stays set up.
   void* elem = allocator->Alloc(kAllocSize);
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kAllocSize);
     CHECK_NE(cur, nullptr);
@@ -233,7 +234,7 @@ float MultiBucket(Allocator* allocator) {
   MemoryAllocationPerfNode* cur = first;
   size_t allocated_memory = kAllocSize;
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       size_t size = kMultiBucketMinimumSize + (i * kMultiBucketIncrement);
@@ -275,7 +276,7 @@ float MultiBucketWithFree(Allocator* allocator) {
     elems.push_back(cur);
   }
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       void* cur = allocator->Alloc(kMultiBucketMinimumSize +
@@ -296,7 +297,7 @@ float MultiBucketWithFree(Allocator* allocator) {
 float DirectMapped(Allocator* allocator) {
   constexpr size_t kSize = 2 * 1000 * 1000;
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kSize);
     CHECK_NE(cur, nullptr);
@@ -340,13 +341,13 @@ void RunTest(int thread_count,
   std::unique_ptr<TestLoopThread> noisy_neighbor_thread = nullptr;
   if (noisy_neighbor_fn) {
     noisy_neighbor_thread = std::make_unique<TestLoopThread>(
-        BindOnce(noisy_neighbor_fn, Unretained(alloc.get())));
+        base::BindOnce(noisy_neighbor_fn, base::Unretained(alloc.get())));
   }
 
   std::vector<std::unique_ptr<TestLoopThread>> threads;
   for (int i = 0; i < thread_count; ++i) {
     threads.push_back(std::make_unique<TestLoopThread>(
-        BindOnce(test_fn, Unretained(alloc.get()))));
+        base::BindOnce(test_fn, base::Unretained(alloc.get()))));
   }
 
   uint64_t total_laps_per_second = 0;
@@ -452,4 +453,4 @@ TEST_P(PartitionAllocMemoryAllocationPerfTest,
 
 }  // namespace
 
-}  // namespace base
+}  // namespace partition_alloc::internal

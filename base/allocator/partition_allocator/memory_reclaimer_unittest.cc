@@ -118,12 +118,12 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   base::internal::PartitionAllocMalloc::Allocator()
       ->EnableThreadCacheIfSupported();
 
-  for (size_t i = 0; i < internal::ThreadCache::kDefaultSizeThreshold; i++) {
+  for (size_t i = 0; i < ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);
     FreeForTest(data);
   }
 
-  auto* tcache = internal::ThreadCache::Get();
+  auto* tcache = ThreadCache::Get();
   ASSERT_TRUE(tcache);
   size_t cached_size = tcache->CachedMemory();
 

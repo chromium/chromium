@@ -148,7 +148,7 @@ namespace {
 
 void RunThreadCachePeriodicPurge() {
   TRACE_EVENT0("memory", "PeriodicPurge");
-  auto& instance = internal::ThreadCacheRegistry::Instance();
+  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
   instance.RunPeriodicPurge();
   TimeDelta delay =
       Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
@@ -175,7 +175,7 @@ void RunMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
 }  // namespace
 
 void StartThreadCachePeriodicPurge() {
-  auto& instance = internal::ThreadCacheRegistry::Instance();
+  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
   TimeDelta delay =
       Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(

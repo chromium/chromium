@@ -81,7 +81,7 @@ void MemoryReclaimer::Reclaim(int flags) {
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
   if (flags & PurgeFlags::kAggressiveReclaim)
-    base::internal::ThreadCacheRegistry::Instance().PurgeAll();
+    ThreadCacheRegistry::Instance().PurgeAll();
 #endif
 
   for (auto* partition : partitions_)

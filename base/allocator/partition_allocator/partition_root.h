@@ -1949,6 +1949,7 @@ namespace partition_alloc {
 // the migration to the new namespaces gets done.
 using ::base::PartitionOptions;
 using ::base::PurgeFlags;
+using ::base::ThreadSafePartitionRoot;
 
 namespace internal {
 
