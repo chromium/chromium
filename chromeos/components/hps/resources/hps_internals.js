@@ -8,58 +8,32 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 const POLL_INTERVAL_MS = 500;  // Matches hpsd polling rate.
 const MAX_HISTORY = 512 / 4;
+const HPS_RESULT_DISABLED = -1;
+const HPS_RESULT_UNKNOWN = 0;
+const HPS_RESULT_NEGATIVE = 1;
+const HPS_RESULT_POSITIVE = 2;
 
-enum HpsResult {
-  DISABLED = -1,
-  UNKNOWN = 0,
-  NEGATIVE = 1,
-  POSITIVE = 2,
-};
+let g_senseState = HPS_RESULT_DISABLED;
+let g_notifyState = HPS_RESULT_DISABLED;
+let g_pollTimer = undefined;
 
-interface ConnectionState {
-  connected: boolean;
-};
-
-interface HpsResultState {
-  state?: number;
-  disabled?: boolean;
-};
-
-let g_senseState = HpsResult.DISABLED;
-let g_notifyState = HpsResult.DISABLED;
-let g_pollTimer: number|undefined = undefined;
-
-function hpsResultToString(result: HpsResult) {
-  switch (result) {
-    case HpsResult.DISABLED:
-      return 'disabled';
-    case HpsResult.UNKNOWN:
-      return 'unknown';
-    case HpsResult.NEGATIVE:
-      return 'negative';
-    case HpsResult.POSITIVE:
-      return 'positive';
-  }
+function hpsResultToString(result) {
+  return {
+    [HPS_RESULT_DISABLED]: 'disabled',
+    [HPS_RESULT_UNKNOWN]: 'unknown',
+    [HPS_RESULT_NEGATIVE]: 'negative',
+    [HPS_RESULT_POSITIVE]: 'positive',
+  }[result];
 }
 
-function hpsResultToClass(result: HpsResult) {
-  // For now we reuse the display strings for class names, but if the UI is ever
-  // translated, this should be adapted.
-  return hpsResultToString(result);
-}
-
-function enableButton(selector: string, enabled: boolean) {
-  ($(selector) as HTMLButtonElement).disabled = !enabled;
-}
-
-function onConnected(state: ConnectionState) {
+function onConnected(state) {
   const connected = state.connected;
   onSenseChanged({disabled: true});
   onNotifyChanged({disabled: true});
-  enableButton('enable-sense', false);
-  enableButton('disable-sense', false);
-  enableButton('enable-notify', false);
-  enableButton('disable-notify', false);
+  $('enable-sense').disabled = true;
+  $('disable-sense').disabled = true;
+  $('enable-notify').disabled = true;
+  $('disable-notify').disabled = true;
   $('connection-error').style.display = connected ? 'none' : 'block';
   if (connected) {
     // Query the state of each feature to see if they are enabled or not.
@@ -73,33 +47,33 @@ function onEnableError() {
   $('enable-error').style.display = 'block';
 }
 
-function onSenseChanged(value: HpsResultState) {
+function onSenseChanged(value) {
   if (value.disabled) {
-    enableButton('enable-sense', true);
-    enableButton('disable-sense', false);
-    g_senseState = HpsResult.DISABLED;
+    $('enable-sense').disabled = false;
+    $('disable-sense').disabled = true;
+    g_senseState = HPS_RESULT_DISABLED;
   } else {
-    enableButton('enable-sense', false);
-    enableButton('disable-sense', true);
-    g_senseState = value.state!;
+    $('enable-sense').disabled = true;
+    $('disable-sense').disabled = false;
+    g_senseState = value.state;
   }
   $('sense-state').textContent = hpsResultToString(g_senseState);
-  $('sense-state').className = hpsResultToClass(g_senseState);
+  $('sense-state').className = hpsResultToString(g_senseState);
   updatePolling();
 }
 
-function onNotifyChanged(value: HpsResultState) {
+function onNotifyChanged(value) {
   if (value.disabled) {
-    enableButton('enable-notify', true);
-    enableButton('disable-notify', false);
-    g_notifyState = HpsResult.DISABLED;
+    $('enable-notify').disabled = false;
+    $('disable-notify').disabled = true;
+    g_notifyState = HPS_RESULT_DISABLED;
   } else {
-    enableButton('enable-notify', false);
-    enableButton('disable-notify', true);
-    g_notifyState = value.state!;
+    $('enable-notify').disabled = true;
+    $('disable-notify').disabled = false;
+    g_notifyState = value.state;
   }
   $('notify-state').textContent = hpsResultToString(g_notifyState);
-  $('notify-state').className = hpsResultToClass(g_notifyState);
+  $('notify-state').className = hpsResultToString(g_notifyState);
   updatePolling();
 }
 
@@ -144,8 +118,8 @@ function disableNotify() {
 
 function updatePolling() {
   const shouldPoll =
-      g_notifyState !== HpsResult.DISABLED ||
-      g_senseState !== HpsResult.DISABLED;
+      g_notifyState !== HPS_RESULT_DISABLED ||
+      g_senseState !== HPS_RESULT_DISABLED;
   if (shouldPoll && g_pollTimer === undefined) {
     g_pollTimer = setInterval(recordSample, POLL_INTERVAL_MS);
     recordSample();
@@ -156,22 +130,22 @@ function updatePolling() {
   $('root').dispatchEvent(new CustomEvent('state-updated-for-test'));
 }
 
-function pruneSamples(container: HTMLElement) {
+function pruneSamples(container) {
   while (container.childElementCount > MAX_HISTORY) {
-    container.firstChild!.remove();
+    container.firstChild.remove();
   }
 }
 
 function recordSample() {
   if (g_senseState !== undefined) {
     let sample = document.createElement('span');
-    sample.className = hpsResultToClass(g_senseState);
+    sample.className = hpsResultToString(g_senseState);
     $('sense-history').appendChild(sample);
     pruneSamples($('sense-history'));
   }
   if (g_notifyState !== undefined) {
     let sample = document.createElement('span');
-    sample.className = hpsResultToClass(g_notifyState);
+    sample.className = hpsResultToString(g_notifyState);
     $('notify-history').appendChild(sample);
     pruneSamples($('notify-history'));
   }
