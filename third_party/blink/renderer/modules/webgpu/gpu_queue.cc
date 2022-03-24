@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -408,8 +409,26 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
     }
   }
 
-  GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data, data_size,
-                               &dawn_data_layout, &dawn_write_size);
+  if (dawn_data_layout.offset > data_size) {
+    device_->InjectError(WGPUErrorType_Validation, "Data offset is too large");
+    return;
+  }
+
+  WGPUTextureFormat format = destination->texture()->Format();
+  size_t required_copy_size = 0;
+  if (!ComputeAndValidateRequiredBytesInCopy(
+          data_size, dawn_data_layout, dawn_write_size, format,
+          dawn_destination.aspect, &required_copy_size, device_)) {
+    return;
+  }
+
+  // Only send the data which is really required.
+  const void* data_ptr =
+      static_cast<const uint8_t*>(data) + dawn_data_layout.offset;
+  dawn_data_layout.offset = 0;
+  GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data_ptr,
+                               required_copy_size, &dawn_data_layout,
+                               &dawn_write_size);
   EnsureFlush();
   return;
 }
