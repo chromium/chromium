@@ -153,9 +153,6 @@ NET_EXPORT extern const base::Feature kEnableTLS13EarlyData;
 
 // Enables the TLS Encrypted ClientHello feature.
 // https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
-//
-// TODO(https://crbug.com/1091403): This flag does not currently do much yet.
-// ECH is still in development.
 NET_EXPORT extern const base::Feature kEncryptedClientHello;
 
 // Enables optimizing the network quality estimation algorithms in network

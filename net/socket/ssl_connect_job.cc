@@ -23,12 +23,14 @@
 #include "net/cert/x509_util.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_connect_job.h"
+#include "net/socket/websocket_transport_connect_job.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -274,9 +276,26 @@ int SSLConnectJob::DoTransportConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  nested_connect_job_ = TransportConnectJob::CreateTransportConnectJob(
-      params_->GetDirectConnectionParams(), priority(), socket_tag(),
-      common_connect_job_params(), this, &net_log());
+  if (!common_connect_job_params()->websocket_endpoint_lock_manager) {
+    // If this is an ECH retry, connect to the same server as before.
+    absl::optional<TransportConnectJob::EndpointResultOverride>
+        endpoint_result_override;
+    if (ech_retry_configs_) {
+      DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
+      DCHECK(endpoint_result_);
+      endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
+    }
+    nested_connect_job_ = std::make_unique<TransportConnectJob>(
+        priority(), socket_tag(), common_connect_job_params(),
+        params_->GetDirectConnectionParams(), this, &net_log(),
+        std::move(endpoint_result_override));
+  } else {
+    // TODO(https://crbug.com/1291352): Support ECH for WebSockets.
+    DCHECK(!ech_retry_configs_);
+    nested_connect_job_ = std::make_unique<WebSocketTransportConnectJob>(
+        priority(), socket_tag(), common_connect_job_params(),
+        params_->GetDirectConnectionParams(), this, &net_log());
+  }
   return nested_connect_job_->Connect();
 }
 
@@ -374,14 +393,30 @@ int SSLConnectJob::DoSSLConnect() {
   ssl_negotiation_started_ = true;
   connect_timing_.ssl_start = base::TimeTicks::Now();
 
+  // Save the `HostResolverEndpointResult`. `nested_connect_job_` is destroyed
+  // at the end of this function.
+  endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
+
   SSLConfig ssl_config = params_->ssl_config();
   ssl_config.network_isolation_key = params_->network_isolation_key();
   ssl_config.privacy_mode = params_->privacy_mode();
   ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
+
   if (base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
-    ssl_config.ech_config_list =
-        nested_connect_job_->GetEndpointMetadata().ech_config_list;
+    if (ech_retry_configs_) {
+      ssl_config.ech_config_list = *ech_retry_configs_;
+    } else if (endpoint_result_) {
+      ssl_config.ech_config_list = endpoint_result_->metadata.ech_config_list;
+    }
+    if (!ssl_config.ech_config_list.empty()) {
+      // Overriding the DNS lookup only works for direct connections. We
+      // currently do not support ECH with other connection types.
+      DCHECK_EQ(params_->GetConnectionType(), SSLSocketParams::DIRECT);
+      // TODO(https://crbug.com/1291352): Support ECH for WebSockets.
+      DCHECK(!common_connect_job_params()->websocket_endpoint_lock_manager);
+    }
   }
+
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);
@@ -412,6 +447,33 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
        result == ERR_SSL_VERSION_OR_CIPHER_MISMATCH)) {
     ResetStateForRestart();
     disable_legacy_crypto_with_fallback_ = false;
+    next_state_ = GetInitialState(params_->GetConnectionType());
+    return OK;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEncryptedClientHello) &&
+      !ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED) {
+    // We used ECH, and the server could not decrypt the ClientHello. However,
+    // it was able to handshake with the public name and send authenticated
+    // retry configs. If this is not the first time around, retry the connection
+    // with the new ECHConfigList, or with ECH disabled (empty retry configs),
+    // as directed.
+    //
+    // See
+    // https://www.ietf.org/archive/id/draft-ietf-tls-esni-13.html#section-6.1.6
+    DCHECK(endpoint_result_ &&
+           !endpoint_result_->metadata.ech_config_list.empty());
+    ech_retry_configs_ = ssl_socket_->GetECHRetryConfigs();
+    net_log().AddEvent(
+        NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
+          base::Value dict(base::Value::Type::DICTIONARY);
+          dict.SetKey("bytes", NetLogBinaryValue(*ech_retry_configs_));
+          return dict;
+        });
+
+    // TODO(https://crbug.com/1091403): Add histograms for how often this
+    // happens.
+    ResetStateForRestart();
     next_state_ = GetInitialState(params_->GetConnectionType());
     return OK;
   }

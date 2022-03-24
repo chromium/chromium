@@ -5,9 +5,12 @@
 #ifndef NET_SOCKET_SSL_CONNECT_JOB_H_
 #define NET_SOCKET_SSL_CONNECT_JOB_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -16,12 +19,14 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -205,6 +210,14 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // lifetime and the aliases can no longer be retrieved from there by by the
   // time that the aliases are needed to be passed in SetSocket.
   std::set<std::string> dns_aliases_;
+
+  // The endpoint result used by `nested_connect_job_`. Stored because
+  // `nested_connect_job_` has a limited lifetime.
+  absl::optional<HostResolverEndpointResult> endpoint_result_;
+
+  // If not `absl::nullopt`, the ECH retry configs to use in the ECH recovery
+  // flow. `endpoint_result_` will then contain the endpoint to reconnect to.
+  absl::optional<std::vector<uint8_t>> ech_retry_configs_;
 };
 
 }  // namespace net

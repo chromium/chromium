@@ -47,6 +47,7 @@
 #include "net/ssl/ssl_legacy_crypto_fallback.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -59,6 +60,12 @@
 
 namespace net {
 namespace {
+
+IPAddress ParseIP(const std::string& ip) {
+  IPAddress address;
+  CHECK(address.AssignFromIPLiteral(ip));
+  return address;
+}
 
 // Just check that all connect times are set to base::TimeTicks::Now(), for
 // tests that don't update the mocked out time.
@@ -1237,6 +1244,349 @@ TEST_F(SSLConnectJobTest, NoAdditionalDnsAliases) {
   // Verify that the alias list only contains "host".
   EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
               testing::ElementsAre("host"));
+}
+
+// Test that `SSLConnectJob` retries the connection if there was a stale ECH
+// configuration.
+TEST_F(SSLConnectJobTest, ECHStaleConfig) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list3));
+
+  // Configure two HTTPS RR routes, to test the retry uses the correct one.
+  HostResolverEndpointResult endpoint1, endpoint2;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = ech_config_list1;
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = ech_config_list2;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+
+  // The first connection attempt will be to `endpoint1`, which will fail.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The second connection attempt will be to `endpoint2`, which will succeed.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake will then fail, but then provide retry configs.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  ssl2.ech_retry_configs = ech_config_list3;
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+  // The third connection attempt should skip `endpoint1` and retry with only
+  // `endpoint2`.
+  StaticSocketDataProvider data3;
+  data3.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data3.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data3);
+  // The handshake should be passed the retry configs.
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  ssl3.expected_ech_config_list = ech_config_list3;
+  socket_factory_.AddSSLSocketDataProvider(&ssl3);
+
+  // The connection should ultimately succeed.
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+}
+
+// Test that `SSLConnectJob` retries the connection given a secure rollback
+// signal.
+TEST_F(SSLConnectJobTest, ECHRollback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+
+  // Configure two HTTPS RR routes, to test the retry uses the correct one.
+  HostResolverEndpointResult endpoint1, endpoint2;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = ech_config_list1;
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = ech_config_list2;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+
+  // The first connection attempt will be to `endpoint1`, which will fail.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The second connection attempt will be to `endpoint2`, which will succeed.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake will then fail, and provide no retry configs.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  ssl2.ech_retry_configs = std::vector<uint8_t>();
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+  // The third connection attempt should skip `endpoint1` and retry with only
+  // `endpoint2`.
+  StaticSocketDataProvider data3;
+  data3.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data3.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data3);
+  // The handshake should not be passed ECH configs.
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  ssl3.expected_ech_config_list = std::vector<uint8_t>();
+  socket_factory_.AddSSLSocketDataProvider(&ssl3);
+
+  // The connection should ultimately succeed.
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+}
+
+// Test that `SSLConnectJob` will not retry more than once.
+TEST_F(SSLConnectJobTest, ECHTooManyRetries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list3));
+
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list1;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint});
+
+  // The first connection attempt will succeed.
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The handshake will then fail, but provide retry configs.
+  SSLSocketDataProvider ssl1(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl1.expected_ech_config_list = ech_config_list1;
+  ssl1.ech_retry_configs = ech_config_list2;
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+  // The second connection attempt will succeed.
+  StaticSocketDataProvider data2;
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake will then fail, but provide new retry configs.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  ssl2.ech_retry_configs = ech_config_list3;
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+  // There will be no third connection attempt.
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(),
+              test::IsError(ERR_ECH_NOT_NEGOTIATED));
+}
+
+// Test that `SSLConnectJob` will not retry for ECH given the wrong error.
+TEST_F(SSLConnectJobTest, ECHWrongRetryError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list1;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint});
+
+  // The first connection attempt will succeed.
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The handshake will then fail, but provide retry configs.
+  SSLSocketDataProvider ssl1(ASYNC, ERR_FAILED);
+  ssl1.expected_ech_config_list = ech_config_list1;
+  ssl1.ech_retry_configs = ech_config_list2;
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+  // There will be no second connection attempt.
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_FAILED));
+}
+
+// Test the legacy crypto callback can trigger after the ECH recovery flow.
+TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list3));
+
+  // Configure two HTTPS RR routes, to test the retry uses the correct one.
+  HostResolverEndpointResult endpoint1, endpoint2;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = ech_config_list1;
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = ech_config_list2;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+
+  // The first connection attempt will be to `endpoint1`, which will fail.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The second connection attempt will be to `endpoint2`, which will succeed.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake will then fail, and provide retry configs.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  ssl2.expected_disable_legacy_crypto = true;
+  ssl2.ech_retry_configs = ech_config_list3;
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+  // The third connection attempt should skip `endpoint1` and retry with only
+  // `endpoint2`.
+  StaticSocketDataProvider data3;
+  data3.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data3.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data3);
+  // The handshake should be passed the retry configs. This will progress
+  // further but trigger the legacy crypto fallback.
+  SSLSocketDataProvider ssl3(ASYNC, ERR_SSL_PROTOCOL_ERROR);
+  ssl3.expected_ech_config_list = ech_config_list3;
+  ssl3.expected_disable_legacy_crypto = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl3);
+  // The third connection attempt should still skip `endpoint1` and retry with
+  // only `endpoint2`.
+  StaticSocketDataProvider data4;
+  data4.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data4.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data4);
+  // The handshake should still be passed ECH retry configs. This time, the
+  // connection enables legacy crypto and succeeds.
+  SSLSocketDataProvider ssl4(ASYNC, OK);
+  ssl4.expected_ech_config_list = ech_config_list3;
+  ssl4.expected_disable_legacy_crypto = false;
+  socket_factory_.AddSSLSocketDataProvider(&ssl4);
+
+  // The connection should ultimately succeed.
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+}
+
+// Test the ECH recovery flow can trigger after the legacy crypto fallback.
+TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list3));
+
+  // Configure two HTTPS RR routes, to test the retry uses the correct one.
+  HostResolverEndpointResult endpoint1, endpoint2;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = ech_config_list1;
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = ech_config_list2;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+
+  // The first connection attempt will be to `endpoint1`, which will fail.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The second connection attempt will be to `endpoint2`, which will succeed.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake will then fail, and trigger the legacy cryptography fallback.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_SSL_PROTOCOL_ERROR);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  ssl2.expected_disable_legacy_crypto = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+  // The third and fourth connection attempts proceed as before, but with legacy
+  // cryptography enabled.
+  StaticSocketDataProvider data3;
+  data3.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+  data3.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  socket_factory_.AddSocketDataProvider(&data3);
+  StaticSocketDataProvider data4;
+  data4.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data4.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data4);
+  // The handshake enables legacy crypto. Now ECH fails with retry configs.
+  SSLSocketDataProvider ssl4(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl4.expected_ech_config_list = ech_config_list2;
+  ssl4.expected_disable_legacy_crypto = false;
+  ssl4.ech_retry_configs = ech_config_list3;
+  socket_factory_.AddSSLSocketDataProvider(&ssl4);
+  // The fourth connection attempt should still skip `endpoint1` and retry with
+  // only `endpoint2`.
+  StaticSocketDataProvider data5;
+  data5.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+  data5.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data5);
+  // The handshake will now succeed with ECH retry configs and legacy
+  // cryptography.
+  SSLSocketDataProvider ssl5(ASYNC, OK);
+  ssl5.expected_ech_config_list = ech_config_list3;
+  ssl5.expected_disable_legacy_crypto = false;
+  socket_factory_.AddSSLSocketDataProvider(&ssl5);
+
+  // The connection should ultimately succeed.
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
 }
 
 }  // namespace

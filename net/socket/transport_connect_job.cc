@@ -150,13 +150,31 @@ std::unique_ptr<ConnectJob> TransportConnectJob::CreateTransportConnectJob(
       delegate, net_log);
 }
 
+TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
+    HostResolverEndpointResult result,
+    std::set<std::string> dns_aliases)
+    : result(std::move(result)), dns_aliases(std::move(dns_aliases)) {}
+TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
+    EndpointResultOverride&&) = default;
+TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
+    const EndpointResultOverride&) = default;
+TransportConnectJob::EndpointResultOverride::~EndpointResultOverride() =
+    default;
+TransportConnectJob::EndpointResultOverride&
+TransportConnectJob::EndpointResultOverride::operator=(
+    EndpointResultOverride&&) = default;
+TransportConnectJob::EndpointResultOverride&
+TransportConnectJob::EndpointResultOverride::operator=(
+    const EndpointResultOverride&) = default;
+
 TransportConnectJob::TransportConnectJob(
     RequestPriority priority,
     const SocketTag& socket_tag,
     const CommonConnectJobParams* common_connect_job_params,
     const scoped_refptr<TransportSocketParams>& params,
     Delegate* delegate,
-    const NetLogWithSource* net_log)
+    const NetLogWithSource* net_log,
+    absl::optional<EndpointResultOverride> endpoint_result_override)
     : ConnectJob(priority,
                  socket_tag,
                  ConnectionTimeout(),
@@ -170,12 +188,20 @@ TransportConnectJob::TransportConnectJob(
       resolve_result_(OK) {
   // This is only set for WebSockets.
   DCHECK(!common_connect_job_params->websocket_endpoint_lock_manager);
+
+  if (endpoint_result_override) {
+    has_dns_override_ = true;
+    endpoint_results_ = {std::move(endpoint_result_override->result)};
+    dns_aliases_ = std::move(endpoint_result_override->dns_aliases);
+    DCHECK(!endpoint_results_.front().ip_endpoints.empty());
+    DCHECK(IsEndpointResultUsable(endpoint_results_.front(),
+                                  IsSvcbOptional(endpoint_results_)));
+  }
 }
 
-TransportConnectJob::~TransportConnectJob() {
-  // We don't worry about cancelling the host resolution and TCP connect, since
-  // ~HostResolver::Request and ~StreamSocket will take care of it.
-}
+// We don't worry about cancelling the host resolution and TCP connect, since
+// ~HostResolver::Request and ~StreamSocket will take care of it.
+TransportConnectJob::~TransportConnectJob() = default;
 
 LoadState TransportConnectJob::GetLoadState() const {
   switch (next_state_) {
@@ -215,10 +241,10 @@ ResolveErrorInfo TransportConnectJob::GetResolveErrorInfo() const {
   return resolve_error_info_;
 }
 
-const ConnectionEndpointMetadata& TransportConnectJob::GetEndpointMetadata()
-    const {
+absl::optional<HostResolverEndpointResult>
+TransportConnectJob::GetHostResolverEndpointResult() const {
   CHECK_LT(current_endpoint_result_, endpoint_results_.size());
-  return endpoint_results_[current_endpoint_result_].metadata;
+  return endpoint_results_[current_endpoint_result_];
 }
 
 // static
@@ -298,8 +324,16 @@ int TransportConnectJob::DoLoop(int result) {
 }
 
 int TransportConnectJob::DoResolveHost() {
-  next_state_ = STATE_RESOLVE_HOST_COMPLETE;
   connect_timing_.dns_start = base::TimeTicks::Now();
+
+  if (has_dns_override_) {
+    DCHECK_EQ(1u, endpoint_results_.size());
+    connect_timing_.dns_end = connect_timing_.dns_start;
+    next_state_ = STATE_TRANSPORT_CONNECT;
+    return OK;
+  }
+
+  next_state_ = STATE_RESOLVE_HOST_COMPLETE;
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();

@@ -30,9 +30,9 @@
 namespace net {
 
 class ClientSocketFactory;
-struct ConnectionEndpointMetadata;
 class HostPortPair;
 class HostResolver;
+struct HostResolverEndpointResult;
 class HttpAuthCache;
 class HttpAuthController;
 class HttpAuthHandlerFactory;
@@ -233,9 +233,13 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
   virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
 
-  // Returns the `ConnectionEndpointMetadata` structure corresponding to the
-  // chosen route. Should only be called on a successful connect.
-  virtual const ConnectionEndpointMetadata& GetEndpointMetadata() const;
+  // Returns the `HostResolverEndpointResult` structure corresponding to the
+  // chosen route. Should only be called on a successful connect. If the
+  // `ConnectJob` does not make DNS queries, or does not use the SVCB/HTTPS
+  // record, it may return `absl::nullopt`, to avoid callers getting confused by
+  // an empty `IPEndPoint` list.
+  virtual absl::optional<HostResolverEndpointResult>
+  GetHostResolverEndpointResult() const;
 
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;

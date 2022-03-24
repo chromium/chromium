@@ -287,6 +287,13 @@ class SocketDataProvider {
   }
   bool set_keep_alive_result() const { return set_keep_alive_result_; }
 
+  const absl::optional<AddressList>& expected_addresses() const {
+    return expected_addresses_;
+  }
+  void set_expected_addresses(net::AddressList addresses) {
+    expected_addresses_ = std::move(addresses);
+  }
+
   // Returns true if the request should be considered idle, for the purposes of
   // IsConnectedAndIdle.
   virtual bool IsIdle() const;
@@ -325,6 +332,7 @@ class SocketDataProvider {
   int set_send_buffer_size_result_ = net::OK;
   bool set_no_delay_result_ = true;
   bool set_keep_alive_result_ = true;
+  absl::optional<AddressList> expected_addresses_;
 };
 
 // The AsyncSocket is an interface used by the SocketDataProvider to
@@ -487,6 +495,9 @@ struct SSLSocketDataProvider {
   // Result for GetSSLCertRequestInfo().
   SSLCertRequestInfo* cert_request_info;
 
+  // Result for GetECHRetryConfigs().
+  std::vector<uint8_t> ech_retry_configs;
+
   absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
 
   uint16_t expected_ssl_version_min;
@@ -496,6 +507,7 @@ struct SSLSocketDataProvider {
   absl::optional<HostPortPair> expected_host_and_port;
   absl::optional<NetworkIsolationKey> expected_network_isolation_key;
   absl::optional<bool> expected_disable_legacy_crypto;
+  absl::optional<std::vector<uint8_t>> expected_ech_config_list;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;

@@ -815,9 +815,9 @@ TEST_F(TransportConnectJobTest, LastRouteUnusable) {
   EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("1.1.1.1"), 8441));
 }
 
-// `GetEndpointMetadata` should surface information about the endpoint that was
-// actually used.
-TEST_F(TransportConnectJobTest, GetEndpointMetadata) {
+// `GetHostResolverEndpointResult` should surface information about the endpoint
+// that was actually used.
+TEST_F(TransportConnectJobTest, GetHostResolverEndpointResult) {
   std::vector<HostResolverEndpointResult> endpoints(4);
   // `endpoints[0]` will be skipped due to ALPN mismatch.
   endpoints[0].ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
@@ -855,7 +855,8 @@ TEST_F(TransportConnectJobTest, GetEndpointMetadata) {
   test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
                                         /*expect_sync_result=*/false);
 
-  EXPECT_EQ(transport_connect_job.GetEndpointMetadata(), endpoints[2].metadata);
+  EXPECT_EQ(transport_connect_job.GetHostResolverEndpointResult(),
+            endpoints[2]);
 }
 
 // If the client and server both support ECH, TransportConnectJob should switch
@@ -980,6 +981,37 @@ TEST_F(TransportConnectJobTest, SvcbOptionalIfEchInconsistent) {
       DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
   test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
                                         /*expect_sync_result=*/false);
+}
+
+// Overriding the endpoint results should skip DNS resolution.
+TEST_F(TransportConnectJobTest, EndpointResultOverride) {
+  // Make DNS resolution fail, to confirm we don't use the result.
+  host_resolver_.rules()->AddRule(kHostName, ERR_FAILED);
+
+  // `TransportConnectJob` should try `endpoint`.
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          endpoint.ip_endpoints),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TransportConnectJob::EndpointResultOverride override(
+      endpoint, {"alias.example", kHostName});
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr, override);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/true);
+
+  // Verify information is reported from the override.
+  EXPECT_EQ(transport_connect_job.GetHostResolverEndpointResult(), endpoint);
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre("alias.example", kHostName));
 }
 
 }  // namespace

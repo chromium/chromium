@@ -788,6 +788,16 @@ EVENT_TYPE(HTTP_PROXY_CONNECT_JOB_CONNECT)
 // The start/end of the WebSocketConnectJob::Connect().
 EVENT_TYPE(WEB_SOCKET_TRANSPORT_CONNECT_JOB_CONNECT)
 
+// A TLS connection attempt failed because ECH was not negotiated. The
+// connection will be retried with a new ECHConfigList from the client-facing
+// server. If the new ECHConfigList is the empty string, the server has rolled
+// back ECH and the new attempt will have ECH disabled.
+//
+//   {
+//     "bytes": <The new ECHConfigList, base64-encoded>
+//   }
+EVENT_TYPE(SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST)
+
 // ------------------------------------------------------------------------
 // ClientSocketPoolBaseHelper
 // ------------------------------------------------------------------------

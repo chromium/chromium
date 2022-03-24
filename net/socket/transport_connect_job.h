@@ -128,12 +128,27 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
       ConnectJob::Delegate* delegate,
       const NetLogWithSource* net_log);
 
+  struct NET_EXPORT_PRIVATE EndpointResultOverride {
+    EndpointResultOverride(HostResolverEndpointResult result,
+                           std::set<std::string> dns_aliases);
+    EndpointResultOverride(EndpointResultOverride&&);
+    EndpointResultOverride(const EndpointResultOverride&);
+    ~EndpointResultOverride();
+    EndpointResultOverride& operator=(EndpointResultOverride&&);
+    EndpointResultOverride& operator=(const EndpointResultOverride&);
+
+    HostResolverEndpointResult result;
+    std::set<std::string> dns_aliases;
+  };
+
   TransportConnectJob(RequestPriority priority,
                       const SocketTag& socket_tag,
                       const CommonConnectJobParams* common_connect_job_params,
                       const scoped_refptr<TransportSocketParams>& params,
                       Delegate* delegate,
-                      const NetLogWithSource* net_log);
+                      const NetLogWithSource* net_log,
+                      absl::optional<EndpointResultOverride>
+                          endpoint_result_override = absl::nullopt);
 
   TransportConnectJob(const TransportConnectJob&) = delete;
   TransportConnectJob& operator=(const TransportConnectJob&) = delete;
@@ -145,7 +160,13 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   bool HasEstablishedConnection() const override;
   ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
-  const ConnectionEndpointMetadata& GetEndpointMetadata() const override;
+  absl::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
+      const override;
+
+  // Skips DNS resolution and instead connects to `endpoint_result`, reporting
+  // `dns_aliases` as the list of DNS aliases. Must be called before `Connect`.
+  void SetDnsResultOverride(const HostResolverEndpointResult& endpoint_result,
+                            const std::set<std::string>& dns_aliases);
 
   // Rolls |addrlist| forward until the first IPv4 address, if any.
   // WARNING: this method should only be used to implement the prefer-IPv4 hack.
@@ -214,6 +235,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   std::vector<HostResolverEndpointResult> endpoint_results_;
   size_t current_endpoint_result_ = 0;
   std::set<std::string> dns_aliases_;
+  bool has_dns_override_ = false;
 
   State next_state_;
 

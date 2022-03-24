@@ -9727,11 +9727,264 @@ TEST_F(HTTPSRequestTest, EncryptedClientHello) {
 
       d.RunUntilComplete();
 
+      EXPECT_THAT(d.request_status(), IsOk());
       EXPECT_EQ(1, d.response_started_count());
       EXPECT_FALSE(d.received_data_before_response());
       EXPECT_NE(0, d.bytes_received());
       EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
     }
+  }
+}
+
+// Test that, if the DNS returns a stale ECHConfigList (or other key mismatch),
+// the client can recover and connect to the server, provided the server can
+// handshake as the public name.
+TEST_F(HTTPSRequestTest, EncryptedClientHelloStaleKey) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list, ech_config_list_stale,
+      ech_config_list_wrong_public_name;
+  bssl::UniquePtr<SSL_ECH_KEYS> ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ech_keys);
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure an ECH-supporting server that can speak for all names except
+  // `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  SSLServerConfig ssl_server_config;
+  ssl_server_config.ech_keys = std::move(ech_keys);
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+
+  // Configure `MockHostResolver` to return `ech_config_list_stale` or
+  // `ech_config_list_wrong_public_name` for the real names.
+  //
+  // TODO(https://crbug.com/1264933): Replace this with an end-to-end test
+  // when the `HostResolver` portion is implemented.
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = addr.endpoints();
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list_stale;
+  host_resolver->rules()->AddRule(kRealNameStale, std::vector{endpoint});
+  endpoint.metadata.ech_config_list = ech_config_list_wrong_public_name;
+  host_resolver->rules()->AddRule(kRealNameWrongPublicName,
+                                  std::vector{endpoint});
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
+
+  // Connecting to `kRealNameStale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and provide new
+  // keys for the client to use.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameStale, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_TRUE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `kRealNameWrongPublicName` should fail. The server can
+  // neither decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+  }
+}
+
+TEST_F(HTTPSRequestTest, EncryptedClientHelloFallback) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list_stale, ech_config_list_wrong_public_name;
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure a server, without ECH, that can speak for all names except
+  // `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+
+  // Configure `MockHostResolver` to return `ech_config_list_stale` or
+  // `ech_config_list_wrong_public_name` for the real names.
+  //
+  // TODO(https://crbug.com/1264933): Replace this with an end-to-end test
+  // when the `HostResolver` portion is implemented.
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = addr.endpoints();
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list_stale;
+  host_resolver->rules()->AddRule(kRealNameStale, std::vector{endpoint});
+  endpoint.metadata.ech_config_list = ech_config_list_wrong_public_name;
+  host_resolver->rules()->AddRule(kRealNameWrongPublicName,
+                                  std::vector{endpoint});
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
+
+  // Connecting to `kRealNameStale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and trigger an
+  // authenticated fallback.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameStale, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_FALSE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `kRealNameWrongPublicName` should fail. The server can
+  // neither decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+  }
+}
+
+TEST_F(HTTPSRequestTest, EncryptedClientHelloFallbackTLS12) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list_stale, ech_config_list_wrong_public_name;
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure a server, without ECH or TLS 1.3, that can speak for all names
+  // except `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  SSLServerConfig ssl_server_config;
+  ssl_server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+
+  // Configure `MockHostResolver` to return `ech_config_list_stale` or
+  // `ech_config_list_wrong_public_name` for the real names.
+  //
+  // TODO(https://crbug.com/1264933): Replace this with an end-to-end test
+  // when the `HostResolver` portion is implemented.
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = addr.endpoints();
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list_stale;
+  host_resolver->rules()->AddRule(kRealNameStale, std::vector{endpoint});
+  endpoint.metadata.ech_config_list = ech_config_list_wrong_public_name;
+  host_resolver->rules()->AddRule(kRealNameWrongPublicName,
+                                  std::vector{endpoint});
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
+
+  // Connecting to `kRealNameStale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and trigger an
+  // authenticated fallback.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameStale, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_FALSE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `kRealNameWrongPublicName` should fail. The server can
+  // neither decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context->CreateRequest(
+        test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
   }
 }
 

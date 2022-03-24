@@ -791,8 +791,8 @@ MockClientSocketFactory::CreateTransportClientSocket(
   SocketDataProvider* data_provider = mock_tcp_data_.GetNextWithoutAsserting();
   if (!data_provider)
     data_provider = mock_data_.GetNext();
-  std::unique_ptr<MockTCPClientSocket> socket(
-      new MockTCPClientSocket(addresses, net_log, data_provider));
+  auto socket =
+      std::make_unique<MockTCPClientSocket>(addresses, net_log, data_provider);
   if (enable_read_if_ready_)
     socket->set_enable_read_if_ready(enable_read_if_ready_);
   return std::move(socket);
@@ -849,6 +849,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   if (next_ssl_data->expected_disable_legacy_crypto) {
     EXPECT_EQ(*next_ssl_data->expected_disable_legacy_crypto,
               ssl_config.disable_legacy_crypto);
+  }
+  if (next_ssl_data->expected_ech_config_list) {
+    EXPECT_EQ(*next_ssl_data->expected_ech_config_list,
+              ssl_config.ech_config_list);
   }
   return std::unique_ptr<SSLClientSocket>(new MockSSLClientSocket(
       std::move(stream_socket), host_and_port, ssl_config, next_ssl_data));
@@ -953,6 +957,9 @@ MockTCPClientSocket::MockTCPClientSocket(const AddressList& addresses,
   DCHECK(data_);
   peer_addr_ = data->connect_data().peer_addr;
   data_->Initialize(this);
+  if (data_->expected_addresses()) {
+    EXPECT_EQ(*data_->expected_addresses(), addresses);
+  }
 }
 
 MockTCPClientSocket::~MockTCPClientSocket() {
@@ -1502,10 +1509,7 @@ int MockSSLClientSocket::ExportKeyingMaterial(const base::StringPiece& label,
 }
 
 std::vector<uint8_t> MockSSLClientSocket::GetECHRetryConfigs() {
-  // TODO(crbug.com/1091403): Add a mechanism to specify this, when testing the
-  // retry portions of the recovery flow.
-  NOTIMPLEMENTED();
-  return {};
+  return data_->ech_retry_configs;
 }
 
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
