@@ -58,12 +58,12 @@
             module: device.createShaderModule({
               code: `
 struct VertexOutput {
-  [[builtin(position)]] Position : vec4<f32>;
-  [[location(0)]] fragUV : vec2<f32>;
+  @builtin(position) Position : vec4<f32>;
+  @location(0) fragUV : vec2<f32>;
 };
 
-[[stage(vertex)]]
-fn main([[builtin(vertex_index)]] idx : u32) -> VertexOutput {
+@stage(vertex)
+fn main(@builtin(vertex_index) idx : u32) -> VertexOutput {
   var pos = array<vec3<f32>, 6>(
     vec3<f32>( 1.0,  1.0, 0.0),
     vec3<f32>( 1.0, -1.0, 0.0),
@@ -93,12 +93,12 @@ fn main([[builtin(vertex_index)]] idx : u32) -> VertexOutput {
           fragment: {
             module: device.createShaderModule({
               code: `
-[[binding(0), group(0)]] var mySampler: sampler;
-[[binding(1), group(0)]] var myTexture: texture_external;
-[[binding(2), group(0)]] var myTexture2: texture_external;
+@binding(0) @group(0) var mySampler: sampler;
+@binding(1) @group(0) var myTexture: texture_external;
+@binding(2) @group(0) var myTexture2: texture_external;
 
-[[stage(fragment)]]
-fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
+@stage(fragment)
+fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
   var result : vec4<f32>;
   if (fragUV.y <= 1.0) {
     result = textureSampleLevel(myTexture, mySampler, fragUV);
