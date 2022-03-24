@@ -4649,6 +4649,9 @@ New install
       <message name="IDS_APP_LIST_OPEN_TAB_HINT" desc="Shown alongside launcher search results which will take the user to an open tab when clicked.">
         Go to this tab
       </message>
+      <message name="IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX" desc="Shown next to a video game search result, begins a list of cloud gaming platforms the game is playable on.">
+        on
+      </message>
       <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
         Google Assistant
       </message>

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
 #include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 #include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
+#include "chrome/browser/ui/app_list/search/games/game_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
@@ -170,6 +171,15 @@ std::unique_ptr<SearchController> CreateSearchController(
   size_t help_app_group_id = controller->AddGroup(kGenericMaxResults);
   controller->AddProvider(help_app_group_id,
                           std::make_unique<HelpAppProvider>(profile));
+
+  // TODO(crbug.com/1305880): Move this to its own flag.
+  if (ash::features::IsProductivityLauncherEnabled() &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          ash::features::kProductivityLauncher, "enable_games", false)) {
+    size_t games_group_id = controller->AddGroup(kGenericMaxResults);
+    controller->AddProvider(games_group_id, std::make_unique<GameProvider>(
+                                                profile, list_controller));
+  }
 
   return controller;
 }

@@ -18,6 +18,35 @@
 namespace app_list {
 namespace {
 
+// Given `higher_priority` and `lower_priority` result types, deduplicate
+// results between the two result types in `results` based on their id,
+// preserving the ones in `higher_priority`.
+//
+// Note this only deduplicates results whose ids are present in both result
+// types; if two results of one result type have the same id, they will not be
+// deduplicated.
+void DeduplicateResults(ResultsMap& results,
+                        ResultType higher_priority,
+                        ResultType lower_priority) {
+  const auto first_it = results.find(higher_priority);
+  const auto second_it = results.find(lower_priority);
+  if (first_it == results.end() || second_it == results.end())
+    return;
+  const auto& first_results = first_it->second;
+  const auto& second_results = second_it->second;
+
+  base::flat_set<std::string> first_ids;
+  for (const auto& result : first_results) {
+    if (result->result_type() == higher_priority)
+      first_ids.insert(result->id());
+  }
+
+  for (auto& result : second_results) {
+    if (first_ids.contains(result->id()))
+      result->scoring().filter = true;
+  }
+}
+
 void DeduplicateDriveFilesAndTabs(ResultsMap& results) {
   const auto omnibox_it = results.find(ProviderType::kOmnibox);
   const auto drive_it = results.find(ProviderType::kDriveSearch);
@@ -91,6 +120,9 @@ void FilteringRanker::UpdateResultRanks(ResultsMap& results,
     return;
   FilterOmniboxResults(results);
   DeduplicateDriveFilesAndTabs(results);
+  // TODO(crbug.com/1305880): Verify that game URLs match the omnibox stripped
+  // URL once game URLs are finalized.
+  DeduplicateResults(results, ResultType::kGames, ResultType::kOmnibox);
 }
 
 }  // namespace app_list

@@ -70,8 +70,7 @@ class FileResult : public ChromeSearchResult {
   }
 
  private:
-  // Callback for the result of MaybeRequestThumbnail's call to the
-  // ThumbnailLoader.
+  // Callback for the result of RequestThumbnail's call to the ThumbnailLoader.
   void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);
 
   // Callback for the result of SetDetailsToJustificationString to
