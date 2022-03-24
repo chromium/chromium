@@ -48,7 +48,7 @@ class MessageDispatcherBridge {
 
  protected:
   virtual ~MessageDispatcherBridge();
-  bool messages_enabled_for_embedder_;
+  bool messages_enabled_for_embedder_ = false;
 
  private:
   ResourceIdMapper resource_id_mapper_;

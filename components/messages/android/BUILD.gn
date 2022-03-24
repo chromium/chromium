@@ -80,6 +80,17 @@ static_library("test_support") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "message_dispatcher_bridge_unittest.cc" ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
 java_cpp_enum("message_enums_java") {
   sources = [ "message_enums.h" ]
 }
