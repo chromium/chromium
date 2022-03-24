@@ -11,14 +11,16 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace printing {
 
 namespace {
 
-constexpr int kMicronsPerMM = 1000;
-constexpr double kMMPerInch = 25.4;
-constexpr double kMicronsPerInch = kMMPerInch * kMicronsPerMM;
+constexpr int kMicronsPerMm = 1000;
+constexpr float kMmPerInch = 25.4f;
+constexpr float kMicronsPerInch = kMmPerInch * kMicronsPerMm;
 
 // Defines two prefixes of a special breed of media sizes not meant for
 // users' eyes. CUPS incidentally returns these IPP values to us, but
@@ -26,9 +28,9 @@ constexpr double kMicronsPerInch = kMMPerInch * kMicronsPerMM;
 constexpr base::StringPiece kMediaCustomMinPrefix = "custom_min";
 constexpr base::StringPiece kMediaCustomMaxPrefix = "custom_max";
 
-enum Unit {
-  INCHES,
-  MILLIMETERS,
+enum class Unit {
+  kInches,
+  kMillimeters,
 };
 
 gfx::Size DimensionsToMicrons(base::StringPiece value) {
@@ -36,10 +38,10 @@ gfx::Size DimensionsToMicrons(base::StringPiece value) {
   base::StringPiece dims;
   size_t unit_position;
   if ((unit_position = value.find("mm")) != base::StringPiece::npos) {
-    unit = MILLIMETERS;
+    unit = Unit::kMillimeters;
     dims = value.substr(0, unit_position);
   } else if ((unit_position = value.find("in")) != base::StringPiece::npos) {
-    unit = INCHES;
+    unit = Unit::kInches;
     dims = value.substr(0, unit_position);
   } else {
     LOG(WARNING) << "Could not parse paper dimensions";
@@ -55,23 +57,17 @@ gfx::Size DimensionsToMicrons(base::StringPiece value) {
     return {0, 0};
   }
 
-  int width_microns;
-  int height_microns;
+  float scale;
   switch (unit) {
-    case MILLIMETERS:
-      width_microns = width * kMicronsPerMM;
-      height_microns = height * kMicronsPerMM;
+    case Unit::kMillimeters:
+      scale = kMicronsPerMm;
       break;
-    case INCHES:
-      width_microns = width * kMicronsPerInch;
-      height_microns = height * kMicronsPerInch;
-      break;
-    default:
-      NOTREACHED();
+    case Unit::kInches:
+      scale = kMicronsPerInch;
       break;
   }
 
-  return gfx::Size{width_microns, height_microns};
+  return gfx::ToFlooredSize(gfx::ScaleSize(gfx::SizeF(width, height), scale));
 }
 
 }  // namespace
