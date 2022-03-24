@@ -443,22 +443,6 @@ def VerifyZlibSupport():
     sys.exit(1)
 
 
-# TODO(https://crbug.com/1286289): remove once Chrome targets don't rely on
-# libstdc++.so existing in the clang package.
-def CopyLibstdcpp(args, build_dir):
-  if not args.gcc_toolchain:
-    return
-  # Find libstdc++.so.6
-  libstdcpp = subprocess.check_output([
-      os.path.join(args.gcc_toolchain, 'bin', 'g++'),
-      '-print-file-name=libstdc++.so.6'
-  ],
-                                      universal_newlines=True).rstrip()
-
-  EnsureDirExists(os.path.join(build_dir, 'lib'))
-  CopyFile(libstdcpp, os.path.join(build_dir, 'lib'))
-
-
 def gn_arg(v):
   if v == 'True':
     return True
@@ -996,7 +980,6 @@ def main():
   os.chdir(LLVM_BUILD_DIR)
   RunCommand(['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
              msvc_arch='x64', env=deployment_env)
-  CopyLibstdcpp(args, LLVM_BUILD_DIR)
   RunCommand(['ninja'], msvc_arch='x64')
 
   if chrome_tools:

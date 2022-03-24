@@ -306,9 +306,6 @@ def main():
     want.extend([
         # pylint: disable=line-too-long
 
-        # Copy the stdlibc++.so.6 we linked the binaries against.
-        'lib/libstdc++.so.6',
-
         # Add llvm-objcopy for partition extraction on Android.
         'bin/llvm-objcopy',
 
