@@ -28,6 +28,22 @@ TEST(InsetsFTest, InsetsF) {
   EXPECT_EQ(4.875f, insets.right());
 }
 
+TEST(InsetsFTest, InsetsFTLBR) {
+  InsetsF insets = InsetsF::TLBR(1.25f, 2.5f, 3.75f, 4.875f);
+  EXPECT_EQ(1.25f, insets.top());
+  EXPECT_EQ(2.5f, insets.left());
+  EXPECT_EQ(3.75f, insets.bottom());
+  EXPECT_EQ(4.875f, insets.right());
+}
+
+TEST(InsetsFTest, InsetsFVH) {
+  InsetsF insets = InsetsF::VH(1.25f, 2.5f);
+  EXPECT_EQ(1.25f, insets.top());
+  EXPECT_EQ(2.5f, insets.left());
+  EXPECT_EQ(1.25f, insets.bottom());
+  EXPECT_EQ(2.5f, insets.right());
+}
+
 TEST(InsetsFTest, SetTop) {
   InsetsF insets = InsetsF(1.5f);
   insets.set_top(2.75f);

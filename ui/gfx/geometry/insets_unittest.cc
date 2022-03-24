@@ -28,6 +28,22 @@ TEST(InsetsTest, Insets) {
   EXPECT_EQ(4, insets.right());
 }
 
+TEST(InsetsTest, InsetsTLBR) {
+  Insets insets = Insets::TLBR(1, 2, 3, 4);
+  EXPECT_EQ(1, insets.top());
+  EXPECT_EQ(2, insets.left());
+  EXPECT_EQ(3, insets.bottom());
+  EXPECT_EQ(4, insets.right());
+}
+
+TEST(InsetsTest, InsetsVH) {
+  Insets insets = Insets::VH(1, 2);
+  EXPECT_EQ(1, insets.top());
+  EXPECT_EQ(2, insets.left());
+  EXPECT_EQ(1, insets.bottom());
+  EXPECT_EQ(2, insets.right());
+}
+
 TEST(InsetsTest, SetLeftRight) {
   Insets insets(1);
   insets.set_left_right(3, 4);

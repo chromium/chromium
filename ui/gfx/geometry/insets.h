@@ -24,16 +24,29 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
 
   // Avoid this constructor in blink code because it's easy to make mistakes in
   // the order of the parameters. Use the other constructors and set_*()
-  // methods instead.
+  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
+  // migrating UI code to TLBR()/VH().
   constexpr Insets(int vertical, int horizontal)
       : Insets(vertical, horizontal, vertical, horizontal) {}
 
   // Avoid this constructor in blink code because it's easy to make mistakes in
   // the order of the parameters. Use the other constructors and set_*()
-  // methods instead.
+  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
+  // migrating UI code to TLBR()/VH().
   constexpr Insets(int top, int left, int bottom, int right) {
     set_left_right(left, right);
     set_top_bottom(top, bottom);
+  }
+
+  // These are for Chromium UI code to replace the original usages of
+  // Insets::Insets(top, left, bottom, right) and Insets(vertical, horizontal).
+  static constexpr Insets TLBR(int top, int left, int bottom, int right) {
+    return Insets().set_top_bottom(top, bottom).set_left_right(left, right);
+  }
+  static constexpr Insets VH(int vertical, int horizontal) {
+    return Insets()
+        .set_top_bottom(vertical, vertical)
+        .set_left_right(horizontal, horizontal);
   }
 
   // Conversion from Insets to Outsets negates all components.
@@ -41,6 +54,8 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
 
   // Avoid this method in blink code because it's easy to make mistakes in the
   // order of the parameters. Use set_*() methods instead.
+  // TODO(crbug.com/1302500): Remove this method after migrating UI code to
+  // TLBR()/VH().
   void Set(int top, int left, int bottom, int right) {
     set_left_right(left, right);
     set_top_bottom(top, bottom);
