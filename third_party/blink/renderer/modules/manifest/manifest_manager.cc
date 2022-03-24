@@ -195,8 +195,9 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   parser.TakeErrors(&manifest_debug_info_->errors);
 
   for (const auto& error : manifest_debug_info_->errors) {
-    auto location = std::make_unique<SourceLocation>(
-        ManifestURL().GetString(), error->line, error->column, nullptr, 0);
+    auto location = std::make_unique<SourceLocation>(ManifestURL().GetString(),
+                                                     String(), error->line,
+                                                     error->column, nullptr, 0);
 
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

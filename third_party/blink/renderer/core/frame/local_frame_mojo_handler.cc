@@ -777,8 +777,9 @@ void LocalFrameMojoHandler::AdvanceFocusForIME(
 void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
     network::mojom::blink::CSPViolationPtr violation) {
   auto source_location = std::make_unique<SourceLocation>(
-      violation->source_location->url, violation->source_location->line,
-      violation->source_location->column, nullptr);
+      violation->source_location->url, String(),
+      violation->source_location->line, violation->source_location->column,
+      nullptr);
 
   frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kSecurity,
@@ -1077,7 +1078,7 @@ void LocalFrameMojoHandler::MixedContentFound(
     network::mojom::blink::SourceLocationPtr source_location) {
   std::unique_ptr<SourceLocation> source;
   if (source_location) {
-    source = std::make_unique<SourceLocation>(source_location->url,
+    source = std::make_unique<SourceLocation>(source_location->url, String(),
                                               source_location->line,
                                               source_location->column, nullptr);
   }

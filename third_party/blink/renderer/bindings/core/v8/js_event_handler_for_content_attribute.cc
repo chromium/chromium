@@ -245,7 +245,7 @@ JSEventHandlerForContentAttribute::GetSourceLocation(EventTarget& target) {
     return source_location;
   // Fallback to uncompiled source info.
   return std::make_unique<SourceLocation>(
-      source_url_, position_.line_.ZeroBasedInt(),
+      source_url_, String(), position_.line_.ZeroBasedInt(),
       position_.column_.ZeroBasedInt(), nullptr);
 }
 

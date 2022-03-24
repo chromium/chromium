@@ -42,6 +42,7 @@ class CORE_EXPORT SourceLocation {
   static std::unique_ptr<SourceLocation> CaptureWithFullStackTrace();
 
   SourceLocation(const String& url,
+                 const String& function,
                  unsigned line_number,
                  unsigned column_number,
                  std::unique_ptr<v8_inspector::V8StackTrace>,
@@ -52,6 +53,7 @@ class CORE_EXPORT SourceLocation {
     return url_.IsNull() && !script_id_ && !line_number_;
   }
   const String& Url() const { return url_; }
+  const String& Function() const { return function_; }
   unsigned LineNumber() const { return line_number_; }
   unsigned ColumnNumber() const { return column_number_; }
   int ScriptId() const { return script_id_; }
@@ -88,6 +90,7 @@ class CORE_EXPORT SourceLocation {
       std::unique_ptr<v8_inspector::V8StackTrace>);
 
   String url_;
+  String function_;
   unsigned line_number_;
   unsigned column_number_;
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace_;

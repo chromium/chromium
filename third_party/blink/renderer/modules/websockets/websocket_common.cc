@@ -168,9 +168,10 @@ void WebSocketCommon::CloseInternal(int code,
     return;
   if (state_ == kConnecting) {
     state_ = kClosing;
-    channel->Fail("WebSocket is closed before the connection is established.",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+    channel->Fail(
+        "WebSocket is closed before the connection is established.",
+        mojom::ConsoleMessageLevel::kWarning,
+        std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
     return;
   }
   state_ = kClosing;

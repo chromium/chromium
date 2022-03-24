@@ -225,10 +225,12 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
   // Try to get only the script name quickly.
   std::unique_ptr<SourceLocation> location;
   String script_url = GetCurrentScriptUrl();
-  if (!script_url.IsEmpty())
-    location = std::make_unique<SourceLocation>(script_url, 1, 0, nullptr);
-  else
+  if (!script_url.IsEmpty()) {
+    location =
+        std::make_unique<SourceLocation>(script_url, String(), 1, 0, nullptr);
+  } else {
     location = SourceLocation::Capture(execution_context);
+  }
 
   if (location) {
     navigator_user_agent_details->setLocation(

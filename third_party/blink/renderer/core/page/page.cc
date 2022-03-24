@@ -1046,7 +1046,7 @@ void Page::ReportIntervention(const String& text) {
     auto* message = MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning, text,
-        std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+        std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
     local_frame->GetDocument()->AddConsoleMessage(message);
   }
 }

@@ -45,8 +45,8 @@ std::unique_ptr<SourceLocation> SourceLocation::Capture(
     return SourceLocation::CreateFromNonEmptyV8StackTrace(
         std::move(stack_trace));
   }
-  return std::make_unique<SourceLocation>(url, line_number, column_number,
-                                          std::move(stack_trace));
+  return std::make_unique<SourceLocation>(
+      url, String(), line_number, column_number, std::move(stack_trace));
 }
 
 // static
@@ -68,13 +68,14 @@ std::unique_ptr<SourceLocation> SourceLocation::Capture(
         line_number =
             document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
     }
-    return std::make_unique<SourceLocation>(
-        document->Url().GetString(), line_number, 0, std::move(stack_trace));
+    return std::make_unique<SourceLocation>(document->Url().GetString(),
+                                            String(), line_number, 0,
+                                            std::move(stack_trace));
   }
 
   return std::make_unique<SourceLocation>(
-      execution_context ? execution_context->Url().GetString() : String(), 0, 0,
-      std::move(stack_trace));
+      execution_context ? execution_context->Url().GetString() : String(),
+      String(), 0, 0, std::move(stack_trace));
 }
 
 // static
@@ -110,8 +111,9 @@ std::unique_ptr<SourceLocation> SourceLocation::FromMessage(
       message->GetScriptOrigin().ResourceName());
   if (url.IsEmpty())
     url = execution_context->Url();
-  return std::make_unique<SourceLocation>(url, line_number, column_number,
-                                          std::move(stack_trace), script_id);
+  return std::make_unique<SourceLocation>(url, String(), line_number,
+                                          column_number, std::move(stack_trace),
+                                          script_id);
 }
 
 // static
@@ -119,11 +121,13 @@ std::unique_ptr<SourceLocation> SourceLocation::CreateFromNonEmptyV8StackTrace(
     std::unique_ptr<v8_inspector::V8StackTrace> stack_trace) {
   // Retrieve the data before passing the ownership to SourceLocation.
   String url = ToCoreString(stack_trace->topSourceURL());
+  String function = ToCoreString(stack_trace->topFunctionName());
   unsigned line_number = stack_trace->topLineNumber();
   unsigned column_number = stack_trace->topColumnNumber();
   int script_id = stack_trace->topScriptId();
-  return base::WrapUnique(new SourceLocation(
-      url, line_number, column_number, std::move(stack_trace), script_id));
+  return base::WrapUnique(
+      new SourceLocation(url, function, line_number, column_number,
+                         std::move(stack_trace), script_id));
 }
 
 // static
@@ -133,9 +137,10 @@ std::unique_ptr<SourceLocation> SourceLocation::FromFunction(
     return std::make_unique<SourceLocation>(
         ToCoreStringWithUndefinedOrNullCheck(
             function->GetScriptOrigin().ResourceName()),
+        ToCoreStringWithUndefinedOrNullCheck(function->GetName()),
         function->GetScriptLineNumber() + 1,
         function->GetScriptColumnNumber() + 1, nullptr, function->ScriptId());
-  return std::make_unique<SourceLocation>(String(), 0, 0, nullptr, 0);
+  return std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr, 0);
 }
 
 // static
@@ -146,16 +151,18 @@ std::unique_ptr<SourceLocation> SourceLocation::CaptureWithFullStackTrace() {
     return SourceLocation::CreateFromNonEmptyV8StackTrace(
         std::move(stack_trace));
   }
-  return std::make_unique<SourceLocation>(String(), 0, 0, nullptr, 0);
+  return std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr, 0);
 }
 
 SourceLocation::SourceLocation(
     const String& url,
+    const String& function,
     unsigned line_number,
     unsigned column_number,
     std::unique_ptr<v8_inspector::V8StackTrace> stack_trace,
     int script_id)
     : url_(url),
+      function_(function),
       line_number_(line_number),
       column_number_(column_number),
       stack_trace_(std::move(stack_trace)),
@@ -194,8 +201,9 @@ void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
 
 std::unique_ptr<SourceLocation> SourceLocation::Clone() const {
   return base::WrapUnique(new SourceLocation(
-      url_.IsolatedCopy(), line_number_, column_number_,
-      stack_trace_ ? stack_trace_->clone() : nullptr, script_id_));
+      url_.IsolatedCopy(), function_.IsolatedCopy(), line_number_,
+      column_number_, stack_trace_ ? stack_trace_->clone() : nullptr,
+      script_id_));
 }
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>

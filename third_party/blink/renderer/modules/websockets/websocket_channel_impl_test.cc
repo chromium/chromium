@@ -1301,9 +1301,9 @@ TEST_F(WebSocketChannelImplTest, FailFromClient) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  Channel()->Fail("fail message from WebSocket",
-                  mojom::ConsoleMessageLevel::kError,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "fail message from WebSocket", mojom::ConsoleMessageLevel::kError,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
 }
 
 class WebSocketChannelImplHandshakeThrottleTest
@@ -1395,9 +1395,9 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
   }
 
   Channel()->Connect(url(), "");
-  Channel()->Fail("close during handshake",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "close during handshake", mojom::ConsoleMessageLevel::kWarning,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
 }
 
@@ -1421,9 +1421,9 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  Channel()->Fail("close during handshake",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "close during handshake", mojom::ConsoleMessageLevel::kWarning,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
 }
 

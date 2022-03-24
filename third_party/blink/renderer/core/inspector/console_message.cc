@@ -52,6 +52,7 @@ ConsoleMessage::ConsoleMessage(const WebConsoleMessage& message,
                      message.level,
                      message.text,
                      std::make_unique<SourceLocation>(message.url,
+                                                      String(),
                                                       message.line_number,
                                                       message.column_number,
                                                       nullptr)) {
