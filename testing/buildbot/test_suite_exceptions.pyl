@@ -2198,6 +2198,11 @@
     },
   },
   'mediapipe_validating_tests': {
+    'modifications': { # TODO(crbug.com/1201887): Remove once tests are stable.
+      'fuchsia-fyi-x64-rel': {
+        'experiment_percentage': 100,
+      },
+    },
     'remove_from': [
       # TODO(crbug.com/1201887): Remove once tests are stable.
       'Fuchsia x64',
@@ -2630,6 +2635,9 @@
           # See above.
           '--extra-browser-args=--disable-wcg-for-test',
         ],
+      },
+      'fuchsia-fyi-x64-rel': { # https://crbug.com/1302427
+        'experiment_percentage': 100,
       },
     },
     'remove_from': [
@@ -3107,6 +3115,13 @@
       # crbug.com/1080749
       'Optional Linux Release (NVIDIA)',
     ],
+  },
+  'trace_test': {
+    'modifications': {
+      'fuchsia-fyi-x64-rel': { # https://crbug.com/1269976
+        'experiment_percentage': 100,
+      },
+    },
   },
   'unit_tests': {
     'remove_from': [

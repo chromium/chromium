@@ -24582,6 +24582,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
@@ -24619,6 +24620,7 @@
           "${buildername}",
           "--git-revision=${got_revision}"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
@@ -24691,6 +24693,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
