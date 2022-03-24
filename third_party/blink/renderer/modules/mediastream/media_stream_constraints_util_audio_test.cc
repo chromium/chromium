@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -554,6 +556,39 @@ class MediaStreamConstraintsUtilAudioTest
   }
 
   std::string GetMediaStreamSource() override { return GetParam(); }
+};
+
+class MediaStreamConstraintsRemoteAPMTest
+    : public MediaStreamConstraintsUtilAudioTestBase,
+      public testing::WithParamInterface<bool> {
+  void SetUp() override {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    if (UseRemoteAPMFlag()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kChromeWideEchoCancellation);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kChromeWideEchoCancellation);
+    }
+#endif
+
+    // Setup the capabilities.
+    ResetFactory();
+    if (IsDeviceCapture()) {
+      capabilities_.emplace_back(
+          "default_device", "fake_group1",
+          media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                 media::CHANNEL_LAYOUT_STEREO,
+                                 media::AudioParameters::kAudioCDSampleRate,
+                                 1000));
+      default_device_ = &capabilities_[0];
+    }
+  }
+
+  bool UseRemoteAPMFlag() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The Unconstrained test checks the default selection criteria.
@@ -1974,6 +2009,43 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimetanlEcWithSource) {
   EXPECT_TRUE(result.HasValue());
 }
 
+TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
+  if (!IsDeviceCapture())
+    return;
+
+  AudioCaptureSettings result;
+  ResetFactory();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+
+  // Native sample rate is only supported by APM in the audio service.
+  if (media::IsChromeWideEchoCancellationEnabled())
+    EXPECT_TRUE(result.HasValue());
+  else
+    EXPECT_FALSE(result.HasValue());
+}
+
+TEST_P(MediaStreamConstraintsRemoteAPMTest,
+       WebRtcSampleRateButNotDeviceSampleRate) {
+  if (!IsDeviceCapture())
+    return;
+
+  AudioCaptureSettings result;
+  ResetFactory();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::kAudioProcessingSampleRateHz);
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+
+  // Native sample rate is only supported by APM in the audio service.
+  if (media::IsChromeWideEchoCancellationEnabled())
+    EXPECT_FALSE(result.HasValue());
+  else
+    EXPECT_TRUE(result.HasValue());
+}
+
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   if (!IsDeviceCapture())
     return;
@@ -2029,4 +2101,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          blink::kMediaStreamSourceTab,
                                          blink::kMediaStreamSourceSystem,
                                          blink::kMediaStreamSourceDesktop));
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamConstraintsRemoteAPMTest,
+                         testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamConstraintsRemoteAPMTest,
+                         testing::Values(false));
+#endif
 }  // namespace blink
