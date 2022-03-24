@@ -32,11 +32,11 @@ AccountCapabilities& AccountCapabilities::operator=(
 // static
 const std::vector<std::string>&
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
-  static base::NoDestructor<std::vector<std::string>> kCapabilityNames({
+  static base::NoDestructor<std::vector<std::string>> kCapabilityNames{{
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, value) cpp_label,
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
-  });
+  }};
   return *kCapabilityNames;
 }
 
