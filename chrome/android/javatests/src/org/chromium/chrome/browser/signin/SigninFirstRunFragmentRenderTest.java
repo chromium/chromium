@@ -87,7 +87,10 @@ public class SigninFirstRunFragmentRenderTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_FIRST_RUN)
+                    .build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();

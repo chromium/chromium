@@ -39,7 +39,10 @@ public class RevampedIncognitoDescriptionViewRenderTest extends BlankUiTestActiv
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_INCOGNITO)
+                    .build();
 
     public RevampedIncognitoDescriptionViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

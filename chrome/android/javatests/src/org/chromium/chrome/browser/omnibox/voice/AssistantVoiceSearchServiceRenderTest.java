@@ -55,7 +55,9 @@ public class AssistantVoiceSearchServiceRenderTest {
             new ChromeTabbedActivityTestRule();
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_SEARCH_VOICE)
+                    .build();
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule

@@ -55,7 +55,10 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST)
+                    .build();
 
     public MerchantTrustMessageViewTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

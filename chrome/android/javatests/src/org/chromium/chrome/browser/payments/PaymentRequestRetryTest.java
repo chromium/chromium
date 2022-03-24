@@ -43,7 +43,10 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(RenderTestRule.Component.BLINK_PAYMENTS)
+                    .build();
 
     @Override
     public void onMainActivityStarted() throws TimeoutException {

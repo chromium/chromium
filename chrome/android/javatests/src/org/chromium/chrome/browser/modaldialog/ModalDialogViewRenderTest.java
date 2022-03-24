@@ -71,7 +71,10 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_MESSAGES)
+                    .build();
 
     public ModalDialogViewRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.

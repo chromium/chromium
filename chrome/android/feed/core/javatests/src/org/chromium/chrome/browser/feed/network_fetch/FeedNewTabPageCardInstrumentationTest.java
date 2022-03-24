@@ -46,9 +46,12 @@ public final class FeedNewTabPageCardInstrumentationTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
-                                                          .setFailOnUnsupportedConfigs(true)
-                                                          .build();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setFailOnUnsupportedConfigs(true)
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
+                    .build();
 
     @Before
     public void setUp() {

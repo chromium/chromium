@@ -56,6 +56,7 @@ public class PaymentRequestFreeShippingTest implements MainActivityStartCallback
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .setBugComponent(RenderTestRule.Component.BLINK_PAYMENTS)
                     .build();
 
     @BeforeClass

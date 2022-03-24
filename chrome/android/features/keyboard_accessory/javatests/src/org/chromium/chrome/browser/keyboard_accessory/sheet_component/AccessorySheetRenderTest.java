@@ -99,7 +99,10 @@ public class AccessorySheetRenderTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
+                    .build();
 
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         FeatureList.setTestFeatures(

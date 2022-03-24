@@ -61,7 +61,9 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
+                    .build();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();

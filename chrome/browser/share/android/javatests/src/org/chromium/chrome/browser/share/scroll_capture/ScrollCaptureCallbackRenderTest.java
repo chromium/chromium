@@ -67,10 +67,12 @@ public class ScrollCaptureCallbackRenderTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
-                                                    .setRevision(2)
-                                                    .setDescription("new test html")
-                                                    .build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(2)
+                    .setDescription("new test html")
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_SHARING)
+                    .build();
 
     private ScrollCaptureCallbackDelegate mCallback;
     private Tab mTab;

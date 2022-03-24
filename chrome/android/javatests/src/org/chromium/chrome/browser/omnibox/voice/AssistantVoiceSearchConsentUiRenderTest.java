@@ -31,7 +31,9 @@ import java.io.IOException;
 public class AssistantVoiceSearchConsentUiRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_SEARCH_VOICE)
+                    .build();
 
     private ViewGroup mParentView;
     private LinearLayout mContentView;
