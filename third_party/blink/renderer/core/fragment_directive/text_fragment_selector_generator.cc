@@ -124,6 +124,8 @@ constexpr int kMaxRangeWords = 10;
 constexpr int kMaxIterationCountToRecord = 10;
 constexpr int kMinWordCount = 3;
 
+absl::optional<int> g_exactTextMaxCharsOverride;
+
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
     : frame_(main_frame) {}
@@ -426,7 +428,7 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   }
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   // If too long should use ranges.
-  if (selected_text.length() > kExactTextMaxChars) {
+  if (selected_text.length() > GetExactTextMaxChars()) {
     step_ = kRange;
     return;
   }
@@ -453,6 +455,10 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
   }
 
   int num_words_to_add = 1;
+
+  // Determine length of target string for verifictaion.
+  unsigned target_length = PlainText(range_->ToEphemeralRange()).length();
+
   // Initialize range start/end and word min count, if needed.
   if (!range_start_iterator_ && !range_end_iterator_) {
     PositionInFlatTree range_start_position =
@@ -471,8 +477,42 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
           range_end_position);
     }
 
-    // Use at least 3 words from both sides for more robust link to text.
-    num_words_to_add = kMinWordCount;
+    // Use at least 3 words from both sides for more robust link to text unless
+    // the selected text is shorter than 6 words.
+    if (TextFragmentFinder::IsInSameUninterruptedBlock(range_start_position,
+                                                       range_end_position)) {
+      num_words_to_add = 0;
+      auto* range_start_counter =
+          MakeGarbageCollected<ForwardSameBlockWordIterator>(
+              range_start_position);
+      // TODO(crbug.com/1302719) ForwardSameBlockWordIterator Should be made to
+      // return the current posision in a form that is comparable against
+      // range_end_position directly.
+
+      while (num_words_to_add < kMinWordCount * 2 &&
+             range_start_counter->AdvanceNextWord() &&
+             range_start_counter->TextFromStart().length() <= target_length) {
+        num_words_to_add++;
+      }
+      num_words_to_add = num_words_to_add / 2;
+      if (num_words_to_add == 0) {
+        // If there is only one word found in the range selection explicitly set
+        // exact selector to avoid round tripping.
+        EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
+        String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
+        step_ = kExact;
+        state_ = kTestCandidate;
+        selector_ = std::make_unique<TextFragmentSelector>(
+            TextFragmentSelector::SelectorType::kExact, selected_text, "", "",
+            "");
+        return;
+      }
+    } else {
+      // If the the start and end are in different blocks overlaps dont need to
+      // be prevented as the number of words will limited by the block
+      // boundaries.
+      num_words_to_add = kMinWordCount;
+    }
   }
 
   if (!range_start_iterator_ && !range_end_iterator_) {
@@ -495,13 +535,8 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       range_start_iterator_ ? range_start_iterator_->TextFromStart() : "";
   String end = range_end_iterator_ ? range_end_iterator_->TextFromStart() : "";
 
-  if (start.length() + end.length() >
-      PlainText(range_->ToEphemeralRange()).length()) {
+  if (start.length() + end.length() > target_length) {
     if (!selector_) {
-      // If we overlap for the first attempt we cannot add context as there is
-      // no selector start or end.
-      // TODO(crbug.com/1302719): Fallback to using less words or exact
-      // selector.
       state_ = kFailure;
       error_ = LinkGenerationError::kNoRange;
       return;
@@ -645,6 +680,22 @@ void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
     const TextFragmentSelector& selector) {
   DCHECK(pending_generate_selector_callback_);
   std::move(pending_generate_selector_callback_).Run(selector, error_);
+}
+
+// static
+void TextFragmentSelectorGenerator::OverrideExactTextMaxCharsForTesting(
+    int value) {
+  if (value < 0)
+    g_exactTextMaxCharsOverride.reset();
+  else
+    g_exactTextMaxCharsOverride = value;
+}
+
+unsigned TextFragmentSelectorGenerator::GetExactTextMaxChars() {
+  if (g_exactTextMaxCharsOverride)
+    return g_exactTextMaxCharsOverride.value();
+  else
+    return kExactTextMaxChars;
 }
 
 }  // namespace blink

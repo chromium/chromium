@@ -205,7 +205,7 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
   error_ = shared_highlighting::LinkGenerationError::kNone;
   selector_ready_status_.reset();
 
-  // It is possible we have unsurved callback, but if we are starting a new
+  // It is possible we have unserved callback, but if we are starting a new
   // generation, then we have a new selection, in which case it is safe to
   // assume that the client is not waiting for the callback return.
   response_callback_.Reset();

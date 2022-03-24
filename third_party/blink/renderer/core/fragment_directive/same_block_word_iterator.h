@@ -128,8 +128,10 @@ class SameBlockWordIterator
   // with until the current position.
   String TextFromStart() const;
 
-  // Moves the current position to the beginning of the next word.
-  void AdvanceNextWord();
+  // Moves the current position to the beginning of the next word. Returns true
+  // if the text advanced successfully, and false if the iterator reached the
+  // end of the block.
+  bool AdvanceNextWord();
 
   void Trace(Visitor* visitor) const;
 
