@@ -40,9 +40,22 @@ RgbKeyboardCapabilities RgbKeyboardManager::GetRgbKeyboardCapabilities() const {
 void RgbKeyboardManager::SetStaticBackgroundColor(uint8_t r,
                                                   uint8_t g,
                                                   uint8_t b) {
+  // Reset the rainbow mode state.
+  is_rainbow_mode_set_for_testing_ = false;
+
   recently_sent_rgb_for_testing_[0] = r;
   recently_sent_rgb_for_testing_[1] = g;
   recently_sent_rgb_for_testing_[2] = b;
+}
+
+// TODO(jimmyxgong): This is a stub implementation, replace with real impl.
+void RgbKeyboardManager::SetRainbowMode() {
+  is_rainbow_mode_set_for_testing_ = true;
+
+  // Reset the stored static rgb values;
+  recently_sent_rgb_for_testing_[0] = 0u;
+  recently_sent_rgb_for_testing_[1] = 0u;
+  recently_sent_rgb_for_testing_[2] = 0u;
 }
 
 // static
