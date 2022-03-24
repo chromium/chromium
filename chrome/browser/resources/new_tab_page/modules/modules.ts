@@ -37,6 +37,9 @@ export interface ModulesElement {
     removeModuleToast: CrToastElement,
     removeModuleToastMessage: HTMLElement,
     undoRemoveModuleButton: HTMLElement,
+    removeModuleFreToast: CrToastElement,
+    removeModuleFreToastMessage: HTMLElement,
+    undoRemoveModuleFreButton: HTMLElement,
   };
 }
 
@@ -385,8 +388,35 @@ export class ModulesElement extends PolymerElement {
         new Event('customize-module', {bubbles: true, composed: true}));
   }
 
-  private onModulesFreOptIn_() {
+  private hideFre_() {
     NewTabPageProxy.getInstance().handler.setModulesFreVisible(false);
+  }
+
+  private onModulesFreOptIn_() {
+    this.hideFre_();
+  }
+
+  private onModulesFreOptOut_() {
+    this.hideFre_();
+    NewTabPageProxy.getInstance().handler.setModulesVisible(false);
+
+    // Hide remove module toast in case user removed a module before opting out
+    // of fre.
+    this.$.removeModuleToast.hide();
+
+    // Any module the user removed before opting out of the FRE should not be
+    // restored if FRE opt out is undone.
+    this.removedModuleData_ = null;
+
+    // Notify the user
+    this.$.removeModuleFreToast.show();
+  }
+
+  /** @private */
+  onUndoRemoveModuleFreButtonClick_() {
+    NewTabPageProxy.getInstance().handler.setModulesFreVisible(true);
+    NewTabPageProxy.getInstance().handler.setModulesVisible(true);
+    this.$.removeModuleFreToast.hide();
   }
 
   /**

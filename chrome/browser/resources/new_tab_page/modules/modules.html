@@ -85,6 +85,10 @@
     flex-grow: 1;
   }
 
+  #removeModuleFreToastMessage {
+    flex-grow: 1;
+  }
+
   :host([drag-enabled_]) ntp-module-wrapper {
     cursor: grab;
   }
@@ -109,10 +113,10 @@
         $i18nRaw{modulesFirstRunExperienceBodyLine2}
       </div>
       <cr-button class="action-button" on-click="onModulesFreOptIn_">
-        $i18n{modulesFirstRunOptInButton}
+        $i18n{modulesFirstRunExperienceOptIn}
       </cr-button>
-      <cr-button class="cancel-button">
-        $i18n{modulesFirstRunOptOutButton}
+      <cr-button class="cancel-button" on-click="onModulesFreOptOut_">
+        $i18n{modulesFirstRunExperienceOptOut}
       </cr-button>
     </div>
   </template>
@@ -123,6 +127,16 @@
   <cr-button id="undoRemoveModuleButton"
       aria-label="$i18n{undoDescription}"
       on-click="onUndoRemoveModuleButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>
+<cr-toast id="removeModuleFreToast" duration="10000">
+  <div id="removeModuleFreToastMessage">
+    $i18n{modulesFirstRunExperienceOptOutToast}
+  </div>
+  <cr-button id="undoRemoveModuleFreButton"
+      aria-label="$i18n{undoDescription}"
+      on-click="onUndoRemoveModuleFreButtonClick_">
     $i18n{undo}
   </cr-button>
 </cr-toast>

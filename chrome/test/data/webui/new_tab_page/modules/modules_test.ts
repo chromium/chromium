@@ -177,6 +177,38 @@ suite('NewTabPageModulesModulesTest', () => {
       // Assert.
       assertTrue(customizeModule.received);
     });
+
+    test(`fre can be opted out of and restored`, async () => {
+      // Arrange.
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+      const modulesElement = await createModulesElement([
+        {
+          descriptor: fooDescriptor,
+          element: createElement(),
+        },
+      ]);
+      callbackRouterRemote.setModulesFreVisibility(true);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act
+      $$<HTMLElement>(modulesElement, '.cancel-button')!.click();
+
+      // Assert.
+      assertDeepEquals(false, handler.getArgs('setModulesFreVisible')[0]);
+      assertDeepEquals(false, handler.getArgs('setModulesVisible')[0]);
+      assertTrue(modulesElement.$.removeModuleFreToast.open);
+      assertFalse(modulesElement.$.removeModuleToast.open);
+
+
+      // Act.
+      modulesElement.$.undoRemoveModuleFreButton.click();
+
+      // Assert.
+      assertFalse(modulesElement.$.removeModuleFreToast.open);
+      assertDeepEquals(true, handler.getArgs('setModulesFreVisible')[1]);
+      assertDeepEquals(true, handler.getArgs('setModulesVisible')[1]);
+    });
   });
 
   suite('modules redesigned layout', () => {
@@ -367,7 +399,7 @@ suite('NewTabPageModulesModulesTest', () => {
       // Act.
       modulesElement.$.undoRemoveModuleButton.click();
 
-      // // Assert.
+      // Assert.
       assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
 
       // Act.

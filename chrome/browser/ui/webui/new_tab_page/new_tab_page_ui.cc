@@ -384,10 +384,12 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_1},
       {"modulesFirstRunExperienceBodyLine2",
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_2},
-      {"modulesFirstRunOptInButton",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_IN_BUTTON},
-      {"modulesFirstRunOptOutButton",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_BUTTON},
+      {"modulesFirstRunExperienceOptIn",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_IN},
+      {"modulesFirstRunExperienceOptOut",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT},
+      {"modulesFirstRunExperienceOptOutToast",
+       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
   };
   source->AddLocalizedStrings(kStrings);
 
