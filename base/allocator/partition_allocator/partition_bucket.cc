@@ -19,6 +19,8 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_tag.h"
+#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -634,6 +636,28 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // Double check that we had enough space in the super page for the new slot
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  PA_DCHECK(root->next_tag_bitmap_page);
+  uintptr_t next_tag_bitmap_page =
+      base::bits::AlignUp(reinterpret_cast<uintptr_t>(
+                              PartitionTagPointer(root->next_partition_page)),
+                          SystemPageSize());
+  if (root->next_tag_bitmap_page < next_tag_bitmap_page) {
+#if DCHECK_IS_ON()
+    uintptr_t super_page =
+        reinterpret_cast<uintptr_t>(slot_span) & kSuperPageBaseMask;
+    uintptr_t tag_bitmap = super_page + PartitionPageSize();
+    PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
+    PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
+#endif
+    SetSystemPagesAccess(root->next_tag_bitmap_page,
+                         next_tag_bitmap_page - root->next_tag_bitmap_page,
+                         PageAccessibilityConfiguration::kReadWrite);
+    root->next_tag_bitmap_page = next_tag_bitmap_page;
+  }
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
   return slot_span;
 }
 
@@ -666,7 +690,9 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
                                             std::memory_order_relaxed);
 
   root->next_super_page = super_page + kSuperPageSize;
-  uintptr_t state_bitmap = super_page + PartitionPageSize();
+  // TODO(crbug.com/1307514): Add direct map support.
+  uintptr_t state_bitmap = super_page + PartitionPageSize() +
+                           (is_direct_mapped() ? 0 : ReservedTagBitmapSize());
   PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
       root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
@@ -744,6 +770,19 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     PA_DCHECK(payload > SuperPagesBeginFromExtent(current_extent) &&
               payload < SuperPagesEndFromExtent(current_extent));
   }
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // `root->next_partition_page` currently points at the start of the
+  // super page payload. We point `root->next_tag_bitmap_page` to the
+  // corresponding point in the tag bitmap and let the caller
+  // (slot span allocation) take care of the rest.
+  root->next_tag_bitmap_page =
+      base::bits::AlignDown(reinterpret_cast<uintptr_t>(
+                                PartitionTagPointer(root->next_partition_page)),
+                            SystemPageSize());
+  PA_DCHECK(root->next_tag_bitmap_page >= super_page + PartitionPageSize())
+      << "tag bitmap can never intrude on metadata partition page";
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   // If PCScan is used, commit the state bitmap. Otherwise, leave it uncommitted
   // and let PartitionRoot::RegisterScannableRoot() commit it when needed. Make
@@ -841,6 +880,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     return_slot =
         ::partition_alloc::internal::TagMemoryRangeRandomly(return_slot, size);
   }
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  PartitionTagSetValue(return_slot, size, root->GetNewPartitionTag());
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
@@ -851,6 +893,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       next_slot =
           ::partition_alloc::internal::TagMemoryRangeRandomly(next_slot, size);
     }
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+    PartitionTagSetValue(next_slot, size, root->GetNewPartitionTag());
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);

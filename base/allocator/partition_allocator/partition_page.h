@@ -11,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -19,6 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -410,17 +412,27 @@ CommittedStateBitmapSize() {
 // caller's responsibility to ensure that the bitmaps even exist.
 ALWAYS_INLINE uintptr_t SuperPageStateBitmapAddr(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + PartitionPageSize();
+  return super_page + PartitionPageSize() +
+         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0);
 }
 ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(uintptr_t super_page) {
   return reinterpret_cast<AllocationStateMap*>(
       SuperPageStateBitmapAddr(super_page));
 }
 
+// Returns the address of the tag bitmap of the `super_page`. Caller must ensure
+// that bitmap exists.
+ALWAYS_INLINE uintptr_t SuperPageTagBitmapAddr(uintptr_t super_page) {
+  PA_DCHECK(IsReservationStart(super_page));
+  // Skip over the guard pages / metadata.
+  return super_page + PartitionPageSize();
+}
+
 ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
                                               bool with_quarantine) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   return super_page + PartitionPageSize() +
+         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0) +
          (with_quarantine ? ReservedStateBitmapSize() : 0);
 }
 

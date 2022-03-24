@@ -14,6 +14,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -23,6 +24,10 @@
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#include "base/allocator/partition_allocator/partition_tag.h"
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 using testing::AllOf;
 using testing::HasSubstr;
@@ -1386,6 +1391,141 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
       "BackupRefPtr: Constructing a raw_ptr");
 }
 #endif
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+static constexpr size_t kTagOffsetForTest = 2;
+
+struct MTECheckedPtrImplPartitionAllocSupportForTest {
+  static bool EnabledForPtr(void* ptr) { return !!ptr; }
+
+  static ALWAYS_INLINE void* TagPointer(uintptr_t ptr) {
+    return reinterpret_cast<void*>(ptr - kTagOffsetForTest);
+  }
+};
+
+using MTECheckedPtrImplForTest =
+    MTECheckedPtrImpl<MTECheckedPtrImplPartitionAllocSupportForTest>;
+
+TEST(MTECheckedPtrImpl, WrapAndSafelyUnwrap) {
+  // Create a fake allocation, with first 2B for tag.
+  // It is ok to use a fake allocation, instead of PartitionAlloc, because
+  // MTECheckedPtrImplForTest fakes the functionality is enabled for this
+  // pointer and points to the tag appropriately.
+  unsigned char bytes[] = {0xBA, 0x42, 0x78, 0x89};
+  void* ptr = bytes + kTagOffsetForTest;
+  ASSERT_EQ(0x78, *static_cast<char*>(ptr));
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  uintptr_t mask = 0xFFFFFFFFFFFFFFFF;
+  if (sizeof(partition_alloc::PartitionTag) < 2)
+    mask = 0x00FFFFFFFFFFFFFF;
+
+  uintptr_t wrapped =
+      reinterpret_cast<uintptr_t>(MTECheckedPtrImplForTest::WrapRawPtr(ptr));
+  // The bytes before the allocation will be used as tag (in reverse
+  // order due to little-endianness).
+  ASSERT_EQ(wrapped, (addr | 0x42BA000000000000) & mask);
+  ASSERT_EQ(MTECheckedPtrImplForTest::SafelyUnwrapPtrForDereference(
+                reinterpret_cast<void*>(wrapped)),
+            ptr);
+
+  // Modify the tag in the fake allocation.
+  bytes[0] |= 0x40;
+  wrapped =
+      reinterpret_cast<uintptr_t>(MTECheckedPtrImplForTest::WrapRawPtr(ptr));
+  ASSERT_EQ(wrapped, (addr | 0x42FA000000000000) & mask);
+  ASSERT_EQ(MTECheckedPtrImplForTest::SafelyUnwrapPtrForDereference(
+                reinterpret_cast<void*>(wrapped)),
+            ptr);
+}
+
+TEST(MTECheckedPtrImpl, SafelyUnwrapDisabled) {
+  // Create a fake allocation, with first 2B for tag.
+  // It is ok to use a fake allocation, instead of PartitionAlloc, because
+  // MTECheckedPtrImplForTest fakes the functionality is enabled for this
+  // pointer and points to the tag appropriately.
+  unsigned char bytes[] = {0xBA, 0x42, 0x78, 0x89};
+  unsigned char* ptr = bytes + kTagOffsetForTest;
+  ASSERT_EQ(0x78, *ptr);
+  ASSERT_EQ(MTECheckedPtrImplForTest::SafelyUnwrapPtrForDereference(ptr), ptr);
+}
+
+TEST(MTECheckedPtrImpl, CrashOnTagMismatch) {
+  // Create a fake allocation, using the first two bytes for the tag.
+  // It is ok to use a fake allocation, instead of PartitionAlloc, because
+  // MTECheckedPtrImplForTest fakes the functionality is enabled for this
+  // pointer and points to the tag appropriately.
+  unsigned char bytes[] = {0xBA, 0x42, 0x78, 0x89};
+  unsigned char* ptr =
+      MTECheckedPtrImplForTest::WrapRawPtr(bytes + kTagOffsetForTest);
+  EXPECT_EQ(*MTECheckedPtrImplForTest::SafelyUnwrapPtrForDereference(ptr),
+            0x78);
+  // Clobber the tag associated with the fake allocation.
+  bytes[0] = 0;
+  EXPECT_DEATH_IF_SUPPORTED(
+      if (*MTECheckedPtrImplForTest::SafelyUnwrapPtrForDereference(ptr) ==
+          0x78) return,
+      "");
+}
+
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// This test works only when PartitionAlloc is used, when tags are enabled.
+// Don't enable it when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, because it
+// makes PartitionAlloc take a different path that doesn't provide tags, thus no
+// crash on UaF, thus missing the EXPECT_DEATH_IF_SUPPORTED expectation.
+TEST(MTECheckedPtrImpl, CrashOnUseAfterFree) {
+  int* unwrapped_ptr = new int;
+  // Use the actual CheckedPtr implementation, not a test substitute, to
+  // exercise real PartitionAlloc paths.
+  raw_ptr<int> ptr = unwrapped_ptr;
+  *ptr = 42;
+  EXPECT_EQ(*ptr, 42);
+  delete unwrapped_ptr;
+  EXPECT_DEATH_IF_SUPPORTED(if (*ptr == 42) return, "");
+}
+
+TEST(MTECheckedPtrImpl, CrashOnUseAfterFree_WithOffset) {
+  const uint8_t kSize = 100;
+  uint8_t* unwrapped_ptr = new uint8_t[kSize];
+  // Use the actual CheckedPtr implementation, not a test substitute, to
+  // exercise real PartitionAlloc paths.
+  raw_ptr<uint8_t> ptrs[kSize];
+  for (uint8_t i = 0; i < kSize; ++i) {
+    ptrs[i] = static_cast<uint8_t*>(unwrapped_ptr) + i;
+  }
+  for (uint8_t i = 0; i < kSize; ++i) {
+    *ptrs[i] = 42 + i;
+    EXPECT_TRUE(*ptrs[i] == 42 + i);
+  }
+  delete[] unwrapped_ptr;
+  for (uint8_t i = 0; i < kSize; i += 15) {
+    EXPECT_DEATH_IF_SUPPORTED(if (*ptrs[i] == 42 + i) return, "");
+  }
+}
+
+TEST(MTECheckedPtrImpl, AdvancedPointerShiftedAppropriately) {
+  uint64_t* unwrapped_ptr = new uint64_t[6];
+  raw_ptr<uint64_t> ptr = unwrapped_ptr;
+
+  // This is unwrapped, but still useful for ensuring that the
+  // shift is sized in `uint64_t`s.
+  auto original_addr = reinterpret_cast<uintptr_t>(ptr.get());
+
+  ptr += 5;
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr.get()) - original_addr,
+            5 * sizeof(uint64_t));
+  delete[] unwrapped_ptr;
+
+  EXPECT_DEATH_IF_SUPPORTED(*ptr, "");
+}
+
+#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 }  // namespace internal
 }  // namespace base

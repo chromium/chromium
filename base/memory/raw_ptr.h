@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
@@ -21,15 +22,21 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || \
+    defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) ||
+        // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#include "base/allocator/partition_allocator/partition_tag.h"
+#include "base/allocator/partition_allocator/tagging.h"
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -127,6 +134,164 @@ struct RawPtrNoOpImpl {
   static RAW_PTR_FUNC_ATTRIBUTES void
   IncrementPointerToMemberOperatorCountForTest() {}
 };
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+constexpr int kValidAddressBits = 48;
+constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
+constexpr int kTagBits = sizeof(uintptr_t) * 8 - kValidAddressBits;
+constexpr uintptr_t kTagMask = ~kAddressMask;
+constexpr int kTopBitShift = 63;
+constexpr uintptr_t kTopBit = 1ull << kTopBitShift;
+static_assert(kTopBit << 1 == 0, "kTopBit should really be the top bit");
+static_assert((kTopBit & kTagMask) > 0,
+              "kTopBit bit must be inside the tag region");
+
+// This functionality is outside of MTECheckedPtrImpl, so that it can be
+// overridden by tests.
+struct MTECheckedPtrImplPartitionAllocSupport {
+  // Checks if the necessary support is enabled in PartitionAlloc for `ptr`.
+  template <typename T>
+  static ALWAYS_INLINE bool EnabledForPtr(T* ptr) {
+    auto as_uintptr =
+        partition_alloc::internal::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr));
+    // MTECheckedPtr algorithms work only when memory is
+    // allocated by PartitionAlloc, from normal buckets pool.
+    //
+    // TODO(crbug.com/1307514): Allow direct-map buckets.
+    return IsManagedByPartitionAlloc(as_uintptr) &&
+           IsManagedByNormalBuckets(as_uintptr);
+  }
+
+  // Returns pointer to the tag that protects are pointed by |ptr|.
+  static ALWAYS_INLINE void* TagPointer(uintptr_t ptr) {
+    return partition_alloc::PartitionTagPointer(ptr);
+  }
+};
+
+template <typename PartitionAllocSupport>
+struct MTECheckedPtrImpl {
+  // This implementation assumes that pointers are 64 bits long and at least 16
+  // top bits are unused. The latter is harder to verify statically, but this is
+  // true for all currently supported 64-bit architectures (DCHECK when wrapping
+  // will verify that).
+  static_assert(sizeof(void*) >= 8, "Need 64-bit pointers");
+
+  // Wraps a pointer, and returns its uintptr_t representation.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* WrapRawPtr(T* ptr) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    DCHECK_EQ(ExtractTag(addr), 0ull);
+
+    // Return a not-wrapped |addr|, if it's either nullptr or if the protection
+    // for this pointer is disabled.
+    if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
+      return reinterpret_cast<T*>(addr);
+    }
+
+    // Read the tag and place it in the top bits of the address.
+    // Even if PartitionAlloc's tag has less than kTagBits, we'll read
+    // what's given and pad the rest with 0s.
+    static_assert(sizeof(partition_alloc::PartitionTag) * 8 <= kTagBits, "");
+    uintptr_t tag = *(static_cast<volatile partition_alloc::PartitionTag*>(
+        PartitionAllocSupport::TagPointer(addr)));
+
+    tag <<= kValidAddressBits;
+    addr |= tag;
+    return reinterpret_cast<T*>(addr);
+  }
+
+  // Notifies the allocator when a wrapped pointer is being removed or replaced.
+  // No-op for MTECheckedPtrImpl.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES void ReleaseWrappedPtr(T*) {}
+
+  // Unwraps the pointer's uintptr_t representation, while asserting that memory
+  // hasn't been freed. The function is allowed to crash on nullptr.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
+    uintptr_t wrapped_addr = reinterpret_cast<uintptr_t>(wrapped_ptr);
+    uintptr_t tag = wrapped_addr >> kValidAddressBits;
+    if (tag > 0) {
+      // Read the tag provided by PartitionAlloc.
+      //
+      // Cast to volatile to ensure memory is read. E.g. in a tight loop, the
+      // compiler could cache the value in a register and thus could miss that
+      // another thread freed memory and changed tag.
+      uintptr_t read_tag =
+          *static_cast<volatile partition_alloc::PartitionTag*>(
+              PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
+      if (UNLIKELY(tag != read_tag))
+        IMMEDIATE_CRASH();
+      return reinterpret_cast<T*>(wrapped_addr & kAddressMask);
+    }
+    return wrapped_ptr;
+  }
+
+  // Unwraps the pointer's uintptr_t representation, while asserting that memory
+  // hasn't been freed. The function must handle nullptr gracefully.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
+    // SafelyUnwrapPtrForDereference handles nullptr case well.
+    return SafelyUnwrapPtrForDereference(wrapped_ptr);
+  }
+
+  // Unwraps the pointer's uintptr_t representation, without making an assertion
+  // on whether memory was freed or not.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
+    return ExtractPtr(wrapped_ptr);
+  }
+
+  // Upcasts the wrapped pointer.
+  template <typename To, typename From>
+  static RAW_PTR_FUNC_ATTRIBUTES constexpr To* Upcast(From* wrapped_ptr) {
+    static_assert(std::is_convertible<From*, To*>::value,
+                  "From must be convertible to To.");
+
+    // The top-bit tag must not affect the result of upcast.
+    return static_cast<To*>(wrapped_ptr);
+  }
+
+  // Advance the wrapped pointer by |delta| bytes.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* Advance(T* wrapped_ptr,
+                                            ptrdiff_t delta_elem) {
+    return wrapped_ptr + delta_elem;
+  }
+
+  // Returns a copy of a wrapped pointer, without making an assertion
+  // on whether memory was freed or not.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* Duplicate(T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
+  // This is for accounting only, used by unit tests.
+  static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void
+  IncrementPointerToMemberOperatorCountForTest() {}
+
+ private:
+  static ALWAYS_INLINE uintptr_t ExtractAddress(uintptr_t wrapped_ptr) {
+    return wrapped_ptr & kAddressMask;
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE T* ExtractPtr(T* wrapped_ptr) {
+    return reinterpret_cast<T*>(
+        ExtractAddress(reinterpret_cast<uintptr_t>(wrapped_ptr)));
+  }
+
+  static ALWAYS_INLINE uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
+    return wrapped_ptr & kTagMask;
+  }
+};
+
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -503,6 +668,11 @@ using RawPtrBanDanglingIfSupported =
 #elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 using RawPtrMayDangle = internal::AsanBackupRefPtrImpl;
 using RawPtrBanDanglingIfSupported = internal::AsanBackupRefPtrImpl;
+#elif defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+using RawPtrMayDangle = internal::MTECheckedPtrImpl<
+    internal::MTECheckedPtrImplPartitionAllocSupport>;
+using RawPtrBanDanglingIfSupported = internal::MTECheckedPtrImpl<
+    internal::MTECheckedPtrImplPartitionAllocSupport>;
 #else
 using RawPtrMayDangle = internal::RawPtrNoOpImpl;
 using RawPtrBanDanglingIfSupported = internal::RawPtrNoOpImpl;

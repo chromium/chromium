@@ -151,6 +151,7 @@ MaxRegularSlotSpanSize() {
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
+//     | TagBitmap             |
 //     | *Scan State Bitmap    |
 //     | Slot span             |
 //     | Slot span             |
@@ -159,7 +160,9 @@ MaxRegularSlotSpanSize() {
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
 //
-// State Bitmap is inserted for partitions that may have quarantine enabled.
+// TagBitmap is only present when
+// defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS) is true. State Bitmap
+// is inserted for partitions that may have quarantine enabled.
 //
 // If refcount_at_end_allocation is enabled, RefcountBitmap(4KiB) is inserted
 // after the Metadata page for BackupRefPtr. The guard pages after the bitmap
@@ -353,7 +356,6 @@ constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // Intentionally set to less than 2GiB to make sure that a 2GiB allocation
 // fails. This is a security choice in Chrome, to help making size_t vs int bugs
 // harder to exploit.
-//
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxDirectMapped() {

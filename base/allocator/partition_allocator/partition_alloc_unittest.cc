@@ -29,6 +29,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
@@ -575,7 +576,9 @@ TEST_P(PartitionAllocTest, Basic) {
   EXPECT_EQ(kPointerOffset,
             reinterpret_cast<size_t>(ptr) & PartitionPageOffsetMask());
   // Check that the offset appears to include a guard page.
-  EXPECT_EQ(PartitionPageSize() + kPointerOffset,
+  EXPECT_EQ(PartitionPageSize() +
+                partition_alloc::internal::ReservedTagBitmapSize() +
+                kPointerOffset,
             reinterpret_cast<size_t>(ptr) & kSuperPageOffsetMask);
 
   allocator.root()->Free(ptr);
@@ -853,9 +856,11 @@ TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
 // super page.
 TEST_P(PartitionAllocTest, MultiPageAllocs) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
-  // 1 super page has 2 guard partition pages.
+  // 1 super page has 2 guard partition pages and a tag bitmap.
   size_t num_slot_spans_needed =
-      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2 -
+       partition_alloc::internal::NumPartitionPagesPerTagBitmap()) /
+      num_pages_per_slot_span;
 
   // We need one more slot span in order to cross super page boundary.
   ++num_slot_spans_needed;
@@ -874,8 +879,11 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
       uintptr_t second_super_page_offset =
           slot_span_start & kSuperPageOffsetMask;
       EXPECT_FALSE(second_super_page_base == first_super_page_base);
-      // Check that we allocated a guard page for the second page.
-      EXPECT_EQ(PartitionPageSize(), second_super_page_offset);
+      // Check that we allocated a guard page and the reserved tag bitmap for
+      // the second page.
+      EXPECT_EQ(PartitionPageSize() +
+                    partition_alloc::internal::ReservedTagBitmapSize(),
+                second_super_page_offset);
     }
   }
   for (i = 0; i < num_slot_spans_needed; ++i)
@@ -1792,9 +1800,11 @@ TEST_P(PartitionAllocTest, PartialPages) {
 TEST_P(PartitionAllocTest, MappingCollision) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // The -2 is because the first and last partition pages in a super page are
-  // guard pages.
+  // guard pages. We also discount the partition pages used for the tag bitmap.
   size_t num_slot_span_needed =
-      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2 -
+       partition_alloc::internal::NumPartitionPagesPerTagBitmap()) /
+      num_pages_per_slot_span;
   size_t num_partition_pages_needed =
       num_slot_span_needed * num_pages_per_slot_span;
 
@@ -1809,8 +1819,11 @@ TEST_P(PartitionAllocTest, MappingCollision) {
 
   uintptr_t slot_spart_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize(), slot_spart_start & kSuperPageOffsetMask);
-  uintptr_t super_page = slot_spart_start - PartitionPageSize();
+  EXPECT_EQ(
+      PartitionPageSize() + partition_alloc::internal::ReservedTagBitmapSize(),
+      slot_spart_start & kSuperPageOffsetMask);
+  uintptr_t super_page = slot_spart_start - PartitionPageSize() -
+                         partition_alloc::internal::ReservedTagBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 = AllocPages(
@@ -1831,9 +1844,11 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   FreePages(map2, PageAllocationGranularity());
 
   super_page = SlotSpan::ToSlotSpanStart(second_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize(),
-            reinterpret_cast<uintptr_t>(super_page) & kSuperPageOffsetMask);
-  super_page -= PartitionPageSize();
+  EXPECT_EQ(
+      PartitionPageSize() + partition_alloc::internal::ReservedTagBitmapSize(),
+      reinterpret_cast<uintptr_t>(super_page) & kSuperPageOffsetMask);
+  super_page -=
+      PartitionPageSize() - partition_alloc::internal::ReservedTagBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(super_page - PageAllocationGranularity(),
@@ -4401,6 +4416,74 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
             kMaxFreeableSpans * bucket_size);
 }
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+// Verifies basic PA support for `MTECheckedPtr`.
+TEST_P(PartitionAllocTest, PartitionTagBasic) {
+  const size_t alloc_size = 64 - kExtraAllocSize;
+  void* ptr1 = allocator.root()->Alloc(alloc_size, type_name);
+  void* ptr2 = allocator.root()->Alloc(alloc_size, type_name);
+  void* ptr3 = allocator.root()->Alloc(alloc_size, type_name);
+  EXPECT_TRUE(ptr1);
+  EXPECT_TRUE(ptr2);
+  EXPECT_TRUE(ptr3);
+
+  auto* slot_span = SlotSpan::FromObject(ptr1);
+  EXPECT_TRUE(slot_span);
+
+  char* char_ptr1 = reinterpret_cast<char*>(ptr1);
+  char* char_ptr2 = reinterpret_cast<char*>(ptr2);
+  char* char_ptr3 = reinterpret_cast<char*>(ptr3);
+  EXPECT_LT(kTestAllocSize, slot_span->bucket->slot_size);
+  EXPECT_EQ(char_ptr1 + slot_span->bucket->slot_size, char_ptr2);
+  EXPECT_EQ(char_ptr2 + slot_span->bucket->slot_size, char_ptr3);
+  constexpr partition_alloc::PartitionTag kTag1 =
+      static_cast<partition_alloc::PartitionTag>(0xBADA);
+  constexpr partition_alloc::PartitionTag kTag2 =
+      static_cast<partition_alloc::PartitionTag>(0xDB8A);
+  constexpr partition_alloc::PartitionTag kTag3 =
+      static_cast<partition_alloc::PartitionTag>(0xA3C4);
+
+  partition_alloc::internal::PartitionTagSetValue(
+      ptr1, slot_span->bucket->slot_size, kTag1);
+  partition_alloc::internal::PartitionTagSetValue(
+      ptr2, slot_span->bucket->slot_size, kTag2);
+  partition_alloc::internal::PartitionTagSetValue(
+      ptr3, slot_span->bucket->slot_size, kTag3);
+
+  memset(ptr1, 0, alloc_size);
+  memset(ptr2, 0, alloc_size);
+  memset(ptr3, 0, alloc_size);
+
+  EXPECT_EQ(kTag1, partition_alloc::internal::PartitionTagGetValue(ptr1));
+  EXPECT_EQ(kTag2, partition_alloc::internal::PartitionTagGetValue(ptr2));
+  EXPECT_EQ(kTag3, partition_alloc::internal::PartitionTagGetValue(ptr3));
+
+  EXPECT_TRUE(!memchr(ptr1, static_cast<uint8_t>(kTag1), alloc_size));
+  EXPECT_TRUE(!memchr(ptr2, static_cast<uint8_t>(kTag2), alloc_size));
+
+  allocator.root()->Free(ptr1);
+  EXPECT_EQ(kTag2, partition_alloc::internal::PartitionTagGetValue(ptr2));
+
+  size_t request_size = slot_span->bucket->slot_size - kExtraAllocSize;
+  void* new_ptr2 = allocator.root()->Realloc(ptr2, request_size, type_name);
+  EXPECT_EQ(ptr2, new_ptr2);
+  EXPECT_EQ(kTag3, partition_alloc::internal::PartitionTagGetValue(ptr3));
+
+  // Add 1B to ensure the object is rellocated to a larger slot.
+  request_size = slot_span->bucket->slot_size - kExtraAllocSize + 1;
+  new_ptr2 = allocator.root()->Realloc(ptr2, request_size, type_name);
+  EXPECT_TRUE(new_ptr2);
+  EXPECT_NE(ptr2, new_ptr2);
+
+  allocator.root()->Free(new_ptr2);
+
+  EXPECT_EQ(kTag3, partition_alloc::internal::PartitionTagGetValue(ptr3));
+  allocator.root()->Free(ptr3);
+}
+
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     BUILDFLAG(IS_CHROMECAST)

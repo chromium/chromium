@@ -56,6 +56,7 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
+#include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
@@ -332,6 +333,12 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   std::atomic<int> thread_caches_being_constructed_{0};
 
   bool quarantine_always_for_testing = false;
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  partition_alloc::PartitionTag current_partition_tag = 0;
+  // Points to the end of the committed tag bitmap region.
+  uintptr_t next_tag_bitmap_page = 0;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   PartitionRoot()
       : quarantine_mode(QuarantineMode::kAlwaysDisabled),
@@ -715,6 +722,17 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   void UncapEmptySlotSpanMemoryForTesting() {
     max_empty_slot_spans_dirty_bytes_shift = 0;
   }
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  ALWAYS_INLINE partition_alloc::PartitionTag GetNewPartitionTag() {
+    // TODO(crbug.com/1298696): performance is not an issue. We can use
+    // random tags in lieu of sequential ones.
+    auto tag = ++current_partition_tag;
+    tag += !tag;  // Avoid 0.
+    current_partition_tag = tag;
+    return tag;
+  }
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
  private:
   // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
@@ -1118,6 +1136,15 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   // been touched above.
   PA_PREFETCH(slot_span);
 #endif  // defined(PA_HAS_MEMORY_TAGGING)
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  if (!root->IsDirectMappedBucket(slot_span->bucket)) {
+    size_t slot_size_less_extras =
+        root->AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
+    partition_alloc::internal::PartitionTagIncrementValue(
+        object, slot_size_less_extras);
+  }
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
