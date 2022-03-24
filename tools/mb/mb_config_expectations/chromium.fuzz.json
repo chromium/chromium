@@ -96,7 +96,8 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_afl": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "ChromiumOS ASAN Release": {
