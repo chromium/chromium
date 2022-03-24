@@ -9,7 +9,9 @@
 
 import 'chrome://support-tool/support_tool.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails} from 'chrome://support-tool/browser_proxy.js';
 import {SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -128,5 +130,20 @@ suite('SupportToolTest', function() {
       assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
       assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
     }
+  });
+
+  test('spinner page', () => {
+    // Check the contents of spinner page.
+    const spinner = supportTool.$.spinnerPage;
+    spinner.shadowRoot!.getElementById('cancelButton')!.click();
+    browserProxy.whenCalled('cancelDataCollection').then(function() {
+      webUIListenerCallback('data-collection-cancelled');
+      flush();
+      // Make sure the issue details page is displayed after cancelling data
+      // collection.
+      assertEquals(
+          supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+          SupportToolPageIndex.ISSUE_DETAILS);
+    });
   });
 });

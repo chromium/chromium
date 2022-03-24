@@ -9,6 +9,7 @@ import './issue_details.js';
 import './spinner_page.js';
 import './support_tool_shared_css.js';
 
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {DataCollectorsElement} from './data_collectors.js';
@@ -30,7 +31,9 @@ export interface SupportToolElement {
   };
 }
 
-export class SupportToolElement extends PolymerElement {
+const SupportToolElementBase = WebUIListenerMixin(PolymerElement);
+
+export class SupportToolElement extends SupportToolElementBase {
   static get is() {
     return 'support-tool';
   }
@@ -55,6 +58,28 @@ export class SupportToolElement extends PolymerElement {
 
   private selectedPage_: SupportToolPageIndex;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addWebUIListener(
+        'data-collection-completed',
+        this.onDataCollectionCompleted_.bind(this));
+    this.addWebUIListener(
+        'data-collection-cancelled',
+        this.onDataCollectionCancelled_.bind(this));
+  }
+
+  private onDataCollectionCompleted_() {
+    // TODO(b/200511640): Receive detected PII items from c++ side here and fill
+    // in the PII selection page.
+    console.log('data collection completed');
+  }
+
+  private onDataCollectionCancelled_() {
+    // Change the selected page into issue details page so they user can restart
+    // data collection if they want.
+    this.selectedPage_ = SupportToolPageIndex.ISSUE_DETAILS;
+  }
 
   private onContinueClick_() {
     // If we are currently on data collectors selection page, send signal to

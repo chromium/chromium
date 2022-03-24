@@ -27,10 +27,12 @@ static constexpr support_tool::DataCollectorType
     kDataCollectorsChromeosHwDetails[] = {support_tool::CHROMEOS_REVEN};
 
 // Returns SupportToolHandler that is created for collecting logs from the
-// given data modules. Adds all Chrome OS related DataCollectors to the
-// SupportToolHandler if `chrome_os` is true. Adds all Chrome browser
-// DataCollectors if `chrome_browser` is true.
-std::unique_ptr<SupportToolHandler> GetSupportToolHandler(bool chrome_os,
-                                                          bool chrome_browser);
+// given information. Adds the corresponding DataCollectors that were listed in
+// `included_data_collectors` to the returned SupportToolHandler.
+std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
+    std::string case_id,
+    std::string email_address,
+    std::string issue_description,
+    std::set<support_tool::DataCollectorType> included_data_collectors);
 
 #endif  // CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_

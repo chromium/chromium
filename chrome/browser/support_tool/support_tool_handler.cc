@@ -56,7 +56,17 @@ base::FilePath CreateTempDirForOutput() {
 }
 
 SupportToolHandler::SupportToolHandler()
-    : task_runner_for_redaction_tool_(
+    : SupportToolHandler(/*case_id=*/std::string(),
+                         /*email_address=*/std::string(),
+                         /*issue_description=*/std::string()) {}
+
+SupportToolHandler::SupportToolHandler(std::string case_id,
+                                       std::string email_address,
+                                       std::string issue_description)
+    : case_id_(case_id),
+      email_address_(email_address),
+      issue_description_(issue_description),
+      task_runner_for_redaction_tool_(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::USER_VISIBLE,
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),

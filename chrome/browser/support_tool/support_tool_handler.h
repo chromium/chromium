@@ -69,7 +69,12 @@ using SupportToolDataExportedCallback =
 
 class SupportToolHandler {
  public:
+  // Intended to be used for unit tests. Initializes `case_id_`,
+  // `email_address_` and `issue_description_` as empty string.
   SupportToolHandler();
+  SupportToolHandler(std::string case_id,
+                     std::string email_address,
+                     std::string issue_description);
   ~SupportToolHandler();
 
   // Adds `collector` to the list of DataCollectors the SupportToolHandler
@@ -133,6 +138,9 @@ class SupportToolHandler {
   void CleanUp();
 
   SEQUENCE_CHECKER(sequence_checker_);
+  std::string case_id_;
+  std::string email_address_;
+  std::string issue_description_;
   PIIMap detected_pii_;
   std::vector<std::unique_ptr<DataCollector>> data_collectors_;
   // Stores the set of errors that are returned from DataCollector calls. Reset

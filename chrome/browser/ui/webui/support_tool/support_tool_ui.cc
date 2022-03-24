@@ -4,15 +4,19 @@
 
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 
+#include <set>
 #include <string>
 
 #include "base/base64url.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
+#include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -25,6 +29,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 const char kSupportCaseIDQuery[] = "case_id";
@@ -140,6 +145,22 @@ base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return data_collector_list;
 }
+
+std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
+    const base::Value::List* data_collector_items) {
+  std::set<support_tool::DataCollectorType> included_data_collectors;
+  for (const auto& item : *data_collector_items) {
+    const base::Value::Dict* item_as_dict = item.GetIfDict();
+    DCHECK(item_as_dict);
+    absl::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
+    if (isIncluded && isIncluded.value()) {
+      included_data_collectors.insert(
+          static_cast<support_tool::DataCollectorType>(
+              item_as_dict->FindInt("protoEnum").value()));
+    }
+  }
+  return included_data_collectors;
+}
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +194,10 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler {
  private:
   base::Value::List GetAccountsList();
 
+  void OnDataCollectionDone(const PIIMap& detected_pii,
+                            std::set<SupportToolError> errors);
+
+  std::unique_ptr<SupportToolHandler> handler_;
   base::WeakPtrFactory<SupportToolMessageHandler> weak_ptr_factory_{this};
 };
 
@@ -242,13 +267,31 @@ void SupportToolMessageHandler::HandleStartDataCollection(
   DCHECK(issue_details);
   const base::Value::List* data_collectors = args[1].GetIfList();
   DCHECK(data_collectors);
-  // TODO(b/219730597): Create SupportToolHandler from `issue_details` and
-  // `data_collectors`. Will be added in follow-up CL.
+  this->handler_ =
+      GetSupportToolHandler(*issue_details->FindString("caseId"),
+                            *issue_details->FindString("emailAddress"),
+                            *issue_details->FindString("issueDescription"),
+                            GetIncludedDataCollectorTypes(data_collectors));
+  this->handler_->CollectSupportData(
+      base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SupportToolMessageHandler::OnDataCollectionDone(
+    const PIIMap& detected_pii,
+    std::set<SupportToolError> errors) {
+  // TODO(b/200511640): Process `detected_pii` and send the detected PII in
+  // FireWebUIListener.
+  AllowJavascript();
+  FireWebUIListener("data-collection-completed");
 }
 
 void SupportToolMessageHandler::HandleCancelDataCollection(
     const base::Value::List& args) {
-  // TODO(b/200511640): Cancel data collection.
+  AllowJavascript();
+  // Deleting the SupportToolHandler object will stop data collection.
+  this->handler_.reset();
+  FireWebUIListener("data-collection-cancelled");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

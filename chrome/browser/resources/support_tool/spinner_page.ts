@@ -6,6 +6,7 @@ import './support_tool_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './spinner_page.html.js';
 
 export class SpinnerPageElement extends PolymerElement {
@@ -17,9 +18,10 @@ export class SpinnerPageElement extends PolymerElement {
     return getTemplate();
   }
 
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
   private onCancelClick_() {
-    // Send cancel signal to Chrome C++ side using BrowserProxy. It will be
-    // added in follow-up CL.
+    this.browserProxy_.cancelDataCollection();
   }
 }
 
