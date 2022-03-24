@@ -89,6 +89,18 @@ std::string NoAttachEncryptionSettingsMatcher::Name() const {
   return "no-attach-encryption-settings-matcher";
 }
 
+void CompressionInformationMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid compression information field.";
+}
+
+void CompressionInformationMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "has an invalid compression information field.";
+}
+
+std::string CompressionInformationMatcher::Name() const {
+  return "encrypted-record-matcher";
+}
+
 bool EncryptedRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
@@ -143,21 +155,70 @@ std::string RequestIdMatcher::Name() const {
 
 bool RecordMatcher::MatchAndExplain(const base::Value::Dict& arg,
                                     MatchResultListener* listener) const {
-  const auto* record_list = GetRecordList(arg, listener);
-  if (record_list == nullptr) {
+  switch (mode_) {
+    case Mode::FullRequest: {
+      const auto* record_list = GetRecordList(arg, listener);
+      if (record_list == nullptr) {
+        return false;
+      }
+
+      for (const auto& record : *record_list) {
+        const auto* record_dict = record.GetIfDict();
+        if (record_dict == nullptr) {
+          *listener << "Record " << record << " is not a dict.";
+          return false;
+        }
+        if (!this->MatchAndExplainRecord(*record_dict, listener)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    case Mode::RecordOnly: {
+      return this->MatchAndExplainRecord(arg, listener);
+    }
+    default: {
+      // Should never reach here.
+      *listener << "Invalid mode of RecordMatcher encountered: "
+                << static_cast<std::underlying_type_t<Mode>>(mode_);
+      return false;
+    }
+  }
+}
+
+RecordMatcher& RecordMatcher::SetMode(RecordMatcher::Mode mode) {
+  mode_ = mode;
+  return *this;
+}
+
+bool CompressionInformationMatcher::MatchAndExplainRecord(
+    const base::Value::Dict& record,
+    MatchResultListener* listener) const {
+  const auto* const compression_info =
+      record.FindDict("compressionInformation");
+  if (compression_info == nullptr) {
+    *listener << "No key named \"compressionInformation\" or the value is "
+                 "not a dict in record "
+              << record << '.';
     return false;
   }
 
-  for (const auto& record : *record_list) {
-    const auto* record_dict = record.GetIfDict();
-    if (record_dict == nullptr) {
-      *listener << "Record " << record << " is not a dict.";
-      return false;
-    }
-    if (!this->MatchAndExplainRecord(*record_dict, listener)) {
-      return false;
-    }
+  const auto compression_algorithm =
+      compression_info->FindInt("compressionAlgorithm");
+  if (!compression_algorithm.has_value()) {
+    *listener << "No key named \"compressionAlgorithm\" under "
+                 "compressionInformation "
+                 "or the value is not an integer in record "
+              << record << '.';
+    return false;
   }
+  if (compression_algorithm.value() > 1 || compression_algorithm < 0) {
+    *listener << "The value of \"compressionInformation/compressionAlgorithm\" "
+                 "is neither 0 nor 1 in record "
+              << record << '.';
+    return false;
+  }
+
   return true;
 }
 
