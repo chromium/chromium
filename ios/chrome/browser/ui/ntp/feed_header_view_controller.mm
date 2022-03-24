@@ -38,8 +38,9 @@ const CGFloat kDiscoverFeedContentWith = 430;
 const CGFloat kWebChannelsHeaderHeight = 52;
 const CGFloat kDiscoverFeedHeaderHeight = 40;
 // * Values below are exclusive to Web Channels.
-// The width of the feed selector segments.
-const CGFloat kHeaderSegmentWidth = 150;
+// The width of the segmented control to toggle between feeds.
+// TODO(crbug.com/1277974): See how segments react to longer words.
+const CGFloat kHeaderSegmentWidth = 300;
 // The height and width of the header menu button. Based on the default
 // UISegmentedControl height.
 const CGFloat kButtonSize = 28;
@@ -252,9 +253,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
       [[UISegmentedControl alloc] initWithItems:headerLabels];
   segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
   [segmentedControl setApportionsSegmentWidthsByContent:NO];
-  for (NSUInteger i = 0; i < segmentedControl.numberOfSegments; ++i) {
-    [segmentedControl setWidth:kHeaderSegmentWidth forSegmentAtIndex:i];
-  }
 
   // Set text font and color.
   UIFont* font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
@@ -302,6 +300,14 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
           constraintEqualToAnchor:self.container.centerXAnchor],
       [self.segmentedControl.centerYAnchor
           constraintEqualToAnchor:self.container.centerYAnchor],
+      [self.segmentedControl.trailingAnchor
+          constraintEqualToAnchor:self.menuButton.leadingAnchor
+                         constant:-kButtonHorizontalMargin],
+      [self.segmentedControl.leadingAnchor
+          constraintEqualToAnchor:self.sortButton.trailingAnchor
+                         constant:kButtonHorizontalMargin],
+      [self.segmentedControl.widthAnchor
+          constraintLessThanOrEqualToConstant:kHeaderSegmentWidth],
       // Set menu button size.
       [self.menuButton.heightAnchor constraintEqualToConstant:kButtonSize],
       [self.menuButton.widthAnchor constraintEqualToConstant:kButtonSize],
