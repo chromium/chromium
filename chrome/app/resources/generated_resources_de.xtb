@@ -458,7 +458,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1477654881618305065">Ihre Organisation lässt das Teilen dieser Inhalte nicht zu. Wenn Sie Hilfe benötigen, wenden Sie sich bitte an Ihren Administrator.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Die Installation ist nicht aktiviert</translation>
-<translation id="1480571698637441426">Damit Sie relevantere Antworten auf Fragen erhalten, können Sie Assistant erlauben, auf einen Screenshot Ihres Bildschirms zuzugreifen. Das kann auch Informationen über abgespielte Lieder oder Videos umfassen.</translation>
+<translation id="1480571698637441426">Damit du relevantere Antworten auf Fragen erhältst, kannst du Assistant erlauben, auf einen Screenshot deines Bildschirms zuzugreifen. Das kann auch Informationen über abgespielte Lieder oder Videos umfassen.</translation>
 <translation id="1480663089572535854">Sie können zurückgehen, um die Zuweisung für „Auswählen“ zu ändern. Der automatische Scan lässt sich jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="1481537595330271162">Fehler bei der Größenanpassung des Laufwerks</translation>
 <translation id="1482626744466814421">Lesezeichen für diesen Tab erstellen…</translation>
@@ -726,7 +726,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1744108098763830590">Hintergrundseite</translation>
 <translation id="1745732479023874451">Kontakte verwalten</translation>
 <translation id="1748563609363301860">Sie können dieses Passwort entweder in Ihrem Google-Konto oder nur auf diesem Gerät speichern</translation>
-<translation id="1750048572964661931">Sie können eine PIN oder ein Passwort für dieses Chromebook festlegen, um den unbefugten Zugriff auf die Apps Ihres Smartphones zu verhindern.</translation>
+<translation id="1750048572964661931">Du kannst eine PIN oder ein Passwort für dieses Chromebook festlegen, um den unbefugten Zugriff auf die Apps deines Smartphones zu verhindern.</translation>
 <translation id="1750172676754093297">Auf Ihrem Sicherheitsschlüssel können keine Fingerabdrücke gespeichert werden</translation>
 <translation id="1751249301761991853">Personalisierung</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> kann dann Dateien im Ordner <ph name="FOLDERNAME" /> bearbeiten, solange Tabs dieser Website geöffnet sind</translation>
@@ -1275,13 +1275,13 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="23055578400314116">Wählen Sie einen Nutzernamen aus</translation>
 <translation id="2306366691914573029">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, unbekannter Gerätetyp</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
-<translation id="2307553512430195144">Sofern Sie zustimmen, wartet Google Assistant im Stand-by-Modus auf „Hey Google“ und kann dann mit Voice Match die Stimme von <ph name="SUPERVISED_USER_NAME" /> erkennen.
+<translation id="2307553512430195144">Sofern du zustimmst, wartet Google Assistant im Stand-by-Modus auf „Hey Google“ und kann dann mit Voice Match die Stimme von <ph name="SUPERVISED_USER_NAME" /> erkennen.
     <ph name="BR" />
     Mit Voice Match kann Google Assistant die Stimme von <ph name="SUPERVISED_USER_NAME" /> auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und das Kind von anderen unterscheiden.
     <ph name="BR" />
-    Assistant nimmt Audioclips der Stimme Ihres Kindes auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf seinen Geräten gespeichert ist. Das Sprachmodell Ihres Kindes wird eventuell vorübergehend an Google gesendet, um seine Stimme besser erkennen zu können.
+    Assistant nimmt Audioclips der Stimme deines Kindes auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf seinen Geräten gespeichert ist. Das Sprachmodell deines Kindes wird eventuell vorübergehend an Google gesendet, um seine Stimme besser erkennen zu können.
     <ph name="BR" />
-    Wenn Sie sich später gegen Voice Match entscheiden, entfernen Sie die Funktion einfach in den Assistant-Einstellungen Ihres Kindes. Unter <ph name="VOICE_MATCH_SETTINGS_URL" /> können Sie die Audioclips, die Ihr Kind während der Voice Match-Einrichtung aufgenommen hat, im Konto Ihres Kindes aufrufen oder löschen.
+    Falls du dich später gegen Voice Match entscheidest, entferne die Funktion einfach in den Assistant-Einstellungen deines Kindes. Unter <ph name="VOICE_MATCH_SETTINGS_URL" /> kannst du die Audioclips, die dein Kind während der Voice Match-Einrichtung aufgenommen hat, im Konto deines Kindes aufrufen oder löschen.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> auf einem Teil der Seite suchen</translation>
@@ -1976,7 +1976,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3011488081941333749">Cookies von <ph name="DOMAIN" /> werden beim Beenden gelöscht</translation>
 <translation id="3012631534724231212">(iFrame)</translation>
 <translation id="3012804260437125868">Nur bei sicheren Verbindungen zur gleichen Website</translation>
-<translation id="3012917896646559015">Wenden Sie sich bitte umgehend an Ihren Hardware-Hersteller, um Ihren Computer an einen Reparaturservice zu senden.</translation>
+<translation id="3012917896646559015">Wende dich bitte umgehend an deinen Hardware-Hersteller, um deinen Computer an einen Reparaturservice zu senden.</translation>
 <translation id="301525898020410885">Die Sprache wird von Ihrer Organisation festgelegt</translation>
 <translation id="3015639418649705390">Jetzt neu starten</translation>
 <translation id="3016381065346027039">Keine Protokolleinträge</translation>
@@ -2150,7 +2150,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="32101887417650595">Keine Verbindung zum Drucker möglich</translation>
 <translation id="321084946921799184">Gelb und Weiß</translation>
 <translation id="321356136776075234">Gerät OU (z. B. OU=Chromebooks,DC=example,DC=com)</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse Ihres Kindes zugreifen.</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen.</translation>
 <translation id="3216825226035747725">G Suite for Education-Administratoren legen fest, auf welche Google-Dienste ihre Nutzer zugreifen können, während sie in einem G Suite for Education-Konto angemeldet sind. Dies beinhaltet unter Umständen Funktionen oder Dienste, auf die Ihr Kind vorher über das gemeinsam verwaltete Konto keinen Zugriff hatte. Administratoren von Bildungseinrichtungen müssen die Einwilligung zur Nutzung der Dienste durch ihre minderjährigen Nutzer vorlegen oder einholen.</translation>
 <translation id="3217843140356091325">Verknüpfung erstellen?</translation>
 <translation id="321834671654278338">Linux-Deinstallationsprogramm</translation>
@@ -2484,7 +2484,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3566325075220776093">Von diesem Gerät</translation>
 <translation id="3566721612727112615">Keine Websites hinzugefügt</translation>
 <translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
-<translation id="3569382839528428029">Soll <ph name="APP_NAME" /> Ihren Bildschirm freigeben?</translation>
+<translation id="3569382839528428029">Soll <ph name="APP_NAME" /> deinen Bildschirm freigeben?</translation>
 <translation id="3569407787324516067">Bildschirmschoner</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
 <translation id="3571734092741541777">Einrichten</translation>
@@ -3262,7 +3262,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="440653823335387109">SEITEN, DIE SIE GELESEN HABEN</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4408599188496843485">&amp;Hilfe</translation>
-<translation id="4409271659088619928">Sie haben <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
+<translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4409697491990005945">Ränder</translation>
 <translation id="4410545552906060960">Anstelle eines Passworts kannst du eine Nummer (PIN) zum Entsperren deines Geräts verwenden. Die PIN kann später unter "Einstellungen" festgelegt werden.</translation>
 <translation id="4411578466613447185">Code-Signaturgeber</translation>
@@ -3767,7 +3767,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4943368462779413526">American Football</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" möchte eine Verbindung mit einem seriellen Port herstellen</translation>
 <translation id="4944310289250773232">Dieser Authentifizierungsdienst wird von <ph name="SAML_DOMAIN" /> gehostet</translation>
-<translation id="4945439665401275950">Bitten Sie Ihr Kind, die Ein-/Aus-Taste zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck Ihres Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
+<translation id="4945439665401275950">Bitte dein Kind, die Ein-/Aus-Taste zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck deines Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{eine Datei}other{# Dateien}}</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
@@ -4773,7 +4773,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
 <translation id="6059652578941944813">Zertifikathierarchie</translation>
 <translation id="6061882183774845124">Link an meine Geräte senden</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse Ihres Kindes zugreifen. Zur Schonung des Akkus können Sie in den Assistant-Einstellungen von <ph name="SUPERVISED_USER_NAME" /> festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen. Zur Schonung des Akkus kannst du in den Assistant-Einstellungen von <ph name="SUPERVISED_USER_NAME" /> festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="6064217302520318294">Displaysperre</translation>
 <translation id="6065289257230303064">Verzeichnisattribute des Zertifikatsinhabers</translation>
 <translation id="6066794465984119824">Image-Hash ist nicht festgelegt</translation>
@@ -5039,7 +5039,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6339668969738228384">Neues Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellen</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personalisierung</translation>
-<translation id="6341850831632289108">Ihren physischen Standort ermitteln</translation>
+<translation id="6341850831632289108">Deinen physischen Standort ermitteln</translation>
 <translation id="6342069812937806050">Gerade eben</translation>
 <translation id="6343003829431264373">Nur gerade Seitenzahlen</translation>
 <translation id="6344170822609224263">Auf Liste der Netzwerkverbindungen zugreifen</translation>
@@ -5352,9 +5352,9 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6686665106869989887">Tab wurde nach rechts verschoben</translation>
 <translation id="6686817083349815241">Passwort speichern</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ausblenden</translation>
-<translation id="6689714331348768690">Bitten Sie <ph name="SUPERVISED_USER_NAME" />, an den Computer zu kommen. Ihr Kind muss einige Sätze auf diesem Bildschirm vorlesen, damit sein Sprachmodell erstellt werden kann.
+<translation id="6689714331348768690">Bitte <ph name="SUPERVISED_USER_NAME" />, an den Computer zu kommen. Dein Kind muss einige Sätze auf diesem Bildschirm vorlesen, damit sein Sprachmodell erstellt werden kann.
     <ph name="BR" />
-    Falls <ph name="SUPERVISED_USER_NAME" /> Hilfe beim Lesen braucht, lesen Sie vor und lassen Sie Ihr Kind den Text wiederholen. Flüstern Sie dabei und sprechen Sie nicht in Richtung des Mikrofons, damit Assistant die Stimme Ihres Kindes lernt und nicht Ihre.</translation>
+    Falls <ph name="SUPERVISED_USER_NAME" /> Hilfe beim Lesen braucht, lies vor und lasse dein Kind den Text wiederholen. Flüstere dabei und sprich nicht in Richtung des Mikrofons, damit Assistant die Stimme deines Kindes lernt und nicht deine.</translation>
 <translation id="6690659332373509948">Datei kann nicht geparst werden: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Synchronisierte Daten im Google Dashboard verwalten</translation>
 <translation id="6691541770654083180">Erde</translation>
@@ -5505,7 +5505,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" möchte die Datei "<ph name="FILE_NAME" />" mit <ph name="PRINTER_NAME" /> ausdrucken.</translation>
 <translation id="6847125920277401289">Zum Fortfahren Speicherplatz freigeben</translation>
 <translation id="6848388270925200958">Zurzeit können einige Ihrer Karten nur auf diesem Gerät verwendet werden</translation>
-<translation id="6848716236260083778">Bitten Sie Ihr Kind, den Fingerabdrucksensor zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck Ihres Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
+<translation id="6848716236260083778">Bitte dein Kind, den Fingerabdrucksensor zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck deines Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
 <translation id="6851181413209322061">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese Einstellung wird vom Inhaber erzwungen. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
 <translation id="6851497530878285708">App aktiviert</translation>
@@ -6400,7 +6400,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7784067724422331729">Diese Datei wurde von den Sicherheitseinstellungen auf Ihrem Computer blockiert.</translation>
 <translation id="7784796923038949829">Daten der Website können nicht gelesen oder geändert werden</translation>
 <translation id="778480864305029524">Zum Verwenden von Instant Tethering Benachrichtigungen für Google Play-Dienste aktivieren.</translation>
-<translation id="7785471469930192436">Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer Suchmaschine</translation>
+<translation id="7785471469930192436">Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine</translation>
 <translation id="7786889348652477777">App &amp;neu laden</translation>
 <translation id="7787308148023287649">Anzeige auf einem anderen Display</translation>
 <translation id="7788298548579301890">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
@@ -6886,7 +6886,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8261378640211443080">Diese Erweiterung ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne Ihr Wissen hinzugefügt.</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8263336784344783289">Gruppe benennen</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> hat Ihren Cursor deaktiviert.</translation>
+<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> hat deinen Cursor deaktiviert.</translation>
 <translation id="8264024885325823677">Diese Einstellung wird von Ihrem Administrator verwaltet.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" hat den Vollbildmodus ausgelöst.</translation>
 <translation id="826511437356419340">Sie befinden sich jetzt im Modus "Fensterübersicht". Um zwischen Fenstern zu wechseln, können Sie wischen oder auf der Tastatur die Tabulatortaste drücken.</translation>
@@ -6970,7 +6970,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="835238322900896202">Bei der Deinstallation ist ein Fehler aufgetreten. Führen Sie die Deinstallation über das Terminal durch.</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8353683614194668312">Berechtigungen:</translation>
-<translation id="8354034204605718473">Die PIN Ihres Kindes wurde hinzugefügt</translation>
+<translation id="8354034204605718473">Die PIN deines Kindes wurde hinzugefügt</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8357388086258943206">Fehler beim Installieren von Linux</translation>
 <translation id="8358685469073206162">Seiten wiederherstellen?</translation>
@@ -7237,7 +7237,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8665180165765946056">Sicherung abgeschlossen</translation>
 <translation id="866611985033792019">Diesem Zertifikat zur Identifizierung von E-Mail-Nutzern vertrauen</translation>
 <translation id="8666584013686199826">Nachfragen, wenn eine Website auf USB-Geräte zugreifen möchte</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> wird nun im Vollbildmodus angezeigt und hat Ihren Cursor deaktiviert.</translation>
+<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> wird nun im Vollbildmodus angezeigt und hat deinen Cursor deaktiviert.</translation>
 <translation id="8668052347555487755">Farbmodus</translation>
 <translation id="8669284339312441707">Wärmer</translation>
 <translation id="8670537393737592796">Installieren Sie <ph name="APP_NAME" />, um schnell hierher zurückzukehren, indem Sie oben auf die Installationsschaltfläche klicken</translation>
@@ -7538,13 +7538,13 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8962918469425892674">Diese Website nutzt Bewegungs- oder Lichtsensoren.</translation>
 <translation id="8964943308070692533">Zusätzliche inaktive Websites</translation>
 <translation id="8965037249707889821">Altes Passwort eingeben</translation>
-<translation id="89667524227025535">Scannen Sie den QR-Code mit Ihrer Kamera oder geben Sie den Aktivierungscode Ihres Anbieters ein</translation>
+<translation id="89667524227025535">Scanne den QR-Code mit deiner Kamera oder gib den Aktivierungscode deines Anbieters ein</translation>
 <translation id="8966809848145604011">Weitere Profile</translation>
 <translation id="8966870118594285808">Versehentlich geschlossenen Tab wieder öffnen</translation>
 <translation id="8967427617812342790">Zur Leseliste hinzufügen</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="89720367119469899">Esc-Taste</translation>
-<translation id="8972513834460200407">Bitten Sie Ihren Netzwerkadministrator, zu überprüfen, ob Downloads von Google-Servern von der Firewall blockiert werden.</translation>
+<translation id="8972513834460200407">Bitte deinen Netzwerkadministrator, zu überprüfen, ob Downloads von Google-Servern von der Firewall blockiert werden.</translation>
 <translation id="8973557916016709913">Zoomstufe entfernen</translation>
 <translation id="8973596347849323817">Sie können dieses Gerät an Ihre Bedürfnisse anpassen. Diese Funktionen der Bedienungshilfen lassen sich später in den Einstellungen ändern.</translation>
 <translation id="897414447285476047">Die Zieldatei wurde aufgrund eines Verbindungsproblems nicht vollständig herunterladen.</translation>
@@ -7781,7 +7781,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9209563766569767417">Einrichtung des Linux-Containers wird geprüft</translation>
 <translation id="9209689095351280025">Websites können keine Cookies nutzen, die Sie durch das Web verfolgen</translation>
 <translation id="9211177926627870898">Aktualisierung erforderlich</translation>
-<translation id="9214520840402538427">Hoppla! Bei der Initialisierung der Installationszeit-Attribute ist eine Zeitüberschreitung aufgetreten. Bitte wenden Sie sich an Ihren Support-Mitarbeiter.</translation>
+<translation id="9214520840402538427">Hoppla! Bei der Initialisierung der Installationszeit-Attribute ist eine Zeitüberschreitung aufgetreten. Bitte wende dich an deinen Support-Mitarbeiter.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" hinzugefügt</translation>
 <translation id="9215742531438648683">Google Play Store deinstallieren</translation>
