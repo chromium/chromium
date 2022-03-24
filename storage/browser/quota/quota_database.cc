@@ -229,16 +229,6 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
     blink::mojom::StorageType storage_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
-  QuotaErrorOr<BucketInfo> bucket_result =
-      GetBucket(storage_key, bucket_name, storage_type);
-
-  if (bucket_result.ok())
-    return QuotaError::kEntryExistsError;
-
-  if (bucket_result.error() != QuotaError::kNotFound)
-    return bucket_result.error();
-
   base::Time now = base::Time::Now();
   return CreateBucketInternal(storage_key, storage_type, bucket_name,
                               /*use_count=*/0, now, now);
@@ -391,23 +381,17 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
   if (open_error != QuotaError::kNone)
     return open_error;
 
-  // Check if bucket exists first. Running an update statement on a bucket that
-  // doesn't exist fails DCHECK and crashes.
-  // TODO(crbug/1210252): Update to not execute 2 sql statements.
-  QuotaErrorOr<BucketInfo> result =
-      GetBucket(storage_key, kDefaultBucketName, type);
-  if (!result.ok())
-    return result.error();
-
   // clang-format off
   static constexpr char kSql[] =
       "UPDATE buckets "
         "SET use_count = use_count + 1, last_accessed = ? "
-        "WHERE id = ?";
+        "WHERE storage_key = ? AND type = ? AND name = ?";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindTime(0, last_accessed);
-  statement.BindInt64(1, result->id.value());
+  statement.BindString(1, storage_key.Serialize());
+  statement.BindInt(2, static_cast<int>(type));
+  statement.BindString(3, kDefaultBucketName);
 
   if (!statement.Run())
     return QuotaError::kDatabaseError;
@@ -423,13 +407,6 @@ QuotaError QuotaDatabase::SetBucketLastAccessTime(BucketId bucket_id,
   QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
   if (open_error != QuotaError::kNone)
     return open_error;
-
-  // Check if bucket exists first. Running an update statement on a bucket that
-  // doesn't exist fails DCHECK and crashes.
-  // TODO(crbug/1210252): Update to not execute 2 sql statements.
-  QuotaErrorOr<BucketTableEntry> entry = GetBucketInfo(bucket_id);
-  if (!entry.ok())
-    return entry.error();
 
   // clang-format off
   static constexpr char kSql[] =
@@ -455,13 +432,6 @@ QuotaError QuotaDatabase::SetBucketLastModifiedTime(BucketId bucket_id,
   QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
   if (open_error != QuotaError::kNone)
     return open_error;
-
-  // Check if bucket exists first. Running an update statement on a bucket that
-  // doesn't exist fails DCHECK and crashes.
-  // TODO(crbug/1210252): Update to not execute 2 sql statements.
-  QuotaErrorOr<BucketTableEntry> entry = GetBucketInfo(bucket_id);
-  if (!entry.ok())
-    return entry.error();
 
   static constexpr char kSql[] =
       "UPDATE buckets SET last_modified = ? WHERE id = ?";

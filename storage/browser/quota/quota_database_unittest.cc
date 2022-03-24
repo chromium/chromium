@@ -565,10 +565,15 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
                                        base::Time::FromJavaTime(30)),
             QuotaError::kNone);
 
-  // one persistent.
+  // One persistent.
   EXPECT_EQ(db.SetBucketLastAccessTime(bucket4.bucket_id,
                                        base::Time::FromJavaTime(40)),
             QuotaError::kNone);
+
+  // One non-existent.
+  EXPECT_EQ(
+      db.SetBucketLastAccessTime(BucketId(777), base::Time::FromJavaTime(40)),
+      QuotaError::kNone);
 
   result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
@@ -632,9 +637,9 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
       StorageKey::CreateFromStringForTesting("http://example/");
   base::Time now = base::Time::Now();
 
-  // Should error if bucket doesn't exist.
+  // Doesn't error if bucket doesn't exist.
   EXPECT_EQ(db.SetStorageKeyLastAccessTime(storage_key, kTemp, now),
-            QuotaError::kNotFound);
+            QuotaError::kNone);
 
   QuotaErrorOr<BucketInfo> bucket =
       db.CreateBucketForTesting(storage_key, kDefaultBucketName, kTemp);
@@ -721,6 +726,11 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
       QuotaError::kNone);
   EXPECT_EQ(
       db.SetBucketLastModifiedTime(bucket4.id, base::Time::FromJavaTime(30)),
+      QuotaError::kNone);
+
+  // Non-existent bucket.
+  EXPECT_EQ(
+      db.SetBucketLastModifiedTime(BucketId(777), base::Time::FromJavaTime(0)),
       QuotaError::kNone);
 
   result = db.GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
