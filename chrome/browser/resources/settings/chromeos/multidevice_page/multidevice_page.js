@@ -692,14 +692,4 @@ Polymer({
     return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
         is_hardware_supported;
   },
-
-  /**
-   * Whether the combined setup for Notifications and Camera Roll is supported
-   * on the connected phone.
-   * @return {boolean}
-   * @private
-   */
-  isCombinedSetupSupported_() {
-    return this.pageContentData.isPhoneHubFeatureCombinedSetupSupported;
-  },
 });

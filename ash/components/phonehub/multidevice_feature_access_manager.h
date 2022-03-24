@@ -7,7 +7,6 @@
 
 #include <ostream>
 
-#include "ash/components/phonehub/combined_access_setup_operation.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
@@ -29,15 +28,12 @@ namespace phonehub {
 // has not yet been granted. If there is no active Phone Hub connection, we
 // assume that the last access value seen is the current value.
 //
-// This class provides two methods for requesting access permissions on the
-// connected Android device:
+// Additionally, this class provides an API for requesting the notification
+// access setup flow via AttemptNotificationSetup().
 //
-// AttemptNotificationSetup() is the legacy setup flow that only supports setup
-// of the Notifications feature.
-//
-// AttemptCombinedFeatureSetup() is the new setup flow that supports the
-// Notifications and/or Camera Roll features. New features requiring setup
-// should be added to this method's flow.
+// In order for user to use camera roll feature, users need to explicit give
+// consent for the feature to be enabled on the phone via the feature setup
+// dialog.
 class MultideviceFeatureAccessManager {
  public:
   // Status of a feature's access. Numerical values are stored in prefs and
@@ -81,10 +77,6 @@ class MultideviceFeatureAccessManager {
     // Called when apps access has changed; use
     // GetAppsAccessStatus() for the new status.
     virtual void OnAppsAccessChanged();
-
-    // Called when FeatureSetupRequestSupported has changed; use
-    // GetFeatureSetupRequestSupported() for the new status.
-    virtual void OnFeatureSetupRequestSupportedChanged();
   };
 
   MultideviceFeatureAccessManager(MultideviceFeatureAccessManager&) = delete;
@@ -103,8 +95,6 @@ class MultideviceFeatureAccessManager {
   // send out the access request until the feature state is fuly synced.
   virtual bool IsAccessRequestAllowed(
       multidevice_setup::mojom::Feature feature) = 0;
-
-  virtual bool GetFeatureSetupRequestSupported() const = 0;
 
   // Returns the reason notification access status is prohibited. The return
   // result is valid if the current access status (from GetAccessStatus())
@@ -131,22 +121,6 @@ class MultideviceFeatureAccessManager {
   std::unique_ptr<NotificationAccessSetupOperation> AttemptNotificationSetup(
       NotificationAccessSetupOperation::Delegate* delegate);
 
-  // Starts an attempt to enable the access for multiple features. |delegate|
-  // will be updated with the status of the flow as long as the operation object
-  // returned by this function remains instantiated.
-  //
-  // To cancel an ongoing setup attempt, delete the operation. If a setup
-  // attempt fails, clients can retry by calling AttemptCombinedFeatureSetup()
-  // again to start a new attempt.
-  //
-  // If a requested feature's access has already been granted, or the
-  // FeatureSetupRequest message is not supported on the phone, this function
-  // returns null.
-  std::unique_ptr<CombinedAccessSetupOperation> AttemptCombinedFeatureSetup(
-      bool camera_roll,
-      bool notifications,
-      CombinedAccessSetupOperation::Delegate* delegate);
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -156,17 +130,12 @@ class MultideviceFeatureAccessManager {
   void NotifyNotificationAccessChanged();
   void NotifyCameraRollAccessChanged();
   void NotifyAppsAccessChanged();
-  void NotifyFeatureSetupRequestSupportedChanged();
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
-  void SetCombinedSetupOperationStatus(
-      CombinedAccessSetupOperation::Status new_status);
 
-  bool IsNotificationSetupOperationInProgress() const;
-  bool IsCombinedSetupOperationInProgress() const;
+  bool IsSetupOperationInProgress() const;
 
-  virtual void OnNotificationSetupRequested();
-  virtual void OnCombinedSetupRequested(bool camera_roll, bool notifications);
+  virtual void OnSetupRequested() {}
 
  private:
   friend class MultideviceFeatureAccessManagerImplTest;
@@ -180,19 +149,12 @@ class MultideviceFeatureAccessManager {
   // Sets the internal AccessStatus but does not send a request for
   // a new status to the remote phone device.
   virtual void SetCameraRollAccessStatusInternal(
-      AccessStatus access_status) = 0;
-  // Sets internal status tracking if feature setup request message is
-  // supported by connected phone.
-  virtual void SetFeatureSetupRequestSupportedInternal(bool supported) = 0;
+      AccessStatus camera_roll_access_status) = 0;
 
-  void OnNotificationSetupOperationDeleted(int operation_id);
-  void OnCombinedSetupOperationDeleted(int operation_id);
+  void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
-  base::flat_map<int, NotificationAccessSetupOperation*>
-      id_to_notification_operation_map_;
-  base::flat_map<int, CombinedAccessSetupOperation*>
-      id_to_combined_operation_map_;
+  base::flat_map<int, NotificationAccessSetupOperation*> id_to_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<MultideviceFeatureAccessManager> weak_ptr_factory_{this};
 };

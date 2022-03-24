@@ -69,7 +69,7 @@ class NotificationAccessSetupOperation {
     virtual ~Delegate() = default;
 
     // Called when status of the setup flow has changed.
-    virtual void OnNotificationStatusChange(Status new_status) = 0;
+    virtual void OnStatusChange(Status new_status) = 0;
   };
 
   NotificationAccessSetupOperation(const NotificationAccessSetupOperation&) =
@@ -84,7 +84,7 @@ class NotificationAccessSetupOperation {
   NotificationAccessSetupOperation(Delegate* delegate,
                                    base::OnceClosure destructor_callback);
 
-  void NotifyNotificationStatusChanged(Status new_status);
+  void NotifyStatusChanged(Status new_status);
 
   absl::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();

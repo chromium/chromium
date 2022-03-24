@@ -92,16 +92,6 @@ export class MultiDeviceBrowserProxy {
    * Cancels the phone hub apps access setup flow.
    */
   cancelAppsSetup() {}
-
-  /**
-   * Attempts the phone hub combined feature access setup flow.
-   */
-  attemptCombinedFeatureSetup(cameraRoll, notifications) {}
-
-  /**
-   * Cancels the phone hub combined feature access setup flow.
-   */
-  cancelCombinedFeatureSetup() {}
 }
 
 /**
@@ -177,16 +167,6 @@ export class MultiDeviceBrowserProxyImpl {
   /** @override */
   cancelAppsSetup() {
     chrome.send('cancelAppsSetup');
-  }
-
-  /** @override */
-  attemptCombinedFeatureSetup(cameraRoll, notifications) {
-    chrome.send('attemptCombinedFeatureSetup', [cameraRoll, notifications]);
-  }
-
-  /** @override */
-  cancelCombinedFeatureSetup() {
-    chrome.send('cancelCombinedFeatureSetup');
   }
 }
 
