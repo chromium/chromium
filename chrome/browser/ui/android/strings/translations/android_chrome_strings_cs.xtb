@@ -580,7 +580,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="4321739720395210191">Kameru nelze otevřít. Restartujte zařízení a zkuste to znovu.</translation>
-<translation id="4324158606177867698">Zde se budou zobrazovat odstraněné zájmy</translation>
 <translation id="433213510553688132">Sledování…</translation>
 <translation id="4335835283689002019">Bezpečné prohlížení je vypnuté</translation>
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
@@ -818,7 +817,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5665379678064389456">Vytvořit událost v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome nemůže vyhledat dostupné aktualizace</translation>
 <translation id="5686790454216892815">Název souboru je příliš dlouhý</translation>
-<translation id="5692329390578659217">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />smluvní podmínky<ph name="END_LINK2" /> tohoto webu.</translation>
 <translation id="569536719314091526">Pomocí tlačítka Další možnosti můžete tuto stránku přeložit do libovolného jazyka.</translation>
 <translation id="5696597120588531049">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami</translation>
 <translation id="5697688514913266141">Soubor bude uložen do složky <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Upravit<ph name="END_LINK2" /></translation>
@@ -1152,7 +1150,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7474822150871987353">Vyhledávejte informace o tématech zmíněných na stránce, aniž byste stránku museli opustit. Slova na stránce můžete vyhledat jednoduše tím, že je vyberete.</translation>
 <translation id="7475192538862203634">Pokud se vám tato stránka zobrazuje často, vyzkoušejte tyto <ph name="BEGIN_LINK" />návrhy<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD karta nebyla nalezena. Některé vaše soubory mohou chybět.</translation>
-<translation id="7477262822945323753">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="7479104141328977413">Správa karet</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7482656565088326534">Karta náhledu</translation>

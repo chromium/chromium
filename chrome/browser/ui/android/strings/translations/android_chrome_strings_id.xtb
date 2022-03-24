@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Bagikan halaman ini dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="1240190568154816272">Tips untuk Chrome</translation>
 <translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />persyaratan layanan<ph name="END_LINK2" /> situs ini.</translation>
 <translation id="1242883863226959074">perangkat</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1246905108078336582">Hapus saran dari papan klip?</translation>
@@ -170,6 +171,7 @@ Trust token meningkatkan privasi di web dan tidak dapat digunakan untuk menemuka
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1986685561493779662">Nama sudah ada</translation>
+<translation id="1995884366040846621">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> situs ini.</translation>
 <translation id="2000419248597011803">Mengirimkan beberapa cookie dan penelusuran dari kolom URL dan kotak penelusuran ke mesin telusur default</translation>
 <translation id="200114059308480249">Sertakan teks di sekitar dalam penelusuran Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# File}}</translation>
@@ -580,7 +582,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4307992518367153382">Dasar</translation>
 <translation id="4320177379694898372">Tidak ada koneksi internet</translation>
 <translation id="4321739720395210191">Tidak dapat membuka kamera Anda. Mulai ulang perangkat Anda dan coba lagi.</translation>
-<translation id="4324158606177867698">Minat yang Anda hapus akan muncul di sini</translation>
 <translation id="433213510553688132">Mengikuti...</translation>
 <translation id="4335835283689002019">Safe Browsing nonaktif</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
@@ -818,7 +819,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5665379678064389456">Buat acara di <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome tidak dapat memeriksa update</translation>
 <translation id="5686790454216892815">Nama file terlalu panjang</translation>
-<translation id="5692329390578659217">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, email, alamat, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />persyaratan layanan<ph name="END_LINK2" /> situs ini.</translation>
 <translation id="569536719314091526">Terjemahkan halaman ini ke bahasa apa pun dari tombol Opsi lainnya</translation>
 <translation id="5696597120588531049">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya</translation>
 <translation id="5697688514913266141">File Anda akan disimpan ke <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7474822150871987353">Pelajari topik di situs tanpa meninggalkan halaman. Pilih satu atau beberapa kata di halaman untuk menelusurinya.</translation>
 <translation id="7475192538862203634">Jika masalah ini sering terjadi, coba <ph name="BEGIN_LINK" />saran<ph name="END_LINK" /> berikut.</translation>
 <translation id="7475688122056506577">Kartu SD tidak ditemukan. Beberapa file Anda mungkin tidak tersimpan.</translation>
-<translation id="7477262822945323753">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, email, alamat, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> situs ini.</translation>
 <translation id="7479104141328977413">Pengelolaan tab</translation>
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7482656565088326534">Tab pratinjau</translation>

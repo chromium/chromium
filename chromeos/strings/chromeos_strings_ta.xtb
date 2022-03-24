@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1476467821656042872">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
+<translation id="1486019694341708158">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க, நிலைமாற்றும் பட்டனை இயக்கவும்</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பிக்கிறது</translation>
 <translation id="1499900233129743732">இந்தப் பயனரை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ஜி.பை. உள்ளது</translation>
+<translation id="2138109643290557664">மிதக்கும் நினைவுகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> படங்கள்</translation>
 <translation id="2157959690810728433">வரிசையிலுள்ளது</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
 <translation id="4275799948641988986">பழுது நீக்கியபிறகு, இந்தச் சாதனத்தை யார் பயன்படுத்துவார்கள்?</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
+<translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்பட்டது</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313"><ph name="NAME" />ஐ உள்ளமை</translation>
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
+<translation id="7191009787982536050">ஸ்கிரீன் சேவர் அனிமேஷன்</translation>
 <translation id="7212734716605298123">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">மனதை வருடும் நினைவுகள்</translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
 <translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7302860742311162920">ICCID</translation>

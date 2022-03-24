@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">ይህን ገጽ በፍጥነት ያጋሩ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="1240190568154816272">ጠቃሚ የChrome ምክሮች</translation>
 <translation id="1240288207750131269"><ph name="LANG" />ን በመጫን ላይ</translation>
+<translation id="1240903469550363138">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህ ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የአገልግሎት ውል<ph name="END_LINK2" /> ይመልከቱ።</translation>
 <translation id="1242883863226959074">መሣሪያ</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1246905108078336582">የአስተያየት ጥቆማ ከቅንጥብ ሰሌዳ ይወገድ?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1984417487208496350">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="1986685561493779662">ስሙ አስቀድሞ አለ</translation>
+<translation id="1995884366040846621">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> ይመልከቱ።</translation>
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
 <translation id="200114059308480249">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለው ጽሑፍ ይካተት?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">መሠረታዊ</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
 <translation id="4321739720395210191">የእርስዎን ካሜራ መክፈት አይቻልም። የእርስዎን መሣሪያ ዳግም ያስጀምሩት እና እንደገና ይሞክሩ።</translation>
-<translation id="4324158606177867698">ያስወገዱት ዝንባሌ እዚህ ይታያል</translation>
 <translation id="433213510553688132">በመከተል ላይ...</translation>
 <translation id="4335835283689002019">ደህንነቱ የተጠበቀ አሰሳ ጠፍቷል</translation>
 <translation id="4351244548802238354">መገናኛ ዝጋ</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">በ<ph name="APP_NAME" /> ውስጥ ክስተት ይፍጠሩ</translation>
 <translation id="5683547024293500885">Chrome ዝማኔዎች ካሉ መፈተሽ አይችልም</translation>
 <translation id="5686790454216892815">የፋይሉ ስም በጣም ረጅም ነው</translation>
-<translation id="5692329390578659217">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል፣ አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህ ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የአገልግሎት ውል<ph name="END_LINK2" /> ይመልከቱ።</translation>
 <translation id="569536719314091526">ከተጨማሪ አማራጮች አዝራርሩ ይህን ገጽ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
 <translation id="5696597120588531049">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዝዎት ይችላል</translation>
 <translation id="5697688514913266141">የእርስዎ ፋይል ወደ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ይቀመጣል። <ph name="BEGIN_LINK2" />አርትዕ<ph name="END_LINK2" />።</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">ከገጹ ሳይወጡ በድር ጣቢያዎች ላይ ስላሉ ርዕሶች ይወቁ። እነሱን ለመፈለግ በገጹ ላይ አንድ ወይም ከዚያ በላይ ቃላትን ይምረጡ።</translation>
 <translation id="7475192538862203634">ይህን በተደጋጋሚነት እያዩት ከሆኑ እነዚህን <ph name="BEGIN_LINK" />የአስተያየት ጥቆማዎች<ph name="END_LINK" /> ይሞክሩ።</translation>
 <translation id="7475688122056506577">ኤስዲ ካርድ አልተገኘም። አንዳንዶቹ ፋይሎችዎ ሊጎድሉ ይችላሉ።</translation>
-<translation id="7477262822945323753">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል፣ አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> ይመልከቱ።</translation>
 <translation id="7479104141328977413">የትር አስተዳደር</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
 <translation id="7482656565088326534">የቅድመ-እይታ ትር</translation>

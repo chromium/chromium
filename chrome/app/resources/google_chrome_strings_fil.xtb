@@ -31,6 +31,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1587325591171447154">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="1597911401261118146">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Upang mas gawing ligtas ang Chrome, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="1628000112320670027">Humingi ng tulong sa Chrome</translation>
 <translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
 <translation id="1674870198290878346">Buksan ang link sa Inco&amp;gnito Window ng Chrome</translation>
@@ -51,12 +52,14 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
 <translation id="2018528049276128029">Ang bawat profile ay may sariling impormasyon sa Chrome tulad ng mga bookmark, history, mga password, at iba pa</translation>
 <translation id="2063848847527508675">Kailangang ma-restart ang Chrome OS upang mailapat ang update.</translation>
+<translation id="207902854391093810">Kapag naka-on ang mga trial, nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="2094648590148273905">Mga tuntunin ng ChromeOS Flex</translation>
 <translation id="2094919256425865063">Umalis pa rin sa Chrome?</translation>
 <translation id="2106831557840787829">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Magde-delete ito ng <ph name="ITEMS_COUNT" /> (na) item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chrome bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ilunsad Ulit para Ma-update ang Chrome</translation>
 <translation id="2123055963409958220">Tulungang pahusayin ang Chrome sa pamamagitan ng pag-ulat sa <ph name="BEGIN_LINK" />mga kasalukuyang setting<ph name="END_LINK" /></translation>
+<translation id="2131230230468101642">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="2151406531797534936">Paki-restart ang Chrome ngayon</translation>
 <translation id="2258103955319320201">Para ma-access ang iyong mga bagay sa Chrome browser sa lahat ng device mo, mag-sign in, pagkatapos ay i-on ang pag-sync</translation>
 <translation id="2290014774651636340">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Google Chrome.</translation>
@@ -83,6 +86,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2742320827292110288">Babala: Hindi mapipigilan ng Google Chrome ang pagtatala ng mga extension ng iyong history ng pag-browse. Upang i-disable ang extension na ito sa Incognito mode, alisin sa pagkakapili ang opsyong ito.</translation>
 <translation id="2746842245914314523">Puwede kang matuto pa tungkol sa mga feature na ito sa mga setting ng Chrome. Sa panahon ng mga trial, posibleng hindi mas pribado ang iyong pakikipag-ugnayan sa mga site kaysa kung wala ang mga bagong feature na ito.</translation>
 <translation id="2765403129283291972">Kailangan ng Chrome ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
+<translation id="2765569104201273438">Sa panahon ng eksperimento, tatantyahin ng Chrome ang mga paksa kung saan posibleng interesado ka. Pagkatapos, posibleng gamitin ng mga site na binibisita mo ang impormasyong ito para magpakita sa iyo ng mga nauugnay na ad, nang hindi nalalaman kung sino ka. Nakabatay ang mga interes sa iyong kamakailang history ng pag-browse, at puwede mong tingnan at pamahalaan ang mga ito.</translation>
 <translation id="2770231113462710648">Baguhin ang default na browser sa:</translation>
 <translation id="2775140325783767197">Hindi masuri ng Chrome ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
@@ -164,6 +168,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4450664632294415862">Chrome - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">May kasalukuyang isinasagawang isa pang pagpapatakbo sa Google Chrome. Pakisubukang muli sa ibang pagkakataon.</translation>
+<translation id="4459234553906210702">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="4480040274068703980">Hindi ma-sync ng Chrome OS ang iyong data dahil sa isang error sa pagsa-sign in.</translation>
 <translation id="4521185804071812304">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng Chrome OS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="4561051373932531560">Pinapayagan ka ng Google Chrome na mag-click sa isang numero ng telepono sa web at tawagan ito gamit ang Skype!</translation>
@@ -174,6 +179,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4627412468266359539">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromeOS Flex sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="4633000520311261472">Upang gawing mas ligtas ang Chrome, nag-disable kami ng ilang extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> at maaaring naidagdag nang hindi mo nalalaman.</translation>
 <translation id="4728575227883772061">Nabigo ang pag-install dahil sa hindi natukoy na error. Kung kasalukuyang tumatakbo ang Google Chrome, paki-sara ito at subukang muli.</translation>
+<translation id="4747730611090640388">Puwedeng tantyahin ng Chrome ang iyong mga interes.  Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Maaaring mapanganib ang file na ito, kaya na-block ito ng Chrome.</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
@@ -199,16 +205,20 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="5357889879764279201">Humingi ng tulong gamit ang ChromeOS Flex</translation>
 <translation id="5386244825306882791">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome o naghanap mula sa Omnibox.</translation>
 <translation id="5394833366792865639">Magbahagi ng tab ng Chrome</translation>
+<translation id="5412485296464121825">Puwedeng mag-store ang mga site sa Chrome tungkol sa iyong mga interes. Halimbawa, kung bibisita ka sa isang site para bumili ng mga sapatos para sa isang marathon, posibleng tukuyin ng site ang iyong interes bilang pagtakbo sa mga marathon. Sa ibang pagkakataon, kung bibisita ka sa ibang site para magparehistro para sa isang karera, puwedeng magpakita sa iyo ang site na iyon ng ad para sa running shoes batay sa mga interes mo.</translation>
 <translation id="5430073640787465221">Sira o di-wasto ang iyong file ng mga kagustuhan.
 
 Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
+<translation id="5524761631371622910">Kapag naka-on ang mga trial at kung random kang inilagay ng Chrome sa isang aktibong trial, maaapektuhan ng iyong history ng pag-browse ang mga ad na makikita mo at ang mga interes tulad ng itinantya sa ibaba. Para protektahan ang iyong privacy, ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan.</translation>
 <translation id="556024056938947818">Sinusubukan ng Google Chrome na magpakita ng mga password.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5590556711361520802">Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo. Puwedeng magbahagi ang Chromium ng hanggang 3 interest nang hindi ibinibigay ang pagkakakilanlan mo.</translation>
 <translation id="565744775970812598">Maaaring mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito}=1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong Incognito window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # Incognito window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="5686916850681061684">I-customize at kontrolin ang Google Chrome. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Magre-restart ang Google Chrome pagkalipas ng 1 segundo}one{Magre-restart ang Google Chrome pagkalipas ng # segundo}other{Magre-restart ang Google Chrome pagkalipas ng # na segundo}}</translation>
+<translation id="5727531838415286053">Kung random kang inilagay ng Chrome sa isang aktibong trial, maaapektuhan ng iyong history ng pag-browse ang mga ad na makikita mo at ang mga interes tulad ng itinantya sa ibaba. Para protektahan ang iyong privacy, ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan. Nagre-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
 <translation id="5736850870166430177">Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="573759479754913123">Tungkol sa Chrome OS</translation>
 <translation id="5756509061973259733">Mayroon nang profile sa Chrome na gumagamit ng account na ito sa device na ito</translation>
@@ -222,6 +232,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>
 <translation id="608006075545470555">Magdagdag ng Profile sa Trabaho sa browser na ito</translation>
+<translation id="609511393187302037">Nag-e-explore ang Chrome ng mga paraan para paghigpitan ang cross-site na pagsubaybay habang binibigyang-daan ang mga site na ihinto ang spam at panloloko sa ad.</translation>
 <translation id="6113794647360055231">Mas mahusay na ang Chrome</translation>
 <translation id="6145313976051292476">Magbukas ng mga PDF sa Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -284,6 +295,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
 <translation id="7641148173327520642">Na-configure ng iyong system administrator ang Google Chrome para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Logo ng Chrome Enterprise</translation>
+<translation id="7655455401911432608">Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="7665553140559834626">Ilunsad ulit para ma-update ang Chrome OS</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
 <translation id="7748512868279796735">Available ang mga sumusunod na account para sa profile sa Chrome na ito</translation>
@@ -311,11 +323,13 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="828798499196665338">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
 <translation id="8290100596633877290">Whoa! Nag-crash ang Google Chrome. Ilunsad muli ngayon?</translation>
 <translation id="8342675569599923794">Mapanganib ang file na ito, kaya na-block ito ng Chrome.</translation>
+<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Puwedeng mag-store ang mga site sa Chrome tungkol sa iyong mga interes. Halimbawa, kung bibisita ka sa isang site para bumili ng mga sapatos para sa isang marathon, posibleng tukuyin ng site ang iyong interes bilang pagtakbo sa mga marathon. Sa ibang pagkakataon, kung bibisita ka sa ibang site para magparehistro para sa isang karera, puwedeng magpakita sa iyo ang site na iyon ng ad para sa running shoes batay sa mga interes mo.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Puwedeng tantyahin ng Chrome ang iyong mga interes. Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="8394720698884623075">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome</translation>
 <translation id="840084489713044809">Gustong i-export ng Google Chrome ang iyong mga password.</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>
+<translation id="8455351369246067579">Makakapagtantya ang Chrome ng mga paksa kung saan posibleng interesado ka. Pagkatapos, posibleng gamitin ng mga site na binibisita mo ang impormasyong ito para magpakita sa iyo ng mga nauugnay na ad, nang hindi nalalaman kung sino ka. Nakabatay ang mga interes sa iyong kamakailang history ng pag-browse, at puwede mong tingnan at pamahalaan ang mga ito.</translation>
 <translation id="8498858610309223613">Naglapat ng espesyal na update sa seguridad para sa Google Chrome. Mag-restart na at ire-restore namin ang iyong mga tab.</translation>
 <translation id="8516431725144212809">Iyong mga interes tulad ng tinatantya ng Chrome</translation>
 <translation id="8521348052903287641">Inbound na panuntunan para sa Google Chrome Dev upang payagan ang trapiko ng mDNS.</translation>
@@ -328,12 +342,14 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8625237574518804553">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng 1 minuto}one{Muling ilulunsad ang Chrome sa loob ng # minuto}other{Muling ilulunsad ang Chrome sa loob ng # na minuto}}</translation>
 <translation id="8629311577791198377">Kapag isinara mo ang lahat ng window ng Chrome, awtomatikong maki-clear ang cookies at data ng site</translation>
 <translation id="8641606876632989680">Aabisuhan ka ng Chrome kapag nag-sign in ka gamit ang nakompromisong password</translation>
+<translation id="8649026945479135076">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na interesado ka, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chrome tungkol sa iyong mga interes.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome.</translation>
 <translation id="8686817260976772516">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="8712767363896337380">Malapit nang ma-update! Muling ilunsad ang Chrome para matapos ang pag-update.</translation>
 <translation id="873133009373065397">Hindi matukoy o maitakda ng Google Chrome ang default na browser</translation>
 <translation id="8823341990149967727">Luma na ang Chrome</translation>
+<translation id="8825634023950448068">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. At kung magkakamali ang Chrome o kung ayaw mong makakita ng ilang partikular na ad, puwede kang mag-alis ng interes.</translation>
 <translation id="8834965163890861871">Sinusubukan ng Google Chrome na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="884296878221830158">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome o na-click ang button ng Home.</translation>
 <translation id="8862326446509486874">Wala kang naaangkop na mga karapatan para sa pag-install sa antas ng system. Subukan muling patakbuhin ang installer bilang Administrator.</translation>
@@ -341,12 +357,14 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8922193594870374009">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8983720963221508955">Na-on mo ang Pinahusay na Ligtas na Pag-browse sa iyong account. Kunin ito ngayon para sa Chrome.</translation>
 <translation id="8986207147630327271">Nagdaragdag ka ng profile sa trabaho sa browser na ito at binibigyan mo ang iyong administrator ng kontrol sa profile sa trabaho lang.</translation>
+<translation id="8989968390305463310">Naaapektuhan ng iyong history ng pag-browse ang mga ad na nakikita mo at mga interes tulad ng tinatantya sa ibaba. Para protektahan ang iyong privacy, awtomatikong ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan. Puwedeng ma-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
 <translation id="8999208279178790196">{0,plural, =0{May available na update sa Chrome}=1{May available na update sa Chrome}one{# araw nang may available na update sa Chrome}other{# na araw nang may available na update sa Chrome}}</translation>
 <translation id="9026991721384951619">Hindi ma-sync ng Chrome OS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="9053892488859122171">System ng ChromeOS Flex</translation>
 <translation id="9067395829937117663">Kailangan ng Google Chrome ng Windows 7 o mas bago.</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>
 <translation id="9138603949443464873">Para ilapat ang iyong mga pagbabago, muling ilunsad ang Chrome</translation>
+<translation id="9195993889682885387">Puwedeng tantyahin ng Chrome ang iyong mga interes batay sa history ng pag-browse mo mula sa mga nakalipas na ilang linggo. Mananatili ang impormasyong ito sa iyong device.</translation>
 <translation id="919706545465235479">I-update ang Chrome upang simulan ang pag-sync</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="93760716455950538">I-restart ang ChromeOS Flex</translation>

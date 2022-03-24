@@ -580,7 +580,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4320177379694898372">No hay conexión a Internet</translation>
 <translation id="4321739720395210191">No se ha podido abrir la cámara. Reinicia el dispositivo y vuelve a intentarlo.</translation>
-<translation id="4324158606177867698">El interés que has eliminado aparecerá aquí</translation>
 <translation id="433213510553688132">Siguiendo...</translation>
 <translation id="4335835283689002019">La función Navegación segura está desactivada</translation>
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
@@ -818,7 +817,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5665379678064389456">Crear evento en <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="5686790454216892815">El nombre del archivo es demasiado largo</translation>
-<translation id="5692329390578659217">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, correo electrónico, dirección e imagen de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />términos del servicio<ph name="END_LINK2" /> de este sitio.</translation>
 <translation id="569536719314091526">Traduce esta página a cualquier idioma con el botón Más opciones</translation>
 <translation id="5696597120588531049">Chrome puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más</translation>
 <translation id="5697688514913266141">El archivo se guardará en <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Editar<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7474822150871987353">Aprende sobre los temas de un sitio web sin salir de la página. Selecciona una o más palabras de la página para buscarlas.</translation>
 <translation id="7475192538862203634">Si este mensaje aparece con frecuencia, prueba estas <ph name="BEGIN_LINK" />sugerencias<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">No se ha encontrado la tarjeta SD. Es posible que falten algunos de tus archivos.</translation>
-<translation id="7477262822945323753">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, correo electrónico, dirección e imagen de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="7479104141328977413">Gestión de pestañas</translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7482656565088326534">Pestaña de vista previa</translation>

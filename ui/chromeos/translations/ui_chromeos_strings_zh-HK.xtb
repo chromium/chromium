@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
 <translation id="4401287888955153199">擷取全部</translation>
+<translation id="4410695710508688828">擷取操作失敗：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>

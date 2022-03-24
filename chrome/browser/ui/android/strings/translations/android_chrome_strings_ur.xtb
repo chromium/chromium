@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">فوری طور پر اس صفحے کا اشتراک کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
 <translation id="1240190568154816272">‏Chrome کی تجاویز</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> لوڈ ہو رہی ہے</translation>
+<translation id="1240903469550363138">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />رازداری کی پالیسی<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سروس کی شرائط<ph name="END_LINK2" /> دیکھیں۔</translation>
 <translation id="1242883863226959074">آلہ</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246905108078336582">کلپ بورڈ سے تجویز ہٹائیں؟</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="1986685561493779662">نام پہلے سے موجود ہے</translation>
+<translation id="1995884366040846621">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />راز داری کی پالیسی<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="2000419248597011803">پتہ بار اور تلاش خانے سے کچھ کوکیز اور تلاشیاں آپ کے ڈیفالٹ تلاش انجن کو بھیجتا ہے</translation>
 <translation id="200114059308480249">‏Google تلاشیوں میں آس پاس کا متن شامل کریں؟</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# فائل}other{# فائلیں}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">بنیادی باتیں</translation>
 <translation id="4320177379694898372">کوئی انٹرنیٹ کنکشن نہیں ہے</translation>
 <translation id="4321739720395210191">اپنا کیمرا نہیں کھول سکتے۔ اپنا آلہ ری سٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
-<translation id="4324158606177867698">آپ کی ہٹائی گئی دلچسپی یہاں ظاہر ہوگی</translation>
 <translation id="433213510553688132">پیروی جاری ہے...</translation>
 <translation id="4335835283689002019">محفوظ براؤزنگ آف ہے</translation>
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> میں ایونٹ بنائیں</translation>
 <translation id="5683547024293500885">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="5686790454216892815">فائل کا نام کافی بڑا ہے</translation>
-<translation id="5692329390578659217">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل، پتہ، اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />رازداری کی پالیسی<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سروس کی شرائط<ph name="END_LINK2" /> دیکھیں۔</translation>
 <translation id="569536719314091526">مزید اختیارات کے بٹن سے کسی بھی زبان میں اس صفحہ کا ترجمہ کریں</translation>
 <translation id="5696597120588531049">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5697688514913266141">آپ کی فائل <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> میں محفوظ کر دی جائے گی۔ <ph name="BEGIN_LINK2" />ترمیم کریں<ph name="END_LINK2" />۔</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">صفحہ کو چھوڑے بغیر ویب سائٹس پر موجود عنوانات کے بارے میں جانیں۔ صفحے پر ایک یا مزید الفاظ منتخب کریں تاکہ انہیں تلاش کر سکیں۔</translation>
 <translation id="7475192538862203634">اگر یہ آپ کو اکثر نظر آتا ہے تو ان <ph name="BEGIN_LINK" />تجاویز<ph name="END_LINK" /> کو آزمائیں۔</translation>
 <translation id="7475688122056506577">‏SD کارڈ نہیں ملا۔ آپ کی کچھ فائلیں ہو سکتا ہے موجود نہ ہوں۔</translation>
-<translation id="7477262822945323753">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل، پتہ، اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />راز داری کی پالیسی<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="7479104141328977413">ٹیب مینیجمنٹ</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>
 <translation id="7482656565088326534">پیش منظر ٹیب</translation>

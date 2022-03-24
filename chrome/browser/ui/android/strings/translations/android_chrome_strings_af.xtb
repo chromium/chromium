@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Deel hierdie bladsy vinnig. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="1240190568154816272">Chrome-wenke</translation>
 <translation id="1240288207750131269">Laai tans <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">toestel</translation>
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1246905108078336582">Verwyder voorstel van knipbord af?</translation>
@@ -170,6 +171,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1984417487208496350">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="1986685561493779662">Naam bestaan reeds</translation>
+<translation id="1995884366040846621">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
 <translation id="200114059308480249">Sluit omringende teks by Google-soektogte in?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# lêer}other{# lêers}}</translation>
@@ -580,7 +582,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4307992518367153382">Basies</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
 <translation id="4321739720395210191">Kan nie jou kamera oopmaak nie. Herbegin jou toestel en probeer weer.</translation>
-<translation id="4324158606177867698">Belangstelling wat jy verwyder het, sal hier verskyn</translation>
 <translation id="433213510553688132">Volg tans …</translation>
 <translation id="4335835283689002019">Veiligblaai is af</translation>
 <translation id="4351244548802238354">Maak dialoog toe</translation>
@@ -818,7 +819,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5665379678064389456">Skep geleentheid in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome kan nie nagaan of daar opdaterings is nie</translation>
 <translation id="5686790454216892815">Lêernaam is te lank</translation>
-<translation id="5692329390578659217">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres, adres, en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Vertaal hierdie bladsy in enige taal vanaf die Meer Opsies-knoppie</translation>
 <translation id="5696597120588531049">Chrome kan help om jou teen dataskendings, onveilige webwerwe, en meer te beskerm</translation>
 <translation id="5697688514913266141">Jou lêer sal gestoor word in <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Wysig<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7474822150871987353">Kom meer te wete oor onderwerpe op webwerwe sonder om die bladsy te verlaat. Kies een of meer woorde op die bladsy om hulle te soek.</translation>
 <translation id="7475192538862203634">As jy dit gereeld sien, probeer hierdie <ph name="BEGIN_LINK" />voorstelle<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Kon nie SD-kaart kry nie. Sommige van jou lêers ontbreek dalk.</translation>
-<translation id="7477262822945323753">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres, adres, en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Oortjiebestuur</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7482656565088326534">Voorskou-oortjie</translation>

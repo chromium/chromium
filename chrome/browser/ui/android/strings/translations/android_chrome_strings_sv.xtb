@@ -581,7 +581,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4307992518367153382">Grunderna</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
 <translation id="4321739720395210191">Det gick inte att öppna kameran. Starta om enheten och försök igen.</translation>
-<translation id="4324158606177867698">Intressen du har tagit bort visas här</translation>
 <translation id="433213510553688132">Följer …</translation>
 <translation id="4335835283689002019">Säker webbsökning har inaktiverats</translation>
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
@@ -819,7 +818,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5665379678064389456">Skapa händelse i <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome kan inte söka efter uppdateringar</translation>
 <translation id="5686790454216892815">Filnamnet är för långt</translation>
-<translation id="5692329390578659217"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress, din adress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />användarvillkor<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>
 <translation id="5696597120588531049">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera</translation>
 <translation id="5697688514913266141">Filen sparas i <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Redigera<ph name="END_LINK2" />.</translation>
@@ -1153,7 +1151,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7474822150871987353">Läs om olika ämnen på webbplatser utan att lämna sidan. Välj ett eller flera ord på sidan som du vill söka efter.</translation>
 <translation id="7475192538862203634">Om du ser detta ofta provar du de här <ph name="BEGIN_LINK" />förslagen<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Det gick inte att hitta SD-kortet. Det kan saknas filer.</translation>
-<translation id="7477262822945323753"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress, din adress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Flikhantering</translation>
 <translation id="7481312909269577407">Framåt</translation>
 <translation id="7482656565088326534">Fliken Förhandsgranskning</translation>

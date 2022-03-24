@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Bu sayfayı hızlıca paylaşın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>
 <translation id="1240190568154816272">Chrome ipuçları</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yükleniyor</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikasını<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />hizmet şartlarını<ph name="END_LINK2" /> inceleyin.</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246905108078336582">Öneri panodan kaldırılsın mı?</translation>
@@ -170,6 +171,7 @@ Güven jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak için
 <translation id="1974060860693918893">Gelişmiş</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
+<translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikasına<ph name="END_LINK1" /> bakın.</translation>
 <translation id="2000419248597011803">Adres çubuğundan ve arama kutusundan bazı çerezleri ve aramaları varsayılan arama motorunuza gönderir</translation>
 <translation id="200114059308480249">Seçilen kelimenin etrafındaki metin Google aramalarına dahil edilsin mi?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Dosya}other{# Dosya}}</translation>
@@ -580,7 +582,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="4307992518367153382">Temel Bilgiler</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yok</translation>
 <translation id="4321739720395210191">Kameranız açılamıyor. Cihazınızı yeniden başlatıp işlemi tekrar deneyin.</translation>
-<translation id="4324158606177867698">Kaldırdığınız ilgi alanı burada görünür</translation>
 <translation id="433213510553688132">Takip ediliyor...</translation>
 <translation id="4335835283689002019">Güvenli Tarama kapalı</translation>
 <translation id="4351244548802238354">İletişim kutusunu kapat</translation>
@@ -818,7 +819,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5665379678064389456"><ph name="APP_NAME" /> adlı uygulamada etkinlik oluştur</translation>
 <translation id="5683547024293500885">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="5686790454216892815">Dosya adı çok uzun</translation>
-<translation id="5692329390578659217"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikası<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />hizmet şartlarını<ph name="END_LINK2" /> inceleyin.</translation>
 <translation id="569536719314091526">Diğer seçenekler düğmesini kullanarak bu sayfayı istediğiniz dile çevirin</translation>
 <translation id="5696597120588531049">Chrome; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir</translation>
 <translation id="5697688514913266141">Dosyanız <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> konumuna kaydedilecek. <ph name="BEGIN_LINK2" />Düzenle<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7474822150871987353">Sayfadan ayrılmadan web sitelerindeki konular hakkında bilgi edinin. Sayfadan bir veya daha fazla kelime seçerek arama yapın.</translation>
 <translation id="7475192538862203634">Bunu çok sık görüyorsanız bu <ph name="BEGIN_LINK" />önerileri<ph name="END_LINK" /> deneyin.</translation>
 <translation id="7475688122056506577">SD kart bulunamadı. Bazı dosyalarınız eksik olabilir.</translation>
-<translation id="7477262822945323753"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikasına<ph name="END_LINK1" /> bakın.</translation>
 <translation id="7479104141328977413">Sekme yönetimi</translation>
 <translation id="7481312909269577407">İleri</translation>
 <translation id="7482656565088326534">Önizleme sekmesi</translation>

@@ -580,7 +580,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4307992518367153382">Grunnatriði</translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
 <translation id="4321739720395210191">Ekki tókst að opna myndavélina. Endurræstu tækið og reyndu aftur.</translation>
-<translation id="4324158606177867698">Áhugasvið sem þú fjarlægðir birtast hér</translation>
 <translation id="433213510553688132">Fylgist með...</translation>
 <translation id="4335835283689002019">Slökkt er á öruggri vefnotkun</translation>
 <translation id="4351244548802238354">Loka glugga</translation>
@@ -818,7 +817,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5665379678064389456">Búa til viðburð í <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome getur ekki leitað að uppfærslum.</translation>
 <translation id="5686790454216892815">Skráarheiti of langt</translation>
-<translation id="5692329390578659217">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi, heimilisfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />þjónustuskilmála<ph name="END_LINK2" /> vefsvæðisins.</translation>
 <translation id="569536719314091526">Notaðu hnappinn „Fleiri valkostir“ til að þýða þessa síðu yfir á hvaða tungumál sem er</translation>
 <translation id="5696597120588531049">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira</translation>
 <translation id="5697688514913266141">Skráin þín verður vistuð í <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Breyta<ph name="END_LINK2" /></translation>
@@ -1152,7 +1150,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7474822150871987353">Fáðu frekari upplýsingar um efnisatriði á vefsvæðum án þess að yfirgefa síðuna. Veldu eitt eða fleiri orð á síðunni til að leita að þeim.</translation>
 <translation id="7475192538862203634">Ef þú sérð þetta oft skaltu prófa þessar <ph name="BEGIN_LINK" />tillögur<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kort fannst ekki. Sumar skrár vantar ef til vill.</translation>
-<translation id="7477262822945323753">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi, heimilisfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> vefsvæðisins.</translation>
 <translation id="7479104141328977413">Stjórnun flipa</translation>
 <translation id="7481312909269577407">Áfram</translation>
 <translation id="7482656565088326534">Forskoðunarflipi</translation>

@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Швидко діліться цією сторінкою. Щоб змінити функцію кнопки, перейдіть у налаштування.</translation>
 <translation id="1240190568154816272">Поради щодо Chrome</translation>
 <translation id="1240288207750131269">Завантажується мовний пакет (<ph name="LANG" />)</translation>
+<translation id="1240903469550363138">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />умови використання<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">пристрої</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246905108078336582">Видалити пропозицію з буфера обміну?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1986685561493779662">Ця назва вже існує</translation>
+<translation id="1995884366040846621">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
 <translation id="200114059308480249">Враховувати контекст у пошуку Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">Основні</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="4321739720395210191">Не вдається відкрити камеру. Перезапустіть пристрій і повторіть спробу.</translation>
-<translation id="4324158606177867698">Тут з’являтимуться вилучені вами інтереси</translation>
 <translation id="433213510553688132">Додавання до підписок…</translation>
 <translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
 <translation id="4351244548802238354">Закрити діалогове вікно</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">Створити подію в додатку <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome не може перевірити наявність оновлень</translation>
 <translation id="5686790454216892815">Назва файлу задовга</translation>
-<translation id="5692329390578659217">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />умови використання<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Перекладіть цю сторінку будь-якою мовою, натиснувши кнопку "Більше опцій"</translation>
 <translation id="5696597120588531049">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо</translation>
 <translation id="5697688514913266141">Файл буде збережено в каталозі <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Змінити<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">Ви можете знаходити додаткову інформацію, не покидаючи веб-сторінку. Виділіть одне чи кілька слів на сторінці та отримайте результати пошуку.</translation>
 <translation id="7475192538862203634">Якщо ви часто бачите таку сторінку, скористайтеся цими <ph name="BEGIN_LINK" />пропозиціями<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Карту SD не знайдено. Деякі файли можуть бути відсутні.</translation>
-<translation id="7477262822945323753">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Керування вкладками</translation>
 <translation id="7481312909269577407">Переслати</translation>
 <translation id="7482656565088326534">Вкладка "Попередній перегляд"</translation>

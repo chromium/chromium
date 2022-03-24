@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">ఈ పేజీని వేగంగా షేర్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> లోడ్ అవుతోంది</translation>
+<translation id="1240903469550363138">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />సర్వీస్ నియమాలను<ph name="END_LINK2" /> చూడండి.</translation>
 <translation id="1242883863226959074">పరికరం</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1246905108078336582">క్లిప్‌బోర్డ్ నుండి సూచనను తొలగించాలా?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
+<translation id="1995884366040846621">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైళ్లు}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321739720395210191">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. మీ పరికరాన్ని పునఃప్రారంభించి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
-<translation id="4324158606177867698">మీరు తీసివేసిన ఆసక్తి ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
 <translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయి</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" />లో ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5683547024293500885">అప్‌డేట్‌లను Chrome చెక్ చేయలేదు</translation>
 <translation id="5686790454216892815">ఫైల్ పేరు చాలా పొడవుగా ఉంది</translation>
-<translation id="5692329390578659217">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్, అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />సర్వీస్ నియమాలను<ph name="END_LINK2" /> చూడండి.</translation>
 <translation id="569536719314091526">మరిన్ని ఎంపికలు బటన్‌ని ఉపయోగించి ఈ పేజీని ఏ భాషలోకైనా అనువదించుకోవచ్చు</translation>
 <translation id="5696597120588531049">డేటా ఉల్లంఘనలు, సురక్షితం కాని వెబ్‌సైట్‌లు, మరిన్నింటి నుండి మిమ్మల్ని సురక్షితంగా ఉంచడంలో Chrome సహాయపడగలదు</translation>
 <translation id="5697688514913266141">మీ ఫైల్ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />లో సేవ్ చేయబడుతుంది. <ph name="BEGIN_LINK2" />ఎడిట్<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">పేజీ నుండి నిష్క్రమించకుండానే వెబ్‌సైట్‌లలోని టాపిక్‌ల గురించి తెలుసుకోండి. వాటి కోసం సెర్చ్ చేయడానికి పేజీలో ఉన్న ఒకటి లేదా అంతకంటే ఎక్కువ పదాలను ఎంచుకోండి.</translation>
 <translation id="7475192538862203634">మీకు ఇది తరచుగా కనిపిస్తుంటే, ఈ <ph name="BEGIN_LINK" />సూచనల<ph name="END_LINK" />ను ప్రయత్నించండి.</translation>
 <translation id="7475688122056506577">SD కార్డ్ కనుగొనబడలేదు. మీ ఫైళ్లలో కొన్ని ఉండకపోవచ్చు.</translation>
-<translation id="7477262822945323753">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్, అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="7479104141328977413">ట్యాబ్ నిర్వహణ</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
 <translation id="7482656565088326534">ప్రివ్యూ ట్యాబ్</translation>

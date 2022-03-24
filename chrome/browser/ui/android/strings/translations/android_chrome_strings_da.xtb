@@ -580,7 +580,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
 <translation id="4321739720395210191">Dit kamera kan ikke åbnes. Genstart din enhed, og prøv igen.</translation>
-<translation id="4324158606177867698">De interesser, du har fjernet, vises her</translation>
 <translation id="433213510553688132">Følger...</translation>
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
 <translation id="4351244548802238354">Luk dialogboksen</translation>
@@ -818,7 +817,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5665379678064389456">Opret begivenhed i <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5686790454216892815">Filnavnet er for langt</translation>
-<translation id="5692329390578659217">For at fortsætte vil <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Oversæt denne side til et hvilket som helst sprog via knappen Flere valgmuligheder</translation>
 <translation id="5696597120588531049">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere</translation>
 <translation id="5697688514913266141">Din fil gemmes i <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Rediger<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7474822150871987353">Læs om emner på websites uden at forlade siden. Vælg ét eller flere ord på siden for at søge efter dem.</translation>
 <translation id="7475192538862203634">Hvis du ser dette jævnligt, kan du prøve disse <ph name="BEGIN_LINK" />forslag<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kortet blev fundet. Nogle af dine filer mangler muligvis.</translation>
-<translation id="7477262822945323753">For at fortsætte vil <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Faneadministration</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7482656565088326534">Fanen forhåndsvisning</translation>

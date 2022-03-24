@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Quickly share this page. To edit this shortcut, go to Settings.</translation>
 <translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1240288207750131269">Loading <ph name="LANG" /></translation>
+<translation id="1240903469550363138">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
@@ -177,6 +178,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1986685561493779662">Name already exists</translation>
+<translation id="1995884366040846621">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
@@ -588,7 +590,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4320177379694898372">No internet connection</translation>
 <translation id="4321739720395210191">Can't open your camera. Restart your device and try again.</translation>
-<translation id="4324158606177867698">Interest that you removed will appear here</translation>
 <translation id="433213510553688132">Following…</translation>
 <translation id="4335835283689002019">Safe Browsing is off</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
@@ -827,7 +828,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
-<translation id="5692329390578659217">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email, address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
 <translation id="5697688514913266141">Your file will be saved to <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -1168,7 +1168,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7474822150871987353">Learn about topics on websites without leaving the page. Select one or more words on the page to search for them.</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
-<translation id="7477262822945323753">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email, address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Tab management</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7482656565088326534">Preview tab</translation>
@@ -1215,6 +1214,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="770741401784017797">Creating GIF</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
+<translation id="7709094866268987903">Interests that you removed will appear here</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Select date and time</translation>

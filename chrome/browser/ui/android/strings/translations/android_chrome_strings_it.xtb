@@ -580,7 +580,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4307992518367153382">Impostazioni di base</translation>
 <translation id="4320177379694898372">Nessuna connessione Internet</translation>
 <translation id="4321739720395210191">Impossibile aprire la fotocamera. Riavvia il dispositivo e riprova.</translation>
-<translation id="4324158606177867698">Qui verranno visualizzati gli interessi rimossi</translation>
 <translation id="433213510553688132">In attesa di seguire…</translation>
 <translation id="4335835283689002019">Navigazione sicura non attiva</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
@@ -818,7 +817,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5665379678064389456">Crea evento in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5686790454216892815">Nome file troppo lungo</translation>
-<translation id="5692329390578659217">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e postale e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5697688514913266141">Il file verrà salvato in: <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifica<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7474822150871987353">Scopri gli argomenti dei siti web senza lasciare la pagina. Seleziona una o più parole nella pagina per cercarle.</translation>
 <translation id="7475192538862203634">Se il problema si verifica di frequente, prova questi <ph name="BEGIN_LINK" />suggerimenti<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Scheda SD non trovata. Potrebbero mancare alcuni dei tuoi file.</translation>
-<translation id="7477262822945323753">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e postale e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> del sito.</translation>
 <translation id="7479104141328977413">Gestione schede</translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7482656565088326534">Scheda di anteprima</translation>

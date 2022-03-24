@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Az oldal gyors megosztása. A gyorsparancs szerkesztéséhez lépjen a Beállításokhoz.</translation>
 <translation id="1240190568154816272">Chrome-tippek</translation>
 <translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
+<translation id="1240903469550363138">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse át a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />általános szerződési feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">eszközén</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1246905108078336582">Eltávolítja a javaslatot a vágólapról?</translation>
@@ -170,6 +171,7 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="1974060860693918893">Speciális</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1986685561493779662">Már van ilyen név</translation>
+<translation id="1995884366040846621">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Bizonyos cookie-kat és kereséseket küld a címsávból és a keresőmezőből az alapértelmezett keresőmotornak</translation>
 <translation id="200114059308480249">Használni szeretné a környező szöveget is a Google Kereső használatakor?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fájl}other{# fájl}}</translation>
@@ -580,7 +582,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4307992518367153382">Alapok</translation>
 <translation id="4320177379694898372">Nincs internetkapcsolat</translation>
 <translation id="4321739720395210191">Nem lehet megnyitni a kamerát. Indítsa újra az eszközt, és próbálkozzon újra.</translation>
-<translation id="4324158606177867698">Az eltávolított érdeklődési körök itt jelennek meg</translation>
 <translation id="433213510553688132">Követés…</translation>
 <translation id="4335835283689002019">A Biztonságos Böngészés ki van kapcsolva</translation>
 <translation id="4351244548802238354">Párbeszédablak bezárása</translation>
@@ -818,7 +819,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5665379678064389456">Esemény létrehozása a(z) <ph name="APP_NAME" /> alkalmazásban</translation>
 <translation id="5683547024293500885">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="5686790454216892815">A fájl neve túl hosszú</translation>
-<translation id="5692329390578659217">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse át a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />általános szerződési feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Bármely nyelvre lefordíthatja ezt az oldalt a További lehetőségek gomb segítségével</translation>
 <translation id="5696597120588531049">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben</translation>
 <translation id="5697688514913266141">A letöltés helye: <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Módosítás<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7474822150871987353">Többet is megtudhat a webhelyeken lévő egyes témákról anélkül, hogy elhagyná az adott oldalt. Jelöljön ki egy vagy több szót az oldalon, ha rájuk szeretne keresni.</translation>
 <translation id="7475192538862203634">Ha gyakran látja ezt, próbálja ki ezeket a <ph name="BEGIN_LINK" />javaslatokat<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Az SD-kártya nem található. Előfordulhat, hogy egyes fájlok hiányoznak.</translation>
-<translation id="7477262822945323753">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Lapkezelés</translation>
 <translation id="7481312909269577407">Előre</translation>
 <translation id="7482656565088326534">Előnézeti lap</translation>

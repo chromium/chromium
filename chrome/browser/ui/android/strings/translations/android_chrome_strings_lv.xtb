@@ -580,7 +580,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4307992518367153382">Pamata</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
 <translation id="4321739720395210191">Nevar atvērt kameru. Restartējiet ierīci un mēģiniet vēlreiz.</translation>
-<translation id="4324158606177867698">Jūsu noņemtās intereses tiks rādītas šeit</translation>
 <translation id="433213510553688132">Tiek reģistrēta sekošana...</translation>
 <translation id="4335835283689002019">Droša pārlūkošana ir izslēgta</translation>
 <translation id="4351244548802238354">Aizvērt dialoglodziņu</translation>
@@ -818,7 +817,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5665379678064389456">Izveidojiet pasākumu lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="5683547024293500885">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5686790454216892815">Faila nosaukums ir pārāk garš</translation>
-<translation id="5692329390578659217">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi, adresi un profila attēlu ar šo vietni. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />konfidencialitātes politiku<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />pakalpojumu sniegšanas noteikumus<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Tulkojiet šīs lapas saturu jebkurā valodā, izmantojot pogu Vairāk opciju.</translation>
 <translation id="5696597120588531049">Chrome var palīdzēt aizsargāt jūs pret datu noplūdi, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="5697688514913266141">Fails tiks saglabāts katalogā <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Rediģēt<ph name="END_LINK2" /></translation>
@@ -1152,7 +1150,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7474822150871987353">Uzziniet vairāk par vietnēs aprakstītajām tēmām, neaizverot lapu. Atlasiet vienu vai vairākus vārdus lapā, lai tos meklētu.</translation>
 <translation id="7475192538862203634">Ja šis ziņojums tiek rādīts bieži, izmēģiniet šos <ph name="BEGIN_LINK" />ieteikumus<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD karte nav atrasta. Iespējams, trūkst kādi jūsu faili.</translation>
-<translation id="7477262822945323753">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi, adresi un profila attēlu ar šo vietni. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />konfidencialitātes politiku<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Ciļņu pārvaldība</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7482656565088326534">Priekšskatījuma cilne</translation>

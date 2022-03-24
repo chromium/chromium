@@ -580,7 +580,6 @@
 <translation id="4307992518367153382">ພື້ນ​ຖານ</translation>
 <translation id="4320177379694898372">ບໍ່​ມີການ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ​</translation>
 <translation id="4321739720395210191">ບໍ່ສາມາດເປີດກ້ອງຂອງທ່ານໄດ້. ຣິສະຕາດອຸປະກອນຂອງທ່ານ ແລ້ວລອງໃໝ່.</translation>
-<translation id="4324158606177867698">ຄວາມສົນໃຈທີ່ທ່ານລຶບອອກຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="433213510553688132">ກຳລັງຕິດຕາມ...</translation>
 <translation id="4335835283689002019">Safe Browsing ປິດ</translation>
 <translation id="4351244548802238354">ປິດ​ໜ້າ​ຕ່າງ</translation>
@@ -818,7 +817,6 @@
 <translation id="5665379678064389456">ສ້າງເຫດການໃນ <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5686790454216892815">ຊື່ໄຟລ໌ຍາວເກີນໄປ</translation>
-<translation id="5692329390578659217">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ອີເມວ, ທີ່ຢູ່ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK2" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="569536719314091526">ແປໜ້ານີ້ເປັນພາສາໃດໆກໍໄດ້ຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="5696597120588531049">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ</translation>
 <translation id="5697688514913266141">ໄຟລ໌ຂອງທ່ານຈະຖືກບັນທຶກໄວ້ໃນ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />ແກ້ໄຂ<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@
 <translation id="7474822150871987353">ສຶກສາກ່ຽວກັບຫົວຂໍ້ຢູ່ເວັບໄຊໂດຍບໍ່ຕ້ອງອອກໄປຈາກໜ້າ. ເລືອກໜຶ່ງ ຫຼື ຫຼາຍກວ່າໜຶ່ງຄຳຢູ່ໜ້າເພື່ອຊອກຫາພວກມັນ.</translation>
 <translation id="7475192538862203634">ຖ້າ​ທ່ານ​​ເຫັນ​ສິ່ງ​ນີ້​ຢູ່​ເລື້ອຍໆ, ​ໃຫ້​ລອງເຮັດຕາມ <ph name="BEGIN_LINK" />ຄຳ​ແນະ​ນໍາ<ph name="END_LINK" /> ​ເຫຼົ່າ​ນີ້.</translation>
 <translation id="7475688122056506577">ບໍ່ພົບແຜ່ນ SD. ບາງໄຟລ໌ຂອງທ່ານອາດຈະຫາຍໄປ.</translation>
-<translation id="7477262822945323753">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ອີເມວ, ທີ່ຢູ່ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="7479104141328977413">ການຈັດການແຖບ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7482656565088326534">ແຖບສະແດງຕົວຢ່າງ</translation>

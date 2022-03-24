@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">এই পৃষ্ঠাখন ক্ষিপ্ৰভাৱে শ্বেয়াৰ কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="1240190568154816272">Chromeৰ কিটিপ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ল’ড কৰি থকা হৈছে</translation>
+<translation id="1240903469550363138">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> চাওক।</translation>
 <translation id="1242883863226959074">ডিভাইচ</translation>
 <translation id="124678866338384709">বর্তমানৰ টেবটো বন্ধ কৰক</translation>
 <translation id="1246905108078336582">ক্লিপব’ৰ্ডৰ পৰা পৰামৰ্শ আঁতৰাবনে?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1986685561493779662">নামটো ইতিমধ্যে আছেই</translation>
+<translation id="1995884366040846621">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> চাওক।</translation>
 <translation id="2000419248597011803">আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনলৈ ঠিকনা বাৰ আৰু সন্ধান বাকছৰ পৰা কিছুমান কুকি আৰু সন্ধান পঠিয়ায়</translation>
 <translation id="200114059308480249">Googleত কৰা সন্ধানত আশে-পাশে থকা পাঠ ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টা ফাইল}one{#টা ফাইল}other{#টা ফাইল}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">মৌলিক</translation>
 <translation id="4320177379694898372">ইণ্টাৰনেট সংযোগ নাই</translation>
 <translation id="4321739720395210191">আপোনাৰ কেমেৰাটো খুলিব নোৱাৰি। আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
-<translation id="4324158606177867698">আপুনি আঁতৰোৱা আগ্ৰহসমূহ ইয়াত প্ৰদৰ্শিত হ’ব</translation>
 <translation id="433213510553688132">ফ’ল’ কৰি থকা হৈছে...</translation>
 <translation id="4335835283689002019">সুৰক্ষিত ব্ৰাউজিং অফ আছে</translation>
 <translation id="4351244548802238354">ডায়ল'গ বন্ধ কৰক</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" />ত কাৰ্যক্ৰম সৃষ্টি কৰক</translation>
 <translation id="5683547024293500885">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5686790454216892815">ফাইলৰ নামটো বহুত দীঘল</translation>
-<translation id="5692329390578659217">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> চাওক।</translation>
 <translation id="569536719314091526">অধিক বিকল্প-ৰ বুটামটো ব্যৱহাৰ কৰি এই পৃষ্ঠাটো যিকোনো ভাষালৈ অনুবাদ কৰক</translation>
 <translation id="5696597120588531049">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="5697688514913266141">আপোনাৰ ফাইলটো <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />ত ছেভ কৰা হ’ব। <ph name="BEGIN_LINK2" />সম্পাদনা কৰক<ph name="END_LINK2" />।</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">পৃষ্ঠাখন এৰি নোযোৱাকৈ ৱেবছাইটত থকা বিষয়বস্তুসমূহৰ বিষয়ে জানক। সন্ধান কৰিবলৈ পৃষ্ঠাখনত এটা অথবা ততোধিক শব্দ বাছনি কৰক।</translation>
 <translation id="7475192538862203634">আপুনি যদি এইটো ঘনাই দেখা পাই আছে তেন্তে <ph name="BEGIN_LINK" />পৰামৰ্শ<ph name="END_LINK" /> কৰি চাওক।</translation>
 <translation id="7475688122056506577">SD কাৰ্ড বিচাৰি পোৱা নগ’ল। আপোনাৰ কিছুমান ফাইল নাথাকিবও পাৰে।</translation>
-<translation id="7477262822945323753">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> চাওক।</translation>
 <translation id="7479104141328977413">টেব পৰিচালনা</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7482656565088326534">টেবটো পূৰ্বদৰ্শন কৰক</translation>

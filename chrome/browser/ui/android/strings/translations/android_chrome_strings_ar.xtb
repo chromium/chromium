@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">يتيح لك هذا الزر مشاركة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="1240190568154816272">‏معلومات بشأن استخدام متصفّح Chrome</translation>
 <translation id="1240288207750131269">جارٍ تحميل <ph name="LANG" /></translation>
+<translation id="1240903469550363138">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. ويمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="1242883863226959074">جهاز</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1986685561493779662">الاسم موجود من قبل</translation>
+<translation id="1995884366040846621">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. ويمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
 <translation id="200114059308480249">‏هل تريد تضمين النص المحيط في عمليات البحث على Google؟</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{ملف واحد (#)}zero{# ملف}two{ملفان (#)}few{# ملفات}many{# ملفًا}other{# ملف}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">الإعدادات الأساسية</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
 <translation id="4321739720395210191">تعذّر فتح الكاميرا. يمكنك إعادة تشغيل الجهاز والمحاولة مجددًا.</translation>
-<translation id="4324158606177867698">ستظهر الاهتمامات التي حذفتها هنا.</translation>
 <translation id="433213510553688132">جارٍ المتابعة…</translation>
 <translation id="4335835283689002019">التصفُّح الآمن غير مُفعّل.</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">إنشاء حدث في <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">‏يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="5686790454216892815">اسم الملف طويل جدًا</translation>
-<translation id="5692329390578659217">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وبريدك الإلكتروني وعنوانك وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="569536719314091526">ترجمة هذه الصفحة إلى أي لغة من خلال الزر "مزيد من الخيارات"</translation>
 <translation id="5696597120588531049">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5697688514913266141">سيتمّ حفظ ملفك في <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />تعديل<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">يمكنك الاطّلاع على المواضيع المتوفّرة على المواقع الإلكترونية بدون مغادرة الصفحة. اختَر كلمة أو أكثر على الصفحة للبحث عنها.</translation>
 <translation id="7475192538862203634">إذا تكرّر هذا الخطأ، ننصحك بالاطّلاع على هذه <ph name="BEGIN_LINK" />الاقتراحات<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">‏لم يتم العثور على بطاقة SD. قد يكون بعض الملفات مفقودًا.</translation>
-<translation id="7477262822945323753">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وبريدك الإلكتروني وعنوانك وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة خصوصية<ph name="END_LINK1" /> هذا الموقع الإلكتروني.</translation>
 <translation id="7479104141328977413">إدارة علامات التبويب</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7482656565088326534">علامة تبويب المعاينة</translation>

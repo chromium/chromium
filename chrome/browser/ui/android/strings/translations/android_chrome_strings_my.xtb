@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">ဤစာမျက်နှာကို အမြန်မျှဝေပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ‘ဆက်တင်များ’ သို့ သွားပါ။</translation>
 <translation id="1240190568154816272">Chrome အကြံပြုချက်များ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ကို ဖွင့်နေသည်</translation>
+<translation id="1240903469550363138">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ကြည့်ပါ။</translation>
 <translation id="1242883863226959074">စက်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1246905108078336582">ကလစ်ဘုတ်မှ အကြံပြုချက်ကို ဖယ်ရှားလိုပါသလား။</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
+<translation id="1995884366040846621">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> ကို ကြည့်ပါ။</translation>
 <translation id="2000419248597011803">လိပ်စာဘားနှင့် ရှာဖွေမှုအကွက်ထဲရှိ အချို့သော ကွတ်ကီးများနှင့် ရှာဖွေမှုများကို သင်၏မူရင်းရှာဖွေမှုအင်ဂျင်သို့ ပို့သည်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ဖိုင်}other{# ဖိုင်}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">အခြေခံများ</translation>
 <translation id="4320177379694898372">အင်တာနက် ချိတ်ဆက်မှု မရှိ</translation>
 <translation id="4321739720395210191">သင့်ကင်မရာကို ဖွင့်၍မရပါ။ သင့်စက်ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="4324158606177867698">သင်ဖယ်ရှားလိုက်သော စိတ်ဝင်စားမှုများ ဤတွင်ပေါ်လာမည်</translation>
 <translation id="433213510553688132">လိုက်ကြည့်နေသည်...</translation>
 <translation id="4335835283689002019">ဘေးကင်းစွာဖွင့်ကြည့်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="4351244548802238354">ဒိုင်ယာလော့ ပိတ်ရန်</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> တွင် အစီအစဉ် ပြုလုပ်ပါ</translation>
 <translation id="5683547024293500885">Chrome က သင့်အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="5686790454216892815">ဖိုင်အမည် ရှည်လွန်းသည်</translation>
-<translation id="5692329390578659217">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်၊ လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ကြည့်ပါ။</translation>
 <translation id="569536719314091526">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ရန် 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်ကို ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="5696597120588531049">ဒေတာပေါက်ကြားမှု၊ မလုံခြုံသော ဝဘ်ဆိုက်များနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုလုံခြုံအောင် Chrome က ကူညီပေးနိုင်သည်</translation>
 <translation id="5697688514913266141">သင်၏ဖိုင်ကို <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> သို့ သိမ်းလိုက်ပါမည်။ <ph name="BEGIN_LINK2" />တည်းဖြတ်ရန်<ph name="END_LINK2" />။</translation>
@@ -1151,7 +1151,6 @@
 <translation id="7474822150871987353">စာမျက်နှာမှမထွက်ဘဲ ဝဘ်ဆိုက်များရှိ အကြောင်းအရာများအကြောင်း လေ့လာနိုင်သည်။ စာမျက်နှာရှိ စကားလုံးတစ်လုံးနှင့်အထက်ကို ရှာဖွေရန် ရွေးနိုင်သည်။</translation>
 <translation id="7475192538862203634">သင်သည် ဒါကို မကြာခဏ မြင်နေရလျှင်၊ <ph name="BEGIN_LINK" />အကြံပြုချက်များ<ph name="END_LINK" />ကို စမ်းကြည့်ပါ။</translation>
 <translation id="7475688122056506577">SD ကတ် မတွေ့ပါ။ သင့်ဖိုင်အချို့ ပျောက်နေနိုင်ပါသည်။</translation>
-<translation id="7477262822945323753">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်၊ လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> ကို ကြည့်ပါ။</translation>
 <translation id="7479104141328977413">တဘ် စီမံခန့်ခွဲမှု</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
 <translation id="7482656565088326534">အစမ်းကြည့်ရှုမှု တဘ်</translation>

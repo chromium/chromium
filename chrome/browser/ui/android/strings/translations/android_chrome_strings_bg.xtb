@@ -580,7 +580,6 @@
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4321739720395210191">Камерата не може да се отвори. Рестартирайте устройството си и опитайте отново.</translation>
-<translation id="4324158606177867698">Тук ще се показват премахнатите от вас интереси</translation>
 <translation id="433213510553688132">Започвате да следите...</translation>
 <translation id="4335835283689002019">„Безопасно сърфиране“ е изключено</translation>
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
@@ -818,7 +817,6 @@
 <translation id="5665379678064389456">Създайте събитие в <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome не може да провери за актуализации</translation>
 <translation id="5686790454216892815">Името на файла е твърде дълго</translation>
-<translation id="5692329390578659217">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />общите условия<ph name="END_LINK2" /> на сайта.</translation>
 <translation id="569536719314091526">Страницата може да бъде преведена на който и да е език чрез бутона за още опции</translation>
 <translation id="5696597120588531049">Chrome може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="5697688514913266141">Файлът ще бъде запазен в <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Редактиране<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@
 <translation id="7474822150871987353">Научавайте за теми в уебсайтовете, без да излизате от страницата. Изберете една или повече думи от страницата, за да ги потърсите.</translation>
 <translation id="7475192538862203634">Ако виждате това често, изпробвайте тези <ph name="BEGIN_LINK" />предложения<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD картата не е намерена. Някои файлове може да липсват.</translation>
-<translation id="7477262822945323753">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="7479104141328977413">Управление на разделите</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7482656565088326534">Раздел за визуализация</translation>

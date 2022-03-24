@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">このページをすばやく共有します。このショートカットは [設定] で編集できます。</translation>
 <translation id="1240190568154816272">Chrome を使いこなすヒント</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> を読み込んでいます</translation>
+<translation id="1240903469550363138">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="1242883863226959074">デバイス</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1246905108078336582">クリップボードから候補を削除してもよろしいですか？</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1986685561493779662">この名前はすでに存在しています</translation>
+<translation id="1995884366040846621">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />をご確認ください。</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 件のファイル}other{# 件のファイル}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">基本設定</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
 <translation id="4321739720395210191">カメラを開けません。デバイスを再起動してもう一度お試しください。</translation>
-<translation id="4324158606177867698">削除した興味 / 関心がこちらに表示されます</translation>
 <translation id="433213510553688132">フォローしています...</translation>
 <translation id="4335835283689002019">セーフ ブラウジングはオフになっています</translation>
 <translation id="4351244548802238354">ダイアログを閉じる</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> で予定を作成</translation>
 <translation id="5683547024293500885">Chrome がアップデートを確認できません</translation>
 <translation id="5686790454216892815">ファイル名が長すぎます</translation>
-<translation id="5692329390578659217">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="569536719314091526">[その他のオプション] から、このページを任意の言語に翻訳できます</translation>
 <translation id="5696597120588531049">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します</translation>
 <translation id="5697688514913266141">ファイルは <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> に保存されます。<ph name="BEGIN_LINK2" />編集<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">ウェブサイト上のトピックについて、ページを移動せずに調べることができます。検索するには、ページ上の単語や語句を選択します。</translation>
 <translation id="7475192538862203634">このメッセージが繰り返し表示される場合は、こちらの<ph name="BEGIN_LINK" />ヒント<ph name="END_LINK" />をお試しください。</translation>
 <translation id="7475688122056506577">SD カードが見つかりません。一部のファイルが欠落している可能性があります。</translation>
-<translation id="7477262822945323753">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />をご確認ください。</translation>
 <translation id="7479104141328977413">タブの管理</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7482656565088326534">[プレビュー] タブ</translation>

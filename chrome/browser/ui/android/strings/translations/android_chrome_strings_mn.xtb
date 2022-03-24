@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Энэ хуудсыг шуурхай хуваалцаарай. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
 <translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1240288207750131269"><ph name="LANG" />-г ачаалж байна</translation>
+<translation id="1240903469550363138">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлого<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />үйлчилгээний нөхцөлийг<ph name="END_LINK2" /> харна уу.</translation>
 <translation id="1242883863226959074">төхөөрөмж</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246905108078336582">Түр санах ойгоос зөвлөмжийг устгах уу?</translation>
@@ -177,6 +178,7 @@
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
+<translation id="1995884366040846621">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлогыг<ph name="END_LINK1" /> харна уу.</translation>
 <translation id="2000419248597011803">Таны өгөгдмөл хайлтын системд хаяг оруулах хэсэг, хайх хэсгийн зарим күүки болон хайлтыг илгээдэг</translation>
 <translation id="200114059308480249">Google-н хайлтуудад эргэн тойрны текстийг оруулах уу?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Файл}other{# Файл}}</translation>
@@ -588,7 +590,6 @@
 <translation id="4307992518367153382">Үндэс</translation>
 <translation id="4320177379694898372">Интернетийн холболтгүй байна</translation>
 <translation id="4321739720395210191">Таны камерыг нээх боломжгүй байна. Төхөөрөмжөө дахин эхлүүлээд дахин оролдоно уу.</translation>
-<translation id="4324158606177867698">Таны хассан сонирхол энд харагдана</translation>
 <translation id="433213510553688132">Дагаж байна...</translation>
 <translation id="4335835283689002019">Аюулгүй үзэх тохиргоо унтраалттай байна</translation>
 <translation id="4351244548802238354">Харилцах цонхыг хаах</translation>
@@ -826,7 +827,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5665379678064389456"><ph name="APP_NAME" />-д арга хэмжээ үүсгэнэ үү</translation>
 <translation id="5683547024293500885">Chrome шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="5686790454216892815">Файлын нэр хэт урт байна</translation>
-<translation id="5692329390578659217">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл, хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлого<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />үйлчилгээний нөхцөлийг<ph name="END_LINK2" /> харна уу.</translation>
 <translation id="569536719314091526">Энэ хуудсыг Бусад сонголт гэсэн товчлуураас дурын хэл рүү орчуулна уу</translation>
 <translation id="5696597120588531049">Chrome таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой</translation>
 <translation id="5697688514913266141">Таны файлыг <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />-д хадгална. <ph name="BEGIN_LINK2" />Засах<ph name="END_LINK2" />.</translation>
@@ -1167,7 +1167,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7474822150871987353">Хуудаснаас гаралгүйгээр вебсайтууд дээрх сэдвүүдийн талаар мэдээлэл аваарай. Хуудаснаас нэг эсвэл түүнээс олон үгийг хайхын тулд сонгоно уу.</translation>
 <translation id="7475192538862203634">Хэрэв та үүнийг байнга харж байгаа бол эдгээр <ph name="BEGIN_LINK" />зөвлөмжийг<ph name="END_LINK" /> туршина уу.</translation>
 <translation id="7475688122056506577">SD карт олдсонгүй. Таны зарим файл алга болсон байж болзошгүй.</translation>
-<translation id="7477262822945323753">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл, хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлогыг<ph name="END_LINK1" /> харна уу.</translation>
 <translation id="7479104141328977413">Табын менежмент</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7482656565088326534">Урьдчилан үзэх таб</translation>
@@ -1214,6 +1213,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7704317875155739195">Хайлт болон URL-г автоматаар гүйцээх</translation>
 <translation id="770741401784017797">GIF үүсгэж байна</translation>
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
+<translation id="7709094866268987903">Таны хассан сонирхол энд харагдана</translation>
 <translation id="7725024127233776428">Таны хавчуурга хийсэн хуудас энд харагдана</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-с текстийг хуваалцсан</translation>
 <translation id="7761849928583394409">Огноо болон цаг сонгох</translation>

@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Deel deze pagina snel. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> laden</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
 <translation id="1242883863226959074">apparaat</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
@@ -170,6 +171,7 @@ Trust-tokens verbeteren de privacy op het web en kunnen niet worden gebruikt om 
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1986685561493779662">Naam bestaat al</translation>
+<translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> van deze site.</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
 <translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
@@ -580,7 +582,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4307992518367153382">Basisinstellingen</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="4321739720395210191">Kan de camera niet openen. Start het apparaat opnieuw op en probeer het nogmaals.</translation>
-<translation id="4324158606177867698">Hier zie je interesses die je hebt verwijderd</translation>
 <translation id="433213510553688132">Volgen…</translation>
 <translation id="4335835283689002019">Safe Browsing staat uit</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
@@ -818,7 +819,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5665379678064389456">Afspraak maken in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome kan niet checken op updates</translation>
 <translation id="5686790454216892815">Bestandsnaam te lang</translation>
-<translation id="5692329390578659217"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
 <translation id="569536719314091526">Vertaal deze pagina in een andere taal via de knop 'Meer opties'</translation>
 <translation id="5696597120588531049">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
 <translation id="5697688514913266141">Je bestand wordt opgeslagen in <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Bewerken<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7474822150871987353">Bekijk informatie over onderwerpen op websites zonder de pagina te verlaten. Selecteer een of meer woorden op de pagina om hiernaar te zoeken.</translation>
 <translation id="7475192538862203634">Als je deze melding vaker ziet, kun je deze <ph name="BEGIN_LINK" />suggesties<ph name="END_LINK" /> proberen.</translation>
 <translation id="7475688122056506577">SD-kaart niet gevonden. Sommige van je bestanden kunnen ontbreken.</translation>
-<translation id="7477262822945323753"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> van deze site.</translation>
 <translation id="7479104141328977413">Tabbladbeheer</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7482656565088326534">Voorbeeldtabblad</translation>

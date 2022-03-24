@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Certificatul de autentificare a fost respins de la distanță</translation>
 <translation id="4394214039309501350">Link extern</translation>
 <translation id="4401287888955153199">Extrage tot</translation>
+<translation id="4410695710508688828">Operațiunea de extragere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4439427728133035643">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>

@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Yaba leli khasi ngokushesha. Ukuhlela lesi sinqamuleli, iya kokuthi Amasethingi.</translation>
 <translation id="1240190568154816272">Amathiphu we-Chrome</translation>
 <translation id="1240288207750131269">Ilayisha i-<ph name="LANG" /></translation>
+<translation id="1240903469550363138">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana ngegama lakho, ikheli le-imeyili, nesithombe sephrofayela nale sayithi. Bona <ph name="BEGIN_LINK1" />inqubomgomo yobumfihlo<ph name="END_LINK1" /> yale sayithi kanye <ph name="BEGIN_LINK2" />nemigomo yesevisi<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">idivayisi</translation>
 <translation id="124678866338384709">Vala ithebhu yamanje</translation>
 <translation id="1246905108078336582">Susa isiphakamiso kusukela kubhodi lokunamathisela?</translation>
@@ -170,6 +171,7 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="1974060860693918893">Okuthuthukisiwe</translation>
 <translation id="1984417487208496350">Asikho Isivikelo (akunconywa)</translation>
 <translation id="1986685561493779662">Igama selivele likhona</translation>
+<translation id="1995884366040846621">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana ngegama lakho, ikheli le-imeyili, nesithombe sephrofayela nale sayithi. Buka <ph name="BEGIN_LINK1" />inqubomgomo yobumfihlo<ph name="END_LINK1" /> yale sayithi.</translation>
 <translation id="2000419248597011803">Ithumela amakhukhi nosesho kusukela kubha yekheli nebhokisi losesho kunjini yakho yosesho ezenzakalelayo</translation>
 <translation id="200114059308480249">Faka phakathi umbhalo ozungezile kusesho lwe-Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Ifayela}one{# Amafayela}other{# Amafayela}}</translation>
@@ -580,7 +582,6 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="4307992518367153382">Izisekelo</translation>
 <translation id="4320177379694898372">Alukho uxhumano lwe-inthanethi</translation>
 <translation id="4321739720395210191">Ayikwazi ukuvula ikhamera yakho. Qala kabusha idivayisi yakho uphinde uzame futhi.</translation>
-<translation id="4324158606177867698">Intshisekelo oyisusile izovela lapha</translation>
 <translation id="433213510553688132">Okulandelayo...</translation>
 <translation id="4335835283689002019">Ukuphequlula okuphephile kuvaliwe</translation>
 <translation id="4351244548802238354">Vala ingxoxo</translation>
@@ -818,7 +819,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5665379678064389456">Dala umcimbi ku-<ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">I-Chrome ayikwazi ukuhlola izibuyekezo</translation>
 <translation id="5686790454216892815">Igama lefayela lide kakhulu</translation>
-<translation id="5692329390578659217">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana ngegama lakho, i-imeyili, ikheli, nesithombe sephrofayela nale sayithi. Bona <ph name="BEGIN_LINK1" />inqubomgomo yobumfihlo<ph name="END_LINK1" /> yale sayithi kanye <ph name="BEGIN_LINK2" />nemigomo yesevisi<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Humusha leli khasi ukuya kunoma iluphi ulimi kusukela kunkinobho yezinketho zokuningi</translation>
 <translation id="5696597120588531049">I-Chrome ingakusiza ukukugcina uphephile ekuphulweni kwesivumelwano sedatha, kumawebhusayithi angaphephile, nokuningi</translation>
 <translation id="5697688514913266141">Ifayela lakho lizolondolozwa ku-<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Hlela<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7474822150871987353">Funda mayelana nezihloko kumawebhusayithi ngaphandle kokushiya ikhasi. Khetha igama elilodwa noma amaningi ekhasini ukuze uwaseshe.</translation>
 <translation id="7475192538862203634">Uma ubona lokhu ngokuvamile, zama lezi <ph name="BEGIN_LINK" />ziphakamiso<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Ikhadi le-SD alitholiwe. Amanye amafayela akho kungenzeka awekho.</translation>
-<translation id="7477262822945323753">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana ngegama lakho, i-imeyili, ikheli, nesithombe sephrofayela nale sayithi. Buka <ph name="BEGIN_LINK1" />inqubomgomo yobumfihlo<ph name="END_LINK1" /> yale sayithi.</translation>
 <translation id="7479104141328977413">Ukuphatha ithebhu</translation>
 <translation id="7481312909269577407">Dlulisela</translation>
 <translation id="7482656565088326534">Ithebhu yokubuka kuqala</translation>

@@ -580,7 +580,6 @@
 <translation id="4307992518367153382">Асноўнае</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
 <translation id="4321739720395210191">Не ўдалося адкрыць камеру. Перазапусціце прыладу і паўтарыце спробу.</translation>
-<translation id="4324158606177867698">Інтарэсы, якія вы выдалілі, з'явяцца тут</translation>
 <translation id="433213510553688132">Выконваецца падпіска...</translation>
 <translation id="4335835283689002019">"Бяспечны прагляд" выключаны</translation>
 <translation id="4351244548802238354">Закрыць дыялогавае акно</translation>
@@ -818,7 +817,6 @@
 <translation id="5665379678064389456">Стварыце падзею ў праграме <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў</translation>
 <translation id="5686790454216892815">Назва файла занадта доўгая</translation>
-<translation id="5692329390578659217">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць звесткі пра ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />ўмовамі выкарыстання<ph name="END_LINK2" /> сайта.</translation>
 <translation id="569536719314091526">Перакладзіце гэту старонку на любую мову з дапамогай кнопкі "Дадатковыя параметры"</translation>
 <translation id="5696597120588531049">Chrome дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, наведваннем небяспечных вэб-сайтаў і г. д.</translation>
 <translation id="5697688514913266141">Файл будзе захаваны ў папцы <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Змяніць<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@
 <translation id="7474822150871987353">Даведайцеся больш пра тэмы на вэб-сайтах, не пакідаючы старонку. Выберыце для пошуку адно або некалькі слоў на старонцы.</translation>
 <translation id="7475192538862203634">Калі вы часта бачыце такое паведамленне, паспрабуйце выкарыстаць <ph name="BEGIN_LINK" />гэтыя прапановы<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-карта не знойдзена. Некаторыя файлы могуць адсутнічаць.</translation>
-<translation id="7477262822945323753">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць звесткі пра ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> сайта.</translation>
 <translation id="7479104141328977413">Кіраванне ўкладкамі</translation>
 <translation id="7481312909269577407">Далей</translation>
 <translation id="7482656565088326534">Укладка перадпрагляду</translation>

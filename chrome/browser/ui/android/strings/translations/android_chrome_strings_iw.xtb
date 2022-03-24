@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
+<translation id="1240903469550363138">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישורים הבאים ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> וב<ph name="BEGIN_LINK2" />תנאים וההגבלות<ph name="END_LINK2" /> של האתר הזה.</translation>
 <translation id="1242883863226959074">מכשיר</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246905108078336582">להסיר את ההצעה מהלוח?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
+<translation id="1995884366040846621">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישור הבא ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">היסודות</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
 <translation id="4321739720395210191">לא ניתן לפתוח את המצלמה. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
-<translation id="4324158606177867698">תחומי עניין שהסרת יופיעו כאן</translation>
 <translation id="433213510553688132">יתבצע מעקב…</translation>
 <translation id="4335835283689002019">הגלישה הבטוחה כבויה.</translation>
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">יצירת אירוע ב-<ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">‏מערכת Chrome לא יכולה לבדוק אם יש עדכונים</translation>
 <translation id="5686790454216892815">שם הקובץ ארוך מדי</translation>
-<translation id="5692329390578659217">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישורים הבאים ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> וב<ph name="BEGIN_LINK2" />תנאים וההגבלות<ph name="END_LINK2" /> של האתר הזה.</translation>
 <translation id="569536719314091526">דרך לחצן האפשרויות הנוספות אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="5696597120588531049">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="5697688514913266141">הקובץ יישמר בספרייה <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />לעריכה<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">לומדים על נושאים שמופיעים באתרים בלי לצאת מהדף. בוחרים מילה אחת או יותר בדף כדי לבצע חיפוש.</translation>
 <translation id="7475192538862203634">אם נתקלת בזה לעתים קרובות, כדאי לנסות את <ph name="BEGIN_LINK" />ההצעות<ph name="END_LINK" /> האלה.</translation>
 <translation id="7475688122056506577">‏לא נמצא כרטיס SD. ייתכן שחלק מהקבצים שלך חסרים.</translation>
-<translation id="7477262822945323753">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישור הבא ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="7479104141328977413">ניהול כרטיסיות</translation>
 <translation id="7481312909269577407">קדימה</translation>
 <translation id="7482656565088326534">כרטיסיית תצוגה מקדימה</translation>

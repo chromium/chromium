@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">এই পৃষ্ঠা দ্রুত শেয়ার করুন। এই শর্টকাট এডিট করতে, সেটিংসে যান।</translation>
 <translation id="1240190568154816272">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> লোড হচ্ছে</translation>
+<translation id="1240903469550363138">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1986685561493779662">নামটি আগে থেকেই আছে</translation>
+<translation id="1995884366040846621">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> দেখুন।</translation>
 <translation id="2000419248597011803">অ্যাড্রেস বার এবং সার্চ বক্স থেকে সার্চের তথ্য এবং কিছু কুকি আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়</translation>
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
@@ -582,7 +584,6 @@
 <translation id="4307992518367153382">বুনিয়াদি</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
 <translation id="4321739720395210191">ক্যামেরা চালু করা যাচ্ছে না। ডিভাইস রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
-<translation id="4324158606177867698">আপনার সরিয়ে দেওয়া আগ্রহ এখানে দেখা যাবে</translation>
 <translation id="433213510553688132">অনুসরণ করা হচ্ছে...</translation>
 <translation id="4335835283689002019">'নিরাপদ ব্রাউজিং' বন্ধ আছে</translation>
 <translation id="4351244548802238354">ডায়ালগ বন্ধ করুন</translation>
@@ -820,7 +821,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> এ ইভেন্ট তৈরি করুন</translation>
 <translation id="5683547024293500885">কোনও আপডেট আছে কিনা, Chrome তা চেক করে দেখতে পারছে না</translation>
 <translation id="5686790454216892815">ফাইলের নামটি খুব বড়</translation>
-<translation id="5692329390578659217">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="569536719314091526">আরও বিকল্প বোতাম থেকে এই পৃষ্ঠাটিকে যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="5696597120588531049">Chrome আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে</translation>
 <translation id="5697688514913266141">আপনার ফাইল <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ডিরেক্টরিতে সেভ করা হবে। <ph name="BEGIN_LINK2" />এডিট করুন<ph name="END_LINK2" />।</translation>
@@ -1154,7 +1154,6 @@
 <translation id="7474822150871987353">পৃষ্ঠা থেকে না বেরিয়েই ওয়েবসাইটের বিষয়গুলির সম্পর্কে জানুন। পৃষ্ঠায় এক বা একাধিক শব্দ সার্চ করতে সেগুলি বেছে নিন।</translation>
 <translation id="7475192538862203634">আপনি যদি এটি প্রায়ই দেখতে পান, তাহলে <ph name="BEGIN_LINK" />প্রস্তাবনাগুলি<ph name="END_LINK" /> চেষ্টা করে দেখুন৷</translation>
 <translation id="7475688122056506577">এসডি কার্ড পাওয়া যায়নি। আপনার কিছু ফাইল নাও থাকতে পারে।</translation>
-<translation id="7477262822945323753">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> দেখুন।</translation>
 <translation id="7479104141328977413">ট্যাব ম্যানেজমেন্ট</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
 <translation id="7482656565088326534">প্রিভিউ ট্যাব</translation>

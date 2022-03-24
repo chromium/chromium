@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Comparteix ràpidament aquesta pàgina. Per editar aquesta drecera, ves a Configuració.</translation>
 <translation id="1240190568154816272">Consells de Chrome</translation>
 <translation id="1240288207750131269">S'està carregant <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei<ph name="END_LINK2" /> d'aquest lloc web.</translation>
 <translation id="1242883863226959074">dispositiu</translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
 <translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
@@ -170,6 +171,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1986685561493779662">El nom ja existeix</translation>
+<translation id="1995884366040846621">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> del lloc web.</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
@@ -580,7 +582,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4307992518367153382">Configuració bàsica</translation>
 <translation id="4320177379694898372">No hi ha connexió a Internet</translation>
 <translation id="4321739720395210191">No es pot obrir la càmera. Reinicia el dispositiu i torna-ho a provar.</translation>
-<translation id="4324158606177867698">Els interessos que hagis suprimit es mostraran aquí</translation>
 <translation id="433213510553688132">S'està seguint...</translation>
 <translation id="4335835283689002019">La funció Navegació segura està desactivada</translation>
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
@@ -818,7 +819,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5665379678064389456">Crea un esdeveniment a <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome no pot cercar actualitzacions</translation>
 <translation id="5686790454216892815">El nom del fitxer és massa llarg</translation>
-<translation id="5692329390578659217">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei<ph name="END_LINK2" /> d'aquest lloc web.</translation>
 <translation id="569536719314091526">Tradueix aquesta pàgina a qualsevol idioma des del botó Més opcions</translation>
 <translation id="5696597120588531049">Chrome pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més</translation>
 <translation id="5697688514913266141">El fitxer es desarà a <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edita<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7474822150871987353">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. Selecciona una o més paraules de la pàgina per cercar-les.</translation>
 <translation id="7475192538862203634">Si això passa sovint, prova aquests <ph name="BEGIN_LINK" />suggeriments<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">La targeta SD no s'ha trobat. Pot ser que faltin alguns fitxers.</translation>
-<translation id="7477262822945323753">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> d'aquest lloc web.</translation>
 <translation id="7479104141328977413">Gestió de pestanyes</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7482656565088326534">Pestanya de previsualització</translation>

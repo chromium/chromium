@@ -2134,7 +2134,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Diese Richtlinie kann nur als Cloud-Nutzer-Richtlinie konfiguriert werden.
       </translation>
-<translation id="3251500716404598358">Konfigurieren Sie Richtlinien, um zwischen Browsern zu wechseln.
+<translation id="3251500716404598358">Konfiguriere Richtlinien, um zwischen Browsern zu wechseln.
 
       Konfigurierte Websites werden automatisch in einem anderen Browser als <ph name="PRODUCT_NAME" /> geöffnet.</translation>
 <translation id="3252724033247471310">Same-Origin-Tabaufnahme für diese Ursprünge zulassen</translation>
@@ -2144,7 +2144,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3255762580838224124">Wenn die Richtlinie konfiguriert ist, wird jeder Bildschirm anhand der festgelegten Bildschirmausrichtung gedreht, wenn das Gerät neugestartet oder der Bildschirm nach einer Änderung des Richtlinienwerts zum ersten Mal angeschlossen wird. Nachdem ein Nutzer sich angemeldet hat, kann er die Bildschirmausrichtung auf der Einstellungsseite ändern, sie wird aber nach dem nächsten Neustart zurückgesetzt. Diese Richtlinie gilt sowohl für primäre als auch sekundäre Bildschirme.
 
       Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwendet und Nutzer können die Bildschirmausrichtung ändern. Die Bildschirmausrichtung wird dann nach dem Neustart nicht zurückgesetzt.</translation>
-<translation id="325883417142483505">Mit dieser Richtlinie kannst du die Liste der URLs für die Unternehmensanmeldung festlegen (nur HTTP- und HTTPS-Protokolle). Der Passwortschutzdienst erfasst auf diesen URLs den Salted-Hash-Wert von Passwörtern und verwendet ihn, um zu prüfen, ob Passwörter wiederverwendet werden. Ihre Anmeldeseiten müssen den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit Salted-Hash-Werte von Passwörtern in <ph name="PRODUCT_NAME" /> richtig erfasst werden können.
+<translation id="325883417142483505">Mit dieser Richtlinie kannst du die Liste der URLs für die Unternehmensanmeldung festlegen (nur HTTP- und HTTPS-Protokolle). Der Passwortschutzdienst erfasst auf diesen URLs den Salted-Hash-Wert von Passwörtern und verwendet ihn, um zu prüfen, ob Passwörter wiederverwendet werden. Deine Anmeldeseiten müssen den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit Salted-Hash-Werte von Passwörtern in <ph name="PRODUCT_NAME" /> richtig erfasst werden können.
 
 Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passwortschutzdienst die Salted-Hash-Werte von Passwörtern nur unter https://accounts.google.com.
 
@@ -2193,7 +2193,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
           Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, um blockierbare gemischte Inhalte zuzulassen und das automatische Upgrade auf HTTPS von optional blockierbaren gemischten Inhalten zu deaktivieren.</translation>
 <translation id="3308724602356134956">Wenn du die Richtlinie konfigurierst, wird <ph name="PRODUCT_OS_NAME" />
 
-      das Hintergrundbild, das Sie für den Desktop und den Anmeldebildschirm des Nutzers festlegen, herunterladen und verwenden. Nutzer können das Hintergrundbild nicht ändern. Gib die URL an (diese muss ohne Authentifizierung zugänglich sein), von der <ph name="PRODUCT_OS_NAME" />
+      das Hintergrundbild, das du für den Desktop und den Anmeldebildschirm des Nutzers festlegst, herunterladen und verwenden. Nutzer können das Hintergrundbild nicht ändern. Gib die URL an (diese muss ohne Authentifizierung zugänglich sein), von der <ph name="PRODUCT_OS_NAME" />
 
       das Hintergrundbild herunterladen kann, sowie einen kryptografischen Hash (im JPEG-Format mit einer Dateigröße von bis zu 16 MB), um die Integrität des Downloads zu verifizieren.
 
@@ -2539,7 +2539,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 
       Weitere Informationen zu <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-Sitzungen findest du in den Spezifikationen zur <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Einstellungen für die Energieverwaltung bei Inaktivität des Nutzers</translation>
-<translation id="3790085888761753785">Wenn diese Einstellung aktiviert ist, können Nutzer sich mit Smart Lock in Ihren Konten anmelden. Du hast dann mehr Möglichkeiten als mit den üblichen Smart Lock-Einstellungen, mit denen sie lediglich ihre Bildschirme entsperren können.
+<translation id="3790085888761753785">Wenn diese Einstellung aktiviert ist, können Nutzer sich mit Smart Lock in ihren Konten anmelden. Du hast dann mehr Möglichkeiten als mit den üblichen Smart Lock-Einstellungen, mit denen sie lediglich ihre Bildschirme entsperren können.
 
 Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock anmelden.
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>

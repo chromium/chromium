@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Jagage kiirelt seda lehte. Selle otsetee muutmiseks avage menüü Seaded.</translation>
 <translation id="1240190568154816272">Chrome’i nõuanded</translation>
 <translation id="1240288207750131269">Keele laadimine: <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">seadmes</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246905108078336582">Kas eemaldada soovitus lõikelaualt?</translation>
@@ -170,6 +171,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="1974060860693918893">Täpsemad</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1986685561493779662">Nimi on juba olemas</translation>
+<translation id="1995884366040846621">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Saadab teie vaikeotsingumootorile mõned küpsisefailid ja otsingud teie aadressiribalt ning otsingukastist</translation>
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fail}other{# faili}}</translation>
@@ -580,7 +582,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4307992518367153382">Põhiteave</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
 <translation id="4321739720395210191">Kaamerat ei saa avada. Taaskäivitage seade ja proovige uuesti.</translation>
-<translation id="4324158606177867698">Eemaldatud huvid kuvatakse siin</translation>
 <translation id="433213510553688132">Jälgimine …</translation>
 <translation id="4335835283689002019">Google'i ohutu sirvimine on väljas</translation>
 <translation id="4351244548802238354">Sule dialoog</translation>
@@ -818,7 +819,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5665379678064389456">Looge sündmus rakenduses <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ei saa värskendusi otsida</translation>
 <translation id="5686790454216892815">Faili nimi on liiga pikk</translation>
-<translation id="5692329390578659217">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi, aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
 <translation id="569536719314091526">Tõlkige leht mis tahes keelde nupuga Rohkem valikuid</translation>
 <translation id="5696597120588531049">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest</translation>
 <translation id="5697688514913266141">Teie fail salvestatakse kausta <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Muutke<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7474822150871987353">Vaadake lisateavet veebisaitide teemade kohta ilma lehelt lahkumata. Valige lehel üks või mitu sõna, et neid otsida.</translation>
 <translation id="7475192538862203634">Kui näete seda sageli, proovige neid <ph name="BEGIN_LINK" />soovitusi<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kaarti ei leitud. Mõned failid võivad puududa.</translation>
-<translation id="7477262822945323753">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi, aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" />.</translation>
 <translation id="7479104141328977413">Vahelehtede haldamine</translation>
 <translation id="7481312909269577407">Edasta</translation>
 <translation id="7482656565088326534">Eelvaate vaheleht</translation>

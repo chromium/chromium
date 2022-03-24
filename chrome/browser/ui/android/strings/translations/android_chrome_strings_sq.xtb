@@ -580,7 +580,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
 <translation id="4321739720395210191">Kamera nuk mund të hapet. Rinise pajisjen dhe provo përsëri.</translation>
-<translation id="4324158606177867698">Interesi që hoqe do të shfaqet këtu</translation>
 <translation id="433213510553688132">Po ndjek...</translation>
 <translation id="4335835283689002019">Shfletimi i sigurt është joaktiv</translation>
 <translation id="4351244548802238354">Mbyll dialogun</translation>
@@ -818,7 +817,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5665379678064389456">Krijo ngjarje në <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="5686790454216892815">Emri i skedarit është tepër i gjatë</translation>
-<translation id="5692329390578659217">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, email-in, adresën dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK1" />politikën e privatësisë<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />kushtet e shërbimit<ph name="END_LINK2" /> të këtij sajti.</translation>
 <translation id="569536719314091526">Përktheje këtë faqe në çdo gjuhë nga butoni "Më shumë opsione"</translation>
 <translation id="5696597120588531049">Chrome mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
 <translation id="5697688514913266141">Skedari yt do të ruhet te <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifiko<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1150,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7474822150871987353">Mëso për temat në sajtet e uebit pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to.</translation>
 <translation id="7475192538862203634">Nëse e shikon shpesh këtë, provo këto <ph name="BEGIN_LINK" />sugjerime<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Karta SD nuk u gjet. Mund të mungojnë disa nga skedarët e tu.</translation>
-<translation id="7477262822945323753">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, email-in, adresën dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK1" />politikën e privatësisë<ph name="END_LINK1" /> të këtij sajti.</translation>
 <translation id="7479104141328977413">Menaxhimi i skedave</translation>
 <translation id="7481312909269577407">Përpara</translation>
 <translation id="7482656565088326534">Skeda e shikimit paraprak</translation>

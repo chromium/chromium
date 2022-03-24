@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Hitro delite to stran. To bližnjico lahko uredite v nastavitvah.</translation>
 <translation id="1240190568154816272">Nasveti za Chrome</translation>
 <translation id="1240288207750131269">Nalaganje: <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />pogoje storitve<ph name="END_LINK2" /> tega spletnega mesta.</translation>
 <translation id="1242883863226959074">napravi</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1246905108078336582">Ali želite odstraniti predlog iz odložišča?</translation>
@@ -170,6 +171,7 @@ Glede na interakcijo spletnega mesta, kot je redno prijavljanje v račun, lahko 
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="1986685561493779662">Ime že obstaja</translation>
+<translation id="1995884366040846621">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> tega spletnega mesta.</translation>
 <translation id="2000419248597011803">Pošilja nekatere piškotke in iskanja iz naslovne vrstice ter iskalnega polja privzetemu iskalniku</translation>
 <translation id="200114059308480249">Želite vključiti sobesedilo v iskanja v Googlu?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
@@ -580,7 +582,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4307992518367153382">Osnove</translation>
 <translation id="4320177379694898372">Ni internetne povezave</translation>
 <translation id="4321739720395210191">Kamere ni mogoče odpreti. Znova zaženite napravo in poskusite znova.</translation>
-<translation id="4324158606177867698">Odstranjena zanimanja bodo prikazana tukaj.</translation>
 <translation id="433213510553688132">Spremljanje …</translation>
 <translation id="4335835283689002019">Varno brskanje je izklopljeno</translation>
 <translation id="4351244548802238354">Zapri pogovorno okno</translation>
@@ -818,7 +819,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5665379678064389456">Ustvarite dogodek v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5686790454216892815">Ime datoteke je predolgo</translation>
-<translation id="5692329390578659217">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in naslov ter profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />pogoje storitve<ph name="END_LINK2" /> tega spletnega mesta.</translation>
 <translation id="569536719314091526">Prevedite to stran v kateri koli jezik z gumbom »Več možnosti«</translation>
 <translation id="5696597120588531049">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="5697688514913266141">Datoteka bo shranjena v mapo <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Uredi<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7474822150871987353">Preberite več o temah na spletnih mestih, ne da bi vam bilo treba zapustiti stran. Izberite eno ali več besed na strani in jo oziroma jih poiščite.</translation>
 <translation id="7475192538862203634">Če se to pogosto zgodi, preizkusite te <ph name="BEGIN_LINK" />predloge<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Kartice SD ni bilo mogoče najti. Nekatere vaše datoteke morda manjkajo.</translation>
-<translation id="7477262822945323753">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in naslov ter profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> tega spletnega mesta.</translation>
 <translation id="7479104141328977413">Upravljanje zavihkov</translation>
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7482656565088326534">Zavihek za predogled</translation>

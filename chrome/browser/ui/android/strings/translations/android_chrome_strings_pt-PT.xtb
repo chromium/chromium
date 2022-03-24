@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Partilhe esta página rapidamente. Para editar este atalho, aceda às Definições.</translation>
 <translation id="1240190568154816272">Sugestões do Chrome</translation>
 <translation id="1240288207750131269">A carregar <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />termos de utilização<ph name="END_LINK2" /> deste site.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246905108078336582">Remover a sugestão da área de transferência?</translation>
@@ -170,6 +171,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">O nome já existe</translation>
+<translation id="1995884366040846621">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste site.</translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="200114059308480249">Pretende incluir o texto circundante nas pesquisas no Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
@@ -580,7 +582,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4307992518367153382">Noções básicas</translation>
 <translation id="4320177379694898372">Sem ligação à Internet</translation>
 <translation id="4321739720395210191">Não é possível abrir a câmara. Reinicie o dispositivo e tente novamente.</translation>
-<translation id="4324158606177867698">O interesse que removeu vai aparecer aqui</translation>
 <translation id="433213510553688132">A seguir…</translation>
 <translation id="4335835283689002019">A Navegação segura está desativada.</translation>
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
@@ -818,7 +819,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5665379678064389456">Criar evento no <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
-<translation id="5692329390578659217">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />termos de utilização<ph name="END_LINK2" /> deste site.</translation>
 <translation id="569536719314091526">Traduzir esta página para qualquer idioma a partir do botão Mais opções</translation>
 <translation id="5696597120588531049">O Chrome pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="5697688514913266141">O ficheiro será guardado em <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edite-o<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7474822150871987353">Saiba mais acerca de tópicos em Websites sem sair da página. Selecione uma ou mais palavras na página para as pesquisar.</translation>
 <translation id="7475192538862203634">Se vê isto com frequência, experimente estas <ph name="BEGIN_LINK" />sugestões<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Cartão SD não encontrado. Alguns dos seus ficheiros poderão estar em falta.</translation>
-<translation id="7477262822945323753">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste site.</translation>
 <translation id="7479104141328977413">Gestão de separadores</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7482656565088326534">Separador Pré-visualização</translation>

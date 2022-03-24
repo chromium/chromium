@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="1240190568154816272">Chrome നുറുങ്ങുകൾ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ലോഡ് ചെയ്യുന്നു</translation>
+<translation id="1240903469550363138">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="1246905108078336582">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നിർദ്ദേശം നീക്കം ചെയ്യണോ?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">നൂതനം</translation>
 <translation id="1984417487208496350">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="1986685561493779662">പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
+<translation id="1995884366040846621">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="2000419248597011803">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനിലേക്ക് വിലാസ ബാറിൽ നിന്നും തിരയൽ ബോക്‌സിൽ നിന്നുമുള്ള തിരയലുകളും കുറച്ച് കുക്കികളും അയയ്ക്കുന്നു</translation>
 <translation id="200114059308480249">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തണോ?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ഫയല്‍}other{# ഫയലുകൾ}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">അടിസ്ഥാനങ്ങള്‍</translation>
 <translation id="4320177379694898372">ഇന്റർനെറ്റ് കണക്ഷനൊന്നുമില്ല</translation>
 <translation id="4321739720395210191">നിങ്ങളുടെ ക്യാമറ തുറക്കാനാവുന്നില്ല. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="4324158606177867698">നിങ്ങൾ നീക്കം ചെയ്ത താൽപ്പര്യം ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="433213510553688132">പിന്തുടരുന്നു...</translation>
 <translation id="4335835283689002019">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാണ്</translation>
 <translation id="4351244548802238354">ഡയലോഗ് അടയ്‌ക്കുക</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> ആപ്പിൽ ഇവന്റ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5683547024293500885">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനാകില്ല</translation>
 <translation id="5686790454216892815">ഫയലിന്റെ പേര് ദൈർഘ്യമേറിയതാണ്</translation>
-<translation id="5692329390578659217">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="569536719314091526">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്ന്, ഈ പേജ് ഏത് ഭാഷയിലേക്കും വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5696597120588531049">ഡാറ്റാ ലംഘനങ്ങൾ, സുരക്ഷിതമല്ലാത്ത വെബ്‌സൈറ്റുകൾ എന്നിവയിൽ നിന്നും മറ്റും നിങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ Chrome സഹായിക്കും</translation>
 <translation id="5697688514913266141"><ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> എന്നതിലേക്ക് നിങ്ങളുടെ ഫയൽ സംരക്ഷിക്കും. <ph name="BEGIN_LINK2" />എഡിറ്റ് ചെയ്യുക<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">പേജ് വിട്ടുപോകാതെ തന്നെ വെബ്‌സൈറ്റുകളിലെ വിഷയങ്ങളെക്കുറിച്ച് അറിയുക. തിരയാൻ, പേജിലെ ഒന്നോ അതിലധികമോ വാക്കുകൾ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7475192538862203634">നിങ്ങൾ ഇത് പതിവായി കാണുന്നുണ്ടെങ്കിൽ, ഈ <ph name="BEGIN_LINK" />നിർദ്ദേശങ്ങൾ<ph name="END_LINK" /> പരീക്ഷിക്കൂ.</translation>
 <translation id="7475688122056506577">SD കാർഡ് കണ്ടെത്തിയില്ല. നിങ്ങളുടെ ചില ഫയലുകൾ നഷ്‌ടപ്പെട്ടേക്കാം.</translation>
-<translation id="7477262822945323753">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="7479104141328977413">ടാബ് മാനേജ്മെൻ്റ്</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7482656565088326534">പ്രിവ്യു ടാബ്</translation>

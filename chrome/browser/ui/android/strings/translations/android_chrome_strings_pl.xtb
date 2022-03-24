@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Szybko udostępnij tę stronę. Aby edytować ten skrót, otwórz Ustawienia.</translation>
 <translation id="1240190568154816272">Wskazówki dotyczące Chrome</translation>
 <translation id="1240288207750131269">Ładuję: <ph name="LANG" /></translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK2" />warunkami korzystania z tej witryny<ph name="END_LINK2" /> oraz jej <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" />.</translation>
 <translation id="1242883863226959074">urządzeniu</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
@@ -170,6 +171,7 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1986685561493779662">Nazwa już istnieje</translation>
+<translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" /> tej witryny.</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
@@ -580,7 +582,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4307992518367153382">Podstawowe</translation>
 <translation id="4320177379694898372">Brak połączenia z internetem</translation>
 <translation id="4321739720395210191">Nie udało się otworzyć aparatu. Ponownie uruchom urządzenie i spróbuj jeszcze raz.</translation>
-<translation id="4324158606177867698">Tutaj będzie widoczne usunięte przez Ciebie zainteresowanie</translation>
 <translation id="433213510553688132">Dodaję do obserwowanych…</translation>
 <translation id="4335835283689002019">Bezpieczne przeglądanie jest wyłączone</translation>
 <translation id="4351244548802238354">Zamknij okno</translation>
@@ -818,7 +819,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5665379678064389456">Utwórz wydarzenie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5686790454216892815">Nazwa pliku jest za długa</translation>
-<translation id="5692329390578659217">Aby kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni witrynie Twoje imię i nazwisko, adres e-mail, adres zamieszkania i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Warunkami korzystania z usługi<ph name="END_LINK2" /> tej witryny.</translation>
 <translation id="569536719314091526">Możesz przetłumaczyć tę stronę na dowolny język, używając przycisku Więcej opcji</translation>
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5697688514913266141">Plik zostanie zapisany w katalogu <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edytuj<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7474822150871987353">Poznaj tematy omawiane w witrynach, nie opuszczając strony. Zaznacz na stronie co najmniej 1 słowo, aby je wyszukać.</translation>
 <translation id="7475192538862203634">Jeśli często widzisz ten komunikat, przeczytaj te <ph name="BEGIN_LINK" />wskazówki<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Nie znaleziono karty SD. Może brakować niektórych Twoich plików.</translation>
-<translation id="7477262822945323753">Aby kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni witrynie Twoje imię i nazwisko, adres e-mail, adres zamieszkania i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" /> tej witryny.</translation>
 <translation id="7479104141328977413">Zarządzanie kartami</translation>
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7482656565088326534">Karta podglądu</translation>

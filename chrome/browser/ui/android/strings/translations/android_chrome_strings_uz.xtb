@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Bu sahifani tezda ulashish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>
 <translation id="1240190568154816272">Chrome maslahatlari</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yuklanmoqda</translation>
+<translation id="1240903469550363138">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />xizmat shartlari<ph name="END_LINK2" /> bilan tanishing.</translation>
 <translation id="1242883863226959074">qurilma</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1246905108078336582">Klipbord taklifi olib tashlansinmi?</translation>
@@ -170,6 +171,7 @@ Ishonch tokenlari internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1984417487208496350">Himoyasiz (tavsiya etilmaydi)</translation>
 <translation id="1986685561493779662">Bu nom band</translation>
+<translation id="1995884366040846621">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> bilan tanishing.</translation>
 <translation id="2000419248597011803">Manzillar qatori va qidiruv oynasida kiritilgan so‘rovlar va ba’zi cookie ma’lumotlarni standart qidiruv tizimiga yuboradi</translation>
 <translation id="200114059308480249">Google qidiruvlariga qamrovli matn kiritilsinmi?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ta fayl}other{# ta fayl}}</translation>
@@ -580,7 +582,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4307992518367153382">Asosiy</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
 <translation id="4321739720395210191">Kamerangiz ochilmadi. Qurilmani qayta ishga tushirib, yana urining.</translation>
-<translation id="4324158606177867698">Olib tashlangan qiziqishlaringiz shu yerda chiqadi</translation>
 <translation id="433213510553688132">Obuna rasmiylashtirilmoqda…</translation>
 <translation id="4335835283689002019">Xavfsiz koʻrish faolsizlantirilgan</translation>
 <translation id="4351244548802238354">Oynani yopish</translation>
@@ -818,7 +819,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5665379678064389456"><ph name="APP_NAME" /> ilovasida tadbir yaratish</translation>
 <translation id="5683547024293500885">Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="5686790454216892815">Fayl nomi juda uzun</translation>
-<translation id="5692329390578659217">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />xizmat shartlari<ph name="END_LINK2" /> bilan tanishing.</translation>
 <translation id="569536719314091526">“Yana” tugmasidan bu sahifani boshqa tilga tarjima qilishingiz mumkin</translation>
 <translation id="5696597120588531049">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="5697688514913266141">Fayl <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> jildiga saqlanadi. <ph name="BEGIN_LINK2" />Tahrirlash<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7474822150871987353">Tasvirlar, mavzular va boshqa maʼlumotlarni belgilangan sahifani tark etmasdan qidiring. Sahifa ichidan qidirish uchun bir yoki bir nechta soʻzni tanlang.</translation>
 <translation id="7475192538862203634">Agar bu muammo tez-tez qaytarilsa, quyidagi <ph name="BEGIN_LINK" />takliflar<ph name="END_LINK" /> bilan tanishing.</translation>
 <translation id="7475688122056506577">SD karta topilmadi. Ba’zi fayllar joyida bo‘lmasligi mumkin.</translation>
-<translation id="7477262822945323753">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> bilan tanishing.</translation>
 <translation id="7479104141328977413">Varaqlar boshqaruvi</translation>
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7482656565088326534">Razm solish sahifasi</translation>

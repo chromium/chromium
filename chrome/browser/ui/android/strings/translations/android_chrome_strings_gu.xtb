@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="1240190568154816272">Chrome વિશે ટિપ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> લોડ કરી રહ્યાં છીએ</translation>
+<translation id="1240903469550363138">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
 <translation id="1242883863226959074">ડિવાઇસ</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
 <translation id="1246905108078336582">શું ક્લિપબોર્ડમાંથી સૂચન કાઢી નાખીએ?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1984417487208496350">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="1986685561493779662">નામ પહેલેથી જ અસ્તિત્વમાં છે</translation>
+<translation id="1995884366040846621">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એન્જિન પર મોકલે છે</translation>
 <translation id="200114059308480249">શું Google Searchમાં શોધવા માટે આજુબાજુની ટેક્સ્ટ શામેલ કરીએ?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">પાયાગત</translation>
 <translation id="4320177379694898372">કોઈ ઇન્ટરનેટ કનેક્શન નથી</translation>
 <translation id="4321739720395210191">તમારો કૅમેરા ખોલી શકતાં નથી. તમારું ડિવાઇસ ફરી શરૂ કરો અને ફરી પ્રયાસ કરો.</translation>
-<translation id="4324158606177867698">તમે કાઢી નાખેલી રુચિ અહીં દેખાશે</translation>
 <translation id="433213510553688132">ફૉલો કરી રહ્યાં છીએ...</translation>
 <translation id="4335835283689002019">Safe Browsing બંધ છે</translation>
 <translation id="4351244548802238354">સંવાદ બંધ કરો</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> માં ઇવેન્ટ બનાવો</translation>
 <translation id="5683547024293500885">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="5686790454216892815">ફાઇલનું નામ ખૂબ લાંબું છે</translation>
-<translation id="5692329390578659217">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
 <translation id="569536719314091526">વધુ વિકલ્પો બટનમાંથી આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
 <translation id="5696597120588531049">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે</translation>
 <translation id="5697688514913266141">તમારી ફાઇલ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />માં સચવાશે. <ph name="BEGIN_LINK2" />ફેરફાર કરો<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">પેજને છોડ્યા વિના વેબસાઇટ પરના વિષયો વિશે જાણો. પેજ પરના એક કે તેનાથી વધુ શબ્દોની શોધ કરવા માટે તેમને પસંદ કરો.</translation>
 <translation id="7475192538862203634">જો તમે આ વારંવાર જોઈ રહ્યાં છો, તો આ <ph name="BEGIN_LINK" />સૂચનો<ph name="END_LINK" />ને અજમાવી જુઓ.</translation>
 <translation id="7475688122056506577">SD કાર્ડ મળ્યું નથી. તમારી અમુક ફાઇલો ખૂટતી હોઈ શકે છે.</translation>
-<translation id="7477262822945323753">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="7479104141328977413">ટૅબ મેનેજમેન્ટ</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
 <translation id="7482656565088326534">પ્રીવ્યૂ ટૅબ</translation>

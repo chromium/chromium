@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Distribuie rapid pagina. Pentru a edita comanda rapidă, accesează setările.</translation>
 <translation id="1240190568154816272">Sfaturi pentru Chrome</translation>
 <translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />termenii și condițiile<ph name="END_LINK2" /> site-ului.</translation>
 <translation id="1242883863226959074">dispozitiv</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
@@ -67,6 +68,9 @@
 <translation id="1320912611264252795">Fluxul de salvare a marcajului în folder deschis la înălțimea completă</translation>
 <translation id="1327257854815634930">Istoricul de navigare este deschis</translation>
 <translation id="1331212799747679585">Chrome nu se poate actualiza. Mai multe opțiuni</translation>
+<translation id="1332100670807501334">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.
+
+Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), ștergi și informațiile de măsurare asociate. Consultă <ph name="BEGIN_LINK" />istoricul de navigare<ph name="END_LINK" />.</translation>
 <translation id="1332501820983677155">Comenzi rapide pentru funcțiile Google Chrome</translation>
 <translation id="1344653310988386453">Include linkul spre evidențiere</translation>
 <translation id="1347468774581902829">Gestionează activitatea</translation>
@@ -114,6 +118,7 @@
 Pe baza interacțiunii tale cu un site, de exemplu, conectarea frecventă la un cont, acel site poate să emită un Trust Token pentru browserul tău. Mai târziu, dacă alte site-uri pe care le accesezi verifică și găsesc un Trust Token valid, există mai multe șanse să te trateze ca pe o persoană, nu ca pe o aplicație bot.
 
 Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folosit pentru a afla cine ești.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Elimină un element selectat}few{Elimină # elemente selectate}other{Elimină # de elemente selectate}}</translation>
 <translation id="1633659023549081553">Descoperă conținut nou în pagina de pornire Chrome</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
@@ -146,6 +151,9 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="1829244130665387512">Găsește în pagină</translation>
 <translation id="1832459821645506983">Da, accept</translation>
 <translation id="1849863543394887018">Poți dezactiva notificările accesând setările</translation>
+<translation id="1854311313115643875">În versiunile de încercare, Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.
+
+Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), ștergi și informațiile de măsurare asociate. Consultă <ph name="BEGIN_LINK" />istoricul de navigare<ph name="END_LINK" />.</translation>
 <translation id="1877026089748256423">Chrome nu este actualizat</translation>
 <translation id="1883903952484604915">Fișierele mele</translation>
 <translation id="189358972401248634">Alte limbi</translation>
@@ -170,6 +178,7 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
 <translation id="1986685561493779662">Numele există deja</translation>
+<translation id="1995884366040846621">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> a site-ului.</translation>
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
@@ -309,6 +318,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2746842245914314523">Poți afla mai multe despre aceste funcții în setările Chrome. În versiunile de încercare, interacțiunea ta cu site-urile este privată datorită noilor funcții.</translation>
 <translation id="2760989362628427051">Activează tema întunecată când este activată tema întunecată sau Economisirea bateriei pentru dispozitiv</translation>
 <translation id="2762000892062317888">adineauri</translation>
+<translation id="2765569104201273438">În timpul experimentului, Chrome va estima subiecte care te-ar putea interesa. Apoi, fără a afla cine ești, site-urile pe care le accesezi pot folosi aceste informații pentru a-ți afișa anunțuri relevante. Interesele se bazează pe istoricul tău de navigare recent și poți să le vezi și să le gestionezi.</translation>
 <translation id="276969039800130567">Conectat(ă) ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec. rămase</translation>
@@ -580,7 +590,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="4307992518367153382">Elemente de bază</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="4321739720395210191">Nu se poate deschide camera. Repornește dispozitivul și încearcă din nou.</translation>
-<translation id="4324158606177867698">Categoria de interese pe care ai eliminat-o va apărea aici</translation>
 <translation id="433213510553688132">Urmărești...</translation>
 <translation id="4335835283689002019">Navigarea sigură este dezactivată</translation>
 <translation id="4351244548802238354">Închide caseta de dialog</translation>
@@ -792,6 +801,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5514904542973294328">Dezactivată de administratorul dispozitivului</translation>
 <translation id="5515439363601853141">Deblochează pentru a vedea parola</translation>
 <translation id="5517095782334947753">Ai marcajele, istoricul, parolele și alte setări din <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5524761631371622910">În versiunile de încercare și dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună.</translation>
 <translation id="5524843473235508879">Redirecționarea a fost blocată.</translation>
 <translation id="5548606607480005320">Verificare de siguranță</translation>
 <translation id="5555525474779371165">Alege protecția prin Navigarea sigură</translation>
@@ -818,13 +828,13 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5665379678064389456">Creează un eveniment în <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome nu poate căuta actualizări</translation>
 <translation id="5686790454216892815">Numele fișierului este prea lung</translation>
-<translation id="5692329390578659217">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />termenii și condițiile<ph name="END_LINK2" /> site-ului.</translation>
 <translation id="569536719314091526">Tradu această pagină în orice limbă folosind butonul Mai multe opțiuni</translation>
 <translation id="5696597120588531049">Chrome te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai</translation>
 <translation id="5697688514913266141">Fișierul va fi salvat în <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifică<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Comută la fila</translation>
 <translation id="572328651809341494">File recente</translation>
 <translation id="5726692708398506830">Mărește întregul conținut al paginii</translation>
+<translation id="5727531838415286053">Dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună. Categoriile de interese se actualizează dacă nu le elimini.</translation>
 <translation id="5748802427693696783">Ai comutat la filele standard</translation>
 <translation id="5749068826913805084">Pentru a descărca fișiere, Chrome necesită acces la stocare.</translation>
 <translation id="5749237766298580851">Dezactivată <ph name="SEPARATOR" /> Nu este recomandată</translation>
@@ -900,6 +910,7 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="6085886413119427067">Stabilește modul de conectare la site-uri printr-o conexiune securizată</translation>
 <translation id="6091413777268123602">Cu versiunile de încercare Privacy Sandbox, site-urile pot oferi aceeași experiență de navigare, folosind mai puține date despre tine. Aceasta înseamnă confidențialitate sporită și reducerea urmăririi pe mai multe site-uri. Vom adăuga versiuni de încercare noi atunci când sunt gata pentru testare.</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rămase</translation>
+<translation id="609511393187302037">Chrome explorează moduri de a restricționa urmărirea pe mai multe site-uri, permițând site-urilor să prevină spamul cu anunțuri și frauda.</translation>
 <translation id="6095578583683628124">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>
 <translation id="6108923351542677676">Configurare în curs...</translation>
 <translation id="6112702117600201073">Se actualizează pagina</translation>
@@ -947,6 +958,11 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6364438453358674297">Elimini sugestia din istoric?</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Preîncarcă mai frecvent paginile pe care Chrome consideră că le-ai putea accesa. Este posibil ca această setare să ducă la o utilizare crescută a datelor.</translation>
+<translation id="6385407407546870227">În versiunile de încercare, Reducerea spamului și fraudei se bazează pe Trust Tokens pentru a ajuta site-urile să prevină frauda și să deosebească aplicațiile bot de persoane.
+
+Pe baza interacțiunii tale cu un site, de exemplu, conectarea frecventă la un cont, acel site poate să emită un Trust Token pentru browserul tău. Mai târziu, dacă alte site-uri pe care le accesezi verifică și găsesc un Trust Token valid, există mai multe șanse să te trateze ca pe o persoană, nu ca pe o aplicație bot.
+
+Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folosit pentru a afla cine ești.</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Din nou online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
@@ -1152,7 +1168,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7474822150871987353">Află despre subiectele de pe site-uri fără să părăsești pagina. Selectează unul sau mai multe cuvinte din pagină ca să le cauți.</translation>
 <translation id="7475192538862203634">Dacă acest mesaj apare frecvent, încearcă următoarele <ph name="BEGIN_LINK" />sugestii<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Nu s-a găsit cardul SD. Este posibil ca unele fișiere să lipsească.</translation>
-<translation id="7477262822945323753">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> a site-ului.</translation>
 <translation id="7479104141328977413">Gestionarea filelor</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7482656565088326534">Fila de previzualizare</translation>
@@ -1342,6 +1357,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8445448999790540984">Nu se pot exporta parole</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8453310803815879010">Începe jocul cu dinozauri</translation>
+<translation id="8455351369246067579">Chrome poate estima subiecte care te-ar putea interesa. Apoi, fără a afla cine ești, site-urile pe care le accesezi pot folosi aceste informații pentru a-ți afișa anunțuri relevante. Interesele se bazează pe istoricul tău de navigare recent și poți să le vezi și să le gestionezi.</translation>
 <translation id="8461694314515752532">Criptează datele sincronizate folosind propria expresie de acces pentru sincronizare</translation>
 <translation id="8466613982764129868">Asigură-te că <ph name="TARGET_DEVICE_NAME" /> este conectat la internet</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
@@ -1448,6 +1464,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8972098258593396643">Descarci în dosarul prestabilit?</translation>
 <translation id="8987641763863173640">Gestionează setările pentru previzualizarea videoclipurilor</translation>
 <translation id="898854820045159673">Reacția a fost adăugată</translation>
+<translation id="8989968390305463310">Istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge automat categoriile de interese în permanență, în fiecare lună. Categoriile de interese se pot actualiza dacă nu le elimini.</translation>
 <translation id="8993760627012879038">Deschide o filă nouă în modul incognito</translation>
 <translation id="8996847606757455498">Alege alt furnizor</translation>
 <translation id="8998729206196772491">Te conectezi cu un cont gestionat de <ph name="MANAGED_DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele se vor șterge de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>

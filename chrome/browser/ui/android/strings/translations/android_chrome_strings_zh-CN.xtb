@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">快速分享此页面。若要修改该快捷方式，请前往“设置”部分。</translation>
 <translation id="1240190568154816272">Chrome 技巧</translation>
 <translation id="1240288207750131269">正在加载<ph name="LANG" /></translation>
+<translation id="1240903469550363138">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1242883863226959074">设备</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246905108078336582">从剪贴板中移除建议？</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
+<translation id="1995884366040846621">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
@@ -467,7 +469,7 @@
 <translation id="3568688522516854065">要访问您在其他设备上的标签页，请登录您的帐号并开启同步功能</translation>
 <translation id="357465026686164600">将手机用作安全密钥</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
-<translation id="3578874072190212775">协助网站打击欺诈行为并将聊天机器人与真人区分开来</translation>
+<translation id="3578874072190212775">协助网站打击欺诈行为以及区分机器人和真人</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
 <translation id="3602290021589620013">预览</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">基本</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4321739720395210191">无法打开您的摄像头。请重启设备，然后重试。</translation>
-<translation id="4324158606177867698">您移除的兴趣将会显示在此处</translation>
 <translation id="433213510553688132">正在关注…</translation>
 <translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">在<ph name="APP_NAME" />中创建活动</translation>
 <translation id="5683547024293500885">Chrome 无法检查是否有更新</translation>
 <translation id="5686790454216892815">文件名过长</translation>
-<translation id="5692329390578659217">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址、邮寄地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5697688514913266141">您的文件将会保存到<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />。<ph name="BEGIN_LINK2" />修改<ph name="END_LINK2" />。</translation>
@@ -1152,7 +1152,6 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7474822150871987353">无需离开所在页面，便可了解网站上的主题。选择页面上的一个或多个字词即可进行搜索。</translation>
 <translation id="7475192538862203634">如果您频繁遇到此问题，请尝试按这些<ph name="BEGIN_LINK" />建议<ph name="END_LINK" />操作。</translation>
 <translation id="7475688122056506577">找不到 SD 卡。您的某些文件可能会丢失。</translation>
-<translation id="7477262822945323753">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址、邮寄地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
 <translation id="7479104141328977413">标签页管理</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7482656565088326534">预览标签页</translation>

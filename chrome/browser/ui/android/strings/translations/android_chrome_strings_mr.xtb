@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">हे पेज झटपट शेअर करा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="1240190568154816272">Chrome शी संबंधित टिपा</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> लोड करत आहे</translation>
+<translation id="1240903469550363138">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />सेवा अटी<ph name="END_LINK2" /> पहा.</translation>
 <translation id="1242883863226959074">डिव्हाइस</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1246905108078336582">क्लिपबोर्डवरून सूचना काढून टाकायची आहे का?</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1986685561493779662">नाव आधीपासून अस्तित्वात आहे</translation>
+<translation id="1995884366040846621">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> पहा.</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">मूलभूत</translation>
 <translation id="4320177379694898372">कोणतेही इंटरनेट कनेक्शन नाही</translation>
 <translation id="4321739720395210191">तुमचा कॅमेरा उघडू शकत नाही. तुमचे डिव्हाइस रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="4324158606177867698">तुम्ही काढून टाकलेले स्वारस्य येथे दिसेल</translation>
 <translation id="433213510553688132">फॉलो करत आहे…</translation>
 <translation id="4335835283689002019">सुरक्षित ब्राउझिंग बंद आहे</translation>
 <translation id="4351244548802238354">डायलॉग बंद करा</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> मध्ये इव्हेंट तयार करा</translation>
 <translation id="5683547024293500885">Chrome अपडेट तपासू शकत नाही</translation>
 <translation id="5686790454216892815">फाइलचे नाव खूप लांब आहे</translation>
-<translation id="5692329390578659217">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल, पत्ता आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />सेवा अटी<ph name="END_LINK2" /> पहा.</translation>
 <translation id="569536719314091526">अधिक पर्याय बटणावरून या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="5696597120588531049">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते</translation>
 <translation id="5697688514913266141">तुमची फाइल <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> मध्ये सेव्ह केली जाईल. <ph name="BEGIN_LINK2" />संपादित करा<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">पेजमधून बाहेर न पडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. ते शोधण्यासाठी पेजवरील एक किंवा त्याहून अधिक शब्द निवडा.</translation>
 <translation id="7475192538862203634">तुम्ही हे वारंवार पहात असल्यास, या <ph name="BEGIN_LINK" />सूचना<ph name="END_LINK" /> वापरून पहा.</translation>
 <translation id="7475688122056506577">SD कार्ड आढळले नाही. तुमच्या काही फाइल गहाळ झालेल्या असू शकतात.</translation>
-<translation id="7477262822945323753">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल, पत्ता आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> पहा.</translation>
 <translation id="7479104141328977413">टॅब व्यवस्थापन</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7482656565088326534">पूर्वावलोकन टॅब</translation>

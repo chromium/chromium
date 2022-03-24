@@ -580,7 +580,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
 <translation id="4321739720395210191">Impossible d'ouvrir l'appareil photo. Redémarrez votre appareil et réessayez.</translation>
-<translation id="4324158606177867698">Les centres d'intérêt que vous supprimez s'afficheront ici</translation>
 <translation id="433213510553688132">Suivre…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
@@ -818,7 +817,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5665379678064389456">Créer un événement dans <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
-<translation id="5692329390578659217">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail, adresse et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
 <translation id="569536719314091526">Traduire cette page dans n'importe quelle langue à partir du bouton "Plus d'options"</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux</translation>
 <translation id="5697688514913266141">Votre fichier va être enregistré dans le dossier <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifier<ph name="END_LINK2" /></translation>
@@ -1152,7 +1150,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7474822150871987353">Découvrez les thèmes abordés sur les sites Web sans quitter la page. Sélectionnez au moins un mot sur celle-ci pour le rechercher.</translation>
 <translation id="7475192538862203634">Si vous rencontrez souvent ce problème, essayez les <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" /> suivantes.</translation>
 <translation id="7475688122056506577">Carte SD introuvable. Certains de vos fichiers risquent d'être manquants.</translation>
-<translation id="7477262822945323753">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail, adresse et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="7479104141328977413">Gestion des onglets</translation>
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7482656565088326534">Onglet ''Aperçu''</translation>

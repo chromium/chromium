@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Kongsi halaman ini dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
 <translation id="1240190568154816272">Petua Chrome</translation>
 <translation id="1240288207750131269">Memuatkan <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />syarat perkhidmatan<ph name="END_LINK2" /> laman ini.</translation>
 <translation id="1242883863226959074">peranti</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1246905108078336582">Alih keluar cadangan daripada papan keratan?</translation>
@@ -170,6 +171,7 @@ Token amanah meningkatkan privasi di web dan tidak boleh digunakan untuk mengeta
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
 <translation id="1986685561493779662">Nama sudah wujud</translation>
+<translation id="1995884366040846621">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> laman ini.</translation>
 <translation id="2000419248597011803">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda</translation>
 <translation id="200114059308480249">Sertakan teks sekitar dalam carian Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fail}other{# Fail}}</translation>
@@ -580,7 +582,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4307992518367153382">Asas</translation>
 <translation id="4320177379694898372">Tiada sambungan Internet</translation>
 <translation id="4321739720395210191">Tidak dapat membuka kamera anda. Mulakan semula peranti anda dan cuba lagi.</translation>
-<translation id="4324158606177867698">Minat yang anda alih keluar akan dipaparkan di sini</translation>
 <translation id="433213510553688132">Mengikuti…</translation>
 <translation id="4335835283689002019">Penyemakan Imbas Selamat dimatikan</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
@@ -818,7 +819,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5665379678064389456">Buat acara dalam <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome tidak dapat menyemak kemas kini</translation>
 <translation id="5686790454216892815">Nama fail terlalu panjang</translation>
-<translation id="5692329390578659217">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />syarat perkhidmatan<ph name="END_LINK2" /> laman ini.</translation>
 <translation id="569536719314091526">Terjemahkan halaman ini ke dalam sebarang bahasa lain daripada butang Lagi pilihan</translation>
 <translation id="5696597120588531049">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi</translation>
 <translation id="5697688514913266141">Fail anda akan disimpan ke <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -1152,7 +1152,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7474822150871987353">Ketahui tentang topik pada laman web tanpa meninggalkan halaman. Pilih satu atau beberapa perkataan pada halaman untuk mencari perkataan tersebut.</translation>
 <translation id="7475192538862203634">Jika anda kerap melihatnya, cuba <ph name="BEGIN_LINK" />cadangan<ph name="END_LINK" /> ini.</translation>
 <translation id="7475688122056506577">Kad SD tidak ditemui. Sesetengah fail anda mungkin tiada.</translation>
-<translation id="7477262822945323753">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> laman ini.</translation>
 <translation id="7479104141328977413">Pengurusan tab</translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7482656565088326534">Tab pratonton</translation>

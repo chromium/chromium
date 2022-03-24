@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">แชร์หน้านี้อย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
 <translation id="1240190568154816272">เคล็ดลับการใช้ Chrome</translation>
 <translation id="1240288207750131269">กำลังโหลดภาษา<ph name="LANG" /></translation>
+<translation id="1240903469550363138">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" />ของเว็บไซต์</translation>
 <translation id="1242883863226959074">อุปกรณ์</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="1986685561493779662">มีชื่อนี้อยู่แล้ว</translation>
+<translation id="1995884366040846621">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />ของเว็บไซต์</translation>
 <translation id="2000419248597011803">ส่งคุกกี้และการค้นหาบางรายการจากแถบที่อยู่และช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="200114059308480249">รวมข้อความที่อยู่โดยรอบในการค้นหาบน Google ไหม</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ไฟล์}other{# ไฟล์}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">พื้นฐาน</translation>
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4321739720395210191">เปิดกล้องไม่ได้ รีสตาร์ทอุปกรณ์และลองอีกครั้ง</translation>
-<translation id="4324158606177867698">ความสนใจที่คุณนำออกจะปรากฏที่นี่</translation>
 <translation id="433213510553688132">กำลังติดตาม...</translation>
 <translation id="4335835283689002019">Google Safe Browsing ปิดอยู่</translation>
 <translation id="4351244548802238354">ปิดข้อความโต้ตอบ</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">สร้างกิจกรรมใน <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5686790454216892815">ชื่อไฟล์ยาวเกินไป</translation>
-<translation id="5692329390578659217">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" /></translation>
 <translation id="569536719314091526">แปลหน้านี้เป็นภาษาใดก็ได้จากปุ่มตัวเลือกเพิ่มเติม</translation>
 <translation id="5696597120588531049">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5697688514913266141">ระบบจะบันทึกไฟล์ลงใน<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> <ph name="BEGIN_LINK2" />แก้ไข<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@
 <translation id="7474822150871987353">ดูข้อมูลเกี่ยวกับหัวข้อในเว็บไซต์โดยไม่ต้องออกจากหน้า เลือกคำในหน้าอย่างน้อย 1 คำเพื่อใช้ค้นหา</translation>
 <translation id="7475192538862203634">หากคุณเห็นข้อความนี้บ่อยๆ โปรดลองทำตาม<ph name="BEGIN_LINK" />คำแนะนำ<ph name="END_LINK" />เหล่านี้</translation>
 <translation id="7475688122056506577">ไม่พบการ์ด SD ไฟล์บางไฟล์อาจหายไป</translation>
-<translation id="7477262822945323753">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />ของเว็บไซต์</translation>
 <translation id="7479104141328977413">การจัดการแท็บ</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7482656565088326534">แท็บแสดงตัวอย่าง</translation>
@@ -1199,6 +1198,7 @@
 <translation id="7704317875155739195">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
 <translation id="770741401784017797">กำลังสร้าง GIF</translation>
 <translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
+<translation id="7709094866268987903">ความสนใจที่คุณลบออกจะปรากฏที่นี่</translation>
 <translation id="7725024127233776428">หน้าที่คุณบุ๊กมาร์กไว้จะปรากฏที่นี่</translation>
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">เลือกวันที่และเวลา</translation>

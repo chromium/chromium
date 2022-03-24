@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Արագ կիսվեք այս էջով։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
+<translation id="1240903469550363138">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="1986685561493779662">Անունն արդեն գոյություն ունի</translation>
+<translation id="1995884366040846621">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
 <translation id="200114059308480249">Ներառե՞լ շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
@@ -580,7 +582,6 @@
 <translation id="4307992518367153382">Հիմնական</translation>
 <translation id="4320177379694898372">Համացանցի կապակցում չկա</translation>
 <translation id="4321739720395210191">Չհաջողվեց բացել տեսախցիկը։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
-<translation id="4324158606177867698">Այստեղ կհայտնվեն ձեր հեռացրած հետաքրքրությունները</translation>
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
@@ -818,7 +819,6 @@
 <translation id="5665379678064389456">Ստեղծեք միջոցառում <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="5683547024293500885">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="5686790454216892815">Ֆայլի անունը չափազանց երկար է</translation>
-<translation id="5692329390578659217">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
 <translation id="5697688514913266141">Ձեր ֆայլը կպահվի <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> պանակում։ <ph name="BEGIN_LINK2" />Փոխել<ph name="END_LINK2" /></translation>
@@ -1152,7 +1152,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7474822150871987353">Իմացեք ավելին կայքի բովանդակության մասին՝ առանց էջից դուրս գալու։ Էջում ընտրեք մեկ կամ մի քանի բառ՝ դրանք որոնելու համար։</translation>
 <translation id="7475192538862203634">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, օգտվեք այս <ph name="BEGIN_LINK" />խորհուրդներից<ph name="END_LINK" />:</translation>
 <translation id="7475688122056506577">SD քարտը չհաջողվեց գտնել: Որոշ ֆայլեր կարող են այլևս չլինել:</translation>
-<translation id="7477262822945323753">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="7479104141328977413">Ներդիրների կառավարում</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7482656565088326534">Նախադիտման ներդիր</translation>
