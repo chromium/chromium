@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
