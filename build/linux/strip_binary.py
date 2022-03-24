@@ -24,7 +24,7 @@ def main():
   ]
 
   process = subprocess.Popen(cmd_line)
-
+  process.wait()
   return process.returncode
 
 
