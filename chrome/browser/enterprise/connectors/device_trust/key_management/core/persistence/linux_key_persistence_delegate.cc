@@ -4,7 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
+#include <fcntl.h>
 #include <grp.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 
 #include <string>
@@ -17,6 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -73,13 +76,13 @@ bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
   locked_file_ = base::File(signing_key_path, base::File::FLAG_OPEN |
                                                   base::File::FLAG_READ |
                                                   base::File::FLAG_WRITE);
-
-  if (locked_file_ && !locked_file_.value().IsValid() &&
-      (locked_file_.value().Lock(base::File::LockMode::kExclusive) !=
-       base::File::FILE_OK))
+  if (!locked_file_ || !locked_file_->IsValid() ||
+      HANDLE_EINTR(flock(locked_file_->GetPlatformFile(), LOCK_EX | LOCK_NB)) ==
+          -1) {
     return LogFailure(
         "Device trust key rotation failed. Could not acquire lock on the "
         "signing key storage.");
+  }
 
   int mode;
   if (!base::GetPosixFilePermissions(signing_key_path, &mode))
@@ -134,14 +137,6 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
           : LogFailure(
                 "Device trust key rotation failed. Could not write to the "
                 "signing key storage.");
-
-  // TODO(b/225163677): File gets unlocked after being written to.
-  if (locked_file_ && !locked_file_.value().IsValid() &&
-      (locked_file_.value().Lock(base::File::LockMode::kExclusive) !=
-       base::File::FILE_OK))
-    return LogFailure(
-        "Device trust key rotation failed. Could not reacquire lock on the "
-        "signing key storage.");
 
   return write_result;
 }
