@@ -4,29 +4,39 @@
 
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 
+#include <initializer_list>
 #include <memory>
+#include <utility>
 
-#include "base/command_line.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/scoped_observation.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
-#include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/traits_bag.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -78,37 +88,20 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    provider->SetDefaultFakeSubsystems();
+    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
     install_manager_observer_ =
-        std::make_unique<TestInstallManagerObserver>(install_manager_.get());
-    fake_registry_controller_->SetUp(profile());
-    icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), base::MakeRefCounted<FileUtilsWrapper>());
-    policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
-    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
-    finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
+        std::make_unique<TestInstallManagerObserver>(install_manager.get());
+    provider->SetInstallManager(std::move(install_manager));
+    provider->SetInstallFinalizer(
+        std::make_unique<WebAppInstallFinalizer>(profile()));
 
-    icon_manager_->SetSubsystems(&registrar(), &install_manager());
-    finalizer_->SetSubsystems(
-        &install_manager(), &registrar(), ui_manager_.get(),
-        &fake_registry_controller_->sync_bridge(),
-        &fake_registry_controller_->os_integration_manager(),
-        icon_manager_.get(), policy_manager_.get(),
-        &fake_registry_controller_->translation_manager());
-    fake_registry_controller_->Init();
-    finalizer_->Start();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
     install_manager_observer_.reset();
-    finalizer_.reset();
-    ui_manager_.reset();
-    policy_manager_.reset();
-    icon_manager_.reset();
-    fake_registry_controller_.reset();
-    install_manager_.reset();
     WebAppTest::TearDown();
   }
 
@@ -141,25 +134,21 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     file_handlers->push_back(std::move(file_handler));
   }
 
-  WebAppInstallFinalizer& finalizer() { return *finalizer_; }
-  WebAppRegistrar& registrar() {
-    return fake_registry_controller_->registrar();
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
+  WebAppInstallFinalizer& finalizer() { return provider().install_finalizer(); }
+  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppInstallManager& install_manager() {
+    return provider().install_manager();
   }
-  WebAppInstallManager& install_manager() const { return *install_manager_; }
 
  protected:
   FakeOsIntegrationManager& os_integration_manager() {
-    return fake_registry_controller_->os_integration_manager();
+    return static_cast<FakeOsIntegrationManager&>(
+        provider().os_integration_manager());
   }
-  std::unique_ptr<WebAppInstallFinalizer> finalizer_;
   std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
 
  private:
-  std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
-  std::unique_ptr<WebAppIconManager> icon_manager_;
-  std::unique_ptr<WebAppPolicyManager> policy_manager_;
-  std::unique_ptr<WebAppUiManager> ui_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -259,7 +248,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
   base::RunLoop runloop;
-  finalizer_->FinalizeUpdate(
+  finalizer().FinalizeUpdate(
       *info,
       base::BindLambdaForTesting(
           [&](const web_app::AppId& app_id, webapps::InstallResultCode code,
@@ -394,7 +383,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
       CreateFileHandlersFromManifest(file_handlers, info->start_url);
 
   base::RunLoop runloop;
-  finalizer_->FinalizeUpdate(
+  finalizer().FinalizeUpdate(
       *info,
       base::BindLambdaForTesting([&](const web_app::AppId& app_id,
                                      webapps::InstallResultCode code,

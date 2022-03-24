@@ -29,6 +29,7 @@ class WebAppTranslationManager;
 class WebApp;
 class WebAppPolicyManager;
 
+// Deprecated: Prefer to use `FakeWebAppProvider::SetDefaultFakeSubsystems()`.
 class FakeWebAppRegistryController : public SyncInstallDelegate {
  public:
   FakeWebAppRegistryController();
