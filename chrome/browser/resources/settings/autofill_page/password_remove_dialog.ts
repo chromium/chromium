@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './avatar_icon.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -30,15 +31,19 @@ import {getTemplate} from './password_remove_dialog.html.js';
 export type PasswordRemoveDialogPasswordsRemovedEvent =
     CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
 
-interface PasswordRemoveDialogElement {
+export interface PasswordRemoveDialogElement {
   $: {
     dialog: CrDialogElement,
+    removeButton: HTMLElement,
+    removeFromAccountCheckbox: CrCheckboxElement,
+    removeFromDeviceCheckbox: CrCheckboxElement,
   };
 }
 
 const PasswordRemoveDialogElementBase = I18nMixin(PolymerElement);
 
-class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
+export class PasswordRemoveDialogElement extends
+    PasswordRemoveDialogElementBase {
   static get is() {
     return 'password-remove-dialog';
   }
@@ -132,6 +137,12 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
     return this.i18nAdvanced(
         'passwordRemoveDialogBody',
         {substitutions: [this.duplicatedPassword.urls.shown], tags: ['b']});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-remove-dialog': PasswordRemoveDialogElement;
   }
 }
 

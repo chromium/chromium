@@ -31,13 +31,14 @@ import './passwords_shared_css.js';
 import './avatar_icon.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -56,7 +57,7 @@ import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mix
 import {MultiStoreExceptionEntry} from './multi_store_exception_entry.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
-import {AddCredentialFromSettingsUserInteractions} from './password_edit_dialog.js';
+import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
@@ -78,8 +79,31 @@ type FocusConfig = Map<string, string|(() => void)>;
 
 export interface PasswordsSectionElement {
   $: {
+    accountEmail: HTMLElement,
+    accountStorageButtonsContainer: HTMLElement,
+    accountStorageOptInBody: HTMLElement,
+    accountStorageOptOutBody: HTMLElement,
+    addPasswordDialog: PasswordEditDialogElement,
+    checkPasswordLeakCount: HTMLElement,
+    checkPasswordLeakDescription: HTMLElement,
+    checkPasswordWarningIcon: HTMLElement,
+    checkPasswordsBannerContainer: HTMLElement,
+    checkPasswordsButtonRow: HTMLElement,
+    checkPasswordsLinkRow: HTMLElement,
+    devicePasswordsLink: HTMLElement,
     exportImportMenu: CrActionMenuElement,
+    manageLink: HTMLElement,
+    menuEditPassword: HTMLElement,
+    menuExportPassword: HTMLElement,
+    noExceptionsLabel: HTMLElement,
+    noPasswordsLabel: HTMLElement,
+    optInToAccountStorageButton: HTMLElement,
+    optOutOfAccountStorageButton: HTMLElement,
+    passwordExceptionsList: HTMLElement,
+    passwordList: DomRepeat,
     passwordsListHandler: PasswordsListHandlerElement,
+    savedPasswordsHeaders: HTMLElement,
+    trustedVaultBanner: CrLinkRowElement,
   };
 }
 

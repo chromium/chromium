@@ -88,6 +88,7 @@ export {PasswordListItemElement} from './autofill_page/password_list_item.js';
 export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
 export {PasswordMoveToAccountDialogElement} from './autofill_page/password_move_to_account_dialog.js';
 export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
+export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialog.js';
 export {PasswordsDeviceSectionElement} from './autofill_page/passwords_device_section.js';
 export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
 export {PasswordsSectionElement} from './autofill_page/passwords_section.js';

@@ -55,7 +55,11 @@ export interface PasswordsListHandlerElement {
   $: {
     copyToast: CrToastElement,
     menu: CrActionMenuElement,
+    menuCopyPassword: HTMLElement,
+    menuEditPassword: HTMLElement,
     menuMovePasswordToAccount: HTMLElement,
+    menuRemovePassword: HTMLElement,
+    removalNotification: HTMLElement,
     removalToast: CrToastElement,
   };
 }
