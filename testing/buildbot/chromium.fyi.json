@@ -80426,6 +80426,15 @@
       }
     ]
   },
+  "linux-chromeos-annotator-rel": {
+    "scripts": [
+      {
+        "name": "test_traffic_annotation_auditor",
+        "script": "test_traffic_annotation_auditor.py",
+        "swarming": {}
+      }
+    ]
+  },
   "linux-chromeos-code-coverage": {
     "additional_compile_targets": [
       "gn_all"
