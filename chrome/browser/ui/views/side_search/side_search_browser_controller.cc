@@ -340,6 +340,9 @@ void SideSearchBrowserController::DidFinishNavigation(
   // be shown.
   auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
       navigation_handle->GetWebContents());
+  if (!tab_contents_helper)
+    return;
+
   if (GetSidePanelToggledOpen() &&
       !tab_contents_helper->CanShowSidePanelForCommittedNavigation()) {
     CloseSidePanel();
@@ -364,12 +367,14 @@ void SideSearchBrowserController::UpdateSidePanelForContents(
   // Ensure that the controller acts as the delegate only to the currently
   // active contents.
   if (old_contents) {
-    SideSearchTabContentsHelper::FromWebContents(old_contents)
-        ->SetDelegate(nullptr);
+    auto* helper = SideSearchTabContentsHelper::FromWebContents(old_contents);
+    if (helper)
+      helper->SetDelegate(nullptr);
   }
   if (new_contents) {
-    SideSearchTabContentsHelper::FromWebContents(new_contents)
-        ->SetDelegate(weak_factory_.GetWeakPtr());
+    auto* helper = SideSearchTabContentsHelper::FromWebContents(new_contents);
+    if (helper)
+      helper->SetDelegate(weak_factory_.GetWeakPtr());
   }
 
   Observe(new_contents);
@@ -413,10 +418,12 @@ void SideSearchBrowserController::ToggleSidePanel() {
 
 bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
   auto* active_contents = browser_view_->GetActiveWebContents();
-  return active_contents
-             ? SideSearchTabContentsHelper::FromWebContents(active_contents)
-                   ->toggled_open()
-             : false;
+  if (!active_contents)
+    return false;
+
+  const auto* helper =
+      SideSearchTabContentsHelper::FromWebContents(active_contents);
+  return helper ? helper->toggled_open() : false;
 }
 
 void SideSearchBrowserController::SidePanelCloseButtonPressed() {
@@ -458,9 +465,10 @@ void SideSearchBrowserController::CloseSidePanel(
 void SideSearchBrowserController::ClobberAllInCurrentBrowser() {
   auto* tab_strip_model = browser_view_->browser()->tab_strip_model();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    SideSearchTabContentsHelper::FromWebContents(
-        tab_strip_model->GetWebContentsAt(i))
-        ->set_toggled_open(false);
+    auto* helper = SideSearchTabContentsHelper::FromWebContents(
+        tab_strip_model->GetWebContentsAt(i));
+    if (helper)
+      helper->set_toggled_open(false);
   }
 }
 
@@ -468,16 +476,21 @@ void SideSearchBrowserController::ClearSideContentsCacheForActiveTab() {
   web_view_->SetWebContents(nullptr);
 
   if (auto* active_contents = browser_view_->GetActiveWebContents()) {
-    SideSearchTabContentsHelper::FromWebContents(active_contents)
-        ->ClearSidePanelContents();
+    auto* helper =
+        SideSearchTabContentsHelper::FromWebContents(active_contents);
+    if (helper)
+      helper->ClearSidePanelContents();
   }
 }
 
 void SideSearchBrowserController::SetSidePanelToggledOpen(bool toggled_open) {
   if (auto* active_contents = browser_view_->GetActiveWebContents()) {
-    SideSearchTabContentsHelper::FromWebContents(active_contents)
-        ->set_toggled_open(toggled_open);
-    side_search::MaybeSaveSideSearchTabSessionData(active_contents);
+    auto* helper =
+        SideSearchTabContentsHelper::FromWebContents(active_contents);
+    if (helper) {
+      helper->set_toggled_open(toggled_open);
+      side_search::MaybeSaveSideSearchTabSessionData(active_contents);
+    }
   }
 }
 
@@ -497,6 +510,11 @@ void SideSearchBrowserController::UpdateSidePanel() {
   // WebContents associated with the active tab.
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(active_contents);
+
+  // Early return if the tab helper for the active tab is not defined
+  // (crbug.com/1307908).
+  if (!tab_contents_helper)
+    return;
 
   const bool can_show_side_panel_for_page =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation();

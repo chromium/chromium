@@ -52,6 +52,9 @@ void SideSearchIconView::UpdateImpl() {
   // TODO(tluk): Setup conditions for `AnimateIn()`.
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(active_contents);
+  if (!tab_contents_helper)
+    return;
+
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
       !tab_contents_helper->toggled_open();
