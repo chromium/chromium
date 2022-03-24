@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "observers/use_counter_page_load_metrics_observer_unittest.cc",
     "page_load_metrics_memory_tracker_unittest.cc",
     "page_load_metrics_util_unittest.cc",
+    "page_load_tracker_unittest.cc",
     "resource_tracker_unittest.cc",
     "responsiveness_metrics_normalization_unittest.cc",
   ]

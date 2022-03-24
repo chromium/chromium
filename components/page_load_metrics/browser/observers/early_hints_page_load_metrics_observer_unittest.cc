@@ -55,7 +55,6 @@ class EarlyHintsPageLoadMetricsObserverTest
   }
 };
 
-// TODO(https://crbug.com/1301880): Add tests for other PageTypes.
 TEST_F(EarlyHintsPageLoadMetricsObserverTest, PageType) {
   NavigateAndCommit(GURL(kTestUrl));
   PopulateTimingForHistograms();
