@@ -52594,6 +52594,7 @@ from previous Chrome versions.
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
+  <int value="-1522304497" label="kVirtualKeyboardMultitouch:enabled"/>
   <int value="-1521544926" label="OmniboxPreserveLongerShortcutsText:disabled"/>
   <int value="-1521339691" label="UseGles2ForOopR:disabled"/>
   <int value="-1521160841" label="DismissNtpPromos:enabled"/>
@@ -56035,6 +56036,7 @@ from previous Chrome versions.
   <int value="840057845" label="HardwareMediaKeyHandling:enabled"/>
   <int value="840222947"
       label="AutofillEnableOfferNotificationForPromoCodes:enabled"/>
+  <int value="840372756" label="kVirtualKeyboardMultitouch:disabled"/>
   <int value="841098208" label="ThrottleForegroundTimers:enabled"/>
   <int value="841276069" label="ChromeHomeDoodle:disabled"/>
   <int value="841343322" label="disable-new-korean-ime"/>

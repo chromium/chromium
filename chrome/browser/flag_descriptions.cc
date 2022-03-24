@@ -5388,6 +5388,10 @@ const char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
+const char kVirtualKeyboardMultitouchName[] = "Virtual Keyboard Multitouch";
+const char kVirtualKeyboardMultitouchDescription[] =
+    "Enables multitouch on the virtual keyboard.";
+
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";

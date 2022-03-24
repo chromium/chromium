@@ -576,6 +576,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "borderedkey", base::FeatureList::IsEnabled(
                          chromeos::features::kVirtualKeyboardBorderedKey)));
   features.Append(GenerateFeatureFlag(
+      "multitouch", base::FeatureList::IsEnabled(
+                        chromeos::features::kVirtualKeyboardMultitouch)));
+  features.Append(GenerateFeatureFlag(
       "systemchinesephysicaltyping",
       base::FeatureList::IsEnabled(
           chromeos::features::kSystemChinesePhysicalTyping)));

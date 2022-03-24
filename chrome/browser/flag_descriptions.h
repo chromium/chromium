@@ -3102,6 +3102,9 @@ extern const char kVirtualKeyboardBorderedKeyDescription[];
 extern const char kVirtualKeyboardDisabledName[];
 extern const char kVirtualKeyboardDisabledDescription[];
 
+extern const char kVirtualKeyboardMultitouchName[];
+extern const char kVirtualKeyboardMultitouchDescription[];
+
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 

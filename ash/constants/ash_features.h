@@ -540,7 +540,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUserActivityPrediction;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardBorderedKey;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWakeOnWifiAllowed;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVirtualKeyboardMultitouch;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kWakeOnWifiAllowed;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWallpaperWebUI;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperFullScreenPreview;
