@@ -505,13 +505,18 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
   }
 
   if (result.event_level_status() !=
-          AttributionTrigger::EventLevelResult::kInternalError ||
-      result.aggregatable_status() !=
-          AttributionTrigger::AggregatableResult::kInternalError) {
-    // Sources are changed here because storing a report can cause sources to be
-    // deleted or become associated with a dedup key.
+      AttributionTrigger::EventLevelResult::kInternalError) {
+    // Sources are changed here because storing an event-level report can
+    // cause sources to reach event-level attribution limit or become
+    // associated with a dedup key.
     NotifySourcesChanged();
     NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
+  }
+
+  if (result.aggregatable_status() ==
+      AttributionTrigger::AggregatableResult::kSuccess) {
+    NotifyReportsChanged(
+        AttributionReport::ReportType::kAggregatableAttribution);
   }
 
   for (auto& observer : observers_)
@@ -760,7 +765,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
   if (info.status != SendResult::Status::kSent &&
       info.status != SendResult::Status::kFailure &&
-      info.status != SendResult::Status::kDropped) {
+      info.status != SendResult::Status::kDropped &&
+      info.status != SendResult::Status::kFailedToAssemble) {
     return;
   }
 
