@@ -182,7 +182,7 @@ void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
   args[1].GetAsDictionary(&parent);
   CHECK(parent);
   const base::Value* obfuscated_gaia_id_value =
-      parent->FindKey(kObfuscatedGaiaIdKey);
+      parent->GetDict().Find(kObfuscatedGaiaIdKey);
   DCHECK(obfuscated_gaia_id_value);
   std::string obfuscated_gaia_id = obfuscated_gaia_id_value->GetString();
 
@@ -269,9 +269,9 @@ void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
     }
 
     base::DictionaryValue parent;
-    parent.SetStringKey("email", member.email);
-    parent.SetStringKey("displayName", member.display_name);
-    parent.SetStringKey(kObfuscatedGaiaIdKey, member.obfuscated_gaia_id);
+    parent.GetDict().Set("email", member.email);
+    parent.GetDict().Set("displayName", member.display_name);
+    parent.GetDict().Set(kObfuscatedGaiaIdKey, member.obfuscated_gaia_id);
 
     parents.Append(std::move(parent));
     profile_image_urls[member.obfuscated_gaia_id] =
@@ -295,7 +295,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
 
   for (auto& parent : parents.GetListDeprecated()) {
     const std::string* obfuscated_gaia_id =
-        parent.FindStringKey(kObfuscatedGaiaIdKey);
+        parent.GetDict().FindString(kObfuscatedGaiaIdKey);
     DCHECK(obfuscated_gaia_id);
     std::string profile_image;
     if (profile_images[*obfuscated_gaia_id].IsEmpty()) {
@@ -309,7 +309,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
       profile_image = webui::GetBitmapDataUrl(
           profile_images[*obfuscated_gaia_id].AsBitmap());
     }
-    parent.SetStringKey("profileImage", profile_image);
+    parent.GetDict().Set("profileImage", profile_image);
   }
 
   ResolveJavascriptCallback(base::Value(get_parents_callback_id_), parents);
@@ -329,7 +329,7 @@ void EduAccountLoginHandler::CreateReAuthProofTokenForParent(
         << "Could not get access token to create ReAuthProofToken for parent"
         << error.ToString();
     base::DictionaryValue result;
-    result.SetBoolKey("isWrongPassword", false);
+    result.GetDict().Set("isWrongPassword", false);
     RejectJavascriptCallback(base::Value(parent_signin_callback_id_), result);
     parent_signin_callback_id_.clear();
     return;
@@ -354,7 +354,7 @@ void EduAccountLoginHandler::OnReAuthProofTokenFailure(
   gaia_auth_fetcher_.reset();
 
   base::DictionaryValue result;
-  result.SetBoolKey(
+  result.GetDict().Set(
       "isWrongPassword",
       error == GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
   RejectJavascriptCallback(base::Value(parent_signin_callback_id_), result);

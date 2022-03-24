@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_message_handler.h"
 
 #include <stdint.h>
+
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -62,7 +65,7 @@ bool GetString(const base::Value& dict,
                base::StringPiece key,
                std::string* result) {
   CHECK(result);
-  const std::string* value = dict.FindStringKey(key);
+  const std::string* value = dict.GetDict().FindString(key);
   if (value) {
     *result = *value;
   }
@@ -176,15 +179,16 @@ void DeviceEmulatorMessageHandler::PowerObserver::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   base::DictionaryValue power_properties;
 
-  power_properties.SetIntKey("battery_percent", proto.battery_percent());
-  power_properties.SetIntKey("battery_state", proto.battery_state());
-  power_properties.SetIntKey("external_power", proto.external_power());
-  power_properties.SetIntKey("battery_time_to_empty_sec",
-                             proto.battery_time_to_empty_sec());
-  power_properties.SetIntKey("battery_time_to_full_sec",
-                             proto.battery_time_to_full_sec());
-  power_properties.SetStringKey("external_power_source_id",
-                                proto.external_power_source_id());
+  power_properties.GetDict().Set("battery_percent",
+                                 int(proto.battery_percent()));
+  power_properties.GetDict().Set("battery_state", int(proto.battery_state()));
+  power_properties.GetDict().Set("external_power", int(proto.external_power()));
+  power_properties.GetDict().Set("battery_time_to_empty_sec",
+                                 int(proto.battery_time_to_empty_sec()));
+  power_properties.GetDict().Set("battery_time_to_full_sec",
+                                 int(proto.battery_time_to_full_sec()));
+  power_properties.GetDict().Set("external_power_source_id",
+                                 proto.external_power_source_id());
 
   owner_->FireWebUIListener("power-properties-updated", power_properties);
 }
@@ -269,10 +273,12 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
       bluez::FakeBluetoothDeviceClient::kPairingActionFail);
 
   base::Value info(base::Value::Type::DICTIONARY);
-  info.SetKey("predefined_devices", std::move(predefined_devices));
-  info.SetKey("devices", std::move(devices));
-  info.SetKey("pairing_method_options", std::move(pairing_method_options));
-  info.SetKey("pairing_action_options", std::move(pairing_action_options));
+  info.GetDict().Set("predefined_devices", std::move(predefined_devices));
+  info.GetDict().Set("devices", std::move(devices));
+  info.GetDict().Set("pairing_method_options",
+                     std::move(pairing_method_options));
+  info.GetDict().Set("pairing_action_options",
+                     std::move(pairing_action_options));
 
   // Send the list of devices to the view.
   FireWebUIListener("bluetooth-info-updated", info);
@@ -307,11 +313,11 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
   CHECK(device_value.is_dict());
   const base::DictionaryValue& device_dict =
       base::Value::AsDictionaryValue(device_value);
-  audio_node.is_input = device_dict.FindBoolKey("isInput").value();
+  audio_node.is_input = device_dict.GetDict().FindBool("isInput").value();
   CHECK(GetString(device_dict, "deviceName", &audio_node.device_name));
   CHECK(GetString(device_dict, "type", &audio_node.type));
   CHECK(GetString(device_dict, "name", &audio_node.name));
-  audio_node.active = device_dict.FindBoolKey("active").value();
+  audio_node.active = device_dict.GetDict().FindBool("active").value();
 
   std::string tmp_id;
   CHECK(GetString(device_dict, "id", &tmp_id));
@@ -414,21 +420,21 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
     CHECK(val.is_dict());
     power_manager::PowerSupplyProperties_PowerSource* source =
         props.add_available_external_power_source();
-    const std::string* id = val.FindStringKey("id");
+    const std::string* id = val.GetDict().FindString("id");
     CHECK(id);
     source->set_id(*id);
-    const std::string* device_type = val.FindStringKey("type");
+    const std::string* device_type = val.GetDict().FindString("type");
     CHECK(device_type);
     bool dual_role = *device_type == "DualRoleUSB";
     source->set_active_by_default(!dual_role);
     if (dual_role)
       props.set_supports_dual_role_devices(true);
-    absl::optional<int> port = val.FindIntKey("port");
+    absl::optional<int> port = val.GetDict().FindInt("port");
     CHECK(port.has_value());
     source->set_port(
         static_cast<power_manager::PowerSupplyProperties_PowerSource_Port>(
             port.value()));
-    const std::string* power_level = val.FindStringKey("power");
+    const std::string* power_level = val.GetDict().FindString("power");
     CHECK(power_level);
     source->set_max_power(*power_level == "high" ? kPowerLevelHigh
                                                  : kPowerLevelLow);
@@ -569,12 +575,12 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   CHECK(GetString(device_dict, "pairingAuthToken", &props.pairing_auth_token));
   CHECK(GetString(device_dict, "pairingAction", &props.pairing_action));
 
-  absl::optional<int> class_value = device_dict.FindIntKey("classValue");
+  absl::optional<int> class_value = device_dict.GetDict().FindInt("classValue");
   CHECK(class_value);
   props.device_class = *class_value;
 
-  props.is_trusted = device_dict.FindBoolKey("isTrusted").value();
-  props.incoming = device_dict.FindBoolKey("incoming").value();
+  props.is_trusted = device_dict.GetDict().FindBool("isTrusted").value();
+  props.incoming = device_dict.GetDict().FindBool("incoming").value();
 
   // Create the device and store it in the FakeBluetoothDeviceClient's observed
   // list of devices.
@@ -593,27 +599,27 @@ base::Value DeviceEmulatorMessageHandler::GetDeviceInfo(
       fake_bluetooth_device_client_->GetPairingOptions(object_path);
 
   base::Value device(base::Value::Type::DICTIONARY);
-  device.SetStringKey("path", object_path.value());
-  device.SetStringKey("name", props->name.value());
-  device.SetStringKey("alias", props->alias.value());
-  device.SetStringKey("address", props->address.value());
+  device.GetDict().Set("path", object_path.value());
+  device.GetDict().Set("name", props->name.value());
+  device.GetDict().Set("alias", props->alias.value());
+  device.GetDict().Set("address", props->address.value());
   if (options) {
-    device.SetStringKey("pairingMethod", options->pairing_method);
-    device.SetStringKey("pairingAuthToken", options->pairing_auth_token);
-    device.SetStringKey("pairingAction", options->pairing_action);
+    device.GetDict().Set("pairingMethod", options->pairing_method);
+    device.GetDict().Set("pairingAuthToken", options->pairing_auth_token);
+    device.GetDict().Set("pairingAction", options->pairing_action);
   } else {
-    device.SetStringKey("pairingMethod", "");
-    device.SetStringKey("pairingAuthToken", "");
-    device.SetStringKey("pairingAction", "");
+    device.GetDict().Set("pairingMethod", "");
+    device.GetDict().Set("pairingAuthToken", "");
+    device.GetDict().Set("pairingAction", "");
   }
-  device.SetIntKey("classValue", props->bluetooth_class.value());
-  device.SetBoolKey("isTrusted", props->trusted.value());
-  device.SetBoolKey("incoming", false);
+  device.GetDict().Set("classValue", int(props->bluetooth_class.value()));
+  device.GetDict().Set("isTrusted", bool(props->trusted.value()));
+  device.GetDict().Set("incoming", false);
 
   base::Value uuids(base::Value::Type::LIST);
   for (const std::string& uuid : props->uuids.value())
     uuids.Append(uuid);
-  device.SetKey("uuids", std::move(uuids));
+  device.GetDict().Set("uuids", std::move(uuids));
 
   return device;
 }
@@ -665,12 +671,12 @@ void DeviceEmulatorMessageHandler::UpdateAudioNodes() {
        chromeos::FakeCrasAudioClient::Get()->node_list()) {
     base::Value audio_node(base::Value::Type::DICTIONARY);
 
-    audio_node.SetBoolKey("isInput", node.is_input);
-    audio_node.SetStringKey("id", base::NumberToString(node.id));
-    audio_node.SetStringKey("deviceName", node.device_name);
-    audio_node.SetStringKey("type", node.type);
-    audio_node.SetStringKey("name", node.name);
-    audio_node.SetBoolKey("active", node.active);
+    audio_node.GetDict().Set("isInput", node.is_input);
+    audio_node.GetDict().Set("id", base::NumberToString(node.id));
+    audio_node.GetDict().Set("deviceName", node.device_name);
+    audio_node.GetDict().Set("type", node.type);
+    audio_node.GetDict().Set("name", node.name);
+    audio_node.GetDict().Set("active", node.active);
 
     audio_nodes.Append(std::move(audio_node));
   }

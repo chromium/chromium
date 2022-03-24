@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -134,7 +135,7 @@ base::Value FormatJsonDict(const base::StringPiece input,
 base::Value GetByProfileId(const base::Value& all_processes,
                            const std::string& profile_id) {
   for (const base::Value& process : all_processes.GetListDeprecated()) {
-    if (profile_id == *process.FindStringKey("certProfileId"))
+    if (profile_id == *process.GetDict().FindString("certProfileId"))
       return process.Clone();
   }
   return base::Value();
@@ -202,7 +203,8 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
       return;
     out_profile_ids->clear();
     for (const base::Value& process : out_all_processes->GetListDeprecated()) {
-      const std::string* profile_id = process.FindStringKey("certProfileId");
+      const std::string* profile_id =
+          process.GetDict().FindString("certProfileId");
       ASSERT_TRUE(profile_id);
       out_profile_ids->push_back(*profile_id);
     }
