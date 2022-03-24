@@ -548,6 +548,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   // <if expr="chromeos_ash or chromeos_lacros">
+  getTokenRequestManagerForTest(): BlockingRequestManager {
+    return this.tokenRequestManager_;
+  }
+
   /**
    * When this event fired, it means that the password-prompt-dialog succeeded
    * in creating a fresh token in the quickUnlockPrivate API. Because new tokens

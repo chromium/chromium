@@ -13,8 +13,9 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BlockingRequestManager} from 'chrome://settings/lazy_load.js';
-import {MultiStorePasswordUiEntry, PasswordManagerImpl} from 'chrome://settings/settings.js';
-import {MockTimer} from 'chrome://test/mock_timer.js';
+import {PasswordManagerImpl} from 'chrome://settings/settings.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createPasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_test.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -24,15 +25,34 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 suite('PasswordsSection_Cros', function() {
   /**
    * Promise resolved when an auth token request is made.
-   * @type {Promise}
    */
-  let requestPromise = null;
+  let requestPromise: Promise<void>;
 
   /**
    * Promise resolved when a saved password is retrieved.
-   * @type {Promise}
    */
-  let passwordPromise = null;
+  let passwordPromise: Promise<void>;
+
+  class PasswordItem {
+    private password_: string = '';
+    entry: chrome.passwordsPrivate.PasswordUiEntry = createPasswordEntry();
+    resolve: (p: void) => void;
+
+    constructor(callback: (p: void) => void) {
+      this.resolve = callback;
+    }
+
+    set password(newPassword: string) {
+      if (newPassword && newPassword !== this.password_) {
+        this.resolve();
+      }
+      this.password_ = newPassword;
+    }
+
+    get password(): string {
+      return this.password_;
+    }
+  }
 
   /**
    * Implementation of PasswordSectionElementFactory with parameters that help
@@ -40,40 +60,38 @@ suite('PasswordsSection_Cros', function() {
    */
   class CrosPasswordSectionElementFactory extends
       PasswordSectionElementFactory {
+    tokenRequestManager: {request: (p: any) => void}|null;
+    passwordItem: PasswordItem|null;
+
     /**
-     * @param {HTMLDocument} document The test's |document| object.
-     * @param {request: Function} tokenRequestManager Fake for
+     * @param document The test's |document| object.
+     * @param tokenRequestManager Fake for
      *     BlockingRequestManager provided to subelements of password-section
      *     that normally have their tokenRequestManager property bound to the
      *     password section's tokenRequestManager_ property. Note:
      *     Tests of the password-section element need to use the full
      *     implementation, which is created by default when the element is
      *     attached.
-     * @param {MultiStorePasswordUiEntry} passwordItem
      */
-    constructor(document, tokenRequestManager, passwordItem) {
+    constructor(
+        document: HTMLDocument,
+        tokenRequestManager: {request: (p: any) => void}|null,
+        passwordItem: PasswordItem|null) {
       super(document);
       this.tokenRequestManager = tokenRequestManager;
       this.passwordItem = passwordItem;
     }
 
-    /** @override */
-    createPasswordsSection(passwordManager) {
+    override createPasswordsSection(
+        passwordManager: TestPasswordManagerProxy,
+        _passwordList: chrome.passwordsPrivate.PasswordUiEntry[],
+        _exceptionList: chrome.passwordsPrivate.ExceptionEntry[]) {
       return super.createPasswordsSection(passwordManager, [], []);
     }
 
-    /** @override */
-    createPasswordEditDialog() {
-      return this.decorateShowPasswordElement_('password-edit-dialog');
-    }
-
-    /** @override */
-    createPasswordListItem() {
-      return this.decorateShowPasswordElement_('password-list-item');
-    }
-
-    /** @override */
-    createExportPasswordsDialog(passwordManager, overrideRequestManager) {
+    override createExportPasswordsDialog(
+        passwordManager: TestPasswordManagerProxy,
+        overrideRequestManager?: boolean) {
       const dialog = super.createExportPasswordsDialog(passwordManager);
       dialog.tokenRequestManager = new BlockingRequestManager();
       return overrideRequestManager ?
@@ -81,68 +99,38 @@ suite('PasswordsSection_Cros', function() {
               dialog, {tokenRequestManager: this.tokenRequestManager}) :
           dialog;
     }
-
-    /**
-     * Creates an element with ShowPasswordBehavior, decorates it with
-     * with the testing data provided in the constructor, and attaches it to
-     * |this.document|.
-     * @param {string} showPasswordElementName Tag name of a Polymer element
-     *     with ShowPasswordBehavior.
-     * @return {!HTMLElement} Element decorated with test data.
-     */
-    decorateShowPasswordElement_(showPasswordElementName) {
-      const element = this.document.createElement(showPasswordElementName);
-      element.item = this.passwordItem;
-      element.tokenRequestManager = this.tokenRequestManager;
-      this.document.body.appendChild(element);
-      flush();
-      return element;
-    }
   }
 
   function fail() {
     throw new Error();
   }
 
-  /** @type {TestPasswordManagerProxy} */
-  let passwordManager = null;
+  let passwordManager: TestPasswordManagerProxy;
 
-  /** @type {CrosPasswordSectionElementFactory} */
-  let elementFactory = null;
+  let elementFactory: CrosPasswordSectionElementFactory;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
 
     // Define a fake BlockingRequestManager to track when a token request
     // comes in by resolving requestPromise.
-    let requestManager;
+    let requestManager: {request: (p: any) => void}|null = null;
     requestPromise = new Promise(resolve => {
       requestManager = {request: resolve};
     });
 
     /**
-     * @type {ShowPasswordBehavior.UiEntryWithPassword} Password item (i.e.
+     *      Password item (i.e.
      *      entry with password text) that overrides the password property
      *      with get/set to track receipt of a saved password and make that
      *      information available by resolving |passwordPromise|.
      */
-    let passwordItem;
+    let passwordItem: PasswordItem|null = null;
     passwordPromise = new Promise(resolve => {
-      passwordItem = {
-        entry: createPasswordEntry(),
-        set password(newPassword) {
-          if (newPassword && newPassword !== this.password_) {
-            resolve(newPassword);
-          }
-          this.password_ = newPassword;
-        },
-        get password() {
-          return this.password_;
-        }
-      };
+      passwordItem = new PasswordItem(resolve);
     });
 
     elementFactory = new CrosPasswordSectionElementFactory(
@@ -155,98 +143,27 @@ suite('PasswordsSection_Cros', function() {
     passwordPromise.then(fail);
     const exportDialog =
         elementFactory.createExportPasswordsDialog(passwordManager, true);
-    exportDialog.shadowRoot.querySelector('#exportPasswordsButton').click();
+    exportDialog.shadowRoot!
+        .querySelector<HTMLElement>('#exportPasswordsButton')!.click();
     return requestPromise;
   });
-
-  // Note (rbpotter): this passes locally, but may still be flaky (see
-  // https://www.crbug.com/1021474)
-  test.skip(
-      'list-item does not request token if it gets password to show',
-      function() {
-        requestPromise.then(fail);
-        const passwordListItem = elementFactory.createPasswordListItem();
-        passwordManager.setPlaintextPassword('password');
-        passwordListItem.shadowRoot.querySelector('#showPasswordButton')
-            .click();
-        return passwordPromise;
-      });
-
-  // Note (rbpotter): this fails locally, possibly out of date
-  test.skip(
-      'list-item requests token if it does not get password to show',
-      function() {
-        passwordPromise.then(fail);
-        const passwordListItem = elementFactory.createPasswordListItem();
-        passwordManager.setPlaintextPassword('');
-        passwordListItem.shadowRoot.querySelector('#showPasswordButton')
-            .click();
-        return requestPromise;
-      });
 
   // TODO(crbug.com/1274569): add test for edit-dialog requesting token when
   // switching from ADD to EDIT mode when other tests are fixed.
 
-  // Note (rbpotter): this passes locally, but may still be flaky (see
-  // https://www.crbug.com/1021474)
-  test.skip(
-      'edit-dialog does not request token if it gets password to show',
-      function() {
-        requestPromise.then(fail);
-        const passwordEditDialog = elementFactory.createPasswordEditDialog();
-        passwordManager.setPlaintextPassword('password');
-        passwordEditDialog.shadowRoot.querySelector('#showPasswordButton')
-            .click();
-        return passwordPromise;
-      });
-
-  // Note (rbpotter): this fails locally, possibly out of date
-  test.skip(
-      'edit-dialog requests token if it does not get password to show',
-      function() {
-        passwordPromise.then(fail);
-        const passwordEditDialog = elementFactory.createPasswordEditDialog();
-        passwordManager.setPlaintextPassword('');
-        passwordEditDialog.shadowRoot.querySelector('#showPasswordButton')
-            .click();
-        return requestPromise;
-      });
 
   // Note (rbpotter): this passes locally, but may still be flaky (see
   // https://www.crbug.com/1021474)
   test.skip('password-prompt-dialog appears on auth token request', function() {
     const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager);
-    assertTrue(!passwordsSection.shadowRoot.querySelector(
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertTrue(!passwordsSection.shadowRoot!.querySelector(
         'settings-password-prompt-dialog'));
-    passwordsSection.tokenRequestManager_.request(fail);
+    passwordsSection.getTokenRequestManagerForTest().request(fail);
     flush();
-    assertTrue(!!passwordsSection.shadowRoot.querySelector(
+    assertTrue(!!passwordsSection.shadowRoot!.querySelector(
         'settings-password-prompt-dialog'));
   });
-
-  // Note (rbpotter): this fails locally, possibly out of date
-  test.skip(
-      'password-section resolves request on auth token receipt',
-      function(done) {
-        const passwordsSection =
-            elementFactory.createPasswordsSection(passwordManager);
-        passwordsSection.tokenRequestManager_.request(done);
-        passwordsSection.authToken_ = 'auth token';
-      });
-
-  // Note (rbpotter): this fails locally, possibly out of date
-  test.skip(
-      'password-section only triggers callback on most recent request',
-      function(done) {
-        const passwordsSection =
-            elementFactory.createPasswordsSection(passwordManager);
-        // Make request that SHOULD NOT be resolved.
-        passwordsSection.tokenRequestManager_.request(fail);
-        // Make request that should be resolved.
-        passwordsSection.tokenRequestManager_.request(done);
-        passwordsSection.authToken_ = 'auth token';
-      });
 
   // Note (rbpotter): this fails locally, possibly out of date
   test.skip(
@@ -256,11 +173,11 @@ suite('PasswordsSection_Cros', function() {
         const passwordsSection = document.createElement('passwords-section');
         document.body.appendChild(passwordsSection);
         flush();
-        assertTrue(!passwordsSection.shadowRoot.querySelector(
+        assertTrue(!passwordsSection.shadowRoot!.querySelector(
             'settings-password-prompt-dialog'));
-        passwordsSection.tokenRequestManager_.request(() => {
+        passwordsSection.getTokenRequestManagerForTest().request(() => {
           flush();
-          assertTrue(!passwordsSection.shadowRoot.querySelector(
+          assertTrue(!passwordsSection.shadowRoot!.querySelector(
               'settings-password-prompt-dialog'));
           done();
         });

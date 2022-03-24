@@ -137,7 +137,7 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
     "system_page_tests.ts",
   ]
 } else {
-  non_preprocessed_files += [ "passwords_section_test_cros.js" ]
+  non_preprocessed_files += [ "passwords_section_test_cros.ts" ]
 }
 
 if (!is_mac && !is_chromeos_ash) {
