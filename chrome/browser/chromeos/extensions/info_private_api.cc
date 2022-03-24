@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
@@ -55,6 +56,9 @@ const char kPropertyCustomizationID[] = "customizationId";
 
 // Key which corresponds to the oem_device_requisition setting.
 const char kPropertyDeviceRequisition[] = "deviceRequisition";
+
+// Key which corresponds to the isMeetDevice property in JS.
+const char kPropertyMeetDevice[] = "isMeetDevice";
 
 // Key which corresponds to the home provider property.
 const char kPropertyHomeProvider[] = "homeProvider";
@@ -307,6 +311,14 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
     provider->GetMachineStatistic(chromeos::system::kOemDeviceRequisitionKey,
                                   &device_requisition);
     return std::make_unique<base::Value>(device_requisition);
+  }
+
+  if (property_name == kPropertyMeetDevice) {
+#if BUILDFLAG(PLATFORM_CFM)
+    return std::make_unique<base::Value>(true);
+#else
+    return std::make_unique<base::Value>(false);
+#endif
   }
 
   if (property_name == kPropertyHomeProvider) {

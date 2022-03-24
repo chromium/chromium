@@ -103,6 +103,7 @@ chrome.test.getConfig(function(config) {
       // Generated chrome.chromeosInfoPrivate.get() tests.
       tests = generateTestsForKeys([
         'hwid',
+        'isMeetDevice',
         'customizationId',
         'homeProvider',
         'initialLocale',
