@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/force_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -54,17 +54,17 @@
     // access point will still be used. The forced sign-in screen may also be
     // presented outside of the FRE when the user has to be prompted to sign-in
     // because of the policy.
-    signin_metrics::AccessPoint accessPoint =
-        IsForceSignInEnabled()
-            ? signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
-            : signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-
-    _logger = [[FirstRunSigninLogger alloc]
-          initWithAccessPoint:accessPoint
-                  promoAction:signin_metrics::PromoAction::
-                                  PROMO_ACTION_NO_SIGNIN_PROMO
-        accountManagerService:accountManagerService];
-
+    if (IsForceSignInEnabled()) {
+      _logger = [[ForceSigninLogger alloc]
+            initWithPromoAction:signin_metrics::PromoAction::
+                                    PROMO_ACTION_NO_SIGNIN_PROMO
+          accountManagerService:accountManagerService];
+    } else {
+      _logger = [[FirstRunSigninLogger alloc]
+            initWithPromoAction:signin_metrics::PromoAction::
+                                    PROMO_ACTION_NO_SIGNIN_PROMO
+          accountManagerService:accountManagerService];
+    }
     [_logger logSigninStarted];
   }
   return self;

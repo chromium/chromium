@@ -85,9 +85,7 @@
             self, _accountManagerService);
 
     _logger = [[FirstRunSigninLogger alloc]
-          initWithAccessPoint:signin_metrics::AccessPoint::
-                                  ACCESS_POINT_START_PAGE
-                  promoAction:signin_metrics::PromoAction::
+          initWithPromoAction:signin_metrics::PromoAction::
                                   PROMO_ACTION_NO_SIGNIN_PROMO
         accountManagerService:accountManagerService];
 

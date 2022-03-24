@@ -75,8 +75,7 @@ using signin_metrics::PromoAction;
                                                             (Browser*)browser {
   DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   UserSigninLogger* logger = [[FirstRunSigninLogger alloc]
-        initWithAccessPoint:AccessPoint::ACCESS_POINT_START_PAGE
-                promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+        initWithPromoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browser->GetBrowserState())];
   return [[UserSigninCoordinator alloc]
