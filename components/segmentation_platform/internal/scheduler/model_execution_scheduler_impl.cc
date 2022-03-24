@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -72,7 +73,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_id)));
   model_execution_manager_->ExecuteModel(
-      segment_info, outstanding_requests_[segment_id].callback());
+      segment_info, nullptr, outstanding_requests_[segment_id].callback());
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
@@ -126,6 +127,7 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
     VLOG(1) << "Segmentation model not executed since it has fresh results.";
     stats::RecordModelExecutionStatus(
         segment_info.segment_id(),
+        /*default_provider=*/false,
         ModelExecutionStatus::kSkippedHasFreshResults);
     return false;
   }
@@ -136,6 +138,7 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
     VLOG(1) << "Segmentation model not executed since results are not expired.";
     stats::RecordModelExecutionStatus(
         segment_info.segment_id(),
+        /*default_provider=*/false,
         ModelExecutionStatus::kSkippedResultNotExpired);
     return false;
   }
@@ -145,6 +148,7 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
           segment_info.model_metadata())) {
     stats::RecordModelExecutionStatus(
         segment_info.segment_id(),
+        /*default_provider=*/false,
         ModelExecutionStatus::kSkippedNotEnoughSignals);
     VLOG(1) << "Segmentation model not executed since metadata requirements "
                "not met.";
@@ -170,7 +174,9 @@ void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
     // TODO(ssid): Consider removing this enum, this is the only case where the
     // execution status is recorded twice for the same execution request.
     stats::RecordModelExecutionStatus(
-        segment_id, ModelExecutionStatus::kFailedToSaveResultAfterSuccess);
+        segment_id,
+        /*default_provider=*/false,
+        ModelExecutionStatus::kFailedToSaveResultAfterSuccess);
     return;
   }
 

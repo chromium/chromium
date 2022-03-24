@@ -68,6 +68,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
   // ModelExecutionManager overrides.
   void ExecuteModel(const proto::SegmentInfo& segment_info,
+                    ModelProvider* explicit_provider,
                     ModelExecutionCallback callback) override;
 
  private:

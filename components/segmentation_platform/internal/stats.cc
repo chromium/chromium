@@ -468,11 +468,19 @@ void RecordModelExecutionSaveResult(OptimizationTarget segment_id,
 }
 
 void RecordModelExecutionStatus(OptimizationTarget segment_id,
+                                bool default_provider,
                                 ModelExecutionStatus status) {
-  base::UmaHistogramEnumeration(
-      "SegmentationPlatform.ModelExecution.Status." +
-          OptimizationTargetToHistogramVariant(segment_id),
-      status);
+  if (!default_provider) {
+    base::UmaHistogramEnumeration(
+        "SegmentationPlatform.ModelExecution.Status." +
+            OptimizationTargetToHistogramVariant(segment_id),
+        status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "SegmentationPlatform.ModelExecution.DefaultProvider.Status." +
+            OptimizationTargetToHistogramVariant(segment_id),
+        status);
+  }
 }
 
 void RecordModelExecutionZeroValuePercent(OptimizationTarget segment_id,

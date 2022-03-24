@@ -257,6 +257,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SegmentationPlatform.ModelExecution.DefaultProvider.Status.{SegmentationModel}"
+    enum="SegmentationPlatformModelExecutionStatus" expires_after="2022-08-01">
+  <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the execution status after executing the {SegmentationModel}
+    segmentation model with default provider. Recorded every time a default
+    provider for {SegmentationModel} is executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
+<histogram
     name="SegmentationPlatform.ModelExecution.Duration.FeatureProcessing.{SegmentationModel}"
     units="ms" expires_after="2022-08-01">
   <owner>nyquist@chromium.org</owner>

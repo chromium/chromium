@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/callback_forward.h"
@@ -14,6 +15,8 @@ namespace segmentation_platform {
 namespace proto {
 class SegmentInfo;
 }  // namespace proto
+
+class ModelProvider;
 
 // The ModelExecutionManager is the core class for interacting with the ML
 // framework. The only requirement is to pass in the segment ID to execute the
@@ -38,7 +41,10 @@ class ModelExecutionManager {
 
   // Called to execute a given model. This assumes that data has been collected
   // for long enough for each of the individual ML features.
+  // If `explicit_provider` is set, then the execution will use it instead of
+  // the original provider.
   virtual void ExecuteModel(const proto::SegmentInfo& segment_info,
+                            ModelProvider* explicit_provider,
                             ModelExecutionCallback callback) = 0;
 
  protected:

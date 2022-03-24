@@ -77,6 +77,7 @@ struct ModelExecutionManagerImpl::ExecutionState {
   OptimizationTarget segment_id;
   int64_t model_version = 0;
   raw_ptr<ModelProvider> model_provider = nullptr;
+  bool is_explicit_provider = false;
   ModelExecutionCallback callback;
   std::vector<float> input_tensor;
   base::Time total_execution_start_time;
@@ -124,25 +125,33 @@ ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;
 
 void ModelExecutionManagerImpl::ExecuteModel(
     const proto::SegmentInfo& segment_info,
+    ModelProvider* explicit_provider,
     ModelExecutionCallback callback) {
   OptimizationTarget segment_id = segment_info.segment_id();
-  auto model_provider_it = model_providers_.find(segment_id);
-  DCHECK(model_provider_it != model_providers_.end());
-
-  ModelProvider& provider = *model_provider_it->second;
 
   // Create an ExecutionState that will stay with this request until it has been
   // fully processed.
   auto state = std::make_unique<ExecutionState>();
   state->segment_id = segment_id;
-  state->model_provider = &provider;
+
+  if (explicit_provider) {
+    state->model_provider = explicit_provider;
+    state->is_explicit_provider = true;
+  } else {
+    auto model_provider_it = model_providers_.find(segment_id);
+    DCHECK(model_provider_it != model_providers_.end());
+    state->model_provider = model_provider_it->second.get();
+    state->is_explicit_provider = false;
+  }
+  DCHECK(state->model_provider);
+
   state->callback = std::move(callback);
   state->total_execution_start_time = clock_->Now();
 
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::ExecuteModel", *state);
 
-  if (!provider.ModelAvailable()) {
+  if (!state->model_provider->ModelAvailable()) {
     RunModelExecutionCallback(std::move(state), 0,
                               ModelExecutionStatus::kSkippedModelNotReady);
     return;
@@ -184,11 +193,6 @@ void ModelExecutionManagerImpl::ExecuteModel(
     std::unique_ptr<ExecutionState> state) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::ExecuteModel", *state);
-  auto it = model_providers_.find(state->segment_id);
-  DCHECK(it != model_providers_.end());
-
-  ModelProvider* handler = (*it).second.get();
-
   if (VLOG_IS_ON(1)) {
     std::stringstream log_input;
     for (unsigned i = 0; i < state->input_tensor.size(); ++i)
@@ -202,7 +206,8 @@ void ModelExecutionManagerImpl::ExecuteModel(
   stats::RecordModelExecutionZeroValuePercent(state->segment_id,
                                               const_input_tensor);
   state->model_execution_start_time = clock_->Now();
-  handler->ExecuteModelWithInput(
+  ModelProvider* model = state->model_provider;
+  model->ExecuteModelWithInput(
       const_input_tensor,
       base::BindOnce(&ModelExecutionManagerImpl::OnModelExecutionComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
@@ -244,7 +249,8 @@ void ModelExecutionManagerImpl::RunModelExecutionCallback(
   stats::RecordModelExecutionDurationTotal(
       state->segment_id, status,
       clock_->Now() - state->total_execution_start_time);
-  stats::RecordModelExecutionStatus(state->segment_id, status);
+  stats::RecordModelExecutionStatus(state->segment_id,
+                                    state->is_explicit_provider, status);
   std::move(state->callback).Run(std::make_pair(result, status));
 }
 

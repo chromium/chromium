@@ -31,6 +31,7 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
   switch (result_state) {
     case SegmentResultProvider::ResultState::kUnknown:
     case SegmentResultProvider::ResultState::kSuccessFromDatabase:
+    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
       NOTREACHED();
       return stats::SegmentationSelectionFailureReason::kMaxValue;
     case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
@@ -42,6 +43,15 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kSignalsNotCollected:
       return stats::SegmentationSelectionFailureReason::
           kAtLeastOneSegmentSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultMissingMetadata;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultSignalNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultExecFailed;
   }
 }
 
@@ -56,11 +66,13 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     const Config* config,
     base::Clock* clock,
     const PlatformOptions& platform_options,
-    ModelProviderFactory* model_provider_factory)
+    DefaultModelManager* default_model_manager,
+    ModelExecutionManager* execution_manager)
     : segment_result_provider_(SegmentResultProvider::Create(
           segment_database,
           signal_storage_config,
-          model_provider_factory,
+          default_model_manager,
+          execution_manager,
           clock,
           platform_options.force_refresh_results)),
       segment_database_(segment_database),
@@ -68,8 +80,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
       result_prefs_(result_prefs),
       config_(config),
       clock_(clock),
-      platform_options_(platform_options),
-      model_provider_factory_(model_provider_factory) {
+      platform_options_(platform_options) {
   // Read selected segment from prefs.
   const auto& selected_segment =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);

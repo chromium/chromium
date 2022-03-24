@@ -126,12 +126,13 @@ class ModelExecutionManagerTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void ExecuteModel(const std::pair<float, ModelExecutionStatus>& expected) {
+  void ExecuteModel(const std::pair<float, ModelExecutionStatus>& expected,
+                    ModelProvider* explicit_provider = nullptr) {
     proto::SegmentInfo* info = segment_database_->FindOrCreateSegment(
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
     base::RunLoop loop;
     model_execution_manager_->ExecuteModel(
-        *info,
+        *info, std::move(explicit_provider),
         base::BindOnce(&ModelExecutionManagerTest::OnExecutionCallback,
                        base::Unretained(this), loop.QuitClosure(), expected));
     loop.Run();
@@ -425,6 +426,39 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithMultipleFeatures) {
       .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
 
   ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
+}
+
+TEST_F(ModelExecutionManagerTest, ExecuteWithExplicitProvider) {
+  auto segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  CreateModelExecutionManager({segment_id}, base::DoNothing());
+
+  // Initialize with required metadata.
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+  std::string user_action_name = "some_user_action";
+  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
+                                          proto::Aggregation::BUCKETED_COUNT);
+
+  EXPECT_CALL(*feature_list_query_processor_,
+              ProcessFeatureList(_, segment_id, clock_.Now(), _))
+      .WillOnce(RunOnceCallback<3>(/*error=*/false,
+                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7}));
+
+  // This provider should not be used since `explicit_provider` is set, and
+  // explicit prvider should be used for execution.
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable()).Times(0);
+  EXPECT_CALL(FindHandler(segment_id), ExecuteModelWithInput(_, _)).Times(0);
+
+  auto explicit_provider =
+      std::make_unique<MockModelProvider>(segment_id, base::DoNothing());
+  EXPECT_CALL(*explicit_provider, ModelAvailable())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*explicit_provider,
+              ExecuteModelWithInput(std::vector<float>{1, 2, 3, 4, 5, 6, 7}, _))
+      .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
+
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess),
+               explicit_provider.get());
 }
 
 }  // namespace segmentation_platform
