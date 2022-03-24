@@ -33,6 +33,9 @@ NSString* const kBubbleViewImageViewIdentifier =
 // Accessibility identifier for the snooze button.
 NSString* const kBubbleViewSnoozeButtonIdentifier =
     @"kBubbleViewSnoozeButtonIdentifier";
+// Accessibility identifier for the arrow view.
+NSString* const kBubbleViewArrowViewIdentifier =
+    @"kBubbleViewArrowViewIdentifier";
 
 namespace {
 // The color of the bubble (both circular background and arrow).
@@ -135,6 +138,7 @@ UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
   [layer setPath:path.CGPath];
   [layer setFillColor:BubbleColor().CGColor];
   [arrow.layer addSublayer:layer];
+  [arrow setAccessibilityIdentifier:kBubbleViewArrowViewIdentifier];
   [arrow setTranslatesAutoresizingMaskIntoConstraints:NO];
   return arrow;
 }
@@ -257,6 +261,8 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
+// Constraint for the arrow horizontal alignment.
+@property(nonatomic, strong) NSLayoutConstraint* arrowAlignmentConstraint;
 // Indicate whether views' constraints need to be added to the bubble.
 @property(nonatomic, assign) BOOL needsAddConstraints;
 
@@ -283,6 +289,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   if (self) {
     _direction = direction;
     _alignment = alignment;
+    _alignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
     // Add background view.
     _background = BubbleBackgroundView();
     [self addSubview:_background];
@@ -361,6 +368,11 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   }
 }
 
+- (void)setAlignmentOffset:(CGFloat)alignmentOffset {
+  _alignmentOffset = alignmentOffset;
+  [self updateArrowAlignmentConstraint];
+}
+
 #pragma mark - Private instance methods
 
 // Handles taps on the close button.
@@ -394,8 +406,11 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   // Add constraints that do not depend on the bubble's direction or alignment.
   NSMutableArray<NSLayoutConstraint*>* constraints =
       [NSMutableArray arrayWithArray:[self generalConstraints]];
-  // Add the constraint that aligns the arrow relative to the bubble.
-  [constraints addObject:[self arrowAlignmentConstraint]];
+  // Add the constraint that aligns the arrow relative to the bubble if none was
+  // added before.
+  if (!self.arrowAlignmentConstraint) {
+    [self updateArrowAlignmentConstraint];
+  }
   // Add constraints that depend on the bubble's direction.
   [constraints addObjectsFromArray:[self arrowDirectionConstraints]];
   // Add constraints for close button.
@@ -433,9 +448,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     // Add a margin to the sides of the background.
     [background.widthAnchor constraintEqualToAnchor:self.widthAnchor
                                            constant:-kBubbleMargin * 2],
-    [background.widthAnchor
-        constraintGreaterThanOrEqualToConstant:[self minBubbleWidth] -
-                                               kBubbleMargin * 2],
     // Ensure that the background view is as wide as the label, with added
     // padding on the sides of the label.
     [label.topAnchor
@@ -540,35 +552,36 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   return constraints;
 }
 
-// Return the constraint that aligns the arrow to the bubble view. This depends
+// Returns the constraint that aligns the arrow to the bubble view. This depends
 // on the bubble's alignment.
-- (NSLayoutConstraint*)arrowAlignmentConstraint {
+- (NSLayoutConstraint*)arrowAlignmentConstraintWithOffset:
+    (CGFloat)alignmentOffset {
   // The anchor of the bubble which is aligned with the arrow's center anchor.
   NSLayoutAnchor* anchor;
   // The constant by which |anchor| is offset from the arrow's center anchor.
   CGFloat offset;
   switch (self.alignment) {
     case BubbleAlignmentLeading:
-      // The anchor point is at a distance of |kBubbleAlignmentOffset|
+      // The anchor point is at a distance of |alignmentOffset|
       // from the bubble's leading edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the leading edge of the
-      // bubble view and adding an offset of |kBubbleAlignmentOffset|.
+      // bubble view and adding an offset of |alignmentOffset|.
       anchor = self.leadingAnchor;
-      offset = bubble_util::BubbleAlignmentOffset();
+      offset = alignmentOffset;
       break;
     case BubbleAlignmentCenter:
-      // Since the anchor point is in the center of the bubble view, center the
+      // Since the anchor point is at the center of the bubble view, center the
       // arrow on the bubble view.
       anchor = self.centerXAnchor;
       offset = 0.0f;
       break;
     case BubbleAlignmentTrailing:
-      // The anchor point is at a distance of |kBubbleAlignmentOffset|
+      // The anchor point is at a distance of |alignmentOffset|
       // from the bubble's trailing edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the trailing edge of the
-      // bubble view and adding an offset of |-kBubbleAlignmentOffset|.
+      // bubble view and adding an offset of |-alignmentOffset|.
       anchor = self.trailingAnchor;
-      offset = -bubble_util::BubbleAlignmentOffset();
+      offset = -alignmentOffset;
       break;
     default:
       NOTREACHED() << "Invalid bubble alignment " << self.alignment;
@@ -603,6 +616,15 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     ];
   }
   return constraints;
+}
+
+- (void)updateArrowAlignmentConstraint {
+  if (self.arrowAlignmentConstraint) {
+    self.arrowAlignmentConstraint.active = NO;
+  }
+  self.arrowAlignmentConstraint =
+      [self arrowAlignmentConstraintWithOffset:self.alignmentOffset];
+  self.arrowAlignmentConstraint.active = YES;
 }
 
 #pragma mark - UIView overrides
@@ -714,7 +736,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 // The minimum bubble width is two times the bubble alignment offset, which
 // causes the bubble to appear center-aligned for short display text.
 - (CGFloat)minBubbleWidth {
-  return bubble_util::BubbleAlignmentOffset() * 2;
+  return self.alignmentOffset * 2;
 }
 
 @end

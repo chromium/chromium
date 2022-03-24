@@ -14,20 +14,16 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-CGFloat TestBubbleAlignmentOffset() {
-  return 29;
-}
-}  // namespace
-
 namespace bubble_util {
 CGSize BubbleMaxSize(CGPoint anchorPoint,
+                     CGFloat alignmentOffset,
                      BubbleArrowDirection direction,
                      BubbleAlignment alignment,
                      CGSize boundingSize,
                      bool isRTL);
 
 CGRect BubbleFrame(CGPoint anchorPoint,
+                   CGFloat alignmentOffset,
                    CGSize size,
                    BubbleArrowDirection direction,
                    BubbleAlignment alignment,
@@ -42,7 +38,8 @@ class BubbleUtilTest : public PlatformTest {
         centerAlignedAnchorPoint_({300.0f, 250.0f}),
         rightAlignedAnchorPoint_({450.0f, 250.0f}),
         bubbleSize_({300.0f, 100.0f}),
-        containerSize_({500.0f, 600.0f}) {}
+        containerSize_({500.0f, 600.0f}),
+        bubbleAlignmentOffset_(29.0f) {}
 
  protected:
   // Anchor point on the left side of the container.
@@ -55,6 +52,9 @@ class BubbleUtilTest : public PlatformTest {
   const CGSize bubbleSize_;
   // Bounding size of the bubble's coordinate system.
   const CGSize containerSize_;
+  // Distance from the anchor point to the |BubbleAlignment| edge of the
+  // bubble's frame.
+  const CGFloat bubbleAlignmentOffset_;
 };
 
 // Test the |AnchorPoint| method when the arrow is pointing upwards, meaning the
@@ -78,10 +78,10 @@ TEST_F(BubbleUtilTest, AnchorPointDown) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnLeftUp) {
   CGSize leftAlignedSize = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentLeading,
-      containerSize_, false /* isRTL */);
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentLeading, containerSize_, false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(430.0f + TestBubbleAlignmentOffset(), leftAlignedSize.width);
+  EXPECT_FLOAT_EQ(430.0f + bubbleAlignmentOffset_, leftAlignedSize.width);
   EXPECT_FLOAT_EQ(350.0f, leftAlignedSize.height);
 }
 
@@ -90,11 +90,11 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnLeftUp) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnCenterDown) {
   CGSize centerAlignedSize = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionDown,
-      BubbleAlignmentLeading, containerSize_, false /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentLeading, containerSize_,
+      false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(200.0f + TestBubbleAlignmentOffset(),
-                  centerAlignedSize.width);
+  EXPECT_FLOAT_EQ(200.0f + bubbleAlignmentOffset_, centerAlignedSize.width);
   EXPECT_FLOAT_EQ(250.0f, centerAlignedSize.height);
 }
 
@@ -103,10 +103,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnCenterDown) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnRightUp) {
   CGSize rightAlignedSize = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentLeading,
-      containerSize_, false /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentLeading, containerSize_, false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(50.0f + TestBubbleAlignmentOffset(), rightAlignedSize.width);
+  EXPECT_FLOAT_EQ(50.0f + bubbleAlignmentOffset_, rightAlignedSize.width);
   EXPECT_FLOAT_EQ(350.0f, rightAlignedSize.height);
 }
 
@@ -115,8 +115,8 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnRightUp) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnLeftDown) {
   CGSize leftAlignedSize = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionDown, BubbleAlignmentCenter,
-      containerSize_, false /* isRTL */);
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionDown,
+      BubbleAlignmentCenter, containerSize_, false /* isRTL */);
 
   EXPECT_FLOAT_EQ(140.0f, leftAlignedSize.width);
   EXPECT_FLOAT_EQ(250.0f, leftAlignedSize.height);
@@ -127,8 +127,8 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnLeftDown) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnCenterUp) {
   CGSize centerAlignedSize = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentCenter,
-      containerSize_, false /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentCenter, containerSize_, false /* isRTL */);
 
   EXPECT_FLOAT_EQ(400.0f, centerAlignedSize.width);
   EXPECT_FLOAT_EQ(350.0f, centerAlignedSize.height);
@@ -139,8 +139,9 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnCenterUp) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnRightDown) {
   CGSize rightAlignedSize = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionDown, BubbleAlignmentCenter,
-      containerSize_, false /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentCenter, containerSize_,
+      false /* isRTL */);
 
   EXPECT_FLOAT_EQ(100.0f, rightAlignedSize.width);
   EXPECT_FLOAT_EQ(250.0f, rightAlignedSize.height);
@@ -151,10 +152,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnRightDown) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnLeftUp) {
   CGSize leftAlignedSize = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentTrailing,
-      containerSize_, false /* isRTL */);
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentTrailing, containerSize_, false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(70.0f + TestBubbleAlignmentOffset(), leftAlignedSize.width);
+  EXPECT_FLOAT_EQ(70.0f + bubbleAlignmentOffset_, leftAlignedSize.width);
   EXPECT_FLOAT_EQ(350.0f, leftAlignedSize.height);
 }
 
@@ -163,11 +164,11 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnLeftUp) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnCenterDown) {
   CGSize centerAlignedSize = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionDown,
-      BubbleAlignmentTrailing, containerSize_, false /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentTrailing, containerSize_,
+      false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(300.0f + TestBubbleAlignmentOffset(),
-                  centerAlignedSize.width);
+  EXPECT_FLOAT_EQ(300.0f + bubbleAlignmentOffset_, centerAlignedSize.width);
   EXPECT_FLOAT_EQ(250.0f, centerAlignedSize.height);
 }
 
@@ -176,10 +177,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnCenterDown) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnRightUp) {
   CGSize rightAlignedSize = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentTrailing,
-      containerSize_, false /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentTrailing, containerSize_, false /* isRTL */);
 
-  EXPECT_FLOAT_EQ(450.0f + TestBubbleAlignmentOffset(), rightAlignedSize.width);
+  EXPECT_FLOAT_EQ(450.0f + bubbleAlignmentOffset_, rightAlignedSize.width);
   EXPECT_FLOAT_EQ(350.0f, rightAlignedSize.height);
 }
 
@@ -188,11 +189,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnRightUp) {
 // the language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnLeftDownRTL) {
   CGSize leftAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionDown, BubbleAlignmentLeading,
-      containerSize_, true /* isRTL */);
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionDown,
+      BubbleAlignmentLeading, containerSize_, true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(70.0f + TestBubbleAlignmentOffset(),
-                  leftAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(70.0f + bubbleAlignmentOffset_, leftAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(250.0f, leftAlignedSizeRTL.height);
 }
 
@@ -201,11 +201,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnLeftDownRTL) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnCenterUpRTL) {
   CGSize centerAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentLeading,
-      containerSize_, true /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentLeading, containerSize_, true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(300.0f + TestBubbleAlignmentOffset(),
-                  centerAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(300.0f + bubbleAlignmentOffset_, centerAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(350.0f, centerAlignedSizeRTL.height);
 }
 
@@ -214,11 +213,11 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnCenterUpRTL) {
 // and the language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnRightDownRTL) {
   CGSize rightAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionDown,
-      BubbleAlignmentLeading, containerSize_, true /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentLeading, containerSize_,
+      true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(450.0f + TestBubbleAlignmentOffset(),
-                  rightAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(450.0f + bubbleAlignmentOffset_, rightAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(250.0f, rightAlignedSizeRTL.height);
 }
 
@@ -227,8 +226,8 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeLeadingWithTargetOnRightDownRTL) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnLeftUpRTL) {
   CGSize leftAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentCenter,
-      containerSize_, true /* isRTL */);
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentCenter, containerSize_, true /* isRTL */);
 
   EXPECT_FLOAT_EQ(140.0f, leftAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(350.0f, leftAlignedSizeRTL.height);
@@ -239,8 +238,9 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnLeftUpRTL) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnCenterDownRTL) {
   CGSize centerAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionDown,
-      BubbleAlignmentCenter, containerSize_, true /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentCenter, containerSize_,
+      true /* isRTL */);
 
   EXPECT_FLOAT_EQ(400.0f, centerAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(250.0f, centerAlignedSizeRTL.height);
@@ -251,8 +251,8 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnCenterDownRTL) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnRightUpRTL) {
   CGSize rightAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionUp, BubbleAlignmentCenter,
-      containerSize_, true /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
+      BubbleAlignmentCenter, containerSize_, true /* isRTL */);
 
   EXPECT_FLOAT_EQ(100.0f, rightAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(350.0f, rightAlignedSizeRTL.height);
@@ -263,11 +263,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeCenterWithTargetOnRightUpRTL) {
 // the language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnLeftDownRTL) {
   CGSize leftAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      leftAlignedAnchorPoint_, BubbleArrowDirectionDown,
+      leftAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionDown,
       BubbleAlignmentTrailing, containerSize_, true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(430.0f + TestBubbleAlignmentOffset(),
-                  leftAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(430.0f + bubbleAlignmentOffset_, leftAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(250.0f, leftAlignedSizeRTL.height);
 }
 
@@ -276,11 +275,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnLeftDownRTL) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnCenterUpRTL) {
   CGSize centerAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      centerAlignedAnchorPoint_, BubbleArrowDirectionUp,
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, BubbleArrowDirectionUp,
       BubbleAlignmentTrailing, containerSize_, true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(200.0f + TestBubbleAlignmentOffset(),
-                  centerAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(200.0f + bubbleAlignmentOffset_, centerAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(350.0f, centerAlignedSizeRTL.height);
 }
 
@@ -289,11 +287,11 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnCenterUpRTL) {
 // and the language is RTL.
 TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnRightDownRTL) {
   CGSize rightAlignedSizeRTL = bubble_util::BubbleMaxSize(
-      rightAlignedAnchorPoint_, BubbleArrowDirectionDown,
-      BubbleAlignmentTrailing, containerSize_, true /* isRTL */);
+      rightAlignedAnchorPoint_, bubbleAlignmentOffset_,
+      BubbleArrowDirectionDown, BubbleAlignmentTrailing, containerSize_,
+      true /* isRTL */);
 
-  EXPECT_FLOAT_EQ(50.0f + TestBubbleAlignmentOffset(),
-                  rightAlignedSizeRTL.width);
+  EXPECT_FLOAT_EQ(50.0f + bubbleAlignmentOffset_, rightAlignedSizeRTL.width);
   EXPECT_FLOAT_EQ(250.0f, rightAlignedSizeRTL.height);
 }
 
@@ -302,9 +300,10 @@ TEST_F(BubbleUtilTest, BubbleMaxSizeTrailingWithTargetOnRightDownRTL) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameUpLeadingLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentLeading, containerSize_.width, false /* isRTL */);
-  EXPECT_FLOAT_EQ(300.0f - TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentLeading, containerSize_.width,
+      false /* isRTL */);
+  EXPECT_FLOAT_EQ(300.0f - bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -315,9 +314,10 @@ TEST_F(BubbleUtilTest, BubbleFrameUpLeadingLTR) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameUpLeadingRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentLeading, containerSize_.width, true /* isRTL */);
-  EXPECT_FLOAT_EQ(TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentLeading, containerSize_.width,
+      true /* isRTL */);
+  EXPECT_FLOAT_EQ(bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -328,8 +328,9 @@ TEST_F(BubbleUtilTest, BubbleFrameUpLeadingRTL) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameUpCenteredLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentCenter, containerSize_.width, false /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentCenter, containerSize_.width,
+      false /* isRTL */);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
@@ -341,8 +342,9 @@ TEST_F(BubbleUtilTest, BubbleFrameUpCenteredLTR) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameUpCenteredRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentCenter, containerSize_.width, true /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentCenter, containerSize_.width,
+      true /* isRTL */);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
@@ -354,9 +356,10 @@ TEST_F(BubbleUtilTest, BubbleFrameUpCenteredRTL) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameUpTrailingLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentTrailing, containerSize_.width, false /* isRTL */);
-  EXPECT_FLOAT_EQ(TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentTrailing, containerSize_.width,
+      false /* isRTL */);
+  EXPECT_FLOAT_EQ(bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -367,9 +370,10 @@ TEST_F(BubbleUtilTest, BubbleFrameUpTrailingLTR) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameUpTrailingRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionUp,
-      BubbleAlignmentTrailing, containerSize_.width, true /* isRTL */);
-  EXPECT_FLOAT_EQ(300.0f - TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionUp, BubbleAlignmentTrailing, containerSize_.width,
+      true /* isRTL */);
+  EXPECT_FLOAT_EQ(300.0f - bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(250.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -380,9 +384,10 @@ TEST_F(BubbleUtilTest, BubbleFrameUpTrailingRTL) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameDownLeadingLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentLeading, containerSize_.width, false /* isRTL */);
-  EXPECT_FLOAT_EQ(300.0f - TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentLeading, containerSize_.width,
+      false /* isRTL */);
+  EXPECT_FLOAT_EQ(300.0f - bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -393,9 +398,10 @@ TEST_F(BubbleUtilTest, BubbleFrameDownLeadingLTR) {
 // the language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameDownLeadingRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentLeading, containerSize_.width, true /* isRTL */);
-  EXPECT_FLOAT_EQ(TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentLeading, containerSize_.width,
+      true /* isRTL */);
+  EXPECT_FLOAT_EQ(bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -406,8 +412,9 @@ TEST_F(BubbleUtilTest, BubbleFrameDownLeadingRTL) {
 // language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameDownCenteredLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentCenter, containerSize_.width, false /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentCenter, containerSize_.width,
+      false /* isRTL */);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
@@ -419,8 +426,9 @@ TEST_F(BubbleUtilTest, BubbleFrameDownCenteredLTR) {
 // language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameDownCenteredRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentCenter, containerSize_.width, true /* isRTL */);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentCenter, containerSize_.width,
+      true /* isRTL */);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
@@ -432,9 +440,10 @@ TEST_F(BubbleUtilTest, BubbleFrameDownCenteredRTL) {
 // the language is LTR.
 TEST_F(BubbleUtilTest, BubbleFrameDownTrailingLTR) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentTrailing, containerSize_.width, false /* isRTL */);
-  EXPECT_FLOAT_EQ(TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentTrailing, containerSize_.width,
+      false /* isRTL */);
+  EXPECT_FLOAT_EQ(bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
@@ -445,9 +454,10 @@ TEST_F(BubbleUtilTest, BubbleFrameDownTrailingLTR) {
 // the language is RTL.
 TEST_F(BubbleUtilTest, BubbleFrameDownTrailingRTL) {
   CGRect bubbleFrame = bubble_util::BubbleFrame(
-      centerAlignedAnchorPoint_, bubbleSize_, BubbleArrowDirectionDown,
-      BubbleAlignmentTrailing, containerSize_.width, true /* isRTL */);
-  EXPECT_FLOAT_EQ(300.0f - TestBubbleAlignmentOffset(), bubbleFrame.origin.x);
+      centerAlignedAnchorPoint_, bubbleAlignmentOffset_, bubbleSize_,
+      BubbleArrowDirectionDown, BubbleAlignmentTrailing, containerSize_.width,
+      true /* isRTL */);
+  EXPECT_FLOAT_EQ(300.0f - bubbleAlignmentOffset_, bubbleFrame.origin.x);
   EXPECT_FLOAT_EQ(150.0f, bubbleFrame.origin.y);
   EXPECT_FLOAT_EQ(bubbleSize_.width, CGRectGetWidth(bubbleFrame));
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));

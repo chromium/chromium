@@ -29,6 +29,7 @@
 
   BubbleArrowDirection direction = BubbleArrowDirectionUp;
   BubbleAlignment alignment = BubbleAlignmentTrailing;
+  CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   self.bubbleViewController =
       [[BubbleViewController alloc] initWithText:@"Lorem ipsum dolor"
                                   arrowDirection:direction
@@ -43,14 +44,15 @@
   [containerView addSubview:elementView];
   CGPoint anchorPoint = bubble_util::AnchorPoint(elementView.frame, direction);
   // Maximum width of the bubble such that it stays within |containerView|.
-  CGSize maxBubbleSize = bubble_util::BubbleMaxSize(
-      anchorPoint, direction, alignment, containerView.frame.size);
+  CGSize maxBubbleSize =
+      bubble_util::BubbleMaxSize(anchorPoint, bubbleAlignmentOffset, direction,
+                                 alignment, containerView.frame.size);
 
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
-  CGRect bubbleFrame =
-      bubble_util::BubbleFrame(anchorPoint, bubbleSize, direction, alignment,
-                               containerView.frame.size.width);
+  CGRect bubbleFrame = bubble_util::BubbleFrame(
+      anchorPoint, bubbleAlignmentOffset, bubbleSize, direction, alignment,
+      containerView.frame.size.width);
 
   [self addBubbleViewControllerWithFrame:bubbleFrame];
   [self.baseViewController pushViewController:self.containerViewController

@@ -21,12 +21,14 @@ const CGFloat kVerticalOffset = 8.0f;
 @property(nonatomic, copy, readonly) NSString* text;
 @property(nonatomic, assign, readonly) BubbleArrowDirection arrowDirection;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
+@property(nonatomic, strong) BubbleView* view;
 @end
 
 @implementation BubbleViewController
 @synthesize text = _text;
 @synthesize arrowDirection = _arrowDirection;
 @synthesize alignment = _alignment;
+@dynamic view;
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
@@ -84,4 +86,7 @@ const CGFloat kVerticalOffset = 8.0f;
       }];
 }
 
+- (void)setBubbleAlignmentOffset:(CGFloat)alignmentOffset {
+  self.view.alignmentOffset = alignmentOffset;
+}
 @end

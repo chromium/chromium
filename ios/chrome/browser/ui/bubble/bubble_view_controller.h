@@ -35,6 +35,10 @@
 // The bubble view controller is automatically removed from the view hierarchy.
 - (void)dismissAnimated:(BOOL)animated;
 
+// Changes the bubbleView's alignment offset, this might change the bubbleView's
+// size.
+- (void)setBubbleAlignmentOffset:(CGFloat)alignmentOffset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_VIEW_CONTROLLER_H_

@@ -21,10 +21,11 @@ namespace {
 // its bounding coordinate system. In LTR contexts, the returned float is the
 // x-coordinate of the bubble's origin. This calculation is based on
 // |anchorPoint|, which is the point of the target UI element the bubble is
-// anchored at, and the bubble's alignment, direction, and size. The returned
-// float is in the same coordinate system as |anchorPoint|, which should be the
-// coordinate system in which the bubble is drawn.
+// anchored at, and the bubble's alignment offset, alignment, direction, and
+// size. The returned float is in the same coordinate system as |anchorPoint|,
+// which should be the coordinate system in which the bubble is drawn.
 CGFloat LeadingDistance(CGPoint anchorPoint,
+                        CGFloat bubbleAlignmentOffset,
                         BubbleAlignment alignment,
                         CGFloat bubbleWidth,
                         CGFloat boundingWidth,
@@ -34,13 +35,13 @@ CGFloat LeadingDistance(CGPoint anchorPoint,
   CGFloat leadingOffset;
   switch (alignment) {
     case BubbleAlignmentLeading:
-      leadingOffset = bubble_util::BubbleAlignmentOffset();
+      leadingOffset = bubbleAlignmentOffset;
       break;
     case BubbleAlignmentCenter:
       leadingOffset = bubbleWidth / 2.0f;
       break;
     case BubbleAlignmentTrailing:
-      leadingOffset = bubbleWidth - bubble_util::BubbleAlignmentOffset();
+      leadingOffset = bubbleWidth - bubbleAlignmentOffset;
       break;
     default:
       NOTREACHED() << "Invalid bubble alignment " << alignment;
@@ -74,10 +75,14 @@ CGFloat OriginY(CGPoint anchorPoint,
 // Calculate the maximum width of the bubble such that it stays within its
 // bounding coordinate space. |anchorPointX| is the x-coordinate of the point on
 // the target UI element the bubble is anchored at. It is in the coordinate
-// system in which the bubble is drawn. |alignment| is the bubble's alignment,
-// |boundingWidth| is the width of the coordinate space in which the bubble is
-// drawn, and |isRTL| is true if the language is RTL and |false| otherwise.
+// system in which the bubble is drawn. |bubbleAlignmentOffset| is the distance
+// from the leading edge of the bubble to the anchor point if leading aligned,
+// and from the trailing edge of the bubble to the anchor point if trailing
+// aligned. |alignment| is the bubble's alignment, |boundingWidth| is the width
+// of the coordinate space in which the bubble is drawn, and |isRTL| is true if
+// the language is RTL and |false| otherwise.
 CGFloat BubbleMaxWidth(CGFloat anchorPointX,
+                       CGFloat bubbleAlignmentOffset,
                        BubbleAlignment alignment,
                        CGFloat boundingWidth,
                        bool isRTL) {
@@ -87,12 +92,11 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
       if (isRTL) {
         // The bubble is aligned right, and can use space to the left of the
         // anchor point and within |BubbleAlignmentOffset()| from the right.
-        maxWidth = anchorPointX + bubble_util::BubbleAlignmentOffset();
+        maxWidth = anchorPointX + bubbleAlignmentOffset;
       } else {
         // The bubble is aligned left, and can use space to the right of the
         // anchor point and within |BubbleAlignmentOffset()| from the left.
-        maxWidth =
-            boundingWidth - anchorPointX + bubble_util::BubbleAlignmentOffset();
+        maxWidth = boundingWidth - anchorPointX + bubbleAlignmentOffset;
       }
       break;
     case BubbleAlignmentCenter:
@@ -104,12 +108,11 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
       if (isRTL) {
         // The bubble is aligned left, and can use space to the right of the
         // anchor point and within |BubbleAlignmentOffset()| from the left.
-        maxWidth =
-            boundingWidth - anchorPointX + bubble_util::BubbleAlignmentOffset();
+        maxWidth = boundingWidth - anchorPointX + bubbleAlignmentOffset;
       } else {
         // The bubble is aligned right, and can use space to the left of the
         // anchor point and within |BubbleAlignmentOffset()| from the right.
-        maxWidth = anchorPointX + bubble_util::BubbleAlignmentOffset();
+        maxWidth = anchorPointX + bubbleAlignmentOffset;
       }
       break;
     default:
@@ -147,7 +150,7 @@ CGFloat BubbleMaxHeight(CGFloat anchorPointY,
 
 namespace bubble_util {
 
-CGFloat BubbleAlignmentOffset() {
+CGFloat BubbleDefaultAlignmentOffset() {
   // This is used to replace a constant that would change based on the flag.
   return 29;
 }
@@ -168,45 +171,56 @@ CGPoint AnchorPoint(CGRect targetFrame, BubbleArrowDirection arrowDirection) {
 // superview's bounding coordinate space and does not overlap the other side of
 // the anchor point. |anchorPoint| is the point on the target UI element the
 // bubble is anchored at in the bubble's superview's coordinate system.
-// |direction| is the bubble's direction. |alignment| is the bubble's alignment.
-// |boundingSize| is the size of the superview. |isRTL| is |true| if the
-// coordinates are in right-to-left language coordinates and |false| otherwise.
-// This method is unit tested so it cannot be in the above anonymous namespace.
+// |bubbleAlignmentOffset| is the distance from the leading edge of the bubble
+// to the anchor point if leading aligned, and from the trailing edge of the
+// bubble to the anchor point if trailing aligned. |direction| is the bubble's
+// direction. |alignment| is the bubble's alignment. |boundingSize| is the size
+// of the superview. |isRTL| is |true| if the coordinates are in right-to-left
+// language coordinates and |false| otherwise. This method is unit tested so it
+// cannot be in the above anonymous namespace.
 CGSize BubbleMaxSize(CGPoint anchorPoint,
+                     CGFloat bubbleAlignmentOffset,
                      BubbleArrowDirection direction,
                      BubbleAlignment alignment,
                      CGSize boundingSize,
                      bool isRTL) {
-  CGFloat maxWidth =
-      BubbleMaxWidth(anchorPoint.x, alignment, boundingSize.width, isRTL);
+  CGFloat maxWidth = BubbleMaxWidth(anchorPoint.x, bubbleAlignmentOffset,
+                                    alignment, boundingSize.width, isRTL);
   CGFloat maxHeight =
       BubbleMaxHeight(anchorPoint.y, direction, boundingSize.height);
   return CGSizeMake(maxWidth, maxHeight);
 }
 
 CGSize BubbleMaxSize(CGPoint anchorPoint,
+                     CGFloat bubbleAlignmentOffset,
                      BubbleArrowDirection direction,
                      BubbleAlignment alignment,
                      CGSize boundingSize) {
   bool isRTL = base::i18n::IsRTL();
-  return BubbleMaxSize(anchorPoint, direction, alignment, boundingSize, isRTL);
+  return BubbleMaxSize(anchorPoint, bubbleAlignmentOffset, direction, alignment,
+                       boundingSize, isRTL);
 }
 
 // Calculate the bubble's frame. |anchorPoint| is the point on the UI element
-// the bubble is pointing to. |size| is the size of the bubble. |direction| is
-// the direction the bubble's arrow is pointing. |alignment| is the alignment of
-// the anchor (either leading, centered, or trailing). |boundingWidth| is the
-// width of the bubble's superview. |isRTL| is |true| if the coordinates are in
-// right-to-left language coordinates and |false| otherwise. This method is unit
-// tested so it cannot be in the above anonymous namespace.
+// the bubble is pointing to. |bubbleAlignmentOffset| is the distance from the
+// leading edge of the bubble to the anchor point if leading aligned, and from
+// the trailing edge of the bubble to the anchor point if trailing aligned.
+// |size| is the size of the bubble. |direction| is the direction the bubble's
+// arrow is pointing. |alignment| is the alignment of the anchor (either
+// leading, centered, or trailing). |boundingWidth| is the width of the bubble's
+// superview. |isRTL| is |true| if the coordinates are in right-to-left language
+// coordinates and |false| otherwise. This method is unit tested so it cannot be
+// in the above anonymous namespace.
 CGRect BubbleFrame(CGPoint anchorPoint,
+                   CGFloat bubbleAlignmentOffset,
                    CGSize size,
                    BubbleArrowDirection direction,
                    BubbleAlignment alignment,
                    CGFloat boundingWidth,
                    bool isRTL) {
   CGFloat leading =
-      LeadingDistance(anchorPoint, alignment, size.width, boundingWidth, isRTL);
+      LeadingDistance(anchorPoint, bubbleAlignmentOffset, alignment, size.width,
+                      boundingWidth, isRTL);
   CGFloat originY = OriginY(anchorPoint, direction, size.height);
   // Use a |LayoutRect| to ensure that the bubble is mirrored in RTL contexts.
   base::i18n::TextDirection textDirection =
@@ -218,13 +232,14 @@ CGRect BubbleFrame(CGPoint anchorPoint,
 }
 
 CGRect BubbleFrame(CGPoint anchorPoint,
+                   CGFloat bubbleAlignmentOffset,
                    CGSize size,
                    BubbleArrowDirection direction,
                    BubbleAlignment alignment,
                    CGFloat boundingWidth) {
   bool isRTL = base::i18n::IsRTL();
-  return BubbleFrame(anchorPoint, size, direction, alignment, boundingWidth,
-                     isRTL);
+  return BubbleFrame(anchorPoint, bubbleAlignmentOffset, size, direction,
+                     alignment, boundingWidth, isRTL);
 }
 
 }  // namespace bubble_util

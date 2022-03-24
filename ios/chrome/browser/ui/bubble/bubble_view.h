@@ -15,6 +15,8 @@ extern NSString* const kBubbleViewTitleLabelIdentifier;
 extern NSString* const kBubbleViewImageViewIdentifier;
 // Accessibility identifier for the snooze button.
 extern NSString* const kBubbleViewSnoozeButtonIdentifier;
+// Accessibility identifier for the arrow view.
+extern NSString* const kBubbleViewArrowViewIdentifier;
 
 // Direction for the bubble to point.
 typedef NS_ENUM(NSInteger, BubbleArrowDirection) {
@@ -76,6 +78,12 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 
 // Text alignment used in this View. Default is NSTextAlignmentCenter.
 @property(nonatomic) NSTextAlignment textAlignment;
+
+// Distance between the arrow's centerX and the (leading or trailing) edge of
+// the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,
+// then |alignmentOffset| is ignored. |alignmentOffset| changes the minimum size
+// of the bubble, thus might change the value of |sizeThatFits|.
+@property(nonatomic) CGFloat alignmentOffset;
 
 @end
 

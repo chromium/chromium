@@ -263,8 +263,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // superview. |anchorPoint| is the anchor point of the bubble. |anchorPoint|
 // and |rect| must be in the same coordinates.
 - (CGRect)frameForBubbleInRect:(CGRect)rect atAnchorPoint:(CGPoint)anchorPoint {
+  CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
+  // Set bubble alignment offset, must be set before the call to |sizeThatFits|.
+  [self.bubbleViewController setBubbleAlignmentOffset:bubbleAlignmentOffset];
   CGSize maxBubbleSize = bubble_util::BubbleMaxSize(
-      anchorPoint, self.arrowDirection, self.alignment, rect.size);
+      anchorPoint, bubbleAlignmentOffset, self.arrowDirection, self.alignment,
+      rect.size);
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
   // If |bubbleSize| does not fit in |maxBubbleSize|, the bubble will be
@@ -275,9 +279,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
       bubbleSize.height > maxBubbleSize.height) {
     return CGRectNull;
   }
-  CGRect bubbleFrame =
-      bubble_util::BubbleFrame(anchorPoint, bubbleSize, self.arrowDirection,
-                               self.alignment, CGRectGetWidth(rect));
+  CGRect bubbleFrame = bubble_util::BubbleFrame(
+      anchorPoint, bubbleAlignmentOffset, bubbleSize, self.arrowDirection,
+      self.alignment, CGRectGetWidth(rect));
   return bubbleFrame;
 }
 

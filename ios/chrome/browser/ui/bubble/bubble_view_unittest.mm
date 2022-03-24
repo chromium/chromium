@@ -50,6 +50,7 @@ class BubbleViewTest : public PlatformTest {
       : maxSize_(CGSizeMake(500.0f, 500.0f)),
         arrowDirection_(BubbleArrowDirectionUp),
         alignment_(BubbleAlignmentCenter),
+        alignmentOffset_(35.0f),
         shortText_(@"I"),
         longText_(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit.") {
   }
@@ -61,6 +62,10 @@ class BubbleViewTest : public PlatformTest {
   const BubbleArrowDirection arrowDirection_;
   // The alignment of the bubble's arrow relative to the rest of the bubble.
   const BubbleAlignment alignment_;
+  // Distance between the arrow's centerX and the (leading or trailing) edge of
+  // the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,
+  // then |alignmentOffset| is ignored.
+  const CGFloat alignmentOffset_;
   // Text that is shorter than the minimum line width.
   NSString* shortText_;
   // Text that is longer than the maximum line width. It should wrap onto
@@ -97,6 +102,11 @@ class BubbleViewTest : public PlatformTest {
   UIButton* GetSnoozeButton(BubbleView* bubbleView) {
     return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
         [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubbleView));
+  }
+
+  UIView* GetArrowView(BubbleView* bubbleView) {
+    return GetViewOfClassWithIdentifier(
+        [UIView class], kBubbleViewArrowViewIdentifier, bubbleView);
   }
 };
 
@@ -281,4 +291,53 @@ TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
   // Tests snooze button action.
   [snoozeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_EQ(delegate.tapCounter, 1);
+}
+
+// Tests the arrow view is aligned properly with BubbleAlignmentLeading.
+TEST_F(BubbleViewTest, ArrowViewLeadingAligned) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:BubbleAlignmentLeading];
+  bubble.alignmentOffset = alignmentOffset_;
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  [bubble layoutIfNeeded];
+  UIView* arrowView = GetArrowView(bubble);
+  ASSERT_TRUE(arrowView);
+  // The center of the arrow must be at a distance of |alignmentOffset_| to the
+  // leading edge of the bubble.
+  EXPECT_EQ(CGRectGetMidX(arrowView.frame), alignmentOffset_);
+}
+
+// Tests the arrow view is aligned properly with BubbleAlignmentCenter.
+TEST_F(BubbleViewTest, ArrowViewCenterAligned) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:BubbleAlignmentCenter];
+  bubble.alignmentOffset = alignmentOffset_;
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  [bubble layoutIfNeeded];
+  UIView* arrowView = GetArrowView(bubble);
+  ASSERT_TRUE(arrowView);
+  // |alignmentOffset| should be ignored with BubbleAlignmentCenter.
+  EXPECT_EQ(CGRectGetMidX(arrowView.frame), CGRectGetMidX(bubble.frame));
+}
+
+// Tests the arrow view is aligned properly with BubbleAlignmentTrailing.
+TEST_F(BubbleViewTest, ArrowViewTrailingAligned) {
+  BubbleView* bubble =
+      [[BubbleView alloc] initWithText:longText_
+                        arrowDirection:arrowDirection_
+                             alignment:BubbleAlignmentTrailing];
+  bubble.alignmentOffset = alignmentOffset_;
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  [bubble layoutIfNeeded];
+  UIView* arrowView = GetArrowView(bubble);
+  ASSERT_TRUE(arrowView);
+  // The center of the arrow must be at a distance of |alignmentOffset_| to the
+  // trailing edge of the bubble.
+  EXPECT_EQ(CGRectGetMidX(arrowView.frame),
+            bubble.frame.size.width - alignmentOffset_);
 }
