@@ -32,14 +32,13 @@ class WebUIBubbleManager : public views::WidgetObserver {
   const WebUIBubbleManager& operator=(const WebUIBubbleManager&) = delete;
   ~WebUIBubbleManager() override;
 
-  bool ShowBubble(const absl::optional<gfx::Rect>& anchor = absl::nullopt);
+  bool ShowBubble();
   void CloseBubble();
   views::Widget* GetBubbleWidget() const;
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
   }
-  virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor) = 0;
+  virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog() = 0;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -111,8 +110,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   }
   ~WebUIBubbleManagerT() override = default;
 
-  base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor) override {
+  base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog() override {
     BubbleContentsWrapper* contents_wrapper = nullptr;
 
     // Only use per profile peristence if the flag is set and if a
@@ -153,8 +151,6 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
 
     auto bubble_view =
         std::make_unique<WebUIBubbleDialogView>(anchor_view_, contents_wrapper);
-    if (anchor)
-      bubble_view->SetAnchorRect(anchor.value());
     auto weak_ptr = bubble_view->GetWeakPtr();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
     return weak_ptr;

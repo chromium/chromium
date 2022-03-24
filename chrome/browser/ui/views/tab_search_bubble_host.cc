@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 
 #include "base/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -19,7 +17,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/widget/widget.h"
@@ -109,26 +106,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   if (controller)
     controller->CloseBubble(feature_engagement::kIPHTabSearchFeature);
 
-  absl::optional<gfx::Rect> anchor;
-  if (button_->GetWidget()->IsFullscreen()) {
-    // An anchor is necessary because the tabstrip used for bubble positioning
-    // is not available in fullscreen mode. The padding gives the bubble a
-    // more similar relative positioning to its non-fullscreen positioning.
-    // The mirrored position is needed to get the correct position in RTL
-    // mode.
-    auto display = display::Screen::GetScreen()->GetDisplayNearestView(
-        button_->GetWidget()->GetNativeView());
-    gfx::Rect bounds = display.bounds();
-    int offset = GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
-
-    int x = base::i18n::IsRTL() ? bounds.x() + offset
-                                : bounds.x() + bounds.width() - offset;
-
-    anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
-  }
-
   bubble_created_time_ = base::TimeTicks::Now();
-  webui_bubble_manager_.ShowBubble(anchor);
+  webui_bubble_manager_.ShowBubble();
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);

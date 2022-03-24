@@ -8,7 +8,6 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/visibility.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
@@ -124,12 +123,6 @@ bool WebUIBubbleDialogView::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
-}
-
-gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
-  if (anchor_rect())
-    return anchor_rect().value();
-  return BubbleDialogDelegateView::GetAnchorRect();
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
