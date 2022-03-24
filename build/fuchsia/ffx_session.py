@@ -289,6 +289,10 @@ class FfxRunner():
     raise Exception('Failed to determine node name for target at %s' %
                     format_host_port(address, port))
 
+  def daemon_stop(self):
+    """Stops the ffx daemon."""
+    self.run_ffx(['daemon', 'stop'], check=False, suppress_repair=True)
+
 
 class FfxTarget():
   """A helper to run `ffx` commands for a specific target."""

@@ -12,6 +12,7 @@ from ffx_session import FfxRunner, FfxTarget
 from target import Target, FuchsiaTargetException
 
 
+@mock.patch.object(FfxRunner, 'daemon_stop')
 class TestDiscoverDeviceTarget(unittest.TestCase):
   def setUp(self):
     self.args = Namespace(out_dir='out/fuchsia',
@@ -25,7 +26,8 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
                           logs_dir=None,
                           system_image_dir=None)
 
-  def testNoNodeNameOneDeviceReturnNoneCheckNameAndAddress(self):
+  def testNoNodeNameOneDeviceReturnNoneCheckNameAndAddress(
+      self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          mock.patch.object(
@@ -46,8 +48,10 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
       self.assertEqual(device_target_instance._port, 12345)
+    mock_daemon_stop.assert_called_once()
 
-  def testNoNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(self):
+  def testNoNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(
+      self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, \
@@ -70,8 +74,10 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
+    mock_daemon_stop.assert_called_once()
 
-  def testNoNodeNameDeviceDoesntHaveNameRaiseExceptionCouldNotFind(self):
+  def testNoNodeNameDeviceDoesntHaveNameRaiseExceptionCouldNotFind(
+      self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
@@ -86,8 +92,10 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
+    mock_daemon_stop.assert_called_once()
 
-  def testNodeNameDefinedDeviceFoundReturnNoneCheckNameAndHost(self):
+  def testNodeNameDefinedDeviceFoundReturnNoneCheckNameAndHost(
+      self, mock_daemon_stop):
     self.args.node_name = 'device_name'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(
@@ -100,8 +108,10 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
       self.assertEqual(device_target_instance._port, 12345)
+    mock_daemon_stop.assert_called_once()
 
-  def testNodeNameDefinedDeviceNotFoundRaiseExceptionCouldNotFind(self):
+  def testNodeNameDefinedDeviceNotFoundRaiseExceptionCouldNotFind(
+      self, mock_daemon_stop):
     self.args.node_name = 'wrong_device_name'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(
@@ -112,8 +122,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
+    mock_daemon_stop.assert_called_once()
 
-  def testNoDevicesFoundRaiseExceptionCouldNotFind(self):
+  def testNoDevicesFoundRaiseExceptionCouldNotFind(self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
@@ -121,8 +132,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
+    mock_daemon_stop.assert_called_once()
 
-  def testNoProvisionDeviceIfVersionsMatch(self):
+  def testNoProvisionDeviceIfVersionsMatch(self, mock_daemon_stop):
     self.args.os_check = 'update'
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
@@ -137,8 +149,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       mock_version.return_value = '1.0'
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 0)
+    mock_daemon_stop.assert_called_once()
 
-  def testRaiseExceptionIfCheckVersionsNoMatch(self):
+  def testRaiseExceptionIfCheckVersionsNoMatch(self, mock_daemon_stop):
     self.args.os_check = 'check'
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
@@ -154,8 +167,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       mock_hash.return_value = '2.0'
       mock_version.return_value = '1.0'
       device_target_instance.Start()
+    mock_daemon_stop.assert_called_once()
 
-  def testProvisionIfOneNonDetectableDevice(self):
+  def testProvisionIfOneNonDetectableDevice(self, mock_daemon_stop):
     self.args.os_check = 'update'
     self.args.node_name = 'mocknode'
     self.args.system_image_dir = 'mockdir'
@@ -167,6 +181,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
           1, 'ffx', 'Timeout attempting to reach target "mocknode"')
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 1)
+    mock_daemon_stop.assert_called_once()
 
 
 if __name__ == '__main__':

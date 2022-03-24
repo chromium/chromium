@@ -13,9 +13,11 @@ import unittest
 import unittest.mock as mock
 
 from argparse import Namespace
+from ffx_session import FfxRunner
 from fvdl_target import FvdlTarget, _SSH_KEY_DIR
 
 
+@mock.patch.object(FfxRunner, 'daemon_stop')
 class TestBuildCommandFvdlTarget(unittest.TestCase):
   def setUp(self):
     self.args = Namespace(out_dir='outdir',
@@ -33,7 +35,7 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
     boot_data.ProvisionSSH = mock.MagicMock()
     FvdlTarget._Shutdown = mock.MagicMock()
 
-  def testBasicEmuCommand(self):
+  def testBasicEmuCommand(self, mock_daemon_stop):
     with FvdlTarget.CreateFromArgs(self.args) as target:
       build_command = target._BuildCommand()
       self.assertIn(target._FVDL_PATH, build_command)
@@ -54,28 +56,35 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
             correct_ram_amount = True
             break
       self.assertTrue(correct_ram_amount)
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckIfNotRequireKVMSetNoAcceleration(self):
+  def testBuildCommandCheckIfNotRequireKVMSetNoAcceleration(
+      self, mock_daemon_stop):
     self.args.require_kvm = False
     with FvdlTarget.CreateFromArgs(self.args) as target:
       self.assertIn('--noacceleration', target._BuildCommand())
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckIfNotEnableGraphicsSetHeadless(self):
+  def testBuildCommandCheckIfNotEnableGraphicsSetHeadless(
+      self, mock_daemon_stop):
     self.args.enable_graphics = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
       self.assertNotIn('--headless', target._BuildCommand())
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckIfHardwareGpuSetHostGPU(self):
+  def testBuildCommandCheckIfHardwareGpuSetHostGPU(self, mock_daemon_stop):
     self.args.hardware_gpu = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
       self.assertIn('--host-gpu', target._BuildCommand())
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckIfWithNetworkSetTunTap(self):
+  def testBuildCommandCheckIfWithNetworkSetTunTap(self, mock_daemon_stop):
     self.args.with_network = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
       self.assertIn('-N', target._BuildCommand())
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckRamSizeNot8192SetRamSize(self):
+  def testBuildCommandCheckRamSizeNot8192SetRamSize(self, mock_daemon_stop):
     custom_ram_size = 4096
     self.args.ram_size_mb = custom_ram_size
     with FvdlTarget.CreateFromArgs(self.args) as target:
@@ -84,14 +93,16 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
       correct_ram_amount = False
       with open(target._device_proto_file.name, 'r') as f:
         self.assertTrue('  ram:  {}\n'.format(custom_ram_size) in f.readlines())
+    mock_daemon_stop.assert_called_once()
 
-  def testBuildCommandCheckEmulatorLogSetup(self):
+  def testBuildCommandCheckEmulatorLogSetup(self, mock_daemon_stop):
     with tempfile.TemporaryDirectory() as logs_dir:
       self.args.logs_dir = logs_dir
       with FvdlTarget.CreateFromArgs(self.args) as target:
         build_command = target._BuildCommand()
         self.assertIn('--emulator-log', build_command)
         self.assertIn('--envs', build_command)
+      mock_daemon_stop.assert_called_once()
 
 
 if __name__ == '__main__':
