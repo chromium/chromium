@@ -60,10 +60,9 @@ class IntentChipButtonBrowserTest
     // For Lacros tests, we need a version of Ash which is new enough to send
     // Preferred Apps over crosapi.
     if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::AppServiceSubscriber::Uuid_) <
-        static_cast<int>(
-            crosapi::mojom::AppServiceSubscriber::MethodMinVersions::
-                kInitializePreferredAppsMinVersion)) {
+            crosapi::mojom::AppServiceProxy::Uuid_) <
+        static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                             kAddPreferredAppMinVersion)) {
       LOG(WARNING) << "Unsupported ash version.";
       return false;
     }
