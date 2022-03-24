@@ -20,7 +20,7 @@
     user-select: none;
   }
 
-  :host([indented]) #header {
+  :host([indented]:not([is-top-visit])) #header {
     padding-inline-start: calc(var(--cluster-padding-horizontal) +
                                var(--top-visit-favicon-size) +
                                var(--favicon-margin));

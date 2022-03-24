@@ -54,7 +54,7 @@ class HistoryClusterElement extends PolymerElement {
       cluster: Object,
 
       /**
-       * Whether the default-hidden related visits are visible.
+       * Whether the default-hidden visits are visible.
        */
       expanded_: {
         type: Boolean,
@@ -63,28 +63,28 @@ class HistoryClusterElement extends PolymerElement {
       },
 
       /**
-       * Whether there are default-hidden related visits.
+       * Whether there are default-hidden visits.
        */
-      hasHiddenRelatedVisits_: {
+      hasHiddenVisits_: {
         type: Boolean,
-        computed: `computeHasHiddenRelatedVisits_(hiddenRelatedVisits_)`,
+        computed: `computeHasHiddenVisits_(hiddenVisits_)`,
         reflectToAttribute: true,
       },
 
       /**
-       * The default-hidden related visits.
+       * The default-hidden visits.
        */
-      hiddenRelatedVisits_: {
+      hiddenVisits_: {
         type: Object,
-        computed: `computeHiddenRelatedVisits_(cluster.visit.relatedVisits.*)`,
+        computed: `computeHiddenVisits_(cluster.visits.*)`,
       },
 
       /**
-       * The always-visible related visits.
+       * The always-visible visits.
        */
-      visibleRelatedVisits_: {
+      visibleVisits_: {
         type: Object,
-        computed: `computeVisibleRelatedVisits_(cluster.visit.relatedVisits.*)`,
+        computed: `computeVisibleVisits_(cluster.visits.*)`,
       },
     };
   }
@@ -98,8 +98,8 @@ class HistoryClusterElement extends PolymerElement {
   private callbackRouter_: PageCallbackRouter;
   private onVisitsRemovedListenerId_: number|null = null;
   private expanded_: boolean;
-  private hiddenRelatedVisits_: Array<URLVisit>;
-  private visibleRelatedVisits_: Array<URLVisit>;
+  private hiddenVisits_: Array<URLVisit>;
+  private visibleVisits_: Array<URLVisit>;
 
   //============================================================================
   // Overridden methods
@@ -149,11 +149,11 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   private onOpenAllVisits_() {
-    const visitsToOpen = [this.cluster.visit, ...this.visibleRelatedVisits_];
-    // Only try to open the hidden related visits if the user actually has
+    const visitsToOpen = this.visibleVisits_;
+    // Only try to open the hidden visits if the user actually has
     // expanded the cluster by clicking "Show More".
     if (this.expanded_) {
-      visitsToOpen.push(...this.hiddenRelatedVisits_);
+      visitsToOpen.push(...this.hiddenVisits_);
     }
 
     BrowserProxyImpl.getInstance().handler.openVisitUrlsInTabGroup(
@@ -163,19 +163,28 @@ class HistoryClusterElement extends PolymerElement {
         ClusterAction.OPENED_IN_TAB_GROUP, this.index);
   }
 
-  private onRemoveVisits_(event: CustomEvent<Array<URLVisit>>) {
+  private onRemoveAllVisits_() {
+    // Pass event up with new detail of all this cluster's visits.
+    this.dispatchEvent(new CustomEvent('remove-visits', {
+      bubbles: true,
+      composed: true,
+      detail: this.cluster.visits,
+    }));
+  }
+
+  private onRemoveVisit_(event: CustomEvent<URLVisit>) {
     // The actual removal is handled at in clusters.ts. This is just a good
     // place to record the metric.
-    const visitsToBeRemoved = event.detail;
+    const visit = event.detail;
+    MetricsProxyImpl.getInstance().recordVisitAction(
+        VisitAction.DELETED, this.getVisitIndex_(visit),
+        MetricsProxyImpl.getVisitType(visit));
 
-    // To match the historic semantics, we only record this metric when a single
-    // visit is requested to be removed by the user.
-    if (visitsToBeRemoved.length === 1) {
-      const visit = visitsToBeRemoved[0];
-      MetricsProxyImpl.getInstance().recordVisitAction(
-          VisitAction.DELETED, this.getVisitIndex_(visit),
-          MetricsProxyImpl.getVisitType(visit));
-    }
+    this.dispatchEvent(new CustomEvent('remove-visits', {
+      bubbles: true,
+      composed: true,
+      detail: [visit],
+    }));
   }
 
   private onToggleButtonKeyDown_(e: KeyboardEvent) {
@@ -225,9 +234,7 @@ class HistoryClusterElement extends PolymerElement {
       }) !== -1;
     };
 
-    // Flatten the cluster's constitutent visits and filter out the removed
-    // ones, if any.
-    const allVisits = [this.cluster.visit, ...this.cluster.visit.relatedVisits];
+    const allVisits = this.cluster.visits;
     const remainingVisits = allVisits.filter(v => !visitHasBeenRemoved(v));
     if (allVisits.length === remainingVisits.length) {
       return;
@@ -245,10 +252,7 @@ class HistoryClusterElement extends PolymerElement {
       MetricsProxyImpl.getInstance().recordClusterAction(
           ClusterAction.DELETED, this.index);
     } else {
-      // Reconstitute the cluster by setting the top visit with the
-      // `remainingVisits` as its related visits.
-      this.set('cluster.visit', remainingVisits.shift()!);
-      this.set('cluster.visit.relatedVisits', remainingVisits);
+      this.set('cluster.visits', remainingVisits);
     }
 
     this.dispatchEvent(new CustomEvent('iron-resize', {
@@ -257,25 +261,32 @@ class HistoryClusterElement extends PolymerElement {
     }));
   }
 
-  private computeHasHiddenRelatedVisits_(): boolean {
-    return this.hiddenRelatedVisits_.length > 0;
+  private computeHasHiddenVisits_(): boolean {
+    return this.hiddenVisits_.length > 0;
   }
 
-  private computeHiddenRelatedVisits_(): Array<URLVisit> {
-    return this.cluster.visit.relatedVisits.filter((visit: URLVisit) => {
-      return visit.belowTheFold;
+  private computeHiddenVisits_(): Array<URLVisit> {
+    return this.cluster.visits.filter((visit: URLVisit) => {
+      return visit.hidden;
     });
   }
 
-  private computeVisibleRelatedVisits_(): Array<URLVisit> {
-    return this.cluster.visit.relatedVisits.filter((visit: URLVisit) => {
-      return !visit.belowTheFold;
+  private computeVisibleVisits_(): Array<URLVisit> {
+    return this.cluster.visits.filter((visit: URLVisit) => {
+      return !visit.hidden;
     });
   }
 
   /**
+   * Returns true if this should be considered a top visit.
+   */
+  private isTopVisit_(index: number, label: string): boolean {
+    return index === 0 && !label;
+  }
+
+  /**
    * Returns the label of the toggle button based on whether the default-hidden
-   * related visits are visible.
+   * visits are visible.
    */
   private getToggleButtonLabel_(_expanded: boolean): string {
     return loadTimeData.getString(
@@ -287,16 +298,7 @@ class HistoryClusterElement extends PolymerElement {
    * if the visit is not found in the cluster at all.
    */
   private getVisitIndex_(visit: URLVisit): number {
-    if (visit === this.cluster.visit) {
-      return 0;
-    }
-
-    const relatedVisitIndex = this.cluster.visit.relatedVisits.indexOf(visit);
-    if (relatedVisitIndex === -1) {
-      return -1;
-    }
-    // Add one, because the "top visit" is the 0th visit.
-    return relatedVisitIndex + 1;
+    return this.cluster.visits.indexOf(visit);
   }
 }
 

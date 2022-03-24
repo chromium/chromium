@@ -11,7 +11,7 @@
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
-  :host([has-hidden-related-visits_]) #container {
+  :host([has-hidden-visits_]) #container {
     /* For containers with a "Show More" button, add some additional spacing for
        the pill button by adding a margin on the container. */
     margin-bottom: var(--cluster-padding-vertical);
@@ -102,7 +102,8 @@
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
     on-open-all-visits="onOpenAllVisits_"
-    on-remove-visits="onRemoveVisits_">
+    on-remove-all-visits="onRemoveAllVisits_"
+    on-remove-visit="onRemoveVisit_">
   <div id="label-row" hidden="[[!cluster.label]]">
     <div id="label">[[cluster.label]]</div>
     <div class="timestamp-and-menu">
@@ -111,16 +112,15 @@
       </menu-container>
     </div>
   </div>
-  <url-visit visit="[[cluster.visit]]" is-top-visit$="[[!cluster.label]]">
-  </url-visit>
-  <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-    <url-visit visit="[[item]]" indented$="[[!cluster.label]]">
+  <template is="dom-repeat" items="[[visibleVisits_]]">
+    <url-visit visit="[[item]]" indented$="[[!cluster.label]]"
+        is-top-visit$="[[isTopVisit_(index, cluster.label)]]">
     </url-visit>
   </template>
   <!-- Disable animation on iron-collapse, as the parent iron-list can't
        easily handle it. -->
   <iron-collapse opened="[[expanded_]]" no-animation>
-    <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
+    <template is="dom-repeat" items="[[hiddenVisits_]]">
       <url-visit visit="[[item]]" indented$="[[!cluster.label]]">
       </url-visit>
     </template>
@@ -136,7 +136,7 @@
       </template>
     </div>
   </div>
-  <div id="visibility-toggle" hidden="[[!hasHiddenRelatedVisits_]]">
+  <div id="visibility-toggle" hidden="[[!hasHiddenVisits_]]">
     <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
         on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
       <span>[[getToggleButtonLabel_(expanded_)]]</span>

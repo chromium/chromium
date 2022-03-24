@@ -79,10 +79,9 @@ class MenuContainerElement extends PolymerElement {
   private onRemoveAllButtonClick_(event: MouseEvent) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent('remove-visits', {
+    this.dispatchEvent(new CustomEvent('remove-all-visits', {
       bubbles: true,
       composed: true,
-      detail: [this.visit, ...this.visit.relatedVisits],
     }));
 
     this.$.actionMenu.get().close();
@@ -91,10 +90,10 @@ class MenuContainerElement extends PolymerElement {
   private onRemoveSelfButtonClick_(event: MouseEvent) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent('remove-visits', {
+    this.dispatchEvent(new CustomEvent('remove-visit', {
       bubbles: true,
       composed: true,
-      detail: [this.visit],
+      detail: this.visit,
     }));
 
     this.$.actionMenu.get().close();

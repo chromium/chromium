@@ -60,12 +60,8 @@ struct URLVisit {
   // Annotations for this visit.
   array<Annotation> annotations;
 
-  // Related visits to this visit; starting with the highest scoring one, if
-  // applicable. Only prominently featured visits have related visits.
-  array<URLVisit> related_visits;
-
   // Whether a related visit is initially hidden.
-  bool below_the_fold;
+  bool hidden;
 
   // A key-value dictionary of additional debug info to show. This is not
   // visible in production, and used for development only.
@@ -79,12 +75,12 @@ struct Cluster {
   // Cluster identifier. See //components/history/core/browser/history_types.h
   int64 id;
 
-  // The prominently featured constituent visit, typically the highest scoring
-  // one, containing its own related visits.
-  URLVisit visit;
+  // A flat list of all the visits in the cluster. The first one is the
+  // "top visit" if the UI needs to specially display a "top visit".
+  array<URLVisit> visits;
 
   // An optional label for the whole cluster. If this is not defined or empty,
-  // `visit` should be displayed prominently instead.
+  // the first visit should be displayed prominently instead.
   string? label;
 
   // Search queries related to this cluster's visits.

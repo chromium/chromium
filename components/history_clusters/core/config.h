@@ -51,8 +51,10 @@ struct Config {
   double min_score_to_always_show_above_the_fold = 0.5;
 
   // If enabled, this is the number of non-zero scored visits to always show
-  // above the fold regardless of score.
-  int num_visits_to_always_show_above_the_fold = 3;
+  // above the fold regardless of score. Note, this value includes the
+  // "top visit". In the unlabeled "top visit" UI configuration, that means the
+  // one "top visit" and three subordinate looking visits will be always shown.
+  size_t num_visits_to_always_show_above_the_fold = 4;
 
   // If enabled, when there is a Journeys search query, the backend re-scores
   // visits within a cluster to account for whether or not that visit matches.

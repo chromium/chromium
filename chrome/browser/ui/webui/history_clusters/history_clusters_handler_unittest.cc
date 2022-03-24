@@ -51,7 +51,7 @@ class HistoryClustersHandlerTest : public testing::Test {
   TestingProfile profile_;
 };
 
-TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_BelowTheFold) {
+TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Hidden) {
   std::vector<history::Cluster> clusters;
 
   // High scoring visits should always be above the fold.
@@ -96,35 +96,31 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_BelowTheFold) {
 
   {
     EXPECT_EQ(mojom_result->clusters[0]->id, 4);
-    EXPECT_EQ(mojom_result->clusters[0]->visit->below_the_fold, false);
-    const auto& related_visits =
-        mojom_result->clusters[0]->visit->related_visits;
-    ASSERT_EQ(related_visits.size(), 4u);
-    EXPECT_EQ(related_visits[0]->below_the_fold, false);
-    EXPECT_EQ(related_visits[1]->below_the_fold, false);
-    EXPECT_EQ(related_visits[2]->below_the_fold, false);
-    EXPECT_EQ(related_visits[3]->below_the_fold, false);
+    const auto& visits = mojom_result->clusters[0]->visits;
+    ASSERT_EQ(visits.size(), 5u);
+    EXPECT_EQ(visits[0]->hidden, false);
+    EXPECT_EQ(visits[1]->hidden, false);
+    EXPECT_EQ(visits[2]->hidden, false);
+    EXPECT_EQ(visits[3]->hidden, false);
+    EXPECT_EQ(visits[4]->hidden, false);
   }
 
   {
     EXPECT_EQ(mojom_result->clusters[1]->id, 6);
-    EXPECT_EQ(mojom_result->clusters[0]->visit->below_the_fold, false);
-    const auto& related_visits =
-        mojom_result->clusters[1]->visit->related_visits;
-    ASSERT_EQ(related_visits.size(), 4u);
-    EXPECT_EQ(related_visits[0]->below_the_fold, false);
-    EXPECT_EQ(related_visits[1]->below_the_fold, false);
-    EXPECT_EQ(related_visits[2]->below_the_fold, false);
-    EXPECT_EQ(related_visits[3]->below_the_fold, true);
+    const auto& visits = mojom_result->clusters[1]->visits;
+    ASSERT_EQ(visits.size(), 5u);
+    EXPECT_EQ(visits[0]->hidden, false);
+    EXPECT_EQ(visits[1]->hidden, false);
+    EXPECT_EQ(visits[2]->hidden, false);
+    EXPECT_EQ(visits[3]->hidden, false);
+    EXPECT_EQ(visits[4]->hidden, true);
   }
 
   {
     EXPECT_EQ(mojom_result->clusters[2]->id, 8);
-    ASSERT_EQ(mojom_result->clusters[2]->visit->related_visits.size(), 1u);
-    EXPECT_EQ(mojom_result->clusters[2]->visit->below_the_fold, false);
-    const auto& related_visits =
-        mojom_result->clusters[02]->visit->related_visits;
-    EXPECT_EQ(related_visits[0]->below_the_fold, true);
+    ASSERT_EQ(mojom_result->clusters[2]->visits.size(), 2u);
+    EXPECT_EQ(mojom_result->clusters[2]->visits[0]->hidden, false);
+    EXPECT_EQ(mojom_result->clusters[2]->visits[1]->hidden, true);
   }
 }
 
