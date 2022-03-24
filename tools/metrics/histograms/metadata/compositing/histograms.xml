@@ -388,6 +388,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Display.OverlayProcessorOzone.MaxOverlaysSupported"
+    units="units" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    This is logged every time a new HardwareCapabilities is received from DRM
+    when display configuration may have changed. It records the number of
+    overlay planes we have available in addition to the primary plane on this
+    device.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.OverlayProcessorOzone.SharedImageExists"
     enum="Boolean" expires_after="2021-09-19">
   <owner>samans@chromium.org</owner>

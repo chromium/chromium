@@ -274,6 +274,10 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
   max_overlays_considered_ =
       std::min(max_overlays_supported, max_overlays_config_);
 
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.OverlayProcessorOzone.MaxOverlaysSupported",
+      max_overlays_supported);
+
   // Different hardware capabilities may mean a different result for a specific
   // combination of overlays, so clear this cache.
   ClearOverlayCombinationCache();
