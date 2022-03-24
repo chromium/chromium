@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
@@ -20,6 +22,8 @@
 #include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "components/permissions/permission_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
 namespace performance_manager {
@@ -45,31 +49,66 @@ constexpr uint32_t BackgroundTabLoadingPolicy::kMinSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kMaxSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kCoresPerSimultaneousTabLoad;
 
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
+                                      bool has_notification_permission)
+    : page_node(std::move(page_node)),
+      has_notification_permission(has_notification_permission) {}
+
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    PageNodeAndNotificationPermission(
+        const PageNodeAndNotificationPermission&
+            page_node_and_notification_permission) = default;
+
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    ~PageNodeAndNotificationPermission() = default;
+
 void ScheduleLoadForRestoredTabs(
     std::vector<content::WebContents*> web_contents_vector) {
-  std::vector<base::WeakPtr<PageNode>> weakptr_page_nodes;
-  weakptr_page_nodes.reserve(web_contents_vector.size());
-  for (auto* content : web_contents_vector) {
-    weakptr_page_nodes.push_back(
-        PerformanceManager::GetPrimaryPageNodeForWebContents(content));
+  std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+      page_node_and_notification_permission_vector;
+  page_node_and_notification_permission_vector.reserve(
+      web_contents_vector.size());
+  for (content::WebContents* content : web_contents_vector) {
+    const GURL last_committed_origin =
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(content);
+    auto notif_permission =
+        PermissionManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(content->GetBrowserContext()))
+            ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
+                                  last_committed_origin, last_committed_origin);
+
+    BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
+        page_node_and_notification_permission(
+            PerformanceManager::GetPrimaryPageNodeForWebContents(content),
+            notif_permission.content_setting == CONTENT_SETTING_ALLOW);
+
+    page_node_and_notification_permission_vector.push_back(
+        page_node_and_notification_permission);
   }
   performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](std::vector<base::WeakPtr<PageNode>> weakptr_page_nodes,
-                        performance_manager::Graph* graph) {
-                       std::vector<PageNode*> page_nodes;
-                       page_nodes.reserve(weakptr_page_nodes.size());
-                       for (auto page_node : weakptr_page_nodes) {
-                         // If the PageNode has been deleted before
-                         // BackgroundTabLoading starts restoring it, then there
-                         // is no need to restore it.
-                         if (PageNode* raw_page = page_node.get())
-                           page_nodes.push_back(raw_page);
-                       }
-                       BackgroundTabLoadingPolicy::GetInstance()
-                           ->ScheduleLoadForRestoredTabs(std::move(page_nodes));
-                     },
-                     std::move(weakptr_page_nodes)));
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<
+                 BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+                 page_node_and_notification_permission_vector,
+             performance_manager::Graph* graph) {
+            std::vector<PageNode*> page_nodes;
+            page_nodes.reserve(
+                page_node_and_notification_permission_vector.size());
+            for (auto page_node_and_notification_permission :
+                 page_node_and_notification_permission_vector) {
+              // If the PageNode has been deleted before
+              // BackgroundTabLoading starts restoring it, then there
+              // is no need to restore it.
+              if (PageNode* raw_page =
+                      page_node_and_notification_permission.page_node.get())
+                page_nodes.push_back(raw_page);
+            }
+            BackgroundTabLoadingPolicy::GetInstance()
+                ->ScheduleLoadForRestoredTabs(std::move(page_nodes));
+          },
+          std::move(page_node_and_notification_permission_vector)));
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy()

@@ -52,6 +52,19 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
                              PageNode::LoadingState previous_state) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
+  // Holds information about a PageNode to load by this policy.
+  struct PageNodeAndNotificationPermission {
+    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
+                                      bool has_notification_permission);
+    PageNodeAndNotificationPermission(
+        const PageNodeAndNotificationPermission&
+            page_node_and_notification_permission);
+    ~PageNodeAndNotificationPermission();
+
+    base::WeakPtr<PageNode> page_node;
+    bool has_notification_permission;
+  };
+
   // Schedules the PageNodes in |page_nodes| to be loaded when appropriate.
   void ScheduleLoadForRestoredTabs(std::vector<PageNode*> page_nodes);
 
