@@ -148,6 +148,7 @@ static_library("performance_manager") {
     "public/render_frame_host_proxy.h",
     "public/render_process_host_id.h",
     "public/render_process_host_proxy.h",
+    "public/user_tuning/prefs.h",
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/v8_detailed_memory_any_seq.h",
     "public/v8_memory/web_memory.h",
@@ -164,6 +165,7 @@ static_library("performance_manager") {
     "service_worker_context_adapter.h",
     "tab_helper_frame_node_source.cc",
     "tab_helper_frame_node_source.h",
+    "user_tuning/prefs.cc",
     "v8_memory/v8_context_tracker.cc",
     "v8_memory/v8_context_tracker.h",
     "v8_memory/v8_context_tracker_helpers.cc",
@@ -189,6 +191,7 @@ static_library("performance_manager") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/pref_registry:pref_registry",
     "//third_party/blink/public/common:headers",
   ]
 
