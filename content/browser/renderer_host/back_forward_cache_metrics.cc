@@ -168,10 +168,15 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       devtools_instrumentation::BackForwardCacheNotUsed(
           navigation, page_store_result_.get(), page_store_tree_result_.get());
     }
+    if (test_observer_) {
+      // This is for reporting |page_store_tree_result_| for testing.
+      test_observer_->NotifyNotRestoredReasons(
+          std::move(page_store_tree_result_));
+    }
   }
-
   page_store_result_ =
       std::make_unique<BackForwardCacheCanStoreDocumentResult>();
+  page_store_tree_result_ = nullptr;
   previous_navigation_is_served_from_bfcache_ =
       navigation->IsServedFromBackForwardCache();
   previous_navigation_is_history_ = IsHistoryNavigation(navigation);
@@ -357,6 +362,8 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     // unittests.
     return;
   }
+  // TODO(yuzus): Update |page_store_tree_result_| to match with
+  // |page_store_result_|.
 }
 
 void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(

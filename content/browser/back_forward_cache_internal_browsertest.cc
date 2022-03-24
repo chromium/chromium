@@ -757,35 +757,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
-  ExecuteScriptAsync(rfh_a, R"(
+  ExecuteScriptAsync(rfh_a.get(), R"(
     let i = 0;
     while (true) { i++; }
   )");
 
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  RenderProcessHost* process = rfh_a->GetProcess();
+  RenderProcessHost* process = rfh_a.get()->GetProcess();
   RenderProcessHostWatcher destruction_observer(
       process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   // rfh_a should be destroyed (not kept in the cache).
   destruction_observer.Wait();
-  delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // rfh_b should still be the current frame.
-  EXPECT_EQ(current_frame_host(), rfh_b);
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+  EXPECT_EQ(current_frame_host(), rfh_b.get());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kTimeoutPuttingInCache}, {}, {}, {}, {},
                     FROM_HERE);
+
+  // Make sure that the tree reasons match the flattened reasons.
+  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
+              MatchesDocumentResult(
+                  NotStoredReasons(NotRestoredReason::kTimeoutPuttingInCache),
+                  BlockListedFeatures()));
 }
 
 // Test the race condition where a document is evicted from the BackForwardCache
@@ -1166,12 +1170,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   // 3) Fast forward to just before eviction is due.
   task_runner->FastForwardBy(time_to_live_in_back_forward_cache - delta);
@@ -1185,11 +1190,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
 
   // 6) Confirm A is evicted.
   delete_observer_rfh_a.WaitUntilDeleted();
-  EXPECT_EQ(current_frame_host(), rfh_b);
+  EXPECT_EQ(current_frame_host(), rfh_b.get());
 
   // 7) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kTimeout}, {}, {}, {}, {}, FROM_HERE);
+  // Make sure that the tree reasons match the flattened reasons.
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(NotStoredReasons(NotRestoredReason::kTimeout),
+                            BlockListedFeatures()));
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -24,6 +24,10 @@
 
 namespace content {
 
+using NotStoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotStoredReasons;
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
 MATCHER(InBackForwardCache, "") {
   return arg->IsInBackForwardCache();
@@ -58,11 +62,17 @@ struct FeatureEqualOperator {
 }  // namespace
 
 // Test about the BackForwardCache.
-class BackForwardCacheBrowserTest : public ContentBrowserTest,
-                                    public WebContentsObserver {
+class BackForwardCacheBrowserTest
+    : public ContentBrowserTest,
+      public WebContentsObserver,
+      public BackForwardCacheMetrics::TestObserver {
  public:
   BackForwardCacheBrowserTest();
   ~BackForwardCacheBrowserTest() override;
+
+  // TestObserver:
+  void NotifyNotRestoredReasons(
+      std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result) override;
 
  protected:
   using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
@@ -172,6 +182,16 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   // assert that the URL after navigation is |url|.
   void NavigateAndBlock(GURL url, int history_offset);
 
+  static testing::Matcher<BackForwardCacheCanStoreDocumentResult>
+  MatchesDocumentResult(testing::Matcher<NotStoredReasons> not_stored,
+                        BlockListedFeatures block_listed);
+
+  // Access the tree result of NotRestoredReason for the last main frame
+  // navigation.
+  BackForwardCacheCanStoreTreeResult* GetTreeResult() {
+    return tree_result_.get();
+  }
+
   base::HistogramTester histogram_tester_;
 
   bool same_site_back_forward_cache_enabled_ = true;
@@ -241,6 +261,10 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   std::vector<UkmMetrics> expected_ukm_outcomes_;
   std::vector<UkmMetrics> expected_ukm_not_restored_reasons_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+
+  // Store the tree result of NotRestoredReasons for the last main frame
+  // navigation.
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result_;
 
   // Indicates whether metrics for all sites regardless of the domains are
   // checked or not.

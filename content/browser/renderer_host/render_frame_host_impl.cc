@@ -6024,9 +6024,9 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     case LifecycleStateImpl::kReadyToBeDeleted:
       return true;
     case LifecycleStateImpl::kInBackForwardCache: {
-      BackForwardCacheCanStoreDocumentResult can_store;
-      can_store.NoDueToDisallowActivation(reason);
-      EvictFromBackForwardCacheWithReasons(can_store);
+      BackForwardCacheCanStoreDocumentResult can_store_flat;
+      can_store_flat.NoDueToDisallowActivation(reason);
+      EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
     }
       return true;
     case LifecycleStateImpl::kPrerendering:
@@ -6063,9 +6063,9 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
   }
   // If the lifecycle state is |LifecycleStateImpl::kInBackForwardCache|, we
   // cannot handle accessibility events any more. We should evict the entry.
-  BackForwardCacheCanStoreDocumentResult can_store;
-  can_store.NoDueToAXEvents(events);
-  EvictFromBackForwardCacheWithReasons(can_store);
+  BackForwardCacheCanStoreDocumentResult can_store_flat;
+  can_store_flat.NoDueToAXEvents(events);
+  EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
   return true;
 }
 
@@ -6081,22 +6081,36 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
   // details.
   DCHECK_NE(reason,
             BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
-  BackForwardCacheCanStoreDocumentResultWithTree can_store =
-      frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
-          GetMainFrame());
-  can_store.flattened_reasons.No(reason);
-  EvictFromBackForwardCacheWithReasons(can_store.flattened_reasons,
-                                       std::move(can_store.tree_reasons));
+
+  BackForwardCacheCanStoreDocumentResult flattened_reasons;
+  flattened_reasons.No(reason);
+  EvictFromBackForwardCacheWithFlattenedReasons(flattened_reasons);
 }
 
-void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
-    const BackForwardCacheCanStoreDocumentResult& can_store_flattened,
-    std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree) {
+void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedReasons(
+    BackForwardCacheCanStoreDocumentResult can_store_flat) {
+  // Create a NotRestoredReasons tree that has |can_store_flat| as a reason
+  // for |this| render frame host.
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree =
+      BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
+          *this, can_store_flat);
+  BackForwardCacheCanStoreDocumentResultWithTree can_store(
+      can_store_flat, std::move(can_store_tree));
+  EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
+}
+
+void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
+    BackForwardCacheCanStoreDocumentResultWithTree& can_store) {
+  BackForwardCacheCanStoreDocumentResult& can_store_flattened =
+      can_store.flattened_reasons;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree =
+      std::move(can_store.tree_reasons);
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
                "can_store", can_store_flattened.ToString(), "rfh",
                static_cast<void*>(this));
   TRACE_EVENT("navigation",
-              "RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons",
+              "RenderFrameHostImpl::"
+              "EvictFromBackForwardCacheWithFlattenedAndTreeReasons",
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
               can_store_flattened);
   DCHECK(IsBackForwardCacheEnabled());
@@ -12569,8 +12583,7 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
 
   if (can_store)
     return;
-  EvictFromBackForwardCacheWithReasons(can_store.flattened_reasons,
-                                       std::move(can_store.tree_reasons));
+  EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
 }
 
 void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(

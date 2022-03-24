@@ -478,12 +478,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsInactiveAndDisallowActivationForAXEvents(
       const std::vector<ui::AXEvent>& events);
 
+  // Evict the RenderFrameHostImpl with |reason| that causes the eviction. This
+  // constructs a flattened list of NotRestoredReasons and calls
+  // |EvictFromBackForwardCacheWithFlattenedReasons|.
   void EvictFromBackForwardCacheWithReason(
       BackForwardCacheMetrics::NotRestoredReason reason);
-  void EvictFromBackForwardCacheWithReasons(
-      const BackForwardCacheCanStoreDocumentResult& can_store_flat,
-      std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree =
-          nullptr);
+  // Evict the RenderFrameHostImpl with |can_store_flat| as the eviction reason.
+  // This constructs a tree of NotRestoredReasons based on |can_store_flat| and
+  // calls |EvictFromBackForwardCacheWithFlattenedAndTreeReasons|.
+  void EvictFromBackForwardCacheWithFlattenedReasons(
+      BackForwardCacheCanStoreDocumentResult can_store_flat);
+  // Evict the RenderFrameHostImpl with |can_store| that causes the eviction.
+  // This reports the flattened list and the tree of NotRestoredReasons to
+  // metrics, and posts a task to evict the frame.
+  void EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
+      BackForwardCacheCanStoreDocumentResultWithTree& can_store);
 
   // Only for testing sticky WebBackForwardCacheDisablingFeature.
   void UseDummyStickyBackForwardCacheDisablingFeatureForTesting();

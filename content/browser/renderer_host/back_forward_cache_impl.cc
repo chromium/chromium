@@ -983,17 +983,41 @@ void BackForwardCacheImpl::PopulateReasonsForDocument(
   }
 }
 
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
+    RenderFrameHostImpl& rfh,
+    BackForwardCacheCanStoreDocumentResult& eviction_reason) {
+  BackForwardCacheImpl::NotRestoredReasonBuilder builder(
+      rfh.GetMainFrame(),
+      /* include_non_sticky = */ false,
+      /* create_tree = */ true,
+      BackForwardCacheImpl::NotRestoredReasonBuilder::EvictionInfo(
+          rfh, &eviction_reason));
+  return builder.GetTreeResult();
+}
+
 BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
     RenderFrameHostImpl* root_rfh,
     bool include_non_sticky,
     bool create_tree)
+    : NotRestoredReasonBuilder(root_rfh,
+                               include_non_sticky,
+                               create_tree,
+                               /* eviction_info = */ absl::nullopt) {}
+
+BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
+    RenderFrameHostImpl* root_rfh,
+    bool include_non_sticky,
+    bool create_tree,
+    absl::optional<EvictionInfo> eviction_info)
     : root_rfh_(root_rfh),
       bfcache_(root_rfh_->frame_tree_node()
                    ->navigator()
                    .controller()
                    .GetBackForwardCache()),
       include_non_sticky_(include_non_sticky),
-      create_tree_(create_tree) {
+      create_tree_(create_tree),
+      eviction_info_(eviction_info) {
   // |root_rfh_| should be either primary main frame or back/forward cached
   // page's main frame.
   DCHECK(root_rfh_->IsInPrimaryMainFrame() ||
@@ -1008,9 +1032,23 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::~NotRestoredReasonBuilder() =
 std::unique_ptr<BackForwardCacheCanStoreTreeResult> BackForwardCacheImpl::
     NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtreeIfNeededFor(
         RenderFrameHostImpl* rfh) {
+  // TODO(https://crbug.com/1280150): Add cache-control:no-store reasons to the
+  // tree.
+
   BackForwardCacheCanStoreDocumentResult result_for_rfh;
-  // Populate |result_for_rfh| by checking the bfcache eligibility of |rfh|.
-  bfcache_.PopulateReasonsForDocument(result_for_rfh, rfh, include_non_sticky_);
+  if (eviction_info_.has_value()) {
+    // When |eviction_info_| is set, that means that we are populating the
+    // reasons for eviction. In that case, we do not need to check each frame's
+    // eligibility, but only mark |rfh_to_be_evicted| with |reasons|, as it is
+    // the cause of eviction.
+    if (rfh == eviction_info_->rfh_to_be_evicted) {
+      result_for_rfh.AddReasonsFrom(*(eviction_info_->reasons));
+    }
+  } else {
+    // Populate |result_for_rfh| by checking the bfcache eligibility of |rfh|.
+    bfcache_.PopulateReasonsForDocument(result_for_rfh, rfh,
+                                        include_non_sticky_);
+  }
   flattened_result_.AddReasonsFrom(result_for_rfh);
 
   // Finds the reasons recursively and create the reason subtree for the
@@ -1281,8 +1319,7 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
     if (!can_store) {
       (*matching_entry)
           ->render_frame_host()
-          ->EvictFromBackForwardCacheWithReasons(
-              can_store.flattened_reasons, std::move(can_store.tree_reasons));
+          ->EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
     }
   }
 

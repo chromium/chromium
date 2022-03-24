@@ -236,6 +236,18 @@ class BackForwardCacheMetrics
   // Should be called only from the UI thread.
   CONTENT_EXPORT static void OverrideTimeForTesting(base::TickClock* clock);
 
+  class TestObserver {
+   public:
+    virtual ~TestObserver() = default;
+    // Report the tree result of NotRestoredReason to the observer.
+    virtual void NotifyNotRestoredReasons(
+        std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result) = 0;
+  };
+
+  void SetObserverForTesting(TestObserver* observer) {
+    test_observer_ = observer;
+  }
+
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
 
@@ -306,6 +318,8 @@ class BackForwardCacheMetrics
   bool previous_navigation_is_served_from_bfcache_ = false;
 
   absl::optional<base::TimeTicks> renderer_killed_timestamp_;
+
+  TestObserver* test_observer_ = nullptr;
 
   // The reason why the last attempted navigation in the frame used or didn't
   // use a new BrowsingInstance.
