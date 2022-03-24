@@ -118,42 +118,57 @@ public class RenderTestRule extends TestWatcher {
         String ANDROID_VR_RENDER_TESTS = "android-vr-render-tests";
     }
 
-    @StringDef({Component.NONE, Component.BLINK_FORMS_COLOR, Component.BLINK_PAYMENTS,
+    @StringDef({Component.NONE, Component.BLINK_CONTACTS, Component.BLINK_FORMS_COLOR,
+            Component.BLINK_PAYMENTS, Component.PRIVACY, Component.PRIVACY_INCOGNITO,
             Component.SERVICES_SIGN_IN, Component.SERVICES_SYNC, Component.UI_BROWSER_AUTOFILL,
-            Component.UI_BROWSER_BOOKMARKS, Component.UI_BROWSER_CONTENT_SUGGESTIONS,
-            Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
+            Component.UI_BROWSER_BOOKMARKS, Component.UI_BROWSER_BUBBLES_PAGE_INFO,
+            Component.UI_BROWSER_CONTENT_SUGGESTIONS, Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
             Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY, Component.UI_BROWSER_FIRST_RUN,
-            Component.UI_BROWSER_INCOGNITO, Component.UI_BROWSER_MOBILE,
+            Component.UI_BROWSER_INCOGNITO, Component.UI_BROWSER_INFOBARS,
+            Component.UI_BROWSER_MEDIA_PICKER, Component.UI_BROWSER_MOBILE,
             Component.UI_BROWSER_MOBILE_APP_MENU, Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
             Component.UI_BROWSER_MOBILE_CUSTOM_TABS, Component.UI_BROWSER_MOBILE_MESSAGES,
-            Component.UI_BROWSER_MOBILE_START, Component.UI_BROWSER_MOBILE_TAB_SWITCHER,
+            Component.UI_BROWSER_MOBILE_RECENT_TABS, Component.UI_BROWSER_MOBILE_SETTINGS,
+            Component.UI_BROWSER_MOBILE_START, Component.UI_BROWSER_MOBILE_TAB_GROUPS,
+            Component.UI_BROWSER_MOBILE_TAB_SWITCHER, Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
             Component.UI_BROWSER_NEW_TAB_PAGE, Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
             Component.UI_BROWSER_OMNIBOX, Component.UI_BROWSER_SEARCH_VOICE,
             Component.UI_BROWSER_SHARING, Component.UI_BROWSER_SHOPPING,
             Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
-            Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR})
+            Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
+            Component.UI_BROWSER_WEB_APP_INSTALLS, Component.UI_SETTINGS_PRIVACY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Component {
         // Default for now, likely to be removed once all existing uses have a valid component.
         String NONE = "N/A";
+        String BLINK_CONTACTS = "Blink>Contacts";
         String BLINK_FORMS_COLOR = "Blink>Forms>Color";
         String BLINK_PAYMENTS = "Blink>Payments";
+        String PRIVACY = "Privacy";
+        String PRIVACY_INCOGNITO = "Privacy>Incognito";
         String SERVICES_SIGN_IN = "Services>SignIn";
         String SERVICES_SYNC = "Services>Sync";
         String UI_BROWSER_AUTOFILL = "UI>Browser>Autofill";
         String UI_BROWSER_BOOKMARKS = "UI>Browser>Bookmarks";
+        String UI_BROWSER_BUBBLES_PAGE_INFO = "UI>Browser>Bubbles>PageInfo";
         String UI_BROWSER_CONTENT_SUGGESTIONS = "UI>Browser>ContentSuggestions";
         String UI_BROWSER_CONTENT_SUGGESTIONS_FEED = "UI>Browser>ContentSuggestions>Feed";
         String UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY = "UI>Browser>ContentSuggestions>History";
         String UI_BROWSER_FIRST_RUN = "UI>Browser>FirstRun";
         String UI_BROWSER_INCOGNITO = "UI>Browser>Incognito";
+        String UI_BROWSER_INFOBARS = "UI>Browser>Infobars";
+        String UI_BROWSER_MEDIA_PICKER = "UI>Browser>MediaPicker";
         String UI_BROWSER_MOBILE = "UI>Browser>Mobile";
         String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
         String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
         String UI_BROWSER_MOBILE_CUSTOM_TABS = "UI>Browser>Mobile>CustomTabs";
         String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
+        String UI_BROWSER_MOBILE_RECENT_TABS = "UI>Browser>Mobile>RecentTabs";
+        String UI_BROWSER_MOBILE_SETTINGS = "UI>Browser>Mobile>Settings";
         String UI_BROWSER_MOBILE_START = "UI>Browser>Mobile>Start";
+        String UI_BROWSER_MOBILE_TAB_GROUPS = "UI>Browser>Mobile>TabGroups";
         String UI_BROWSER_MOBILE_TAB_SWITCHER = "UI>Browser>Mobile>TabSwitcher";
+        String UI_BROWSER_MOBILE_TAB_SWITCHER_GRID = "UI>Browser>Mobile>TabSwitcher>Grid";
         String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
         String UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES = "UI>Browser>NewTabPage>ExploreSites";
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
@@ -163,6 +178,8 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_SHOPPING_MERCHANT_TRUST = "UI>Browser>Shopping>MerchantTrust";
         String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
         String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
+        String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
+        String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";
     }
 
     // Skia Gold-specific constructor used by the builder.

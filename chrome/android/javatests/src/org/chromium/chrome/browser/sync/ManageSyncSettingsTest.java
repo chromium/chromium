@@ -104,6 +104,7 @@ public class ManageSyncSettingsTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
     @Test

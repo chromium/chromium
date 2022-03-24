@@ -79,7 +79,10 @@ public class ContactsPickerDialogTest
     private WebContents mWebContents;
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.BLINK_CONTACTS)
+                    .build();
 
     // The dialog we are testing.
     private ContactsPickerDialog mDialog;

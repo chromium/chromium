@@ -141,7 +141,10 @@ public class TabGridDialogTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
+                    .build();
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {

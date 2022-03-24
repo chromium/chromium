@@ -56,7 +56,10 @@ public class RecentTabsPageTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(3).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(3)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
+                    .build();
 
     private FakeRecentlyClosedTabManager mManager;
     private Tab mTab;

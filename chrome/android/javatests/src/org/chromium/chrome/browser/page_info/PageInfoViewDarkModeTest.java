@@ -62,7 +62,10 @@ public class PageInfoViewDarkModeTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(5).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(5)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
+                    .build();
 
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);

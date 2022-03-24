@@ -88,9 +88,12 @@ public class PriceTrackingDialogTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
-                                                          .setRevision(RENDER_TEST_REVISION)
-                                                          .build();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_SHOPPING_PRICE_TRACKING)
+                    .build();
 
     @Before
     public void setUp() throws Exception {

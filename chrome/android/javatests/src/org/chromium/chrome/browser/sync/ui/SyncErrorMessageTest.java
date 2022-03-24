@@ -74,7 +74,10 @@ public class SyncErrorMessageTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(2)
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
+                    .build();
 
     @Before
     public void setUp() {

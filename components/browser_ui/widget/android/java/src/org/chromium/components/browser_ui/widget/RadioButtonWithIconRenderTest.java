@@ -45,10 +45,12 @@ public class RadioButtonWithIconRenderTest extends BlankUiTestActivityTestCase {
             "Test rendering of the icon in a disabled state.";
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
-                                                    .setRevision(REVISION)
-                                                    .setDescription(REVISION_DESCRIPTION)
-                                                    .build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(REVISION)
+                    .setDescription(REVISION_DESCRIPTION)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .build();
 
     private RadioButtonWithDescriptionLayout mLayout;
 

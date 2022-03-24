@@ -100,7 +100,9 @@ public class ReturnToChromeTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
+                    .build();
 
     class ActivityInflationObserver implements ActivityStateListener, InflationObserver {
         @Override

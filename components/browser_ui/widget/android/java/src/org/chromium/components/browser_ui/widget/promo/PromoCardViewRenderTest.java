@@ -48,7 +48,10 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .build();
 
     public PromoCardViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

@@ -68,7 +68,9 @@ public class AccountManagementFragmentTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
+                    .build();
 
     @Before
     public void setUp() {

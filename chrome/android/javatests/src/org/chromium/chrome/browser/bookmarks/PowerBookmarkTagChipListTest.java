@@ -41,7 +41,9 @@ import java.io.IOException;
 public class PowerBookmarkTagChipListTest extends BlankUiTestActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
+                    .build();
 
     private ViewGroup mContentView;
     private PowerBookmarkTagChipList mTagChipList;

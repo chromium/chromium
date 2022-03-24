@@ -53,7 +53,9 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     private Runnable mSeeOtherTabsRunnableMock;
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
+                    .build();
 
     @Override
     public void setUpTest() throws Exception {

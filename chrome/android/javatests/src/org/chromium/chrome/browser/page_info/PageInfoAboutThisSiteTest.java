@@ -109,7 +109,9 @@ public class PageInfoAboutThisSiteTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
+                    .build();
 
     @Mock
     private PageInfoAboutThisSiteController.Natives mMockAboutThisSiteJni;

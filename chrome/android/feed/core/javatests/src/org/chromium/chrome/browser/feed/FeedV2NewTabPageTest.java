@@ -150,7 +150,10 @@ public class FeedV2NewTabPageTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
+                    .build();
 
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);

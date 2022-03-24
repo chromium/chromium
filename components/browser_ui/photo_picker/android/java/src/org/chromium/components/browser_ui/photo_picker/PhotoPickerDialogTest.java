@@ -69,7 +69,10 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MEDIA_PICKER)
+                    .build();
 
     private WindowAndroid mWindowAndroid;
 

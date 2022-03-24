@@ -102,7 +102,10 @@ public class AccountPickerBottomSheetRenderTest {
 
     @Rule
     public final RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(3).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(3)
+                    .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();

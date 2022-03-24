@@ -123,9 +123,11 @@ public class MainSettingsFragmentTest {
                                                 .around(mSettingsActivityTestRule);
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
-                                                          .setRevision(RENDER_TEST_REVISION)
-                                                          .build();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_SETTINGS)
+                    .build();
     @Mock
     public TemplateUrlService mMockTemplateUrlService;
     @Mock

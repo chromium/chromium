@@ -181,7 +181,10 @@ public class PageInfoViewTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(7).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(7)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
+                    .build();
 
     private boolean mIsSystemLocationSettingEnabled = true;
 

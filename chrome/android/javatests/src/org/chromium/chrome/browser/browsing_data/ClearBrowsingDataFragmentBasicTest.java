@@ -65,7 +65,9 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.PRIVACY)
+                    .build();
 
     @Mock
     private SyncService mMockSyncService;

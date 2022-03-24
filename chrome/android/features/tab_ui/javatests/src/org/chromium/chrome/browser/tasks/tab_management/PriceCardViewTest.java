@@ -49,7 +49,10 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(
+                            ChromeRenderTestRule.Component.UI_BROWSER_SHOPPING_PRICE_TRACKING)
+                    .build();
 
     public PriceCardViewTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

@@ -47,10 +47,12 @@ public class RadioButtonRenderTest extends BlankUiTestActivityTestCase {
             "Use Google standard colors as the background.";
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
-                                                    .setRevision(REVISION)
-                                                    .setDescription(REVISION_DESCRIPTION)
-                                                    .build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(REVISION)
+                    .setDescription(REVISION_DESCRIPTION)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .build();
 
     private RadioButtonWithDescriptionLayout mLayout;
 

@@ -40,6 +40,7 @@ public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
                     .build();
 
     @Before

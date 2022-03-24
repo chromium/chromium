@@ -37,7 +37,10 @@ public final class LaunchpadActivityTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_WEB_APP_INSTALLS)
+                    .build();
 
     private LaunchpadActivity mLaunchpadActivity;
     private LaunchpadCoordinator mLaunchpadCoordinator;

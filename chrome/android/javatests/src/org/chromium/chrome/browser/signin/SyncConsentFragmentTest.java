@@ -132,6 +132,7 @@ public class SyncConsentFragmentTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_REVISION)
                     .setDescription(RENDER_DESCRIPTION)
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
     @Mock

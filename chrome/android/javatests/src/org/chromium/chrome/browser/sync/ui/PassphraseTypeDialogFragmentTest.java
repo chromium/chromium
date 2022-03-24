@@ -44,7 +44,10 @@ import java.io.IOException;
 public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCase {
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(RenderTestRule.Component.SERVICES_SYNC)
+                    .build();
 
     private static final String TAG = "PassphraseTypeDialogFragmentTest";
 

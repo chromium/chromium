@@ -71,7 +71,9 @@ public class FreUMADialogTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_FIRST_RUN)
+                    .build();
 
     @Mock
     private Listener mListenerMock;

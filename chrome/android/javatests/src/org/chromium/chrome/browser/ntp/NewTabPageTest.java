@@ -116,9 +116,11 @@ public class NewTabPageTest {
     public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
-                                                          .setRevision(RENDER_TEST_REVISION)
-                                                          .build();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_NEW_TAB_PAGE)
+                    .build();
     @Mock
     OmniboxStub mOmniboxStub;
     @Mock

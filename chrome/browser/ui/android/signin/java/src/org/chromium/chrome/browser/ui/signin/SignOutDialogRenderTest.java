@@ -50,7 +50,9 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
 
     @Rule
     public final JniMocker mocker = new JniMocker();
