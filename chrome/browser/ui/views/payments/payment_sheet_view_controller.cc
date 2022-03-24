@@ -876,9 +876,6 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
           },
           dialog()));
 
-  // TODO(pbos): Investigate whether this override is necessary.
-  link_style.override_color = gfx::kGoogleBlue700;
-
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetInsideBorderInsets(gfx::Insets(0, kPaymentRequestRowHorizontalInsets))

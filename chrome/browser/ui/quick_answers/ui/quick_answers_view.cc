@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -216,6 +217,9 @@ class ReportQueryView : public views::Button {
 
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
+    SetBackground(views::CreateThemedSolidBackground(
+        this, kColorQuickAnswersReportQueryButtonBackground));
+
     auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -259,17 +263,9 @@ class ReportQueryView : public views::Button {
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
 
-    const bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
-
-    // Hard code color for dark mode since we use special specs for this
-    // temporary view. Will remove the usage after we remove this view.
-    const auto background_color =
-        should_use_dark_colors ? SkColorSetA(gfx::kGoogleBlue300, 0x4C /*30%*/)
-                               : gfx::kGoogleBlue050;
-    const auto foreground_color =
-        should_use_dark_colors ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
-
-    SetBackground(views::CreateSolidBackground(background_color));
+    const auto* const color_provider = GetColorProvider();
+    const SkColor foreground_color =
+        color_provider->GetColor(kColorQuickAnswersReportQueryButtonForeground);
     dogfood_icon_->SetImage(gfx::CreateVectorIcon(
         vector_icons::kDogfoodIcon, kDogfoodIconSizeDip, foreground_color));
     description_label_->SetEnabledColor(foreground_color);

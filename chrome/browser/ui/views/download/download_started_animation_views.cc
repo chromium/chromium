@@ -8,6 +8,7 @@
 #include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -66,16 +67,16 @@ class DownloadStartedAnimationViews : public gfx::LinearAnimation,
 DownloadStartedAnimationViews::DownloadStartedAnimationViews(
     content::WebContents* web_contents)
     : gfx::LinearAnimation(kMoveTime, kFrameRateHz, nullptr), popup_(nullptr) {
-  gfx::ImageSkia download_image =
-      gfx::CreateVectorIcon(kFileDownloadShelfIcon, 72, gfx::kGoogleBlue500);
+  auto download_image = ui::ImageModel::FromVectorIcon(
+      kFileDownloadShelfIcon, kColorDownloadStartedAnimationForeground, 72);
 
   // If we're too small to show the download image, then don't bother -
   // the shelf will be enough.
   web_contents_bounds_ = web_contents->GetContainerBounds();
-  if (web_contents_bounds_.height() < download_image.height())
+  if (web_contents_bounds_.height() < download_image.Size().height())
     return;
 
-  SetImage(&download_image);
+  SetImage(download_image);
 
   popup_ = new views::Widget;
 

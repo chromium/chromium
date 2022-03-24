@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -24,23 +26,28 @@
 
 namespace {
 
-std::unique_ptr<views::Textfield> MakePinTextField(
-    views::TextfieldController* controller,
-    views::View* label) {
-  constexpr int kMinWidthInChars = 6;
-  constexpr int kDefaultWidthInChars = 20;
-  constexpr int kBottomBorderThickness = 2;
+class PinTextfield : public views::Textfield {
+ public:
+  PinTextfield(views::TextfieldController* controller, views::View* label) {
+    SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
+    SetMinimumWidthInChars(6);
+    SetDefaultWidthInChars(20);
 
-  auto field = std::make_unique<views::Textfield>();
-  field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
-  field->SetMinimumWidthInChars(kMinWidthInChars);
-  field->SetDefaultWidthInChars(kDefaultWidthInChars);
-  field->SetBorder(views::CreateSolidSidedBorder(0, 0, kBottomBorderThickness,
-                                                 0, gfx::kGoogleBlue500));
-  field->set_controller(controller);
-  field->SetAssociatedLabel(label);
-  return field;
-}
+    set_controller(controller);
+    SetAssociatedLabel(label);
+  }
+  PinTextfield(const PinTextfield&) = delete;
+  PinTextfield& operator=(const PinTextfield&) = delete;
+  ~PinTextfield() override = default;
+
+  void OnThemeChanged() override {
+    views::Textfield::OnThemeChanged();
+    constexpr int kBottomBorderThickness = 2;
+    SetBorder(views::CreateSolidSidedBorder(
+        0, 0, kBottomBorderThickness, 0,
+        GetColorProvider()->GetColor(kColorWebAuthnPinTextfieldBottomBorder)));
+  }
+};
 
 }  // namespace
 
@@ -81,13 +88,13 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
     AddChildView(std::make_unique<views::View>());
   }
 
-  pin_text_field_ = AddChildView(MakePinTextField(this, pin_label));
+  pin_text_field_ =
+      AddChildView(std::make_unique<PinTextfield>(this, pin_label));
 
   if (show_confirmation_text_field_) {
     DCHECK(confirmation_label_ptr);
-    auto confirmation_text_field =
-        MakePinTextField(this, confirmation_label_ptr);
-    confirmation_text_field_ = AddChildView(std::move(confirmation_text_field));
+    confirmation_text_field_ = AddChildView(
+        std::make_unique<PinTextfield>(this, confirmation_label_ptr));
   } else {
     AddChildView(std::make_unique<views::View>());
   }

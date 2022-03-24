@@ -223,6 +223,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkDragImageIconBackground] = {
       kColorBookmarkDragImageForeground};
   mixer[kColorCaptionButtonBackground] = {SK_ColorTRANSPARENT};
+  mixer[kColorCapturedTabContentsBorder] = {ui::kColorAccent};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
@@ -233,10 +234,14 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadShelfContentAreaSeparator] = ui::AlphaBlend(
       kColorToolbarButtonIcon, kColorDownloadShelfBackground, 0x3A);
   mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
+  mixer[kColorDownloadStartedAnimationForeground] = {ui::kColorAccent};
   mixer[kColorDownloadToolbarButtonActive] = {ui::kColorThrobber};
   mixer[kColorDownloadToolbarButtonInactive] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
+  mixer[kColorExtensionIconBadgeBackgroundDefault] = {ui::kColorAccent};
+  mixer[kColorExtensionIconBadgeForegroundDefault] =
+      ui::GetColorWithMaxContrast(kColorExtensionIconBadgeBackgroundDefault);
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
   mixer[kColorEyedropperCentralPixelInnerRing] = {SK_ColorBLACK};
   mixer[kColorEyedropperCentralPixelOuterRing] = {SK_ColorWHITE};
@@ -266,6 +271,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
+  mixer[kColorMediaRouterIconActive] = {ui::kColorAccent};
+  mixer[kColorMediaRouterIconError] = {ui::kColorAlertHighSeverity};
+  mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverity};
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
   mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300
@@ -325,6 +333,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                              : gfx::kGoogleGreen600};
   mixer[kColorQrCodeBackground] = {SK_ColorWHITE};
   mixer[kColorQrCodeBorder] = {ui::kColorMidground};
+  mixer[kColorQuickAnswersReportQueryButtonBackground] =
+      ui::SetAlpha(ui::kColorAccent, 0x0A);
+  mixer[kColorQuickAnswersReportQueryButtonForeground] = {ui::kColorAccent};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
   mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
   mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
@@ -500,6 +511,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabStrokeFrameActive] = {kColorToolbarTopSeparatorFrameActive};
   mixer[kColorTabStrokeFrameInactive] = {
       kColorToolbarTopSeparatorFrameInactive};
+  mixer[kColorTabstripLoadingProgressBackground] =
+      ui::AlphaBlend(ui::kColorAccent, kColorToolbar, 0x32);
+  mixer[kColorTabstripLoadingProgressForeground] = {ui::kColorAccent};
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);
@@ -532,6 +546,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTopSeparatorFrameInactive] =
       GetToolbarTopSeparatorColorTransform(kColorToolbar,
                                            ui::kColorFrameInactive);
+  mixer[kColorWebAuthnPinTextfieldBottomBorder] = {ui::kColorAccent};
   mixer[kColorWebContentsBackground] = {kColorNewTabPageBackground};
   mixer[kColorWebContentsBackgroundLetterboxing] =
       ui::AlphaBlend(kColorWebContentsBackground, SK_ColorBLACK, 0x33);
