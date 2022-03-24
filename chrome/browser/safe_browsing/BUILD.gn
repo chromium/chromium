@@ -255,6 +255,8 @@ static_library("safe_browsing") {
         "download_protection/two_phase_uploader.h",
         "extension_telemetry/extension_signal.h",
         "extension_telemetry/extension_signal_processor.h",
+        "extension_telemetry/extension_telemetry_persister.cc",
+        "extension_telemetry/extension_telemetry_persister.h",
         "extension_telemetry/extension_telemetry_service.cc",
         "extension_telemetry/extension_telemetry_service.h",
         "extension_telemetry/extension_telemetry_service_factory.cc",

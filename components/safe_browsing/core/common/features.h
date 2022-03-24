@@ -79,6 +79,11 @@ extern const base::Feature kEnhancedProtection;
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 extern const base::Feature kExtensionTelemetry;
+
+// Enables data collected by the kExtensionTelemetry to be written and read to
+// disk. This data will be uploaded for analysis.
+extern const base::Feature kExtensionTelemetryPersistence;
+
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
 // Enables collection of telemetry signal whenever an extension invokes the

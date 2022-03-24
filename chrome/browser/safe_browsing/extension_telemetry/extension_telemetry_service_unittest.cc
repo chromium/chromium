@@ -4,13 +4,17 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -87,6 +91,7 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
     return telemetry_service_->GetExtensionInfoForReport(extension);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -420,4 +425,25 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
   }
 }
 
+TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  PrimeTelemetryServiceWithSignal();
+  task_environment_.RunUntilIdle();
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  // After a shutdown, the persister should create a file of persisted data.
+  telemetry_service_->Shutdown();
+  base::FilePath persisted_file;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &persisted_file))
+    persisted_file = persisted_file.AppendASCII("CRXTelemetry");
+  persisted_file = persisted_file.AppendASCII("CRXTelemetry_0");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(persisted_file));
+  // After the telemetry service is disabled, the persisted data folder should
+  // be deleted.
+  telemetry_service_->SetEnabled(false);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(persisted_file));
+}
 }  // namespace safe_browsing

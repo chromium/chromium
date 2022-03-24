@@ -1066,6 +1066,60 @@ chromium-metrics-reviews@google.com.
       variants="MetricsCollectorTimesDisabledEnabledDuration"/>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionPersister.AgedFileFound"
+    enum="BooleanFound" expires_after="2022-08-07">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records if a persisted file is older than 3 days. Every file that is found
+    on disk will have its age checked.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionPersister.CacheSize" units="files"
+    expires_after="2022-08-07">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of persisted files on disk when the telemetry persister
+    is first initiated. The cache size is only checked when the persister init
+    function is run.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionPersister.PersistedFileSize"
+    units="bytes" expires_after="2022-07-31">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The size of a persisted file in bytes. This is recorded for any file found
+    on disk, regardless of if it was successfully read.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionPersister.ReadResult"
+    enum="BooleanSuccess" expires_after="2022-07-31">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the read request succeeded or not. This is recorded once for every
+    time the persister attempts to read from a file. Read requests happen when
+    the telemetry service successfully uploads a file. If the persister attempts
+    to read from an empty filepath, it will be marked as a failure.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionPersister.WriteResult"
+    enum="BooleanSuccess" expires_after="2022-07-31">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the write request succeeded or not. This is recorded once for every
+    file written. Write requests happen on Chrome shutdown and when an extension
+    telemetry upload is not successful.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.NetworkRequestResponseCodeOrError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-07">

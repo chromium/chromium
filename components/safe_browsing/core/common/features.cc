@@ -86,6 +86,11 @@ const base::Feature kEnhancedProtection {
 
 const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kExtensionTelemetryPersistence{
+    "SafeBrowsingExtensionTelemetryPersistence",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
     /*default_value=*/3600};
@@ -184,6 +189,7 @@ constexpr struct {
     {&kEnhancedProtection, true},
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryReportContactedHosts, true},
+    {&kExtensionTelemetryPersistence, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kSafeBrowsingCsbrrWithToken, true},
