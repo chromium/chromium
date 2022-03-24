@@ -17,12 +17,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+class PrefService;
+class GURL;
 
 using DefaultClientCallback = base::OnceCallback<void(bool)>;
 
@@ -74,7 +76,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   };
 
   // Creates a new instance.
-  ProtocolHandlerRegistry(content::BrowserContext* context,
+  ProtocolHandlerRegistry(PrefService* prefs,
                           std::unique_ptr<Delegate> delegate);
 
   ProtocolHandlerRegistry(const ProtocolHandlerRegistry&) = delete;
@@ -341,8 +343,9 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Protocol handlers that are the defaults for a given protocol.
   ProtocolHandlerMap default_handlers_;
 
-  // The browser context that owns this ProtocolHandlerRegistry.
-  raw_ptr<content::BrowserContext> context_;
+  // The PrefService to store the registered handlers in the user profile (it
+  // may be null for testing)
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // The Delegate that registers / deregisters external handlers on our behalf.
   std::unique_ptr<Delegate> delegate_;

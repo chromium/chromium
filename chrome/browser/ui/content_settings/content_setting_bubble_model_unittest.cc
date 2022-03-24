@@ -1045,7 +1045,7 @@ TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
 
 TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   custom_handlers::ProtocolHandlerRegistry registry(
-      profile(),
+      profile()->GetPrefs(),
       std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 
@@ -1113,7 +1113,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
 
 TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
   custom_handlers::ProtocolHandlerRegistry registry(
-      profile(),
+      profile()->GetPrefs(),
       std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 

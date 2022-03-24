@@ -383,7 +383,7 @@ class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
     RenderViewContextMenuTest::SetUp();
     // TestingProfile does not provide a protocol registry.
     registry_ = std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
-        profile(), nullptr);
+        profile()->GetPrefs(), nullptr);
   }
 
   void TearDown() override {
@@ -447,7 +447,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     registry_ = std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
-        profile(), nullptr);
+        profile()->GetPrefs(), nullptr);
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),

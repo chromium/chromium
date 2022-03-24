@@ -33,7 +33,7 @@ class ChromeProtocolHandlerRegistryTest : public testing::Test {
     CHECK(profile_->GetPrefs());
     auto delegate = std::make_unique<
         custom_handlers::TestProtocolHandlerRegistryDelegate>();
-    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile_.get(),
+    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile_->GetPrefs(),
                                                           std::move(delegate));
     registry_->InitProtocolSettings();
   }

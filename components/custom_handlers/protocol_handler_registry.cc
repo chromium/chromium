@@ -63,9 +63,9 @@ GURL TranslateUrl(
 // ProtocolHandlerRegistry -----------------------------------------------------
 
 ProtocolHandlerRegistry::ProtocolHandlerRegistry(
-    content::BrowserContext* context,
+    PrefService* prefs,
     std::unique_ptr<Delegate> delegate)
-    : context_(context),
+    : prefs_(prefs),
       delegate_(std::move(delegate)),
       enabled_(true),
       is_loading_(false),
@@ -181,9 +181,13 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
   is_loaded_ = true;
   is_loading_ = true;
 
-  PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  if (prefs->HasPrefPath(prefs::kCustomHandlersEnabled)) {
-    if (prefs->GetBoolean(prefs::kCustomHandlersEnabled)) {
+  if (!prefs_) {
+    is_loading_ = false;
+    return;
+  }
+
+  if (prefs_->HasPrefPath(prefs::kCustomHandlersEnabled)) {
+    if (prefs_->GetBoolean(prefs::kCustomHandlersEnabled)) {
       Enable();
     } else {
       Disable();
@@ -500,13 +504,16 @@ void ProtocolHandlerRegistry::Save() {
   if (is_loading_) {
     return;
   }
+
+  if (!prefs_)
+    return;
+
   base::Value registered_protocol_handlers(EncodeRegisteredHandlers());
   base::Value ignored_protocol_handlers(EncodeIgnoredHandlers());
-  PrefService* prefs = user_prefs::UserPrefs::Get(context_);
 
-  prefs->Set(prefs::kRegisteredProtocolHandlers, registered_protocol_handlers);
-  prefs->Set(prefs::kIgnoredProtocolHandlers, ignored_protocol_handlers);
-  prefs->SetBoolean(prefs::kCustomHandlersEnabled, enabled_);
+  prefs_->Set(prefs::kRegisteredProtocolHandlers, registered_protocol_handlers);
+  prefs_->Set(prefs::kIgnoredProtocolHandlers, ignored_protocol_handlers);
+  prefs_->SetBoolean(prefs::kCustomHandlersEnabled, enabled_);
 }
 
 const ProtocolHandlerRegistry::ProtocolHandlerList*
@@ -607,12 +614,11 @@ std::vector<const base::Value::Dict*>
 ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<const base::Value::Dict*> result;
-  PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  if (!prefs->HasPrefPath(pref_name)) {
+  if (!prefs_ || !prefs_->HasPrefPath(pref_name)) {
     return result;
   }
 
-  const base::Value* handlers = prefs->GetList(pref_name);
+  const base::Value* handlers = prefs_->GetList(pref_name);
   if (handlers) {
     for (const auto& list_item : handlers->GetList()) {
       if (const base::Value::Dict* encoded_handler = list_item.GetIfDict()) {

@@ -487,7 +487,7 @@ std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
-      profile,
+      profile->GetPrefs(),
       std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
 }
 

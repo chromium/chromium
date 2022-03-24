@@ -192,8 +192,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     DCHECK(browser_context_);
     auto delegate = std::make_unique<TestProtocolHandlerRegistryDelegate>();
     delegate_ = delegate.get();
-    registry_ = std::make_unique<ProtocolHandlerRegistry>(
-        browser_context_.get(), std::move(delegate));
+    registry_ = std::make_unique<ProtocolHandlerRegistry>(GetPrefs(),
+                                                          std::move(delegate));
     if (initialize)
       registry_->InitProtocolSettings();
   }

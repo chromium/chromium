@@ -47,7 +47,7 @@ class SiteSettingsCounterTest : public testing::Test {
 #endif
     handler_registry_ =
         std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
-            profile(),
+            profile()->GetPrefs(),
             std::make_unique<
                 custom_handlers::TestProtocolHandlerRegistryDelegate>());
 
