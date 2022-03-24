@@ -77,7 +77,7 @@ function createAttributionSrcImg(src) {
   return img;
 }
 
-function createAndClickAttributionSrcAnchor({
+function createAttributionSrcAnchor({
   id,
   url,
   attributionsrc,
@@ -102,7 +102,11 @@ function createAndClickAttributionSrcAnchor({
   anchor.innerText = 'This is link';
 
   document.body.appendChild(anchor);
-  simulateClick(anchor);
+  return anchor;
+}
 
+function createAndClickAttributionSrcAnchor(params) {
+  const anchor = createAttributionSrcAnchor(params);
+  simulateClick(anchor);
   return anchor;
 }

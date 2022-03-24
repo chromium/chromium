@@ -60,13 +60,13 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -740,14 +740,19 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     data.link_text = anchor->innerText().Utf8();
 
-    if (anchor->HasImpression()) {
-      absl::optional<WebImpression> web_impression =
-          GetImpressionForAnchor(anchor);
-      data.impression =
-          web_impression.has_value()
-              ? absl::optional<Impression>(
-                    ConvertWebImpressionToImpression(web_impression.value()))
-              : absl::nullopt;
+    if (anchor->FastHasAttribute(html_names::kAttributionsrcAttr)) {
+      const AtomicString& attribution_src_value =
+          anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+      if (!attribution_src_value.IsNull()) {
+        absl::optional<WebImpression> web_impression =
+            selected_frame->GetAttributionSrcLoader()->RegisterNavigation(
+                selected_frame->GetDocument()->CompleteURL(
+                    attribution_src_value));
+        if (web_impression.has_value()) {
+          data.impression =
+              ConvertWebImpressionToImpression(web_impression.value());
+        }
+      }
     }
   }
 

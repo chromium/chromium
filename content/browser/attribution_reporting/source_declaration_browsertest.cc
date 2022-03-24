@@ -424,22 +424,20 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 // TODO(johnidel): SimulateMouseClickAt() does not work on Android, find a
 // different way to invoke the context menu that works on Android.
 #if !BUILDFLAG(IS_ANDROID)
-// https://crbug.com/1219907 started flaking after Field Trial Testing Config
-// was enabled for content_browsertests.
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
-                       DISABLED_ContextMenuShownForImpression_ImpressionSet) {
-  // Navigate to a page with the non-https server.
+                       ContextMenuShownForImpression_ImpressionSet) {
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
-                        data: '10',
-                        destination: 'https://dest.com',
-                        left: 100,
-                        top: 100});)"));
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+  createAttributionSrcAnchor({url: 'page_with_conversion_redirect.html',
+                                      attributionsrc: $1,
+                                      left: 100,
+                                      top: 100});)",
+                                               register_url)));
 
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
@@ -454,9 +452,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   blink::UntrustworthyContextMenuParams params =
       context_menu_interceptor->get_params();
   EXPECT_TRUE(params.impression);
-  EXPECT_EQ(10UL, params.impression->impression_data);
-  EXPECT_EQ(url::Origin::Create(GURL("https://dest.com")),
-            params.impression->conversion_destination);
+  EXPECT_TRUE(params.impression->attribution_src_token.has_value());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
