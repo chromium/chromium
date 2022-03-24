@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ANDROID_BACKEND_ERROR_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ANDROID_BACKEND_ERROR_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_BACKEND_ERROR_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_BACKEND_ERROR_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,4 +47,4 @@ struct AndroidBackendError {
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ANDROID_BACKEND_ERROR_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_BACKEND_ERROR_H_

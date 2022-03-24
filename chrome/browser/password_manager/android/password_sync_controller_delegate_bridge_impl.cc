@@ -5,8 +5,8 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordSyncControllerDelegateBridgeImpl_jni.h"
+#include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using password_manager::AndroidBackendError;

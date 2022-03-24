@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [
-    "android_backend_error.h",
     "chromesync_status_code.h",
     "password_manager_setting.h",
     "password_store_operation_target.h",
@@ -27,8 +26,6 @@ source_set("backend") {
   ]
 
   sources = [
-    "android_backend_error.cc",
-    "android_backend_error.h",
     "password_manager_lifecycle_helper.cc",
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
@@ -223,6 +220,7 @@ android_library("backend_interface_java") {
   deps = [
     ":android_backend_java_enums",
     "//base:base_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:guava_android_java",
   ]
   sources = [

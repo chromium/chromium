@@ -36,6 +36,8 @@ static_library("browser") {
     "android_affiliation/facet_manager_host.h",
     "android_affiliation/lookup_affiliation_response_parser.cc",
     "android_affiliation/lookup_affiliation_response_parser.h",
+    "android_backend_error.cc",
+    "android_backend_error.h",
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
     "bulk_leak_check_service.cc",
@@ -463,6 +465,7 @@ if (is_android) {
 
   java_cpp_enum("password_manager_java_enums_srcjar") {
     sources = [
+      "android_backend_error.h",
       "manage_passwords_referrer.h",
       "password_manager_metrics_util.h",
     ]

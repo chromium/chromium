@@ -8,8 +8,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
+#include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/data_type_activation_response.h"
