@@ -162,6 +162,16 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1309146
   "u2fd.WebauthnUsingPassword.tpm1",
+
+  # b/224969741
+  # "arc.Boot.vm", # Flaky, but also important.
+  "arc.ChromeCrash.vm_logged_in",
+  "arc.Drivefs.vm",
+  "arc.IMEBlockingVK.vm",
+  "arc.RemovableMedia.vm",
+  "arc.SettingsBridge.vm",
+  "arc.StartStop.vm",
+  "arc.TextToSpeech.vm",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
