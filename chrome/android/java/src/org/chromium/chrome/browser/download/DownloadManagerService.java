@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
+import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -367,6 +368,8 @@ public class DownloadManagerService implements DownloadController.Observer,
 
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                     ProfileKey.getLastUsedRegularProfileKey());
+
+            removeInterstitialDownloadPendingDeletion();
             mActivityLaunched = true;
         }
     }
@@ -430,6 +433,24 @@ public class DownloadManagerService implements DownloadController.Observer,
             // up-to-date.
             Log.e(TAG, "Failed to write DownloadInfo " + type);
         }
+    }
+
+    /**
+     * Remove downloads in the case that Chrome closes before a download interstitial can remove a
+     * deleted/cancelled download.
+     */
+    private static void removeInterstitialDownloadPendingDeletion() {
+        String contentIdString = SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL, "");
+        if (TextUtils.isEmpty(contentIdString)) return;
+
+        String[] contentIdData = contentIdString.split(","); // { namespace, id }
+        assert contentIdData.length == 2;
+
+        OfflineContentAggregatorFactory.get().removeItem(
+                new ContentId(contentIdData[0], contentIdData[1]));
+        SharedPreferencesManager.getInstance().removeKeySync(
+                ChromePreferenceKeys.DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL);
     }
 
     /**

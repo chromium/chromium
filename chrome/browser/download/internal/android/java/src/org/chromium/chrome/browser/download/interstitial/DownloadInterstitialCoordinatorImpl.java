@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.interstitial;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,7 +34,8 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
         mView = DownloadInterstitialView.create(context);
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
-        mMediator = new DownloadInterstitialMediator(context, model, provider, snackbarManager);
+        mMediator = new DownloadInterstitialMediator(
+                context, model, provider, snackbarManager, SharedPreferencesManager.getInstance());
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 model, mView, DownloadInterstitialViewBinder::bind);
     }

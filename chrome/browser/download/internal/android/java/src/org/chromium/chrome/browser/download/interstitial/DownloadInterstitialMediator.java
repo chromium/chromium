@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.download.home.list.ShareUtils;
 import org.chromium.chrome.browser.download.home.rename.RenameDialogManager;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.State;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -56,6 +58,7 @@ class DownloadInterstitialMediator {
     private final OfflineContentProvider mProvider;
     private final SnackbarManager mSnackbarManager;
     private final OfflineContentProvider.Observer mObserver;
+    private final SharedPreferencesManager mSharedPrefs;
     private boolean mDownloadIsComplete;
     private boolean mPendingDeletion;
 
@@ -70,11 +73,13 @@ class DownloadInterstitialMediator {
      *         download interstitial view.
      */
     DownloadInterstitialMediator(Context context, PropertyModel model,
-            OfflineContentProvider provider, SnackbarManager snackbarManager) {
+            OfflineContentProvider provider, SnackbarManager snackbarManager,
+            SharedPreferencesManager sharedPrefs) {
         mContext = context;
         mModel = model;
         mProvider = provider;
         mSnackbarManager = snackbarManager;
+        mSharedPrefs = sharedPrefs;
 
         mModel.set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
         mModel.set(ListProperties.CALLBACK_OPEN, this::onOpenItem);
@@ -103,6 +108,7 @@ class DownloadInterstitialMediator {
                 mProvider.cancelDownload(mModel.get(DOWNLOAD_ITEM).id);
             }
         }
+        clearDownloadPendingRemoval();
     }
 
     private void setState(@State int state) {
@@ -152,16 +158,19 @@ class DownloadInterstitialMediator {
     private void onResumeItem(OfflineItem item) {
         setState(mDownloadIsComplete ? State.SUCCESSFUL : State.IN_PROGRESS);
         mPendingDeletion = false;
+        clearDownloadPendingRemoval();
         mProvider.resumeDownload(item.id, true /* hasUserGesture */);
     }
 
     private void onCancelItem(OfflineItem item) {
         setState(State.CANCELLED);
+        storeDownloadPendingRemoval(item.id);
         mProvider.pauseDownload(item.id);
     }
 
     private void onDeleteItem(OfflineItem item) {
         mPendingDeletion = true;
+        storeDownloadPendingRemoval(item.id);
         showDeletedSnackbar();
         setState(State.CANCELLED);
     }
@@ -246,5 +255,28 @@ class DownloadInterstitialMediator {
                 }
             }
         };
+    }
+
+    private void storeDownloadPendingRemoval(ContentId downloadId) {
+        final String key = ChromePreferenceKeys.DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL;
+        boolean success = mSharedPrefs.writeStringSync(
+                key, String.format("%s,%s", downloadId.namespace, downloadId.id));
+
+        if (!success) {
+            // Write synchronously because it might be used on restart and needs to stay
+            // up-to-date.
+            Log.e(TAG, "Failed to write DownloadInfo " + key);
+        }
+    }
+
+    private void clearDownloadPendingRemoval() {
+        final String key = ChromePreferenceKeys.DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL;
+        boolean success = mSharedPrefs.removeKeySync(key);
+
+        if (!success) {
+            // Write synchronously because it might be used on restart and needs to stay
+            // up-to-date.
+            Log.e(TAG, "Failed to clear DownloadInfo " + key);
+        }
     }
 }
