@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_REPORTING_UTIL_TEST_SUPPORT_CALLBACKS_H_
 #define COMPONENTS_REPORTING_UTIL_TEST_SUPPORT_CALLBACKS_H_
 
-#include <atomic>
 #include <tuple>
 
-#include "base/callback.h"
+#include "base/atomic_ref_count.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace reporting {
 namespace test {
@@ -24,6 +27,9 @@ namespace test {
 //   ... = e.result();  // Will wait for e.cb() to be called and return the
 //   collected result.
 //
+//   This class follows base::BarrierCallback in using mutex Lock.
+//   It can only be done in tests, never in production code.
+//
 template <typename ResType>
 class TestEvent {
  public:
@@ -33,6 +39,7 @@ class TestEvent {
   TestEvent& operator=(const TestEvent& other) = delete;
   ResType result() {
     run_loop_.Run();
+    base::ReleasableAutoLock lock(&mutex_);
     return std::forward<ResType>(result_);
   }
 
@@ -42,17 +49,22 @@ class TestEvent {
   // when the caller requires it.
   // If the caller expects OnceCallback, result will be converted automatically.
   base::RepeatingCallback<void(ResType res)> cb() {
-    return base::BindRepeating(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(&run_loop_), base::Unretained(&result_));
+    return base::BindRepeating(&TestEvent<ResType>::Callback,
+                               base::Unretained(this));
   }
 
  private:
+  void Callback(ResType res) {
+    {
+      base::ReleasableAutoLock lock(&mutex_);
+      result_ = std::forward<ResType>(res);
+    }
+    run_loop_.Quit();
+  }
+
   base::RunLoop run_loop_;
-  ResType result_;
+  base::Lock mutex_;
+  ResType result_ GUARDED_BY(mutex_);
 };
 
 // Usage (in tests only):
@@ -64,6 +76,9 @@ class TestEvent {
 //   caller. std::tie(res1, res2, ...) = e.result();  // Will wait for e.cb() to
 //   be called and return the collected results.
 //
+//   This class follows base::BarrierCallback in using mutex Lock.
+//   It can only be done in tests, never in production code.
+//
 template <typename... ResType>
 class TestMultiEvent {
  public:
@@ -73,23 +88,28 @@ class TestMultiEvent {
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
   std::tuple<ResType...> result() {
     run_loop_.Run();
+    base::ReleasableAutoLock lock(&mutex_);
     return std::forward<std::tuple<ResType...>>(result_);
   }
 
   // Completion callback to hand over to the processing method.
   base::RepeatingCallback<void(ResType... res)> cb() {
-    return base::BindRepeating(
-        [](base::RunLoop* run_loop, std::tuple<ResType...>* result,
-           ResType... res) {
-          *result = std::forward_as_tuple(res...);
-          run_loop->Quit();
-        },
-        base::Unretained(&run_loop_), base::Unretained(&result_));
+    return base::BindRepeating(&TestMultiEvent<ResType...>::Callback,
+                               base::Unretained(this));
   }
 
  private:
+  void Callback(ResType... res) {
+    {
+      base::ReleasableAutoLock lock(&mutex_);
+      result_ = std::forward_as_tuple(res...);
+    }
+    run_loop_.Quit();
+  }
+
   base::RunLoop run_loop_;
-  std::tuple<ResType...> result_;
+  base::Lock mutex_;
+  std::tuple<ResType...> result_ GUARDED_BY(mutex_);
 };
 
 // Usage (in tests only):
@@ -114,15 +134,13 @@ class TestCallbackWaiter {
   TestCallbackWaiter(const TestCallbackWaiter& other) = delete;
   TestCallbackWaiter& operator=(const TestCallbackWaiter& other) = delete;
 
-  void Attach(size_t more = 1) {
-    const size_t old_counter = counter_.fetch_add(more);
-    DCHECK_GT(old_counter, 0u) << "Cannot attach when already being released";
+  void Attach(int more = 1) {
+    const int old_counter = counter_.Increment(more);
+    DCHECK_GT(old_counter, 0) << "Cannot attach when already being released";
   }
 
   void Signal() {
-    const size_t old_counter = counter_.fetch_sub(1);
-    DCHECK_GT(old_counter, 0u) << "Already being released";
-    if (old_counter > 1u) {
+    if (counter_.Decrement()) {
       // There are more owners.
       return;
     }
@@ -136,11 +154,11 @@ class TestCallbackWaiter {
   }
 
  private:
-  std::atomic<size_t> counter_{1};  // Owned by constructor.
+  base::AtomicRefCount counter_{1};  // Owned by constructor.
   base::RunLoop run_loop_;
 };
 
-// RAAI wrapper for TestCallbackWaiter.
+// RAII wrapper for TestCallbackWaiter.
 //
 // Usage:
 // {
