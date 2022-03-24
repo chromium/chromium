@@ -495,8 +495,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAOnclick) {
   RunHtmlTest(FILE_PATH_LITERAL("a-onclick.html"));
 }
 
+// TODO(https://crbug.com/1309941): This test is failing on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityANestedStructure \
+  DISABLED_AccessibilityANestedStructure
+#else
+#define MAYBE_AccessibilityANestedStructure AccessibilityANestedStructure
+#endif  // BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityANestedStructure) {
+                       MAYBE_AccessibilityANestedStructure) {
   RunHtmlTest(FILE_PATH_LITERAL("a-nested-structure.html"));
 }
 
@@ -1865,8 +1872,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFieldset) {
   RunHtmlTest(FILE_PATH_LITERAL("fieldset.html"));
 }
 
-// TODO(crbug.com/1307316): failing on Linux bots.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1307316): failing on Linux bots and flaky on Fuchsia bots.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityFigcaption DISABLED_AccessibilityFigcaption
 #else
 #define MAYBE_AccessibilityFigcaption AccessibilityFigcaption
@@ -2824,7 +2831,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("selectmenu-open.html"));
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(https://crbug.com/1309941): Flaky on Fuchsia
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilitySource DISABLED_AccessibilitySource
 #else
 #define MAYBE_AccessibilitySource AccessibilitySource
