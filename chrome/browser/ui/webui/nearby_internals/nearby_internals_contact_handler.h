@@ -15,10 +15,6 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -42,7 +38,7 @@ class NearbyInternalsContactHandler
 
  private:
   // Message handler callback that initializes JavaScript.
-  void InitializeContents(const base::ListValue* args);
+  void InitializeContents(const base::Value::List& args);
 
   // NearbyShareContactManager::Observer:
   void OnContactsDownloaded(
@@ -53,7 +49,7 @@ class NearbyInternalsContactHandler
 
   // Message handler callback that requests a contacts download from the contact
   // manager.
-  void HandleDownloadContacts(const base::ListValue* args);
+  void HandleDownloadContacts(const base::Value::List& args);
 
   content::BrowserContext* context_;
   base::ScopedObservation<NearbyShareContactManager,

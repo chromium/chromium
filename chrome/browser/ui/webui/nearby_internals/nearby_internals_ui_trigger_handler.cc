@@ -243,69 +243,69 @@ NearbyInternalsUiTriggerHandler::NearbyInternalsUiTriggerHandler(
 NearbyInternalsUiTriggerHandler::~NearbyInternalsUiTriggerHandler() = default;
 
 void NearbyInternalsUiTriggerHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeUiTrigger",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "sendText",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::SendText,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "accept", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Accept,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "reject", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Reject,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancel", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Cancel,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "open", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Open,
                                   base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "registerSendSurfaceForeground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "registerSendSurfaceBackground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "unregisterSendSurface",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::UnregisterSendSurface,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "registerReceiveSurfaceForeground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "registerReceiveSurfaceBackground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "unregisterReceiveSurface",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getStates",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::GetState,
                           base::Unretained(this)));
 }
 
 void NearbyInternalsUiTriggerHandler::InitializeContents(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -313,7 +313,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -323,7 +323,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -331,7 +331,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -341,7 +341,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
 }
 
 void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -349,7 +349,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(service_->UnregisterSendSurface(this, this),
@@ -357,7 +357,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -365,7 +365,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -375,7 +375,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -383,7 +383,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -393,7 +393,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
 }
 
 void NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -401,7 +401,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface(
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(service_->UnregisterReceiveSurface(this),
@@ -459,7 +459,7 @@ void NearbyInternalsUiTriggerHandler::OnCancelCalled(
       StatusCodeToDictionary(status_codes, TriggerEvent::kCancel));
 }
 
-void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::SendText(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -467,7 +467,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetListDeprecated()[1].GetString();
+  std::string share_target_id = args[1].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -480,7 +480,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
       TextAttachment::Type::kText, kPayloadExample, /*title=*/absl::nullopt,
       /*mime_type=*/absl::nullopt));
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -488,7 +488,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
           TriggerEvent::kSendText));
 }
 
-void NearbyInternalsUiTriggerHandler::Accept(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::Accept(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -496,7 +496,7 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetListDeprecated()[0].GetString();
+  std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -510,7 +510,7 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::ListValue* args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Open(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::Open(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -518,7 +518,7 @@ void NearbyInternalsUiTriggerHandler::Open(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetListDeprecated()[0].GetString();
+  std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -531,7 +531,7 @@ void NearbyInternalsUiTriggerHandler::Open(const base::ListValue* args) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Reject(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::Reject(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -539,7 +539,7 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetListDeprecated()[0].GetString();
+  std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -553,7 +553,7 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::ListValue* args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Cancel(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::Cancel(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -561,7 +561,7 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetListDeprecated()[0].GetString();
+  std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -575,7 +575,7 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::ListValue* args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::GetState(const base::ListValue* args) {
+void NearbyInternalsUiTriggerHandler::GetState(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -583,7 +583,7 @@ void NearbyInternalsUiTriggerHandler::GetState(const base::ListValue* args) {
     return;
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusBooleansToDictionary(

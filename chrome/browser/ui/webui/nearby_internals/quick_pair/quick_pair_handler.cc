@@ -58,31 +58,31 @@ QuickPairHandler::QuickPairHandler()
 QuickPairHandler::~QuickPairHandler() = default;
 
 void QuickPairHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getQuickPairLogMessages",
       base::BindRepeating(&QuickPairHandler::HandleGetLogMessages,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairError",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairError,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairDiscovery",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairPairing",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairPairing,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairApplicationAvailable",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairApplicationAvailable,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairApplicationInstalled",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairApplicationInstalled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifyFastPairAssociateAccount",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairAssociateAccountKey,
                           base::Unretained(this)));
@@ -96,9 +96,9 @@ void QuickPairHandler::OnJavascriptDisallowed() {
   observation_.Reset();
 }
 
-void QuickPairHandler::HandleGetLogMessages(const base::ListValue* args) {
+void QuickPairHandler::HandleGetLogMessages(const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   base::Value list(base::Value::Type::LIST);
   for (const auto& log : *ash::quick_pair::LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
@@ -116,7 +116,7 @@ void QuickPairHandler::OnLogMessageAdded(
                     LogMessageToDictionary(log_message));
 }
 
-void QuickPairHandler::NotifyFastPairError(const base::ListValue* args) {
+void QuickPairHandler::NotifyFastPairError(const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -129,7 +129,7 @@ void QuickPairHandler::OnImageDecodedFastPairError(gfx::Image image) {
       kTestDeviceName, image, base::DoNothing(), base::DoNothing());
 }
 
-void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {
+void QuickPairHandler::NotifyFastPairDiscovery(const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -143,7 +143,7 @@ void QuickPairHandler::OnImageDecodedFastPairDiscovery(gfx::Image image) {
       base::DoNothing());
 }
 
-void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {
+void QuickPairHandler::NotifyFastPairPairing(const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -157,7 +157,7 @@ void QuickPairHandler::OnImageDecodedFastPairPairing(gfx::Image image) {
 }
 
 void QuickPairHandler::NotifyFastPairApplicationAvailable(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -173,7 +173,7 @@ void QuickPairHandler::OnImageDecodedFastPairApplicationAvailable(
 }
 
 void QuickPairHandler::NotifyFastPairApplicationInstalled(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -190,7 +190,7 @@ void QuickPairHandler::OnImageDecodedFastPairApplicationInstalled(
 }
 
 void QuickPairHandler::NotifyFastPairAssociateAccountKey(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,

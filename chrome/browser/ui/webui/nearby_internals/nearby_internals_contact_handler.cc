@@ -89,11 +89,11 @@ NearbyInternalsContactHandler::NearbyInternalsContactHandler(
 NearbyInternalsContactHandler::~NearbyInternalsContactHandler() = default;
 
 void NearbyInternalsContactHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeContacts",
       base::BindRepeating(&NearbyInternalsContactHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "downloadContacts",
       base::BindRepeating(
           &NearbyInternalsContactHandler::HandleDownloadContacts,
@@ -115,12 +115,12 @@ void NearbyInternalsContactHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsContactHandler::InitializeContents(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
 void NearbyInternalsContactHandler::HandleDownloadContacts(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {

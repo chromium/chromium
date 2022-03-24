@@ -13,10 +13,6 @@
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -55,16 +51,16 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
 
  private:
   // Message handler callback that initializes JavaScript.
-  void InitializeContents(const base::ListValue* args);
+  void InitializeContents(const base::Value::List& args);
 
   // Message handler callback that calls Update Device RPC.
-  void UpdateDevice(const base::ListValue* args);
+  void UpdateDevice(const base::Value::List& args);
 
   // Message handler callback that calls List Public Certificates RPC.
-  void ListPublicCertificates(const base::ListValue* args);
+  void ListPublicCertificates(const base::Value::List& args);
 
   // Message handler callback that calls List Contacts RPC.
-  void ListContactPeople(const base::ListValue* args);
+  void ListContactPeople(const base::Value::List& args);
 
   content::BrowserContext* const context_;
   base::ScopedObservation<NearbyShareHttpNotifier,

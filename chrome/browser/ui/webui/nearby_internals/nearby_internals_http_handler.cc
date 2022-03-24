@@ -74,19 +74,19 @@ NearbyInternalsHttpHandler::NearbyInternalsHttpHandler(
 NearbyInternalsHttpHandler::~NearbyInternalsHttpHandler() = default;
 
 void NearbyInternalsHttpHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeHttp",
       base::BindRepeating(&NearbyInternalsHttpHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateDevice",
       base::BindRepeating(&NearbyInternalsHttpHandler::UpdateDevice,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "listContactPeople",
       base::BindRepeating(&NearbyInternalsHttpHandler::ListContactPeople,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "listPublicCertificates",
       base::BindRepeating(&NearbyInternalsHttpHandler::ListPublicCertificates,
                           base::Unretained(this)));
@@ -107,11 +107,11 @@ void NearbyInternalsHttpHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsHttpHandler::InitializeContents(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
-void NearbyInternalsHttpHandler::UpdateDevice(const base::ListValue* args) {
+void NearbyInternalsHttpHandler::UpdateDevice(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
@@ -122,7 +122,7 @@ void NearbyInternalsHttpHandler::UpdateDevice(const base::ListValue* args) {
 }
 
 void NearbyInternalsHttpHandler::ListPublicCertificates(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
@@ -133,7 +133,7 @@ void NearbyInternalsHttpHandler::ListPublicCertificates(
 }
 
 void NearbyInternalsHttpHandler::ListContactPeople(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
