@@ -167,6 +167,7 @@ suite('NewTabPageModulesModulesTest', () => {
         },
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
+      callbackRouterRemote.setDisabledModules(false, []);
       await callbackRouterRemote.$.flushForTesting();
       const customizeModule = capture(modulesElement, 'customize-module');
       render(modulesElement);
@@ -189,6 +190,7 @@ suite('NewTabPageModulesModulesTest', () => {
         },
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
+      callbackRouterRemote.setDisabledModules(false, []);
       await callbackRouterRemote.$.flushForTesting();
 
       // Act

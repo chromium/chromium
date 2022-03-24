@@ -85,6 +85,8 @@ export class ModulesElement extends PolymerElement {
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
+      modulesShownToUser_: Boolean,
+
       modulesFreVisible_: {
         type: Boolean,
         value: false,
@@ -97,7 +99,8 @@ export class ModulesElement extends PolymerElement {
       showModulesFre_: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: `computeShowModulesFre_(modulesFreVisible_, modulesLoaded_)`,
+        computed:
+            `computeShowModulesFre_(modulesLoaded_, modulesFreVisible_, modulesShownToUser_)`,
       },
 
       /** @private {boolean} */
@@ -126,6 +129,7 @@ export class ModulesElement extends PolymerElement {
   private modulesLoaded_: boolean;
   private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
+  private modulesShownToUser_: boolean;
   private modulesFreVisible_: boolean;
   private showModulesFre_: boolean;
   private dragEnabled_: boolean;
@@ -171,14 +175,19 @@ export class ModulesElement extends PolymerElement {
   private computeShowModulesFre_(): boolean {
     return (
         loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
-        this.modulesLoaded_ && this.modulesFreVisible_);
+        this.modulesLoaded_ && this.modulesFreVisible_ &&
+        this.modulesShownToUser_);
   }
 
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {
     this.$.modules.innerHTML = '';
     let shortModuleSiblingsContainer: HTMLElement|null = null;
+    this.modulesShownToUser_ = false;
     moduleContainers.forEach((moduleContainer: HTMLElement, index: number) => {
       let moduleContainerParent = this.$.modules;
+      if (!moduleContainer.hidden) {
+        this.modulesShownToUser_ = !moduleContainer.hidden;
+      }
       if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
         // Wrap pairs of sibling short modules in a container. All other
         // modules will be placed in a container of their own.
@@ -267,6 +276,7 @@ export class ModulesElement extends PolymerElement {
     // </if>
     if (ctrlKeyPressed && e.key === 'z') {
       this.onUndoRemoveModuleButtonClick_();
+      this.onUndoRemoveModuleFreButtonClick_();
     }
   }
 
@@ -412,8 +422,7 @@ export class ModulesElement extends PolymerElement {
     this.$.removeModuleFreToast.show();
   }
 
-  /** @private */
-  onUndoRemoveModuleFreButtonClick_() {
+  private onUndoRemoveModuleFreButtonClick_() {
     NewTabPageProxy.getInstance().handler.setModulesFreVisible(true);
     NewTabPageProxy.getInstance().handler.setModulesVisible(true);
     this.$.removeModuleFreToast.hide();
