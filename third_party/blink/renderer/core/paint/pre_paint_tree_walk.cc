@@ -556,6 +556,8 @@ bool PrePaintTreeWalk::CollectMissableChildren(
     const NGPhysicalBoxFragment& parent) {
   bool has_missable_children = false;
   for (const NGLink& child : parent.Children()) {
+    if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
+      continue;
     if ((child->IsOutOfFlowPositioned() &&
          (context.current_fragmentainer.fragment ||
           child->IsFixedPositioned())) ||
@@ -619,6 +621,8 @@ void PrePaintTreeWalk::WalkMissedChildren(
     return;
 
   for (const NGLink& child : fragment.Children()) {
+    if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
+      continue;
     if (!child->IsOutOfFlowPositioned() && !child->IsFloating())
       continue;
     if (!pending_missables_.Contains(child.fragment))
