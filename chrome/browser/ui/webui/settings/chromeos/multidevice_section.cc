@@ -9,6 +9,7 @@
 #include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/components/phonehub/url_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -321,7 +322,8 @@ MultiDeviceSection::MultiDeviceSection(
       phone_hub_manager_(phone_hub_manager),
       android_sms_service_(android_sms_service),
       pref_service_(pref_service),
-      eche_app_manager_(eche_app_manager) {
+      eche_app_manager_(eche_app_manager),
+      html_source_(nullptr) {
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile)) {
     NearbySharingService* nearby_sharing_service =
@@ -333,6 +335,13 @@ MultiDeviceSection::MultiDeviceSection(
         nearby_sharing_service->GetSettings();
     OnEnabledChanged(nearby_share_settings->GetEnabled());
     RefreshNearbyBackgroundScanningShareSearchConcepts();
+  }
+  if (features::IsEcheSWAEnabled()) {
+    pref_change_registrar_.Init(pref_service_);
+    pref_change_registrar_.Add(
+        ash::prefs::kEnableAutoScreenLock,
+        base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
+                            base::Unretained(this)));
   }
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
@@ -346,12 +355,14 @@ MultiDeviceSection::MultiDeviceSection(
 }
 
 MultiDeviceSection::~MultiDeviceSection() {
+  pref_change_registrar_.RemoveAll();
   if (multidevice_setup_client_)
     multidevice_setup_client_->RemoveObserver(this);
 }
 
 void MultiDeviceSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
+  html_source_ = html_source;
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"multidevicePageTitle", IDS_SETTINGS_MULTIDEVICE},
       {"multideviceSetupButton", IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON},
@@ -602,11 +613,7 @@ void MultiDeviceSection::AddLoadTimeData(
       phonehub::ScreenLockManager::LockStatus::kLockedOn;
   html_source->AddBoolean("isPhoneScreenLockEnabled",
                           is_phone_screen_lock_enabled);
-  const bool is_screen_lock_enabled =
-      SessionControllerClientImpl::CanLockScreen() &&
-      SessionControllerClientImpl::ShouldLockScreenAutomatically();
-  html_source->AddBoolean("isChromeosScreenLockEnabled",
-                          is_screen_lock_enabled);
+  OnEnableScreenLockChanged();
   html_source->AddBoolean("isOnePageOnboardingEnabled",
                           base::FeatureList::IsEnabled(
                               ::features::kNearbySharingOnePageOnboarding));
@@ -814,6 +821,16 @@ void MultiDeviceSection::OnFastInitiationNotificationStateChanged(
 void MultiDeviceSection::OnIsFastInitiationHardwareSupportedChanged(
     bool is_supported) {
   RefreshNearbyBackgroundScanningShareSearchConcepts();
+}
+
+void MultiDeviceSection::OnEnableScreenLockChanged() {
+  const bool is_screen_lock_enabled =
+      SessionControllerClientImpl::CanLockScreen() &&
+      SessionControllerClientImpl::ShouldLockScreenAutomatically();
+  if (html_source_) {
+    html_source_->AddBoolean("isChromeosScreenLockEnabled",
+                             is_screen_lock_enabled);
+  }
 }
 
 }  // namespace settings

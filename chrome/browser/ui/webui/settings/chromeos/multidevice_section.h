@@ -46,6 +46,7 @@ class MultiDeviceSection
   ~MultiDeviceSection() override;
 
  private:
+  friend class MultiDeviceSectionTest;
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -64,8 +65,8 @@ class MultiDeviceSection
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
 
-  // Nearby Share enabled pref change observer.
-  void OnNearbySharingEnabledChanged();
+  // Screen lock enabled pref change observer.
+  void OnEnableScreenLockChanged();
 
   bool IsFeatureSupported(ash::multidevice_setup::mojom::Feature feature);
   void RefreshNearbyBackgroundScanningShareSearchConcepts();
@@ -92,6 +93,7 @@ class MultiDeviceSection
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   ash::eche_app::EcheAppManager* eche_app_manager_;
+  content::WebUIDataSource* html_source_;
 };
 
 }  // namespace settings
