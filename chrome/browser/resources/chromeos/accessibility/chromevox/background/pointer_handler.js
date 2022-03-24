@@ -7,6 +7,7 @@
  * either user touch or mouse input.
  */
 import {BaseAutomationHandler} from './base_automation_handler.js';
+import {CustomAutomationEvent} from './custom_automation_event.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;

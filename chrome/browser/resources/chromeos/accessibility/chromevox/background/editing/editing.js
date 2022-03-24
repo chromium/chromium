@@ -7,9 +7,10 @@
  * appropriate spoken and braille feedback.
  */
 import {ChromeVoxEditableTextBase, TextChangeEvent} from '../../common/editable_text_base.js';
-
 import {BrailleBackground} from '../braille_background.js';
 import {Color} from '../color.js';
+import {ChromeVoxEvent} from '../custom_automation_event.js';
+
 import {EditableLine} from './editable_line.js';
 import {IntentHandler} from './intent_handler.js';
 

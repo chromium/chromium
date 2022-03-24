@@ -17,6 +17,9 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
     window.press = this.press;
 
     await importModule(
+        'CustomAutomationEvent',
+        '/chromevox/background/custom_automation_event.js');
+    await importModule(
         'DesktopAutomationHandler',
         '/chromevox/background/desktop_automation_handler.js');
     await importModule(

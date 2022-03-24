@@ -27,7 +27,6 @@ goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');
 goog.require('CommandStore');
 goog.require('ConsoleTts');
-goog.require('CustomAutomationEvent');
 goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('EventStreamLogger');

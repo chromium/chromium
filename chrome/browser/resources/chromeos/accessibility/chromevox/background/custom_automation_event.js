@@ -9,18 +9,15 @@
  * construct, unlike the object from the extension system.
  */
 
-goog.provide('ChromeVoxEvent');
-goog.provide('CustomAutomationEvent');
-
 /**
  * @typedef{chrome.automation.AutomationEvent|CustomAutomationEvent}
  */
-let ChromeVoxEvent;
+export let ChromeVoxEvent;
 
 /**
  * An object we can use instead of a chrome.automation.AutomationEvent.
  */
-CustomAutomationEvent = class {
+export class CustomAutomationEvent {
   /**
    * @param {chrome.automation.EventType} type The event type.
    * @param {!chrome.automation.AutomationNode} target The event target.
@@ -43,4 +40,4 @@ CustomAutomationEvent = class {
   stopPropagation() {
     throw Error('Can\'t call stopPropagation on a CustomAutomationEvent');
   }
-};
+}

@@ -13,6 +13,7 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
+import {ChromeVoxEvent} from '../background/custom_automation_event.js';
 
 /**
  * A class containing the information needed to speak
