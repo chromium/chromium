@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -208,6 +209,35 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
             loop.Quit();
           }));
   loop.Run();
+}
+
+TEST_F(FileSystemAccessHandleBaseTest, GetParentURL_CustomBucketLocator) {
+  auto default_bucket_url = FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("/test"));
+  TestFileSystemAccessHandle default_handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      default_bucket_url, handle_state_);
+  EXPECT_FALSE(default_handle.GetParentURLForTesting().bucket());
+
+  auto custom_bucket_url = FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("/test"));
+  const auto custom_bucket = storage::BucketLocator(
+      storage::BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+  custom_bucket_url.SetBucket(custom_bucket);
+  TestFileSystemAccessHandle custom_handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      custom_bucket_url, handle_state_);
+  EXPECT_TRUE(custom_handle.GetParentURLForTesting().bucket());
+  EXPECT_EQ(custom_handle.GetParentURLForTesting().bucket().value(),
+            custom_bucket_url.bucket().value());
 }
 
 }  // namespace content

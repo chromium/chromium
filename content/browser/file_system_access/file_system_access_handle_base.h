@@ -57,6 +57,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 
   PermissionStatus GetReadPermissionStatus();
   PermissionStatus GetWritePermissionStatus();
+  storage::FileSystemURL GetParentURLForTesting() { return GetParentURL(); }
 
   // Implementation for the GetPermissionStatus method in the
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
@@ -116,7 +117,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 
  private:
   storage::FileSystemURL GetParentURL();
-
   void DidRequestPermission(
       bool writable,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
