@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_MEMORY_DETAILS_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_MEMORY_DETAILS_H_
 
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
 #include "chrome/browser/memory_details.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace ash::cfm {

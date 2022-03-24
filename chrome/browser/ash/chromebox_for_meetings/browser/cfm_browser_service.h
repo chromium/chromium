@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
 
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::cfm {

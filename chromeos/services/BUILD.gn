@@ -21,7 +21,6 @@ source_set("unit_tests") {
   deps = [
     "//chromeos/services/assistant:tests",
     "//chromeos/services/bluetooth_config:unit_tests",
-    "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests",
     "//chromeos/services/cros_healthd/private/cpp:unit_tests",
     "//chromeos/services/cros_healthd/public/cpp:unit_tests",
     "//chromeos/services/federated/public/cpp:unit_tests",

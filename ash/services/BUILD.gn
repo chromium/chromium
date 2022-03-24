@@ -17,6 +17,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//ash/services/cellular_setup:unit_tests",
+    "//ash/services/chromebox_for_meetings/public/cpp:unit_tests",
     "//ash/services/device_sync:unit_tests",
     "//ash/services/ime:services_unittests",
     "//ash/services/ime:unit_tests",

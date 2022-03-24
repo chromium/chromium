@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_LOGGER_REPORTING_PIPELINE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_LOGGER_REPORTING_PIPELINE_H_
 
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/chromebox_for_meetings/logger/cfm_logger_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 

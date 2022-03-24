@@ -8,6 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,11 +25,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/test_utils.h"

@@ -8,6 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "base/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -18,11 +23,6 @@
 #include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_browser.mojom.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

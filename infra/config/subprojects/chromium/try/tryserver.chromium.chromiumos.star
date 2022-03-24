@@ -216,7 +216,7 @@ try_.builder(
         location_regexp = [
             ".+/[+]/chromeos/components/chromebox_for_meetings/.+",
             ".+/[+]/chromeos/dbus/chromebox_for_meetings/.+",
-            ".+/[+]/chromeos/services/chromebox_for_meetings/.+",
+            ".+/[+]/ash/services/chromebox_for_meetings/.+",
             ".+/[+]/chrome/browser/ash/chromebox_for_meetings/.+",
             ".+/[+]/chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
             ".+/[+]/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+",

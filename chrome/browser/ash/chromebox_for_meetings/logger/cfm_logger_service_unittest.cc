@@ -8,6 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -16,12 +22,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "components/reporting/util/status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

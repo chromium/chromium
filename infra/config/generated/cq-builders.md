@@ -315,7 +315,7 @@ builder.
   Path regular expressions:
   * [`//chromeos/components/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/components/chromebox_for_meetings/)
   * [`//chromeos/dbus/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/dbus/chromebox_for_meetings/)
-  * [`//chromeos/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/services/chromebox_for_meetings/)
+  * [`//ash/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/ash/services/chromebox_for_meetings/)
   * [`//chrome/browser/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ash/chromebox_for_meetings/)
   * [`//chrome/browser/resources/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/chromebox_for_meetings/)
   * [`//chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/)

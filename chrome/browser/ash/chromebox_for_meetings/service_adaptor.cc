@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
 namespace ash::cfm {
 

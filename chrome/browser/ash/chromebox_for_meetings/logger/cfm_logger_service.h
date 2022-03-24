@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_LOGGER_CFM_LOGGER_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_LOGGER_CFM_LOGGER_SERVICE_H_
 
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
+#include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
