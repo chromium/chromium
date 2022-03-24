@@ -254,8 +254,9 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   // credential, so that the server that hosts the image cannot detect presence
   // of the credential on file.
   auto* request_ptr = request.get();
-  gfx::Size preferred_size(kSecurePaymentConfirmationInstrumentIconWidthPx,
-                           kSecurePaymentConfirmationInstrumentIconHeightPx);
+  gfx::Size preferred_size(
+      kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
+      kSecurePaymentConfirmationInstrumentIconHeightPx);
   request_ptr->pending_icon_download_request_id =
       request_ptr->web_contents()->DownloadImageInFrame(
           request_ptr->delegate->GetInitiatorRenderFrameHostId(),

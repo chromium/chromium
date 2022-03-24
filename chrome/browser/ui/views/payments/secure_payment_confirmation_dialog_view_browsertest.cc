@@ -27,12 +27,17 @@
 namespace payments {
 namespace {
 
-const SkBitmap CreateInstrumentIcon(SkColor color) {
+const SkBitmap CreateInstrumentIcon(SkColor color, int width, int height) {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(kSecurePaymentConfirmationInstrumentIconWidthPx,
-                        kSecurePaymentConfirmationInstrumentIconHeightPx);
+  bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
   return bitmap;
+}
+
+const SkBitmap CreateMaxSizeInstrumentIcon(SkColor color) {
+  return CreateInstrumentIcon(
+      color, kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
+      kSecurePaymentConfirmationInstrumentIconHeightPx);
 }
 
 }  // namespace
@@ -87,7 +92,7 @@ class SecurePaymentConfirmationDialogViewTest
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
     model_.set_instrument_value(u"Mastercard ****4444");
     instrument_icon_ =
-        std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorBLUE));
+        std::make_unique<SkBitmap>(CreateMaxSizeInstrumentIcon(SK_ColorBLUE));
     model_.set_instrument_icon(instrument_icon_.get());
 
     model_.set_total_label(
@@ -170,7 +175,7 @@ class SecurePaymentConfirmationDialogViewTest
         instrument_icon_->drawsNothing()
             ? gfx::CreateVectorIcon(
                   kCreditCardIcon,
-                  kSecurePaymentConfirmationInstrumentIconWidthPx,
+                  kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
                   test_delegate_->dialog_view()->GetColorProvider()->GetColor(
                       ui::kColorDialogForeground))
                   .bitmap()
@@ -390,13 +395,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   // Change the bitmap pointer
   instrument_icon_ =
-      std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorGREEN));
+      std::make_unique<SkBitmap>(CreateMaxSizeInstrumentIcon(SK_ColorGREEN));
   model_.set_instrument_icon(instrument_icon_.get());
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
 
   // Change the bitmap itself without touching the model's pointer
-  *instrument_icon_ = CreateInstrumentIcon(SK_ColorRED);
+  *instrument_icon_ = CreateMaxSizeInstrumentIcon(SK_ColorRED);
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
 
@@ -465,6 +470,76 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   ExpectLabelText(
       u"merchant2.com",
       SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
+
+  CloseDialogAndWait();
+}
+
+// Test that an oversized instrument icon is resized down to the maximum size.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       OversizedInstrumentIcon) {
+  CreateModel();
+
+  *instrument_icon_ = CreateInstrumentIcon(
+      SK_ColorRED, kSecurePaymentConfirmationInstrumentIconMaximumWidthPx * 2,
+      kSecurePaymentConfirmationInstrumentIconHeightPx * 2);
+
+  InvokeSecurePaymentConfirmationUI();
+  ExpectViewMatchesModel();
+
+  views::ImageView* image_view = static_cast<views::ImageView*>(
+      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
+          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
+  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
+            image_view->GetImageBounds().width());
+  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+            image_view->GetImageBounds().height());
+
+  CloseDialogAndWait();
+}
+
+// Test that an undersized instrument icon is resized up to the minimum size.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       UndersizedInstrumentIcon) {
+  CreateModel();
+
+  *instrument_icon_ = CreateInstrumentIcon(
+      SK_ColorRED, kSecurePaymentConfirmationInstrumentIconDefaultWidthPx / 2,
+      kSecurePaymentConfirmationInstrumentIconHeightPx / 2);
+
+  InvokeSecurePaymentConfirmationUI();
+  ExpectViewMatchesModel();
+
+  views::ImageView* image_view = static_cast<views::ImageView*>(
+      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
+          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
+  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
+            image_view->GetImageBounds().width());
+  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+            image_view->GetImageBounds().height());
+
+  CloseDialogAndWait();
+}
+
+// Test that a midsized instrument icon is not resized.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       MidsizedInstrumentIcon) {
+  CreateModel();
+
+  int width = (kSecurePaymentConfirmationInstrumentIconDefaultWidthPx +
+               kSecurePaymentConfirmationInstrumentIconMaximumWidthPx) /
+              2;
+  *instrument_icon_ = CreateInstrumentIcon(
+      SK_ColorRED, width, kSecurePaymentConfirmationInstrumentIconHeightPx);
+
+  InvokeSecurePaymentConfirmationUI();
+  ExpectViewMatchesModel();
+
+  views::ImageView* image_view = static_cast<views::ImageView*>(
+      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
+          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
+  EXPECT_EQ(width, image_view->GetImageBounds().width());
+  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+            image_view->GetImageBounds().height());
 
   CloseDialogAndWait();
 }

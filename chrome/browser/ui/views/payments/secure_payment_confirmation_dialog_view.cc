@@ -308,9 +308,10 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   if (icon) {
     layout->AddColumn(
         views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter,
-        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-        kSecurePaymentConfirmationInstrumentIconWidthPx,
-        kSecurePaymentConfirmationInstrumentIconWidthPx);
+        views::TableLayout::kFixedSize,
+        views::TableLayout::ColumnSize::kUsePreferred,
+        /*fixed_width=*/0,
+        /*min_width=*/kSecurePaymentConfirmationInstrumentIconDefaultWidthPx);
     layout->AddPaddingColumn(views::TableLayout::kFixedSize,
                              ChromeLayoutProvider::Get()->GetDistanceMetric(
                                  views::DISTANCE_RELATED_LABEL_HORIZONTAL));
@@ -339,11 +340,13 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
     std::unique_ptr<views::ImageView> icon_view;
     // The instrument icon may be empty, if it couldn't be downloaded/decoded
     // and iconMustBeShown was set to false. In that case, use a default icon.
+    // The actual display color is set based on the theme in OnThemeChanged.
     if (instrument_icon_->drawsNothing()) {
       icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
           gfx::CreateVectorIcon(
               kCreditCardIcon,
-              kSecurePaymentConfirmationInstrumentIconWidthPx));
+              kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
+              SK_ColorGRAY));
     } else {
       icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
           gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
@@ -374,7 +377,8 @@ void SecurePaymentConfirmationDialogView::OnThemeChanged() {
     static_cast<views::ImageView*>(
         GetViewByID(static_cast<int>(DialogViewID::INSTRUMENT_ICON)))
         ->SetImage(gfx::CreateVectorIcon(
-            kCreditCardIcon, kSecurePaymentConfirmationInstrumentIconWidthPx,
+            kCreditCardIcon,
+            kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
             GetColorProvider()->GetColor(ui::kColorDialogForeground)));
   }
 }

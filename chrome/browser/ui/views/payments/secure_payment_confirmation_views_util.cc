@@ -134,9 +134,20 @@ CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& image) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
   icon_view->SetImage(image);
+
+  gfx::Size image_size = image.size();
+  // Resize to a constant height, with a variable width in the acceptable range
+  // based on the aspect ratio.
+  float aspect_ratio =
+      static_cast<float>(image_size.width()) / image_size.height();
+  int preferred_width = static_cast<int>(
+      kSecurePaymentConfirmationInstrumentIconHeightPx * aspect_ratio);
+  int icon_width =
+      std::max(std::min(preferred_width,
+                        kSecurePaymentConfirmationInstrumentIconMaximumWidthPx),
+               kSecurePaymentConfirmationInstrumentIconDefaultWidthPx);
   icon_view->SetImageSize(
-      gfx::Size(kSecurePaymentConfirmationInstrumentIconWidthPx,
-                kSecurePaymentConfirmationInstrumentIconHeightPx));
+      gfx::Size(icon_width, kSecurePaymentConfirmationInstrumentIconHeightPx));
   icon_view->SetPaintToLayer();
   icon_view->layer()->SetFillsBoundsOpaquely(false);
 
