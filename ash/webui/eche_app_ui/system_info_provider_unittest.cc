@@ -59,6 +59,20 @@ void ParseJson(const std::string& json,
     debug_mode = debug_mode_opt.value();
 }
 
+class TaskRunner {
+ public:
+  TaskRunner() = default;
+  ~TaskRunner() = default;
+
+  void WaitForResult() { run_loop_.Run(); }
+
+  void Finish() { run_loop_.Quit(); }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::RunLoop run_loop_;
+};
+
 class FakeTabletMode : public ash::TabletMode {
  public:
   FakeTabletMode() = default;
@@ -98,6 +112,45 @@ class FakeTabletMode : public ash::TabletMode {
   bool in_tablet_mode = false;
 };
 
+class FakeObserver : public mojom::SystemInfoObserver {
+ public:
+  FakeObserver() = default;
+  ~FakeObserver() override = default;
+
+  size_t num_backlight_state_calls() const {
+    return num_backlight_state_calls_;
+  }
+  size_t num_tablet_state_calls() const { return num_tablet_state_calls_; }
+
+  // mojom::SystemInfoObserver:
+  void OnScreenBacklightStateChanged(
+      ash::ScreenBacklightState screen_state) override {
+    ++num_backlight_state_calls_;
+    if (task_runner_) {
+      task_runner_->Finish();
+    }
+  }
+
+  // mojom::SystemInfoObserver:
+  void OnReceivedTabletModeChanged(bool is_tablet_mode) override {
+    ++num_tablet_state_calls_;
+    if (task_runner_) {
+      task_runner_->Finish();
+    }
+  }
+
+  static void setTaskRunner(TaskRunner* task_runner) {
+    task_runner_ = task_runner;
+  }
+
+  mojo::Receiver<mojom::SystemInfoObserver> receiver{this};
+
+ private:
+  size_t num_backlight_state_calls_ = 0;
+  size_t num_tablet_state_calls_ = 0;
+  static TaskRunner* task_runner_;
+};
+
 class Callback {
  public:
   static void GetSystemInfoCallback(const std::string& system_info) {
@@ -110,13 +163,12 @@ class Callback {
   static std::string system_info_;
 };
 
+ash::eche_app::TaskRunner* ash::eche_app::FakeObserver::task_runner_ = nullptr;
 std::string ash::eche_app::Callback::system_info_ = "";
 
 class SystemInfoProviderTest : public testing::Test {
  protected:
-  SystemInfoProviderTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  SystemInfoProviderTest() {
     ash::GetNetworkConfigService(
         remote_cros_network_config_.BindNewPipeAndPassReceiver());
   }
@@ -124,6 +176,7 @@ class SystemInfoProviderTest : public testing::Test {
   SystemInfoProviderTest& operator=(const SystemInfoProviderTest&) = delete;
   ~SystemInfoProviderTest() override = default;
   std::unique_ptr<FakeTabletMode> tablet_mode_controller_;
+  std::unique_ptr<FakeObserver> fake_observer_;
 
   // testing::Test:
   void SetUp() override {
@@ -135,19 +188,35 @@ class SystemInfoProviderTest : public testing::Test {
                                                  .SetBoardName(kFakeBoardName)
                                                  .Build(),
                                              remote_cros_network_config_.get());
+    fake_observer_ = std::make_unique<FakeObserver>();
+    system_info_provider_->SetSystemInfoObserver(
+        fake_observer_->receiver.BindNewPipeAndPassRemote());
     SetWifiConnectionStateList();
   }
+
   void TearDown() override {
     system_info_provider_.reset();
     Callback::resetSystemInfo();
   }
+
   void GetSystemInfo() {
     system_info_provider_->GetSystemInfo(
         base::BindOnce(&Callback::GetSystemInfoCallback));
   }
+
   void SetWifiConnectionStateList() {
     system_info_provider_->OnWifiNetworkList(GetWifiNetworkStateList());
   }
+
+  void SetOnScreenBacklightStateChanged() {
+    system_info_provider_->OnScreenBacklightStateChanged(
+        ash::ScreenBacklightState::OFF);
+  }
+
+  void OnTabletModeStarted() { system_info_provider_->OnTabletModeStarted(); }
+
+  void OnTabletModeEnded() { system_info_provider_->OnTabletModeEnded(); }
+
   std::vector<network_config::mojom::NetworkStatePropertiesPtr>
   GetWifiNetworkStateList() {
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> result;
@@ -159,9 +228,16 @@ class SystemInfoProviderTest : public testing::Test {
     return result;
   }
 
- private:
-  base::test::TaskEnvironment task_environment_;
+  size_t GetNumTabletStateObserverCalls() const {
+    return fake_observer_->num_tablet_state_calls();
+  }
+  size_t GetNumBacklightStateObserverCalls() const {
+    return fake_observer_->num_backlight_state_calls();
+  }
+  TaskRunner task_runner_;
 
+ private:
+  // base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
@@ -184,6 +260,30 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(tablet_mode, kFakeTabletMode);
   EXPECT_EQ(wifi_connection_state, "connected");
   EXPECT_EQ(debug_mode, kFakeDebugMode);
+}
+
+TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {
+  FakeObserver::setTaskRunner(&task_runner_);
+  SetOnScreenBacklightStateChanged();
+  task_runner_.WaitForResult();
+
+  EXPECT_EQ(1u, GetNumBacklightStateObserverCalls());
+}
+
+TEST_F(SystemInfoProviderTest, ObserverCalledWhenTabletModeStarted) {
+  FakeObserver::setTaskRunner(&task_runner_);
+  OnTabletModeStarted();
+  task_runner_.WaitForResult();
+
+  EXPECT_EQ(1u, GetNumTabletStateObserverCalls());
+}
+
+TEST_F(SystemInfoProviderTest, ObserverCalledWhenTabletModeEnded) {
+  FakeObserver::setTaskRunner(&task_runner_);
+  OnTabletModeEnded();
+  task_runner_.WaitForResult();
+
+  EXPECT_EQ(1u, GetNumTabletStateObserverCalls());
 }
 
 }  // namespace eche_app
