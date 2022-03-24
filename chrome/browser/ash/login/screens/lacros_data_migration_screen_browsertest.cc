@@ -29,17 +29,33 @@ constexpr char kLacrosDataMigrationId[] = "lacros-data-migration";
 const test::UIPath kSkipButton = {kLacrosDataMigrationId, "skipButton"};
 const test::UIPath kUpdating = {kLacrosDataMigrationId, "updating"};
 const test::UIPath kLowBattery = {kLacrosDataMigrationId, "lowBattery"};
+const test::UIPath kProgressDialog = {kLacrosDataMigrationId, "progressDialog"};
+const test::UIPath kErrorDialog = {kLacrosDataMigrationId, "errorDialog"};
+const test::UIPath kLowDiskSpace = {kLacrosDataMigrationId,
+                                    "lowDiskSpaceError"};
+const test::UIPath kGenericError = {kLacrosDataMigrationId, "genericError"};
+const test::UIPath kCancelButton = {kLacrosDataMigrationId, "cancelButton"};
+const test::UIPath kGotoFilesButton = {kLacrosDataMigrationId,
+                                       "gotoFilesButton"};
 
 class FakeMigrator : public BrowserDataMigrator {
  public:
   // BrowserDataMigrator overrides.
-  void Migrate(MigrateCallback callback) override {}
+  void Migrate(MigrateCallback callback) override {
+    callback_ = std::move(callback);
+  }
   void Cancel() override { cancel_called_ = true; }
 
   bool IsCancelCalled() { return cancel_called_; }
 
+  void MaybeRunCallback(const BrowserDataMigrator::Result& result) {
+    if (!callback_.is_null())
+      std::move(callback_).Run(result);
+  }
+
  private:
   bool cancel_called_ = false;
+  MigrateCallback callback_;
 };
 
 class LacrosDataMigrationScreenTest : public OobeBaseTest {
@@ -70,15 +86,22 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
     fake_migrator_ = new FakeMigrator();
     lacros_data_migration_screen->SetMigratorForTesting(
         base::WrapUnique(fake_migrator_));
+    lacros_data_migration_screen->SetAttemptRestartForTesting(
+        base::BindRepeating(
+            &LacrosDataMigrationScreenTest::OnAttemptRestartCalled,
+            base::Unretained(this)));
     lacros_data_migration_screen->SetSkipPostShowButtonForTesting(true);
     OobeBaseTest::SetUpOnMainThread();
   }
+
+  bool is_attempt_restart_called() const { return is_attempt_restart_called_; }
 
  protected:
   FakeMigrator* fake_migrator() { return fake_migrator_; }
   FakePowerManagerClient* power_manager_client() {
     return static_cast<FakePowerManagerClient*>(PowerManagerClient::Get());
   }
+  void OnAttemptRestartCalled() { is_attempt_restart_called_ = true; }
 
  private:
   // This is owned by `LacrosDataMigrationScreen`.
@@ -86,6 +109,7 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
   LoginManagerMixin login_mixin_{&mixin_host_};
+  bool is_attempt_restart_called_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, SkipButton) {
@@ -173,6 +197,83 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, LowBattery) {
 
   test::OobeJS().CreateVisibilityWaiter(true, kUpdating)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kLowBattery)->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OutOfDiskError) {
+  OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
+  WizardController::default_controller()->AdvanceToScreen(
+      LacrosDataMigrationScreenView::kScreenId);
+  waiter.Wait();
+
+  test::OobeJS().ExpectVisiblePath(kProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+
+  fake_migrator()->MaybeRunCallback(
+      {BrowserDataMigrator::ResultKind::kFailed, 12345});
+
+  test::OobeJS().CreateVisibilityWaiter(false, kProgressDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
+  test::OobeJS().ExpectVisiblePath(kLowDiskSpace);
+  test::OobeJS().ExpectHiddenPath(kGenericError);
+  test::OobeJS().ExpectVisiblePath(kCancelButton);
+  test::OobeJS().ExpectVisiblePath(kGotoFilesButton);
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, GenericError) {
+  OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
+  WizardController::default_controller()->AdvanceToScreen(
+      LacrosDataMigrationScreenView::kScreenId);
+  waiter.Wait();
+
+  test::OobeJS().ExpectVisiblePath(kProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+
+  fake_migrator()->MaybeRunCallback({BrowserDataMigrator::ResultKind::kFailed});
+
+  test::OobeJS().CreateVisibilityWaiter(false, kProgressDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
+  test::OobeJS().ExpectHiddenPath(kLowDiskSpace);
+  test::OobeJS().ExpectVisiblePath(kGenericError);
+  test::OobeJS().ExpectVisiblePath(kCancelButton);
+  test::OobeJS().ExpectHiddenPath(kGotoFilesButton);
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OnCancel) {
+  OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
+  WizardController::default_controller()->AdvanceToScreen(
+      LacrosDataMigrationScreenView::kScreenId);
+  waiter.Wait();
+
+  fake_migrator()->MaybeRunCallback(
+      {BrowserDataMigrator::ResultKind::kFailed, 12345});
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
+
+  EXPECT_FALSE(is_attempt_restart_called());
+  test::OobeJS().TapOnPath(kCancelButton);
+  test::TestPredicateWaiter(
+      base::BindRepeating(
+          &LacrosDataMigrationScreenTest::is_attempt_restart_called,
+          base::Unretained(this)))
+      .Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OnGotoFiles) {
+  OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
+  WizardController::default_controller()->AdvanceToScreen(
+      LacrosDataMigrationScreenView::kScreenId);
+  waiter.Wait();
+
+  fake_migrator()->MaybeRunCallback(
+      {BrowserDataMigrator::ResultKind::kFailed, 12345});
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
+
+  EXPECT_FALSE(is_attempt_restart_called());
+  test::OobeJS().TapOnPath(kGotoFilesButton);
+  test::TestPredicateWaiter(
+      base::BindRepeating(
+          &LacrosDataMigrationScreenTest::is_attempt_restart_called,
+          base::Unretained(this)))
+      .Wait();
 }
 
 }  // namespace

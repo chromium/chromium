@@ -50,6 +50,11 @@ class LacrosDataMigrationScreen : public BaseScreen,
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
+  // Sets |attempt_restart_| for testing. This helps testing as it can block
+  // to restart.
+  void SetAttemptRestartForTesting(
+      const base::RepeatingClosure& attempt_restart);
+
  private:
   // BaseScreen:
   void ShowImpl() override;
@@ -59,6 +64,9 @@ class LacrosDataMigrationScreen : public BaseScreen,
   // Updates the low battery message.
   void UpdateLowBatteryStatus();
 
+  // Called when migration is completed.
+  void OnMigrated(BrowserDataMigrator::Result result);
+
   device::mojom::WakeLock* GetWakeLock();
 
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
@@ -66,6 +74,7 @@ class LacrosDataMigrationScreen : public BaseScreen,
   LacrosDataMigrationScreenView* view_;
   std::unique_ptr<BrowserDataMigrator> migrator_;
   bool skip_post_show_button_for_testing_ = false;
+  base::RepeatingClosure attempt_restart_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>

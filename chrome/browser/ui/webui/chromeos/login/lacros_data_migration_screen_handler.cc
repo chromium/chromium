@@ -8,6 +8,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace chromeos {
 
@@ -36,6 +37,16 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
                IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION);
   builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
   builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
+  builder->Add("lacrosDataMigrationErrorTitle",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE);
+  builder->Add("lacrosDataMigrationErrorLowDiskSpace",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_LOW_DISK_SPACE);
+  builder->Add("lacrosDataMigrationErrorSubtitle",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_SUBTITLE);
+  builder->Add("lacrosDataMigrationErrorCancelButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_CANCEL_BUTTON);
+  builder->Add("lacrosDataMigrationErrorGotoFilesButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_GOTO_FILES_BUTTON);
 }
 
 void LacrosDataMigrationScreenHandler::Bind(LacrosDataMigrationScreen* screen) {
@@ -66,6 +77,16 @@ void LacrosDataMigrationScreenHandler::ShowSkipButton() {
 
 void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
   CallJS("login.LacrosDataMigrationScreen.setLowBatteryStatus", low_battery);
+}
+
+void LacrosDataMigrationScreenHandler::SetFailureStatus(
+    const absl::optional<uint64_t>& required_size,
+    bool show_goto_files) {
+  CallJS("login.LacrosDataMigrationScreen.setFailureStatus",
+         required_size.has_value()
+             ? ui::FormatBytes(static_cast<int64_t>(required_size.value()))
+             : std::u16string(),
+         show_goto_files);
 }
 
 void LacrosDataMigrationScreenHandler::Initialize() {

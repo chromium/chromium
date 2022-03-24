@@ -23,6 +23,8 @@
 namespace ash {
 namespace {
 constexpr char kUserActionSkip[] = "skip";
+constexpr char kUserActionCancel[] = "cancel";
+constexpr char kUserActionGotoFiles[] = "gotoFiles";
 constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(20);
 
 // If the battery percent is lower than this ratio, and the charger is not
@@ -34,7 +36,8 @@ LacrosDataMigrationScreen::LacrosDataMigrationScreen(
     LacrosDataMigrationScreenView* view)
     : BaseScreen(LacrosDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
-      view_(view) {
+      view_(view),
+      attempt_restart_(base::BindRepeating(&chrome::AttemptRestart)) {
   DCHECK(view_);
   if (view_)
     view_->Bind(this);
@@ -69,7 +72,8 @@ void LacrosDataMigrationScreen::ShowImpl() {
                  << switches::kBrowserDataMigrationForUser
                  << ". Aborting migration.";
 
-      chrome::AttemptRestart();
+      attempt_restart_.Run();
+      return;
     }
     DCHECK(!user_id_hash.empty()) << "user_id_hash should not be empty.";
 
@@ -77,7 +81,7 @@ void LacrosDataMigrationScreen::ShowImpl() {
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
       LOG(ERROR) << "Could not get the original user data dir path. Aborting "
                     "migration.";
-      chrome::AttemptRestart();
+      attempt_restart_.Run();
       return;
     }
 
@@ -93,12 +97,10 @@ void LacrosDataMigrationScreen::ShowImpl() {
     migrator_ = std::make_unique<BrowserDataMigratorImpl>(
         profile_data_dir, user_id_hash, progress_callback,
         g_browser_process->local_state());
-
-    migrator_->Migrate(base::BindOnce([](BrowserDataMigrator::Result result) {
-      // TODO(crbug.com/1296174): support page transition on failure.
-      chrome::AttemptRestart();
-    }));
   }
+
+  migrator_->Migrate(base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
+                                    weak_factory_.GetWeakPtr()));
 
   // Show the screen.
   view_->Show();
@@ -136,8 +138,32 @@ void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
       // which triggers Chrome to restart.
       migrator_->Cancel();
     }
+  } else if (action_id == kUserActionCancel) {
+    attempt_restart_.Run();
+  } else if (action_id == kUserActionGotoFiles) {
+    // TODO(crbug.com/1296174): Record a bit here so that Files.app will be
+    // opened in the following user session.
+    attempt_restart_.Run();
   } else {
     BaseScreen::OnUserAction(action_id);
+  }
+}
+
+void LacrosDataMigrationScreen::OnMigrated(BrowserDataMigrator::Result result) {
+  switch (result.kind) {
+    case BrowserDataMigrator::ResultKind::kSkipped:
+    case BrowserDataMigrator::ResultKind::kSucceeded:
+    case BrowserDataMigrator::ResultKind::kCancelled:
+      attempt_restart_.Run();
+      return;
+    case BrowserDataMigrator::ResultKind::kFailed:
+      if (view_) {
+        // Goto Files button should be displayed on migration failure caused by
+        // out of disk space.
+        const bool show_goto_files = result.required_size.has_value();
+        view_->SetFailureStatus(result.required_size, show_goto_files);
+      }
+      break;
   }
 }
 
@@ -189,6 +215,12 @@ void LacrosDataMigrationScreen::SetSkipPostShowButtonForTesting(bool value) {
 void LacrosDataMigrationScreen::SetMigratorForTesting(
     std::unique_ptr<BrowserDataMigrator> migrator) {
   migrator_ = std::move(migrator);
+}
+
+void LacrosDataMigrationScreen::SetAttemptRestartForTesting(
+    const base::RepeatingClosure& attempt_restart) {
+  DCHECK(!attempt_restart.is_null());
+  attempt_restart_ = attempt_restart;
 }
 
 }  // namespace ash

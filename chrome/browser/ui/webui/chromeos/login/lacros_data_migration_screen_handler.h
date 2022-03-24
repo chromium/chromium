@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_LACROS_DATA_MIGRATION_SCREEN_HANDLER_H_
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class LacrosDataMigrationScreen;
@@ -38,6 +39,13 @@ class LacrosDataMigrationScreenView {
 
   // Notifies the UI about low battery.
   virtual void SetLowBatteryStatus(bool low_battery) = 0;
+
+  // Displays the error page. If |required_size| is non nullopt, the error
+  // message is to navigate users to make some space on their disk to run
+  // migration.
+  // |show_goto_files| can control
+  virtual void SetFailureStatus(const absl::optional<uint64_t>& required_size,
+                                bool show_goto_files) = 0;
 };
 
 class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
@@ -64,6 +72,8 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
   void SetProgressValue(int progress) override;
   void ShowSkipButton() override;
   void SetLowBatteryStatus(bool low_battery) override;
+  void SetFailureStatus(const absl::optional<uint64_t>& required_size,
+                        bool show_goto_files) override;
 
  private:
   // BaseScreenHandler:
