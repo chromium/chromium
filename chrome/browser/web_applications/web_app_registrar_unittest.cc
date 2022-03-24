@@ -987,19 +987,22 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModesWithPolicy) {
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 
-  const char kWebAppSettingWithDefaultConfiguration[] = R"({
-    "https://windowed.example/": {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed"
     },
-    "https://allowed.example/": {
+    {
+      "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed"
     },
-    "*": {
+    {
+      "manifest_id": "*",
       "run_on_os_login": "blocked"
     }
-  })";
+  ])";
 
-  test::SetWebAppSettingsDictPref(profile(),
+  test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
   controller().policy_manager().RefreshPolicySettingsForTesting();
 

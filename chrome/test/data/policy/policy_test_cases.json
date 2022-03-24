@@ -16421,20 +16421,24 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "WebAppSettings": {
-            "https://foo.example": {
+          "WebAppSettings": [
+            {
+              "manifest_id": "https://foo.example/index.html",
               "run_on_os_login": "allowed"
             },
-            "https://bar.example": {
+            {
+              "manifest_id": "https://bar.example/index.html",
               "run_on_os_login": "blocked"
             },
-            "https://foobar.example": {
+            {
+              "manifest_id": "https://foobar.example/index.html",
               "run_on_os_login": "run_windowed"
             },
-            "*": {
+            {
+              "manifest_id": "*",
               "run_on_os_login": "blocked"
             }
-          }
+          ]
         },
         "prefs": {
           "profile.web_app.policy_settings": {}

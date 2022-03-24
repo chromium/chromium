@@ -1,0 +1,59 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
+
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/common/pref_names.h"
+#include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+
+namespace web_app {
+
+WebAppSettingsPolicyHandler::WebAppSettingsPolicyHandler(policy::Schema schema)
+    : policy::SimpleSchemaValidatingPolicyHandler(
+          policy::key::kWebAppSettings,
+          prefs::kWebAppSettings,
+          schema,
+          policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED) {}
+
+WebAppSettingsPolicyHandler::~WebAppSettingsPolicyHandler() = default;
+
+bool WebAppSettingsPolicyHandler::CheckPolicySettings(
+    const policy::PolicyMap& policies,
+    policy::PolicyErrorMap* errors) {
+  if (!policy::SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(
+          policies, errors)) {
+    return false;
+  }
+
+  const policy::PolicyMap::Entry* policy_entry = policies.Get(policy_name());
+  if (!policy_entry)
+    return true;
+
+  const auto& web_apps_list = policy_entry->value()->GetList();
+  const auto it = std::find_if(
+      web_apps_list.begin(), web_apps_list.end(), [](const base::Value& entry) {
+        return entry.FindKey(kManifestId)->GetString() == kWildcard;
+      });
+
+  if (it != web_apps_list.end() && it->is_dict()) {
+    const std::string* run_on_os_login_str = it->FindStringKey(kRunOnOsLogin);
+    if (run_on_os_login_str && *run_on_os_login_str != kAllowed &&
+        *run_on_os_login_str != kBlocked) {
+      errors->AddError(policy_name(), kWildcard,
+                       "The default configuration contains an unsupported "
+                       "value for the run_on_os_login field:" +
+                           *run_on_os_login_str);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+}  // namespace web_app

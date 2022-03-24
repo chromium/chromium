@@ -741,10 +741,10 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(
       run_loop.QuitClosure());
   GURL url = GetAppStartURL(site_mode);
   {
-    DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
-                                    prefs::kWebAppSettings);
-    base::Value* dict = updateDict.Get();
-    dict->RemoveKey(url.spec());
+    ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
+    updateList->GetList().EraseIf([&](const base::Value& item) {
+      return item.FindKey(kManifestId)->GetString() == url.spec();
+    });
   }
   run_loop.Run();
   AfterStateChangeAction();
@@ -2021,12 +2021,16 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(
       run_loop.QuitClosure());
   GURL url = GetAppStartURL(site_mode);
   {
+    ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
+    updateList->EraseListValueIf([&](const base::Value& item) {
+      return item.FindKey(kManifestId)->GetString() == url.spec();
+    });
+
     base::Value dictItem(base::Value::Type::DICTIONARY);
+    dictItem.SetKey(kManifestId, base::Value(url.spec()));
     dictItem.SetKey(kRunOnOsLogin, base::Value(policy));
-    DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
-                                    prefs::kWebAppSettings);
-    base::Value* dict = updateDict.Get();
-    dict->SetKey(url.spec(), std::move(dictItem));
+
+    updateList.Get()->Append(std::move(dictItem));
   }
   run_loop.Run();
 }

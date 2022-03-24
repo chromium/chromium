@@ -274,19 +274,22 @@ TEST_F(RunOnOsLoginCommandUnitTest,
 }
 
 TEST_F(RunOnOsLoginCommandUnitTest, SyncRunOnOsLoginOsIntegrationState) {
-  const char kWebAppSettingWithDefaultConfiguration[] = R"({
-    "https://windowed.example/": {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed"
     },
-    "https://allowed.example/": {
+    {
+      "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed"
     },
-    "*": {
+    {
+      "manifest_id": "*",
       "run_on_os_login": "blocked"
     }
-  })";
+  ])";
 
-  test::SetWebAppSettingsDictPref(profile(),
+  test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
   provider()->policy_manager().RefreshPolicySettingsForTesting();
 
@@ -380,22 +383,26 @@ TEST_F(RunOnOsLoginCommandUnitTest,
   // value. A null value can be returned if a web app was installed prior to the
   // completion of the work associated with https://crbug.com/1280773. This test
   // validates that both states are handled properly.
-  const char kWebAppSettingWithDefaultConfiguration[] = R"({
-    "https://windowed.example/": {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed"
     },
-    "https://allowed.example/": {
+    {
+      "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed"
     },
-    "https://allowed2.example/": {
+    {
+      "manifest_id": "https://allowed2.example/",
       "run_on_os_login": "allowed"
     },
-    "*": {
+    {
+      "manifest_id": "*",
       "run_on_os_login": "blocked"
     }
-  })";
+  ])";
 
-  test::SetWebAppSettingsDictPref(profile(),
+  test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
   provider()->policy_manager().RefreshPolicySettingsForTesting();
 
@@ -507,19 +514,22 @@ TEST_F(RunOnOsLoginCommandUnitTest,
 
 TEST_F(RunOnOsLoginCommandUnitTest,
        SyncRunOnOsLoginOsIntegrationStateAppNotLocallyInstalled) {
-  const char kWebAppSettingWithDefaultConfiguration[] = R"({
-    "https://windowed.example/": {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed"
     },
-    "https://allowed.example/": {
+    {
+      "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed"
     },
-    "*": {
+    {
+      "manifest_id": "*",
       "run_on_os_login": "blocked"
     }
-  })";
+  ])";
 
-  test::SetWebAppSettingsDictPref(profile(),
+  test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
   provider()->policy_manager().RefreshPolicySettingsForTesting();
 

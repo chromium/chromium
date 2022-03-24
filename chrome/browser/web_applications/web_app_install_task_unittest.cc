@@ -1434,16 +1434,18 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   CreateRendererAppInfo(url, name, description, /*scope=*/GURL{}, theme_color,
                         /*user_display_mode=*/DisplayMode::kStandalone);
 
-  const char kWebAppSettingWithDefaultConfiguration[] = R"({
-    "https://example.com/scope/path": {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://example.com/scope/path",
       "run_on_os_login": "run_windowed"
     },
-    "*": {
+    {
+      "manifest_id": "*",
       "run_on_os_login": "blocked"
     }
-  })";
+  ])";
 
-  test::SetWebAppSettingsDictPref(profile(),
+  test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
   controller().policy_manager().RefreshPolicySettingsForTesting();
 

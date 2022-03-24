@@ -19,6 +19,7 @@ const char kCustomIconHashKey[] = "hash";
 
 const char kWildcard[] = "*";
 
+const char kManifestId[] = "manifest_id";
 const char kRunOnOsLogin[] = "run_on_os_login";
 const char kAllowed[] = "allowed";
 const char kBlocked[] = "blocked";

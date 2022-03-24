@@ -140,7 +140,7 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
 void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
-  registry->RegisterDictionaryPref(prefs::kWebAppSettings);
+  registry->RegisterListPref(prefs::kWebAppSettings);
 }
 
 void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
@@ -261,43 +261,49 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
 
 void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
-  // are using a SimpleSchemaValidatingPolicyHandler which should validate them
-  // for us.
-  const base::Value* web_app_dict =
-      pref_service_->GetDictionary(prefs::kWebAppSettings);
+  // are using a WebAppSettingsPolicyHandler which should validate them for us.
+  const base::Value* web_app_settings =
+      pref_service_->GetList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
   default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
 
-  if (!web_app_dict)
+  if (!web_app_settings)
     return;
 
+  const auto& web_apps_list = web_app_settings->GetList();
+
   // Read default policy, if provided.
-  const base::Value* default_settings_dict =
-      web_app_dict->FindDictKey(kWildcard);
-  if (default_settings_dict) {
-    if (!default_settings_->Parse(*default_settings_dict, true)) {
+  const auto it = std::find_if(
+      web_apps_list.begin(), web_apps_list.end(), [](const base::Value& entry) {
+        return entry.FindKey(kManifestId)->GetString() == kWildcard;
+      });
+
+  if (it != web_apps_list.end() && it->is_dict()) {
+    if (!default_settings_->Parse(*it, true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
       default_settings_->ResetSettings();
     }
   }
 
   // Read policy for individual web apps
-  for (const auto iter : web_app_dict->DictItems()) {
-    if (iter.first == kWildcard)
+  for (const auto& iter : web_apps_list) {
+    const std::string* web_app_id_str = iter.FindStringKey(kManifestId);
+
+    if (*web_app_id_str == kWildcard)
       continue;
 
-    if (!iter.second.is_dict())
+    if (!iter.is_dict())
       continue;
 
-    GURL url = GURL(iter.first);
+    GURL url = GURL(*web_app_id_str);
     if (!url.is_valid()) {
-      LOG(WARNING) << "Invalid URL: " << iter.first;
+      LOG(WARNING) << "Invalid URL: " << *web_app_id_str;
       continue;
     }
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
-    if (by_url.Parse(iter.second, false)) {
+    if (by_url.Parse(iter, false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;

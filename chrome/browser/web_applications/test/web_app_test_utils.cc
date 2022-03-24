@@ -544,11 +544,11 @@ void CheckServiceWorkerStatus(const GURL& url,
   run_loop.Run();
 }
 
-void SetWebAppSettingsDictPref(Profile* profile, const base::StringPiece pref) {
+void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
   base::JSONReader::ValueWithError result =
       base::JSONReader::ReadAndReturnValueWithError(
           pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  DCHECK(result.value && result.value->is_dict()) << result.error_message;
+  DCHECK(result.value && result.value->is_list()) << result.error_message;
   profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result.value));
 }
 

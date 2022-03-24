@@ -21,6 +21,7 @@ extern const char kCustomIconHashKey[];
 
 extern const char kWildcard[];
 
+extern const char kManifestId[];
 extern const char kRunOnOsLogin[];
 extern const char kAllowed[];
 extern const char kBlocked[];
