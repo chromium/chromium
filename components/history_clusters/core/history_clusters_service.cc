@@ -125,6 +125,7 @@ std::string GetDebugJSONForClusters(
         debug_entities.Append(std::move(debug_entity));
       }
       debug_visit.SetKey("entities", std::move(debug_entities));
+      debug_visit.SetDoubleKey("site_engagement_score", visit.engagement_score);
 
       base::ListValue debug_duplicate_visits;
       for (const auto& duplicate_visit : visit.duplicate_visits) {
