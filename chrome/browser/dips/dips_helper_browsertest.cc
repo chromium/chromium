@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 
@@ -75,6 +76,11 @@ constexpr char kTimeToInteraction_OTR_Block3PC[] =
 
 class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Prevents flakiness by handling clicks even before content is drawn.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     DIPSTabHelper::SetClockForTesting(&test_clock_);
   }
@@ -187,13 +193,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.user_interaction_time().has_value());
 }
 
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#define MAYBE_Histograms_StorageThenClick DISABLED_Histograms_StorageThenClick
-#else
-#define MAYBE_Histograms_StorageThenClick Histograms_StorageThenClick
-#endif
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
-                       MAYBE_Histograms_StorageThenClick) {
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
@@ -218,15 +218,8 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Histograms_StorageThenClick_Incognito \
-  DISABLED_Histograms_StorageThenClick_Incognito
-#else
-#define MAYBE_Histograms_StorageThenClick_Incognito \
-  Histograms_StorageThenClick_Incognito
-#endif
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
-                       MAYBE_Histograms_StorageThenClick_Incognito) {
+                       Histograms_StorageThenClick_Incognito) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
@@ -257,13 +250,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
                                     base::Seconds(10), 1);
 }
 
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#define MAYBE_Histograms_ClickThenStorage DISABLED_Histograms_ClickThenStorage
-#else
-#define MAYBE_Histograms_ClickThenStorage Histograms_ClickThenStorage
-#endif
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
-                       MAYBE_Histograms_ClickThenStorage) {
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   base::HistogramTester histograms;
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
