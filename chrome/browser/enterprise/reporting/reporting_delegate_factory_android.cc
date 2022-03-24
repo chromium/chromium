@@ -39,4 +39,9 @@ ReportingDelegateFactoryAndroid::GetRealTimeReportGeneratorDelegate() {
   return nullptr;
 }
 
+std::unique_ptr<ReportScheduler::Delegate>
+ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate(Profile* profile) {
+  return std::make_unique<ReportSchedulerAndroid>(profile);
+}
+
 }  // namespace enterprise_reporting

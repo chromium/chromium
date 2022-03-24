@@ -15,6 +15,8 @@
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
+class Profile;
+
 namespace enterprise_reporting {
 
 // Desktop implementation of the reporting delegate factory. Creates desktop-
@@ -42,6 +44,9 @@ class ReportingDelegateFactoryDesktop : public ReportingDelegateFactory {
 
   std::unique_ptr<RealTimeReportGenerator::Delegate>
   GetRealTimeReportGeneratorDelegate() override;
+
+  std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate(
+      Profile* profile);
 };
 
 }  // namespace enterprise_reporting

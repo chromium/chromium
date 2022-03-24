@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
@@ -217,25 +218,33 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
   if (cloud_policy_client_->is_registered())
     return true;
 
+  policy::DMToken dm_token;
+  std::string client_id;
+  if (profile_request_generator_) {
+    // Get token for profile reporting
+    dm_token = delegate_->GetProfileDMToken();
+    client_id = delegate_->GetProfileClientId();
+  } else {
+    // Get token for browser reporting
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::DMToken browser_dm_token =
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
-  std::string client_id =
-      policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-
-  if (!browser_dm_token.is_valid() || client_id.empty()) {
+    dm_token = policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+    client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#else
+    NOTREACHED();
+    return true;
+#endif
+  }
+  if (!dm_token.is_valid() || client_id.empty()) {
     VLOG(1)
-        << "Enterprise reporting is disabled because device is not enrolled.";
+        << "Enterprise reporting is disabled because device or profile is not "
+           "enrolled.";
     return false;
   }
 
-  cloud_policy_client_->SetupRegistration(browser_dm_token.value(), client_id,
-                                          std::vector<std::string>());
+  cloud_policy_client_->SetupRegistration(
+      dm_token.value(), client_id,
+      /*user_affiliation_ids=*/std::vector<std::string>());
   return true;
-#else
-  NOTREACHED();
-  return true;
-#endif
 }
 
 void ReportScheduler::Start(base::Time last_upload_time) {

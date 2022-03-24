@@ -5037,6 +5037,10 @@ static_library("browser") {
     }
   } else {  # Non - Ash.
     sources += [
+      "enterprise/reporting/cloud_profile_reporting_service.cc",
+      "enterprise/reporting/cloud_profile_reporting_service.h",
+      "enterprise/reporting/cloud_profile_reporting_service_factory.cc",
+      "enterprise/reporting/cloud_profile_reporting_service_factory.h",
       "fullscreen.h",
       "policy/browser_signin_policy_handler.cc",
       "policy/browser_signin_policy_handler.h",

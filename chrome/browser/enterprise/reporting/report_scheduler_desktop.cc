@@ -7,17 +7,21 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/reporting/client/report_queue_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -44,14 +48,26 @@ PrefService* LocalState() {
 }  // namespace
 
 ReportSchedulerDesktop::ReportSchedulerDesktop()
-    : ReportSchedulerDesktop(nullptr, LocalState()) {}
-
-ReportSchedulerDesktop::ReportSchedulerDesktop(raw_ptr<Profile> profile)
-    : ReportSchedulerDesktop(profile, LocalState()) {}
+    : ReportSchedulerDesktop(nullptr, false) {}
 
 ReportSchedulerDesktop::ReportSchedulerDesktop(raw_ptr<Profile> profile,
-                                               raw_ptr<PrefService> prefs)
-    : prefs_(prefs), extension_request_observer_factory_(profile) {}
+                                               bool profile_reporting) {
+  if (profile_reporting) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Profile reporting is on LaCrOs instead of Ash.
+    NOTREACHED();
+#endif
+    profile_ = profile;
+    prefs_ = profile->GetPrefs();
+    // Extension request hasn't support profile report yet. When we do, we also
+    // need to refactor the code to avoid multiple extension request observer.
+  } else {
+    profile_ = nullptr;
+    prefs_ = LocalState();
+    extension_request_observer_factory_ =
+        std::make_unique<ExtensionRequestObserverFactory>(profile);
+  }
+}
 
 ReportSchedulerDesktop::~ReportSchedulerDesktop() {
   // If new profiles have been added since the last report was sent, they won't
@@ -106,20 +122,35 @@ void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
 }
 
 void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
-  // On CrOS, the function may be called twice during startup.
-  if (extension_request_observer_factory_.IsReportEnabled())
+  if (!extension_request_observer_factory_)
     return;
 
-  extension_request_observer_factory_.EnableReport(
+  // On CrOS, the function may be called twice during startup.
+  if (extension_request_observer_factory_->IsReportEnabled())
+    return;
+
+  extension_request_observer_factory_->EnableReport(
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
                           base::Unretained(this)));
 }
 
 void ReportSchedulerDesktop::StopWatchingExtensionRequest() {
-  extension_request_observer_factory_.DisableReport();
+  if (extension_request_observer_factory_)
+    extension_request_observer_factory_->DisableReport();
 }
 
 void ReportSchedulerDesktop::OnExtensionRequestUploaded() {}
+
+policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
+  absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
+  if (!dm_token || dm_token->empty())
+    return policy::DMToken();
+  return policy::DMToken(policy::DMToken::Status::kValid, *dm_token);
+}
+
+std::string ReportSchedulerDesktop::GetProfileClientId() {
+  return reporting::GetUserClientId(profile_).value_or(std::string());
+}
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   DCHECK(ShouldReportUpdates());

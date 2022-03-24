@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REPORTING_DELEGATE_FACTORY_ANDROID_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REPORTING_DELEGATE_FACTORY_ANDROID_H_
 
+#include <memory>
+
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+
+class Profile;
 
 namespace enterprise_reporting {
 
@@ -31,6 +35,9 @@ class ReportingDelegateFactoryAndroid : public ReportingDelegateFactory {
       override;
   std::unique_ptr<RealTimeReportGenerator::Delegate>
   GetRealTimeReportGeneratorDelegate() override;
+
+  std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate(
+      Profile* profile);
 };
 
 }  // namespace enterprise_reporting

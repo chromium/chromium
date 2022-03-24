@@ -229,21 +229,24 @@ class ReportSchedulerTest : public ::testing::Test {
         std::move(extension_request_uploader_ptr_));
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateSchedulerForProfileReporting(Profile* profile) {
     ReportScheduler::CreateParams params;
     params.client = client_;
     client_->SetDMToken("dm-token");
     params.delegate =
 #if BUILDFLAG(IS_ANDROID)
-        std::make_unique<ReportSchedulerAndroid>(profile->GetPrefs());
+        std::make_unique<ReportSchedulerAndroid>(profile);
 #else
-        std::make_unique<ReportSchedulerDesktop>(profile, profile->GetPrefs());
+        std::make_unique<ReportSchedulerDesktop>(profile,
+                                                 /*profile_reporting=*/true);
 #endif  // BUILDFLAG(IS_ANDROID)
     params.profile_request_generator =
         std::move(profile_request_generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetLastUploadInHour(base::TimeDelta gap) {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
@@ -390,6 +393,8 @@ TEST_F(ReportSchedulerTest, UploadReportSucceeded) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
+// Profile reporting does not support ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
@@ -414,6 +419,7 @@ TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ReportSchedulerTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();

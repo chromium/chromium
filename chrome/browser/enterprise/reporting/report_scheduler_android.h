@@ -7,13 +7,15 @@
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
+class Profile;
+
 namespace enterprise_reporting {
 
 // Android implementation of the ReportScheduler delegate.
 class ReportSchedulerAndroid : public ReportScheduler::Delegate {
  public:
   ReportSchedulerAndroid();
-  explicit ReportSchedulerAndroid(raw_ptr<PrefService> prefs);
+  explicit ReportSchedulerAndroid(raw_ptr<Profile> profile);
   ReportSchedulerAndroid(const ReportSchedulerAndroid&) = delete;
   ReportSchedulerAndroid& operator=(const ReportSchedulerAndroid&) = delete;
 
@@ -28,8 +30,11 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
   void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
+  policy::DMToken GetProfileDMToken() override;
+  std::string GetProfileClientId() override;
 
  private:
+  raw_ptr<Profile> profile_;
   raw_ptr<PrefService> prefs_;
 };
 

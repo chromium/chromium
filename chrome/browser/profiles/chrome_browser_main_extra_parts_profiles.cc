@@ -35,6 +35,7 @@
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -443,6 +444,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserPolicySigninServiceFactory::GetInstance();
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  enterprise_reporting::CloudProfileReportingServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(

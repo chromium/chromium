@@ -31,6 +31,8 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate {
   void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
+  policy::DMToken GetProfileDMToken() override;
+  std::string GetProfileClientId() override;
 };
 
 }  // namespace enterprise_reporting

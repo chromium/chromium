@@ -37,4 +37,10 @@ ReportingDelegateFactoryDesktop::GetRealTimeReportGeneratorDelegate() {
   return std::make_unique<RealTimeReportGeneratorDesktop>();
 }
 
+std::unique_ptr<ReportScheduler::Delegate>
+ReportingDelegateFactoryDesktop::GetReportSchedulerDelegate(Profile* profile) {
+  return std::make_unique<ReportSchedulerDesktop>(profile,
+                                                  /*profile_reporting=*/true);
+}
+
 }  // namespace enterprise_reporting

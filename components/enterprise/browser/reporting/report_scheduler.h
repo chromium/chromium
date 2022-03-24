@@ -5,19 +5,19 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_SCHEDULER_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_SCHEDULER_H_
 
-#include <stdint.h>
 #include <memory>
+#include <string>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_uploader.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace policy {
@@ -76,6 +76,9 @@ class ReportScheduler {
     virtual void StartWatchingExtensionRequestIfNeeded() = 0;
     virtual void StopWatchingExtensionRequest() = 0;
     virtual void OnExtensionRequestUploaded() = 0;
+
+    virtual policy::DMToken GetProfileDMToken() = 0;
+    virtual std::string GetProfileClientId() = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
