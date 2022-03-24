@@ -26,6 +26,15 @@ function compareDefault(a, b) {
 }
 
 /**
+ * @param {string} key
+ * @param {*} value
+ * @return {*}
+ */
+function bigint_replacer(key, value) {
+  return typeof value === 'bigint' ? value.toString() : value;
+}
+
+/**
  * @template T
  * @abstract
  */
@@ -427,6 +436,7 @@ class Source {
     this.sourceType = SourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
+    this.aggregatableSource = JSON.stringify(mojo.aggregatableSource, bigint_replacer, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.status = AttributabilityToText(mojo.attributability);
@@ -448,6 +458,7 @@ class SourceTableModel extends TableModel {
       new ValueColumn('Source Type', (e) => e.sourceType),
       new ValueColumn('Priority', (e) => e.priority),
       new CodeColumn('Filter Data', (e) => e.filterData),
+      new CodeColumn('Aggregatable Source', (e) => e.aggregatableSource),
       new ValueColumn('Debug Key', (e) => e.debugKey),
       new ValueColumn('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
       new ValueColumn('Status', (e) => e.status),
@@ -589,9 +600,7 @@ class AggregatableAttributionReport extends Report {
     super(mojo, mojo.data.aggregatableAttributionData.id);
 
     this.contributions = JSON.stringify(
-        mojo.data.aggregatableAttributionData.contributions,
-        (key, value) =>
-            typeof value === 'bigint' ? value.toString() : value, ' ');
+        mojo.data.aggregatableAttributionData.contributions, bigint_replacer, ' ');
   }
 }
 

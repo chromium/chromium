@@ -34,10 +34,15 @@ struct WebUIAttributionReportEventLevelData {
   bool attributed_truthfully;
 };
 
+// Represents `AttributionAggregatableKey`.
+struct AttributionAggregatableKey {
+  uint64 high_bits;
+  uint64 low_bits;
+};
+
 // Represents `AggregatableHistogramContribution`.
 struct AttributionReportHistogramContribution {
-  uint64 key_high_bits;
-  uint64 key_low_bits;
+  AttributionAggregatableKey key;
   uint32 value;
 };
 
@@ -107,6 +112,7 @@ struct WebUIAttributionSource {
   AttributionDebugKey? debug_key;
   array<uint64> dedup_keys;
   map<string, array<string>> filter_data;
+  map<string, AttributionAggregatableKey> aggregatable_source;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`,
   // and `AttributionStorage::DeactivatedSource::Reason`.

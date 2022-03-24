@@ -5,19 +5,23 @@
 #include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
 
 #include <iterator>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -41,6 +45,20 @@ namespace {
 using Attributability =
     ::content::mojom::WebUIAttributionSource::Attributability;
 
+base::flat_map<std::string, mojom::AttributionAggregatableKeyPtr> Convert(
+    const AttributionAggregatableSource& aggregatable_source) {
+  const proto::AttributionAggregatableSource& proto =
+      aggregatable_source.proto();
+
+  base::flat_map<std::string, mojom::AttributionAggregatableKeyPtr> map;
+  for (const auto& [key_id, key] : proto.keys()) {
+    // TODO(linnan): Replacing with 128-bit value string.
+    map.emplace(key_id, mojom::AttributionAggregatableKey::New(key.high_bits(),
+                                                               key.low_bits()));
+  }
+  return map;
+}
+
 mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
     const CommonSourceInfo& source,
     Attributability attributability,
@@ -52,7 +70,8 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
       source.source_type(), source.priority(),
       source.debug_key() ? mojom::AttributionDebugKey::New(*source.debug_key())
                          : nullptr,
-      dedup_keys, source.filter_data().filter_values(), attributability);
+      dedup_keys, source.filter_data().filter_values(),
+      Convert(source.aggregatable_source()), attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -113,8 +132,10 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
           aggregatable_data.contributions, std::back_inserter(contributions),
           [](const auto& contribution) {
             return mojom::AttributionReportHistogramContribution::New(
-                absl::Uint128High64(contribution.key()),
-                absl::Uint128Low64(contribution.key()), contribution.value());
+                mojom::AttributionAggregatableKey::New(
+                    absl::Uint128High64(contribution.key()),
+                    absl::Uint128Low64(contribution.key())),
+                contribution.value());
           });
       return mojom::WebUIAttributionReportData::NewAggregatableAttributionData(
           mojom::WebUIAttributionReportAggregatableAttributionData::New(
