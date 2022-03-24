@@ -152,8 +152,12 @@ void LensSidePanelController::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                transition, renderer_initiated);
+  content::OpenURLParams params(url, referrer, disposition, transition,
+                                renderer_initiated);
+  // If the navigation is initiated by the renderer process, we must set an
+  // initiator origin.
+  if (renderer_initiated)
+    params.initiator_origin = url::Origin::Create(url);
   browser_view_->browser()->OpenURL(params);
   base::RecordAction(base::UserMetricsAction("LensSidePanel.ResultLinkClick"));
 }
