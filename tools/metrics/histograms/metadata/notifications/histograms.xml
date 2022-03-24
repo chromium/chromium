@@ -199,8 +199,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Chime.Android.Events" enum="ChimeEvent"
     expires_after="never">
-  <owner>hesen@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
 <!-- expires-never: Monitors Chime notification stability. -->
 
   <summary>
@@ -212,8 +212,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Chime.Android.Registration"
     enum="BooleanSuccess" expires_after="never">
-  <owner>hesen@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
 <!-- expires-never: Monitors Chime notification stability. -->
 
   <summary>
@@ -727,8 +727,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.BackgroundTask.Event"
     enum="NotificationSchedulerBackgroundTaskEvent" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the various events when running the background task in notification
     scheduling system.
@@ -737,8 +737,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.BackgroundTask.NotificationShown"
     units="notifications" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of notifications shown in each background task run.
   </summary>
@@ -746,8 +746,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.BackgroundTask.Start" units="hours"
     expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the hour (0-23) when the notification scheduler background task
     starts.
@@ -756,8 +756,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.IconDb.InitResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the initialization result of icon database for the notification
     scheduling system.
@@ -766,8 +766,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.IconDb.OperationResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the database operation result (except initialization) of icon
     database for the notification scheduling system.
@@ -776,8 +776,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.IconDb.RecordCount" units="records"
     expires_after="2022-09-11">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of records of icon database for the notification
     scheduling system when the icon database is initialized.
@@ -788,8 +788,8 @@ chromium-metrics-reviews@google.com.
     enum="NotificationSchedulerActionButtonEvent" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records events for inline helpful/unhelpful action buttons on the
     notification when the buttons are shown or clicked.
@@ -800,8 +800,8 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of impression records in impression db right after the
     impression database is initialized.
@@ -810,8 +810,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.Impression.Event"
     enum="NotificationSchedulerImpressionEvent" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records various events in impression history tracker in notification
     scheduling system when the user interacts with the notification.
@@ -820,8 +820,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.ImpressionDb.InitResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the initialization result of impression database for the
     notification scheduling system.
@@ -830,8 +830,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.ImpressionDb.OperationResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the database operation result (except initialization) of impression
     database for the notification scheduling system.
@@ -840,8 +840,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.ImpressionDb.RecordCount"
     units="records" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of records of impression database for the notification
     scheduling system when the impression database is initialized.
@@ -850,8 +850,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.NotificationDb.InitResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the initialization result of notification database for the
     notification scheduling system.
@@ -860,8 +860,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.NotificationDb.OperationResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the database operation result (except initialization) of
     notification database for the notification scheduling system.
@@ -870,8 +870,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.NotificationDb.RecordCount"
     units="records" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of records of notification database for the notification
     scheduling system when the notification database is initialized.
@@ -883,8 +883,8 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records life cycle events for a scheduled notification, when notification is
     scheduled, shown or encountering any error.
@@ -893,8 +893,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.PngIconConverter.DecodeResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the result of png icon converter decoding process in icon store for
     the notification scheduling system. It will be logged typically when
@@ -905,8 +905,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Scheduler.PngIconConverter.EncodeResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>xingliu@chromium.org</owner>
-  <owner>hesen@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <summary>
     Records the result of png icon converter encoding process in icon store for
     the notification scheduling system. It will be logged typically when the
@@ -919,7 +919,6 @@ chromium-metrics-reviews@google.com.
     enum="NotificationSchedulerUserActionType" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
-  <owner>xingliu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the type of user action when the user interacts with notification

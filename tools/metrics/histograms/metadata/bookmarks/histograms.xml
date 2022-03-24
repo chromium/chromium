@@ -132,7 +132,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.BottomSheet.DestinationFolder" enum="BookmarkType"
     expires_after="2022-06-01">
   <owner>wylieb@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs the destination directory chosen by the user when saving a bookmark via
@@ -616,7 +615,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
     expires_after="2022-02-15">
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
@@ -642,7 +640,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
     expires_after="2022-08-14">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>
@@ -654,7 +651,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
     expires_after="2022-08-14">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>
@@ -666,7 +662,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.ReadingList.NumberOfUnreadItems" units="items"
     expires_after="2022-08-28">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>

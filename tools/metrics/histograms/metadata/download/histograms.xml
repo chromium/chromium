@@ -50,7 +50,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
     expires_after="2022-09-11">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Overall bandwidth seen for a completed download. This includes all file
     downloads going through the download subsystem, but excludes all the page
@@ -63,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.CancelReason" enum="DownloadCancelReason"
     expires_after="2022-09-18">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records why the download is canceled.</summary>
 </histogram>
@@ -72,7 +71,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors download system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>Types of audio files that are downloaded.</summary>
 </histogram>
 
@@ -88,7 +88,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors download system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>Types of text files that are downloaded.</summary>
 </histogram>
 
@@ -96,7 +97,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors download system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>Types of video files that are downloaded.</summary>
 </histogram>
 
@@ -104,7 +106,8 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-07-24">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     Various individual counts in the download system; see DownloadCountType for
     details.
@@ -123,7 +126,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.DangerousDialog.Events"
     enum="DangerousDownloadDialogEvent" expires_after="2022-08-21">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
     Records when the dialog is shown, or when user clicks on a button or
@@ -145,7 +147,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Helpful to track download database issue. -->
 
-  <owner>xingliu@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records whether the download database is available when database startup
@@ -157,7 +158,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.DeleteRetentionTime.Audio" units="hours"
     expires_after="2020-01-30">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     How long users keep downloaded audio files on disk. Recorded when the
     downloaded file is deleted.
@@ -166,7 +168,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.DeleteRetentionTime.Video" units="hours"
     expires_after="2020-01-30">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     How long users keep downloaded video files on disk. Recorded when the
     downloaded file is deleted.
@@ -265,7 +268,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>The count of HTTP Response codes for download requests.</summary>
 </histogram>
 
@@ -306,7 +310,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- expires-never: Core download metrics, used in go/chrome-download-dashboard. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The reason that a download was interrupted.</summary>
 </histogram>
@@ -453,7 +457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Later.Events" enum="DownloadLaterEvent"
     expires_after="2022-07-17">
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records events for download later feature in download core code.
@@ -462,7 +466,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Later.ScheduledDownloadSize" units="Mb"
     expires_after="2022-05-01">
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The size of downloads when the user tries to download at a scheduled time.
@@ -474,7 +478,7 @@ chromium-metrics-reviews@google.com.
     enum="DownloadLaterDialogChoice" expires_after="2022-08-07">
 <!-- Name completed by histogram_suffixes name="DownloadDialogSource" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The user selection in the download later dialog. Recorded when the user
@@ -485,7 +489,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Later.UI.Events" enum="DownloadLaterUiEvent"
     expires_after="2022-08-14">
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records events for download later feature in download Android UI.
@@ -498,7 +502,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>Records events for local media metadata parsing.</summary>
 </histogram>
 
@@ -508,7 +511,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records events when using media parser to analyze local media files.
   </summary>
@@ -517,7 +519,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.MixedContentDialog.Events"
     enum="MixedContentDownloadDialogEvent" expires_after="2022-08-07">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records user interactions with the mixed content download dialog on Android.
     Records when the dialog is shown, or when user clicks on a button or
@@ -539,7 +540,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>Network connection type when a download is completed.</summary>
 </histogram>
 
@@ -548,7 +548,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>Network connection type when starting a new download.</summary>
 </histogram>
 
@@ -619,7 +618,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.ParallelDownload.CreationFailureReason"
     enum="InterruptReason" expires_after="2021-04-25">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the received failure reason after sending a parallel download
     request.
@@ -629,7 +627,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.ParallelDownloadRequestCount" units="requests"
     expires_after="2022-04-01">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     The total number of requests sent for a parallel download, including the
     initial request.
@@ -642,7 +639,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="DownloadType" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The download path generation behavior which happens before download path
@@ -656,7 +654,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="DownloadType" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The download path validation result before the final download target is
@@ -739,7 +737,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.ResumptionRestart.Reason" enum="InterruptReason"
     expires_after="2021-02-28">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the interrupt reason when download is restarting from the beginning
     during resumption.
@@ -759,7 +756,7 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="never">
 <!-- expires-never: Download service stability metric. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@chromium.org</owner>
   <summary>
     The file size of completed background download. Recorded when background
@@ -774,7 +771,7 @@ chromium-metrics-reviews@google.com.
     enum="Download.Service.ModelAction" expires_after="never">
 <!-- expires-never: Monitor background download system database stability. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records a failed database operation.</summary>
 </histogram>
@@ -783,7 +780,7 @@ chromium-metrics-reviews@google.com.
     enum="Download.Service.ModelAction" expires_after="never">
 <!-- expires-never: Monitor background download system database stability. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records a successful database operation.</summary>
 </histogram>
@@ -795,7 +792,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.EntryState" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The total number of database records used by download service, and the
@@ -807,7 +804,7 @@ chromium-metrics-reviews@google.com.
     enum="InterruptReason" expires_after="never">
 <!-- expires-never: Monitor background download system errors. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The interrupt reason for failed downloads in download service.
@@ -817,14 +814,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Service.Entry.Event"
     enum="Download.Service.EntryEvent" expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>An action the download service took on an active download.</summary>
 </histogram>
 
 <histogram name="Download.Service.Entry.RetryCount" units="attempts"
     expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records how many attempts have taken place at the time of a retry for a
     download in the Download Service. This differs from
@@ -840,7 +835,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.CleanupReason" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of files that have been deleted by external application or the
@@ -855,7 +850,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.CleanupReason" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of failed file deletion attempts, when performing clean up tasks
@@ -870,7 +865,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.CleanupReason" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of files successfully deleted, when performing clean up tasks in
@@ -882,7 +877,8 @@ chromium-metrics-reviews@google.com.
     enum="PlatformFileError" expires_after="never">
 <!-- expires-never: Download service stability metric. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     The error code when failed to create the download directory.
   </summary>
@@ -892,7 +888,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Download service stability metric. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     The lifestime of a download file, which begins from the download completion
     to the file being deleted by the clean up task.
@@ -904,13 +901,15 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.CompletionType" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>The time to complete the download in download service.</summary>
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
     enum="Download.Service.CompletionType" expires_after="2022-08-14">
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>The completion type for downloads in download service.</summary>
 </histogram>
 
@@ -944,7 +943,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.Client" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the API calls on download service.</summary>
 </histogram>
@@ -956,7 +955,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- expires-never: Monitors download service system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The start up result of the download service.</summary>
 </histogram>
@@ -968,7 +967,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes
      name="Download.Service.TaskType" -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The platform background tasks used by download service will invoke native
@@ -1138,7 +1137,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Monitors download system health. -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The initiation source (if initiated within the above-content layer of
@@ -1189,7 +1188,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>Records events for local video thumbnail retrieval.</summary>
 </histogram>
 

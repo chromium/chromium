@@ -1374,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.QueryTiles.ImagePreloadingEvent"
     enum="QueryTilesImageLoadingEvent" expires_after="2022-04-01">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
     Records the image preloading events when the query tile images are fetched

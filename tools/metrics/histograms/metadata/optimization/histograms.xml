@@ -1113,7 +1113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PushNotifications.ReceivedNotificationType"
     enum="OptimizationType" expires_after="M106">
-  <owner>xingliu@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the OptimizationType of the push notification. Recorded when the

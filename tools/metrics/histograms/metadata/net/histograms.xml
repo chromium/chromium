@@ -1797,7 +1797,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpResponseCode.CustomHttpClient" enum="HttpResponseCode"
     expires_after="2022-07-31">
   <owner>wenyufu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Http response code accepted by the request sent from a custom HttpClient, if

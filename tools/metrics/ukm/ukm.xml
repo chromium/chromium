@@ -5602,8 +5602,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Download.Completed">
-  <owner>jming@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     Metrics taken when a download completes. Its parent event is
     Download.Started.
@@ -5634,8 +5633,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Download.Interrupted">
-  <owner>jming@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     Metrics taken when a download is interrupted. Its parent event is
     Download.Started.
@@ -5679,8 +5677,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Download.Resumed">
-  <owner>jming@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     Metrics taken when a download is resumed. Its parent event is
     Download.Started.
@@ -5705,8 +5702,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Download.Started">
-  <owner>jming@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>
     Metrics taken when a download begins. It has one Download.Ended and none to
     multiple Download.Interrupted/Download.Resumed events associated with it.
@@ -12301,7 +12297,6 @@ be describing additional metrics about the same event.
 <event name="Omnibox.EditUrlSuggestion.Share">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     User pressed 'Share' while viewing edit URL suggestions which shares the
     current URL.
@@ -18885,7 +18880,6 @@ be describing additional metrics about the same event.
 <event name="TopToolbar.Share">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     User pressed the 'Share' in the top toolbar, which shares the current URL.
   </summary>

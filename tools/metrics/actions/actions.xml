@@ -2476,7 +2476,6 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <description>
     User marked an item as read in the Reading List page from the Android
     bookmark page by clicking &quot;Mark As Read&quot; from the &quot;more&quot;
@@ -2486,7 +2485,6 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.ReadingList.OpenReadingList">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <description>
     User navigated to the Reading List page from the Android bookmark page by
     clicking on reading list folder.
@@ -2495,7 +2493,6 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.ReadingList.RemoveItem">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <description>
     User removed an item from the Reading List page from the Android bookmarks
     page by clicking &quot;delete&quot; from the &quot;more&quot; menu.
@@ -2504,7 +2501,6 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.ReadingList.SelectFromMenu">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <description>
     User selected an item from the Reading List page from the Android bookmark
     page by clicking &quot;select&quot; from the &quot;more&quot; menu.
@@ -2531,7 +2527,6 @@ should be able to be added at any place in this file.
 
 <action name="Android.Bookmarks.BottomSheet.Open">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <description>
     User tapped on the star icon from the app menu to bookmark a page. This
     resulted in opening the bookmarks bottom sheet that presents a list of
@@ -2866,7 +2861,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.Item.ExternallyDeletedKeepRecord">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <description>
     A download file was externally deleted by other application, e.g. through a
     third-party download manager. However the associated database record will
@@ -7621,7 +7616,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Downloads_OpenUrlOfDownloadedItem">
-  <owner>xingliu@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
     Records clicks on the URL of download items in chrome://downloads page.
@@ -7632,7 +7626,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Downloads_OpenUrlOfDownloadedItemFromContextMenu">
-  <owner>xingliu@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
     Records open a URL of download items in chrome://downloads page from context
@@ -16415,7 +16408,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
-  <owner>xingliu@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
     The user clicked on the body of an Android notification for a file download.
@@ -18992,7 +18984,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabClosedUndoShortCut">
-  <owner>xingliu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
   <description>
     Undo tab closure by keyboard shortcut ctrl+shift+T, for Android only.
   </description>

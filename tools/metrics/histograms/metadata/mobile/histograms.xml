@@ -387,7 +387,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records which Android notifications users interact with. Recorded when an
     user taps the button in a notification, for any Chrome-generated
@@ -403,7 +402,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user clicked on an action button on the
@@ -416,7 +414,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Android: Represents the number of system notifications that were blocked and
     could not be shown by type.
@@ -428,7 +425,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Android: Represents the type of notification that was last shown before the
     user disabled notification permissions on Chrome. This is only logged the
@@ -441,7 +437,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>peter@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Android: Represents the number of system notifications by type that we
     attempted to show but were blocked, due to their notification channel being
@@ -453,7 +448,7 @@ chromium-metrics-reviews@google.com.
     enum="SystemNotificationType" expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
 
-  <owner>xingliu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records the type of notification when the user clicks the body of Android
@@ -472,7 +467,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user clicked the notification on Android.
@@ -484,7 +478,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the type of notification when the user dismisses the Android
     notification.
@@ -499,7 +492,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user dismissed the notification on Android.
@@ -564,7 +556,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Android: Represents the number of system notifications that will be
     successfully shown to the user by type.
@@ -585,7 +576,6 @@ chromium-metrics-reviews@google.com.
     enum="MobileDownloadBackgroundTargetDeterminationResult"
     expires_after="2020-12-13">
   <owner>qinmin@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     Android: Records the target determination result for downloads started in
     the background, that is, while the browser process is not running.
@@ -603,7 +593,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.DownloadLaterPromptStatus"
     enum="DownloadLaterPromptStatus" expires_after="2023-02-06">
-  <owner>xingliu@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Android: Records whether download later dialog will be shown to the user.
@@ -613,7 +603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.DownloadPromptStatus"
     enum="DownloadPromptStatus" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Android: Records whether download dialog will be shown to the user. Recorded
@@ -623,7 +613,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.Location.Dialog.DirectoryType"
     enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the directory type when the user selects the download directory
@@ -634,7 +624,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.Location.Dialog.Result"
     enum="DownloadLocationDialogResult" expires_after="2022-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records whether the user accepted or dismissed the dialog to select a
@@ -644,21 +634,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.Location.Dialog.Suggestion.Events"
     enum="DownloadLocationSuggestionEvent" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion event.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.SuggestionSelected"
     enum="BooleanSelected" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion choice.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Type"
     enum="DownloadLocationDialogType" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the download location dialog type when the dialog is shown to the
@@ -668,7 +658,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.Location.DirectoryType"
     enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <summary>
@@ -680,14 +669,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MobileDownload.Location.Download.DirectoryType"
     enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the directory type when download is completed.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Setting.DirectoryType"
     enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
-  <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the directory type when the user selects the download directory

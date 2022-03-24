@@ -317,7 +317,6 @@ chromium-metrics-reviews@google.com.
     units="records" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     The total number of metadata entries in the image fetcher cache metadata
     database for a given cache strategy. Recorded during cache eviction process.
@@ -330,7 +329,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
   <summary>
     The total size of the cache for a given cache strategy. Recorded during
     cache eviction process. {ImageFetcherCacheStrategy}
