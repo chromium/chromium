@@ -174,13 +174,13 @@ constexpr base::FeatureParam<int> kThreadPoolLogLevel{
 // GPU process.
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
     &kEnableHangWatcher, "gpu_process_io_thread_log_level",
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kNone)};
 constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
     &kEnableHangWatcher, "gpu_process_main_thread_log_level",
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kNone)};
 constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
     &kEnableHangWatcher, "gpu_process_threadpool_log_level",
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kNone)};
 
 // Renderer process.
 constexpr base::FeatureParam<int> kRendererProcessIOThreadLogLevel{
