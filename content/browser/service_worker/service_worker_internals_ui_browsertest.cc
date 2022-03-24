@@ -400,8 +400,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   TearDownWindow();
 }
 
+// TODO(crbug.com/1307548): Flaky on Linux/Lacros
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define MAYBE_RegisteredSWReflectedOnInternalUI \
+  DISABLED_RegisteredSWReflectedOnInternalUI
+#else
+#define MAYBE_RegisteredSWReflectedOnInternalUI \
+  RegisteredSWReflectedOnInternalUI
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       RegisteredSWReflectedOnInternalUI) {
+                       MAYBE_RegisteredSWReflectedOnInternalUI) {
   Shell* SWInternalUIWindow = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
