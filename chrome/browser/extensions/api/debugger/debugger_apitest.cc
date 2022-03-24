@@ -15,15 +15,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/values_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -43,7 +48,13 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace extensions {
+
+using testing::Eq;
 
 class DebuggerApiTest : public ExtensionApiTest {
  protected:
@@ -383,6 +394,153 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   run_loop.Run();
 
   EXPECT_EQ(0u, manager->infobar_count());
+}
+
+class CrossProfileDebuggerApiTest : public DebuggerApiTest {
+ protected:
+  Profile* other_profile() { return other_profile_; }
+  Profile* otr_profile() { return otr_profile_; }
+
+  std::unique_ptr<content::WebContents> CreateTabWithProfileAndNavigate(
+      Profile* profile,
+      const GURL& url) {
+    auto wc = content::WebContents::Create(
+        content::WebContents::CreateParams(profile));
+    EXPECT_TRUE(content::NavigateToURL(wc.get(), url));
+    return wc;
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    DebuggerApiTest::SetUpOnMainThread();
+    profile_manager_ = g_browser_process->profile_manager();
+
+    base::RunLoop run_loop;
+    profile_manager_->CreateProfileAsync(
+        profile_manager_->GenerateNextProfileDirectoryPath(),
+        base::BindRepeating(
+            [](CrossProfileDebuggerApiTest* self, base::RunLoop* run_loop,
+               Profile* profile, Profile::CreateStatus status) {
+              if (status == Profile::CREATE_STATUS_INITIALIZED) {
+                self->other_profile_ = profile;
+                run_loop->Quit();
+              }
+            },
+            this, &run_loop));
+    run_loop.Run();
+    otr_profile_ = profile()->GetPrimaryOTRProfile(true);
+  }
+
+  void TearDownOnMainThread() override {
+    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    DebuggerApiTest::TearDownOnMainThread();
+  }
+
+  ProfileManager* profile_manager_ = nullptr;
+  Profile* other_profile_ = nullptr;
+  Profile* otr_profile_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
+  auto wc1 = CreateTabWithProfileAndNavigate(
+      other_profile(),
+      embedded_test_server()->GetURL("/simple.html?other_profile"));
+  auto wc2 = CreateTabWithProfileAndNavigate(
+      otr_profile(),
+      embedded_test_server()->GetURL("/simple.html?off_the_record"));
+
+  {
+    auto get_targets_function =
+        base::MakeRefCounted<DebuggerGetTargetsFunction>();
+    base::Value value = std::move(
+        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", browser()));
+
+    ASSERT_TRUE(value.is_list());
+    const base::Value::List targets = std::move(value.GetList());
+    ASSERT_THAT(targets, testing::SizeIs(1));
+    EXPECT_THAT(targets[0], base::test::DictionaryHasValue(
+                                "url", base::Value("about:blank")));
+  }
+
+  {
+    auto get_targets_function =
+        base::MakeRefCounted<DebuggerGetTargetsFunction>();
+    base::Value value = std::move(
+        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", browser(),
+            api_test_utils::RunFunctionFlags::INCLUDE_INCOGNITO));
+
+    ASSERT_TRUE(value.is_list());
+    const base::Value::List targets = std::move(value.GetList());
+    std::vector<std::string> urls;
+    std::transform(
+        targets.begin(), targets.end(), std::back_inserter(urls),
+        [](const base::Value& value) -> std::string {
+          GURL::Replacements remove_port;
+          remove_port.ClearPort();
+          const std::string* url = value.GetDict().FindString("url");
+          return url ? GURL(*url).ReplaceComponents(remove_port).spec()
+                     : "<missing field>";
+        });
+    EXPECT_THAT(urls, testing::UnorderedElementsAre(
+                          "about:blank",
+                          "http://127.0.0.1/simple.html?off_the_record"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
+  auto wc1 = CreateTabWithProfileAndNavigate(
+      other_profile(),
+      embedded_test_server()->GetURL("/simple.html?other_profile"));
+  std::string target_in_other_profile = base::StringPrintf(
+      "[{\"targetId\": \"%s\"}, \"1.1\"]",
+      content::DevToolsAgentHost::GetOrCreateFor(wc1.get())->GetId().c_str());
+
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_other_profile, browser(),
+        api_test_utils::NONE));
+  }
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_other_profile.c_str(),
+        browser(), api_test_utils::INCLUDE_INCOGNITO));
+  }
+
+  auto wc2 = CreateTabWithProfileAndNavigate(
+      otr_profile(),
+      embedded_test_server()->GetURL("/simple.html?off_the_record"));
+  std::string target_in_otr_profile = base::StringPrintf(
+      "[{\"targetId\": \"%s\"}, \"1.1\"]",
+      content::DevToolsAgentHost::GetOrCreateFor(wc2.get())->GetId().c_str());
+
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_otr_profile.c_str(),
+        browser(), api_test_utils::NONE));
+  }
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_TRUE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_otr_profile.c_str(),
+        browser(), api_test_utils::INCLUDE_INCOGNITO));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
