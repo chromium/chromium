@@ -1005,8 +1005,8 @@ void ShelfView::CalculateIdealBounds() {
   const int button_size = GetButtonSize();
   for (int i = 0; i < view_model_->view_size(); ++i) {
     if (view_model_->view_at(i)->GetVisible()) {
-      view_model_->set_ideal_bounds(i,
-                                    gfx::Rect(x, y, button_size, button_size));
+      gfx::Rect ideal_view_bounds(x, y, button_size, button_size);
+      view_model_->set_ideal_bounds(i, ideal_view_bounds);
       if (view_model_->view_at(i) == drag_view_ &&
           current_ghost_view_index_ != i && !dragged_off_shelf_) {
         if (current_ghost_view_)
@@ -1015,9 +1015,14 @@ void ShelfView::CalculateIdealBounds() {
         last_ghost_view_ = current_ghost_view_;
 
         auto current_ghost_view = std::make_unique<GhostImageView>(GridIndex());
-        gfx::Rect ghost_view_bounds(x, y, button_size, button_size);
+        gfx::Size icon_size = drag_view_
+                                  ->GetIdealIconBounds(ideal_view_bounds.size(),
+                                                       /*icon_scale=*/1.0f)
+                                  .size();
+        gfx::Rect ghost_view_bounds = ideal_view_bounds;
+        ghost_view_bounds.ClampToCenteredSize(icon_size);
         current_ghost_view->Init(ghost_view_bounds,
-                                 ShelfConfig::Get()->button_spacing());
+                                 ghost_view_bounds.width() / 2);
 
         current_ghost_view_ = AddChildView(std::move(current_ghost_view));
         current_ghost_view_->FadeIn();
