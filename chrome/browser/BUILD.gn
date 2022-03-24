@@ -7499,7 +7499,7 @@ grit("resources") {
     deps += [
       "//chrome/browser/resources/discards:discards_resources_gen",
       "//chrome/browser/resources/gaia_auth_host:modulize",
-      "//chrome/browser/resources/inline_login:web_components",
+      "//chrome/browser/resources/inline_login:components",
       "//chrome/browser/resources/management:web_components",
       "//chrome/browser/resources/signin:web_components",
       "//chrome/browser/ui/webui/discards:mojo_bindings_js",
@@ -7520,6 +7520,7 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/account_manager:web_components",
       "//chrome/browser/resources/chromeos/account_manager/components:web_components",
       "//chrome/browser/resources/chromeos/add_supervision:web_components",
+      "//chrome/browser/resources/chromeos/arc_account_picker:web_components",
       "//chrome/browser/resources/chromeos/crostini_installer:crostini_installer",
       "//chrome/browser/resources/chromeos/crostini_installer:web_components",
       "//chrome/browser/resources/chromeos/crostini_upgrader:web_components",

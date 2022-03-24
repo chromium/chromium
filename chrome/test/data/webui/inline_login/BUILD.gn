@@ -17,11 +17,13 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/inline_login/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
-                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=../../chrome/browser/resources/",
+                    "js_module_root=./gen/chrome/browser/resources/",
+                    "js_module_root=../../chrome/browser/resources/inline_login/",
+                    "js_module_root=./gen/chrome/browser/resources/inline_login/",
+                    "js_module_root=./gen/chrome/browser/resources/inline_login/preprocessed/",
                   ]
   deps = [
-    ":arc_account_picker_test",
     ":inline_login_test",
     ":inline_login_test_util",
   ]
@@ -39,58 +41,52 @@ js_library("inline_login_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("inline_login_welcome_page_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
+if (is_chromeos) {
+  js_library("inline_login_welcome_page_test") {
+    deps = [
+      ":inline_login_test_util",
+      "..:chai_assert",
+      "..:test_util",
+      "//chrome/browser/resources/inline_login:inline_login_app",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 
-js_library("inline_login_signin_blocked_by_policy_page_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
+  js_library("inline_login_signin_blocked_by_policy_page_test") {
+    deps = [
+      ":inline_login_test_util",
+      "..:chai_assert",
+      "..:test_util",
+      "//chrome/browser/resources/inline_login:inline_login_app",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 
-js_library("arc_account_picker_page_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("arc_account_picker_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/inline_login:arc_account_picker_app",
-    "//chrome/browser/resources/inline_login:arc_account_picker_browser_proxy",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  js_library("arc_account_picker_page_test") {
+    deps = [
+      ":inline_login_test_util",
+      "..:chai_assert",
+      "..:test_util",
+      "../chromeos/arc_account_picker:test_util",
+      "//chrome/browser/resources/inline_login:inline_login_app",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 }
 
 js_library("inline_login_test_util") {
+  sources = [ "$target_gen_dir/inline_login_test_util.js" ]
   deps = [
     "..:test_browser_proxy",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+  extra_deps = [ ":preprocess" ]
 }

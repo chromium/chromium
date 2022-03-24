@@ -66,6 +66,7 @@ group("closure_compile") {
     "account_manager:closure_compile",
     "account_manager/components:closure_compile",
     "add_supervision:closure_compile",
+    "arc_account_picker:closure_compile",
     "bluetooth_pairing_dialog:closure_compile",
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",

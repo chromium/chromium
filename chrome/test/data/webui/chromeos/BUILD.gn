@@ -44,6 +44,7 @@ group("closure_compile") {
     public_deps += [
       ":closure_compile_local",
       "account_manager:closure_compile",
+      "arc_account_picker:closure_compile",
       "ash_common:closure_compile",
       "diagnostics:closure_compile",
       "emoji_picker:closure_compile",

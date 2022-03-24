@@ -6,13 +6,15 @@ import 'chrome://chrome-signin/inline_login_app.js';
 
 import {ArcAccountPickerBrowserProxyImpl} from 'chrome://chrome-signin/arc_account_picker_browser_proxy.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
+import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals} from '../chai_assert.js';
+import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from '../chromeos/arc_account_picker/test_util.js';
 
-import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, getFakeAccountsNotAvailableInArcList, TestArcAccountPickerBrowserProxy, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 window.arc_account_picker_page_test = {};
 const arc_account_picker_page_test = window.arc_account_picker_page_test;
@@ -59,7 +61,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
 
     testArcBrowserProxy = new TestArcAccountPickerBrowserProxy();
     testArcBrowserProxy.setAccountsNotAvailableInArc(accountsNotAvailableInArc);
-    ArcAccountPickerBrowserProxyImpl.setInstance(testArcBrowserProxy);
+    setTestArcAccountPickerBrowserProxy(testArcBrowserProxy);
 
     inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
         document.createElement('inline-login-app'));

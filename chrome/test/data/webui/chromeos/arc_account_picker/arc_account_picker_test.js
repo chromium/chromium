@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {getFakeAccountsNotAvailableInArcList, TestArcAccountPickerBrowserProxy} from './inline_login_test_util.js';
+import {getFakeAccountsNotAvailableInArcList, TestArcAccountPickerBrowserProxy} from './test_util.js';
 
 window.arc_account_picker_test = {};
 const arc_account_picker_test = window.arc_account_picker_test;

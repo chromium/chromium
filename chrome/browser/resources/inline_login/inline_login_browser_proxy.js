@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-import {AuthCompletedCredentials} from '../gaia_auth_host/authenticator.m.js';
+import {AuthCompletedCredentials} from './gaia_auth_host/authenticator.m.js';
 
 /** @interface */
 export class InlineLoginBrowserProxy {

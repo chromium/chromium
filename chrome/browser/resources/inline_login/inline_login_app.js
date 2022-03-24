@@ -25,7 +25,7 @@ import './strings.m.js';
 import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
 // </if>
 
-import {AuthCompletedCredentials, Authenticator, AuthParams} from '../gaia_auth_host/authenticator.m.js';
+import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';
 import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
 /**
@@ -174,10 +174,11 @@ Polymer({
     this.addWebUIListener(
         'send-lst-fetch-results', arg => this.sendLSTFetchResults_(arg));
     this.addWebUIListener('close-dialog', () => this.closeDialog_());
-
+    // <if expr="chromeos_ash">
     this.addWebUIListener(
         'show-signin-blocked-by-policy-page',
         data => this.signinBlockedByPolicyShowView_(data));
+    // </if>
   },
 
   /** @private */
@@ -313,6 +314,7 @@ Polymer({
     this.browserProxy_.dialogClose();
   },
 
+  // <if expr="chromeos_ash">
   /**
    * Navigates to the welcome screen.
    * @private
@@ -381,6 +383,7 @@ Polymer({
     return this.enableGaiaActionButtons_ &&
         this.currentView_ === View.addAccount;
   },
+  // </if>
 
   /**
    * Navigates to the default view.
@@ -416,10 +419,10 @@ Polymer({
   getDefaultView_() {
     // TODO(https://crbug.com/1155041): simplify this when the file will be
     // split into CrOS and non-CrOS parts.
-    if (!isChromeOS) {
-      // On non-ChromeOS always show 'Add account'.
-      return View.addAccount;
-    }
+    // <if expr="not chromeos_ash">
+    // On non-ChromeOS always show 'Add account'.
+    return View.addAccount;
+    // </if>
 
     // <if expr="chromeos_ash">
     if (this.isReauthentication_) {
@@ -452,10 +455,12 @@ Polymer({
    * @private
    */
   isWelcomePageEnabled_() {
-    if (!isChromeOS) {
-      return false;
-    }
+    // <if expr="not chromeos_ash">
+    return false;
+    // </if>
+    // <if expr="chromeos_ash">
     return !this.shouldSkipWelcomePage_ && !this.isReauthentication_;
+    // </if>
   },
 
   // <if expr="chromeos">

@@ -2,43 +2,80 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/buildflags.gni")
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + [
-        "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-      ]
+preprocess_folder = "preprocessed"
+
+group("components") {
   deps = [
-    ":arc_account_picker_app",
-    ":arc_account_picker_browser_proxy",
-    ":inline_login_app",
-    ":inline_login_browser_proxy",
-    ":inline_login_util",
-    ":signin_blocked_by_policy_page",
-    ":welcome_page_app",
+    ":preprocess",
+    ":preprocess_generated",
+    ":web_components",
   ]
 }
 
-js_library("inline_login_app") {
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "inline_login_browser_proxy.js" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = "$target_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "inline_login_app.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/inline_login/",
+                    "js_module_root=./gen/chrome/browser/resources/inline_login/",
+                    "js_module_root=./gen/chrome/browser/resources/inline_login/preprocessed/",
+                    "js_module_root=../../chrome/browser/resources/",
+                    "js_module_root=./gen/chrome/browser/resources/",
+                  ]
   deps = [
-    ":arc_account_picker_app",
+    ":inline_login_app",
     ":inline_login_browser_proxy",
-    ":inline_login_util",
-    ":signin_blocked_by_policy_page",
-    ":welcome_page_app",
+  ]
+  if (is_chromeos_ash) {
+    deps += [
+      ":inline_login_util",
+      ":signin_blocked_by_policy_page",
+      ":welcome_page_app",
+    ]
+  }
+}
+
+js_library("inline_login_app") {
+  sources = [ "$target_gen_dir/$preprocess_folder/inline_login_app.js" ]
+  deps = [
+    ":inline_login_browser_proxy",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  if (is_chromeos_ash) {
+    deps += [
+      ":inline_login_util",
+      ":signin_blocked_by_policy_page",
+      ":welcome_page_app",
+      "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_app",
+    ]
+  }
   externs_list = [ "$externs_path/webview_tag.js" ]
+  extra_deps = [ ":preprocess_generated" ]
 }
 
 js_library("welcome_page_app") {
@@ -50,13 +87,6 @@ js_library("welcome_page_app") {
   ]
 }
 
-js_library("arc_account_picker_app") {
-  deps = [
-    ":arc_account_picker_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("signin_blocked_by_policy_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -65,16 +95,14 @@ js_library("signin_blocked_by_policy_page") {
 }
 
 js_library("inline_login_browser_proxy") {
+  sources =
+      [ "$target_gen_dir/$preprocess_folder/inline_login_browser_proxy.js" ]
   deps = [
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("arc_account_picker_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":preprocess" ]
 }
 
 js_library("inline_login_util") {
@@ -86,6 +114,5 @@ html_to_js("web_components") {
     "inline_login_app.js",
     "signin_blocked_by_policy_page.js",
     "welcome_page_app.js",
-    "arc_account_picker_app.js",
   ]
 }
