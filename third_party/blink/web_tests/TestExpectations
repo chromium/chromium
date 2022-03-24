@@ -7619,3 +7619,7 @@ crbug.com/1309633 [ Mac10.12 ] external/wpt/FileAPI/url/url-lifetime.html [ Fail
 crbug.com/1309633 [ Mac10.13 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
 crbug.com/1309633 [ Mac10.14 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
 crbug.com/1309633 [ Mac10.15 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
+
+# Sheriff 2022-03-24
+crbug.com/1309756 http/tests/images/force-reload.html [ Skip ]
+crbug.com/1309756 [ Mac11-arm64 ] http/tests/images/force-reload-image-document.html [ Skip ]
