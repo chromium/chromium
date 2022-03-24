@@ -222,7 +222,6 @@ void WebGL2RenderingContextBase::InitializeNewContext() {
                            &max_uniform_buffer_bindings);
   bound_indexed_uniform_buffers_.clear();
   bound_indexed_uniform_buffers_.resize(max_uniform_buffer_bindings);
-  max_bound_uniform_buffer_index_ = 0;
 
   pack_row_length_ = 0;
   pack_skip_pixels_ = 0;
@@ -5569,20 +5568,6 @@ bool WebGL2RenderingContextBase::ValidateAndUpdateBufferBindBaseTarget(
       }
       bound_indexed_uniform_buffers_[index] = buffer;
       bound_uniform_buffer_ = buffer;
-
-      // Keep track of what the maximum bound uniform buffer index is
-      if (buffer) {
-        if (index > max_bound_uniform_buffer_index_)
-          max_bound_uniform_buffer_index_ = index;
-      } else if (max_bound_uniform_buffer_index_ > 0 &&
-                 index == max_bound_uniform_buffer_index_) {
-        wtf_size_t i = max_bound_uniform_buffer_index_ - 1;
-        for (; i > 0; --i) {
-          if (bound_indexed_uniform_buffers_[i].Get())
-            break;
-        }
-        max_bound_uniform_buffer_index_ = i;
-      }
       break;
     default:
       NOTREACHED();
