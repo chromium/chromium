@@ -180,6 +180,16 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
     return;
   }
 
+  if (!is_google_photos_enterprise_enabled_) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
+        "Google Photos enterprise setting is enabled.");
+    std::move(callback).Run(
+        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
+            absl::nullopt, absl::nullopt));
+    return;
+  }
+
   if (!google_photos_albums_fetcher_) {
     google_photos_albums_fetcher_ =
         std::make_unique<wallpaper_handlers::GooglePhotosAlbumsFetcher>(
@@ -195,6 +205,14 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosCount(
     mojo::ReportBadMessage(
         "Cannot call `FetchGooglePhotosCount()` without Google Photos "
         "Wallpaper integration enabled.");
+    std::move(callback).Run(-1);
+    return;
+  }
+
+  if (!is_google_photos_enterprise_enabled_) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosCount()` without confirming that the "
+        "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(-1);
     return;
   }
@@ -224,8 +242,11 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
         std::make_unique<wallpaper_handlers::GooglePhotosEnabledFetcher>(
             profile_);
   }
-  google_photos_enabled_fetcher_->AddRequestAndStartIfNecessary(
-      std::move(callback));
+  // base::Unretained is safe to use because |this| outlives
+  // |google_photos_enabled_fetcher_|.
+  google_photos_enabled_fetcher_->AddRequestAndStartIfNecessary(base::BindOnce(
+      &PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled,
+      base::Unretained(this), std::move(callback)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
@@ -237,6 +258,16 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
     mojo::ReportBadMessage(
         "Cannot call `FetchGooglePhotosPhotos()` without Google Photos "
         "Wallpaper integration enabled.");
+    std::move(callback).Run(
+        ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New(
+            absl::nullopt, absl::nullopt));
+    return;
+  }
+
+  if (!is_google_photos_enterprise_enabled_) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosPhotos()` without confirming that the "
+        "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(
         ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New(
             absl::nullopt, absl::nullopt));
@@ -447,6 +478,14 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
     const std::string& id,
     ash::WallpaperLayout layout,
     SelectGooglePhotosPhotoCallback callback) {
+  if (!is_google_photos_enterprise_enabled_) {
+    mojo::ReportBadMessage(
+        "Cannot call `SelectGooglePhotosPhoto()` without confirming that the "
+        "Google Photos enterprise setting is enabled.");
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (pending_select_google_photos_photo_callback_)
     std::move(pending_select_google_photos_photo_callback_).Run(false);
   pending_select_google_photos_photo_callback_ = std::move(callback);
@@ -581,6 +620,15 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
     result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
+}
+
+void PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled(
+    FetchGooglePhotosEnabledCallback callback,
+    ash::personalization_app::mojom::GooglePhotosEnablementState state) {
+  is_google_photos_enterprise_enabled_ =
+      state ==
+      ash::personalization_app::mojom::GooglePhotosEnablementState::kEnabled;
+  std::move(callback).Run(state);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGetLocalImages(

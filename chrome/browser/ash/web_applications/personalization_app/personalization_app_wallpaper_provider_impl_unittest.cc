@@ -434,6 +434,35 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     : public PersonalizationAppWallpaperProviderImplTest {
  protected:
+  // Mocks an attempt to fetch the Google Photos enterprise setting from the
+  // server. A successful attempt, which happens when the Google Photos
+  // wallpaper integration is enabled, will enable wallpaper selection and
+  // other Google Photos data fetches to go through.
+  void FetchGooglePhotosEnabled(size_t num_fetches = 1) {
+    using ash::personalization_app::mojom::GooglePhotosEnablementState;
+
+    // Mock a fetcher for the enablement state query.
+    auto* const google_photos_enabled_fetcher = static_cast<::testing::NiceMock<
+        wallpaper_handlers::MockGooglePhotosEnabledFetcher>*>(
+        delegate()->SetGooglePhotosEnabledFetcherForTest(
+            std::make_unique<::testing::NiceMock<
+                wallpaper_handlers::MockGooglePhotosEnabledFetcher>>(
+                profile())));
+
+    EXPECT_CALL(*google_photos_enabled_fetcher, AddRequestAndStartIfNecessary)
+        .Times(GooglePhotosEnabled() ? num_fetches : 0);
+
+    for (size_t i = 0; i < num_fetches; ++i) {
+      wallpaper_provider_remote()->get()->FetchGooglePhotosEnabled(
+          base::BindLambdaForTesting([this](GooglePhotosEnablementState state) {
+            EXPECT_EQ(state, GooglePhotosEnabled()
+                                 ? GooglePhotosEnablementState::kEnabled
+                                 : GooglePhotosEnablementState::kError);
+          }));
+    }
+    wallpaper_provider_remote()->FlushForTesting();
+  }
+
   // The number of times to start each idempotent API query.
   static constexpr size_t kNumFetches = 2;
   // Resume token value used across several tests.
@@ -460,6 +489,22 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
                                             ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
+  // Test fetching Google Photos albums before fetching the enterprise setting.
+  // No requests should be made.
+  for (size_t i = 0; i < kNumFetches; ++i) {
+    wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
+        kResumeToken, base::BindLambdaForTesting(
+                          [](ash::personalization_app::mojom::
+                                 FetchGooglePhotosAlbumsResponsePtr response) {
+                            EXPECT_FALSE(response->albums.has_value());
+                          }));
+  }
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Test fetching Google Photos albums after fetching the enterprise setting.
+  // Requests should be made if and only if the Google Photos wallpaper
+  // integration is enabled.
+  FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
         kResumeToken,
@@ -485,6 +530,18 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
   EXPECT_CALL(*google_photos_count_fetcher, AddRequestAndStartIfNecessary)
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
+  // Test fetching Google Photos count before fetching the enterprise setting.
+  // No requests should be made.
+  for (size_t i = 0; i < kNumFetches; ++i) {
+    wallpaper_provider_remote()->get()->FetchGooglePhotosCount(
+        base::BindLambdaForTesting([](int count) { EXPECT_EQ(count, -1); }));
+  }
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Test fetching Google Photos count after fetching the enterprise setting.
+  // Requests should be made if and only if the Google Photos wallpaper
+  // integration is enabled.
+  FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosCount(
         base::BindLambdaForTesting([this](int count) {
@@ -495,29 +552,9 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchEnabled) {
-  using ash::personalization_app::mojom::GooglePhotosEnablementState;
-
-  // Mock a fetcher for the enablement state query.
-  auto* const google_photos_enabled_fetcher = static_cast<
-      ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosEnabledFetcher>*>(
-      delegate()->SetGooglePhotosEnabledFetcherForTest(
-          std::make_unique<::testing::NiceMock<
-              wallpaper_handlers::MockGooglePhotosEnabledFetcher>>(profile())));
-
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
-  EXPECT_CALL(*google_photos_enabled_fetcher, AddRequestAndStartIfNecessary)
-      .Times(GooglePhotosEnabled() ? kNumFetches : 0);
-
-  for (size_t i = 0; i < kNumFetches; ++i) {
-    wallpaper_provider_remote()->get()->FetchGooglePhotosEnabled(
-        base::BindLambdaForTesting([this](GooglePhotosEnablementState state) {
-          EXPECT_EQ(state, GooglePhotosEnabled()
-                               ? GooglePhotosEnablementState::kEnabled
-                               : GooglePhotosEnablementState::kError);
-        }));
-  }
-  wallpaper_provider_remote()->FlushForTesting();
+  FetchGooglePhotosEnabled(kNumFetches);
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
@@ -538,6 +575,23 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
                   absl::make_optional(kResumeToken), ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
+  // Test fetching Google Photos photos before fetching the enterprise setting.
+  // No requests should be made.
+  for (size_t i = 0; i < kNumFetches; ++i) {
+    wallpaper_provider_remote()->get()->FetchGooglePhotosPhotos(
+        item_id, album_id, kResumeToken,
+        base::BindLambdaForTesting(
+            [](ash::personalization_app::mojom::
+                   FetchGooglePhotosPhotosResponsePtr response) {
+              EXPECT_FALSE(response->photos.has_value());
+            }));
+  }
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Test fetching Google Photos photos after fetching the enterprise setting.
+  // Requests should be made if and only if the Google Photos wallpaper
+  // integration is enabled.
+  FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosPhotos(
         item_id, album_id, kResumeToken,
@@ -874,14 +928,31 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   const std::string photo_id = "OmnisVirLupus";
   bool feature_enabled = GooglePhotosEnabled();
 
+  // Test selecting a wallpaper before fetching the enterprise setting.
   wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
       photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      base::BindLambdaForTesting([&feature_enabled](bool success) {
+      base::BindLambdaForTesting([](bool success) { EXPECT_FALSE(success); }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  EXPECT_EQ(0,
+            test_wallpaper_controller()->set_google_photos_wallpaper_count());
+  EXPECT_NE(
+      ash::WallpaperInfo(
+          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED}),
+      test_wallpaper_controller()->wallpaper_info().value_or(
+          ash::WallpaperInfo()));
+
+  // Test selecting a wallpaper after fetching the enterprise setting.
+  FetchGooglePhotosEnabled();
+  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+      photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      base::BindLambdaForTesting([feature_enabled](bool success) {
         EXPECT_EQ(success, feature_enabled);
       }));
   wallpaper_provider_remote()->FlushForTesting();
 
-  EXPECT_EQ(1,
+  EXPECT_EQ(feature_enabled ? 1 : 0,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
   EXPECT_EQ(
       feature_enabled,

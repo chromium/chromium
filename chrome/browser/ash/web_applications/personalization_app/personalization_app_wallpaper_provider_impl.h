@@ -179,6 +179,10 @@ class PersonalizationAppWallpaperProviderImpl
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
+  void OnFetchGooglePhotosEnabled(
+      FetchGooglePhotosEnabledCallback callback,
+      ash::personalization_app::mojom::GooglePhotosEnablementState state);
+
   void OnGetLocalImages(GetLocalImagesCallback callback,
                         const std::vector<base::FilePath>& images);
 
@@ -265,6 +269,12 @@ class PersonalizationAppWallpaperProviderImpl
   // mock in a test.
   std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>
       google_photos_photos_fetcher_;
+
+  // Set to true when an enabled Google Photos enterprise setting is fetched
+  // from the server. Attempting to select a Google Photos wallpaper or fetch
+  // Google Photos data other than the enterprise setting itself will fail if
+  // this value is false.
+  bool is_google_photos_enterprise_enabled_ = false;
 
   SelectWallpaperCallback pending_select_wallpaper_callback_;
 
