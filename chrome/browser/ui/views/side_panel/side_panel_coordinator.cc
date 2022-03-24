@@ -162,6 +162,7 @@ void SidePanelCoordinator::Close() {
   global_registry_->ResetActiveEntry();
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
+  ClearCachedEntryViews();
 
   // TODO(pbos): Make this button observe panel-visibility state instead.
   browser_view_->toolbar()->side_panel_button()->SetTooltipText(
@@ -227,11 +228,35 @@ void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
   views::View* content_wrapper =
       GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
   DCHECK(content_wrapper);
-  content_wrapper->RemoveAllChildViews();
-  content_wrapper->AddChildView(entry->CreateContent());
+  // |content_wrapper| should have either no child views or one child view for
+  // the currently hosted SidePanelEntry.
+  DCHECK(content_wrapper->children().size() <= 1);
+  if (content_wrapper->children().size()) {
+    DCHECK(GetLastActiveEntryId().has_value());
+    SidePanelEntry* current_entry =
+        GetEntryForId(GetLastActiveEntryId().value());
+    DCHECK(current_entry);
+    auto current_entry_view =
+        content_wrapper->RemoveChildViewT(content_wrapper->children().front());
+    current_entry->CacheView(std::move(current_entry_view));
+  }
+  content_wrapper->AddChildView(entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
   entry->OnEntryShown();
+}
+
+void SidePanelCoordinator::ClearCachedEntryViews() {
+  global_registry_->ClearCachedEntryViews();
+  TabStripModel* model = browser_view_->browser()->tab_strip_model();
+  if (!model)
+    return;
+  for (int index = 0; index < model->count(); ++index) {
+    auto* web_contents =
+        browser_view_->browser()->tab_strip_model()->GetWebContentsAt(index);
+    if (auto* registry = SidePanelRegistry::Get(web_contents))
+      registry->ClearCachedEntryViews();
+  }
 }
 
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetLastActiveEntryId()
@@ -356,9 +381,15 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
   combobox_model_->RemoveItem(entry->id());
   // Update the current entry to make sure we don't show an entry that is being
-  // removed.
-  if (GetContentView())
-    Show(GetLastActiveEntryId().value_or(kDefaultEntry));
+  // removed or close the panel if the entry being deregistered is the only one
+  // that has been visible.
+  if (GetContentView()) {
+    if (global_registry_->active_entry().has_value()) {
+      Show(GetLastActiveEntryId().value_or(kDefaultEntry));
+    } else {
+      Close();
+    }
+  }
 }
 
 void SidePanelCoordinator::OnTabStripModelChanged(

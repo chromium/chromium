@@ -36,6 +36,9 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
   void ResetActiveEntry();
 
+  // Clear cached view for all owned entries.
+  void ClearCachedEntryViews();
+
   void AddObserver(SidePanelRegistryObserver* observer);
   void RemoveObserver(SidePanelRegistryObserver* observer);
 

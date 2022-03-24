@@ -43,6 +43,11 @@ void SidePanelRegistry::ResetActiveEntry() {
   active_entry_.reset();
 }
 
+void SidePanelRegistry::ClearCachedEntryViews() {
+  for (auto const& entry : entries_)
+    entry.get()->ClearCachedView();
+}
+
 void SidePanelRegistry::AddObserver(SidePanelRegistryObserver* observer) {
   observers_.AddObserver(observer);
 }

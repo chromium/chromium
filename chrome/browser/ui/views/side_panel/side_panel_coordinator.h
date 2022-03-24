@@ -57,6 +57,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // and populates the side panel with the provided SidePanelEntry.
   void PopulateSidePanel(SidePanelEntry* entry);
 
+  // Clear cached views for registry entries for global and contextual
+  // registries.
+  void ClearCachedEntryViews();
+
   // Returns the last active entry or the reading list entry if no last active
   // entry exists.
   absl::optional<SidePanelEntry::Id> GetLastActiveEntryId() const;

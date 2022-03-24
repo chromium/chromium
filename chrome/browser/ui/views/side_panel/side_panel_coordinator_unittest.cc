@@ -174,11 +174,21 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregistered) {
 
 TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistanceAndValue(global_registry_->active_entry(),
+                               SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
   coordinator_->Show(SidePanelEntry::Id::kSideSearch);
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
   EXPECT_TRUE(GetLastActiveEntryId().has_value());
   EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kSideSearch);
-  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(global_registry_->active_entry(),
+                               SidePanelEntry::Id::kReadingList);
   VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kSideSearch);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
@@ -194,6 +204,33 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
   EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kReadingList);
   VerifyEntryExistanceAndValue(global_registry_->active_entry(),
                                SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+}
+
+// Test that the side panel closes if a contextual entry is deregistered while
+// visible when no globel entries have been shown since the panel was opened.
+TEST_F(
+    SidePanelCoordinatorTest,
+    ContextualEntryDeregisteredWhileVisibleClosesPanelIfNoLastSeenGlobalEntryExists) {
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
+  // Deregister kSideSearch from the first tab.
+  contextual_registries_[0]->Deregister(SidePanelEntry::Id::kSideSearch);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+
+  // Verify the panel closes.
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_FALSE(GetLastActiveEntryId().has_value());
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
   EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
 }
