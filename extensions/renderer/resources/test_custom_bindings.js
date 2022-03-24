@@ -296,13 +296,31 @@ apiBridge.registerCustomHook(function(api) {
     // Note: Importing scripts is different depending on if this script is
     // executing in a Service Worker context.
     const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+
+    function createError(exception) {
+      let errorStr = 'Unable to load script: "' + scriptUrl + '"';
+      if (inServiceWorker) {
+        return new Error(errorStr, { cause:exception });
+      } else {
+        return new Error(errorStr);
+      }
+    }
+
     if (inServiceWorker) {
-      importScripts(scriptUrl);
+      try {
+        importScripts(scriptUrl);
+      } catch (e) {
+        return Promise.reject(createError(e));
+      }
       return Promise.resolve();
     }
     let script = document.createElement('script');
-    let onScriptLoad = new Promise((resolve) => {
+    let onScriptLoad = new Promise((resolve, reject) => {
       script.onload = resolve;
+      function onError() {
+        reject(createError());
+      }
+      script.onerror = onError;
     });
     script.src = scriptUrl;
     document.body.appendChild(script);
