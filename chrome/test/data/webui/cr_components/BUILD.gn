@@ -21,6 +21,7 @@ if (use_nss_certs) {
 # file below, move it to the list above.
 non_preprocessed_files = [
   "app_management/app_management_test_support.ts",
+  "app_management/file_handling_item_test.ts",
   "app_management/permission_item_test.ts",
   "customize_themes_test.ts",
   "managed_dialog_test.ts",

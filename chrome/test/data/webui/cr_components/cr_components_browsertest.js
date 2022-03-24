@@ -125,3 +125,15 @@ var CrComponentsAppManagementPermissionItemTest =
 TEST_F('CrComponentsAppManagementPermissionItemTest', 'All', function() {
   mocha.run();
 });
+
+var CrComponentsAppManagementFileHandlingItemTest =
+    class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/app_management/file_handling_item_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrComponentsAppManagementFileHandlingItemTest', 'All', function() {
+  mocha.run();
+});
