@@ -158,14 +158,6 @@ base::Value* PolicyMap::Entry::value_unsafe() {
   return base::OptionalOrNullptr(value_);
 }
 
-base::Value* PolicyMap::Entry::value() {
-  return base::OptionalOrNullptr(value_);
-}
-
-const base::Value* PolicyMap::Entry::value() const {
-  return base::OptionalOrNullptr(value_);
-}
-
 void PolicyMap::Entry::set_value(absl::optional<base::Value> val) {
   value_ = std::move(val);
 }
@@ -347,18 +339,6 @@ const base::Value* PolicyMap::GetValueUnsafe(const std::string& policy) const {
 base::Value* PolicyMap::GetMutableValueUnsafe(const std::string& policy) {
   auto* entry = GetMutable(policy);
   return entry ? entry->value_unsafe() : nullptr;
-}
-
-const base::Value* PolicyMap::GetValue(const std::string& policy) const {
-  auto entry = map_.find(policy);
-  return entry != map_.end() && !entry->second.ignored() ? entry->second.value()
-                                                         : nullptr;
-}
-
-base::Value* PolicyMap::GetMutableValue(const std::string& policy) {
-  auto entry = map_.find(policy);
-  return entry != map_.end() && !entry->second.ignored() ? entry->second.value()
-                                                         : nullptr;
 }
 
 const PolicyMap::Entry* PolicyMap::GetUntrusted(
