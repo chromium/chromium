@@ -171,7 +171,7 @@ class WebViewCrxSmokeTests(
     """Adds test suite specific command line arguments"""
     parser.add_option('--crx-file', action='store', help='Path to CRX file')
     parser.add_option('--component-name', action='store', help='Component name',
-                      choices=_COMPONENT_NAME_TO_DATA.keys())
+                      choices=list(_COMPONENT_NAME_TO_DATA.keys()))
     parser.add_option('--webview-package-name', action='store',
                       help='WebView package name')
 
