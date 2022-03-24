@@ -232,17 +232,21 @@ bool IsApplicationLocaleSupportedByJourneys(
   // is enabled.
   DCHECK(GetConfig().is_journeys_enabled_no_locale_check);
 
-  // Default to "", because defaulting it to a specific locale makes it hard
-  // to allow all locales, since the FeatureParam code interprets an empty
-  // string as undefined, and instead returns the default value.
+  // Note, we now set a default value for the allowlist, which means that when
+  // the feature parameter is undefined, the below allowlist is enabled.
   const base::FeatureParam<std::string> kLocaleOrLanguageAllowlist{
-      &internal::kJourneys, "JourneysLocaleOrLanguageAllowlist", ""};
+      &internal::kJourneys, "JourneysLocaleOrLanguageAllowlist",
+      "de:en:es:fr:it:nl:pt:tr"};
+
+  // To allow for using any locale, we also interpret the special '*' value.
+  auto allowlist_string = kLocaleOrLanguageAllowlist.Get();
+  if (allowlist_string == "*")
+    return true;
 
   // Allow comma and colon as delimiters to the language list.
-  auto allowlist =
-      base::SplitString(kLocaleOrLanguageAllowlist.Get(),
-                        ",:", base::WhitespaceHandling::TRIM_WHITESPACE,
-                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  auto allowlist = base::SplitString(
+      allowlist_string, ",:", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
 
   // Allow any exact locale matches, and also allow any users where the
   // primary language subtag, e.g. "en" from "en-US" to match any element of

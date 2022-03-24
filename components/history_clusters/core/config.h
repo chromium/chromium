@@ -67,7 +67,7 @@ struct Config {
 
   // If enabled, changes the History Clusters omnibox action text to be:
   // "Resume your research" instead of "Resume your journey".
-  bool alternate_omnibox_action_text = true;
+  bool alternate_omnibox_action_text = false;
 
   // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
   // for this to take effect.
@@ -107,7 +107,7 @@ struct Config {
 
   // Returns whether content clustering is enabled and
   // should be performed by the clustering backend.
-  bool content_clustering_enabled = true;
+  bool content_clustering_enabled = false;
 
   // Returns the weight that should be placed on entity similarity for
   // determining if two clusters are similar enough to be combined into one.

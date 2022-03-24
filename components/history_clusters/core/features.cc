@@ -27,10 +27,10 @@ constexpr auto enabled_by_default_desktop_only =
 
 namespace internal {
 
-const base::Feature kJourneys{"Journeys", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kJourneys{"Journeys", enabled_by_default_desktop_only};
 
 const base::Feature kOmniboxAction{"JourneysOmniboxAction",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   enabled_by_default_desktop_only};
 
 const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

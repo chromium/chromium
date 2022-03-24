@@ -10,25 +10,40 @@
 
 namespace history_clusters {
 
-TEST(HistoryClustersConfigTest, OmniboxAction) {
+TEST(HistoryClustersConfigTest, LocaleOrLanguageAllowlistDefault) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({internal::kJourneys, internal::kOmniboxAction},
-                            {});
+  features.InitAndEnableFeature(internal::kJourneys);
 
   const struct {
     const std::string locale;
     bool expected_is_journeys_enabled;
-  } kLocaleTestCases[] = {{"", true},
+  } kLocaleTestCases[] = {{"", false},
                           {"en", true},
                           {"fr", true},
-                          {"zh-TW", true},
-                          {" random junk ", true}};
+                          {"zh-TW", false},
+                          {" random junk ", false}};
 
   for (const auto& test : kLocaleTestCases) {
     EXPECT_EQ(test.expected_is_journeys_enabled,
               IsApplicationLocaleSupportedByJourneys(test.locale))
         << test.locale;
   }
+}
+
+TEST(HistoryClustersConfigTest, LocaleOrLanguageWildcard) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{
+          internal::kJourneys,
+          {{"JourneysLocaleOrLanguageAllowlist", "*"}},
+      }},
+      {});
+
+  EXPECT_TRUE(IsApplicationLocaleSupportedByJourneys(""));
+  EXPECT_TRUE(IsApplicationLocaleSupportedByJourneys("*"));
+  EXPECT_TRUE(IsApplicationLocaleSupportedByJourneys("en"));
+  EXPECT_TRUE(IsApplicationLocaleSupportedByJourneys("zh-TW"));
+  EXPECT_TRUE(IsApplicationLocaleSupportedByJourneys("random junk"));
 }
 
 TEST(HistoryClustersConfigTest, LocaleOrLanguageAllowlist) {

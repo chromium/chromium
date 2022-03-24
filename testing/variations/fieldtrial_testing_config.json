@@ -5101,7 +5101,6 @@
                 {
                     "name": "PageContentAnnotationsWithVisibility_JourneysWithOmniboxAction_20211202",
                     "params": {
-                        "JourneysAlternateOmniboxActionText": "false",
                         "annotate_title_instead_of_page_content": "true",
                         "bag_of_words_entities": "false",
                         "content_clustering_enabled": "false",
@@ -5111,9 +5110,6 @@
                         "write_to_history_service": "true"
                     },
                     "enable_features": [
-                        "HistoryClustersOnDeviceClustering",
-                        "Journeys",
-                        "JourneysOmniboxAction",
                         "PageContentAnnotations",
                         "PageEntitiesPageContentAnnotations"
                     ]
