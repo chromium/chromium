@@ -62,7 +62,7 @@ source_set("test_support") {
     "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
-    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications:browser_tests_base",
     "//chrome/test:test_support_ui",
     "//chromeos/dbus/session_manager",
     "//components/session_manager/core",

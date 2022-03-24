@@ -6,14 +6,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 
 namespace web_app {
 
-class WebAppProviderUnitTest : public WebAppTest {
+class WebAppProviderUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   WebAppProviderUnitTest() = default;
   WebAppProviderUnitTest(const WebAppProviderUnitTest&) = delete;
@@ -21,7 +21,7 @@ class WebAppProviderUnitTest : public WebAppTest {
   ~WebAppProviderUnitTest() override = default;
 
   void SetUp() override {
-    WebAppTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SkipMainProfileCheckForTesting();
