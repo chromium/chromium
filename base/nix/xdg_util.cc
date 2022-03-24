@@ -90,6 +90,8 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         return DESKTOP_ENVIRONMENT_PANTHEON;
       if (value == "XFCE")
         return DESKTOP_ENVIRONMENT_XFCE;
+      if (value == "UKUI")
+        return DESKTOP_ENVIRONMENT_UKUI;
     }
   }
 
@@ -110,6 +112,8 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         desktop_session == "xubuntu") {
       return DESKTOP_ENVIRONMENT_XFCE;
     }
+    if (desktop_session == "ukui")
+      return DESKTOP_ENVIRONMENT_UKUI;
   }
 
   // Fall back on some older environment variables.
@@ -145,6 +149,8 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return "UNITY";
     case DESKTOP_ENVIRONMENT_XFCE:
       return "XFCE";
+    case DESKTOP_ENVIRONMENT_UKUI:
+      return "UKUI";
   }
   return nullptr;
 }

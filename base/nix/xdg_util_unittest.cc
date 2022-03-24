@@ -38,6 +38,7 @@ const char* const kXdgDesktopGNOME = "GNOME";
 const char* const kXdgDesktopGNOMEClassic = "GNOME:GNOME-Classic";
 const char* const kXdgDesktopKDE = "KDE";
 const char* const kXdgDesktopPantheon = "Pantheon";
+const char* const kXdgDesktopUKUI = "UKUI";
 const char* const kXdgDesktopUnity = "Unity";
 const char* const kXdgDesktopUnity7 = "Unity:Unity7";
 const char* const kXdgDesktopUnity8 = "Unity:Unity8";
@@ -158,6 +159,15 @@ TEST(XDGUtilTest, GetXdgDesktopPantheon) {
       .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopPantheon), Return(true)));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_PANTHEON, GetDesktopEnvironment(&getter));
+}
+
+TEST(XDGUtilTest, GetXdgDesktopUKUI) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUKUI), Return(true)));
+
+  EXPECT_EQ(DESKTOP_ENVIRONMENT_UKUI, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopUnity) {
