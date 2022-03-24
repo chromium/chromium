@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, InstallWithNoAppsSelected) {
   // The install button is expected to be disabled at this point. Send empty app
   // list directly to test handler behavior when install is triggered with no
   // apps selected.
-  test::OobeJS().Evaluate("chrome.send('recommendAppsInstall', []);");
+  test::OobeJS().Evaluate("chrome.send('recommendAppsInstall', [[]]);");
 
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());

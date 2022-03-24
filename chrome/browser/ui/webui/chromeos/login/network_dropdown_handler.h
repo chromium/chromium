@@ -30,8 +30,9 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
  private:
   void HandleLaunchInternetDetailDialog();
   void HandleLaunchAddWiFiNetworkDialog();
-  void HandleShowNetworkDetails(const base::ListValue* args);
-  void HandleShowNetworkConfig(const base::ListValue* args);
+  void HandleShowNetworkDetails(const std::string& type,
+                                const std::string& guid);
+  void HandleShowNetworkConfig(const std::string& guid);
 };
 
 }  // namespace chromeos

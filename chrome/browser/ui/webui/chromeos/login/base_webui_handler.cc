@@ -65,11 +65,4 @@ void BaseWebUIHandler::OnJavascriptDisallowed() {
   javascript_disallowed_ = true;
 }
 
-void BaseWebUIHandler::OnRawCallback(
-    const std::string& function_name,
-    const content::WebUI::DeprecatedMessageCallback& callback,
-    const base::ListValue* args) {
-  callback.Run(args);
-}
-
 }  // namespace chromeos

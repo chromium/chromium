@@ -7,7 +7,6 @@
 #include <type_traits>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -63,8 +62,6 @@ CoreOobeHandler::CoreOobeHandler(JSCallsContainer* js_calls_container)
 
   ash::TabletMode::Get()->AddObserver(this);
 
-  ash::BindCrosDisplayConfigController(
-      cros_display_config_.BindNewPipeAndPassReceiver());
   OobeConfiguration::Get()->AddAndFireObserver(this);
 }
 
@@ -126,11 +123,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("toggleResetScreen", &CoreOobeHandler::HandleToggleResetScreen);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
-  // Note: Used by enterprise_RemoraRequisitionDisplayUsage.py:
-  // TODO(felixe): Use chrome.system.display or cros_display_config.mojom,
-  // https://crbug.com/858958.
-  AddRawCallback("getPrimaryDisplayNameForTesting",
-                 &CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting);
   AddCallback("startDemoModeSetupForTesting",
               &CoreOobeHandler::HandleStartDemoModeSetupForTesting);
 
@@ -338,32 +330,6 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
   if (reverse)
     event.set_flags(ui::EF_SHIFT_DOWN);
   SendEventToSink(&event);
-}
-
-void CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-
-  cros_display_config_->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(&CoreOobeHandler::GetPrimaryDisplayNameCallback,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
-}
-
-void CoreOobeHandler::GetPrimaryDisplayNameCallback(
-    const base::Value& callback_id,
-    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
-  AllowJavascript();
-  std::string display_name;
-  for (const ash::mojom::DisplayUnitInfoPtr& info : info_list) {
-    if (info->is_primary) {
-      display_name = info->name;
-      break;
-    }
-  }
-  DCHECK(!display_name.empty());
-  ResolveJavascriptCallback(callback_id, base::Value(display_name));
 }
 
 void CoreOobeHandler::HandleStartDemoModeSetupForTesting(

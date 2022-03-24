@@ -273,17 +273,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Get the primary display's name.
-     *
-     * Same as the displayInfo.name parameter returned by
-     * chrome.system.display.getInfo(), but unlike chrome.system it's available
-     * during OOBE.
-     */
-    static getPrimaryDisplayNameForTesting() {
-      return cr.sendWithPromise('getPrimaryDisplayNameForTesting');
-    }
-
-    /**
      * Click on the primary action button ("Next" usually) for Gaia. On the
      * Login or Enterprise Enrollment screen.
      *

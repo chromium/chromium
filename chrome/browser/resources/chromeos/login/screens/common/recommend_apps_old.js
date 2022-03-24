@@ -178,7 +178,7 @@ class RecommendAppsOldElement extends RecommendAppsOldElementBase {
       let appListView = this.$.appView;
       appListView.executeScript(
           {code: 'getSelectedPackages();'}, function(result) {
-            chrome.send('recommendAppsInstall', result[0]);
+            chrome.send('recommendAppsInstall', [result[0]]);
           });
     }
   }

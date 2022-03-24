@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,8 +99,7 @@ void RecommendAppsScreenHandler::DeclareLocalizedValues(
 void RecommendAppsScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();
   AddCallback(kUserActionSkip, &RecommendAppsScreenHandler::OnUserSkip);
-  AddRawCallback(kUserActionInstall,
-                 &RecommendAppsScreenHandler::HandleInstall);
+  AddCallback(kUserActionInstall, &RecommendAppsScreenHandler::HandleInstall);
 }
 
 void RecommendAppsScreenHandler::Bind(RecommendAppsScreen* screen) {
@@ -167,9 +167,11 @@ void RecommendAppsScreenHandler::HandleSkip() {
     screen_->OnSkip();
 }
 
-void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
+void RecommendAppsScreenHandler::HandleInstall(
+    const base::ListValue* apps_arg) {
+  base::Value::List apps = apps_arg->GetList().Clone();
   if (recommended_app_count_ != 0) {
-    int selected_app_count = static_cast<int>(args->GetListDeprecated().size());
+    int selected_app_count = static_cast<int>(apps.size());
     int selected_recommended_percentage =
         100 * selected_app_count / recommended_app_count_;
     RecordUmaUserSelectionAppCount(selected_app_count);
@@ -178,14 +180,15 @@ void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
 
   // If the user does not select any apps, we should skip the app downloading
   // screen.
-  if (args->GetListDeprecated().empty()) {
+  if (apps.empty()) {
     RecordUmaScreenAction(RecommendAppsScreenAction::SELECTED_NONE);
     HandleSkip();
     return;
   }
 
   RecordUmaScreenAction(RecommendAppsScreenAction::APP_SELECTED);
-  pref_service_->Set(arc::prefs::kArcFastAppReinstallPackages, *args);
+  pref_service_->Set(arc::prefs::kArcFastAppReinstallPackages,
+                     base::Value(std::move(apps)));
 
   arc::ArcFastAppReinstallStarter* fast_app_reinstall_starter =
       arc::ArcSessionManager::Get()->fast_app_resintall_starter();

@@ -5,6 +5,7 @@
 #include "components/login/base_screen_handler_utils.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 
 namespace login {
@@ -105,6 +106,14 @@ bool ParseValue(const base::Value* value, AccountId* out_value) {
   LOG(ERROR) << "Failed to deserialize, parse as email, valid="
              << out_value->is_valid();
   return true;
+}
+
+bool ParseValue(const base::Value* value, const base::ListValue** out_value) {
+  if (out_value && value->is_list()) {
+    *out_value = static_cast<const base::ListValue*>(value);
+    return true;
+  }
+  return false;
 }
 
 ParsedValueContainer<AccountId>::ParsedValueContainer() = default;

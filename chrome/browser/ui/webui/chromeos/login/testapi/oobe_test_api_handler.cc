@@ -6,9 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/ash_interfaces.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -42,6 +45,12 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
   AddCallback("OobeTestApi.showGaiaDialog",
               &OobeTestAPIHandler::ShowGaiaDialog);
+
+  // Keeping the code in case the test using this will be ported to tast. The
+  // function used to be called getPrimaryDisplayNameForTesting. In order to use
+  // this one you need to add a function into login/test_api/test_api.js.
+  AddCallback("OobeTestApi.getPrimaryDisplayName",
+              &OobeTestAPIHandler::HandleGetPrimaryDisplayName);
 }
 
 void OobeTestAPIHandler::Initialize() {}
@@ -94,6 +103,36 @@ void OobeTestAPIHandler::LoginAsGuest() {
 
 void OobeTestAPIHandler::ShowGaiaDialog() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
+}
+void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
+    const std::string& callback_id) {
+  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config;
+  ash::BindCrosDisplayConfigController(
+      cros_display_config.BindNewPipeAndPassReceiver());
+
+  cros_display_config->GetDisplayUnitInfoList(
+      false /* single_unified */,
+      base::BindOnce(&OobeTestAPIHandler::OnGetDisplayUnitInfoList,
+                     base::Unretained(this), callback_id));
+}
+
+void OobeTestAPIHandler::OnGetDisplayUnitInfoList(
+    const std::string& callback_id,
+    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
+  std::string display_name;
+  for (const ash::mojom::DisplayUnitInfoPtr& info : info_list) {
+    if (info->is_primary) {
+      display_name = info->name;
+      break;
+    }
+  }
+  if (display_name.empty()) {
+    RejectJavascriptCallback(base::Value(callback_id),
+                             base::Value(display_name));
+    return;
+  }
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(display_name));
 }
 
 }  // namespace chromeos

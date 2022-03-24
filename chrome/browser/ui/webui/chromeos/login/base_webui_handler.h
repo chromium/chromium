@@ -110,18 +110,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
            IsJavascriptAllowed();
   }
 
-  // Register WebUI callbacks. The callbacks will be recorded if recording is
-  // enabled.
-  template <typename T>
-  void AddRawCallback(const std::string& function_name,
-                      void (T::*method)(const base::ListValue* args)) {
-    content::WebUI::DeprecatedMessageCallback callback =
-        base::BindRepeating(method, base::Unretained(static_cast<T*>(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
-        function_name,
-        base::BindRepeating(&BaseWebUIHandler::OnRawCallback,
-                            base::Unretained(this), function_name, callback));
-  }
   template <typename T, typename... Args>
   void AddCallback(const std::string& function_name,
                    void (T::*method)(Args...)) {
@@ -158,11 +146,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
  private:
   friend class OobeUI;
 
-  // These two functions wrap Add(Raw)Callback so that the incoming JavaScript
-  // event can be recorded.
-  void OnRawCallback(const std::string& function_name,
-                     const content::WebUI::DeprecatedMessageCallback& callback,
-                     const base::ListValue* args);
   template <typename... Args>
   void OnCallback(const std::string& function_name,
                   const base::RepeatingCallback<void(Args...)>& callback,

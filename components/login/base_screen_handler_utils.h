@@ -42,6 +42,8 @@ bool LOGIN_EXPORT ParseValue(const base::Value* value,
 bool LOGIN_EXPORT ParseValue(const base::Value* value, StringList* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, String16List* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, AccountId* out_value);
+bool LOGIN_EXPORT ParseValue(const base::Value* value,
+                             const base::ListValue** out_value);
 
 template <typename T>
 inline bool GetArg(const base::ListValue* args, size_t index, T* out_value) {

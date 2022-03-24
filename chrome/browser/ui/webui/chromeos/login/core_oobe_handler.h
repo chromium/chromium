@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -22,11 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_source.h"
-
-namespace base {
-class ListValue;
-class Value;
-}
 
 namespace ui {
 class EventSink;
@@ -126,10 +120,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleSkipToLoginForTesting();
   void HandleLaunchHelpApp(double help_topic_id);
   void HandleToggleResetScreen();
-  void HandleGetPrimaryDisplayNameForTesting(const base::ListValue* args);
-  void GetPrimaryDisplayNameCallback(
-      const base::Value& callback_id,
-      std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.
   void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
@@ -159,8 +149,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
-
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
   base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_{this};
 };

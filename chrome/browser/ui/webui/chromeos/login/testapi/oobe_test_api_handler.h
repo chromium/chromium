@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
 
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 
@@ -30,6 +31,10 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void SkipPostLoginScreens();
   void LoginAsGuest();
   void ShowGaiaDialog();
+  void HandleGetPrimaryDisplayName(const std::string& callback_id);
+  void OnGetDisplayUnitInfoList(
+      const std::string& callback_id,
+      std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
 };
 
 }  // namespace chromeos
