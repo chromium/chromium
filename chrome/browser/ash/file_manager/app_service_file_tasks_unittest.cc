@@ -16,12 +16,16 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -103,52 +107,61 @@ class AppServiceFileTasksTest : public testing::Test {
 
   void AddFakeAppWithIntentFilters(
       const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> intent_filters,
-      apps::mojom::AppType app_type,
-      apps::mojom::OptionalBool handles_intents) {
-    std::vector<apps::mojom::AppPtr> apps;
-    auto app = apps::mojom::App::New();
+      std::vector<apps::IntentFilterPtr> intent_filters,
+      apps::AppType app_type,
+      absl::optional<bool> handles_intents) {
+    std::vector<apps::AppPtr> apps;
+    auto app = std::make_unique<apps::App>(app_type, app_id);
     app->app_id = app_id;
     app->app_type = app_type;
     app->handles_intents = handles_intents;
-    app->readiness = apps::mojom::Readiness::kReady;
+    app->readiness = apps::Readiness::kReady;
     app->intent_filters = std::move(intent_filters);
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(apps), app_type, false /* should_notify_initialized */);
-    app_service_test_.WaitForAppService();
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      app_service_proxy_->AppRegistryCache().OnApps(
+          std::move(apps), app_type, false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_apps;
+      mojom_apps.push_back(apps::ConvertAppToMojomApp(apps[0]));
+      app_service_proxy_->AppRegistryCache().OnApps(
+          std::move(mojom_apps), apps::ConvertAppTypeToMojomAppType(app_type),
+          /*should_notify_initialized=*/false);
+      app_service_test_.WaitForAppService();
+    }
   }
 
   void AddFakeWebApp(const std::string& app_id,
                      const std::string& mime_type,
                      const std::string& file_extension,
                      const std::string& activity_label,
-                     apps::mojom::OptionalBool handles_intents) {
-    std::vector<apps::mojom::IntentFilterPtr> filters;
-    filters.push_back(apps_util::CreateFileFilterForView(
+                     absl::optional<bool> handles_intents) {
+    std::vector<apps::IntentFilterPtr> filters;
+    filters.push_back(apps_util::MakeFileFilterForView(
         mime_type, file_extension, activity_label));
-    AddFakeAppWithIntentFilters(app_id, std::move(filters),
-                                apps::mojom::AppType::kWeb, handles_intents);
+    AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kWeb,
+                                handles_intents);
   }
 
   void AddTextApp() {
     AddFakeWebApp(kAppIdText, kMimeTypeText, kFileExtensionText,
-                  kActivityLabelText, apps::mojom::OptionalBool::kTrue);
+                  kActivityLabelText, true);
   }
 
   void AddImageApp() {
     AddFakeWebApp(kAppIdImage, kMimeTypeImage, kFileExtensionImage,
-                  kActivityLabelImage, apps::mojom::OptionalBool::kTrue);
+                  kActivityLabelImage, true);
   }
 
   void AddTextWildApp() {
     AddFakeWebApp(kAppIdTextWild, kMimeTypeTextWild, kFileExtensionAny,
-                  kActivityLabelTextWild, apps::mojom::OptionalBool::kTrue);
+                  kActivityLabelTextWild, true);
   }
 
   void AddAnyApp() {
     AddFakeWebApp(kAppIdAny, kMimeTypeAny, kFileExtensionAny, kActivityLabelAny,
-                  apps::mojom::OptionalBool::kTrue);
+                  true);
   }
 
   // Provides file handlers for all extensions and images.
@@ -186,10 +199,9 @@ class AppServiceFileTasksTest : public testing::Test {
             .Build());
     baz_app.SetID(kChromeAppId);
     auto filters =
-        apps_util::CreateChromeAppIntentFilters(baz_app.Build().get());
+        apps_util::CreateIntentFiltersForChromeApp(baz_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppId, std::move(filters),
-                                apps::mojom::AppType::kChromeApp,
-                                apps::mojom::OptionalBool::kTrue);
+                                apps::AppType::kChromeApp, true);
   }
 
   void AddChromeAppWithVerbs() {
@@ -259,10 +271,9 @@ class AppServiceFileTasksTest : public testing::Test {
             .Build());
     foo_app.SetID(kChromeAppWithVerbsId);
     auto filters =
-        apps_util::CreateChromeAppIntentFilters(foo_app.Build().get());
+        apps_util::CreateIntentFiltersForChromeApp(foo_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppWithVerbsId, std::move(filters),
-                                apps::mojom::AppType::kChromeApp,
-                                apps::mojom::OptionalBool::kTrue);
+                                apps::AppType::kChromeApp, true);
   }
 
   // Adds file_browser_handler to handle .txt files.
@@ -289,10 +300,9 @@ class AppServiceFileTasksTest : public testing::Test {
             .Build());
     fbh_app.SetID(kExtensionId);
     auto filters =
-        apps_util::CreateExtensionIntentFilters(fbh_app.Build().get());
+        apps_util::CreateIntentFiltersForExtension(fbh_app.Build().get());
     AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
-                                apps::mojom::AppType::kChromeApp,
-                                apps::mojom::OptionalBool::kTrue);
+                                apps::AppType::kChromeApp, true);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -330,7 +340,7 @@ TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceFileTasksText) {
 // match.
 TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksHandlesIntent) {
   AddFakeWebApp(kAppIdImage, kMimeTypeImage, kFileExtensionImage,
-                kActivityLabelImage, apps::mojom::OptionalBool::kFalse);
+                kActivityLabelImage, false);
   std::vector<FullTaskDescriptor> tasks =
       FindAppServiceTasks({{"foo.jpeg", kMimeTypeImage}});
   ASSERT_EQ(0U, tasks.size());
