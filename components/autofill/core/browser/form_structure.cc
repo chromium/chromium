@@ -737,52 +737,50 @@ void FormStructure::DetermineHeuristicTypes(
       AutofillTickClock::NowTicks() - determine_heuristic_types_start_time);
 }
 
-bool FormStructure::EncodeUploadRequest(
+std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     const ServerFieldTypeSet& available_field_types,
     bool form_was_autofilled,
-    const std::string& login_form_signature,
+    const base::StringPiece& login_form_signature,
     bool observed_submission,
-    bool is_raw_metadata_uploading_enabled,
-    AutofillUploadContents* upload,
-    std::vector<FormSignature>* encoded_signatures) const {
+    bool is_raw_metadata_uploading_enabled) const {
   DCHECK(AllTypesCaptured(*this, available_field_types));
-  encoded_signatures->clear();
 
-  upload->set_submission(observed_submission);
-  upload->set_client_version(
+  AutofillUploadContents upload;
+  upload.set_submission(observed_submission);
+  upload.set_client_version(
       version_info::GetProductNameAndVersionForUserAgent());
-  upload->set_form_signature(form_signature().value());
-  upload->set_autofill_used(form_was_autofilled);
-  upload->set_data_present(EncodeFieldTypes(available_field_types));
-  upload->set_passwords_revealed(passwords_were_revealed_);
-  upload->set_has_form_tag(is_form_tag_);
+  upload.set_form_signature(form_signature().value());
+  upload.set_autofill_used(form_was_autofilled);
+  upload.set_data_present(EncodeFieldTypes(available_field_types));
+  upload.set_passwords_revealed(passwords_were_revealed_);
+  upload.set_has_form_tag(is_form_tag_);
   if (!current_page_language_->empty() && randomized_encoder_ != nullptr) {
-    upload->set_language(current_page_language_.value());
+    upload.set_language(current_page_language_.value());
   }
   if (single_username_data_)
-    upload->mutable_single_username_data()->CopyFrom(*single_username_data_);
+    upload.mutable_single_username_data()->CopyFrom(*single_username_data_);
 
   auto triggering_event = (submission_event_ != SubmissionIndicatorEvent::NONE)
                               ? submission_event_
                               : ToSubmissionIndicatorEvent(submission_source_);
 
   DCHECK(autofill::mojom::IsKnownEnumValue(triggering_event));
-  upload->set_submission_event(
+  upload.set_submission_event(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
 
   if (password_attributes_vote_) {
     EncodePasswordAttributesVote(*password_attributes_vote_,
                                  password_length_vote_, password_symbol_vote_,
-                                 upload);
+                                 &upload);
   }
 
   if (is_raw_metadata_uploading_enabled) {
-    upload->set_action_signature(StrToHash64Bit(target_url_.host_piece()));
+    upload.set_action_signature(StrToHash64Bit(target_url_.host_piece()));
     if (!form_name().empty())
-      upload->set_form_name(base::UTF16ToUTF8(form_name()));
+      upload.set_form_name(base::UTF16ToUTF8(form_name()));
     for (const ButtonTitleInfo& e : button_titles_) {
-      auto* button_title = upload->add_button_title();
+      auto* button_title = upload.add_button_title();
       button_title->set_title(base::UTF16ToUTF8(e.first));
       button_title->set_type(static_cast<ButtonTitleType>(e.second));
     }
@@ -791,15 +789,19 @@ bool FormStructure::EncodeUploadRequest(
   if (!login_form_signature.empty()) {
     uint64_t login_sig;
     if (base::StringToUint64(login_form_signature, &login_sig))
-      upload->set_login_form_signature(login_sig);
+      upload.set_login_form_signature(login_sig);
   }
 
   if (IsMalformed())
-    return false;  // Malformed form, skip it.
+    return {};  // Malformed form, skip it.
 
-  EncodeFormForUpload(is_raw_metadata_uploading_enabled, upload,
-                      encoded_signatures);
-  return true;
+  if (randomized_encoder_) {
+    PopulateRandomizedFormMetadata(*randomized_encoder_, *this,
+                                   upload.mutable_randomized_form_metadata());
+  }
+
+  EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, &upload);
+  return {std::move(upload)};
 }
 
 // static
@@ -2199,18 +2201,10 @@ void FormStructure::EncodeFormForQuery(
   }
 }
 
-void FormStructure::EncodeFormForUpload(
+void FormStructure::EncodeFormFieldsForUpload(
     bool is_raw_metadata_uploading_enabled,
-    AutofillUploadContents* upload,
-    std::vector<FormSignature>* encoded_signatures) const {
+    AutofillUploadContents* upload) const {
   DCHECK(!IsMalformed());
-
-  encoded_signatures->push_back(form_signature());
-
-  if (randomized_encoder_) {
-    PopulateRandomizedFormMetadata(*randomized_encoder_, *this,
-                                   upload->mutable_randomized_form_metadata());
-  }
 
   for (const auto& field : fields_) {
     // Don't upload checkable fields.

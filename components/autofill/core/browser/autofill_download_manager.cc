@@ -706,57 +706,57 @@ bool AutofillDownloadManager::StartUploadRequest(
   if (!needs_logging && !allow_upload)
     return false;
 
-  AutofillUploadContents upload;
-  std::vector<FormSignature> form_signatures;
-  if (!form.EncodeUploadRequest(available_field_types, form_was_autofilled,
-                                login_form_signature, observed_submission,
-                                is_raw_metadata_uploading_enabled_, &upload,
-                                &form_signatures)) {
-    return false;
-  }
+  auto Upload = [&](AutofillUploadContents upload) {
+    // If this upload was a candidate for throttling, tag it and make sure that
+    // any throttling sensitive features are enforced.
+    if (can_throttle_upload) {
+      upload.set_was_throttleable(true);
 
-  // If this upload was a candidate for throttling, tag it and make sure that
-  // any throttling sensitive features are enforced.
-  if (can_throttle_upload) {
-    upload.set_was_throttleable(true);
-
-    // Don't send randomized metadata.
-    upload.clear_randomized_form_metadata();
-    for (auto& f : *upload.mutable_field()) {
-      f.clear_randomized_field_metadata();
+      // Don't send randomized metadata.
+      upload.clear_randomized_form_metadata();
+      for (auto& f : *upload.mutable_field())
+        f.clear_randomized_field_metadata();
     }
-  }
 
-  // Get the POST payload that contains upload data.
-  std::string payload;
-  bool is_payload = GetUploadPayloadForApi(upload, &payload);
-  // Indicate that we could not serialize upload in the payload.
-  if (!is_payload) {
-    return false;
-  }
+    // Get the POST payload that contains upload data.
+    std::string payload;
+    bool is_payload = GetUploadPayloadForApi(upload, &payload);
+    // Indicate that we could not serialize upload in the payload.
+    if (!is_payload) {
+      return false;
+    }
 
-  if (form.upload_required() == UPLOAD_NOT_REQUIRED) {
     // If we ever need notification that upload was skipped, add it here.
-    return false;
-  }
+    if (form.upload_required() == UPLOAD_NOT_REQUIRED) {
+      return false;
+    }
 
-  FormRequestData request_data;
-  request_data.form_signatures = std::move(form_signatures);
-  request_data.request_type = AutofillDownloadManager::REQUEST_UPLOAD;
-  request_data.payload = std::move(payload);
+    FormRequestData request_data;
+    request_data.form_signatures = {form.form_signature()};
+    request_data.request_type = AutofillDownloadManager::REQUEST_UPLOAD;
+    request_data.payload = std::move(payload);
 
-  DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
-  if (log_manager_) {
-    log_manager_->Log() << LoggingScope::kAutofillServer
-                        << LogMessage::kSendAutofillUpload << Br{}
-                        << "Allow upload?: " << allow_upload << Br{}
-                        << "Data: " << Br{} << upload;
-  }
+    DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
+    if (log_manager_) {
+      log_manager_->Log() << LoggingScope::kAutofillServer
+                          << LogMessage::kSendAutofillUpload << Br{}
+                          << "Allow upload?: " << allow_upload << Br{}
+                          << "Data: " << Br{} << upload;
+    }
 
-  if (!allow_upload)
-    return false;
+    if (!allow_upload)
+      return false;
 
-  return StartRequest(std::move(request_data));
+    return StartRequest(std::move(request_data));
+  };
+
+  std::vector<AutofillUploadContents> uploads = form.EncodeUploadRequest(
+      available_field_types, form_was_autofilled, login_form_signature,
+      observed_submission, is_raw_metadata_uploading_enabled_);
+  bool all_succeeded = !uploads.empty();
+  for (AutofillUploadContents& upload : uploads)
+    all_succeeded &= Upload(std::move(upload));
+  return all_succeeded;
 }
 
 void AutofillDownloadManager::ClearUploadHistory(PrefService* pref_service) {

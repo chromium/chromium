@@ -75,19 +75,18 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
-  // Encodes the proto |upload| request from this FormStructure, and stores
-  // the (single) FormSignature and the signatures of the fields to be uploaded
-  // in |encoded_signatures|.
-  // In some cases, a |login_form_signature| is included as part of the upload.
-  // This field is empty when sending upload requests for non-login forms.
-  bool EncodeUploadRequest(
+  // Encodes this FormStructure as a vector of protobufs.
+  //
+  // On success, the returned vector is non-empty. The first element encodes the
+  // entire FormStructure. In some cases, a |login_form_signature| is included
+  // as part of the upload. This field is empty when sending upload requests for
+  // non-login forms.
+  std::vector<AutofillUploadContents> EncodeUploadRequest(
       const ServerFieldTypeSet& available_field_types,
       bool form_was_autofilled,
-      const std::string& login_form_signature,
+      const base::StringPiece& login_form_signature,
       bool observed_submission,
-      bool is_raw_metadata_uploading_enabled,
-      autofill::AutofillUploadContents* upload,
-      std::vector<FormSignature>* encoded_signatures) const;
+      bool is_raw_metadata_uploading_enabled) const;
 
   // Encodes the proto |query| request for the list of |forms| and their fields
   // that are valid. The queried FormSignatures and FieldSignatures are stored
@@ -526,10 +525,11 @@ class FormStructure {
                           std::vector<FormSignature>* queried_form_signatures,
                           std::set<FormSignature>* processed_forms) const;
 
-  void EncodeFormForUpload(
+  // Encodes the fields of `this` in the in-out parameter `upload`.
+  // Helper function for EncodeUploadRequest().
+  void EncodeFormFieldsForUpload(
       bool is_raw_metadata_uploading_enabled,
-      autofill::AutofillUploadContents* upload,
-      std::vector<FormSignature>* encoded_signatures) const;
+      autofill::AutofillUploadContents* upload) const;
 
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;

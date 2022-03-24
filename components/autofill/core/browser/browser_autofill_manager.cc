@@ -1585,20 +1585,14 @@ void BrowserAutofillManager::UploadFormData(const FormStructure& submitted_form,
     return;
 
   // Check if the form is among the forms that were recently auto-filled.
-  bool was_autofilled = false;
-  std::string form_signature = submitted_form.FormSignatureAsStr();
-  for (const std::string& cur_sig : autofilled_form_signatures_) {
-    if (cur_sig == form_signature) {
-      was_autofilled = true;
-      break;
-    }
-  }
+  bool was_autofilled = base::Contains(autofilled_form_signatures_,
+                                       submitted_form.FormSignatureAsStr());
 
   ServerFieldTypeSet non_empty_types;
   personal_data_->GetNonEmptyTypes(&non_empty_types);
   // AS CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
-      non_empty_types.find(CREDIT_CARD_NUMBER) != non_empty_types.end()) {
+      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
 

@@ -194,6 +194,7 @@ struct FormData {
   std::u16string name;
 
   // Titles of form's buttons.
+  // Only populated in Password Manager.
   ButtonTitleList button_titles;
 
   // The URL (minus query parameters and fragment) containing the form.
