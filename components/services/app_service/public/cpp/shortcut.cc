@@ -33,8 +33,8 @@ std::unique_ptr<Shortcut> Shortcut::Clone() const {
 std::string Shortcut::ToString() const {
   std::stringstream out;
   out << "shortcut_id: " << shortcut_id << std::endl;
-  out << "name: " << name << std::endl;
-  out << "position: " << position << std::endl;
+  out << "- name: " << name << std::endl;
+  out << "- position: " << position << std::endl;
   return out.str();
 }
 

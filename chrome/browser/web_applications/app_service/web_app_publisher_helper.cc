@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
 #include <atomic>
+#include <memory>
 #include <ostream>
 #include <set>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -564,6 +566,15 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
   app->run_on_os_login = apps::RunOnOsLogin(
       ConvertOsLoginMode(login_mode.value), !login_mode.user_controllable);
+
+  for (const auto& shortcut : web_app->shortcuts_menu_item_infos()) {
+    const std::string name = base::UTF16ToUTF8(shortcut.name);
+    std::string shortcut_id = GenerateShortcutId();
+    StoreShortcutId(shortcut_id, shortcut);
+    app->shortcuts.push_back(
+        std::make_unique<apps::Shortcut>(shortcut_id, name));
+  }
+
   return app;
 }
 

@@ -34,8 +34,8 @@ struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
   // Example output:
   //
   // shortcut_id: 2
-  // shortcut_name: Launch
-  // position: 0
+  // - shortcut_name: Launch
+  // - position: 0
   std::string ToString() const;
 
   // Represents a particular shortcut in an app. Needs to be unique within an
