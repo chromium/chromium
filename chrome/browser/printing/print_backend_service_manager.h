@@ -21,6 +21,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/native_widget_types.h"
+#endif
+
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "Out-of-process printing must be enabled."
 #endif
@@ -85,6 +89,15 @@ class PrintBackendServiceManager {
   void UseDefaultSettings(
       const std::string& printer_name,
       mojom::PrintBackendService::UseDefaultSettingsCallback callback);
+#if BUILDFLAG(IS_WIN)
+  void AskUserForSettings(
+      const std::string& printer_name,
+      gfx::NativeView parent_view,
+      int max_pages,
+      bool has_selection,
+      bool is_scripted,
+      mojom::PrintBackendService::AskUserForSettingsCallback callback);
+#endif
   void UpdatePrintSettings(
       const std::string& printer_name,
       base::flat_map<std::string, base::Value> job_settings,
@@ -187,6 +200,10 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
   using RemoteSavedUseDefaultSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+#if BUILDFLAG(IS_WIN)
+  using RemoteSavedAskUserForSettingsCallbacks =
+      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+#endif
   using RemoteSavedUpdatePrintSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
@@ -314,6 +331,10 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
   RemoteSavedUseDefaultSettingsCallbacks&
   GetRemoteSavedUseDefaultSettingsCallbacks(bool sandboxed);
+#if BUILDFLAG(IS_WIN)
+  RemoteSavedAskUserForSettingsCallbacks&
+  GetRemoteSavedAskUserForSettingsCallbacks(bool sandboxed);
+#endif
   RemoteSavedUpdatePrintSettingsCallbacks&
   GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
   RemoteSavedStartPrintingCallbacks& GetRemoteSavedStartPrintingCallbacks(
@@ -360,6 +381,10 @@ class PrintBackendServiceManager {
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
   void OnDidUseDefaultSettings(const CallbackContext& context,
                                mojom::PrintSettingsResultPtr settings);
+#if BUILDFLAG(IS_WIN)
+  void OnDidAskUserForSettings(const CallbackContext& context,
+                               mojom::PrintSettingsResultPtr settings);
+#endif
   void OnDidUpdatePrintSettings(const CallbackContext& context,
                                 mojom::PrintSettingsResultPtr printer_caps);
   void OnDidStartPrinting(const CallbackContext& context,
@@ -434,6 +459,12 @@ class PrintBackendServiceManager {
       sandboxed_saved_use_default_settings_callbacks_;
   RemoteSavedUseDefaultSettingsCallbacks
       unsandboxed_saved_use_default_settings_callbacks_;
+#if BUILDFLAG(IS_WIN)
+  RemoteSavedAskUserForSettingsCallbacks
+      sandboxed_saved_ask_user_for_settings_callbacks_;
+  RemoteSavedAskUserForSettingsCallbacks
+      unsandboxed_saved_ask_user_for_settings_callbacks_;
+#endif
   RemoteSavedUpdatePrintSettingsCallbacks
       sandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedUpdatePrintSettingsCallbacks
