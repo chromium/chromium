@@ -384,10 +384,19 @@ bool DocumentTransitionStyleTracker::Start() {
   }
 
   if (found_new_tags) {
-    VectorOf<AtomicString> new_tags;
-    new_tags.push_back(RootTag());
-    // TODO(vmpstr): We probably want to sort this on `element_index`.
+    VectorOf<std::pair<AtomicString, int>> new_tag_pairs;
+    new_tag_pairs.push_back(std::make_pair(RootTag(), root_index));
     for (auto& [tag, data] : element_data_map_)
+      new_tag_pairs.push_back(std::make_pair(tag, data->element_index));
+
+    std::sort(new_tag_pairs.begin(), new_tag_pairs.end(),
+              [](const std::pair<AtomicString, int>& left,
+                 const std::pair<AtomicString, int>& right) {
+                return left.second < right.second;
+              });
+
+    VectorOf<AtomicString> new_tags;
+    for (auto& [tag, index] : new_tag_pairs)
       new_tags.push_back(tag);
 
     document_->GetStyleEngine().SetDocumentTransitionTags(new_tags);
