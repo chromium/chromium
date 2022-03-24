@@ -21,9 +21,9 @@ class SegmentInfoDatabase;
 class SignalStorageConfig;
 
 // Collect training data and report as Ukm message. Live on main thread.
-// TODO(xingliu): Make a new class that owns the training data collector and
+// TODO(ssid): Make a new class that owns the training data collector and
 // model execution collector.
-class TrainingDataCollector : public HistogramSignalHandler::Observer {
+class TrainingDataCollector {
  public:
   static std::unique_ptr<TrainingDataCollector> Create(
       SegmentInfoDatabase* segment_info_database,
@@ -40,14 +40,14 @@ class TrainingDataCollector : public HistogramSignalHandler::Observer {
   // to Ukm for |UMAOutput| in |SegmentationModelMetadata|.
   virtual void OnServiceInitialized() = 0;
 
-  ~TrainingDataCollector() override = default;
+  virtual ~TrainingDataCollector();
 
   // Disallow copy/assign.
   TrainingDataCollector(const TrainingDataCollector&) = delete;
   TrainingDataCollector& operator=(const TrainingDataCollector&) = delete;
 
  protected:
-  TrainingDataCollector() = default;
+  TrainingDataCollector();
 };
 
 }  // namespace segmentation_platform

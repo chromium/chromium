@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
 
 #include <map>
 
@@ -44,10 +44,10 @@ constexpr int kSample = 1;
 namespace segmentation_platform {
 namespace {
 
-class TrainingDataCollectorTest : public ::testing::Test {
+class TrainingDataCollectorImplTest : public ::testing::Test {
  public:
-  TrainingDataCollectorTest() = default;
-  ~TrainingDataCollectorTest() override = default;
+  TrainingDataCollectorImplTest() = default;
+  ~TrainingDataCollectorImplTest() override = default;
 
   void SetUp() override {
     test_recorder_.Purge();
@@ -66,13 +66,13 @@ class TrainingDataCollectorTest : public ::testing::Test {
         .WillByDefault(Return(true));
 
     test_segment_info_db_ = std::make_unique<test::TestSegmentInfoDatabase>();
-    collector_ = TrainingDataCollector::Create(
+    collector_ = std::make_unique<TrainingDataCollectorImpl>(
         test_segment_info_db_.get(), &feature_list_processor_,
         &histogram_signal_handler_, &signal_storage_config_, &clock_);
   }
 
  protected:
-  TrainingDataCollector* collector() { return collector_.get(); }
+  TrainingDataCollectorImpl* collector() { return collector_.get(); }
   test::TestSegmentInfoDatabase* test_segment_db() {
     return test_segment_info_db_.get();
   }
@@ -159,11 +159,11 @@ class TrainingDataCollectorTest : public ::testing::Test {
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
   NiceMock<MockSignalStorageConfig> signal_storage_config_;
   std::unique_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
-  std::unique_ptr<TrainingDataCollector> collector_;
+  std::unique_ptr<TrainingDataCollectorImpl> collector_;
 };
 
 // No segment info in database. Do nothing.
-TEST_F(TrainingDataCollectorTest, NoSegment) {
+TEST_F(TrainingDataCollectorImplTest, NoSegment) {
   Init();
   collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
   task_environment()->RunUntilIdle();
@@ -171,7 +171,7 @@ TEST_F(TrainingDataCollectorTest, NoSegment) {
 }
 
 // Histogram not in the output list will not trigger a training data report..
-TEST_F(TrainingDataCollectorTest, IrrelevantHistogramNotReported) {
+TEST_F(TrainingDataCollectorImplTest, IrrelevantHistogramNotReported) {
   CreateSegmentInfo();
   Init();
   collector()->OnHistogramSignalUpdated("irrelevant_histogram", kSample);
@@ -186,7 +186,7 @@ TEST_F(TrainingDataCollectorTest, IrrelevantHistogramNotReported) {
 
 // Immediate training data collection for a certain histogram will be reported
 // as a UKM.
-TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
+TEST_F(TrainingDataCollectorImplTest, HistogramImmediatelyReported) {
   CreateSegmentInfo();
   Init();
   WaitForHistogramSignalUpdated(kHistogramName0, kSample);
@@ -198,7 +198,8 @@ TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
 }
 
 // A histogram interested by multiple model will trigger multiple UKM reports.
-TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported_MultipleModel) {
+TEST_F(TrainingDataCollectorImplTest,
+       HistogramImmediatelyReported_MultipleModel) {
   CreateSegmentInfo();
   // Segment 1 contains 1 immediate collection uma output for for
   // |kHistogramName0|
@@ -210,7 +211,7 @@ TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported_MultipleModel) {
 }
 
 // No UKM report due to minimum data collection time not met.
-TEST_F(TrainingDataCollectorTest, SignalCollectionRequirementNotMet) {
+TEST_F(TrainingDataCollectorImplTest, SignalCollectionRequirementNotMet) {
   EXPECT_CALL(*signal_storage_config(), MeetsSignalCollectionRequirement(_))
       .WillOnce(Return(false));
 
@@ -222,7 +223,7 @@ TEST_F(TrainingDataCollectorTest, SignalCollectionRequirementNotMet) {
 }
 
 // No UKM report due to model updated recently.
-TEST_F(TrainingDataCollectorTest, ModelUpdatedRecently) {
+TEST_F(TrainingDataCollectorImplTest, ModelUpdatedRecently) {
   auto* segment_info = CreateSegmentInfo();
   base::TimeDelta min_signal_collection_length =
       segment_info->model_metadata().min_signal_collection_length() *

@@ -21,6 +21,8 @@ static_library("internal") {
     "data_collection/dummy_training_data_collector.h",
     "data_collection/training_data_collector.cc",
     "data_collection/training_data_collector.h",
+    "data_collection/training_data_collector_impl.cc",
+    "data_collection/training_data_collector_impl.h",
     "database/database_maintenance.h",
     "database/database_maintenance_impl.cc",
     "database/database_maintenance_impl.h",
@@ -181,7 +183,7 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
-    "data_collection/training_data_collector_unittest.cc",
+    "data_collection/training_data_collector_impl_unittest.cc",
     "database/database_maintenance_impl_unittest.cc",
     "database/metadata_utils_unittest.cc",
     "database/mock_signal_database.cc",

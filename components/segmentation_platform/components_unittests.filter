@@ -28,7 +28,7 @@ SignalKeyInternalTest.*
 SignalKeyTest.*
 SignalStorageConfigTest.*
 StatsTest.*
-TrainingDataCollectorTest.*
+TrainingDataCollectorImplTest.*
 UkmConfigTest.*
 UkmObserverTest.*
 UrlSignalHandlerTest.*

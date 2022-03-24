@@ -14,8 +14,4 @@ void DummyTrainingDataCollector::OnModelMetadataUpdated() {}
 
 void DummyTrainingDataCollector::OnServiceInitialized() {}
 
-void DummyTrainingDataCollector::OnHistogramSignalUpdated(
-    const std::string& histogram_name,
-    base::HistogramBase::Sample sample) {}
-
 }  // namespace segmentation_platform

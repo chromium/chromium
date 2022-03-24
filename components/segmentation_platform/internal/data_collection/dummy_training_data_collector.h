@@ -7,8 +7,6 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 
-#include <string>
-
 namespace segmentation_platform {
 
 // Dummy TrainingDataCollector implementation that does nothing, used when
@@ -21,8 +19,6 @@ class DummyTrainingDataCollector : public TrainingDataCollector {
   // TrainingDataCollector implementation.
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
-  void OnHistogramSignalUpdated(const std::string& histogram_name,
-                                base::HistogramBase::Sample sample) override;
 };
 
 }  // namespace segmentation_platform
