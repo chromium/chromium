@@ -100,4 +100,12 @@ TEST_F(RgbKeyboardManagerTest, StaticResetRainbowMode) {
 
   EXPECT_FALSE(manager_->is_rainbow_mode_set());
 }
+
+TEST_F(RgbKeyboardManagerTest, SetCapsLockState) {
+  EXPECT_FALSE(manager_->is_caps_lock_set());
+  manager_->SetCapsLockState(/*is_caps_lock_set=*/true);
+  EXPECT_TRUE(manager_->is_caps_lock_set());
+  manager_->SetCapsLockState(/*is_caps_lock_set=*/false);
+  EXPECT_FALSE(manager_->is_caps_lock_set());
+}
 }  // namespace ash

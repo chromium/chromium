@@ -58,6 +58,10 @@ void RgbKeyboardManager::SetRainbowMode() {
   recently_sent_rgb_for_testing_[2] = 0u;
 }
 
+void RgbKeyboardManager::SetCapsLockState(bool is_caps_lock_set) {
+  is_caps_lock_set_ = is_caps_lock_set;
+}
+
 // static
 RgbKeyboardManager* RgbKeyboardManager::Get() {
   return g_instance;
