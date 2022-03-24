@@ -22,9 +22,19 @@ namespace {
 
 bool ShouldThemifyFaviconForEntryUrl(const GURL& url) {
   // Themify favicon for the default NTP and incognito NTP.
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.host_piece() == chrome::kChromeUINewTabPageHost ||
-          url.host_piece() == chrome::kChromeUINewTabHost);
+  if (url.SchemeIs(content::kChromeUIScheme)) {
+    return url.host_piece() == chrome::kChromeUINewTabPageHost ||
+           url.host_piece() == chrome::kChromeUINewTabHost;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Themify menu favicon for CrOS Terminal home page.
+  if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return url.host_piece() == chrome::kChromeUIUntrustedTerminalHost;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return false;
 }
 
 bool ShouldThemifyFaviconForVisibleUrl(const GURL& visible_url) {
