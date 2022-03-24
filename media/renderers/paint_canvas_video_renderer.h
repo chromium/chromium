@@ -44,6 +44,15 @@ class VideoTextureBacking;
 // Handles rendering of VideoFrames to PaintCanvases.
 class MEDIA_EXPORT PaintCanvasVideoRenderer {
  public:
+  // Specifies the chroma upsampling filter used for pixel formats with chroma
+  // subsampling (YUV 4:2:0 and YUV 4:2:2).
+  //
+  // NOTE: Keep the numeric values in sync with libyuv::FilterMode.
+  enum FilterMode {
+    kFilterNone = 0,      // Nearest neighbor.
+    kFilterBilinear = 2,  // Bilinear interpolation.
+  };
+
   PaintCanvasVideoRenderer();
 
   PaintCanvasVideoRenderer(const PaintCanvasVideoRenderer&) = delete;
@@ -79,7 +88,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // should point into a buffer large enough to hold as many 32 bit RGBA pixels
   // as are in the visible_rect() area of the frame. |premultiply_alpha|
   // indicates whether the R, G, B samples in |rgb_pixels| should be multiplied
-  // by alpha.
+  // by alpha. |filter| specifies the chroma upsampling filter used for pixel
+  // formats with chroma subsampling. If chroma planes in the pixel format are
+  // not subsampled, |filter| is ignored.
   //
   // NOTE: If |video_frame| doesn't have an alpha plane, all the A samples in
   // |rgb_pixels| will be 255 (equivalent to an alpha of 1.0) and therefore the
@@ -88,7 +99,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   static void ConvertVideoFrameToRGBPixels(const media::VideoFrame* video_frame,
                                            void* rgb_pixels,
                                            size_t row_bytes,
-                                           bool premultiply_alpha = true);
+                                           bool premultiply_alpha = true,
+                                           FilterMode filter = kFilterNone);
 
   // Copy the contents of |video_frame| to |texture| of |destination_gl|.
   //
