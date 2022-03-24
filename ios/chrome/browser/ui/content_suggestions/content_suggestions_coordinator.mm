@@ -542,11 +542,15 @@
       [[ActivityParams alloc] initWithURL:URL
                                     title:title
                                  scenario:ActivityScenario::MostVisitedEntry];
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  originView:view];
+  UIViewController* contentSuggestionsVC =
+      IsContentSuggestionsUIViewControllerMigrationEnabled()
+          ? self.contentSuggestionsViewController
+          : self.collectionViewController;
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:contentSuggestionsVC
+                         browser:self.browser
+                          params:params
+                      originView:view];
   [self.sharingCoordinator start];
 }
 
