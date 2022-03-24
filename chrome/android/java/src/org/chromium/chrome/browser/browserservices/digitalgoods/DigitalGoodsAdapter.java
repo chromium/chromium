@@ -13,7 +13,9 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.payments.mojom.DigitalGoods.Consume_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchaseHistory_Response;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 
 /**
@@ -24,10 +26,14 @@ import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 public class DigitalGoodsAdapter {
     private static final String TAG = "DigitalGoods";
 
-    public static final String COMMAND_ACKNOWLEDGE = "acknowledge";
+    public static final String COMMAND_CONSUME = "consume";
     public static final String COMMAND_GET_DETAILS = "getDetails";
     public static final String COMMAND_LIST_PURCHASES = "listPurchases";
+    public static final String COMMAND_LIST_PURCHASE_HISTORY = "listPurchaseHistory";
     public static final String KEY_SUCCESS = "success";
+
+    // Legacy commands kept around for backwards compatibility.
+    public static final String COMMAND_ACKNOWLEDGE = "acknowledge";
 
     private final TrustedWebActivityClient mClient;
 
@@ -51,6 +57,35 @@ public class DigitalGoodsAdapter {
         Runnable onUnavailable = () -> ListPurchasesConverter.returnClientAppUnavailable(response);
 
         execute(scope, COMMAND_LIST_PURCHASES, args, callback, onError, onUnavailable);
+    }
+
+    public void listPurchaseHistory(Uri scope, ListPurchaseHistory_Response response) {
+        Bundle args = new Bundle();
+        TrustedWebActivityCallback callback =
+                ListPurchaseHistoryConverter.convertCallback(response);
+        Runnable onError = () -> ListPurchaseHistoryConverter.returnClientAppError(response);
+        Runnable onUnavailable =
+                () -> ListPurchaseHistoryConverter.returnClientAppUnavailable(response);
+
+        execute(scope, COMMAND_LIST_PURCHASE_HISTORY, args, callback, onError, onUnavailable);
+    }
+
+    public void consume(Uri scope, String purchaseToken, Consume_Response response) {
+        Bundle args = ConsumeConverter.convertParams(purchaseToken);
+        TrustedWebActivityCallback callback = ConsumeConverter.convertCallback(response);
+        Runnable onUnavailable = () -> ConsumeConverter.returnClientAppUnavailable(response);
+        Runnable onError = () -> ConsumeConverter.returnClientAppError(response);
+
+        // If Consume fails, try to call acknowledge(..., makeAvailableAgain = true) which will
+        // achieve the same effect on older clients.
+        Runnable tryAcknowledgeOnError = () -> {
+            Bundle ackArgs = AcknowledgeConverter.convertParams(purchaseToken);
+            TrustedWebActivityCallback ackCallback = AcknowledgeConverter.convertCallback(response);
+
+            execute(scope, COMMAND_ACKNOWLEDGE, ackArgs, ackCallback, onError, onUnavailable);
+        };
+
+        execute(scope, COMMAND_CONSUME, args, callback, tryAcknowledgeOnError, onUnavailable);
     }
 
     private void execute(Uri scope, String command, Bundle args,

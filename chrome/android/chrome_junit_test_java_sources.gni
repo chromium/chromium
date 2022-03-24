@@ -38,6 +38,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/SessionDataHolderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsConverterTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/digitalgoods/MockTrustedWebActivityClient.java",
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/LocationPermissionUpdaterTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationChannelPreserverTest.java",

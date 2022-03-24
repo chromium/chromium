@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,36 +18,26 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
 import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchaseHistory_Response;
 import org.chromium.payments.mojom.PurchaseReference;
-import org.chromium.payments.mojom.PurchaseState;
 
 /**
- * A converter that deals with the results of ListPurchases calls.
+ * A converter that deals with the results of ListPurchaseHistory calls.
  */
-class ListPurchasesConverter {
+class ListPurchaseHistoryConverter {
     private static final String TAG = "DigitalGoods";
 
-    static final String RESPONSE_COMMAND = "listPurchases.response";
-    static final String KEY_PURCHASES_LIST = "listPurchases.purchasesList";
-    static final String KEY_RESPONSE_CODE = "listPurchases.responseCode";
+    static final String RESPONSE_COMMAND = "listPurchaseHistory.response";
+    static final String KEY_PURCHASES_LIST = "listPurchaseHistory.purchasesList";
+    static final String KEY_RESPONSE_CODE = "listPurchaseHistory.responseCode";
 
-    static final String KEY_ITEM_ID = "purchaseDetails.itemId";
-    static final String KEY_PURCHASE_TOKEN = "purchaseDetails.purchaseToken";
-
-    // These values are copied from the Play Billing library since Chrome cannot depend on it.
-    // https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
-    static final int PLAY_BILLING_PURCHASE_STATE_PENDING = 2;
-    static final int PLAY_BILLING_PURCHASE_STATE_PURCHASED = 1;
-    static final int PLAY_BILLING_PURCHASE_STATE_UNSPECIFIED = 0;
-
-    private ListPurchasesConverter() {}
+    private ListPurchaseHistoryConverter() {}
 
     /**
      * Produces a {@link TrustedWebActivityCallback} that calls the given
-     * {@link ListPurchasesResponse}.
+     * {@link ListPurchaseHistoryResponse}.
      */
-    static TrustedWebActivityCallback convertCallback(ListPurchases_Response callback) {
+    static TrustedWebActivityCallback convertCallback(ListPurchaseHistory_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
@@ -80,46 +70,12 @@ class ListPurchasesConverter {
         };
     }
 
-    /** Convert a Bundle into a PurchaseReference object. */
-    static PurchaseReference convertPurchaseReference(Bundle purchase) {
-        if (!checkField(purchase, KEY_ITEM_ID, String.class)) return null;
-        if (!checkField(purchase, KEY_PURCHASE_TOKEN, String.class)) return null;
-
-        PurchaseReference result = new PurchaseReference();
-
-        result.itemId = purchase.getString(KEY_ITEM_ID);
-        result.purchaseToken = purchase.getString(KEY_PURCHASE_TOKEN);
-
-        return result;
-    }
-
-    static int convertPurchaseState(int purchaseState) {
-        switch (purchaseState) {
-            case PLAY_BILLING_PURCHASE_STATE_PENDING:
-                return PurchaseState.PENDING;
-            case PLAY_BILLING_PURCHASE_STATE_PURCHASED:
-                return PurchaseState.PURCHASED;
-            default:
-                return PurchaseState.UNKNOWN;
-        }
-    }
-
-    static void returnClientAppUnavailable(ListPurchases_Response callback) {
+    static void returnClientAppUnavailable(ListPurchaseHistory_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new PurchaseReference[0]);
     }
 
-    static void returnClientAppError(ListPurchases_Response callback) {
+    static void returnClientAppError(ListPurchaseHistory_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_ERROR, new PurchaseReference[0]);
-    }
-
-    @VisibleForTesting
-    static Bundle createPurchaseReferenceBundle(String itemId, String purchaseToken) {
-        Bundle bundle = new Bundle();
-
-        bundle.putString(KEY_ITEM_ID, itemId);
-        bundle.putString(KEY_PURCHASE_TOKEN, purchaseToken);
-
-        return bundle;
     }
 
     @VisibleForTesting

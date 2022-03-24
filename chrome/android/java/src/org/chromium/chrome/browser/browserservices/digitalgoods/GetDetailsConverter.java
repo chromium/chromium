@@ -20,7 +20,9 @@ import org.chromium.base.Log;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.ItemDetails;
+import org.chromium.payments.mojom.ItemType;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
+import org.chromium.url.mojom.Url;
 
 /**
  * A converter that deals with the parameters and result for GetDetails calls.
@@ -40,11 +42,18 @@ public class GetDetailsConverter {
     static final String KEY_VALUE = "itemDetails.value";
     static final String[] REQUIRED_FIELDS = {KEY_ID, KEY_TITLE, KEY_DESC, KEY_CURRENCY, KEY_VALUE};
 
+    static final String KEY_TYPE = "itemDetails.type";
+    static final String KEY_ICON_URL = "itemDetails.url";
+
     static final String KEY_SUBS_PERIOD = "itemDetails.subsPeriod";
     static final String KEY_FREE_TRIAL_PERIOD = "itemDetails.freeTrialPeriod";
     static final String KEY_INTRO_CURRENCY = "itemDetails.introPriceCurrency";
     static final String KEY_INTRO_VALUE = "itemDetails.introPriceValue";
     static final String KEY_INTRO_PERIOD = "itemDetails.introPricePeriod";
+    static final String KEY_INTRO_CYCLES = "itemDetails.introPriceCycles";
+
+    static final String ITEM_TYPE_SUBS = "subs";
+    static final String ITEM_TYPE_INAPP = "inapp";
 
     private GetDetailsConverter() {}
 
@@ -115,9 +124,20 @@ public class GetDetailsConverter {
         result.price = price;
 
         // Optional fields.
+        result.type = convertItemType(item.getString(KEY_TYPE));
+        String iconUrl = item.getString(KEY_ICON_URL);
+        if (iconUrl != null) {
+            org.chromium.url.mojom.Url url = new Url();
+            url.url = iconUrl;
+            result.iconUrls = new Url[] {url};
+        } else {
+            result.iconUrls = new Url[0];
+        }
+
         result.subscriptionPeriod = item.getString(KEY_SUBS_PERIOD);
         result.freeTrialPeriod = item.getString(KEY_FREE_TRIAL_PERIOD);
         result.introductoryPricePeriod = item.getString(KEY_INTRO_PERIOD);
+        result.introductoryPriceCycles = item.getInt(KEY_INTRO_CYCLES, 0);
 
         String introPriceCurrency = item.getString(KEY_INTRO_CURRENCY);
         String introPriceValue = item.getString(KEY_INTRO_VALUE);
@@ -130,6 +150,17 @@ public class GetDetailsConverter {
         }
 
         return result;
+    }
+
+    static int convertItemType(@Nullable String itemType) {
+        // TODO: introduce our own API here.
+        if (ITEM_TYPE_SUBS.equals(itemType)) {
+            return ItemType.SUBSCRIPTION;
+        } else if (ITEM_TYPE_INAPP.equals(itemType)) {
+            return ItemType.PRODUCT;
+        }
+
+        return ItemType.UNKNOWN;
     }
 
     static void returnClientAppUnavailable(GetDetails_Response callback) {
@@ -146,16 +177,21 @@ public class GetDetailsConverter {
      */
     @VisibleForTesting
     static Bundle createItemDetailsBundle(String id, String title, String desc, String currency,
-            String value, @Nullable String subsPeriod, @Nullable String freeTrialPeriod,
-            @Nullable String introPriceCurrency, @Nullable String introPriceValue,
-            @Nullable String intoPricePeriod) {
+            String value, String type, String iconUrl, @Nullable String subsPeriod,
+            @Nullable String freeTrialPeriod, @Nullable String introPriceCurrency,
+            @Nullable String introPriceValue, @Nullable String intoPricePeriod,
+            int introPriceCycles) {
         Bundle bundle = createItemDetailsBundle(id, title, desc, currency, value);
+
+        bundle.putString(KEY_TYPE, type);
+        bundle.putString(KEY_ICON_URL, iconUrl);
 
         bundle.putString(KEY_SUBS_PERIOD, subsPeriod);
         bundle.putString(KEY_FREE_TRIAL_PERIOD, freeTrialPeriod);
         bundle.putString(KEY_INTRO_CURRENCY, introPriceCurrency);
         bundle.putString(KEY_INTRO_VALUE, introPriceValue);
         bundle.putString(KEY_INTRO_PERIOD, intoPricePeriod);
+        bundle.putInt(KEY_INTRO_CYCLES, introPriceCycles);
 
         return bundle;
     }

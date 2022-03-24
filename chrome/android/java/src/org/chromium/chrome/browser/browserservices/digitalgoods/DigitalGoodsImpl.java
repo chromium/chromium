@@ -49,12 +49,14 @@ public class DigitalGoodsImpl implements DigitalGoods {
 
     @Override
     public void listPurchaseHistory(ListPurchaseHistory_Response callback) {
-        // TODO(peconn)
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.listPurchaseHistory(Uri.parse(url.getSpec()), callback);
     }
 
     @Override
     public void consume(String purchaseToken, Consume_Response callback) {
-        // TODO(peconn)
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.consume(Uri.parse(url.getSpec()), purchaseToken, callback);
     }
 
     @Override

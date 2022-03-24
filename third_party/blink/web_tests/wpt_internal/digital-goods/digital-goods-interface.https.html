@@ -192,6 +192,8 @@ digital_goods_test(async service => {
   assert_equals(response[1].purchaseToken, 'purchaseToken:1');
 }, {title: 'ListPurchases round trip.'});
 
+// TODO (crbug.com/1250604): Add ListPurchaseHistory test with blink impl.
+
 digital_goods_test(async service => {
   const response = await service.listPurchaseHistory();
   assert_equals(response.length, 20);
