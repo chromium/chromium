@@ -10,4 +10,5 @@
     <!-- Tags -->
     <item type="id" name="highlight_color" />
     <item type="id" name="omnibox_results_container_stub" />
+    <item type="id" name="report_exception_callback" />
 </resources>

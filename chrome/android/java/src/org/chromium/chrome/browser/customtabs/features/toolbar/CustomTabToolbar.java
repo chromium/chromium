@@ -49,6 +49,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -712,7 +713,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     (unused)
                             -> {},
                     this, new NoOpkeyboardVisibilityDelegate(),
-                    locationBarDataProvider.isIncognito());
+                    locationBarDataProvider.isIncognito(),
+                    ChromePureJavaExceptionReporter::postReportJavaException);
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
