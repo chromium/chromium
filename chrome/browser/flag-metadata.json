@@ -4199,6 +4199,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "notification-permission-rationale-dialog",
+    "owners": ["shaktisahu", "salg"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
     "expiry_milestone": 102

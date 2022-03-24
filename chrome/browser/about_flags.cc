@@ -2046,6 +2046,34 @@ const FeatureEntry::FeatureVariation kFeatureNotificationGuideVariations[] = {
     {"Default browser", kFeatureNotificationGuide_default_browser,
      std::size(kFeatureNotificationGuide_default_browser), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kNotificationPermissionRationale_show_dialog_next_start_text_variant[] = {
+        {"always_show_rationale_before_requesting_permission", "true"},
+        {"notification_permission_dialog_text_variant_2", "true"},
+        {"permission_request_interval_days", "0"},
+};
+
+const FeatureEntry::FeatureParam
+    kNotificationPermissionRationale_show_dialog_next_start[] = {
+        {"always_show_rationale_before_requesting_permission", "true"},
+        {"notification_permission_dialog_text_variant_2", "false"},
+        {"permission_request_interval_days", "0"},
+};
+
+const FeatureEntry::FeatureVariation
+    kNotificationPermissionRationaleVariations[] = {
+        {"- Show rationale dialog on next startup",
+         kNotificationPermissionRationale_show_dialog_next_start,
+         std::size(kNotificationPermissionRationale_show_dialog_next_start),
+         nullptr},
+        {"- Show rationale dialog on next startup - alternative copy",
+         kNotificationPermissionRationale_show_dialog_next_start_text_variant,
+         std::size(
+             kNotificationPermissionRationale_show_dialog_next_start_text_variant),
+         nullptr},
+};
+
 const FeatureEntry::FeatureParam kWebFeed_accelerator[] = {
     {"intro_style", "accelerator"}};
 
@@ -4122,6 +4150,13 @@ const FeatureEntry kFeatureEntries[] = {
          feature_guide::features::kFeatureNotificationGuide,
          kFeatureNotificationGuideVariations,
          "FeatureNotificationGuide")},
+    {"notification-permission-rationale-dialog",
+     flag_descriptions::kNotificationPermissionRationaleName,
+     flag_descriptions::kNotificationPermissionRationaleDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kNotificationPermissionVariant,
+         kNotificationPermissionRationaleVariations,
+         "NotificationPermissionVariant")},
     {"feature-notification-guide-skip-check-for-low-engaged-users",
      flag_descriptions::
          kFeatureNotificationGuideSkipCheckForLowEngagedUsersName,

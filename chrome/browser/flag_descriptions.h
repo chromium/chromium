@@ -1904,6 +1904,9 @@ extern const char kMessagesForAndroidUpdatePasswordDescription[];
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 
+extern const char kNotificationPermissionRationaleName[];
+extern const char kNotificationPermissionRationaleDescription[];
+
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 

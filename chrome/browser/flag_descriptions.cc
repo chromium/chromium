@@ -3327,6 +3327,12 @@ const char kNewWindowAppMenuDescription[] =
     "Show a new menu item 'New Window' on tablet-sized screen when Chrome "
     "can open a new window and create a new instance in it.";
 
+const char kNotificationPermissionRationaleName[] =
+    "Notification Permission Rationale UI";
+const char kNotificationPermissionRationaleDescription[] =
+    "Configure the dialog shown before requesting notification permission. "
+    "Only works with builds targeting Android T.";
+
 const char kOfflinePagesLivePageSharingName[] =
     "Enables live page sharing of offline pages";
 const char kOfflinePagesLivePageSharingDescription[] =

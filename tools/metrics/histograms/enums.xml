@@ -54042,6 +54042,7 @@ from previous Chrome versions.
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551434067"
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
+  <int value="-551334994" label="NotificationPermissionVariant:enabled"/>
   <int value="-549837954" label="RevenLogSource:enabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
@@ -54929,6 +54930,7 @@ from previous Chrome versions.
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>
   <int value="72558615" label="TrafficCountersSettingsUi:enabled"/>
   <int value="73606763" label="XsurfaceMetricsReporting:disabled"/>
