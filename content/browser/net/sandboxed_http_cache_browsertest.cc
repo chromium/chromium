@@ -149,8 +149,15 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CreateSimpleCacheWithParentDirectory \
+  DISABLED_CreateSimpleCacheWithParentDirectory
+#else
+#define MAYBE_CreateSimpleCacheWithParentDirectory \
+  CreateSimpleCacheWithParentDirectory
+#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
-                       CreateSimpleCacheWithParentDirectory) {
+                       MAYBE_CreateSimpleCacheWithParentDirectory) {
   base::RunLoop run_loop;
 
   const base::FilePath root_path = GetTempDirPath();
