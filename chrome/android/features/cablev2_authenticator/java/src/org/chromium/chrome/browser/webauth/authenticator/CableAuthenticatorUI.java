@@ -761,11 +761,10 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                 settingsButtonVisible = true;
                 break;
 
-                // TODO: create a dedicated error message for these cases, which
-                // result when the client sends a discoverable-credentials
-                // request that Android cannot handle.
-                // case ERROR_AUTHENTICATOR_SELECTION_RECEIVED:
-                // case ERROR_DISCOVERABLE_CREDENTIALS_REQUEST:
+            case ERROR_AUTHENTICATOR_SELECTION_RECEIVED:
+            case ERROR_DISCOVERABLE_CREDENTIALS_REQUEST:
+                desc = getResources().getString(R.string.cablev2_error_disco_cred, packageLabel);
+                break;
 
             default:
                 TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);

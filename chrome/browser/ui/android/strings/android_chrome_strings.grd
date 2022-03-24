@@ -4829,6 +4829,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         To use this device as a security key, set a screen lock
       </message>
 
+      <message name="IDS_CABLEV2_ERROR_DISCO_CRED" desc="The description of an error shown when the user is trying to use their phone to register or authenticate with a website on a laptop, but the phone doesn't support the type of sign-in requested.">
+        This verification method isn’t available for this device. Pick a different option on your other device.
+      </message>
+
       <message name="IDS_CABLEV2_ERROR_GENERIC" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but some generic error occured.">
         Try another verification option
       </message>
