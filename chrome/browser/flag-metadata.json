@@ -3859,6 +3859,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "launcher-lacros-integration",
+    "owners": ["wrong", "thanhdng", "tby"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "launcher-nudge",
     "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
     "expiry_milestone": 104

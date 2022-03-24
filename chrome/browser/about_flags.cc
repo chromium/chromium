@@ -8318,6 +8318,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"launcher-lacros-integration",
+     flag_descriptions::kLauncherLacrosIntegrationName,
+     flag_descriptions::kLauncherLacrosIntegrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(app_list_features::kLauncherLacrosIntegration)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

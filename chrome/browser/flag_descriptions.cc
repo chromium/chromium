@@ -5042,6 +5042,11 @@ const char kLacrosProfileMigrationForceOffDescription[] =
     "migration is rolled out to the user, the migration will not run and the "
     "user can continue to use lacros without profile migration.";
 
+const char kLauncherLacrosIntegrationName[] = "Launcher lacros integration";
+const char kLauncherLacrosIntegrationDescription[] =
+    "Forces launcher Omnibox search queries to be sent to the lacros browser. "
+    "If disabled, queries are sent to the ash browser.";
+
 const char kLimitShelfItemsToActiveDeskName[] =
     "Limit Shelf items to active desk";
 const char kLimitShelfItemsToActiveDeskDescription[] =

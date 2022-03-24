@@ -43,6 +43,8 @@ const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLauncherLacrosIntegration{
+    "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -116,6 +118,11 @@ bool IsDynamicSearchUpdateAnimationEnabled() {
   // Search update animations are only supported for categorical search.
   return IsCategoricalSearchEnabled() &&
          base::FeatureList::IsEnabled(kDynamicSearchUpdateAnimation);
+}
+
+bool IsLauncherLacrosIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport) &&
+         base::FeatureList::IsEnabled(kLauncherLacrosIntegration);
 }
 
 std::string CategoricalSearchType() {

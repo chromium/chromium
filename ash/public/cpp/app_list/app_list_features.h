@@ -74,6 +74,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kSearchResultInlineIcon;
 // are interrupted by search model updates.
 ASH_PUBLIC_EXPORT extern const base::Feature kDynamicSearchUpdateAnimation;
 
+// Forces the Launcher provider to send Omnibox search queries to the lacros
+// browser. If disabled, queries are sent to the ash browser.
+ASH_PUBLIC_EXPORT extern const base::Feature kLauncherLacrosIntegration;
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
@@ -92,6 +96,7 @@ ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
+ASH_PUBLIC_EXPORT bool IsLauncherLacrosIntegrationEnabled();
 
 ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
 ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();
