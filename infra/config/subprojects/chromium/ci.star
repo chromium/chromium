@@ -116,6 +116,7 @@ consoles.console_view(
 ) for name, category, short_name in (
     ("fuchsia-fyi-arm64-size", "fyi", "a64-size"),
     ("fuchsia-fyi-astro", "astro", "gpu"),
+    ("fuchsia-fyi-atlas", "atlas", "gpu"),
     ("fuchsia-fyi-sherlock", "sherlock", "gpu"),
     ("fuchsia-builder-perf-fyi", "fyi", "builder-perf"),
     ("fuchsia-builder-perf-x64", "fyi", "builder-perf-x64"),
