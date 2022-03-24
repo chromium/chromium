@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<title> Images on a page Cross-Origin-Embedder-Policy: require-corp should load the same from the cache or network</title>
+<title> Images on a page Cross-Origin-Embedder-Policy: require-corp should load the same from the cache or network, even with revalidation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -20,7 +20,9 @@ function remote(path) {
 // We expect the image with the header to load successfully and the one without
 // to fail to load.
 // After the first load we then reload the iframe, with the same expectations
-// for the image loads when they are loaded from the cache.
+// for the image loads when they are loaded from the cache. Because of the
+// revalidate directive, we will receive a 304 response instead of directly
+// using the cache response.
 //
 
 const RUNS = ["NETWORK", "CACHED"];
@@ -44,7 +46,7 @@ window.addEventListener("load", async () => {
   // The token attribute is used to ensure the resource has never been seen by
   // the HTTP cache. This can be useful if the cache isn't properly flushed in
   // between two tests.
-  iframe.src = `resources/load-corp-images.html?revalidate=false&token=${token()}`;
+  iframe.src = `resources/load-corp-images.html?revalidate=true&token=${token()}`;
   let runCount = 0;
   window.addEventListener("message", (event) => {
     // After the first done event we reload the iframe.

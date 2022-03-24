@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS NETWORK - No CORP image
+PASS NETWORK - CORP image
+PASS CACHED - No CORP image
+FAIL CACHED - CORP image assert_equals: CACHED - CORP image should  succeed expected true but got false
+PASS main_test
+Harness: the test ran to completion.
+
