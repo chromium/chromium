@@ -189,10 +189,12 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(
 
 #if defined(UNIT_TEST)
   if (!network_context) {
-    // Cannot invoke the callback right away because it would cause the
-    // use-after-free after returning from this function.
-    content::GetUIThreadTaskRunner({content::BrowserTaskType::kPreconnect})
-        ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), false));
+    // Cannot invoke the callback right away because it would cause a
+    // use-after-free after returning from this method:
+    // The return value of this method is assigned to a member variable of a
+    // PreresolveJob that is destroyed when the callback executes.
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return nullptr;
   }
 #endif
