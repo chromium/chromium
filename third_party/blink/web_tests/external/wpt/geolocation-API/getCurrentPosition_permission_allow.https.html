@@ -31,4 +31,22 @@
       "Expected GeolocationPosition"
     );
   }, "User allows access, check that success callback is called.");
+
+  promise_test(async (t) => {
+    t.add_cleanup(() => {
+      return test_driver.set_permission({ name: "geolocation" }, "prompt");
+    });
+    await test_driver.set_permission({ name: "geolocation" }, "granted");
+    const position = await new Promise((resolve, reject) => {
+      try {
+        navigator.geolocation.getCurrentPosition(resolve, null);
+      } catch (err) {
+        reject(err);
+      }
+    });
+    assert_true(
+      position instanceof GeolocationPosition,
+      "Expected GeolocationPosition"
+    );
+  }, "Error callback is nullable for getCurrentPosition().");
 </script>

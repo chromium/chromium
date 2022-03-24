@@ -2338,7 +2338,6 @@ crbug.com/1050754 external/wpt/gamepad/idlharness.https.window.html [ Failure Pa
 crbug.com/1050754 external/wpt/generic-sensor/generic-sensor-permission.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/geolocation-API/PositionOptions.https.html [ Failure ]
 crbug.com/1050754 external/wpt/geolocation-API/getCurrentPosition_IDL.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/geolocation-sensor/GeolocationSensor-disabled-by-feature-policy.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/geolocation-sensor/GeolocationSensor-enabled-by-feature-policy-attribute-redirect-on-load.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/geolocation-sensor/GeolocationSensor-enabled-by-feature-policy-attribute.https.html [ Failure Pass ]

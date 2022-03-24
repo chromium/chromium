@@ -51,4 +51,15 @@
       );
     });
   }, "Call watchPosition() with wrong type for third argument. Exception expected.");
+
+  test(function () {
+    const handleEvent = function(){};
+    assert_throws_js(TypeError, function () {
+      navigator.geolocation.watchPosition({ handleEvent });
+    });
+
+    assert_throws_js(TypeError, function () {
+      navigator.geolocation.watchPosition(()=>{}, { handleEvent });
+    });
+  }, "Calling watchPosition() with a legacy event handler object.");
 </script>

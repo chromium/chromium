@@ -47,4 +47,15 @@ test(function() {
     navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, 4);
   });
 }, 'Call getCurrentPosition() with wrong type for third argument. Exception expected.');
+
+test(function () {
+  const handleEvent = ()=>{};
+  assert_throws_js(TypeError, function () {
+    navigator.geolocation.getCurrentPosition({ handleEvent });
+  });
+
+  assert_throws_js(TypeError, function () {
+    navigator.geolocation.getCurrentPosition(()=>{}, { handleEvent });
+  });
+}, "Calling getCurrentPosition() with a legacy event handler objects.");
 </script>
