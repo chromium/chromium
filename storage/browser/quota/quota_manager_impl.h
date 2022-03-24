@@ -475,7 +475,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class StorageKeyGathererTask;
   class BucketDataDeleter;
   class HostDataDeleter;
-  class DumpQuotaTableHelper;
   class DumpBucketTableHelper;
   class StorageCleanupHelper;
 
@@ -492,17 +491,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     std::set<int> active_override_session_ids;
   };
 
-  using QuotaTableEntry = QuotaDatabase::QuotaTableEntry;
   using BucketTableEntry = QuotaDatabase::BucketTableEntry;
-  using QuotaTableEntries = std::vector<QuotaTableEntry>;
   using BucketTableEntries = std::vector<BucketTableEntry>;
   using StorageKeysByType =
       base::flat_map<blink::mojom::StorageType, std::set<blink::StorageKey>>;
 
   using QuotaSettingsCallback = base::OnceCallback<void(const QuotaSettings&)>;
 
-  using DumpQuotaTableCallback =
-      base::OnceCallback<void(const QuotaTableEntries&)>;
   using DumpBucketTableCallback =
       base::OnceCallback<void(const BucketTableEntries&)>;
 
@@ -544,7 +539,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
-  void DumpQuotaTable(DumpQuotaTableCallback callback);
   void DumpBucketTable(DumpBucketTableCallback callback);
   void DidRetrieveBucketsTable(RetrieveBucketsTableCallback callback,
                                const BucketTableEntries& entries);

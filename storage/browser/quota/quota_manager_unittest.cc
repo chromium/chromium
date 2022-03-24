@@ -135,8 +135,6 @@ MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
 
 class QuotaManagerImplTest : public testing::Test {
  protected:
-  using QuotaTableEntry = QuotaManagerImpl::QuotaTableEntry;
-  using QuotaTableEntries = QuotaManagerImpl::QuotaTableEntries;
   using BucketTableEntries = QuotaManagerImpl::BucketTableEntries;
 
  public:
@@ -434,13 +432,6 @@ class QuotaManagerImplTest : public testing::Test {
         future.GetCallback<const std::set<BucketLocator>&, StorageType>());
     EXPECT_EQ(future.Get<1>(), type);
     return future.Get<0>();
-  }
-
-  QuotaTableEntries DumpQuotaTable() {
-    base::test::TestFuture<QuotaTableEntries> future;
-    quota_manager_impl_->DumpQuotaTable(
-        future.GetCallback<const QuotaTableEntries&>());
-    return future.Get();
   }
 
   BucketTableEntries DumpBucketTable() {
@@ -2752,22 +2743,6 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetweenWithDatabaseError) {
 
   // Return empty set when error is encountered.
   EXPECT_TRUE(buckets.empty());
-}
-
-TEST_F(QuotaManagerImplTest, DumpQuotaTable) {
-  SetPersistentHostQuota("example1.com", 1);
-  SetPersistentHostQuota("example2.com", 20);
-  SetPersistentHostQuota("example3.com", 300);
-  task_environment_.RunUntilIdle();
-
-  const QuotaTableEntries& entries = DumpQuotaTable();
-  EXPECT_THAT(
-      entries,
-      testing::UnorderedElementsAre(
-          QuotaTableEntry{.host = "example1.com", .type = kPerm, .quota = 1},
-          QuotaTableEntry{.host = "example2.com", .type = kPerm, .quota = 20},
-          QuotaTableEntry{
-              .host = "example3.com", .type = kPerm, .quota = 300}));
 }
 
 TEST_F(QuotaManagerImplTest, DumpBucketTable) {

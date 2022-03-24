@@ -57,7 +57,6 @@ bool ContainsBucket(const std::set<BucketLocator>& buckets,
 // mode. True will create the database in memory.
 class QuotaDatabaseTest : public testing::TestWithParam<bool> {
  protected:
-  using QuotaTableEntry = QuotaDatabase::QuotaTableEntry;
   using BucketTableEntry = QuotaDatabase::BucketTableEntry;
   using EnsureOpenedMode = QuotaDatabase::EnsureOpenedMode;
 
@@ -831,25 +830,6 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
   info = db.GetBucketInfo(bucket_result->id);
   EXPECT_TRUE(info.ok());
   EXPECT_EQ(1, info->use_count);
-}
-
-TEST_P(QuotaDatabaseTest, DumpQuotaTable) {
-  QuotaTableEntry kTableEntries[] = {
-      {.host = "http://go/", .type = kTemp, .quota = 1},
-      {.host = "http://oo/", .type = kTemp, .quota = 2},
-      {.host = "http://gle/", .type = kPerm, .quota = 3}};
-
-  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
-  EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));
-  AssignQuotaTable(&db, kTableEntries);
-
-  using Verifier = EntryVerifier<QuotaTableEntry>;
-  Verifier verifier(kTableEntries, std::end(kTableEntries));
-  EXPECT_EQ(
-      DumpQuotaTable(&db, base::BindRepeating(&Verifier::Run,
-                                              base::Unretained(&verifier))),
-      QuotaError::kNone);
-  EXPECT_TRUE(verifier.table.empty());
 }
 
 TEST_P(QuotaDatabaseTest, DumpBucketTable) {

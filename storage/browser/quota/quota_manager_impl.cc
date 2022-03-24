@@ -1109,43 +1109,7 @@ class QuotaManagerImpl::StorageCleanupHelper : public QuotaTask {
 // Gather storage key info table for quota-internals page.
 //
 // This class is granted ownership of itself when it is passed to
-// DidDumpQuotaTable() via base::Owned(). When the closure for said function
-// goes out of scope, the object is deleted.
-// This class is not thread-safe because there can be a race when entries_ is
-// modified.
-class QuotaManagerImpl::DumpQuotaTableHelper {
- public:
-  QuotaError DumpQuotaTableOnDBThread(QuotaDatabase* database) {
-    DCHECK(database);
-    return database->DumpQuotaTable(base::BindRepeating(
-        &DumpQuotaTableHelper::AppendEntry, base::Unretained(this)));
-  }
-
-  void DidDumpQuotaTable(const base::WeakPtr<QuotaManagerImpl>& manager,
-                         DumpQuotaTableCallback callback,
-                         QuotaError error) {
-    if (!manager) {
-      // The operation was aborted.
-      std::move(callback).Run(QuotaTableEntries());
-      return;
-    }
-    manager->DidDatabaseWork(error != QuotaError::kDatabaseError);
-    std::move(callback).Run(entries_);
-  }
-
- private:
-  bool AppendEntry(const QuotaTableEntry& entry) {
-    entries_.push_back(entry);
-    return true;
-  }
-
-  QuotaTableEntries entries_;
-};
-
-// Gather storage key info table for quota-internals page.
-//
-// This class is granted ownership of itself when it is passed to
-// DidDumpQuotaTable() via base::Owned(). When the closure for said function
+// DidDumpBucketTable() via base::Owned(). When the closure for said function
 // goes out of scope, the object is deleted.
 // This class is not thread-safe because there can be races when entries_ is
 // modified.
@@ -2013,24 +1977,6 @@ void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
       base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
                      weak_factory_.GetWeakPtr(), client_id, delta,
                      modification_time, std::move(callback)));
-}
-
-void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
-
-  if (db_disabled_) {
-    std::move(callback).Run(QuotaTableEntries());
-    return;
-  }
-
-  DumpQuotaTableHelper* helper = new DumpQuotaTableHelper;
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&DumpQuotaTableHelper::DumpQuotaTableOnDBThread,
-                     base::Unretained(helper)),
-      base::BindOnce(&DumpQuotaTableHelper::DidDumpQuotaTable,
-                     base::Owned(helper), weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
 }
 
 void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {

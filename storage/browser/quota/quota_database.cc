@@ -975,27 +975,6 @@ bool QuotaDatabase::ResetSchema() {
   return EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) == QuotaError::kNone;
 }
 
-QuotaError QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
-  if (open_error != QuotaError::kNone)
-    return open_error;
-
-  static constexpr char kSql[] = "SELECT * FROM quota";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-
-  while (statement.Step()) {
-    QuotaTableEntry entry = {
-        .host = statement.ColumnString(0),
-        .type = static_cast<StorageType>(statement.ColumnInt(1)),
-        .quota = statement.ColumnInt64(2)};
-
-    if (!callback.Run(entry))
-      return QuotaError::kNone;
-  }
-  return statement.Succeeded() ? QuotaError::kNone : QuotaError::kDatabaseError;
-}
-
 QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
@@ -1081,18 +1060,6 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
 
   return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
                     base::Time::Max(), 0);
-}
-
-bool operator==(const QuotaDatabase::QuotaTableEntry& lhs,
-                const QuotaDatabase::QuotaTableEntry& rhs) {
-  return std::tie(lhs.host, lhs.type, lhs.quota) ==
-         std::tie(rhs.host, rhs.type, rhs.quota);
-}
-
-bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,
-               const QuotaDatabase::QuotaTableEntry& rhs) {
-  return std::tie(lhs.host, lhs.type, lhs.quota) <
-         std::tie(rhs.host, rhs.type, rhs.quota);
 }
 
 bool operator<(const QuotaDatabase::BucketTableEntry& lhs,
