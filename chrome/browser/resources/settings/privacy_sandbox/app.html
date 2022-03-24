@@ -119,6 +119,10 @@
     padding-bottom: 8px;
   }
 
+  .ad-personalization-body {
+    height: 530px;
+  }
+
   .ad-personalization-section-title {
     font-weight: 500;
     padding: 8px 0;
@@ -267,7 +271,7 @@
           <div class="ad-personalization-title" slot="title">
             $i18n{privacySandboxAdPersonalizationDialogTitle}
           </div>
-          <div slot="body">
+          <div slot="body" class="ad-personalization-body">
             <div class="dialog-description">
               [[getAdPersonalizationDialogDescription_(
                     prefs.privacy_sandbox.apis_enabled_v2.value,
@@ -318,7 +322,7 @@
                   on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
               </iron-icon>
               <paper-tooltip id="fledgeTooltip" for="fledgeTooltipIcon"
-                  position="top" manual-mode fit-to-visible-bounds>
+                  position="bottom" manual-mode fit-to-visible-bounds>
                 <div class="dialog-description">
                   $i18n{privacySandboxAdPersonalizationDialogFledgeLearnMore1}
                 </div>
@@ -363,7 +367,7 @@
               $i18n{privacySandboxAdPersonalizationRemovedDialogTitle}
             </span>
           </div>
-          <div slot="body">
+          <div slot="body" class="ad-personalization-body">
             <div class="dialog-description">
               $i18n{privacySandboxAdPersonalizationRemovedDialogDescription}
             </div>
