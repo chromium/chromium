@@ -733,10 +733,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
-    expires_after="2022-04-24">
-  <owner>maajid@google.com</owner>
-  <owner>shaochuan@google.com</owner>
-  <owner>shihuis@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>mduggan@google.com</owner>
+  <owner>yhanada@google.com</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Total of Arc.EngagementTime.Background and Arc.EngagementTime.Foreground.
     Note that this differs from Arc.EngagementTime.Total in that this is the
@@ -747,10 +747,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Background" units="ms"
-    expires_after="2022-04-17">
-  <owner>maajid@google.com</owner>
-  <owner>shaochuan@google.com</owner>
-  <owner>shihuis@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>mduggan@google.com</owner>
+  <owner>yhanada@google.com</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Times when user is engaged and ARC++ apps are running in the background, but
     the user isn't focusing on an ARC++ app window. See Arc.EngagementTime.Total
@@ -759,10 +759,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
-    expires_after="2022-04-03">
-  <owner>maajid@google.com</owner>
-  <owner>shaochuan@google.com</owner>
-  <owner>shihuis@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>mduggan@google.com</owner>
+  <owner>yhanada@google.com</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Times when user is engaged and focuses on an ARC++ app window. See
     Arc.EngagementTime.Total for definition of engagement and details.
@@ -770,10 +770,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Total" units="ms"
-    expires_after="2022-04-24">
-  <owner>maajid@google.com</owner>
-  <owner>shaochuan@google.com</owner>
-  <owner>shihuis@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>mduggan@google.com</owner>
+  <owner>yhanada@google.com</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Total CrOS user session time (from login to logout) excluding times when
     user &quot;disengages&quot;: screen is locked or dims down due to user idle.
