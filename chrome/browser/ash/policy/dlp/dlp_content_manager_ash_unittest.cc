@@ -74,6 +74,10 @@ const DlpContentRestrictionSet kScreenShareWarned(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kWarn);
 
+const DlpContentRestrictionSet kScreenshotReported(
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kReport);
+
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kNonEmptyRestrictionSet = kScreenshotRestricted;
 
@@ -451,6 +455,95 @@ TEST_F(DlpContentManagerAshTest,
   EXPECT_EQ(events_.size(), 0u);
 
   helper_.DestroyWebContents(web_contents.get());
+}
+
+TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
+  const GURL kSrcUrl = GURL("https://example.com/");
+  const GURL kGoogleUrl = GURL("https://google.com/");
+  SetReportQueueForReportingManager();
+  SetupDlpRulesManager();
+  // Return |kSrcPattern| for reporting for both |kSrcUrl| and |kGoogleUrl|.
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+      .Times(2)
+      .WillRepeatedly(::testing::Return(kSrcPattern));
+
+  // Setup two web contents with different urls.
+  std::unique_ptr<content::WebContents> web_contents1 = CreateWebContents();
+  content::WebContentsTester::For(web_contents1.get())
+      ->NavigateAndCommit(kSrcUrl);
+  std::unique_ptr<content::WebContents> web_contents2 = CreateWebContents();
+  content::WebContentsTester::For(web_contents2.get())
+      ->NavigateAndCommit(kGoogleUrl);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
+
+  // WebContents 1 becomes confidential. No reporting expected.
+  helper_.ChangeConfidentiality(web_contents1.get(), kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
+            kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kScreenshotReported);
+  EXPECT_TRUE(events_.empty());
+
+  // Simulate starting video capture. Expect report event from WebContents 1.
+  const ScreenshotArea area = ScreenshotArea::CreateForAllRootWindows();
+  GetManager()->OnVideoCaptureStarted(area);
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
+                  DlpRulesManager::Level::kReport)));
+
+  // WebContents 2 becomes confidential. Expect report event from WebContents 2.
+  helper_.ChangeConfidentiality(web_contents2.get(), kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
+            kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
+            kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kScreenshotReported);
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
+                  DlpRulesManager::Level::kReport)));
+
+  // Remove confidentiality for both web contents.
+  helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
+  helper_.ChangeConfidentiality(web_contents2.get(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
+  EXPECT_EQ(events_.size(), 2u);
+
+  // Both web contents become confidential. Expect no reporting event because
+  // both urls were already reported during the current capture.
+  helper_.ChangeConfidentiality(web_contents1.get(), kScreenshotReported);
+  helper_.ChangeConfidentiality(web_contents2.get(), kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
+            kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
+            kScreenshotReported);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kScreenshotReported);
+  EXPECT_EQ(events_.size(), 2u);
+
+  GetManager()->CheckStoppedVideoCapture(base::DoNothing());
+  EXPECT_EQ(events_.size(), 2u);
+
+  // Remove confidentiality to avoid race condition in test case
+  // deinitialization.
+  helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
+  helper_.ChangeConfidentiality(web_contents2.get(), kEmptyRestrictionSet);
 }
 
 class DlpContentManagerAshCheckRestrictionTest

@@ -114,13 +114,8 @@ class DlpContentManagerAsh : public DlpContentManager,
 
     const ScreenshotArea area;
     DlpConfidentialContents confidential_contents;
-    // For a single video capture there should be sent at most one reporting
-    // event. This flag informs if we already sent an event for the report mode.
-    bool was_reported = false;
-    // Analogous to `was_reported` flag. `was_reported_warning_proceeded` flag
-    // informs if we already sent a warning proceeded event for the warning
-    // mode.
-    bool was_reported_warning_proceeded = false;
+    // Contents reported during a video capture, after the start of a capture.
+    DlpConfidentialContents reported_confidential_contents;
     // Flag that indicates that there was some content with warn level
     // restriction captured. Used to indicate that the warn UMA should be
     // logged, even if no warning is shown.

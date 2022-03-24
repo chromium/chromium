@@ -154,17 +154,19 @@ void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
   if (IsReported(info.restriction_info)) {
     // Don't report for the report mode before starting a video capture to avoid
     // reporting multiple times.
-    DCHECK(!running_video_capture_info_->was_reported);
+    DCHECK(
+        running_video_capture_info_->reported_confidential_contents.IsEmpty());
+    // TODO(1306306): Consider reporting all visible confidential urls for
+    //  onscreen restrictions.
     MaybeReportEvent(info.restriction_info,
                      DlpRulesManager::Restriction::kScreenshot);
-    running_video_capture_info_->was_reported = true;
+    running_video_capture_info_->reported_confidential_contents.UnionWith(
+        info.confidential_contents);
   }
   if (IsWarn(info.restriction_info) && reporting_manager_) {
-    DCHECK(!running_video_capture_info_->was_reported_warning_proceeded);
     ReportWarningProceededEvent(info.restriction_info.url,
                                 DlpRulesManager::Restriction::kScreenshot,
                                 reporting_manager_);
-    running_video_capture_info_->was_reported_warning_proceeded = true;
   }
 }
 
@@ -186,19 +188,17 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
 
     ReportWarningEvent(url, DlpRulesManager::Restriction::kScreenshot);
 
-    if (!running_video_capture_info_->was_reported_warning_proceeded) {
-      auto reporting_callback = base::BindOnce(
-          &MaybeReportWarningProceededEvent, url,
-          DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
-      callback = std::move(reporting_callback).Then(std::move(callback));
-    }
+    auto reporting_callback = base::BindOnce(
+        &MaybeReportWarningProceededEvent, url,
+        DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
     // base::Unretained(this) is safe here because DlpContentManagerAsh is
     // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpVideoCaptureWarningDialog(
-        base::BindOnce(
-            &DlpContentManagerAsh::OnDlpWarnDialogReply, base::Unretained(this),
-            running_video_capture_info_->confidential_contents,
-            DlpRulesManager::Restriction::kScreenshot, std::move(callback)),
+        base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
+                       base::Unretained(this),
+                       running_video_capture_info_->confidential_contents,
+                       DlpRulesManager::Restriction::kScreenshot,
+                       std::move(reporting_callback).Then(std::move(callback))),
         running_video_capture_info_->confidential_contents);
   } else {
     DlpBooleanHistogram(dlp::kScreenshotWarnSilentProceededUMA, true);
@@ -629,10 +629,21 @@ void DlpContentManagerAsh::CheckRunningVideoCapture() {
   ConfidentialContentsInfo info = GetAreaConfidentialContentsInfo(
       running_video_capture_info_->area, DlpContentRestriction::kScreenshot);
 
-  if (!running_video_capture_info_->was_reported) {
+  if (IsReported(info.restriction_info) &&
+      !std::includes(running_video_capture_info_->reported_confidential_contents
+                         .GetContents()
+                         .begin(),
+                     running_video_capture_info_->reported_confidential_contents
+                         .GetContents()
+                         .end(),
+                     info.confidential_contents.GetContents().begin(),
+                     info.confidential_contents.GetContents().end())) {
+    // TODO(1306306): Consider reporting all visible confidential urls for
+    //  onscreen restrictions.
     MaybeReportEvent(info.restriction_info,
                      DlpRulesManager::Restriction::kScreenshot);
-    running_video_capture_info_->was_reported = true;
+    running_video_capture_info_->reported_confidential_contents.UnionWith(
+        info.confidential_contents);
   }
 
   if (IsBlocked(info.restriction_info)) {
