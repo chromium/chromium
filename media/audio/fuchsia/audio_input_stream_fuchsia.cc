@@ -71,6 +71,7 @@ AudioInputStream::OpenOutcome AudioInputStreamFuchsia::Open() {
   // Allocate shared buffer.
   size_t capture_buffer_size =
       parameters_.GetBytesPerBuffer(kSampleFormatF32) * kBufferPacketCapacity;
+  capture_buffer_size = base::bits::AlignUp(capture_buffer_size, ZX_PAGE_SIZE);
 
   zx::vmo buffer_vmo;
   zx_status_t status = zx::vmo::create(capture_buffer_size, 0, &buffer_vmo);
