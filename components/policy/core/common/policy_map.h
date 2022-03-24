@@ -79,6 +79,11 @@ class POLICY_EXPORT PolicyMap {
     const base::Value* value_unsafe() const;
     base::Value* value_unsafe();
 
+    // DEPRECATED - do not use in new code. Use either the type-checking or
+    // unsafe versions above.
+    base::Value* value();
+    const base::Value* value() const;
+
     void set_value(absl::optional<base::Value> val);
 
     // Returns true if |this| equals |other|.
@@ -202,6 +207,11 @@ class POLICY_EXPORT PolicyMap {
   // above where possible.
   const base::Value* GetValueUnsafe(const std::string& policy) const;
   base::Value* GetMutableValueUnsafe(const std::string& policy);
+
+  // DEPRECATED - do not use in new code. Use either the type-checking or unsafe
+  // versions above.
+  const base::Value* GetValue(const std::string& policy) const;
+  base::Value* GetMutableValue(const std::string& policy);
 
   // Overwrites any existing information stored in the map for the key |policy|.
   // Resets the error for that policy to the empty string.
