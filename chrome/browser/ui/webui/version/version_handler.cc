@@ -62,21 +62,21 @@ void VersionHandler::OnJavascriptDisallowed() {
 }
 
 void VersionHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       version_ui::kRequestVersionInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVersionInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       version_ui::kRequestVariationInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       version_ui::kRequestPathInfo,
       base::BindRepeating(&VersionHandler::HandleRequestPathInfo,
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVersionInfo(const base::Value::List& args) {
   // This method is overridden by platform-specific handlers which may still
   // use |CallJavascriptFunction|. Main version info is returned by promise
   // using handlers below.
@@ -86,13 +86,12 @@ void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
   AllowJavascript();
 }
 
-void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  const auto& list = args->GetListDeprecated();
-  CHECK_EQ(2U, list.size());
-  const std::string& callback_id = list[0].GetString();
-  const bool include_variations_cmd = list[1].GetBool();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const bool include_variations_cmd = args[1].GetBool();
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyVariationsList,
@@ -104,11 +103,11 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestPathInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.

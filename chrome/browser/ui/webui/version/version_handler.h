@@ -29,15 +29,15 @@ class VersionHandler : public content::WebUIMessageHandler {
   // This is still supported for platform-specific asynchronous calls (see
   // derived classes) but the main version information is now retrieved with
   // below messages using |cr.sendWithPromise|.
-  virtual void HandleRequestVersionInfo(const base::ListValue* args);
+  virtual void HandleRequestVersionInfo(const base::Value::List& args);
 
   // Callback for the "requestVariationInfo" message. This resolves immediately
   // with variations list as well as command variations if requested.
-  virtual void HandleRequestVariationInfo(const base::ListValue* args);
+  virtual void HandleRequestVariationInfo(const base::Value::List& args);
 
   // Callback for the "requestPathInfo" message. This resolves asynchronously
   // with |OnGotFilePaths|.
-  virtual void HandleRequestPathInfo(const base::ListValue* args);
+  virtual void HandleRequestPathInfo(const base::Value::List& args);
 
  private:
   // Callback which handles returning the executable and profile paths to the

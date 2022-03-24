@@ -30,7 +30,7 @@ void ThemeHandler::RegisterMessages() {
   // constructor since they need the web_ui value to be set, which is done
   // post-construction, but before registering messages.
   InitializeCSSCaches();
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "observeThemeChanges",
       base::BindRepeating(&ThemeHandler::HandleObserveThemeChanges,
                           base::Unretained(this)));
@@ -69,7 +69,8 @@ void ThemeHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   SendThemeChanged();
 }
 
-void ThemeHandler::HandleObserveThemeChanges(const base::ListValue* /*args*/) {
+void ThemeHandler::HandleObserveThemeChanges(
+    const base::Value::List& /*args*/) {
   AllowJavascript();
 }
 

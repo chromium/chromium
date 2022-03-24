@@ -21,7 +21,7 @@ class VersionHandlerWindows : public VersionHandler {
   ~VersionHandlerWindows() override;
 
   // VersionHandler overrides:
-  void HandleRequestVersionInfo(const base::ListValue* args) override;
+  void HandleRequestVersionInfo(const base::Value::List& args) override;
 
   // Callbacks from windows::VersionLoader.
   void OnVersion(const std::string& version);

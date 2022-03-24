@@ -21,24 +21,24 @@ WebApksHandler::WebApksHandler()
 WebApksHandler::~WebApksHandler() {}
 
 void WebApksHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestWebApksInfo",
       base::BindRepeating(&WebApksHandler::HandleRequestWebApksInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestWebApkUpdate",
       base::BindRepeating(&WebApksHandler::HandleRequestWebApkUpdate,
                           base::Unretained(this)));
 }
 
-void WebApksHandler::HandleRequestWebApksInfo(const base::ListValue* args) {
+void WebApksHandler::HandleRequestWebApksInfo(const base::Value::List& args) {
   AllowJavascript();
   delegate_.RetrieveWebApks();
 }
 
-void WebApksHandler::HandleRequestWebApkUpdate(const base::ListValue* args) {
+void WebApksHandler::HandleRequestWebApkUpdate(const base::Value::List& args) {
   AllowJavascript();
-  for (const auto& val : args->GetListDeprecated()) {
+  for (const auto& val : args) {
     if (val.is_string())
       ShortcutHelper::SetForceWebApkUpdate(val.GetString());
   }

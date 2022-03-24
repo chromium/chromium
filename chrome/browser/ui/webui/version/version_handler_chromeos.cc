@@ -36,7 +36,7 @@ void VersionHandlerChromeOS::OnJavascriptDisallowed() {
 }
 
 void VersionHandlerChromeOS::HandleRequestVersionInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   VersionHandler::HandleRequestVersionInfo(args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,14 +69,14 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
 void VersionHandlerChromeOS::RegisterMessages() {
   VersionHandler::RegisterMessages();
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kCrosUrlVersionRedirect,
       base::BindRepeating(&VersionHandlerChromeOS::HandleCrosUrlVersionRedirect,
                           base::Unretained(this)));
 }
 
 void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   lacros_url_handling::NavigateInAsh(GURL(chrome::kOsUIVersionURL));
 #else

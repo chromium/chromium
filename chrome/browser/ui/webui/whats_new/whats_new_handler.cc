@@ -26,15 +26,14 @@ WhatsNewHandler::WhatsNewHandler() = default;
 WhatsNewHandler::~WhatsNewHandler() = default;
 
 void WhatsNewHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize", base::BindRepeating(&WhatsNewHandler::HandleInitialize,
                                         base::Unretained(this)));
 }
 
-void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  CHECK_EQ(1U, list.size());
-  const std::string& callback_id = list[0].GetString();
+void WhatsNewHandler::HandleInitialize(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   AllowJavascript();
   ResolveJavascriptCallback(

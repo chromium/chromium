@@ -81,14 +81,15 @@ void SignInInternalsHandler::OnJavascriptDisallowed() {
 }
 
 void SignInInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandler::HandleGetSignInInfo,
                           base::Unretained(this)));
 }
 
-void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+void SignInInternalsHandler::HandleGetSignInInfo(
+    const base::Value::List& args) {
+  std::string callback_id = args[0].GetString();
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());

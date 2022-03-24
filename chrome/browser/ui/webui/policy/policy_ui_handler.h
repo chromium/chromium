@@ -91,10 +91,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void AddExtensionPolicyNames(base::Value* names,
                                policy::PolicyDomain policy_domain);
 
-  void HandleExportPoliciesJson(const base::ListValue* args);
-  void HandleListenPoliciesUpdates(const base::ListValue* args);
-  void HandleReloadPolicies(const base::ListValue* args);
-  void HandleCopyPoliciesJson(const base::ListValue* args);
+  void HandleExportPoliciesJson(const base::Value::List& args);
+  void HandleListenPoliciesUpdates(const base::Value::List& args);
+  void HandleReloadPolicies(const base::Value::List& args);
+  void HandleCopyPoliciesJson(const base::Value::List& args);
 
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, a dictionary containing the value and additional

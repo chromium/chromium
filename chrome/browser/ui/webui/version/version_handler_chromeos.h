@@ -24,7 +24,7 @@ class VersionHandlerChromeOS : public VersionHandler {
 
   // VersionHandler overrides:
   void OnJavascriptDisallowed() override;
-  void HandleRequestVersionInfo(const base::ListValue* args) override;
+  void HandleRequestVersionInfo(const base::Value::List& args) override;
   void RegisterMessages() override;
 
   // Callbacks from chromeos::VersionLoader.
@@ -33,7 +33,7 @@ class VersionHandlerChromeOS : public VersionHandler {
   void OnARCVersion(const std::string& version);
 
   // Callback for the "crosUrlVersionRedirect" message.
-  void HandleCrosUrlVersionRedirect(const base::ListValue* args);
+  void HandleCrosUrlVersionRedirect(const base::Value::List& args);
 
  private:
   base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_{this};

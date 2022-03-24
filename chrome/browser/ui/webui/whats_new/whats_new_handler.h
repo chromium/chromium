@@ -7,10 +7,6 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 // Page handler for chrome://whats-new.
 class WhatsNewHandler : public content::WebUIMessageHandler {
  public:
@@ -20,7 +16,7 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
   WhatsNewHandler& operator=(const WhatsNewHandler&) = delete;
 
  private:
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(const base::Value::List& args);
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;

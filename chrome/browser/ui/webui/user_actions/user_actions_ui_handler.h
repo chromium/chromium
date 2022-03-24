@@ -9,7 +9,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
-class ListValue;
 class TimeTicks;
 }  // namespace base
 
@@ -31,7 +30,7 @@ class UserActionsUIHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandlePageLoaded(const base::ListValue* args);
+  void HandlePageLoaded(const base::Value::List& args);
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
   base::ActionCallback action_callback_;

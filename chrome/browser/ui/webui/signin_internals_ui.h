@@ -34,7 +34,7 @@ class SignInInternalsHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleGetSignInInfo(const base::ListValue* args);
+  void HandleGetSignInInfo(const base::Value::List& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
   void OnSigninStateChanged(const base::Value* info) override;

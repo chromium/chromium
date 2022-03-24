@@ -10,10 +10,6 @@
 #include "chrome/browser/android/webapk/webapk_info.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 // Handles JavaScript messages from the chrome://webapks page.
 class WebApksHandler : public content::WebUIMessageHandler {
  public:
@@ -30,12 +26,12 @@ class WebApksHandler : public content::WebUIMessageHandler {
   // Handler for the "requestWebApksInfo" message. This requests
   // information for the installed WebAPKs and returns it to JS using
   // OnWebApkInfoReceived().
-  void HandleRequestWebApksInfo(const base::ListValue* args);
+  void HandleRequestWebApksInfo(const base::Value::List& args);
 
   // Handler for the "requestWebApkUpdate" message. This sets the
   // update flag for a set of WebAPKs. |args| should contain the
   // webapp IDs of the WebAPKs to update.
-  void HandleRequestWebApkUpdate(const base::ListValue* args);
+  void HandleRequestWebApkUpdate(const base::Value::List& args);
 
  private:
   // Called once for each installed WebAPK when the WebAPK Info is retrieved.

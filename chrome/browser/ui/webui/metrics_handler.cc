@@ -25,42 +25,41 @@ MetricsHandler::MetricsHandler() {}
 MetricsHandler::~MetricsHandler() {}
 
 void MetricsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordAction",
       base::BindRepeating(&MetricsHandler::HandleRecordAction,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordInHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordInHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordBooleanHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordBooleanHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordTime",
       base::BindRepeating(&MetricsHandler::HandleRecordTime,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordMediumTime",
       base::BindRepeating(&MetricsHandler::HandleRecordMediumTime,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "metricsHandler:recordSparseHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordSparseHistogram,
                           base::Unretained(this)));
 }
 
-void MetricsHandler::HandleRecordAction(const base::ListValue* args) {
+void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
   std::string string_action = base::UTF16ToUTF8(ExtractStringValue(args));
   base::RecordComputedAction(string_action);
 }
 
-void MetricsHandler::HandleRecordInHistogram(const base::ListValue* args) {
-  base::Value::ConstListView list = args->GetListDeprecated();
-  const std::string& histogram_name = list[0].GetString();
-  int int_value = static_cast<int>(list[1].GetDouble());
-  int int_boundary_value = static_cast<int>(list[2].GetDouble());
+void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
+  const std::string& histogram_name = args[0].GetString();
+  int int_value = static_cast<int>(args[1].GetDouble());
+  int int_boundary_value = static_cast<int>(args[2].GetDouble());
 
   DCHECK_GE(int_value, 0);
   DCHECK_LE(int_value, int_boundary_value);
@@ -80,23 +79,23 @@ void MetricsHandler::HandleRecordInHistogram(const base::ListValue* args) {
   counter->Add(int_value);
 }
 
-void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  if (list.size() < 2 || !list[0].is_string() || !list[1].is_bool()) {
+void MetricsHandler::HandleRecordBooleanHistogram(
+    const base::Value::List& args) {
+  if (args.size() < 2 || !args[0].is_string() || !args[1].is_bool()) {
     NOTREACHED();
     return;
   }
-  const std::string histogram_name = list[0].GetString();
-  const bool value = list[1].GetBool();
+  const std::string histogram_name = args[0].GetString();
+  const bool value = args[1].GetBool();
 
   base::HistogramBase* counter = base::BooleanHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
   counter->AddBoolean(value);
 }
 
-void MetricsHandler::HandleRecordTime(const base::ListValue* args) {
-  const std::string& histogram_name = args->GetListDeprecated()[0].GetString();
-  double value = args->GetListDeprecated()[1].GetDouble();
+void MetricsHandler::HandleRecordTime(const base::Value::List& args) {
+  const std::string& histogram_name = args[0].GetString();
+  double value = args[1].GetDouble();
 
   DCHECK_GE(value, 0);
 
@@ -108,18 +107,19 @@ void MetricsHandler::HandleRecordTime(const base::ListValue* args) {
   counter->AddTime(time_value);
 }
 
-void MetricsHandler::HandleRecordMediumTime(const base::ListValue* args) {
-  const std::string& histogram_name = args->GetListDeprecated()[0].GetString();
-  double value = args->GetListDeprecated()[1].GetDouble();
+void MetricsHandler::HandleRecordMediumTime(const base::Value::List& args) {
+  const std::string& histogram_name = args[0].GetString();
+  double value = args[1].GetDouble();
 
   DCHECK_GE(value, 0);
 
   base::UmaHistogramMediumTimes(histogram_name, base::Milliseconds(value));
 }
 
-void MetricsHandler::HandleRecordSparseHistogram(const base::ListValue* args) {
-  const std::string& histogram_name = args->GetListDeprecated()[0].GetString();
-  int sample = args->GetListDeprecated()[1].GetInt();
+void MetricsHandler::HandleRecordSparseHistogram(
+    const base::Value::List& args) {
+  const std::string& histogram_name = args[0].GetString();
+  int sample = args[1].GetInt();
 
   base::UmaHistogramSparse(histogram_name, sample);
 }

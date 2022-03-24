@@ -22,35 +22,35 @@ LensInternalsUIMessageHandler::LensInternalsUIMessageHandler(Profile* profile) {
 LensInternalsUIMessageHandler::~LensInternalsUIMessageHandler() = default;
 
 void LensInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStartDebugMode,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshDebugData",
       base::BindRepeating(
           &LensInternalsUIMessageHandler::HandleRefreshDebugData,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "stopDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStopDebugMode,
                           base::Unretained(this)));
 }
 
 void LensInternalsUIMessageHandler::HandleStartDebugMode(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   Java_LensDebugBridge_startProactiveDebugMode(env);
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, base::Value());
 }
 
 void LensInternalsUIMessageHandler::HandleRefreshDebugData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // Only needs to be called once.
   AllowJavascript();
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -72,17 +72,17 @@ void LensInternalsUIMessageHandler::HandleRefreshDebugData(
         base::Value(row_as_list_storage));
   }
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id,
                             base::Value(debug_data_as_vector_of_values));
 }
 
 void LensInternalsUIMessageHandler::HandleStopDebugMode(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   Java_LensDebugBridge_stopProactiveDebugMode(env);
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, base::Value());
 }
