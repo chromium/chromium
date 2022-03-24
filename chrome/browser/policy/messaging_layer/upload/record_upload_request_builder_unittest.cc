@@ -166,9 +166,7 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   // Finish correctly setting encryption info - expect complete call.
   encryption_info->set_public_key_id(1234);
 
-  const auto record_dict = EncryptedRecordDictionaryBuilder(record).Build();
-  ASSERT_TRUE(record_dict.has_value());
-  EXPECT_THAT(record_dict.value(), IsRecordValid<>());
+  EXPECT_TRUE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 }
 
 TEST_P(RecordUploadRequestBuilderTest, AcceptRequestId) {
@@ -204,29 +202,24 @@ TEST_P(RecordUploadRequestBuilderTest, DenyRequestIdWhenBadRecordSet) {
 TEST_P(RecordUploadRequestBuilderTest,
        DontBuildCompressionRequestIfNoInformation) {
   EncryptedRecord compressionless_record = GenerateEncryptedRecord("TEST_INFO");
-  ASSERT_FALSE(compressionless_record.has_compression_information());
+  EXPECT_FALSE(compressionless_record.has_compression_information());
 
   absl::optional<base::Value::Dict> compressionless_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressionless_record))
           .Build();
   ASSERT_TRUE(compressionless_payload.has_value());
-  EXPECT_THAT(compressionless_payload.value(), IsRecordValid<>());
   EXPECT_FALSE(compressionless_payload.value().Find(
       EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 
   EncryptedRecord compressed_record =
       GenerateEncryptedRecord("TEST_INFO", true);
-  ASSERT_TRUE(compressed_record.has_compression_information());
+  EXPECT_TRUE(compressed_record.has_compression_information());
 
   absl::optional<base::Value::Dict> compressed_record_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressed_record)).Build();
   ASSERT_TRUE(compressed_record_payload.has_value());
-  EXPECT_THAT(
-      compressed_record_payload.value(),
-      RequestValidityMatcherBuilder<>::CreateRecord()
-          .AppendMatcher(RecordMatcher::SetMode(
-              CompressionInformationMatcher(), RecordMatcher::Mode::RecordOnly))
-          .Build());
+  EXPECT_TRUE(compressed_record_payload.value().Find(
+      EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 }
 
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
