@@ -178,10 +178,18 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
 
+        // Remove the default title view.
         UiUtils.removeViewFromParent(layout.getMessageTextView());
-        layout.getMessageLayout().addIconTitle(mIconDrawableId, mTitleText);
 
         InfoBarControlLayout control = layout.addControlLayout();
+
+        // Add the illustration icon.
+        control.addLeadImage(R.drawable.virtual_card_enrollment_illustration);
+
+        // Add Google Pay icon and title
+        control.addIconTitle(mIconDrawableId, mTitleText);
+
+        // Add infobar description.
         if (!TextUtils.isEmpty(mDescriptionText) && !TextUtils.isEmpty(mLearnMoreLinkText)) {
             SpannableString text = new SpannableString(mDescriptionText);
             int offset = mDescriptionText.length() - mLearnMoreLinkText.length();
