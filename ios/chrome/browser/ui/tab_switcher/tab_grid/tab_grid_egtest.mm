@@ -193,7 +193,7 @@ id<GREYMatcher> SearchRecentTabsSuggestedAction() {
       grey_sufficientlyVisible(), nil);
 }
 
-// Returns a matcher for the "Search recent tabs" suggested action.
+// Returns a matcher for the "Search open tabs" suggested action.
 id<GREYMatcher> SearchOpenTabsSuggestedAction() {
   return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
                         IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS),
@@ -208,7 +208,7 @@ id<GREYMatcher> SearchHistorySuggestedAction() {
 }
 
 // Returns a matcher for the "Search history (|matches_count| Found)" suggested
-// action.
+// action on the regular tab grid.
 id<GREYMatcher> SearchHistorySuggestedActionWithMatches(size_t matches_count) {
   NSString* count_str = [NSString stringWithFormat:@"%" PRIuS, matches_count];
   NSString* history_label = l10n_util::GetNSStringF(
@@ -216,6 +216,16 @@ id<GREYMatcher> SearchHistorySuggestedActionWithMatches(size_t matches_count) {
       base::SysNSStringToUTF16(count_str));
   return grey_allOf(grey_accessibilityLabel(history_label),
                     grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the "Search history (|matches_count| Found)" suggested
+// action on the recent tabs page.
+id<GREYMatcher> RecentTabsSearchHistorySuggestedActionWithMatches(
+    size_t matches_count) {
+  return grey_allOf(
+      RecentTabsTable(),
+      grey_descendant(SearchHistorySuggestedActionWithMatches(matches_count)),
+      nil);
 }
 
 // Returns a matcher for the search suggested actions section.
@@ -269,7 +279,10 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       @selector(testOpenTabsHeaderVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
+      @selector
+      (testRecentTabsSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
       @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
+      @selector(testSearchSuggestedActionsSectionContentInRecentTabs),
       @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
       @selector(testSearchSuggestedActionsPageSwitch),
       @selector(testHistorySuggestedActionInRegularTabsSearch),
@@ -1724,6 +1737,41 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that the search suggested actions section has the right rows in the
+// recent tabs page.
+- (void)testSearchSuggestedActionsSectionContentInRecentTabs {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Enter search mode and enter a search query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  // TODO(crbug.com/1306246): Scrolling doesn't work properly in very small
+  // devices. Once that is fixed a more broad query can be used for searching
+  // (eg. "page").
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  // Verify that the suggested actions section exist and has "Search on web",
+  // "Search open tabs", "Search history" rows.
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
+                                   IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:SearchOnWebSuggestedAction()]
+      assertWithMatcher:grey_notNil()];
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:SearchOpenTabsSuggestedAction()]
+      assertWithMatcher:grey_notNil()];
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:SearchHistorySuggestedAction()]
+      assertWithMatcher:grey_notNil()];
+}
+
 // Tests that history row in the search suggested actions section displays the
 // correct number of matches.
 - (void)testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount {
@@ -1755,6 +1803,49 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
                toSelectMatcher:
                    SearchSuggestedActionsSectionWithHistoryMatchesCount(1)]
       assertWithMatcher:grey_notNil()];
+
+  // Cancel search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that history row in the search suggested actions section displays the
+// correct number of matches in recent tabs.
+- (void)testRecentTabsSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount {
+  [ChromeEarlGrey clearBrowsingHistory];
+  [self loadTestURLs];
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that the suggested actions section does not exist.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
+                                   IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Searching the word "page" matches 2 items from history.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"page\n")];
+  [[self
+      scrollDownViewMatcher:RecentTabsTable()
+            toSelectMatcher:RecentTabsSearchHistorySuggestedActionWithMatches(
+                                2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Adding to the existing query " two" will search for "page two" and should
+  // only match 1 item from the history.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@" two\n")];
+  [[self
+      scrollDownViewMatcher:RecentTabsTable()
+            toSelectMatcher:RecentTabsSearchHistorySuggestedActionWithMatches(
+                                1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Cancel search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
