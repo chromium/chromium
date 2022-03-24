@@ -696,8 +696,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 38
-// Next id: 38
+// Next version: 39
+// Next id: 39
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -860,6 +860,11 @@ struct BrowserInitParams {
   // Lacros needs to use the same client id as ash chrome.
   [MinVersion=26]
   string? metrics_service_client_id@26;
+
+  // UKM client id of ash chrome.
+  // Lacros needs to use the same client id as ash chrome.
+  [MinVersion=38]
+  uint64 ukm_client_id@38;
 
   // When this flag is |true|, Lacros is the only browser.
   [MinVersion=27]

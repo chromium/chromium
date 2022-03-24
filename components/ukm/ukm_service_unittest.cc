@@ -1792,4 +1792,15 @@ TEST_F(UkmServiceTest, PruneAppIDLast) {
   }
 }
 
+TEST_F(UkmServiceTest, UseExternalClientID) {
+  prefs_.SetUint64(prefs::kUkmClientId, 1234);
+  uint64_t external_client_id = 5678;
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>(),
+                     external_client_id);
+  service.Initialize();
+  EXPECT_EQ(external_client_id, service.client_id());
+  EXPECT_EQ(external_client_id, prefs_.GetUint64(prefs::kUkmClientId));
+}
+
 }  // namespace ukm

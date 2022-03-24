@@ -85,8 +85,10 @@
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/ukm_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "media/capture/mojom/video_capture.mojom.h"
@@ -353,6 +355,13 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
     std::string client_id = metrics_service->GetClientId();
     if (!client_id.empty())
       params->metrics_service_client_id = client_id;
+  }
+
+  if (auto* metrics_services_manager =
+          g_browser_process->GetMetricsServicesManager()) {
+    if (auto* ukm_service = metrics_services_manager->GetUkmService()) {
+      params->ukm_client_id = ukm_service->client_id();
+    }
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

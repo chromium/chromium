@@ -141,6 +141,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/metrics/lacros_metrics_provider.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -653,10 +654,20 @@ void ChromeMetricsServiceClient::Initialize() {
       base::FeatureList::IsEnabled(ukm::kUkmFeature)) {
     identifiability_study_state_ =
         std::make_unique<IdentifiabilityStudyState>(local_state);
+
+    uint64_t client_id = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Read metrics service client id from ash chrome if it's present.
+    if (auto* lacros_service = chromeos::LacrosService::Get()) {
+      client_id = lacros_service->init_params()->ukm_client_id;
+    }
+#endif
+
     ukm_service_ = std::make_unique<ukm::UkmService>(
         local_state, this,
         MakeDemographicMetricsProvider(
-            metrics::MetricsLogUploader::MetricServiceType::UKM));
+            metrics::MetricsLogUploader::MetricServiceType::UKM),
+        client_id);
     ukm_service_->SetIsWebstoreExtensionCallback(
         base::BindRepeating(&IsWebstoreExtension));
     ukm_service_->RegisterEventFilter(
