@@ -10,6 +10,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -17,6 +18,28 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
+
+namespace {
+
+// If `use_screen` is true we convert to screen coordinates, otherwise we
+// convert to root window coordinates.
+gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
+                                      bool use_screen) {
+  // `aura::Window::Get*Bounds*` is affected by transforms, which may be the
+  // case when in overview mode. Compute the bounds in screen minus the
+  // transform.
+  auto* client = aura::client::GetScreenPositionClient(window->GetRootWindow());
+  DCHECK(client);
+  gfx::Point origin;
+  if (use_screen) {
+    client->ConvertPointToScreenIgnoringTransforms(window, &origin);
+  } else {
+    client->ConvertPointToRootWindowIgnoringTransforms(window, &origin);
+  }
+  return gfx::Rect(origin, window->bounds().size());
+}
+
+}  // namespace
 
 std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
@@ -56,12 +79,8 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     if (window_state->HasRestoreBounds()) {
       window_info->current_bounds = window_state->GetRestoreBoundsInScreen();
     } else {
-      // `aura::Window::Get*Bounds*` is affected by transforms, which may be the
-      // case when in overview mode. Compute the bounds in screen minus the
-      // transform.
-      gfx::Rect untransformed_window_bounds = window->bounds();
-      wm::ConvertRectToScreen(window->parent(), &untransformed_window_bounds);
-      window_info->current_bounds = untransformed_window_bounds;
+      window_info->current_bounds =
+          GetBoundsIgnoringTransforms(window, /*use_screen=*/true);
     }
 
     // Window restore does not support restoring fullscreen windows. If a window
@@ -90,7 +109,8 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
       extra.title = window->GetTitle();
-      extra.bounds_in_root = window->GetBoundsInRootWindow();
+      extra.bounds_in_root =
+          GetBoundsIgnoringTransforms(window, /*use_screen=*/false);
       window_info->arc_extra_info = extra;
     }
   }
