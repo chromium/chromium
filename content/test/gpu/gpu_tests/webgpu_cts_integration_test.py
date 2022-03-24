@@ -17,10 +17,10 @@ from gpu_tests import gpu_integration_test
 
 import gpu_path_util
 
-WEB_TESTS_DIR = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
-                             'blink', 'web_tests')
+EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
+                                 'dawn', 'webgpu-cts', 'expectations.txt')
 LIST_SCRIPT = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
-                           'webgpu-cts', 'scripts', 'list.py')
+                           'dawn', 'webgpu-cts', 'scripts', 'list.py')
 TYPESCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, '.webgpu_typescript')
 
 TEST_RUNS_BETWEEN_CLEANUP = 1000
@@ -53,7 +53,8 @@ WORKER_TEST_GLOBS = [
     'webgpu:api,validation,buffer,mapping:*',
 ]
 
-HTML_FILENAME = os.path.join('gen', 'content', 'test', 'cts_chrome.https.html')
+HTML_FILENAME = os.path.join('gen', 'third_party', 'dawn', 'webgpu-cts',
+                             'test_page.html')
 
 
 async def StartWebsocketServer():
@@ -302,10 +303,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def ExpectationsFiles(cls):
-    return [
-        os.path.join(gpu_path_util.GPU_EXPECTATIONS_DIR,
-                     'webgpu_cts_expectations.txt'),
-    ]
+    return [EXPECTATIONS_FILE]
 
 
 def TestNameFromInputs(query, worker):

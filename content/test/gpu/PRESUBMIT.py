@@ -90,7 +90,6 @@ def CommonChecks(input_api, output_api):
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(CheckForNewSkipExpectations(input_api, output_api))
-  results.extend(CheckForWebGpuExpectationSync(input_api, output_api))
 
   return results
 
@@ -118,27 +117,6 @@ def CheckForNewSkipExpectations(input_api, output_api):
             'expectations when they are strictly necessary, e.g. the test is '
             'impacting other tests. Otherwise, opt for a '
             'Failure/RetryOnFailure expectation.' % '\n'.join(warnings)))
-  return result
-
-
-def CheckForWebGpuExpectationSync(input_api, output_api):
-  """Enforces that the WebGPU expectations are synced if the CL touched them."""
-  webgpu_expectations = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                               'gpu_tests', 'test_expectations',
-                                               'webgpu_cts_expectations.txt')
-  file_filter = lambda f: f.AbsoluteLocalPath() == webgpu_expectations
-  result = []
-  for _ in input_api.AffectedFiles(file_filter=file_filter):
-    check = input_api.Command(name='check_webgpu_expectation_sync',
-                              cmd=[
-                                  input_api.python3_executable,
-                                  'process_generated_webgpu_expectations.py',
-                                  'validate'
-                              ],
-                              kwargs={},
-                              message=output_api.PresubmitError,
-                              python3=True)
-    result.extend(input_api.RunTests([check]))
   return result
 
 
