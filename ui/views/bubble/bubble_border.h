@@ -67,6 +67,10 @@ class VIEWS_EXPORT BubbleBorder : public Border {
     // not supported.
     NO_SHADOW_LEGACY = 0,
     STANDARD_SHADOW,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // CHROMEOS_SYSTEM_UI_SHADOW uses ChromeOS system UI shadow style.
+    CHROMEOS_SYSTEM_UI_SHADOW,
+#endif
     // NO_SHADOW don't draw a stroke or a shadow. This is used for platforms
     // that provide their own shadows or UIs that doesn't need shadows.
     NO_SHADOW,
@@ -145,7 +149,8 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD insets.
   static gfx::Insets GetBorderAndShadowInsets(
-      absl::optional<int> shadow_elevation = absl::nullopt);
+      absl::optional<int> shadow_elevation = absl::nullopt,
+      Shadow shadow_type = Shadow::STANDARD_SHADOW);
 
   // Draws a border and shadow outside the |rect| on |canvas|. |color_provider|
   // is passed into GetBorderAndShadowFlags to obtain the shadow color.
