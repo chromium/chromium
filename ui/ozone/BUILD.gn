@@ -238,7 +238,10 @@ source_set("ozone_switches") {
 
   deps = [ "//base" ]
 
-  visibility += [ "//chrome/test:browser_tests_runner" ]
+  visibility += [
+    "//chrome/test:browser_tests_runner",
+    "//content/public/browser:browser_sources",
+  ]
 }
 
 component("ozone") {

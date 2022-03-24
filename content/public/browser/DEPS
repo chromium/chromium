@@ -38,6 +38,13 @@ specific_include_rules = {
     "+third_party/webrtc/modules/desktop_capture/desktop_capture_options.h",
   ],
 
+  "gpu_utils\.cc": [
+    # For using switch::kPlatformDisallowsChromeOSDirectVideoDecoder.
+    # TODO(b/192563524): remove it when the legacy video decoder is replaced for
+    # all devices.
+    "+ui/ozone/public/ozone_switches.h",
+  ],
+
   ".*unittest\.cc": [
     "+services/network/network_service.h",
   ],
