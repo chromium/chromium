@@ -587,6 +587,28 @@
       <arg name="whitepoint" type="uint" enum="zcr_color_manager_v1.whitepoint_names" summary="whitepoint"/>
     </event>
 
+    <event name="params">
+      <description summary="RGB primaries along with whitepoint defining color space">
+	This event may be sent only as a response to
+	zcr_color_space_v1.get_information.
+
+	The RGB primary value arguments along with the whitepoint value arguments
+	and eotf can be used to define an arbitrary or custom color space.
+
+	The eotf enum contains well known names of that property, but the compositor
+	should not assume that all clients will understand those names.
+      </description>
+      <arg name="eotf" type="uint" enum="zcr_color_manager_v1.eotf_names" summary="EOTF"/>
+      <arg name="primary_r_x" type="uint" summary="red primary X * 10000"/>
+      <arg name="primary_r_y" type="uint" summary="red primary Y * 10000"/>
+      <arg name="primary_g_x" type="uint" summary="green primary X * 10000"/>
+      <arg name="primary_g_y" type="uint" summary="green primary Y * 10000"/>
+      <arg name="primary_b_x" type="uint" summary="blue primary X * 10000"/>
+      <arg name="primary_b_y" type="uint" summary="blue primary Y * 10000"/>
+      <arg name="white_point_x" type="uint" summary="white point X * 10000"/>
+      <arg name="white_point_y" type="uint" summary="white point Y * 10000"/>
+    </event>
+
     <event name="done">
       <description summary="end of color space information">
 	This event may be sent only as a response to
