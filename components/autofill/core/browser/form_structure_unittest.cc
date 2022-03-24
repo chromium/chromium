@@ -90,11 +90,11 @@ void AddFieldOverrideToForm(
 template <typename T>
 auto SerializesSameAs(const T& expected) {
   std::string expected_string;
-  DCHECK(expected.SerializeToString(&expected_string));
+  CHECK(expected.SerializeToString(&expected_string));
   return Truly([expected_string](const auto& actual) {
     std::string actual_string;
-    return actual.SerializeToString(&actual_string) &&
-           actual_string == expected_string;
+    CHECK(actual.SerializeToString(&actual_string));
+    return actual_string == expected_string;
   });
 }
 
