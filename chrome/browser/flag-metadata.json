@@ -605,17 +605,17 @@
   {
     "name": "bookmark-bottom-sheet",
     "owners": [ "wylieb" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 107
   },
   {
     "name": "bookmarks-improved-save-flow",
     "owners": ["wylieb", "fgorski", "mdjones"],
-    "expiry_milestone": 102
+    "expiry_milestone": 107
   },
   {
     "name": "bookmarks-refresh",
     "owners": ["wylieb", "fgorski", "mdjones"],
-    "expiry_milestone": 102
+    "expiry_milestone": 107
   },
   {
     "name": "borealis-big-gl",
