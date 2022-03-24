@@ -14,6 +14,7 @@
 #include "net/base/request_priority.h"
 #include "net/cert/cert_verifier.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,6 +135,27 @@ class NetworkTasksTest : public testing::Test {
     }));
   }
 
+  void CreateURLRequest(net::NetworkChangeNotifier::NetworkHandle network) {
+    PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
+      auto* context = network_tasks_->GetURLRequestContext(network);
+      url_request_ = context->CreateRequest(GURL("http://www.foo.com"),
+                                            net::DEFAULT_PRIORITY, nullptr,
+                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+      EXPECT_TRUE(url_request_);
+    }));
+  }
+
+  void ReleaseURLRequest() {
+    PostToNetworkThreadSync(
+        base::BindLambdaForTesting([&]() { url_request_.reset(); }));
+  }
+
+  void MaybeDestroyURLRequestContext(
+      net::NetworkChangeNotifier::NetworkHandle network) {
+    PostToNetworkThreadSync(base::BindLambdaForTesting(
+        [&]() { network_tasks_->MaybeDestroyURLRequestContext(network); }));
+  }
+
   void PostToNetworkThreadSync(base::OnceCallback<void()> callback) {
     std::latch callback_executed{1};
     auto wait_for_callback = base::BindLambdaForTesting(
@@ -149,6 +171,7 @@ class NetworkTasksTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   raw_ptr<CronetContext::NetworkTasks> network_tasks_;
+  std::unique_ptr<net::URLRequest> url_request_;
 };
 
 TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
@@ -167,6 +190,34 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
   // Once the network disconnects the context should be destroyed.
   scoped_ncn_.mock_network_change_notifier()->NotifyNetworkDisconnected(
       kNetwork);
+  CheckURLRequestContextExistence(kNetwork, false);
+}
+
+TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  constexpr net::NetworkChangeNotifier::NetworkHandle kNetwork = 1;
+
+  CheckURLRequestContextExistence(kNetwork, false);
+  SpawnNetworkBoundURLRequestContext(kNetwork);
+  CheckURLRequestContextExistence(kNetwork, true);
+
+  // If after a network disconnection there are still pending requests, the
+  // context should not be destroyed to avoid UAFs (URLRequests can reference
+  // their associated URLRequestContext).
+  CreateURLRequest(kNetwork);
+  scoped_ncn_.mock_network_change_notifier()->NotifyNetworkDisconnected(
+      kNetwork);
+  CheckURLRequestContextExistence(kNetwork, true);
+
+  // Once the URLRequest is destroyed, MaybeDestroyURLRequestContext should be
+  // able to destroy the context.
+  ReleaseURLRequest();
+  MaybeDestroyURLRequestContext(kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
 }
 
