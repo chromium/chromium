@@ -492,6 +492,7 @@ junit_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
     "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
     "junit/src/org/chromium/ui/widget/ViewLookupCachingFrameLayoutTest.java",
+    "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
   deps = [
     ":ui_java",
