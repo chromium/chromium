@@ -18,6 +18,7 @@ source_set("bubble") {
     "bubble_view_controller_presenter.mm",
   ]
   deps = [
+    "resources:password_suggestion_icon",
     "//base",
     "//base:i18n",
     "//components/feature_engagement/public",
