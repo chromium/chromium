@@ -116,6 +116,9 @@ class U2FClientImpl : public U2FClient {
   void CancelWebAuthnFlow(
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) override;
+  void GetAlgorithms(
+      const u2f::GetAlgorithmsRequest& request,
+      DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) override;
 
  private:
   dbus::ObjectProxy* proxy_ = nullptr;
@@ -301,6 +304,18 @@ void U2FClientImpl::CancelWebAuthnFlow(
       base::BindOnce(
           &U2FClientImpl::HandleResponse<u2f::CancelWebAuthnFlowResponse>,
           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void U2FClientImpl::GetAlgorithms(
+    const u2f::GetAlgorithmsRequest& request,
+    DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) {
+  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FGetAlgorithms);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(request);
+  proxy_->CallMethod(
+      &method_call, kU2FShortTimeout,
+      base::BindOnce(&U2FClientImpl::HandleResponse<u2f::GetAlgorithmsResponse>,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 }  // namespace

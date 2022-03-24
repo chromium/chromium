@@ -102,6 +102,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) = 0;
 
+  virtual void GetAlgorithms(
+      const u2f::GetAlgorithmsRequest& request,
+      DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) = 0;
+
  protected:
   U2FClient();
   virtual ~U2FClient();

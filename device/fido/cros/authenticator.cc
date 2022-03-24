@@ -9,6 +9,7 @@
 #include "device/fido/cros/authenticator.h"
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -68,7 +69,37 @@ ChromeOSAuthenticator::AuthenticatorTransport() const {
 
 void ChromeOSAuthenticator::InitializeAuthenticator(
     base::OnceClosure callback) {
+  u2f::GetAlgorithmsRequest request;
+  chromeos::U2FClient::Get()->GetAlgorithms(
+      request, base::BindOnce(&ChromeOSAuthenticator::OnGetAlgorithmsResponse,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
+    base::OnceClosure callback,
+    absl::optional<u2f::GetAlgorithmsResponse> response) {
+  if (response && response->status() ==
+                      u2f::GetAlgorithmsResponse_GetAlgorithmsStatus_SUCCESS) {
+    supported_algorithms_ = std::vector<int32_t>();
+    for (int i = 0; i < response->algorithm_size(); i++) {
+      supported_algorithms_->push_back(response->algorithm(i));
+    }
+  } else {
+    // Keep `supported_algorithms_` as nullopt if fetching supported algorithms
+    // from u2fd failed, since the caller of `GetAlgorithms` method might want
+    // to provide defaults.
+    supported_algorithms_ = absl::nullopt;
+  }
+
   std::move(callback).Run();
+}
+
+absl::optional<base::span<const int32_t>>
+ChromeOSAuthenticator::GetAlgorithms() {
+  if (supported_algorithms_) {
+    return base::span<const int32_t>(*supported_algorithms_);
+  }
+  return absl::nullopt;
 }
 
 void ChromeOSAuthenticator::MakeCredential(

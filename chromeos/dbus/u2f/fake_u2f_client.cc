@@ -80,4 +80,10 @@ void FakeU2FClient::CancelWebAuthnFlow(
   NOTREACHED();
 }
 
+void FakeU2FClient::GetAlgorithms(
+    const u2f::GetAlgorithmsRequest& request,
+    DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) {
+  NOTREACHED();
+}
+
 }  // namespace chromeos

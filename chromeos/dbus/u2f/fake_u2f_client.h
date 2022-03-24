@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   void CancelWebAuthnFlow(
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) override;
+  void GetAlgorithms(
+      const u2f::GetAlgorithmsRequest& request,
+      DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) override;
 };
 
 }  // namespace chromeos
