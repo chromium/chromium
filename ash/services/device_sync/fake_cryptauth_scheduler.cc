@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -143,4 +143,4 @@ void FakeCryptAuthSchedulerDeviceSyncDelegate::OnDeviceSyncRequested(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

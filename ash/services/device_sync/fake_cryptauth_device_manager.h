@@ -11,7 +11,7 @@
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -131,6 +131,11 @@ class FakeCryptAuthDeviceManager : public CryptAuthDeviceManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::FakeCryptAuthDeviceManager;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_DEVICE_MANAGER_H_

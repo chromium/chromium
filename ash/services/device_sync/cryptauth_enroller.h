@@ -11,7 +11,7 @@
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/callback_forward.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -46,6 +46,6 @@ class CryptAuthEnrollerFactory {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLER_H_

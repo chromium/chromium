@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -101,6 +101,6 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_ENROLLMENT_MANAGER_H_

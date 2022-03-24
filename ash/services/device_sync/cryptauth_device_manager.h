@@ -17,7 +17,7 @@ class Time;
 class TimeDelta;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -121,13 +121,11 @@ class CryptAuthDeviceManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::CryptAuthDeviceManager;
-}  // namespace device_sync
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::CryptAuthDeviceManager;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_MANAGER_H_

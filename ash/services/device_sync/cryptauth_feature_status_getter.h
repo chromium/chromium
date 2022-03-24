@@ -20,7 +20,7 @@ namespace cryptauthv2 {
 class RequestContext;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -90,6 +90,6 @@ class CryptAuthFeatureStatusGetter {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_FEATURE_STATUS_GETTER_H_

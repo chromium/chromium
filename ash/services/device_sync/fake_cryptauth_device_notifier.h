@@ -17,7 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -116,6 +116,6 @@ class FakeCryptAuthDeviceNotifierFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_DEVICE_NOTIFIER_H_

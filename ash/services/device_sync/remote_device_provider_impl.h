@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ash/services/device_sync/cryptauth_device_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "ash/services/device_sync/remote_device_provider.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -17,7 +19,6 @@ namespace chromeos {
 
 namespace device_sync {
 
-class CryptAuthDeviceSyncResult;
 class RemoteDeviceLoader;
 class RemoteDeviceV2Loader;
 

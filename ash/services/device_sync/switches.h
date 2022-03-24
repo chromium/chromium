@@ -23,4 +23,11 @@ extern const char kCryptAuthV2DeviceSyncHTTPHost[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync::switches {
+using ::chromeos::device_sync::switches::kCryptAuthHTTPHost;
+using ::chromeos::device_sync::switches::kCryptAuthV2DeviceSyncHTTPHost;
+using ::chromeos::device_sync::switches::kCryptAuthV2EnrollmentHTTPHost;
+}  // namespace ash::device_sync::switches
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_SWITCHES_H_

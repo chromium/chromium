@@ -23,7 +23,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -353,4 +353,4 @@ void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollmentWithKeys() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

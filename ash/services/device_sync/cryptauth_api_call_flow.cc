@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -156,4 +156,4 @@ CryptAuthApiCallFlow::GetNetworkTrafficAnnotationTag() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

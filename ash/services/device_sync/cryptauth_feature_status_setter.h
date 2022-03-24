@@ -12,7 +12,7 @@
 #include "ash/services/device_sync/network_request_error.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -42,6 +42,11 @@ class CryptAuthFeatureStatusSetter {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::CryptAuthFeatureStatusSetter;
+}
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_FEATURE_STATUS_SETTER_H_

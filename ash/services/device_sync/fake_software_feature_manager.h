@@ -153,4 +153,9 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::FakeSoftwareFeatureManager;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_SOFTWARE_FEATURE_MANAGER_H_

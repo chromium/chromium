@@ -15,7 +15,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -104,6 +104,6 @@ class FakeCryptAuthDeviceSyncerFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_DEVICE_SYNCER_H_

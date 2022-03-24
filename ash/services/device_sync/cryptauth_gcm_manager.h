@@ -12,7 +12,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -83,11 +83,11 @@ class CryptAuthGCMManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::CryptAuthGCMManager;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::CryptAuthGCMManager;
 }
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_H_

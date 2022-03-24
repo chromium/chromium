@@ -13,7 +13,7 @@
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -224,4 +224,4 @@ std::ostream& operator<<(std::ostream& stream, const CryptAuthDevice& device) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

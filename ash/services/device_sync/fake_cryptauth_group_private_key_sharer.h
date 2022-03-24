@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace device_sync {
 
 class CryptAuthClientFactory;
@@ -99,6 +99,6 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GROUP_PRIVATE_KEY_SHARER_H_

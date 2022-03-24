@@ -37,7 +37,7 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -1167,4 +1167,4 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetAccessTokenUsed) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -141,13 +141,13 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class FakeDeviceSyncImplFactory
-    : public chromeos::device_sync::DeviceSyncImpl::Factory {
+    : public ash::device_sync::DeviceSyncImpl::Factory {
  public:
   FakeDeviceSyncImplFactory() = default;
   ~FakeDeviceSyncImplFactory() override = default;
 
-  // chromeos::device_sync::DeviceSyncImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::DeviceSyncBase> CreateInstance(
+  // ash::device_sync::DeviceSyncImpl::Factory:
+  std::unique_ptr<ash::device_sync::DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
       gcm::GCMDriver* gcm_driver,
       PrefService* profile_prefs,
@@ -431,7 +431,7 @@ void InProcessBrowserTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Device sync (for multidevice "Better Together") is ash specific.
-  chromeos::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(
+  ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(
       GetFakeDeviceSyncImplFactory());
 
   // Using a screenshot for clamshell to tablet mode transitions makes the flow
@@ -493,7 +493,7 @@ void InProcessBrowserTest::TearDown() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
+  ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
   launch_browser_for_testing_ = nullptr;
 #endif
 }

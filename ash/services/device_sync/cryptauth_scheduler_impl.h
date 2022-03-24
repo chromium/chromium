@@ -18,15 +18,15 @@
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 namespace device_sync {
 
@@ -185,11 +185,6 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::CryptAuthSchedulerImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_SCHEDULER_IMPL_H_

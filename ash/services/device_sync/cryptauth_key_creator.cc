@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_key_creator.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -41,4 +41,4 @@ CryptAuthKeyCreator::~CryptAuthKeyCreator() = default;
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

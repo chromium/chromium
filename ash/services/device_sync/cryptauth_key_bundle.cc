@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -218,4 +218,4 @@ bool CryptAuthKeyBundle::operator!=(const CryptAuthKeyBundle& other) const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

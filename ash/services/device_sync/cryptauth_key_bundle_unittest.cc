@@ -7,7 +7,7 @@
 #include "ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -266,4 +266,4 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, ToAndFromDictionary) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

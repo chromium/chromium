@@ -18,7 +18,7 @@
 using ::testing::_;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -468,4 +468,4 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidFeatureType) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

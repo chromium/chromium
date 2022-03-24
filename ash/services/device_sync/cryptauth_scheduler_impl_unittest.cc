@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -1026,4 +1026,4 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

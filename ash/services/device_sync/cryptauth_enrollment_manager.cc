@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_enrollment_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -32,4 +32,4 @@ void CryptAuthEnrollmentManager::NotifyEnrollmentFinished(bool success) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

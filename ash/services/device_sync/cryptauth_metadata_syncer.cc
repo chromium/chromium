@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -44,4 +44,4 @@ void CryptAuthMetadataSyncer::OnAttemptFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

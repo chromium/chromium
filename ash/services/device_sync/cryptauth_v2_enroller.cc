@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -38,4 +38,4 @@ void CryptAuthV2Enroller::OnAttemptFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -41,4 +41,11 @@ std::string DecryptFakeEncryptedString(
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::DecryptFakeEncryptedString;
+using ::chromeos::device_sync::GetPrivateKeyFromPublicKeyForTest;
+using ::chromeos::device_sync::MakeFakeEncryptedString;
+}  // namespace ash::device_sync
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_ECIES_ENCRYPTION_H_

@@ -22,6 +22,8 @@
 #include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/device_sync/remote_device_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/software_feature_manager.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -44,7 +46,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -56,7 +58,6 @@ class CryptAuthFeatureStatusSetter;
 class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
-class SoftwareFeatureManager;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:
@@ -109,7 +110,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   ~DeviceSyncImpl() override;
 
  protected:
-  // ash::device_sync::mojom::DeviceSync:
+  // device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;
@@ -169,7 +170,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // feature has been set according to the parameters used).
     bool IsFulfilled() const;
 
-    void InvokeCallback(ash::device_sync::mojom::NetworkRequestResult result);
+    void InvokeCallback(mojom::NetworkRequestResult result);
 
     multidevice::SoftwareFeature software_feature() const {
       return software_feature_;
@@ -199,7 +200,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // agrees with the device data returned by CryptAuth.
     bool IsFulfilled() const;
 
-    void InvokeCallback(ash::device_sync::mojom::NetworkRequestResult result);
+    void InvokeCallback(mojom::NetworkRequestResult result);
 
    private:
     std::string device_instance_id_;
@@ -251,15 +252,14 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
   void OnFindEligibleDevicesSuccess(
-      base::OnceCallback<void(
-          ash::device_sync::mojom::NetworkRequestResult,
-          ash::device_sync::mojom::FindEligibleDevicesResponsePtr)> callback,
+      base::OnceCallback<void(mojom::NetworkRequestResult,
+                              mojom::FindEligibleDevicesResponsePtr)> callback,
       const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
       const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
   void OnFindEligibleDevicesError(
-      const base::OnceCallback<void(
-          ash::device_sync::mojom::NetworkRequestResult,
-          ash::device_sync::mojom::FindEligibleDevicesResponsePtr)> callback,
+      const base::OnceCallback<void(mojom::NetworkRequestResult,
+                                    mojom::FindEligibleDevicesResponsePtr)>
+          callback,
       NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,
@@ -331,13 +331,11 @@ class DeviceSyncImpl : public DeviceSyncBase,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::DeviceSyncImpl;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::DeviceSyncImpl;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_DEVICE_SYNC_IMPL_H_

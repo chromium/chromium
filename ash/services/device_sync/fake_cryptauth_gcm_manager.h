@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -72,6 +72,6 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GCM_MANAGER_H_

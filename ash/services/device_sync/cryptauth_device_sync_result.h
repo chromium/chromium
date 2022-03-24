@@ -10,7 +10,7 @@
 #include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -121,6 +121,11 @@ std::ostream& operator<<(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::CryptAuthDeviceSyncResult;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNC_RESULT_H_

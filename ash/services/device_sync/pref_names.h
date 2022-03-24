@@ -49,4 +49,9 @@ extern const char kCryptAuthSchedulerLastSuccessfulDeviceSyncTime[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+namespace prefs = ::chromeos::device_sync::prefs;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_PREF_NAMES_H_

@@ -9,7 +9,7 @@
 #include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "base/containers/flat_map.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -73,6 +73,6 @@ class CryptAuthKeyRegistry {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_

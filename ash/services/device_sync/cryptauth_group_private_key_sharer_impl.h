@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -111,6 +111,6 @@ class CryptAuthGroupPrivateKeySharerImpl
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GROUP_PRIVATE_KEY_SHARER_IMPL_H_

@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -116,6 +116,11 @@ class FakeCryptAuthFeatureStatusSetterFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::FakeCryptAuthFeatureStatusSetter;
+}
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_FEATURE_STATUS_SETTER_H_

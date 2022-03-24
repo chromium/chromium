@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_v2_device_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -34,4 +34,4 @@ void CryptAuthV2DeviceManager::NotifyDeviceSyncFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

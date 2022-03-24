@@ -13,7 +13,7 @@ class ClientMetadata;
 class ClientAppMetadata;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -103,6 +103,6 @@ class CryptAuthDeviceSyncer {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNCER_H_

@@ -19,7 +19,7 @@
 #include "base/containers/queue.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -122,6 +122,6 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_NOTIFIER_IMPL_H_

@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -87,6 +87,11 @@ class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::FakeCryptAuthV2DeviceManager;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_V2_DEVICE_MANAGER_H_

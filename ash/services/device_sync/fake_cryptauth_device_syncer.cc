@@ -6,7 +6,7 @@
 
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -54,4 +54,4 @@ FakeCryptAuthDeviceSyncerFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

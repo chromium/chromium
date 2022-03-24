@@ -16,7 +16,7 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -104,6 +104,6 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_ACTIVITY_GETTER_IMPL_H_

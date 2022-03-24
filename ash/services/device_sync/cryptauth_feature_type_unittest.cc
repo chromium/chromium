@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -53,4 +53,4 @@ TEST(DeviceSyncCryptAuthFeatureTypeTest, ToHash) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -11,7 +11,7 @@
 #include "ash/services/device_sync/cryptauth_key_proof_computer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -61,6 +61,6 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_PROOF_COMPUTER_IMPL_H_

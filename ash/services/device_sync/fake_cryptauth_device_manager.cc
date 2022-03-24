@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -84,4 +84,4 @@ FakeCryptAuthDeviceManager::GetPixelTetherHosts() const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

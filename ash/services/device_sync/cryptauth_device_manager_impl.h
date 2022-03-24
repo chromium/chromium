@@ -19,7 +19,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -141,6 +141,6 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_MANAGER_IMPL_H_

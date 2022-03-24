@@ -6,7 +6,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_device_notifier.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -73,4 +73,4 @@ FakeCryptAuthDeviceNotifierFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -25,7 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -268,4 +268,4 @@ TEST_F(DeviceSyncCryptAuthDeviceNotifierImplTest, Test) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

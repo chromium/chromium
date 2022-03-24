@@ -193,14 +193,13 @@ class StubDeviceSync : public DeviceSyncBase {
   absl::optional<multidevice::RemoteDevice> local_device_metadata_;
 };
 
-class StubDeviceSyncImplFactory
-    : public chromeos::device_sync::DeviceSyncImpl::Factory {
+class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
  public:
   StubDeviceSyncImplFactory() = default;
   ~StubDeviceSyncImplFactory() override = default;
 
-  // chromeos::device_sync::DeviceSyncImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::DeviceSyncBase> CreateInstance(
+  // ash::device_sync::DeviceSyncImpl::Factory:
+  std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
       gcm::GCMDriver* gcm_driver,
       PrefService* profile_prefs,

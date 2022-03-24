@@ -28,7 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -846,4 +846,4 @@ void CryptAuthDeviceManagerImpl::OnSyncRequested(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

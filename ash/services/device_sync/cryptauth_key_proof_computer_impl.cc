@@ -17,7 +17,7 @@
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -154,4 +154,4 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

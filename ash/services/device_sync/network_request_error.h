@@ -42,4 +42,9 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::NetworkRequestError;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_NETWORK_REQUEST_ERROR_H_

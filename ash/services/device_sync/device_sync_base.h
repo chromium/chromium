@@ -11,27 +11,25 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 // Base DeviceSync implementation.
-class DeviceSyncBase : public ash::device_sync::mojom::DeviceSync {
+class DeviceSyncBase : public mojom::DeviceSync {
  public:
   DeviceSyncBase(const DeviceSyncBase&) = delete;
   DeviceSyncBase& operator=(const DeviceSyncBase&) = delete;
 
   ~DeviceSyncBase() override;
 
-  // ash::device_sync::mojom::DeviceSync:
-  void AddObserver(
-      mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver> observer,
-      AddObserverCallback callback) override;
+  // device_sync::mojom::DeviceSync:
+  void AddObserver(mojo::PendingRemote<mojom::DeviceSyncObserver> observer,
+                   AddObserverCallback callback) override;
 
   // Binds a receiver to this implementation. Should be called each time that
   // the service receives a receiver.
-  void BindReceiver(
-      mojo::PendingReceiver<ash::device_sync::mojom::DeviceSync> receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::DeviceSync> receiver);
 
   void CloseAllReceivers();
 
@@ -48,19 +46,17 @@ class DeviceSyncBase : public ash::device_sync::mojom::DeviceSync {
  private:
   void OnDisconnection();
 
-  mojo::RemoteSet<ash::device_sync::mojom::DeviceSyncObserver> observers_;
-  mojo::ReceiverSet<ash::device_sync::mojom::DeviceSync> receivers_;
+  mojo::RemoteSet<mojom::DeviceSyncObserver> observers_;
+  mojo::ReceiverSet<mojom::DeviceSync> receivers_;
 };
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace device_sync {
-using ::chromeos::device_sync::DeviceSyncBase;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::DeviceSyncBase;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_DEVICE_SYNC_BASE_H_

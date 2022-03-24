@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -88,4 +88,4 @@ base::Value CryptAuthDeviceRegistryImpl::AsDictionary() const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

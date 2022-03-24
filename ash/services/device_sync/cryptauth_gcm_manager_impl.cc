@@ -18,7 +18,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -364,4 +364,4 @@ void CryptAuthGCMManagerImpl::OnRegistrationCompleted(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

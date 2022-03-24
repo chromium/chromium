@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_enrollment_manager.h"
 #include "ash/services/device_sync/cryptauth_feature_type.h"
 #include "ash/services/device_sync/cryptauth_gcm_manager.h"
@@ -24,11 +26,7 @@ namespace base {
 class Clock;
 }
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
@@ -196,11 +194,6 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::CryptAuthEnrollmentManagerImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_IMPL_H_

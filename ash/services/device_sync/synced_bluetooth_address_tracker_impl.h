@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/cryptauth_scheduler.h"
 #include "ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -23,8 +25,6 @@ class BluetoothAdapter;
 namespace chromeos {
 
 namespace device_sync {
-
-class CryptAuthScheduler;
 
 // SyncedBluetoothAddressTracker implementation which uses profile prefs to
 // store the last synced Bluetooth address. If the address changes, it triggers

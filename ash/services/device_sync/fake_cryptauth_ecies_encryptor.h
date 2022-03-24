@@ -10,7 +10,7 @@
 #include "ash/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "ash/services/device_sync/cryptauth_ecies_encryptor_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -62,6 +62,6 @@ class FakeCryptAuthEciesEncryptorFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_ECIES_ENCRYPTOR_H_

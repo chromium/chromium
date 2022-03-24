@@ -48,7 +48,7 @@ class GetDevicesActivityStatusRequest;
 class GetDevicesActivityStatusResponse;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -210,6 +210,12 @@ class CryptAuthClientFactory {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ash::device_sync::CryptAuthClient;
+using ash::device_sync::CryptAuthClientFactory;
+}  // namespace chromeos::device_sync
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_CLIENT_H_

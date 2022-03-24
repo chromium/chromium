@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_gcm_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -64,4 +64,4 @@ void FakeCryptAuthGCMManager::PushResyncMessage(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

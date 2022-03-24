@@ -7,7 +7,7 @@
 
 #include "ash/services/device_sync/cryptauth_enroller.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -29,6 +29,6 @@ class CryptAuthEnrollerFactoryImpl : public CryptAuthEnrollerFactory {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLER_FACTORY_IMPL_H_

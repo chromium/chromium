@@ -46,14 +46,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 constexpr base::TimeDelta kSetFeatureEnabledTimeout = base::Seconds(5);
 
@@ -1344,4 +1341,4 @@ void DeviceSyncImpl::OnSetSoftwareFeatureTimerFired() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

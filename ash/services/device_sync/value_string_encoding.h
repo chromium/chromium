@@ -67,4 +67,9 @@ absl::optional<T> DecodeProtoMessageFromValueString(
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+namespace util = ::chromeos::device_sync::util;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_VALUE_STRING_ENCODING_H_

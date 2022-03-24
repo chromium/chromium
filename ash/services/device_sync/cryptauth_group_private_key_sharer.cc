@@ -8,7 +8,7 @@
 
 #include "ash/services/device_sync/cryptauth_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -41,4 +41,4 @@ void CryptAuthGroupPrivateKeySharer::OnAttemptFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

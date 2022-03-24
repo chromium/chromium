@@ -194,8 +194,8 @@ class FakeRemoteDeviceProviderFactory
 
   // chromeos::device_sync::RemoteDeviceProviderImpl::Factory:
   std::unique_ptr<chromeos::device_sync::RemoteDeviceProvider> CreateInstance(
-      chromeos::device_sync::CryptAuthDeviceManager* device_manager,
-      chromeos::device_sync::CryptAuthV2DeviceManager* v2_device_manager,
+      device_sync::CryptAuthDeviceManager* device_manager,
+      device_sync::CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
       const std::string& user_private_key) override {
     return std::make_unique<chromeos::device_sync::FakeRemoteDeviceProvider>();
@@ -335,8 +335,8 @@ class TetherServiceTest : public testing::Test {
     initial_feature_state_ =
         multidevice_setup::mojom::FeatureState::kEnabledByUser;
 
-    fake_enrollment_manager_ = std::make_unique<
-        chromeos::device_sync::FakeCryptAuthEnrollmentManager>();
+    fake_enrollment_manager_ =
+        std::make_unique<device_sync::FakeCryptAuthEnrollmentManager>();
     fake_enrollment_manager_->set_user_private_key(kTestUserPrivateKey);
 
     mock_adapter_ =
@@ -543,7 +543,7 @@ class TetherServiceTest : public testing::Test {
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
-  std::unique_ptr<chromeos::device_sync::FakeCryptAuthEnrollmentManager>
+  std::unique_ptr<device_sync::FakeCryptAuthEnrollmentManager>
       fake_enrollment_manager_;
 
   multidevice_setup::mojom::FeatureState initial_feature_state_;

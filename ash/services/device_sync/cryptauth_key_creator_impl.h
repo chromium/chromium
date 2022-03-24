@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_key.h"
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
 #include "ash/services/device_sync/cryptauth_key_creator.h"
@@ -17,11 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
@@ -84,6 +82,6 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_CREATOR_IMPL_H_

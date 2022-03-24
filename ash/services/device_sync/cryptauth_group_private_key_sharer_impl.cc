@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -377,4 +377,4 @@ std::ostream& operator<<(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -37,4 +37,9 @@ class MockSyncScheduler : public SyncScheduler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::device_sync {
+using ::chromeos::device_sync::MockSyncScheduler;
+}
+
 #endif  // ASH_SERVICES_DEVICE_SYNC_MOCK_SYNC_SCHEDULER_H_

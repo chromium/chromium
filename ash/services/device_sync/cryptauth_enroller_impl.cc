@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -242,4 +242,4 @@ void CryptAuthEnrollerImpl::OnFinishEnrollmentFailure(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

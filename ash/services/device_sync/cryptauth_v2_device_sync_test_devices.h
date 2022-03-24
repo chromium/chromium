@@ -14,7 +14,7 @@ namespace cryptauthv2 {
 class DeviceMetadataPacket;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -72,6 +72,11 @@ GetAllTestDeviceMetadataPackets();
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::kDefaultLocalDeviceBluetoothAddress;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_SYNC_TEST_DEVICES_H_

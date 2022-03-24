@@ -21,7 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -881,4 +881,4 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

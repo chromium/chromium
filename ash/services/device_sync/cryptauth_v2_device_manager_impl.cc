@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -211,4 +211,4 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

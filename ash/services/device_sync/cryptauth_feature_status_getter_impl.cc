@@ -19,7 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -328,4 +328,4 @@ void CryptAuthFeatureStatusGetterImpl::FinishAttempt(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_enrollment_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -19,4 +19,4 @@ const char kCryptAuthClientVersion[] = "1.0.0";
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

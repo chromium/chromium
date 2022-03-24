@@ -8,7 +8,7 @@
 #include "base/base64url.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -161,4 +161,4 @@ bool CryptAuthKey::operator!=(const CryptAuthKey& other) const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

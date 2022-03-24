@@ -16,20 +16,21 @@
 #include "ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 class CryptAuthClientFactory;
 class CryptAuthDeviceSyncer;
 class CryptAuthKeyRegistry;
-class SyncedBluetoothAddressTracker;
 
 // Implementation of CryptAuthV2DeviceManager that considers three sources of
 // DeviceSync requests:
@@ -131,6 +132,6 @@ class CryptAuthV2DeviceManagerImpl
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_MANAGER_IMPL_H_

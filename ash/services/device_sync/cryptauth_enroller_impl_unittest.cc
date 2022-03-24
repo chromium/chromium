@@ -16,7 +16,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -366,4 +366,4 @@ TEST_F(DeviceSyncCryptAuthEnrollerTest, IncompleteDeviceInfo) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

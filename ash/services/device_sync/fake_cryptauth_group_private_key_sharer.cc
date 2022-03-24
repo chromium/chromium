@@ -6,7 +6,7 @@
 
 #include "ash/services/device_sync/cryptauth_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -54,4 +54,4 @@ FakeCryptAuthGroupPrivateKeySharerFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

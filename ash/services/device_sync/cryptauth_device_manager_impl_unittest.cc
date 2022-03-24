@@ -37,7 +37,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -1320,4 +1320,4 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

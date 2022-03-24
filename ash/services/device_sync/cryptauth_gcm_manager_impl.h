@@ -19,7 +19,7 @@ namespace gcm {
 class GCMDriver;
 }
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -106,6 +106,6 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_

@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -328,4 +328,4 @@ GetAllTestDeviceMetadataPackets() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

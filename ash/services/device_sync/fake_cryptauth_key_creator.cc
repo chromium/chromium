@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -40,4 +40,4 @@ FakeCryptAuthKeyCreatorFactory::CreateInstance() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

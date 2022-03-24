@@ -9,7 +9,7 @@
 
 #include "ash/services/device_sync/network_request_error.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -53,6 +53,6 @@ void LogCryptAuthApiCallSuccessMetric(const std::string& metric_name,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_TASK_METRICS_LOGGER_H_

@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_metadata_syncer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -59,4 +59,4 @@ FakeCryptAuthMetadataSyncerFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

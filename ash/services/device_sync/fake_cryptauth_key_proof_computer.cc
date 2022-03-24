@@ -13,7 +13,7 @@ const char kFakeKeyProofPrefix[] = "fake_key_proof";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -35,4 +35,4 @@ absl::optional<std::string> FakeCryptAuthKeyProofComputer::ComputeKeyProof(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

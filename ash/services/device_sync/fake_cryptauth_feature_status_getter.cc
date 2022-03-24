@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_feature_status_getter.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -50,4 +50,4 @@ FakeCryptAuthFeatureStatusGetterFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

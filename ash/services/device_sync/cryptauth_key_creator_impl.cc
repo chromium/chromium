@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "crypto/hkdf.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -242,4 +242,4 @@ void CryptAuthKeyCreatorImpl::OnSymmetricKeyDerived(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

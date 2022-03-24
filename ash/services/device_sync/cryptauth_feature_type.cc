@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -507,4 +507,4 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

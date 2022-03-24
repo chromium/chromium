@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -44,6 +44,6 @@ class CryptAuthDeviceNotifier {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_NOTIFIER_H_

@@ -14,7 +14,7 @@ class ClientMetadata;
 class PolicyReference;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -96,6 +96,6 @@ class CryptAuthV2Enroller {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_

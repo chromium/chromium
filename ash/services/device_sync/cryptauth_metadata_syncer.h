@@ -19,7 +19,7 @@ namespace cryptauthv2 {
 class BetterTogetherDeviceMetadata;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -113,6 +113,6 @@ class CryptAuthMetadataSyncer {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_METADATA_SYNCER_H_

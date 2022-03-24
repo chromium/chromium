@@ -20,7 +20,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -764,4 +764,4 @@ std::unique_ptr<CryptAuthClient> CryptAuthClientFactoryImpl::CreateInstance() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

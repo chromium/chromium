@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_enrollment_result.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -167,4 +167,4 @@ std::ostream& operator<<(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

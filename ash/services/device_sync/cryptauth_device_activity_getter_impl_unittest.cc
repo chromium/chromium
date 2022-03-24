@@ -30,14 +30,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 const char kAccessTokenUsed[] = "access token used by CryptAuthClient";
 const char kDeviceId[] = "device_id1";
@@ -247,4 +244,4 @@ TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

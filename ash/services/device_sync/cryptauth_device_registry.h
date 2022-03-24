@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -64,6 +64,11 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ash::device_sync::CryptAuthDeviceRegistry;
+}
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_REGISTRY_H_

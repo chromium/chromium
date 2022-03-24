@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -15,11 +17,7 @@ namespace securemessage {
 class Header;
 }  // namespace securemessage
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
@@ -106,6 +104,6 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ECIES_ENCRYPTOR_IMPL_H_

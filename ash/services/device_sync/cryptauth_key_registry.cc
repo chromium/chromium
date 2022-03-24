@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_key_registry.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -100,4 +100,4 @@ void CryptAuthKeyRegistry::SetKeyDirective(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

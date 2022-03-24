@@ -17,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -371,4 +371,4 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

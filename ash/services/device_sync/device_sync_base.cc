@@ -9,12 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 DeviceSyncBase::DeviceSyncBase() {
   receivers_.set_disconnect_handler(base::BindRepeating(
@@ -57,4 +54,4 @@ void DeviceSyncBase::OnDisconnection() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

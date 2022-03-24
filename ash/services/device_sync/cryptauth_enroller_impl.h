@@ -7,17 +7,15 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_enroller.h"
 #include "ash/services/device_sync/network_request_error.h"
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
@@ -110,6 +108,6 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLER_IMPL_H_

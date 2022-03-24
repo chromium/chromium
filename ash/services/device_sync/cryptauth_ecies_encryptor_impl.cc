@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -233,4 +233,4 @@ void CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

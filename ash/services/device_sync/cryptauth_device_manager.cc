@@ -7,7 +7,7 @@
 #include "ash/services/device_sync/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -48,4 +48,4 @@ void CryptAuthDeviceManager::NotifySyncFinished(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

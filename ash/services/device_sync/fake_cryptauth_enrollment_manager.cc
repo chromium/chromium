@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_enrollment_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -71,4 +71,4 @@ std::string FakeCryptAuthEnrollmentManager::GetUserPrivateKey() const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

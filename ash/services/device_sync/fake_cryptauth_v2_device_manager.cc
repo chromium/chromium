@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_v2_device_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -73,4 +73,4 @@ void FakeCryptAuthV2DeviceManager::FinishNextForcedDeviceSync(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

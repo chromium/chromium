@@ -18,7 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -581,4 +581,4 @@ void CryptAuthSchedulerImpl::OnTimerFired(RequestType request_type) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

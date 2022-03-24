@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -44,4 +44,4 @@ void MockCryptAuthClientFactory::RemoveObserver(Observer* observer) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

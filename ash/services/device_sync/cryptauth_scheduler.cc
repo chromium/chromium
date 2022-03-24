@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/cryptauth_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -68,4 +68,4 @@ void CryptAuthScheduler::NotifyDeviceSyncRequested(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

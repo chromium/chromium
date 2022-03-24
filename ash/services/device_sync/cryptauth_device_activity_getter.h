@@ -11,7 +11,7 @@
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -24,7 +24,7 @@ namespace device_sync {
 class CryptAuthDeviceActivityGetter {
  public:
   using DeviceActivityStatusResult =
-      std::vector<ash::device_sync::mojom::DeviceActivityStatusPtr>;
+      std::vector<mojom::DeviceActivityStatusPtr>;
   using GetDeviceActivityStatusAttemptFinishedCallback =
       base::OnceCallback<void(DeviceActivityStatusResult)>;
   using GetDeviceActivityStatusAttemptErrorCallback =
@@ -59,6 +59,11 @@ class CryptAuthDeviceActivityGetter {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::device_sync {
+using ::ash::device_sync::CryptAuthDeviceActivityGetter;
+}
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_ACTIVITY_GETTER_H_

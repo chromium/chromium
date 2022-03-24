@@ -27,7 +27,7 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -474,4 +474,4 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, ReenrollOnGCMPushMessage) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

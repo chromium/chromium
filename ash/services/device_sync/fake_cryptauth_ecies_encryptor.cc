@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_ecies_encryptor.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -44,4 +44,4 @@ FakeCryptAuthEciesEncryptorFactory::CreateInstance() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

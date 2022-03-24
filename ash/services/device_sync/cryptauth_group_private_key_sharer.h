@@ -15,7 +15,7 @@ namespace cryptauthv2 {
 class RequestContext;
 }  // namespace cryptauthv2
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -71,6 +71,6 @@ class CryptAuthGroupPrivateKeySharer {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GROUP_PRIVATE_KEY_SHARER_H_

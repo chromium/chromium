@@ -13,7 +13,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -65,11 +65,6 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::CryptAuthDeviceRegistryImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_REGISTRY_IMPL_H_

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -102,4 +102,4 @@ void CryptAuthEciesEncryptor::ProcessInput(const IdToInputMap& id_to_input_map,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
