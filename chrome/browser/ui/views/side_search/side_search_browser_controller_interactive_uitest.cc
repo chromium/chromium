@@ -161,6 +161,11 @@ class SideSearchBrowserControllerTest
     BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
   }
 
+  void NotifyReadLaterButtonClick(Browser* browser) {
+    views::test::ButtonTestApi(GetReadLaterButtonFor(browser))
+        .NotifyClick(GetDummyEvent());
+  }
+
   void SetIsSidePanelSRPAvailableAt(Browser* browser,
                                     int index,
                                     bool is_available) {
@@ -176,6 +181,14 @@ class SideSearchBrowserControllerTest
     views::View* button_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
             kSideSearchButtonElementId, browser->window()->GetElementContext());
+    return button_view ? views::AsViewClass<views::Button>(button_view)
+                       : nullptr;
+  }
+
+  views::Button* GetReadLaterButtonFor(Browser* browser) {
+    views::View* button_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kReadLaterButtonElementId, browser->window()->GetElementContext());
     return button_view ? views::AsViewClass<views::Button>(button_view)
                        : nullptr;
   }
@@ -489,6 +502,12 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 
   EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
   EXPECT_EQ(nullptr, GetSidePanelFor(browser2));
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest, ReadLaterWorkInOTR) {
+  Browser* browser2 = CreateIncognitoBrowser();
+  EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
+  NotifyReadLaterButtonClick(browser2);
 }
 
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
