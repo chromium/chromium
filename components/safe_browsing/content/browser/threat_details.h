@@ -24,9 +24,13 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
 
 namespace history {
 class HistoryService;
@@ -71,14 +75,14 @@ using FrameTreeIdToChildIdsMap =
 using ThreatDetailsDoneCallback =
     base::OnceCallback<void(content::WebContents*)>;
 
-class ThreatDetails : public content::WebContentsObserver {
+class ThreatDetails {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
   ThreatDetails(const ThreatDetails&) = delete;
   ThreatDetails& operator=(const ThreatDetails&) = delete;
 
-  ~ThreatDetails() override;
+  virtual ~ThreatDetails();
 
   // Constructs a new ThreatDetails instance, using the factory.
   static std::unique_ptr<ThreatDetails> NewThreatDetails(
@@ -111,11 +115,6 @@ class ThreatDetails : public content::WebContentsObserver {
 
   // Overridden during tests
   virtual void OnRedirectionCollectionReady();
-
-  // WebContentsObserver implementation:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
 
   base::WeakPtr<ThreatDetails> GetWeakPtr();
 
@@ -178,7 +177,7 @@ class ThreatDetails : public content::WebContentsObserver {
 
   void OnReceivedThreatDOMDetails(
       mojo::Remote<mojom::ThreatReporter> threat_reporter,
-      content::GlobalRenderFrameHostId sender_id,
+      content::WeakDocumentPtr sender,
       std::vector<mojom::ThreatDOMDetailsNodePtr> params);
 
   void AddRedirectUrlList(const std::vector<GURL>& urls);
@@ -205,6 +204,10 @@ class ThreatDetails : public content::WebContentsObserver {
 
   // Called when the report is complete. Runs |done_callback_|.
   void AllDone();
+
+  // `this` is owned by TriggerManager which prevents this from outliving
+  // the WebContents.
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   scoped_refptr<BaseUIManager> ui_manager_;
 
@@ -277,10 +280,6 @@ class ThreatDetails : public content::WebContentsObserver {
 
   // Whether the |done_callback_| has been invoked.
   bool is_all_done_;
-
-  // The set of RenderFrameHosts that have pending requests and haven't been
-  // deleted.
-  std::vector<content::RenderFrameHost*> pending_render_frame_hosts_;
 
   // Used for references to |this| bound in callbacks.
   base::WeakPtrFactory<ThreatDetails> weak_factory_{this};
