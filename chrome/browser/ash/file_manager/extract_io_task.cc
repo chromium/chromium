@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "components/services/unzip/content/unzip_service.h"
+#include "third_party/zlib/google/redact.h"
 
 namespace file_manager {
 namespace io_task {
@@ -55,7 +56,10 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
                  base::BindOnce(&ExtractIOTask::ZipExtractCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
-  }  // TODO(crbug.com/953256) Report directory creation error.
+  } else {
+    LOG(ERROR) << "Cannot create directory "
+               << zip::Redact(destination_directory);
+  }
 }
 
 void ExtractIOTask::ExtractArchive(
