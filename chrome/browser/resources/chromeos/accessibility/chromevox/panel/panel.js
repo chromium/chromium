@@ -5,6 +5,7 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {GestureCommandData} from '../background/gesture_command_data.js';
 
 import {ISearchUI} from './i_search.js';
 import {PanelInterface} from './panel_interface.js';

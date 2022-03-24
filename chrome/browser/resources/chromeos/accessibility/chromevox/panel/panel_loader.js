@@ -14,7 +14,6 @@ goog.require('ChromeVoxState');
 goog.require('CommandStore');
 goog.require('EventGenerator');
 goog.require('EventSourceType');
-goog.require('GestureCommandData');
 goog.require('KeyCode');
 goog.require('KeyMap');
 goog.require('KeyUtil');

@@ -12,6 +12,7 @@ import {BrailleBackground} from './braille_background.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {Color} from './color.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {GestureGranularity} from './gesture_command_data.js';
 import {GestureInterface} from './gesture_interface.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
 

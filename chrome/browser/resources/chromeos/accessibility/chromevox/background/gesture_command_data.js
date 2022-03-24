@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('GestureCommandData');
-goog.provide('GestureGranularity');
-
-goog.require('KeyCode');
+export const GestureCommandData = {};
 
 /**
  * Map from gesture names (ax::mojom::Gesture defined in
@@ -92,7 +89,7 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
  * Possible granularities to navigate.
  * @enum {number}
  */
-GestureGranularity = {
+export const GestureGranularity = {
   CHARACTER: 0,
   WORD: 1,
   LINE: 2,

@@ -6,6 +6,7 @@
  * @fileoverview Interface to prevent circular dependencies between
  * CommandHandler and GestureCommandHandler.
  */
+import {GestureGranularity} from './gesture_command_data.js';
 
 export const GestureInterface = {};
 

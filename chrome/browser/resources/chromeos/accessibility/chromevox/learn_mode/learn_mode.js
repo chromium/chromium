@@ -6,6 +6,7 @@
  * @fileoverview Script for ChromeOS keyboard explorer.
  *
  */
+import {GestureCommandData} from '../background/gesture_command_data.js';
 
 /**
  * Class to manage the keyboard explorer.

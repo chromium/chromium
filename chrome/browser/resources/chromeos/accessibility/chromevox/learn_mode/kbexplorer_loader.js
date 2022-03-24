@@ -8,7 +8,6 @@
 
 goog.require('BrailleCommandData');
 goog.require('BrailleKeyEvent');
-goog.require('GestureCommandData');
 goog.require('Spannable');
 goog.require('AbstractTts');
 goog.require('BrailleKeyCommand');
