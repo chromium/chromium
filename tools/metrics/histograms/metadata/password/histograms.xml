@@ -2387,8 +2387,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
-    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-01">
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-08-21">
   <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Why was the save password UI (bubble or infobar) closed? This is currently
