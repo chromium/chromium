@@ -10,6 +10,8 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -120,6 +122,15 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case MENU_PERSONALIZATION_HUB:
       DCHECK(ash::features::IsPersonalizationHubEnabled());
       NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
+      break;
+    // Using reorder CommandId in ash/public/cpp/app_menu_constants.h
+    case REORDER_BY_NAME_ALPHABETICAL:
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kNameAlphabetical);
+      break;
+    case REORDER_BY_COLOR:
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kColor);
       break;
     default:
       if (delegate_) {

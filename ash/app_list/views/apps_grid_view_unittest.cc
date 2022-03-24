@@ -48,6 +48,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
@@ -5079,12 +5080,18 @@ TEST_P(AppsGridViewCardifiedStateTest,
   test_api_->LayoutToIdealBounds();
 }
 
-TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
+TEST_P(AppsGridViewAppSortTest,
+       ContextMenuInTopLevelAppListSortAllAppsInClamshellMode) {
   // In this test, the sort algorithm is not tested. Instead, the context menu
   // that contains the options to sort is verified to be shown in apps grid
   // view. The menu option selecting is also simulated to ensure the sorting is
   // called. The actual sort algorithm is tested in
   // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
+
+  // The AppsGridContextMenu is only used in clamshell mode.
+  if (create_as_tablet_mode_)
+    return;
+
   model_->PopulateApps(1);
 
   AppsGridContextMenu* context_menu = apps_grid_view_->context_menu_for_test();
@@ -5126,6 +5133,75 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   SimulateLeftClickOrTapAt(color_option);
   EXPECT_EQ(AppListSortOrder::kColor, model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
+}
+
+TEST_P(AppsGridViewAppSortTest,
+       ContextMenuInTopLevelAppListSortAllAppsInTabletMode) {
+  // This test checks the context menu on root window in tablet mode.
+  if (!create_as_tablet_mode_)
+    return;
+
+  model_->PopulateApps(1);
+  EXPECT_EQ(AppListSortOrder::kCustom, model_->requested_sort_order());
+
+  // Get a point in `apps_grid_view_` that doesn't have an item on it.
+  const gfx::Point empty_space =
+      apps_grid_view_->GetBoundsInScreen().CenterPoint();
+
+  // Open the menu to test the alphabetical sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  AppMenuModelAdapter* context_menu =
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing();
+  EXPECT_TRUE(context_menu->IsShowingMenu());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_submenu =
+      context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_TRUE(reorder_submenu->title() == u"Sort by");
+
+  // Open the Sort by submenu.
+  gfx::Point reorder_submenu_point =
+      reorder_submenu->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_submenu_point);
+
+  views::MenuItemView* reorder_option =
+      reorder_submenu->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_TRUE(reorder_option->title() == u"Name");
+  gfx::Point reorder_option_point =
+      reorder_option->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_option_point);
+
+  // Check that the apps are sorted and the menu is closed.
+  EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
+            model_->requested_sort_order());
+  EXPECT_EQ(
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing(),
+      nullptr);
+
+  // Open the menu again to test the color sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  context_menu =
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing();
+  EXPECT_TRUE(context_menu->IsShowingMenu());
+
+  reorder_submenu =
+      context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_TRUE(reorder_submenu->title() == u"Sort by");
+
+  // Open the Sort by submenu.
+  reorder_submenu_point = reorder_submenu->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_submenu_point);
+
+  reorder_option = reorder_submenu->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_TRUE(reorder_option->title() == u"Color");
+  reorder_option_point = reorder_option->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_option_point);
+
+  // Check that the apps are sorted and the menu is closed.
+  EXPECT_EQ(AppListSortOrder::kColor, model_->requested_sort_order());
+  EXPECT_EQ(
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing(),
+      nullptr);
 }
 
 TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {

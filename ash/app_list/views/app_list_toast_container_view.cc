@@ -58,8 +58,12 @@ AppListToastContainerView::AppListToastContainerView(
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
 
-  context_menu_ = std::make_unique<AppsGridContextMenu>();
-  set_context_menu_controller(context_menu_.get());
+  if (!tablet_mode_) {
+    // `context_menu_` is only set in clamshell mode. The sort options in tablet
+    // mode are handled in RootWindowController with ShelfContextMenuModel.
+    context_menu_ = std::make_unique<AppsGridContextMenu>();
+    set_context_menu_controller(context_menu_.get());
+  }
 }
 
 AppListToastContainerView::~AppListToastContainerView() {

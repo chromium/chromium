@@ -59,7 +59,8 @@ enum CommandId {
   USE_LAUNCH_TYPE_WINDOW = 203,
   USE_LAUNCH_TYPE_TABBED_WINDOW = 204,
   USE_LAUNCH_TYPE_COMMAND_END,
-  // The reorder submenu options used by AppServiceContextMenu.
+  // The reorder options used by AppsGridContextMenu, ShelfContextMenuModel and
+  // AppServiceContextMenu.
   REORDER_SUBMENU = 300,
   REORDER_BY_NAME_ALPHABETICAL = 301,
   REORDER_BY_NAME_REVERSE_ALPHABETICAL = 302,

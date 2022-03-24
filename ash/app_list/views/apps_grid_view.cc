@@ -369,8 +369,12 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
         l10n_util::GetStringUTF16(IDS_ALL_APPS_INDICATOR));
   }
 
-  context_menu_ = std::make_unique<AppsGridContextMenu>();
-  set_context_menu_controller(context_menu_.get());
+  if (!IsTabletMode()) {
+    // `context_menu_` is only set in clamshell mode. The sort options in tablet
+    // mode are handled in RootWindowController with ShelfContextMenuModel.
+    context_menu_ = std::make_unique<AppsGridContextMenu>();
+    set_context_menu_controller(context_menu_.get());
+  }
 }
 
 AppsGridView::~AppsGridView() {

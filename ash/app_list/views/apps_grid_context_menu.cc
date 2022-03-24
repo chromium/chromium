@@ -8,6 +8,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,11 +33,11 @@ void AppsGridContextMenu::Cancel() {
 
 void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case AppsGridCommandId::kReorderByNameAlphabetical:
+    case REORDER_BY_NAME_ALPHABETICAL:
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
           AppListSortOrder::kNameAlphabetical);
       break;
-    case AppsGridCommandId::kReorderByColor:
+    case REORDER_BY_COLOR:
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
           AppListSortOrder::kColor);
       break;
@@ -79,13 +80,13 @@ void AppsGridContextMenu::BuildMenuModel() {
   context_menu_model_->AddTitle(l10n_util::GetStringUTF16(
       IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE));
   context_menu_model_->AddItemWithIcon(
-      AppsGridCommandId::kReorderByNameAlphabetical,
+      REORDER_BY_NAME_ALPHABETICAL,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
       ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   context_menu_model_->AddItemWithIcon(
-      AppsGridCommandId::kReorderByColor,
+      REORDER_BY_COLOR,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
       ui::ImageModel::FromVectorIcon(kSortColorIcon,

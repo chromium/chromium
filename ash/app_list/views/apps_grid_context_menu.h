@@ -24,21 +24,6 @@ namespace ash {
 class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
                                        public views::ContextMenuController {
  public:
-  // List of command id used in apps grid context menu.
-  enum AppsGridCommandId {
-    // Command Id that contains a submenu with app name reorder options.
-    kReorderByName,
-
-    // Command that will sort the name in alphabetical order.
-    kReorderByNameAlphabetical,
-
-    // Command that will sort the name in reverse alphabetical order.
-    kReorderByNameReverseAlphabetical,
-
-    // Command that will sort by icon color in rainbow order.
-    kReorderByColor
-  };
-
   AppsGridContextMenu();
   AppsGridContextMenu(const AppsGridContextMenu&) = delete;
   AppsGridContextMenu& operator=(const AppsGridContextMenu&) = delete;
