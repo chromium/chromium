@@ -659,3 +659,8 @@ void RecordNearbyShareSetupNotificationTimeToAction(base::TimeDelta time) {
   base::UmaHistogramMediumTimes(
       "Nearby.Share.BackgroundScanning.Setup.Notification.TimeToAction", time);
 }
+
+void RecordNearbyShareWifiConfigurationResultMetric(bool success) {
+  base::UmaHistogramBoolean("Nearby.Share.WifiNetworkConfiguration.Result",
+                            success);
+}

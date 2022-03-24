@@ -1194,6 +1194,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.WifiNetworkConfiguration.Result"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>crisrael@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the success/failure of the Wi-Fi Network Configuration Handler. When
+    Wi-Fi credentials are successfully received, the Configuration Handler will
+    attempt to configure that network automatically. Emitted immediately after
+    the transfer has completed and the Configuration Handler attempted to
+    configure the network.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

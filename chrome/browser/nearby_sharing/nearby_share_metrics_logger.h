@@ -127,4 +127,6 @@ void RecordNearbyShareSetupNotificationFlowEvent(
 
 void RecordNearbyShareSetupNotificationTimeToAction(base::TimeDelta time);
 
+void RecordNearbyShareWifiConfigurationResultMetric(bool success);
+
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
