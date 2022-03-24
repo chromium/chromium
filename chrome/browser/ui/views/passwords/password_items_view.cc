@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,6 +48,8 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+constexpr int kIconHeight = 20;
 
 // Column set identifiers for displaying or undoing removal of credentials.
 // All of them allocate space differently.
@@ -287,6 +290,9 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
     }
     RecreateLayout();
   }
+
+  SetShowIcon(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerDesktop));
 }
 
 PasswordItemsView::~PasswordItemsView() = default;
@@ -297,6 +303,15 @@ PasswordBubbleControllerBase* PasswordItemsView::GetController() {
 
 const PasswordBubbleControllerBase* PasswordItemsView::GetController() const {
   return &controller_;
+}
+
+ui::ImageModel PasswordItemsView::GetWindowIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(kGooglePasswordManagerIcon,
+                                        ui::kColorIcon, kIconHeight);
+#else
+  return ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, kIconHeight);
+#endif
 }
 
 void PasswordItemsView::RecreateLayout() {

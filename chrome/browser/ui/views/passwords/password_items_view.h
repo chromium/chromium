@@ -32,6 +32,7 @@ class PasswordItemsView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   void NotifyPasswordFormAction(
       const password_manager::PasswordForm& password_form,
