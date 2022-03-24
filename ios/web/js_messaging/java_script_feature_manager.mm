@@ -64,13 +64,9 @@ void JavaScriptFeatureManager::ConfigureFeatures(
       std::make_unique<JavaScriptContentWorld>(browser_state_);
   AddSharedCommonFeatures(page_content_world_.get());
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    isolated_world_ = std::make_unique<JavaScriptContentWorld>(
-        browser_state_, WKContentWorld.defaultClientWorld);
-    AddSharedCommonFeatures(isolated_world_.get());
-  }
-#endif  // defined(__IPHONE14_0)
+  isolated_world_ = std::make_unique<JavaScriptContentWorld>(
+      browser_state_, WKContentWorld.defaultClientWorld);
+  AddSharedCommonFeatures(isolated_world_.get());
 
   for (JavaScriptFeature* feature : features) {
     if (isolated_world_ &&
