@@ -8,6 +8,7 @@ def handle_headers(frame, request, response):
     link_header_value = "<{}>; rel=preload; as=script".format(first_preload)
     early_hints = [
         (b":status", b"103"),
+        (b"content-security-policy", "script-src 'self' 'unsafe-inline'"),
         (b"link", link_header_value),
     ]
     response.writer.write_raw_header_frame(headers=early_hints,
@@ -15,8 +16,11 @@ def handle_headers(frame, request, response):
 
     second_preload = request.GET.first(b"second-preload").decode()
     link_header_value = "<{}>; rel=preload; as=script".format(second_preload)
+    second_preload_origin = request.GET.first(b"second-preload-origin").decode()
+    csp_value = "script-src 'self' 'unsafe-inline' {}".format(second_preload_origin)
     early_hints = [
         (b":status", b"103"),
+        (b"content-security-policy", csp_value),
         (b"link", link_header_value),
     ]
     response.writer.write_raw_header_frame(headers=early_hints,
