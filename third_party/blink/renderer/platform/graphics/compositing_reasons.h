@@ -31,6 +31,7 @@ using CompositingReasons = uint64_t;
   V(ActiveBackdropFilterAnimation)                                            \
   V(AffectedByOuterViewportBoundsDelta)                                       \
   V(FixedPosition)                                                            \
+  V(FixedToViewport)                                                          \
   V(StickyPosition)                                                           \
   V(OverflowScrolling)                                                        \
   V(WillChangeTransform)                                                      \
@@ -112,7 +113,7 @@ class PLATFORM_EXPORT CompositingReason {
     kPreventingSubpixelAccumulationReasons = kWillChangeTransform,
     kDirectReasonsForPaintOffsetTranslationProperty =
         kComboScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
-        kVideo | kCanvas | kPlugin | kIFrame,
+        kFixedToViewport | kVideo | kCanvas | kPlugin | kIFrame,
     kDirectReasonsForTransformProperty =
         k3DTransform | kTrivial3DTransform | kWillChangeTransform |
         kWillChangeOther | kPerspectiveWith3DDescendants |

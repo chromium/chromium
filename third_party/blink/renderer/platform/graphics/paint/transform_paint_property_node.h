@@ -346,6 +346,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return DirectCompositingReasons() & CompositingReason::kFixedPosition;
   }
 
+  bool RequiresCompositingForFixedToViewport() const {
+    return DirectCompositingReasons() & CompositingReason::kFixedToViewport;
+  }
+
   bool RequiresCompositingForScrollDependentPosition() const {
     return DirectCompositingReasons() &
            CompositingReason::kComboScrollDependentPosition;

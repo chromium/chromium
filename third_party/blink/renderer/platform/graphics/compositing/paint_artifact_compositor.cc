@@ -691,7 +691,7 @@ void PaintArtifactCompositor::Update(
         effect, clip, layer.draws_content());
 
     if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled() &&
-        transform.RequiresCompositingForFixedPosition())
+        transform.RequiresCompositingForFixedToViewport())
       property_tree_manager.SetOverscrollClipNodeId(clip_id);
 
     // We need additional bookkeeping for backdrop-filter mask.
