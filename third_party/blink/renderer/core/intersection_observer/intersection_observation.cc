@@ -146,7 +146,8 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
     return false;
   if (!needs_update_)
     return false;
-  if (target_->isConnected() && Observer()->trackVisibility()) {
+  if (target_->isConnected() && target_->GetDocument().GetFrame() &&
+      Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
         target_->GetDocument().GetFrame()->GetOcclusionState();
     // If we're tracking visibility, and we don't have occlusion information
