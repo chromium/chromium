@@ -152362,7 +152362,7 @@
          ]
         ],
         "shape-outside-inset-031.html": [
-         "dc2938dca4a514c5add5686478cd4da7119d1744",
+         "8d323b071e913ad93c4128d431eb42e2cb3a0f42",
          [
           null,
           [
@@ -280314,7 +280314,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "4b2f21ac5efef55d1127d3f748ffd0e3e0675a70",
+      "10e225d42814f05e5c9f5e8a3f3f834f57893306",
       []
      ],
      "iframe.html": [
@@ -306917,7 +306917,7 @@
      []
     ],
     "compute-pressure.idl": [
-     "9e99a0140a462a1fe92f0b1f959ecc133920a038",
+     "ea8af76bead0a2106bbf0b17d1e13db6e40a8545",
      []
     ],
     "console.idl": [
@@ -307057,7 +307057,7 @@
      []
     ],
     "cssom-view.idl": [
-     "74736152702aa3c34c819f43ac85ecd307dfe1d8",
+     "e18247553a3b449dd9723f331eef8209d871aafe",
      []
     ],
     "cssom.idl": [
@@ -307082,6 +307082,10 @@
     ],
     "device-posture.idl": [
      "ba8f9f51f025d9ac1924d220fc17dfa11678abf2",
+     []
+    ],
+    "digital-goods.idl": [
+     "38cedac40cddc71ea754df7171d68018d1a0854b",
      []
     ],
     "dom.idl": [
@@ -308092,6 +308096,10 @@
        "0086711fb7c7bb5de136346e4ab7be50bb895d99",
        []
       ],
+      "delayed-js.h2.py": [
+       "b3d28e86da353a9d26888399a5b7ca7186eb86ec",
+       []
+      ],
       "early-hints-helpers.sub.js": [
        "9eb1db383c73ca32d593384614ae5d7b478808ea",
        []
@@ -308132,12 +308140,32 @@
        "3be2852348ba800662fa2caf626654b2f40b5902",
        []
       ],
+      "preload-in-flight-when-consumed.h2.py": [
+       "c3d66160e37ff7f83c1e851215779eb6a36be313",
+       []
+      ],
+      "preload-in-flight-when-consumed.html": [
+       "5075d928464aff5d09f7f5a56ad5e26e03ce2bc5",
+       []
+      ],
       "preload-initiator-type.html": [
        "0fdeb2b9037be8785880f71045a9facbc85fb394",
        []
       ],
+      "redirect-between-early-hints.h2.py": [
+       "a1b3f15ca453f5a0d2569490876abb56f94f82d1",
+       []
+      ],
+      "redirect-cross-origin-between-early-hints.html": [
+       "46560bb2da8b79a03bfbb6f3217a47e5966c1a3e",
+       []
+      ],
       "redirect-cross-origin.html": [
        "39b37f81300bd722381de0b47e2d998a7c976574",
+       []
+      ],
+      "redirect-same-origin-between-early-hints.html": [
+       "395f7f1752500c4e4ac15f5ff8e62f9a1eae1b48",
        []
       ],
       "redirect-same-origin.html": [
@@ -308154,6 +308182,10 @@
       ],
       "referrer-policy-test.html": [
        "d0389c2e11cce36ae0ed0ddee454809e7360b539",
+       []
+      ],
+      "resume-delayed-js.h2.py": [
+       "f1d9ab7d4510343231c18ea4e2b0c20ea26c2eed",
        []
       ],
       "utils.py": [
@@ -364409,6 +364441,13 @@
         {}
        ]
       ],
+      "at-container-serialization.html": [
+       "758a7c3b2d35b4e39baffe88e5fbfb6a78934f18",
+       [
+        null,
+        {}
+       ]
+      ],
       "auto-scrollbars.html": [
        "9cf797186c5a2de984afce85ca623cb0e267e607",
        [
@@ -364480,7 +364519,7 @@
        ]
       ],
       "container-name-computed.html": [
-       "8d8898786343cf34c589af3e216cfdf0fd4fb4af",
+       "94e173730f15f548d6c4c0646b78b8b8349748a0",
        [
         null,
         {}
@@ -364494,7 +364533,7 @@
        ]
       ],
       "container-name-parsing.html": [
-       "d4737ce2dca296ada369fb674c647908ac13d78d",
+       "3e0ea059a9f3c04ccef8e833d273e1f4c76d047e",
        [
         null,
         {}
@@ -364669,7 +364708,7 @@
        ]
       ],
       "idlharness.html": [
-       "4e329644aff7ea2e47344fea9d059980132b73ee",
+       "ac1a677bb94d045d9aa6ce8b49bb85cbff51cc92",
        [
         null,
         {}
@@ -474449,6 +474488,24 @@
        }
       ]
      ],
+     "preload-in-flight-when-consumed.h2.window.js": [
+      "beaa45e2ddff825d9ac1a5fb97fa1e9125244186",
+      [
+       "loading/early-hints/preload-in-flight-when-consumed.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "preload-initiator-type.h2.window.js": [
       "959aacef4978b935b44fec694d5f3ca3cb074485",
       [
@@ -474463,10 +474520,46 @@
        }
       ]
      ],
+     "redirect-cross-origin-between-early-hints.h2.window.js": [
+      "2ca92cf82ca7afcfb229bf3d27d4dc6e8816c6d6",
+      [
+       "loading/early-hints/redirect-cross-origin-between-early-hints.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "redirect-cross-origin.h2.window.js": [
       "548759b19cc8441f3defbf6b412cce5e7b224179",
       [
        "loading/early-hints/redirect-cross-origin.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "redirect-same-origin-between-early-hints.h2.window.js": [
+      "276303608efad56dd2c465a43fd81d47acfa07a8",
+      [
+       "loading/early-hints/redirect-same-origin-between-early-hints.h2.window.html",
        {
         "script_metadata": [
          [

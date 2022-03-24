@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Compute Pressure API (https://wicg.github.io/compute-pressure/)
+// Source: Compute Pressure API Level 1 (https://wicg.github.io/compute-pressure/)
 
 enum ComputePressureState { "nominal", "fair", "serious", "critical" };
 
@@ -16,14 +16,14 @@ enum ComputePressureSource { "cpu" };
 
 [Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
 interface ComputePressureObserver {
-  constructor(ComputePressureUpdateCallback callback);
+  constructor(ComputePressureUpdateCallback callback, optional ComputePressureObserverOptions options = {});
 
-  undefined observe(ComputePressureSource source, optional ComputePressureObserverOptions options = {});
+  undefined observe(ComputePressureSource source);
   undefined unobserve(ComputePressureSource source);
   undefined disconnect();
   sequence<ComputePressureRecord> takeRecords();
 
-  [SameObject] static readonly attribute FrozenArray<DOMString> supportedSources;
+  [SameObject] static readonly attribute FrozenArray<ComputePressureSource> supportedSources;
 
   [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
@@ -32,8 +32,7 @@ dictionary ComputePressureRecord {
   ComputePressureSource source;
   ComputePressureState state;
   sequence<ComputePressureFactor> factors;
-  DOMHighResTimeStamp timestamp;
-  ComputePressureObserverOptions options;
+  DOMHighResTimeStamp time;
 };
 
 dictionary ComputePressureObserverOptions {
