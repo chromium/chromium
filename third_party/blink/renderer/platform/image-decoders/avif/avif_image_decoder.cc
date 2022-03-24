@@ -994,7 +994,7 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
     // https://bugs.chromium.org/p/libyuv/issues/detail?id=845
     media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
         frame.get(), rgba_8888, frame->visible_rect().width() * 4,
-        premultiply_alpha);
+        premultiply_alpha, media::PaintCanvasVideoRenderer::kFilterBilinear);
     return true;
   }
 
