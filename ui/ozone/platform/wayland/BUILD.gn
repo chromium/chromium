@@ -602,6 +602,7 @@ source_set("ui_test_support") {
   deps = [
     ":wayland_proxy",
     "//base",
+    "//third_party/wayland:wayland_util",
     "//third_party/wayland-protocols:weston_test",
     "//ui/base:test_support",
     "//ui/events",

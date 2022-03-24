@@ -1606,6 +1606,7 @@
       'lacros-amd64-generic-rel': {
         'additional_compile_targets': [
           'chrome',
+          'browser_tests',
         ],
         'mixins': [
           'has_native_resultdb_integration',

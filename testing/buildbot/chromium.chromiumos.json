@@ -1369,7 +1369,8 @@
   },
   "lacros-amd64-generic-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "browser_tests"
     ],
     "gtest_tests": [
       {
