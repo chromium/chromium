@@ -26,10 +26,6 @@
       "all"
     ]
   },
-  "GPU FYI Win x64 Builder (dbg) (reclient shadow)": {},
-  "GPU FYI Win x64 Builder (reclient shadow)": {},
-  "GPU FYI Win x64 DX12 Vulkan Builder (dbg) (reclient shadow)": {},
-  "GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)": {},
   "Linux Builder (j-500) (reclient)": {
     "additional_compile_targets": [
       "all"
