@@ -42,7 +42,6 @@ export interface SettingsPersonalizationOptionsElement {
     toast: CrToastElement,
     signinAllowedToggle: SettingsToggleButtonElement,
     metricsReportingControl: SettingsToggleButtonElement,
-    spellCheckControl: SettingsToggleButtonElement,
   };
 }
 

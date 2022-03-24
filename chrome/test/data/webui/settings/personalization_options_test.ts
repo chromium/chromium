@@ -254,10 +254,11 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       spellcheck: {dictionaries: {value: ['en-US']}}
     };
     flush();
-    assertFalse(testElement.$.spellCheckControl.hidden);
+    const shadowRoot = testElement.shadowRoot!;
+    assertFalse(
+        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
     assertTrue(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -266,10 +267,10 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       spellcheck: {dictionaries: {value: []}}
     };
     flush();
-    assertTrue(testElement.$.spellCheckControl.hidden);
     assertTrue(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
+    assertTrue(
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -282,11 +283,10 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       }
     };
     flush();
-    testElement.$.spellCheckControl.click();
+    shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
     assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
     assertTrue(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
   });
   // </if>
 
@@ -306,11 +306,12 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       spellcheck: {dictionaries: {value: ['en-US']}}
     };
     flush();
-    assertFalse(testElement.$.spellCheckControl.hidden);
+    const shadowRoot = testElement.shadowRoot!;
+    assertFalse(
+        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
     // <if expr="chromeos">
     assertTrue(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
     // </if>
 
     testElement.prefs = {
@@ -320,7 +321,8 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       spellcheck: {dictionaries: {value: []}}
     };
     flush();
-    assertTrue(testElement.$.spellCheckControl.hidden);
+    assertTrue(
+        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -333,7 +335,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       }
     };
     flush();
-    testElement.$.spellCheckControl.click();
+    shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
     assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
   });
 
@@ -351,9 +353,9 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       spellcheck: {dictionaries: {value: ['en-US']}}
     };
     flush();
+    const shadowRoot = testElement.shadowRoot!;
     assertFalse(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -363,8 +365,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     };
     flush();
     assertTrue(
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#spellCheckLink')!.hidden);
+        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
   });
   // </if>
 });
