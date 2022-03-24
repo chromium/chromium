@@ -5,4 +5,9 @@ This directory contains the implementation of the client-side logic for the [Agg
 ## Command-line tool
 A command-line tool that generates aggregatable reports for testing is available. Please see //tools/aggregation_service's [README](../../../tools/aggregation_service/README.md) for more detail
 
+## Payload encryption
+
+The details of how aggregatable report payloads are encrypted are provided in a
+separate [README](./payload_encryption.md).
+
 **TODO**: Expand this README.
