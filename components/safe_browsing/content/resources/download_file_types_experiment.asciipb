@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 48
+version_id: 49
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -30,6 +30,9 @@ default_file_type {
 
 # Files that are not dangerous, and are popular enough that we'd like to
 # exclude them from download pings.
+#  - Files are generally considered not dangerous if they don't have executable
+#    parts and have not been known to be abused by campaigns.
+#  - Files are considered popular if they make up >= 0.03% of download pings
 file_types {
   extension: "jpg"
   uma_value: 322
@@ -103,6 +106,11 @@ file_types {
 file_types {
   extension: "mov"
   uma_value: 341
+  ping_setting: SAMPLED_PING
+}
+file_types {
+  extension: "avif"
+  uma_value: 397
   ping_setting: SAMPLED_PING
 }
 
