@@ -74,7 +74,8 @@ def set_lpac_acls(acl_dir, is_test_script=False):
   """Sets LPAC ACLs on a directory. Windows 10 only."""
   if platform.release() != '10':
     return
-  logging.info('Start setting LPAC ACLs.')
+  if is_test_script:
+    logging.info('Start setting LPAC ACLs.')
   try:
     existing_acls = subprocess.check_output(['icacls', acl_dir],
                                             stderr=subprocess.STDOUT,
@@ -106,7 +107,8 @@ def set_lpac_acls(acl_dir, is_test_script=False):
           'Failed to set ACLs for directory %s', acl_dir)
       logging.error('Command output: %s', e.output)
       sys.exit(e.returncode)
-  logging.info('Finish setting LPAC ACLs.')
+  if is_test_script:
+    logging.info('Finish setting LPAC ACLs.')
 
 
 def run_script(argv, funcs):
