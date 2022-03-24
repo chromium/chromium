@@ -11,7 +11,7 @@ import '../settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
@@ -199,7 +199,29 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   }
 
   private onDialogClose_() {
+    const lastView = this.privacySandboxSettingsView_;
     this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+    afterNextRender(this, async () => {
+      switch (lastView) {
+        case PrivacySandboxSettingsView.LEARN_MORE_DIALOG:
+          this.getElement_('#learnMoreLink')!.focus();
+          break;
+        case PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG:
+        case PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG:
+          this.getElement_('#adPersonalizationRow')!.focus();
+          break;
+        case PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG:
+          this.getElement_('#adMeasurementRow')!.focus();
+          break;
+        case PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG:
+          this.getElement_('#spamAndFraudRow')!.focus();
+          break;
+      }
+    });
+  }
+
+  private getElement_(selector: string): HTMLElement|null {
+    return this.shadowRoot!.querySelector<HTMLElement>(selector);
   }
 
   private onLearnMoreClick_(e: Event) {
