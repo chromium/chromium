@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Presubmit checks for Share share_targets."""
 
+USE_PYTHON3 = True
+
 
 def CheckVersionUpdatedInShareTargetList(input_api, output_api):
     def IsShareTargetList(x):
