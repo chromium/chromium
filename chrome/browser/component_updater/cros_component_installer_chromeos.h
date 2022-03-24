@@ -39,6 +39,7 @@ struct ComponentConfig {
   enum class PolicyType {
     kEnvVersion,  // Checks env_version, see below.
     kLacros,      // Uses special lacros compatibility rules.
+    kDemoApp,     // Adds demo-mode-specific install attributes
   };
   PolicyType policy_type;
   // This is used for ABI compatibility checks. It is compared against the
@@ -131,6 +132,24 @@ class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static void SetAshVersionForTest(const char* version);
+};
+
+// An installer policy for the ChromeOS Demo Mode app, which includes special
+// system-sourced installer attributes in the request to receive customized
+// app versions
+class DemoAppInstallerPolicy : public CrOSComponentInstallerPolicy {
+ public:
+  DemoAppInstallerPolicy(const ComponentConfig& config,
+                         CrOSComponentInstaller* cros_component_installer);
+  DemoAppInstallerPolicy(const DemoAppInstallerPolicy&) = delete;
+  DemoAppInstallerPolicy& operator=(const DemoAppInstallerPolicy&) = delete;
+  ~DemoAppInstallerPolicy() override;
+
+  // ComponentInstallerPolicy:
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& path,
+                      base::Value manifest) override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
 // This class contains functions used to register and install a component.

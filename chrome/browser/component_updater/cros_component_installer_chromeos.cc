@@ -44,6 +44,8 @@ const ComponentConfig kConfigs[] = {
      "c93c3e1013c52100a20038b405ac854d69fa889f6dc4fa6f188267051e05e444"},
     {"demo-mode-resources", ComponentConfig::PolicyType::kEnvVersion, "1.0",
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
+    {"demo-mode-app", ComponentConfig::PolicyType::kDemoApp, nullptr,
+     "b6c5ce9f03b0ce830eb5f9f92ed3016cfdb7a2327330f0187adbe9a00ddfd34d"},
     // NOTE: If you change the lacros component names, you must also update
     // chrome/browser/ash/crosapi/browser_loader.cc.
     {"lacros-dogfood-canary", ComponentConfig::PolicyType::kLacros, nullptr,
@@ -249,6 +251,24 @@ void LacrosInstallerPolicy::SetAshVersionForTest(const char* version) {
   g_ash_version_for_test = version;
 }
 
+DemoAppInstallerPolicy::DemoAppInstallerPolicy(
+    const ComponentConfig& config,
+    CrOSComponentInstaller* cros_component_installer)
+    : CrOSComponentInstallerPolicy(config, cros_component_installer) {}
+
+DemoAppInstallerPolicy::~DemoAppInstallerPolicy() = default;
+
+void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
+                                            const base::FilePath& path,
+                                            base::Value manifest) {
+  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+}
+
+update_client::InstallerAttributes
+DemoAppInstallerPolicy::GetInstallerAttributes() const {
+  return {};
+}
+
 CrOSComponentInstaller::CrOSComponentInstaller(
     std::unique_ptr<MetadataTable> metadata_table,
     ComponentUpdateService* component_updater)
@@ -349,6 +369,9 @@ void CrOSComponentInstaller::Register(const ComponentConfig& config,
       break;
     case ComponentConfig::PolicyType::kLacros:
       policy = std::make_unique<LacrosInstallerPolicy>(config, this);
+      break;
+    case ComponentConfig::PolicyType::kDemoApp:
+      policy = std::make_unique<DemoAppInstallerPolicy>(config, this);
       break;
   }
   auto installer = base::MakeRefCounted<ComponentInstaller>(std::move(policy));
