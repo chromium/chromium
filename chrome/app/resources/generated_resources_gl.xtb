@@ -2059,7 +2059,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2977480621796371840">Quitar do grupo</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
 <translation id="2981113813906970160">Mostrar cursor do rato grande</translation>
-<translation id="2981474224638493138">Calidade da proxección do escritorio/pestana</translation>
 <translation id="2983373101216420412">Nivel de batería do estoxo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Queres enviarlle unha solicitude ao teu administrador para que instale <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
@@ -3439,7 +3438,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4369121877634339065">Arrastra o cursor sobre calquera imaxe para buscala</translation>
 <translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
-<translation id="4373966964907728675">Emitindo escritorio</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros descargados</translation>
 <translation id="4376226992615520204">A localización está desactivada</translation>
@@ -4015,6 +4013,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
 <translation id="496027654926814138">Co ficheiro <ph name="FILE_NAME" />, os atacantes poderían roubarche información persoal.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4961361269522589229">ideas de receitas</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
@@ -4712,6 +4711,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5659833766619490117">Non se puido traducir esta páxina</translation>
 <translation id="5662513737565158057">Cambia o funcionamento das aplicacións de Linux.</translation>
+<translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
 <translation id="5668351004957198136">Produciuse un erro</translation>
 <translation id="56702779821643359">Comparte ficheiros coas persoas que te rodean. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -5119,7 +5119,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="6080689532560039067">Comproba a hora do sistema</translation>
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> (forma parte dun grupo sen nome)</translation>
-<translation id="6085457109149794212">Consulta todas as opcións relativas ás tarxetas en Personalizar Chrome</translation>
 <translation id="6085886413119427067">Determina como conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6086004606538989567">A conta que verificaches non está autorizada para acceder a este dispositivo.</translation>
 <translation id="6086846494333236931">Extensión instalada polo administrador</translation>
@@ -5204,7 +5203,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
 <translation id="6169040057125497443">Comproba o micrófono.</translation>
-<translation id="6169666352732958425">Non se puido emitir o escritorio.</translation>
 <translation id="6169967265765719844">Os permisos das aplicacións e xogos instalados a través de Steam poden xestionarse na <ph name="LINK_BEGIN" />configuración da aplicación Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sándwich</translation>
 <translation id="6170498031581934115">Non se puido activar a depuración de ADB. Accede á configuración e téntao de novo.</translation>
@@ -5363,6 +5361,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6322370287306604163">Desbloquear o dispositivo máis rápido coa impresión dixital</translation>
 <translation id="6324916366299863871">Editar atallo</translation>
 <translation id="6325191661371220117">Desactivar inicio automático</translation>
+<translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6326855256003666642">Número de conexións permanente</translation>
 <translation id="6327785803543103246">Detección automática do proxy web</translation>
@@ -5852,7 +5851,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6817174620439930047">Preguntar cando un sitio queira utilizar mensaxes exclusivas do sistema para acceder aos dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma da páxina que se quere traducir</translation>
 <translation id="6818802132960437751">Protección antivirus integrada</translation>
-<translation id="682123305478866682">Emitir contido do escritorio</translation>
 <translation id="6823174134746916417">Tocar para facer clic do panel táctil</translation>
 <translation id="6824564591481349393">Copiar &amp;enderezo de correo electrónico</translation>
 <translation id="6824584962142919697">&amp;Inspeccionar elementos</translation>
@@ -6857,7 +6855,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7826254698725248775">Identificador de dispositivos en conflito.</translation>
 <translation id="7828731929332799387">Ao realizar esta acción, eliminaranse todas as cookies e os datos dos sitios de terceiros. Queres continuar?</translation>
 <translation id="7829877209233347340">Pídelle a teu pai ou a túa nai que inicie sesión e che dea permiso para engadir unha conta de centro educativo</translation>
-<translation id="7830594666202422257">Conectar a Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Se Google atopa algún desconto, veralo nesta páxina</translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
@@ -7773,7 +7770,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8755376271068075440">&amp;Máis grande</translation>
 <translation id="875604634276263540">O URL da imaxe non é valido</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
-<translation id="8757090071857742562">Non se puido emitir o escritorio. Comproba se confirmaches a solicitude para empezar a compartir a pantalla.</translation>
 <translation id="8757203080302669031">Esta pestana está buscando dispositivos Bluetooth de maneira activa.</translation>
 <translation id="8757368836647541092">Quitouse a <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Activar ditado (falar para escribir)</translation>
@@ -8204,7 +8200,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9179524979050048593">Nome de usuario da pantalla de inicio de sesión</translation>
 <translation id="9180281769944411366">Este proceso pode tardar uns minutos. Iniciando o contedor de Linux.</translation>
 <translation id="9180380851667544951">O sitio pode compartir a túa pantalla</translation>
-<translation id="918224512343736195">Conectarse a SSH</translation>
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>

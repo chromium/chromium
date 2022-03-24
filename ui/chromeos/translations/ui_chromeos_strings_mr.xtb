@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> चा बॅकअप घेत आहे</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> साठी एक्सेप्शन काढा</translation>
 <translation id="4261901459838235729">Google प्रेझेंटेशन</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर सुरू आहे.</translation>
 <translation id="4290535918735525311">Linux सह एक फोल्डर शेअर केला</translation>
 <translation id="4299729908419173967">ब्राझिलियन</translation>
 <translation id="4302605047395093221">या मोबाइल नेटवर्कशी कनेक्ट करण्यासाठी, हे डिव्हाइस वापरणाऱ्या कोणालाही पासवर्ड एंटर करण्याची आवश्यकता असेल</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4579744207439506346">निवडीमध्ये <ph name="ENTRY_NAME" /> जोडली/ले.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> साठी परिणाम दाखवत आहे.</translation>
+<translation id="4599600860674643278">फिल्टर रीसेट केला.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर कॉपी करत आहे</translation>
 <translation id="4631887759990505102">कलाकार</translation>
 <translation id="4642769377300286600">मोबाइल प्रोफाइल इंस्टॉल करत आहे, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5469868506864199649">इटालियन</translation>
 <translation id="5473333559083690127">नवीन पिन पुन्हा प्रविष्‍ट करा</translation>
 <translation id="5489067830765222292">ला‍टवियन</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> फिल्टर बंद आहे.</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5500122897333236901">आइसलँडिक</translation>
 <translation id="5508696409934741614">बिंदू</translation>

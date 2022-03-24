@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="1240190568154816272">Συμβουλές για το Chrome</translation>
 <translation id="1240288207750131269">Φόρτωση <ph name="LANG" /></translation>
+<translation id="1240903469550363138">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο. Δείτε την <ph name="BEGIN_LINK1" />πολιτική απορρήτου<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK2" />.</translation>
 <translation id="1242883863226959074">συσκευή</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1246905108078336582">Θέλετε να καταργήσετε την πρόταση από το πρόχειρο;</translation>
@@ -170,6 +171,7 @@
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1986685561493779662">Το όνομα υπάρχει ήδη</translation>
+<translation id="1995884366040846621">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο. Δείτε την <ph name="BEGIN_LINK1" />πολιτική απορρήτου<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Αρχείο}other{# Αρχεία}}</translation>

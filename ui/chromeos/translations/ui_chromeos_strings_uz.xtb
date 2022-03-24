@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> nusxasi zaxiralanmoqda</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> hostini istisnolardan olib tashlash</translation>
 <translation id="4261901459838235729">Google taqdimoti</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtri yoniq.</translation>
 <translation id="4290535918735525311">1 ta jild Linuxga ulashilgan</translation>
 <translation id="4299729908419173967">Brazil</translation>
 <translation id="4302605047395093221">Bu qurilmaning har qaysi foydalanuvchisi mobil internetga ulanish uchun PIN kodni kiritishi lozim</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Yana...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> tanlamaga kiritildi.</translation>
 <translation id="4594543368593301662">Natijalarini chiqarish: <ph name="SEARCH_TERM" /></translation>
+<translation id="4599600860674643278">Filtr asliga qaytarildi.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga nusxalanmoqda</translation>
 <translation id="4631887759990505102">Ijrochi</translation>
 <translation id="4642769377300286600">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> oʻrnatilmoqda</translation>
@@ -528,6 +530,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5469868506864199649">Italyan</translation>
 <translation id="5473333559083690127">Yangi PIN kodni qayta kiriting</translation>
 <translation id="5489067830765222292">Latish</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtri oʻchiq.</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5500122897333236901">Island tili</translation>
 <translation id="5508696409934741614">Nuqtalar</translation>

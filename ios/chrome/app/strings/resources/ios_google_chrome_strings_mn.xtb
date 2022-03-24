@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="1096883626080133124">Энгийн, аюулгүй бөгөөд урьд өмнөхөөсөө илүү хурдан Google Chrome-р илүү ихийг хийгээрэй</translation>
 <translation id="1143896152279775643">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална.</translation>
 <translation id="1282031177488366470">Chrome-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="1479202195792305274">Таныг Google Бүртгэлээрээ нэвтрэх үед Chrome таны нууц үгнүүдийг шалгах боломжтой.</translation>
@@ -31,7 +30,9 @@
 <translation id="2869959624320573933">Chrome-д нэвтэрнэ үү</translation>
 <translation id="2919738076569633423">Chrome-г ашигласнаар та <ph name="BEGIN_LINK_TOS" />Үйлчилгээний нөхцөлийг<ph name="END_LINK_TOS" /> зөвшөөрч байна.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />-г сонгоно уу</translation>
+<translation id="2993413480261249761">Энгийн, аюулгүй бөгөөд урьд өмнөхөөсөө илүү хурдан Google Chrome-р илүү ихийг хийгээрэй.</translation>
 <translation id="3030414234702425231">Та <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
+<translation id="3121002401028999199">Аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн тайланг Google-д илгээнэ. <ph name="BEGIN_LINK" />Удирдах<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Таны бүртгэл Google Chrome-д ажиллахгүй байна. Нэвтрэхийн тулд та домайн админтайгаа холбогдох, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглаарай.</translation>
 <translation id="3173834708294760622">Google Chrome-н хуудас</translation>
 <translation id="3196546062792660320">Chrome таны бүртгэлийг вебэд оруулснаар таны цагийг хэмнэдэг. Та Тохиргоо хэсэгт бүртгэл нэмэх, эсвэл устгах боломжтой.</translation>
@@ -39,7 +40,6 @@
 <translation id="3345341804167540816">Chrome-г хүссэн газраа ашиглаарай</translation>
 <translation id="3522659714780527202">Та Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
 <translation id="3533694711092285624">Хадгалсан ямар ч нууц үг байхгүй байна. Таныг нууц үгсээ хадгалах үед Chrome тэднийг шалгах боломжтой.</translation>
-<translation id="3634910711516114487">Chrome-г бүрэн ашиглахын тулд Chrome-д Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="3655656110921623717">Энэ нь Chrome тухай бүрд мобайл сайтын хүсэлт тавина гэсэн үг юм.</translation>
 <translation id="3706101708757577809">Та одоо Chrome-г хэзээд ч мессеж, документ болон бусад аппын холбоосон дээр товшин ашиглах боломжтой.</translation>
 <translation id="3720541637541300822">Таныг Chrome-г хаах үед Нууцлалтай табыг түгжинэ</translation>
@@ -110,6 +110,7 @@
 <translation id="766361182512894255">Өгөгдлийн зөрчлийн улмаас таны нууц үгийг задруулсан байна. Chrome одоо нууц үгээ өөрчлөхийг зөвлөж байна.</translation>
 <translation id="7693590760643069321">Та одоо Chrome-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="7698568245838009292">Chrome камерт хандах хүсэлтэй байна</translation>
+<translation id="7780154209050837198">Chrome-г бүрэн ашиглахын тулд Chrome-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="7855730255114109580">Google Chrome-г шинэчилсэн байна</translation>
 <translation id="8022947259858476807">Холбооснуудыг нээх, жижиг хэрэгслүүдээс хайх, бусад аппад нууц үгнүүдийг автоматаар бөглөхийн тулд Chrome-г өгөгдмөлөөр ашиглана уу</translation>
 <translation id="8160472928944011082">Chrome-г шинэчлэх боломжгүй байна</translation>
@@ -127,6 +128,7 @@
 <translation id="8736550665979974340">Google Chrome-н тусламжтай аюулгүй байгаарай</translation>
 <translation id="8772179140489533211">Chrome-д нэвтрэх сануулгыг харуулна.</translation>
 <translation id="8788269841521769222">Та энэ нууц үгийг санах шаардлагагүй. Үүнийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална</translation>
+<translation id="9064404358728865190">Chrome-г ашигласнаар та <ph name="BEGIN_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_LINK" /> зөвшөөрч байна.</translation>
 <translation id="9112744793181547300">Chrome-г өгөгдмөлөөр тохируулах уу?</translation>
 <translation id="9122931302567044771">Энэ нь Chrome тухай бүрд компьютерын сайтын хүсэлт тавина гэсэн үг юм.</translation>
 </translationbundle>

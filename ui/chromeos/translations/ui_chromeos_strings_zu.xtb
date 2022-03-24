@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Yenza isipele <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Susa okuhlukile kwe-<ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Iphrezentheshini ye-Google</translation>
+<translation id="4277536868133419688">Isihlungi esithi <ph name="FILTER_NAME" /> sivuliwe.</translation>
 <translation id="4290535918735525311">1 ifolda yabiwe nge-Linux</translation>
 <translation id="4299729908419173967">Isi-Brazilian</translation>
 <translation id="4302605047395093221">Noma ubani osebenzisa le divayisi kuzodingeka afake Iphinikhodi ukuze axhumeke kule nethiwekhi yeselula</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Okuningi...</translation>
 <translation id="4579744207439506346">Kungezwe i-<ph name="ENTRY_NAME" /> kukhetho.</translation>
 <translation id="4594543368593301662">Ibonisa imiphumela ye-<ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Isihlungi sisethwe kabusha.</translation>
 <translation id="4603392156942865207">Ikopisha i-<ph name="FILE_NAME" /> ku-<ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Umculi</translation>
 <translation id="4642769377300286600">Ifaka iphrofayela leselula, Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwangu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">Isi-Italian</translation>
 <translation id="5473333559083690127">Phinda ufake iphinikhodi entsha</translation>
 <translation id="5489067830765222292">Isi-Latvian</translation>
+<translation id="5489965683297092283">Isihlungi esithi <ph name="FILTER_NAME" /> sivaliwe.</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
 <translation id="5500122897333236901">Isi-Icelandic</translation>
 <translation id="5508696409934741614">Amachashazi</translation>

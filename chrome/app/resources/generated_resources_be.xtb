@@ -2063,7 +2063,6 @@
 <translation id="2977480621796371840">Выдаліць з групы</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
 <translation id="2981113813906970160">Паказваць вялікі курсор мышы</translation>
-<translation id="2981474224638493138">Якасць праекцыі ўкладкі/працоўнага стала</translation>
 <translation id="2983373101216420412">Зарад акумулятара чахла: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Адправіць запыт адміністратару на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
@@ -3443,7 +3442,6 @@
 <translation id="4369121877634339065">Каб выканаць пошук, вылучыце частку якога-небудзь відарыса з дапамогай указальніка</translation>
 <translation id="4369215744064167350">Запыт на доступ да вэб-сайта ўхвалены</translation>
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
-<translation id="4373966964907728675">Ідзе трансляцыя працоўнага стала</translation>
 <translation id="4374831787438678295">Усталёўшчык Linux</translation>
 <translation id="4375035964737468845">Адкрыць спампаваныя файлы</translation>
 <translation id="4376226992615520204">Вызначэнне месцазнаходжання выключана</translation>
@@ -4019,6 +4017,7 @@
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
 <translation id="496027654926814138">З дапамогай файла "<ph name="FILE_NAME" />" зламыснікі могуць украсці вашу асабістую інфармацыю.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Трансляцыя экрана</translation>
 <translation id="4961361269522589229">прыклады рэцэптаў</translation>
 <translation id="496185450405387901">Праграма ўсталявана адміністратарам.</translation>
 <translation id="4963789650715167449">Выдаліць бягучую ўкладку</translation>
@@ -5123,7 +5122,6 @@
 <translation id="6080689532560039067">Праверце сістэмны час</translation>
 <translation id="6082877069782862752">Вызначэнне клавіш</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – належыць да групы без назвы</translation>
-<translation id="6085457109149794212">Праглядзіце ўсе варыянты картак у раздзеле "Наладзіць Chrome"</translation>
 <translation id="6085886413119427067">Вызначае, як устанаўліваць бяспечнае падключэнне да вэб-сайтаў</translation>
 <translation id="6086004606538989567">Спраўджаны вамі ўліковы запіс не мае дазволу на доступ да гэтай прылады.</translation>
 <translation id="6086846494333236931">Усталявана вашым адміністратарам</translation>
@@ -5208,7 +5206,6 @@
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
 <translation id="6169040057125497443">Праверце мікрафон.</translation>
-<translation id="6169666352732958425">Не ўдалося трансліраваць працоўны стол.</translation>
 <translation id="6169967265765719844">Дазволамі для гульняў і праграм, усталяваных праз платформу Steam, можна кіраваць у <ph name="LINK_BEGIN" />яе наладах<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
 <translation id="6170498031581934115">Не ўдалося ўключыць адладку ADB. Перайдзіце ў налады і паўтарыце спробу.</translation>
@@ -5367,6 +5364,7 @@
 <translation id="6322370287306604163">Разблакіроўку прылады можна зрабіць хутчэйшай, выкарыстоўваючы адбітак пальца</translation>
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6325191661371220117">Выключыць аўтаматычны запуск</translation>
+<translation id="6325525973963619867">Збой</translation>
 <translation id="6326175484149238433">Выдаліць з Chrome</translation>
 <translation id="6326855256003666642">Лік актыўных працэсаў</translation>
 <translation id="6327785803543103246">Аўтаматычная наладка проксі-сервера</translation>
@@ -5856,7 +5854,6 @@
 <translation id="6817174620439930047">Запытваць, калі сайт хоча выкарыстоўваць эксклюзіўныя сістэмныя паведамленні для доступу да MIDI-прылад (рэкамендуецца)</translation>
 <translation id="6818198425579322765">З якой мовы перакладаць старонку</translation>
 <translation id="6818802132960437751">Убудаваная абарона ад вірусаў</translation>
-<translation id="682123305478866682">Трансляцыя працоўнага стала</translation>
 <translation id="6823174134746916417">Націсканне дотыкам да сэнсарнай панэлі</translation>
 <translation id="6824564591481349393">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="6824584962142919697">&amp;Праверыць элементы</translation>
@@ -6861,7 +6858,6 @@
 <translation id="7826254698725248775">Канфлікт ідэнтыфікатараў прылад.</translation>
 <translation id="7828731929332799387">Будуць выдалены ўсе файлы cookie і даныя сайтаў, даступныя ў старонніх кантэкстах. Працягнуць?</translation>
 <translation id="7829877209233347340">Папрасіце кагосьці з бацькоў увайсці і дазволіць дадаць навучальны ўліковы запіс</translation>
-<translation id="7830594666202422257">Падключыць да Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Калі Google знойдзе скідку, яна з'явіцца на гэтай старонцы</translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з'явяцца тут</translation>
@@ -7777,7 +7773,6 @@
 <translation id="8755376271068075440">&amp;Павялічыць</translation>
 <translation id="875604634276263540">Няправільны URL-адрас відарыса</translation>
 <translation id="8756969031206844760">Абнавіць пароль?</translation>
-<translation id="8757090071857742562">Не ўдалося трансліраваць працоўны стол.  Праверце, ці далі вы дазвол на запыт пачаць абагульваць ваш экран.</translation>
 <translation id="8757203080302669031">Гэта ўкладка шукае прылады з Bluetooth.</translation>
 <translation id="8757368836647541092">Карыстальнік <ph name="USER_NAME_OR_EMAIL" /> выдалены</translation>
 <translation id="8758418656925882523">Уключыць галасавы ўвод</translation>
@@ -8208,7 +8203,6 @@
 <translation id="9179524979050048593">Імя карыстальніка на экране ўваходу</translation>
 <translation id="9180281769944411366">Гэты працэс можа заняць некалькі хвілін. Ідзе запуск кантэйнера Linux.</translation>
 <translation id="9180380851667544951">Сайт можа абагульваць ваш экран</translation>
-<translation id="918224512343736195">Падключыцца да SSH</translation>
 <translation id="9182556968660520230">Не дазваляць сайтам прайграваць абароненае змесціва</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Праграма}one{# праграма}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
 <translation id="9186963452600581158">Увайсці праз Уліковы запіс Google дзіцяці</translation>

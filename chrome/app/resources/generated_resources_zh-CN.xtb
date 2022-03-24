@@ -464,6 +464,7 @@
 <translation id="1448264954024227422">您可将此帐号用于 Android 应用。如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。您已向应用授予的权限可能会应用于此帐号。您可在<ph name="APPS_LINK_BEGIN" />应用设置<ph name="APPS_LINK_END" />中控制向 Android 应用授予的权限。</translation>
 <translation id="1448779317883494811">画笔工具</translation>
 <translation id="1449191289887455076">再按一次“<ph name="CURRENTKEY" />”键即可确认分配并<ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">已从“<ph name="DEVICE_NAME" />”收到“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="1451375123200651445">网页（单个文件）</translation>
 <translation id="1453561711872398978">发送<ph name="BEGIN_LINK" />调试日志<ph name="END_LINK" />（推荐）</translation>
 <translation id="1454223536435069390">屏幕截图(&amp;A)</translation>
@@ -989,6 +990,7 @@
 <translation id="1938351510777341717">外部命令</translation>
 <translation id="1940546824932169984">已连接的设备</translation>
 <translation id="1941410638996203291">开始时间：<ph name="TIME" /></translation>
+<translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">读取和更改您在所有网站上的数据</translation>
 <translation id="1942600407708803723">合盖后关机</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
@@ -1063,6 +1065,7 @@
 <translation id="202352106777823113">下载时间过长，网络已停止下载。</translation>
 <translation id="2024195579772565064">删除搜索引擎</translation>
 <translation id="2025632980034333559">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重新加载该扩展程序。</translation>
+<translation id="2027138361022454492">“<ph name="DEVICE_NAME" />”正在与您共享 Wi-Fi 网络。</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="202918510990975568">您必须输入密码，才能配置安全性和登录</translation>
 <translation id="2030455719695904263">触控板</translation>
@@ -2053,7 +2056,6 @@
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
-<translation id="2981474224638493138">标签页/桌面投影品质</translation>
 <translation id="2983373101216420412">保护套的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2985348301114641460">向您的管理员发送“<ph name="EXTENSION_NAME" />”安装请求？</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
@@ -2135,6 +2137,7 @@
 <translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
 <translation id="3055113921564083271">您移除的兴趣</translation>
 <translation id="3055590424724986000">使用您选择的提供商</translation>
+<translation id="3057660594186523687">未能从“<ph name="DEVICE_NAME" />”收到“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
 <translation id="3059195548603439580">想要查看系统组件？请访问</translation>
@@ -2560,6 +2563,7 @@
 <translation id="3507888235492474624">重新扫描蓝牙设备</translation>
 <translation id="3508492320654304609">无法删除您的登录数据</translation>
 <translation id="3508920295779105875">选择其他文件夹...</translation>
+<translation id="3509379002674019679">您可创建、保存和管理您的密码，以便轻松登录网站和应用。</translation>
 <translation id="3511200754045804813">重新扫描</translation>
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
 <translation id="351152300840026870">宽度固定的字体</translation>
@@ -2621,7 +2625,7 @@
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
 <translation id="3578594933904494462">此标签页的内容正在共享中。</translation>
-<translation id="3578874072190212775">协助网站打击欺诈行为并将聊天机器人与真人区分开来</translation>
+<translation id="3578874072190212775">协助网站打击欺诈行为以及区分机器人和真人</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
@@ -3430,7 +3434,6 @@
 <translation id="4369121877634339065">在任一图片上拖动光标即可搜索</translation>
 <translation id="4369215744064167350">网站请求已获批准</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
-<translation id="4373966964907728675">正在投射桌面</translation>
 <translation id="4374831787438678295">Linux 安装程序</translation>
 <translation id="4375035964737468845">打开已下载的文件</translation>
 <translation id="4376226992615520204">已关闭位置信息服务</translation>
@@ -4006,6 +4009,7 @@
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 帐号中，以便您在任意设备上使用密码</translation>
 <translation id="496027654926814138">攻击者可能会利用 <ph name="FILE_NAME" /> 窃取您的个人信息。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">投射屏幕</translation>
 <translation id="4961361269522589229">食谱建议</translation>
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
 <translation id="4963789650715167449">移除当前标签页</translation>
@@ -4703,6 +4707,7 @@
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5659833766619490117">无法翻译此网页</translation>
 <translation id="5662513737565158057">更改 Linux 应用的运行方式。</translation>
+<translation id="5667293444945855280">恶意软件</translation>
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
 <translation id="5668351004957198136">失败</translation>
 <translation id="56702779821643359">与附近的人分享文件。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -5110,7 +5115,6 @@
 <translation id="6080689532560039067">检查系统时间</translation>
 <translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
-<translation id="6085457109149794212">在“自定义 Chrome”部分中查看所有卡片选项</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
@@ -5195,7 +5199,6 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
-<translation id="6169666352732958425">无法投射桌面。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6170498031581934115">无法启用 ADB 调试。请转到“设置”，然后重试。</translation>
@@ -5354,6 +5357,7 @@
 <translation id="6322370287306604163">指纹解锁更快捷</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6325191661371220117">停用自动启动</translation>
+<translation id="6325525973963619867">失败</translation>
 <translation id="6326175484149238433">从Chrome中移除</translation>
 <translation id="6326855256003666642">正在使用相应扩展程序的活动数</translation>
 <translation id="6327785803543103246">网络代理自动发现</translation>
@@ -5398,6 +5402,7 @@
 <translation id="6374469231428023295">重试</translation>
 <translation id="6374635887697228982">要获取折扣吗？</translation>
 <translation id="6377268785556383139">1 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
+<translation id="6378392501584240055">在 Wi-Fi 网络中打开</translation>
 <translation id="6380143666419481200">接受并继续</translation>
 <translation id="6382616130475191723">已获准读取和更改“<ph name="SITE_NAME" />”</translation>
 <translation id="6382958439467370461">没有无效的快捷字词</translation>
@@ -5515,6 +5520,7 @@
 <translation id="648927581764831596">没有可用设备</translation>
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="6491376743066338510">授权失败</translation>
+<translation id="6492526860459984042">正在从“<ph name="DEVICE_NAME" />”接收“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="6494327278868541139">显示增强型保护详情</translation>
 <translation id="6494445798847293442">不是证书授权中心</translation>
 <translation id="6494974875566443634">自定义</translation>
@@ -5774,6 +5780,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>
 <translation id="6758056191028427665">让我们知道您的满意度。</translation>
 <translation id="6759193508432371551">恢复出厂设置</translation>
+<translation id="6761431452438552910">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">已开启</translation>
 <translation id="676560328519657314">您在 Google Pay 中的付款方式</translation>
@@ -5843,7 +5850,6 @@
 <translation id="6817174620439930047">当网站想使用系统专有消息访问 MIDI 设备时询问您（推荐）</translation>
 <translation id="6818198425579322765">要翻译的网页语言</translation>
 <translation id="6818802132960437751">内置病毒防护功能</translation>
-<translation id="682123305478866682">投射桌面</translation>
 <translation id="6823174134746916417">触控板点按即点击</translation>
 <translation id="6824564591481349393">复制电子邮件地址(&amp;E)</translation>
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
@@ -6848,7 +6854,6 @@
 <translation id="7826254698725248775">设备标识符冲突。</translation>
 <translation id="7828731929332799387">这将会删除第三方环境下的所有可用 Cookie 和网站数据。要继续吗？</translation>
 <translation id="7829877209233347340">如需添加学校帐号，请让家长登录并向您授权</translation>
-<translation id="7830594666202422257">连接到 Linux</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到了折扣信息，您就会在此页面上看到相应信息</translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
@@ -7765,7 +7770,6 @@
 <translation id="8755376271068075440">放大(&amp;L)</translation>
 <translation id="875604634276263540">图片网址无效</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
-<translation id="8757090071857742562">无法投射桌面，请查看您是否已确认开始共享屏幕的提示。</translation>
 <translation id="8757203080302669031">此标签页正在主动搜寻蓝牙设备。</translation>
 <translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">启用语音输入（说话即可输入）</translation>
@@ -8196,7 +8200,6 @@
 <translation id="9179524979050048593">在登录屏幕上显示用户名</translation>
 <translation id="9180281769944411366">此过程可能需要几分钟的时间。正在启动 Linux 容器。</translation>
 <translation id="9180380851667544951">该网站可能会共享您的屏幕</translation>
-<translation id="918224512343736195">连接到 SSH</translation>
 <translation id="9182556968660520230">不允许网站播放受保护内容</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帐号登录</translation>

@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> వాటిని బ్యాకప్ చేస్తోంది</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> యొక్క మినహాయింపును తీసివేయి</translation>
 <translation id="4261901459838235729">Google ప్రెజెంటేషన్</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ఫిల్టర్ ఆన్‌లో ఉంది.</translation>
 <translation id="4290535918735525311">Linuxతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="4299729908419173967">బ్రెజిలియన్</translation>
 <translation id="4302605047395093221">ఈ పరికరాన్ని ఉపయోగిస్తున్న ఎవరైనా ఈ మొబైల్ నెట్‌వర్క్‌కు కనెక్ట్ చేయడానికి PINను ఎంటర్ చేయాల్సి ఉంటుంది</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">మరిన్ని...</translation>
 <translation id="4579744207439506346">ఎంచుకున్న అంశాలకు <ph name="ENTRY_NAME" /> కూడా జోడించబడింది.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ఫలితాలను చూపుతోంది.</translation>
+<translation id="4599600860674643278">ఫిల్టర్ రీసెట్ చేయబడింది.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
 <translation id="4631887759990505102">చిత్రకారుడు</translation>
 <translation id="4642769377300286600"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">ఇటాలియన్</translation>
 <translation id="5473333559083690127">కొత్త PINని మళ్లీ నమోదు చేయండి</translation>
 <translation id="5489067830765222292">లాత్వియన్</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ఫిల్టర్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5500122897333236901">ఐస్‌లాండిక్</translation>
 <translation id="5508696409934741614">చుక్కలు</translation>

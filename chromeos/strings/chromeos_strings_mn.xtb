@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Дэлгэц амраагчийн сонголтыг сонгохын тулд онцлогийг асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> зураг</translation>
+<translation id="4793710386569335688">Илүү их тусламж авах бол <ph name="BEGIN_LINK" />Тусламжийн төв<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="4793756956024303490">Шахалтын алгоритм</translation>
 <translation id="4794140124556169553">Төв процессорын нэгжийн туршилтыг ажиллуулах нь таны системийн гүйцэтгэлд нөлөөлж болзошгүй</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Гэр бүл</translation>
+<translation id="5695599963893094957">Гарынхаа дурын товчийг дарна уу. Та нэг дор 4 хүртэлх товч дарах боломжтой.</translation>
 <translation id="5701381305118179107">Төв</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-н <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />-г шинэчлэх</translation>
@@ -424,6 +427,7 @@
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="5866840822086176774">Маш хүчтэй</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
@@ -472,6 +476,7 @@
 <translation id="6348738456043757611">Хэрэглэгчийн нэр болон нууц үг</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
 <translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
+<translation id="6381741036071372448">Гараа шалгана уу</translation>
 <translation id="6388847657025262518">Сканнерын документ дамжуулах тавиур гацсан байна. Дамжуулах тавиурыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="6410257289063177456">Зургийн файлууд</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>

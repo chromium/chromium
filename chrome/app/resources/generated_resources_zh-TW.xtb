@@ -465,6 +465,7 @@
 你授予應用程式的權限可能會存入這個帳戶的設定。你可以前往「<ph name="APPS_LINK_BEGIN" />應用程式設定<ph name="APPS_LINK_END" />」控管 Android 應用程式的權限。</translation>
 <translation id="1448779317883494811">筆刷工具</translation>
 <translation id="1449191289887455076">再次按下「<ph name="CURRENTKEY" />」鍵即可確認指派設定並<ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">已透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
@@ -995,6 +996,7 @@
 <translation id="1938351510777341717">外部 Command 鍵</translation>
 <translation id="1940546824932169984">已連結的裝置</translation>
 <translation id="1941410638996203291">開始時間 <ph name="TIME" /></translation>
+<translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
 <translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
@@ -1069,6 +1071,7 @@
 <translation id="202352106777823113">下載時間過長，網路已中止下載。</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> 正在與你共用網路。</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入你的密碼以進行安全性與登入設定</translation>
 <translation id="2030455719695904263">觸控板</translation>
@@ -2061,7 +2064,6 @@
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
-<translation id="2981474224638493138">分頁/桌面投影品質</translation>
 <translation id="2983373101216420412">充電盒電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2985348301114641460">要傳送「<ph name="EXTENSION_NAME" />」的安裝要求給系統管理員嗎？</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
@@ -2143,6 +2145,7 @@
 <translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
 <translation id="3055113921564083271">已移除的感興趣主題</translation>
 <translation id="3055590424724986000">使用你選取的供應商</translation>
+<translation id="3057660594186523687">無法透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
 <translation id="3059195548603439580">要查看系統元件嗎？請前往</translation>
@@ -2568,6 +2571,7 @@
 <translation id="3507888235492474624">重新掃描藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除你的登入資料</translation>
 <translation id="3508920295779105875">選擇另一個資料夾...</translation>
+<translation id="3509379002674019679">建立、儲存及管理密碼，讓你輕鬆登入網站和應用程式。</translation>
 <translation id="3511200754045804813">重新掃描</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
@@ -3439,7 +3443,6 @@
 <translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
-<translation id="4373966964907728675">正在投放桌面</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案。</translation>
 <translation id="4376226992615520204">已關閉定位功能</translation>
@@ -4015,6 +4018,7 @@
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="496027654926814138">攻擊者可能透過「<ph name="FILE_NAME" />」竊取你的個人資訊。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4961361269522589229">食譜建議</translation>
 <translation id="496185450405387901">你的系統管理員已安裝此應用程式。</translation>
 <translation id="4963789650715167449">移除目前的分頁</translation>
@@ -4712,6 +4716,7 @@
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5659833766619490117">無法翻譯這個網頁的內容</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
+<translation id="5667293444945855280">惡意程式</translation>
 <translation id="5667546120811588575">正在設定 Google Play...</translation>
 <translation id="5668351004957198136">未通過</translation>
 <translation id="56702779821643359">與周遭的人分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5119,7 +5124,6 @@
 <translation id="6080689532560039067">請檢查你的系統時間</translation>
 <translation id="6082877069782862752">對應按鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
-<translation id="6085457109149794212">前往「自訂 Chrome」查看所有資訊卡選項</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
 <translation id="6086846494333236931">由您的管理員安裝</translation>
@@ -5204,7 +5208,6 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166185671393271715">將密碼匯入 Chrome 中</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
-<translation id="6169666352732958425">無法投放桌面。</translation>
 <translation id="6169967265765719844">你可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6170498031581934115">無法啟用 ADB 偵錯。請前往「設定」，然後再試一次。</translation>
@@ -5363,6 +5366,7 @@
 <translation id="6322370287306604163">使用指紋快速解鎖</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325191661371220117">停用自動啟動功能</translation>
+<translation id="6325525973963619867">失敗</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6326855256003666642">Keepalive 數量</translation>
 <translation id="6327785803543103246">網路 Proxy 自動探索</translation>
@@ -5407,6 +5411,7 @@
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6374635887697228982">要取得折扣嗎？</translation>
 <translation id="6377268785556383139">有 1 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
+<translation id="6378392501584240055">開啟 Wi-Fi 網路清單</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="6382616130475191723">可以讀取及變更 <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">沒有無效捷徑</translation>
@@ -5523,6 +5528,7 @@
 <translation id="648927581764831596">沒有可用的裝置</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491376743066338510">授權失敗</translation>
+<translation id="6492526860459984042">正在透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
 <translation id="6494974875566443634">自訂</translation>
@@ -5782,6 +5788,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
 <translation id="6758056191028427665">請讓我們瞭解你的滿意度。</translation>
 <translation id="6759193508432371551">恢復原廠設定</translation>
+<translation id="6761431452438552910">請確認你的藍牙裝置放在附近，且處於配對模式。只配對你信任的裝置。</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6762833852331690540">開啟</translation>
 <translation id="676560328519657314">你的 Google Pay 付款方式</translation>
@@ -5851,7 +5858,6 @@
 <translation id="6817174620439930047">每當有網站要使用系統專用訊息存取 MIDI 裝置時詢問我 (建議使用)</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818802132960437751">內建防毒機制</translation>
-<translation id="682123305478866682">投放桌面</translation>
 <translation id="6823174134746916417">觸控板點按功能</translation>
 <translation id="6824564591481349393">複製電子郵件地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
@@ -6856,7 +6862,6 @@
 <translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
 <translation id="7828731929332799387">這將會刪除第三方內容中使用的所有 Cookie 和網站資料。確定要繼續嗎？</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
-<translation id="7830594666202422257">連線至 Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到相關折扣，會顯示在這個頁面上</translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
@@ -7774,7 +7779,6 @@
 <translation id="8755376271068075440">放大(&amp;L)</translation>
 <translation id="875604634276263540">映像檔網址無效</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
-<translation id="8757090071857742562">無法投放桌面，請檢查您是否已確認要開始分享您的螢幕畫面。</translation>
 <translation id="8757203080302669031">這個分頁正在主動掃描藍牙裝置。</translation>
 <translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
 <translation id="8758418656925882523">啟用語音輸入 (說話即可輸入)</translation>
@@ -8205,7 +8209,6 @@
 <translation id="9179524979050048593">登入畫面上的使用者名稱</translation>
 <translation id="9180281769944411366">正在啟動 Linux 容器，過程可能需要幾分鐘。</translation>
 <translation id="9180380851667544951">網站可以分享你的螢幕畫面</translation>
-<translation id="918224512343736195">連線至 SSH</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>

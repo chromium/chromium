@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Biztonsági másolat készítése a következőkről: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">A(z) <ph name="HOST_NAME" /> webhelyre vonatkozó kivétel eltávolítása</translation>
 <translation id="4261901459838235729">Google-bemutató</translation>
+<translation id="4277536868133419688">A(z) <ph name="FILTER_NAME" /> szűrő be van kapcsolva.</translation>
 <translation id="4290535918735525311">1 mappa megosztva Linuxszal</translation>
 <translation id="4299729908419173967">brazil</translation>
 <translation id="4302605047395093221">Aki az eszközt szeretné használni, meg kell adnia a PIN-kódot a mobilhálózathoz való csatlakozáshoz</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Továbbiak...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> hozzáadva a kijelöléshez.</translation>
 <translation id="4594543368593301662">Keresési eredmények megjelenítése a következőhöz: <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Szűrő visszaállítva.</translation>
 <translation id="4603392156942865207">A(z) <ph name="FILE_NAME" /> másolása ide: <ph name="FOLDER_NAME" />…</translation>
 <translation id="4631887759990505102">Előadó</translation>
 <translation id="4642769377300286600">Mobilprofil telepítése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">olasz</translation>
 <translation id="5473333559083690127">Írja be újra az új PIN-kódot</translation>
 <translation id="5489067830765222292">lett</translation>
+<translation id="5489965683297092283">A(z) <ph name="FILTER_NAME" /> szűrő ki van kapcsolva.</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>

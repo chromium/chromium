@@ -2077,7 +2077,6 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
-<translation id="2981474224638493138">탭/데스크톱 프로젝션 품질</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">관리자에게 '<ph name="EXTENSION_NAME" />' 설치 요청을 전송하시겠습니까?</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
@@ -3455,7 +3454,6 @@
 <translation id="4369121877634339065">검색할 이미지를 드래그하세요.</translation>
 <translation id="4369215744064167350">웹사이트 요청 승인됨</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
-<translation id="4373966964907728675">바탕화면 전송</translation>
 <translation id="4374831787438678295">Linux 설치 프로그램</translation>
 <translation id="4375035964737468845">다운로드한 파일 열기</translation>
 <translation id="4376226992615520204">위치 사용 중지됨</translation>
@@ -4032,6 +4030,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> 파일로 인해 공격자가 개인 정보를 도용할 가능성이 있습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">화면 전송</translation>
 <translation id="4961361269522589229">레시피 아이디어</translation>
 <translation id="496185450405387901">이 앱은 관리자가 설치했습니다.</translation>
 <translation id="4963789650715167449">현재 탭 삭제</translation>
@@ -4730,6 +4729,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5659833766619490117">페이지를 번역할 수 없음</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
+<translation id="5667293444945855280">악성 코드</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
 <translation id="5668351004957198136">실패</translation>
 <translation id="56702779821643359">주변의 사람들과 파일을 공유하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -5137,7 +5137,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6080689532560039067">시스템 시간 확인</translation>
 <translation id="6082877069782862752">키 매핑</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 이름이 지정되지 않은 그룹에 속함</translation>
-<translation id="6085457109149794212">Chrome 맞춤설정에서 모든 카드 옵션을 확인하세요.</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6086004606538989567">인증한 계정은 이 기기에 액세스할 권한이 없습니다.</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
@@ -5222,7 +5221,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
-<translation id="6169666352732958425">데스크톱을 전송할 수 없음</translation>
 <translation id="6169967265765719844">Steam을 통해 설치된 게임 및 앱에 대한 권한은 <ph name="LINK_BEGIN" />Steam 앱 설정<ph name="LINK_END" />에서 관리할 수 있습니다.</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6170498031581934115">ADB 디버깅을 사용 설정할 수 없습니다. 설정으로 이동하여 다시 시도해 보세요.</translation>
@@ -5381,6 +5379,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6322370287306604163">지문으로 신속하게 잠금 해제</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6325191661371220117">자동 실행 사용 안함</translation>
+<translation id="6325525973963619867">실패</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6326855256003666642">프로그램 사용자 수</translation>
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
@@ -5870,7 +5869,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6817174620439930047">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="6818198425579322765">페이지 번역 출발어</translation>
 <translation id="6818802132960437751">내장 바이러스 보호 기능</translation>
-<translation id="682123305478866682">데스크톱 전송</translation>
 <translation id="6823174134746916417">터치패드 탭하여 클릭</translation>
 <translation id="6824564591481349393">이메일 주소 복사(&amp;E)</translation>
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
@@ -6875,7 +6873,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7826254698725248775">기기 식별자가 충돌합니다.</translation>
 <translation id="7828731929332799387">타사와 관련하여 제공되는 모든 쿠키 및 사이트 데이터가 삭제됩니다. 계속하시겠습니까?</translation>
 <translation id="7829877209233347340">부모님에게 로그인하여 학교 계정을 추가할 권한을 부여해 달라고 요청하세요.</translation>
-<translation id="7830594666202422257">Linux에 연결</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google에서 할인 가격을 찾으면 이 페이지에 표시됩니다.</translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>
@@ -7794,7 +7791,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8755376271068075440">크게(&amp;L)</translation>
 <translation id="875604634276263540">이미지 URL이 유효하지 않습니다.</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
-<translation id="8757090071857742562">데스크톱을 전송할 수 없습니다. 화면 공유 시작 메시지를 확인했는지 알아보세요.</translation>
 <translation id="8757203080302669031">이 탭은 현재 블루투스 기기를 검사하고 있습니다.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> 삭제됨</translation>
 <translation id="8758418656925882523">음성기록 사용(말하여 입력)</translation>
@@ -8225,7 +8221,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9179524979050048593">로그인 화면 사용자 이름</translation>
 <translation id="9180281769944411366">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 시작합니다.</translation>
 <translation id="9180380851667544951">사이트에서 화면을 공유할 수 있습니다.</translation>
-<translation id="918224512343736195">SSH 연결</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>

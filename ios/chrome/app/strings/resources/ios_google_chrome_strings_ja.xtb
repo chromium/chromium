@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1096883626080133124">シンプル、安全で、さらに高速になった Google Chrome をご活用ください</translation>
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
@@ -39,7 +38,6 @@
 <translation id="3345341804167540816">Chromeをどこでも使用</translation>
 <translation id="3522659714780527202">どのデバイスからでも Chrome で自分のタブにアクセスするには、同期をオンにしてください</translation>
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
-<translation id="3634910711516114487">Chrome を最大限に活用するには、Google アカウントで Chrome にログインしてください</translation>
 <translation id="3655656110921623717">Chrome は毎回モバイルサイトをリクエストします。</translation>
 <translation id="3706101708757577809">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="3720541637541300822">Chrome を終了するときにシークレット タブをロックする</translation>

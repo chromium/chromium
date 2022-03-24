@@ -6,9 +6,9 @@
 <translation id="1091252999271033193">Энэ нь Chromium тухай бүрд мобайл сайтын хүсэлт тавина гэсэн үг юм.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
+<translation id="1266817106503861676">Энгийн, аюулгүй бөгөөд урьд өмнөхөөс илүү хурдан Chromium-р илүү ихийг хийгээрэй.</translation>
 <translation id="1289216811211435351">Chromium руу сэлгэх</translation>
 <translation id="1361748954329991663">Chromium хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол таны төхөөрөмж Chromium-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
-<translation id="1370204544543370355">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="1431818719585918472">Chromium-д таны Нууцлалтай табуудыг түгжихийг зөвшөөрнө үү.</translation>
 <translation id="1472013873724362412">Таны бүртгэл Chromium-д ажилладаггүй. Нэвтрэхийн тулд та домайн админдаа хандах, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглах боломжтой.</translation>
 <translation id="1507010443238049608">Chromium-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
@@ -31,7 +31,6 @@
 <translation id="2426113998523353159">Танай байгууллага танаас Chromium-г ашиглахын тулд нэвтрэхийг шаардаж байна.</translation>
 <translation id="2450140762465183767">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />-г сонгоно уу</translation>
-<translation id="2567507405773541360">Энгийн, аюулгүй бөгөөд урьд өмнөхөөс илүү хурдан Chromium-р илүү ихийг хийгээрэй</translation>
 <translation id="2590893390871230428">Chromium-н өгөгдлөө синк хийх</translation>
 <translation id="2650312721222849884">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
 <translation id="2684230048001240293">Та өөрийн бүх төхөөрөмж дээрх табууд, нууц үгнүүд болон төлбөрийн мэдээллээ синк хийхийн тулд Chromium-г өгөгдмөлөөр тохируулна уу</translation>
@@ -43,6 +42,7 @@
 <translation id="3256316712990552818">Chromium руу хуулсан</translation>
 <translation id="3344973607274501920">Chromium таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
+<translation id="3567399274263440288">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> энэ төхөөрөмж дээр Chromium-г ашиглаж байсан бөгөөд хавчуурга, нууц үг болон бусад тохиргоог үлдээсэн.</translation>
 <translation id="3805899903892079518">Chromium-д таны зураг, видеонд хандах зөвшөөрөл байхгүй байна. Хандалтыг iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт идэвхжүүлээрэй.</translation>
@@ -86,6 +86,7 @@
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
 <translation id="632825460376924298">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="6337530241089703714">Chromium-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хадгалах эсэхээ сонгоно уу</translation>
+<translation id="6364764337654495917">Chromium-г ашигласнаар та <ph name="BEGIN_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_LINK" /> зөвшөөрч байна.</translation>
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
 <translation id="6752854822223394465">Танай байгууллага Chromium-г тохируулж байна...</translation>
 <translation id="6820823224820483452">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
@@ -106,6 +107,7 @@
 <translation id="7400689562045506105">Chromium-г хүссэн газраа ашиглаарай</translation>
 <translation id="766897673682622022">Өгөгдлийн зөрчлийн улмаас таны нууц үгийг задруулсан байна. Chromium одоо нууц үгээ өөрчлөхийг зөвлөж байна.</translation>
 <translation id="7674213385180944843">Тохиргоо &gt; Нууцлал &gt; Камер &gt; Chromium-г нээж, камерыг асаана уу.</translation>
+<translation id="7724877991918731397">Аппыг сайжруулахад туслахын тулд Chromium ашиглалт болон гэмтлийн тайланг Google-д илгээнэ. <ph name="BEGIN_LINK" />Удирдах<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium-н зөвлөгөө. Буцаах, Урагшлуулах болон Хайх зэрэг зарим товчлуур таны дэлгэцийн доод хэсэгт байрладаг боллоо.</translation>
 <translation id="7763454117143368771">Аюултай сайтуудаас хамгаалалттай байх болон нууц үгнүүдээ аюулгүй байлгахын тулд Chromium-г өгөгдмөл хөтчөөрөө ашиглана уу</translation>
 <translation id="786327964234957808">Та синк хийх бүртгэлийг <ph name="USER_EMAIL1" />-с <ph name="USER_EMAIL2" /> рүү шилжүүлж байна. Таны одоогийн Chromium-н өгөгдлийг <ph name="DOMAIN" />-с удирддаг. Энэ нь таны өгөгдлийг энэ төхөөрөмжөөс устгах хэдий ч эдгээр нь <ph name="USER_EMAIL1" />-д хэвээр үлдэнэ.</translation>

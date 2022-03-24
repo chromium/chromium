@@ -468,6 +468,7 @@
 အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက ဤအကောင့်တွင် အကျုံးဝင်နိုင်သည်။ <ph name="APPS_LINK_BEGIN" />အက်ပ်ဆက်တင်များ<ph name="APPS_LINK_END" /> တွင် Android အက်ပ်များအတွက် ခွင့်ပြုချက်များကို ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="1448779317883494811">ဘရပ်ရှ် တူးလ်</translation>
 <translation id="1449191289887455076">သတ်မှတ်မှုကို အတည်ပြုရန် “<ph name="CURRENTKEY" />” ထပ်နှိပ်ပြီး <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771"><ph name="DEVICE_NAME" /> မှ '<ph name="NETWORK_NAME" />' အတွက် ကွန်ရက်စီစဉ်သတ်မှတ်ချက် ရရှိပြီးပြီ</translation>
 <translation id="1451375123200651445">ဝဘ်စာမျက်နှာ၊ ဖိုင် တစ်ခုတည်း</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />အမှားရှာပြင်မှု မှတ်တမ်းများ<ph name="END_LINK" /> ပို့ရန် (အကြံပြုထားသည်)</translation>
 <translation id="1454223536435069390">လျှပ်&amp;တပြက် ပုံရိုက်ရန်</translation>
@@ -1006,6 +1007,7 @@
 <translation id="1938351510777341717">ပြင်ပကွန်မန်း</translation>
 <translation id="1940546824932169984">ချိတ်ဆက်ထားသော စက်ပစ္စည်းများ</translation>
 <translation id="1941410638996203291">စတင်ချိန်- <ph name="TIME" /></translation>
+<translation id="1941553344801134989">ဗားရှင်း- <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">ဝဘ်ဆိုက်အားလုံးပေါ်ရှိ သင့်ဒေတာအားလုံးကို ဖတ်ရှုခြင်းနှင့် ပြောင်းခြင်း</translation>
 <translation id="1942600407708803723">အဖုံးကို ပိတ်လိုက်သည့်အခါ စက်ပိတ်ရန်</translation>
 <translation id="1944528062465413897">ဘလူးတုသ် တွဲချိတ်ရန်ကုဒ်-</translation>
@@ -1080,6 +1082,7 @@
 <translation id="202352106777823113">ဒေါင်းလုဒ်မှာ သိပ်ကြာနေခဲ့၍ ကွန်ရက်မှ ရပ်ပစ်ခဲ့သည်။</translation>
 <translation id="2024195579772565064">ရှာဖွေရေးအင်ဂျင် ဖျက်ခြင်း</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> မှာ ပျက်စီးသွားပြီ။ တိုးချဲ့မှုကို ပြန်တင်ရန် ဒီပူဖောင်းကို န။</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> က Wi-Fi ကွန်ရက်ကို သင်နှင့် မျှဝေနေသည်။</translation>
 <translation id="2028449514182362831">လှုပ်ရှားမှုအာရုံခံစနစ် လိုအပ်သည့် ဝန်ဆောင်မှုများ အလုပ်လုပ်မည်မဟုတ်ပါ</translation>
 <translation id="202918510990975568">လုံခြုံရေးနှင့် လက်မှတ်ထိုးဝင်ခြင်းကို စီစဉ်သတ်မှတ်ရန် သင့်စကားဝှက်ကို ထည့်ပါ</translation>
 <translation id="2030455719695904263">တာ့ချ်ပက်</translation>
@@ -1516,6 +1519,7 @@
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ကို ဖွင့်နေသည်</translation>
 <translation id="2440604414813129000">ရင်း&amp;မြစ်ကို ကြည့်ရန်</translation>
+<translation id="2441719842399509963">မူလသို့ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="244231003699905658">လိပ်စာ မမှန်ကန်ပါ။ လိပ်စာကို ပြန်စစ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2442916515643169563">စာသားအရိပ်</translation>
 <translation id="2443487764245141020">ဝဘ်ဆိုက်များသည် သတ်မှတ်မှုစနစ်သုံးပြီး သင့်စက်ကို မှတ်သားရန်လည်း လိုအပ်နိုင်သည်</translation>
@@ -2074,7 +2078,6 @@
 <translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
 <translation id="2979639724566107830">ဝင်းဒိုးအသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="2981113813906970160">ကြီးမားသည့် မောက်စ်ညွှန်ပြကိရိယာ ပြရန်</translation>
-<translation id="2981474224638493138">တဘ်/ဒက်စ်တော့ ပုံထိုးပြမှု အရည်အသွေး</translation>
 <translation id="2983373101216420412">နားကြပ်ဘူး ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
 <translation id="2985348301114641460">သင့်စီမံခန့်ခွဲသူထံ "<ph name="EXTENSION_NAME" />" ထည့်သွင်းရန် တောင်းဆိုချက်ပို့မလား။</translation>
 <translation id="2987620471460279764">အခြားစက်ပစ္စည်းမှ မျှဝေထားသော စာတို</translation>
@@ -2156,6 +2159,7 @@
 <translation id="3054766768827382232">ပိတ်လိုက်ခြင်းက သင့်ချိတ်ဆက်ပစ္စည်းများ၏ စွမ်းဆောင်ရည်ကို ပိုမိုကောင်းမွန်စေသော်လည်း ခွင့်ပြုချက်မရသော အသုံးပြုမှုဖြင့် သင့်ကိုယ်ရေးကိုယ်တာဒေတာကို ဖော်ထုတ်နိုင်သည်။</translation>
 <translation id="3055113921564083271">သင်ဖယ်ရှားလိုက်သည့် စိတ်ဝင်စားမှုများ</translation>
 <translation id="3055590424724986000">ဝန်ဆောင်မှုပေးသူကို သင့်စိတ်ကြိုက်ရွေးနိုင်သည်</translation>
+<translation id="3057660594186523687"><ph name="DEVICE_NAME" /> မှ '<ph name="NETWORK_NAME" />' အတွက် ကွန်ရက်စီစဉ်သတ်မှတ်ချက် မရရှိပါ</translation>
 <translation id="3058498974290601450">စင့်ကို ဆက်တင်များထဲတွင် အချိန်မရွေး ဖွင့်နိုင်သည်</translation>
 <translation id="3058517085907878899">စက်ကို အမည်ပေးရန်</translation>
 <translation id="3059195548603439580">စနစ်အစိတ်အပိုင်းများ ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
@@ -2581,6 +2585,7 @@
 <translation id="3507888235492474624">ဘလူးတုသ် စက်များ ပြန်ရှာရန်</translation>
 <translation id="3508492320654304609">သင်၏ လက်မှတ်ထိုးဝင်ခြင်းဒေတာများကို ဖျက်၍မရပါ</translation>
 <translation id="3508920295779105875">နောက် ဖိုလ်ဒါ တစ်ခုကို ရွေးရန်...</translation>
+<translation id="3509379002674019679">ဝဘ်ဆိုက်နှင့် အက်ပ်များသို့ လွယ်ကူစွာလက်မှတ်ထိုးဝင်နိုင်ရန် စကားဝှက်များ ပြုလုပ်ပြီး သိမ်းကာစီမံပါ။</translation>
 <translation id="3511200754045804813">ထပ်ရှာရန်</translation>
 <translation id="3511307672085573050">လင့် လိပ်&amp;စာ ကူးယူရန်</translation>
 <translation id="351152300840026870">သတ်မှတ်-အကျယ် ဖွန့်</translation>
@@ -3453,7 +3458,6 @@
 <translation id="4369121877634339065">ရှာဖွေရန် ပုံပေါ်ဖိဆွဲနိုင်သည်</translation>
 <translation id="4369215744064167350">ဝဘ်ဆိုက်တောင်းဆိုချက် အတည်ပြုလိုက်သည်</translation>
 <translation id="4370975561335139969">အီးမေးလိပ်စာနှင့် သင်ရိုက်ထည့်သော စကားဝှက် ကိုက်ညီမှု မရှိပါ</translation>
-<translation id="4373966964907728675">Casting ဒက်စတော့</translation>
 <translation id="4374831787438678295">Linux ထည့်သွင်းကိရိယာ</translation>
 <translation id="4375035964737468845">ဒေါင်းလုပ်လုပ်ထားသည့် ဖိုင်များ ဖွင့်ရန်</translation>
 <translation id="4376226992615520204">တည်နေရာကို ပိတ်ထားပါသည်</translation>
@@ -3992,7 +3996,7 @@
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> သည် ပရိုဂရမ်အဆက်"<ph name="EXTENSION_NAME" />" နှင့် ဆက်သွယ်လိုသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
-<translation id="4918134162946436591">အရိပ်အမြွက်ထပ်ပိုးလွှာ ပြပါ</translation>
+<translation id="4918134162946436591">ထိန်းချုပ်မှုထပ်ပိုးလွှာ ပြရန်</translation>
 <translation id="4921348630401250116">စာသားမှ စကားပြော</translation>
 <translation id="492299503953721473">Android အက်ပ်များကို ဖယ်ရှားပါ</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
@@ -4030,6 +4034,7 @@
 <translation id="4959262764292427323">မည်သည့်စက်ပစ္စည်းတွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google အကောင့်ထဲတွင် သိမ်းဆည်းထားပါသည်</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> သည် တိုက်ခိုက်သူများအား သင်၏ကိုယ်ရေးကိုယ်တာအချက်လက်များကို ခိုးယူခွင့်ပေးနိုင်သည်။</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
 <translation id="4961361269522589229">ချက်ပြုတ်နည်း စိတ်ကူးများ</translation>
 <translation id="496185450405387901">ဤအက်ပ်ကို သင်၏စီမံခန့်ခွဲသူက ထည့်သွင်းထားပါသည်။</translation>
 <translation id="4963789650715167449">လက်ရှိတဘ်ကို ဖယ်ရှားရန်</translation>
@@ -4728,6 +4733,7 @@
 <translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5659833766619490117">ဤစာမျက်နှာကို ဘာသာပြန်၍ မရပါ</translation>
 <translation id="5662513737565158057">Linux အက်ပ်များ အလုပ်လုပ်ပုံကို ပြောင်းရန်။</translation>
+<translation id="5667293444945855280">အန္တရာယ်ဝဲ</translation>
 <translation id="5667546120811588575">Google Play ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="5668351004957198136">မအောင်မြင်ပါ</translation>
 <translation id="56702779821643359">သင့်အနီးရှိလူများအား ဖိုင်များကို မျှဝေပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -5133,7 +5139,6 @@
 <translation id="6080689532560039067">သင့် စနစ် အချိန်ကို စစ်ကြည့်ရန်</translation>
 <translation id="6082877069782862752">ကီးနေရာချခြင်း</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - အမည်ပေးမထားသော အုပ်စု၏ တစ်စိတ်တစ်ဒေသ</translation>
-<translation id="6085457109149794212">ကတ်ရွေးချယ်မှုအားလုံးကို ‘Chrome စိတ်ကြိုက်လုပ်ခြင်း’ တွင် ကြည့်နိုင်သည်</translation>
 <translation id="6085886413119427067">လုံခြုံသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ဝဘ်ဆိုက်များသို့ ချိတ်ဆက်ရန်နည်းလမ်းကို ဆုံးဖြတ်ပေးသည်</translation>
 <translation id="6086004606538989567">သင်အတည်ပြုလိုက်သောအကောင့်ကို ဤစက်အသုံးပြုရန် ခွင့်ပြုမထားပါ။</translation>
 <translation id="6086846494333236931">သင့်ကြီးကြပ်သူမှ ထည့်သွင်းခဲ့သည်</translation>
@@ -5218,7 +5223,6 @@
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6166185671393271715">Chrome သို့စကားဝှက်များကို သွင်းထည့်ပါ</translation>
 <translation id="6169040057125497443">သင့်မိုက်ကရိုဖုန်းကို စစ်ဆေးပါ။</translation>
-<translation id="6169666352732958425">စားပွဲတင်ကွန်ပျူတာသို့ ကာစ်တ်လုပ်၍ မရပါ</translation>
 <translation id="6169967265765719844">Steam ဖြင့်ထည့်သွင်းထားသော ဂိမ်းနှင့် အက်ပ်များအတွက် ခွင့်ပြုချက်များကို <ph name="LINK_BEGIN" />Steam အက်ပ်ဆက်တင်များ<ph name="LINK_END" /> တွင် စီမံနိုင်သည်။</translation>
 <translation id="6170470584681422115">အသားညှပ်ပေါင်မုန့်</translation>
 <translation id="6170498031581934115">ADB အမှားရှာပြင်ခြင်းကို ဖွင့်၍မရပါ။ 'ဆက်တင်များ' သို့ သွားပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -5378,6 +5382,7 @@
 <translation id="6322370287306604163">လက်ဗွေဖြင့် ပိုမိုမြန်ဆန်စွာ ဖွင့်ပါ</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6325191661371220117">အလိုအလျောက်-စတင်ခြင်း မပြုရန်</translation>
+<translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="6326175484149238433">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
 <translation id="6326855256003666642">Keepalive အရေအတွက်</translation>
 <translation id="6327785803543103246">ဝဘ်ပရောက်စီ အလိုအလျောက် ရှာဖွေမှု</translation>
@@ -5422,6 +5427,7 @@
 <translation id="6374469231428023295">ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="6374635887697228982">လျှော့ဈေးများ ရယူမလား။</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် ၁ ခု</translation>
+<translation id="6378392501584240055">Wi-Fi ကွန်ရက်များတွင် ဖွင့်ရန်</translation>
 <translation id="6380143666419481200">လက်ခံပြီး ဆက်လုပ်ရန်</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> ကိုဖတ်ပြီးပြောင်းရန် ခွင့်ပြုထားသည်</translation>
 <translation id="6382958439467370461">အသုံးမပြုသည့် ဖြတ်လမ်းလင့်ခ်များ မရှိပါ</translation>
@@ -5539,6 +5545,7 @@
 <translation id="648927581764831596">မရနိုင်ပါ</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="6491376743066338510">ခွင့်ပြုချက် မရရှိပါ</translation>
+<translation id="6492526860459984042"><ph name="DEVICE_NAME" /> မှ '<ph name="NETWORK_NAME" />' အတွက် ကွန်ရက်စီစဉ်သတ်မှတ်ချက် ရယူနေသည်</translation>
 <translation id="6494327278868541139">အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု အသေးစိတ်ကို ပြရန်</translation>
 <translation id="6494445798847293442">စီမံခန့်ခွဲမှုဆိုင်ရာ အသိအမှတ်ပြုလက်မှတ် ထုတ်ပေးသူ မဟုတ်ပါ</translation>
 <translation id="6494974875566443634">စိတ်ကြိုက်ပြုလုပ်ခြင်း</translation>
@@ -5796,6 +5803,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ရုပ်ဖျက်)</translation>
 <translation id="6758056191028427665">ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများအတွက် စိတ်ကျေနပ်မှုမည်မျှရှိကြောင်း ပြောပြပေးပါ။</translation>
 <translation id="6759193508432371551">စက်ရုံဆက်တင် ပြန်လည်သပ်မှတ်</translation>
+<translation id="6761431452438552910">သင့်ဘလူးတုသ်သုံးစက်သည် တွဲချိတ်ခြင်းမုဒ်တွင် ရှိပြီး အနီးအနားတွင် ရှိနေကြောင်း သေချာပါစေ။ သင်ယုံကြည်ရသော စက်များနှင့်သာ တွဲချိတ်ပါ။</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">ဖွင့်ထားသည်</translation>
 <translation id="676560328519657314">Google Pay ရှိ သင်၏ငွေပေးချေနည်းလမ်းများ</translation>
@@ -5865,7 +5873,6 @@
 <translation id="6817174620439930047">MIDI စက်ပစ္စည်းများကို အသုံးပြုရန်အတွက် စနစ်သီးခြားမက်ဆေ့ဂျ်များအား ဝဘ်ဆိုက်က အသုံးပြုလိုသည့်အခါ မေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="6818198425579322765">ပြန်ဆိုရမည့် စာမျက်နှာ၏ ဘာသာစကား</translation>
 <translation id="6818802132960437751">အသင့်ပါ ဗိုင်းရပ်စ်ကာကွယ်ရေး</translation>
-<translation id="682123305478866682">ဒက်စ်တော့ကို ကာစ် လုပ်ရန်</translation>
 <translation id="6823174134746916417">တာ့ချ်ပက် နှိပ်ရန်အတွက် တို့ရန်</translation>
 <translation id="6824564591481349393">အီးမေးလ် လိပ်စာ &amp;ကူးယူရန်</translation>
 <translation id="6824584962142919697">&amp;စာမျက်နှာအတွင်းရှိ အရာများကို စစ်ဆေးရန်</translation>
@@ -6870,7 +6877,6 @@
 <translation id="7826254698725248775">စက်ပစ္စည်းသတ်မှတ်မှုစနစ် ထပ်နေသည်</translation>
 <translation id="7828731929332799387">၎င်းက ပြင်ပအခြေအနေများတွင် ရရှိနိုင်သော ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာအားလုံးကို ဖျက်လိုက်ပါမည်။ ရှေ့ဆက်လိုသလား။</translation>
 <translation id="7829877209233347340">ကျောင်းအကောင့်ထည့်ရန်အတွက် ခွင့်ပြုချက်ပေးရန် မိဘကို လက်မှတ်ထိုးဝင်ခိုင်းပါ</translation>
-<translation id="7830594666202422257">Linux သို့ ချိတ်ဆက်ရန်</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /><ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google သည် လျှော့ဈေးကိုတွေ့ပါက ၎င်းကို ဤစာမျက်နှာတွင် ပြပါမည်</translation>
 <translation id="7833720883933317473">သိမ်းဆည်းထားသော စိတ်ကြိုက်စကားလုံးများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
@@ -7787,7 +7793,6 @@
 <translation id="8755376271068075440">&amp;ပိုကြီး</translation>
 <translation id="875604634276263540">ပုံ url မမှန်ကန်ပါ</translation>
 <translation id="8756969031206844760">စကားဝှက်ကို အပ်ဒိတ်လုပ်လိုပါသလား။</translation>
-<translation id="8757090071857742562">စားပွဲတင်ကွန်ပျူတာကို ကာစ်တ်မလုပ်နိုင်ပါ။ သင့်ဖန်သားပြင်ကို မျှဝေရန် မေးမြန်းမှုကို အတည်ပြုခဲ့ခြင်းရှိမရှိ စစ်ဆေးပါ။</translation>
 <translation id="8757203080302669031">ဤတဘ်က ဘလူးတုသ်သုံးစက်များကို ယခု ရှာနေသည်။</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ကို ဖယ်ရှားလိုက်ပြီ</translation>
 <translation id="8758418656925882523">နှုတ်တိုက်ချပေးခြင်းကို ဖွင့်ရန် (စာရိုက်ရန် စကားပြောပါ)</translation>
@@ -8218,7 +8223,6 @@
 <translation id="9179524979050048593">လက်မှတ်ထိုးဝင်ရန် ဖန်သားပြင်ရှိ အသုံးပြုသူအမည်</translation>
 <translation id="9180281769944411366">ဤလုပ်ဆောင်ချက်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပါသည်။ Linux ကွန်တိန်နာကို စတင်နေသည်။</translation>
 <translation id="9180380851667544951">ဝဘ်ဆိုက်က သင့်မျက်နှာပြင်ကို မျှဝေနိုင်သည်</translation>
-<translation id="918224512343736195">SSH သို့ ချိတ်ဆက်ခြင်း</translation>
 <translation id="9182556968660520230">ကာကွယ်ထားသော အကြောင်းအရာကိုဖွင့်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{အက်ပ်}other{အက်ပ် # ခု}}</translation>
 <translation id="9186963452600581158">ကလေး၏ Google Account ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>

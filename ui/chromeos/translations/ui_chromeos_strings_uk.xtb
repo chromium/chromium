@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Створюється резервна копія: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Видалити виняток для хосту <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Презентація Google</translation>
+<translation id="4277536868133419688">Фільтр "<ph name="FILTER_NAME" />" увімкнено.</translation>
 <translation id="4290535918735525311">Linux має доступ до 1 папки</translation>
 <translation id="4299729908419173967">бразильська</translation>
 <translation id="4302605047395093221">Щоб під’єднатися до цієї мобільної мережі, усі користувачі пристрою мають вводити PIN-код</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Інші...</translation>
 <translation id="4579744207439506346">Додано до вибраного: <ph name="ENTRY_NAME" />.</translation>
 <translation id="4594543368593301662">Результати для запиту "<ph name="SEARCH_TERM" />".</translation>
+<translation id="4599600860674643278">Фільтр скинуто.</translation>
 <translation id="4603392156942865207">Копіювання файлу <ph name="FILE_NAME" /> у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4631887759990505102">Виконавець</translation>
 <translation id="4642769377300286600">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" />; оператор: <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Італійська</translation>
 <translation id="5473333559083690127">Ще раз введіть новий PIN-код</translation>
 <translation id="5489067830765222292">Латвійська</translation>
+<translation id="5489965683297092283">Фільтр "<ph name="FILTER_NAME" />" вимкнено.</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5500122897333236901">Ісландська</translation>
 <translation id="5508696409934741614">Крапки</translation>

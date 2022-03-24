@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" />ଟି ବ୍ୟାକ୍‍ଅପ୍ ନିଆଯାଉଛି</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ପାଇଁ ବ୍ୟତିକ୍ରମକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4261901459838235729">Google ଉପସ୍ଥାପନା</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ଫିଲ୍ଟର ଚାଲୁ ଅଛି।</translation>
 <translation id="4290535918735525311">Linux ସହ 1ଟି ଫୋଲ୍ଡର୍ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4299729908419173967">ବ୍ରାଜିଲିଆନ୍</translation>
 <translation id="4302605047395093221">ଏହି ଡିଭାଇସ୍ ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତିଙ୍କୁ ଏହି ମୋବାଇଲ ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବା ପାଇଁ PIN ଲେଖିବାକୁ ପଡ଼ିବ</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">ଅଧିକ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" />କୁ ବଛାଯାଇଛି।</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ପାଇଁ ଫଳାଫଳ ଦେଖାଉଛି।</translation>
+<translation id="4599600860674643278">ଫିଲ୍ଟର ରିସେଟ କରାଯାଇଛି।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> କପି କରାଯାଉଛି</translation>
 <translation id="4631887759990505102">କଳାକାର</translation>
 <translation id="4642769377300286600">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର ନେଟୱାର୍କ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ଇନଷ୍ଟଲ୍ କରାଯାଉଛି</translation>
@@ -523,6 +525,7 @@
 <translation id="5469868506864199649">ଇଟାଲିୟାନ୍</translation>
 <translation id="5473333559083690127">ନୂଆ PIN ପୁଣି ଲେଖନ୍ତୁ</translation>
 <translation id="5489067830765222292">ଲାତଭିଆନ୍</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ଫିଲ୍ଟର ବନ୍ଦ ଅଛି।</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5500122897333236901">ଆଇସ୍ଲେଣ୍ଡିକ୍</translation>
 <translation id="5508696409934741614">ଡଟ୍</translation>

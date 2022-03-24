@@ -2077,7 +2077,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981113813906970160">Visa stor muspekare</translation>
-<translation id="2981474224638493138">Projektionskvalitet för flik/skrivbord</translation>
 <translation id="2983373101216420412">Fodralets batterinivå är på <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Vill du skicka en begäran om att installera <ph name="EXTENSION_NAME" /> till administratören?</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
@@ -3457,7 +3456,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4369121877634339065">Dra över en bild för att söka</translation>
 <translation id="4369215744064167350">Webbplatsbegäran har godkänts</translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
-<translation id="4373966964907728675">Skrivbordet castas</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
 <translation id="4375035964737468845">Öppna nedladdade filer</translation>
 <translation id="4376226992615520204">Plats har inaktiverats</translation>
@@ -4034,6 +4032,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> kan göra att angripare stjäl dina personliga uppgifter.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4961361269522589229">receptförslag</translation>
 <translation id="496185450405387901">Den här appen har installerats av administratören.</translation>
 <translation id="4963789650715167449">Ta bort aktuell flik</translation>
@@ -4731,6 +4730,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5659833766619490117">Det gick inte att översätta sidan</translation>
 <translation id="5662513737565158057">Ändra hur Linux-appar fungerar.</translation>
+<translation id="5667293444945855280">Skadlig programvara</translation>
 <translation id="5667546120811588575">Google Play konfigureras …</translation>
 <translation id="5668351004957198136">Ej godkänd</translation>
 <translation id="56702779821643359">Dela filer med andra i närheten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -5138,7 +5138,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6080689532560039067">Kontrollera systemtiden</translation>
 <translation id="6082877069782862752">Tangentmappning</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – ingår i namnlös grupp</translation>
-<translation id="6085457109149794212">Se alla kortalternativ i Anpassa Chrome</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
 <translation id="6086004606538989567">Kontot som du har verifierat har inte åtkomstbehörighet till den här enheten.</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
@@ -5223,7 +5222,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166185671393271715">Importera lösenord till Chrome</translation>
 <translation id="6169040057125497443">Kontrollera mikrofonen.</translation>
-<translation id="6169666352732958425">Det gick inte att casta skrivbordet.</translation>
 <translation id="6169967265765719844">Behörigheter för spel och appar som installerats via Steam kan hanteras i <ph name="LINK_BEGIN" />inställningarna för Steam-appen<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Smörgås</translation>
 <translation id="6170498031581934115">Det gick inte att aktivera felsökning med ADB. Öppna inställningarna och försök igen.</translation>
@@ -5382,6 +5380,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6322370287306604163">Lås upp snabbare med fingeravtryck</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6325191661371220117">Inaktivera automatisk start</translation>
+<translation id="6325525973963619867">Misslyckades</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6326855256003666642">Antal keepalive</translation>
 <translation id="6327785803543103246">Automatisk identifiering av webbproxy</translation>
@@ -5871,7 +5870,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6817174620439930047">Fråga när en webbplats vill använda systemexklusiva meddelanden för att komma åt MIDI-enheter (rekommenderas)</translation>
 <translation id="6818198425579322765">Språk på sidan som ska översättas</translation>
 <translation id="6818802132960437751">Inbyggt virusskydd</translation>
-<translation id="682123305478866682">Casta skrivbordet</translation>
 <translation id="6823174134746916417">Lätt klick på styrplattan</translation>
 <translation id="6824564591481349393">Kopiera &amp;e-postadress</translation>
 <translation id="6824584962142919697">&amp;Inspektera element</translation>
@@ -6876,7 +6874,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7826254698725248775">Motstridiga enhetsidentifierare.</translation>
 <translation id="7828731929332799387">Med denna åtgärd raderas alla cookies och webbplatsuppgifter som är tillgängliga i sammanhang där en tredje part är inblandad. Vill du fortsätta?</translation>
 <translation id="7829877209233347340">Be en förälder att logga in och ge behörighet att lägga till ett skolkonto</translation>
-<translation id="7830594666202422257">Anslut till Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Om Google hittar en rabatt visas den på denna sida</translation>
 <translation id="7833720883933317473">Sparade anpassade ord visas här</translation>
@@ -7794,7 +7791,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8755376271068075440">&amp;Större</translation>
 <translation id="875604634276263540">Avbildningens webbadress är ogiltig</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
-<translation id="8757090071857742562">Det gick inte att casta skrivbordet. Kontrollera att du har svarat på frågan om att dela skärmen.</translation>
 <translation id="8757203080302669031">Aktiv sökning efter Bluetooth-enheter på fliken.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> har tagits bort</translation>
 <translation id="8758418656925882523">Aktivera diktering (skriv genom att tala)</translation>
@@ -8225,7 +8221,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9179524979050048593">Användarnamn på inloggningsskärmen</translation>
 <translation id="9180281769944411366">Detta kan ta några minuter. Linux-containern startas.</translation>
 <translation id="9180380851667544951">Webbplatsen kan dela din skärm</translation>
-<translation id="918224512343736195">Anslut till SSH</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# appar}}</translation>
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>

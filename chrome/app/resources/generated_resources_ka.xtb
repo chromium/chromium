@@ -2061,7 +2061,6 @@
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
 <translation id="2979639724566107830">ახალ ფანჯარაში გახსნა</translation>
 <translation id="2981113813906970160">აჩვენეთ მაუსის დიდი კურსორი</translation>
-<translation id="2981474224638493138">ჩანართზე/დესკტოპზე პროექციის ხარისხი</translation>
 <translation id="2983373101216420412">სათავსოს ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">გსურთ, გაუგზავნოთ ადმინისტრატორს „<ph name="EXTENSION_NAME" />“-ის ინსტალაციის მოთხოვნა?</translation>
 <translation id="2987620471460279764">სხვა მოწყობილობიდან გაზიარებული ტექსტი</translation>
@@ -3441,7 +3440,6 @@
 <translation id="4369121877634339065">ძიებისთვის ჩავლებით გადაიტანეთ ნებისმიერ სურათზე</translation>
 <translation id="4369215744064167350">ვებსაიტის მოთხოვნა დაკმაყოფილდა</translation>
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
-<translation id="4373966964907728675">დესკტოპის ტრანსლირება</translation>
 <translation id="4374831787438678295">Linux ინსტალატორი</translation>
 <translation id="4375035964737468845">გახსენით გადმოწერილი ფაილი</translation>
 <translation id="4376226992615520204">მდებარეობა გამორთულია</translation>
@@ -4017,6 +4015,7 @@
 <translation id="4959262764292427323">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" />-მა, შესაძლოა, საშუალება მისცეს თავდამსხმელებს, მოიპარონ თქვენი პერსონალური ინფორმაცია.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
 <translation id="4961361269522589229">რეცეპტების იდეეები</translation>
 <translation id="496185450405387901">ეს აპი დაინსტალირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="4963789650715167449">ამჟამინდელი ჩანართის ამოშლა</translation>
@@ -4714,6 +4713,7 @@
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="5659833766619490117">ეს გვერდი ვერ ითარგმნა</translation>
 <translation id="5662513737565158057">შეცვალეთ Linux აპების მუშაობის პრინციპი.</translation>
+<translation id="5667293444945855280">საზიანო პროგრამა</translation>
 <translation id="5667546120811588575">მიმდინარეობს Google Play-ს დაყენება...</translation>
 <translation id="5668351004957198136">მარცხით დასრულდა</translation>
 <translation id="56702779821643359">გაუზიარეთ ფაილები თქვენ გარშემო მყოფ ადამიანებს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -5121,7 +5121,6 @@
 <translation id="6080689532560039067">შეამოწმეთ სისტემის დრო</translation>
 <translation id="6082877069782862752">კლავიშების ასახვა</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> — უსახელო ჯგუფის ნაწილი</translation>
-<translation id="6085457109149794212">გაეცანით ბარათებთან დაკავშირებულ ყველა ვარიანტს „Chrome-ის მორგების“ სექციიდან</translation>
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
 <translation id="6086004606538989567">ანგარიშს, რომელიც დაადასტურეთ, არ აქვს ამ მოწყობილობაზე წვდომის უფლება.</translation>
 <translation id="6086846494333236931">დაინსტალირებულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -5206,7 +5205,6 @@
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166185671393271715">პაროლების იმპორტი Chrome-ში</translation>
 <translation id="6169040057125497443">შეამოწმეთ თქვენი მიკროფონი.</translation>
-<translation id="6169666352732958425">დესკტოპის ტრანსლირება შეუძლებელია.</translation>
 <translation id="6169967265765719844">Steam-ის მეშვეობით დაინტალირებული თამაშებისა და აპების ნებართვების მართვა შესაძლებელია <ph name="LINK_BEGIN" />Steam აპის პარამეტრებიდან<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">სენდვიჩი</translation>
 <translation id="6170498031581934115">ADB გამართვის ჩართვა ვერ მოხერხდა. გადადით პარამეტრებზე და ცადეთ ხელახლა.</translation>
@@ -5365,6 +5363,7 @@
 <translation id="6322370287306604163">განბლოკეთ უფრო სწრაფად თითის ანაბეჭდის მეშვეობით</translation>
 <translation id="6324916366299863871">მალსახმობის რედაქტირება</translation>
 <translation id="6325191661371220117">ავტომატური გაშვების გამორთვა</translation>
+<translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="6326175484149238433">Chrome-იდან წაშლა</translation>
 <translation id="6326855256003666642">აქტიურად შენარჩუნებათა რაოდენობა</translation>
 <translation id="6327785803543103246">ვებ პროქსი-სერვერის ავტომატური აღმოჩენა</translation>
@@ -5854,7 +5853,6 @@
 <translation id="6817174620439930047">შეკითხვა, როცა საიტს MIDI მოწყობილობებზე წვდომისთვის სისტემის ექსკლუზიური შეტყობინების გამოყენება სურს (რეკომენდებულია)</translation>
 <translation id="6818198425579322765">სათარგმნი გვერდის ენა</translation>
 <translation id="6818802132960437751">ვირუსებისგან ჩაშენებული დაცვა</translation>
-<translation id="682123305478866682">დესკტოპის ტრანსლირება</translation>
 <translation id="6823174134746916417">სენსორული პანელზე შეხებით დაწკაპუნება</translation>
 <translation id="6824564591481349393">&amp;ელფოსტის მისამართის კოპირება</translation>
 <translation id="6824584962142919697">ელემენტების შ&amp;ემოწმება</translation>
@@ -6859,7 +6857,6 @@
 <translation id="7826254698725248775">მოწყობილობის იდენტიფიკატორი კონფლიქტშია.</translation>
 <translation id="7828731929332799387">ეს ქმედება წაშლის ყველა იმ ქუქი-ჩანაწერსა და საიტების მონაცემს, რომელიც ხელმისაწვდომია მესამე მხარის კონტექსტებში. გსურთ გაგრძელება?</translation>
 <translation id="7829877209233347340">სასწავლებლის ანგარიშის დამატების ნებართვის მოსანიჭებლად სთხოვეთ მშობელს სისტემაში შესვლა</translation>
-<translation id="7830594666202422257">Linux-თან დაკავშირება</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">თუ Google იპოვის ფასდაკლებას, მას ამ გვერდზე იხილავთ</translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>
@@ -7775,7 +7772,6 @@
 <translation id="8755376271068075440">&amp;უფრო დიდი</translation>
 <translation id="875604634276263540">სურათის url არასწორია</translation>
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
-<translation id="8757090071857742562">დესკტოპის ტრანსლირება შეუძლებელია. შეამოწმეთ, დადასტურებული გაქვთ თუ არა თქვენი ეკრანის გაზიარების დაწყების შესახებ მოთხოვნა.</translation>
 <translation id="8757203080302669031">ეს ჩანართი აქტიურად ასკანირებს Bluetooth მოწყობილობებს.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> წაიშალა</translation>
 <translation id="8758418656925882523">კარნახის (ტექსტის წარმოთქმით აკრეფის) ჩართვა</translation>
@@ -8206,7 +8202,6 @@
 <translation id="9179524979050048593">შესვლის ეკრანის მომხმარებლის სახელი</translation>
 <translation id="9180281769944411366">მიმდინარეობს Linux კონტეინერის გაშვება, რასაც შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="9180380851667544951">საიტს შეუძლია თქვენი ეკრანის გაზიარება</translation>
-<translation id="918224512343736195">SSH-თან დაკავშირება</translation>
 <translation id="9182556968660520230">საიტებისთვის დაცული კონტენტის დაკვრის აკრძალვა</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{აპი}other{# აპი}}</translation>
 <translation id="9186963452600581158">თქვენი შვილის Google ანგარიშით შესვლა</translation>

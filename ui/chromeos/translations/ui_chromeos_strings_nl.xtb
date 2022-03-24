@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Back-up van <ph name="FILE_COUNT" /> maken</translation>
 <translation id="4218274196133425560">Uitzondering voor <ph name="HOST_NAME" /> verwijderen</translation>
 <translation id="4261901459838235729">Google-presentatie</translation>
+<translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
 <translation id="4290535918735525311">1 map gedeeld met Linux</translation>
 <translation id="4299729908419173967">Braziliaans</translation>
 <translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode opgeven om verbinding te maken met dit mobiele netwerk</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> aan selectie toegevoegd.</translation>
 <translation id="4594543368593301662">Resultaten voor <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Het filter is gereset.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopiëren naar <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artiest</translation>
 <translation id="4642769377300286600">Mobiel profiel installeren, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -530,6 +532,7 @@
 <translation id="5469868506864199649">Italiaans</translation>
 <translation id="5473333559083690127">Pincode opnieuw opgeven</translation>
 <translation id="5489067830765222292">Lets</translation>
+<translation id="5489965683297092283">Het filter <ph name="FILTER_NAME" /> staat uit.</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>

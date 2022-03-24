@@ -579,6 +579,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2505268675989099013">Protect account</translation>
 <translation id="2509167091171468975">Food and grocery retailers</translation>
 <translation id="2512101340618156538">Not allowed (default)</translation>
+<translation id="2512413427717747692">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Create form</translation>
@@ -881,6 +882,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3366477098757335611">View cards</translation>
 <translation id="3369192424181595722">Clock error</translation>
 <translation id="3369459162151165748">Vehicle parts and accessories</translation>
+<translation id="3371064404604898522">Set Chrome as the default browser</translation>
 <translation id="3371076217486966826"><ph name="URL" /> wants to:
       • Create a 3D map of your surroundings and track camera position
       • Use your camera</translation>
@@ -1098,6 +1100,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3969052498612555048">Can't find your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
+<translation id="3978338123949022456">Search mode, type a query and press Enter to search with <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Birds</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987940399970879459">Less than 1 MB</translation>
@@ -1927,6 +1930,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6319249456820053699">Cameras and camcorders</translation>
 <translation id="6321917430147971392">Check your DNS settings</translation>
 <translation id="6322182122604171028">Couldn't use Windows Hello</translation>
+<translation id="6326947323444967009">Set Chrome as the system's default browser in iOS settings</translation>
 <translation id="6328639280570009161">Try disabling network prediction</translation>
 <translation id="6328784461820205019">'Your connection is not private' or '&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;' or '&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;' or '&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;' or '&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;' or 'SSL certificate error'</translation>
 <translation id="6328786501058569169">This site is deceptive</translation>
@@ -2889,6 +2893,7 @@ Additional details:
 <translation id="908796725011587895">University sports</translation>
 <translation id="9089260154716455634">Off-hours policy:</translation>
 <translation id="9095388113577226029">More languages...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab and then Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="9096679202588811390">TV shows and programmes</translation>
 <translation id="9101630580131696064">Tray 1</translation>
 <translation id="9103537084693478942">Video software</translation>

@@ -2057,7 +2057,6 @@
 <translation id="2977480621796371840">Топтан өшіру</translation>
 <translation id="2979639724566107830">Жаңа терезеде ашу</translation>
 <translation id="2981113813906970160">Үлкен тінтуір курсорын көрсету</translation>
-<translation id="2981474224638493138">Қойынды/жұмыс үстелін проекциялау сапасы</translation>
 <translation id="2983373101216420412">Қап батареясының деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2985348301114641460">Әкімшіңізге "<ph name="EXTENSION_NAME" />" орнату туралы сұрау жіберу керек пе?</translation>
 <translation id="2987620471460279764">Басқа құрылғылардан келген мәтін</translation>
@@ -3437,7 +3436,6 @@
 <translation id="4369121877634339065">Іздеу үшін кез келген суретті сүйреңіз.</translation>
 <translation id="4369215744064167350">Веб-сайтқа кіру сұрауы мақұлданды</translation>
 <translation id="4370975561335139969">Сіз енгізген электрондық пошта және құпия сөз сәйкес емес</translation>
-<translation id="4373966964907728675">Жұмыс үстелі трансляциялануда</translation>
 <translation id="4374831787438678295">Linux орнату құралы</translation>
 <translation id="4375035964737468845">Жүктелген файлдарды ашу</translation>
 <translation id="4376226992615520204">Локация өшірулі.</translation>
@@ -4013,6 +4011,7 @@
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> файлы хакерлердің жеке ақпаратыңызды ұрлауына мүмкіндік беруі мүмкін.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Экран трансляциясы</translation>
 <translation id="4961361269522589229">рецепт идеялары</translation>
 <translation id="496185450405387901">Бұл қолданбаны әкімшіңіз орнатты.</translation>
 <translation id="4963789650715167449">Ағымдағы қойындыны өшіру</translation>
@@ -5117,7 +5116,6 @@
 <translation id="6080689532560039067">Жүйе уақытын тексеру</translation>
 <translation id="6082877069782862752">Кілтті түрлендіру</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: атаусыз топқа кіреді</translation>
-<translation id="6085457109149794212">Картаның барлық параметрін "Chrome браузерін реттеу" бөлімінен қараңыз.</translation>
 <translation id="6085886413119427067">Қорғалған байланыс арқылы веб-сайттарға қосылу әдісін анықтайды.</translation>
 <translation id="6086004606538989567">Растаған аккаунтыңыздың бұл құрылғыны пайдалануға рұқсаты жоқ.</translation>
 <translation id="6086846494333236931">Әкімші орнатқан</translation>
@@ -5202,7 +5200,6 @@
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6166185671393271715">Құпия сөздерді Chrome жүйесіне импорттау</translation>
 <translation id="6169040057125497443">Микрофонды тексеріңіз.</translation>
-<translation id="6169666352732958425">Жұмыс үстелі трансляцияланбайды.</translation>
 <translation id="6169967265765719844">Steam арқылы орнатылған ойындар мен қолданбаларға арналған рұқсаттарды <ph name="LINK_BEGIN" />Steam қолданбасы параметрлерінен<ph name="LINK_END" /> басқаруға болады.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">ADB түзетуі қосылмады. "Параметрлер" бөліміне өтіп, қайта қосып көріңіз.</translation>
@@ -5361,6 +5358,7 @@
 <translation id="6322370287306604163">Саусақ ізімен құлыпты жылдам ашу</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
 <translation id="6325191661371220117">Автоматты іске қосуды өшіру</translation>
+<translation id="6325525973963619867">Қате шықты</translation>
 <translation id="6326175484149238433">Chrome бағдарламасынан жою</translation>
 <translation id="6326855256003666642">Кеңейтімдер қолданатын процестер саны</translation>
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
@@ -5850,7 +5848,6 @@
 <translation id="6817174620439930047">Сайт MIDI құрылғыларына кіру үшін жүйенің айрықша хабарларын пайдаланғысы келетіні сұралсын (ұсынылады)</translation>
 <translation id="6818198425579322765">Беттің аударма тілі</translation>
 <translation id="6818802132960437751">Ендірілген вирустан қорғау жүйесі</translation>
-<translation id="682123305478866682">Жұмыс үстелін тарату</translation>
 <translation id="6823174134746916417">Сенсорлық тақтаны басу үшін түрту</translation>
 <translation id="6824564591481349393">&amp;Электрондық пошта мекенжайын көшіру</translation>
 <translation id="6824584962142919697">&amp;Элементтерді тексеру</translation>
@@ -6855,7 +6852,6 @@
 <translation id="7826254698725248775">Құрылғы идентификаторы сәйкес келмейді.</translation>
 <translation id="7828731929332799387">Бөгде сайттардағы cookie файлдары мен сайт деректерінің барлығы жойылады. Жалғастырғыңыз келе ме?</translation>
 <translation id="7829877209233347340">Ата-анаңыздан кіріп, мектеп аккаунтын енгізуге рұқсат беруін сұраңыз.</translation>
-<translation id="7830594666202422257">Linux жүйесіне жалғану</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google жеңілдік тапса, оны осы беттен көресіз.</translation>
 <translation id="7833720883933317473">Сақталған арнаулы сөздер осы жерге шығады</translation>
@@ -7771,7 +7767,6 @@
 <translation id="8755376271068075440">&amp;Үлкенірек</translation>
 <translation id="875604634276263540">Кескіннің URL мекенжайы жарамсыз.</translation>
 <translation id="8756969031206844760">Құпия сөз жаңартылсын ба?</translation>
-<translation id="8757090071857742562">Жұмыс үстелін трансляциялау мүмкін емес. Экранды бөлісу сұрауын растағаныңызға көз жеткізіңіз.</translation>
 <translation id="8757203080302669031">Бұл қойынды Bluetooth құрылғыларын белсенді түрде іздеп жатыр.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> өшірілді.</translation>
 <translation id="8758418656925882523">Дауыспен енгізу (мәтінді айтып теру) функциясын қосу</translation>
@@ -8202,7 +8197,6 @@
 <translation id="9179524979050048593">Кіру экранындағы пайдаланушы аты</translation>
 <translation id="9180281769944411366">Бұл процесс бірнеше минутқа созылуы мүмкін. Linux контейнері іске қосылуда.</translation>
 <translation id="9180380851667544951">Сайт экраныңызды бөлісе алады</translation>
-<translation id="918224512343736195">SSH арқылы қосылу</translation>
 <translation id="9182556968660520230">Сайттардың қорғалған мазмұнды ойнатуына рұқсат бермеу</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Қолданба}other{# қолданба}}</translation>
 <translation id="9186963452600581158">Баланың Google аккаунтымен кіру</translation>

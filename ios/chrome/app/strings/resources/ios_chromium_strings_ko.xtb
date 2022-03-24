@@ -8,7 +8,6 @@
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
-<translation id="1370204544543370355">Chromium을 최대한으로 활용하려면 Google 계정을 사용해 Chromium에 로그인하세요</translation>
 <translation id="1431818719585918472">Chromium에서 시크릿 탭을 잠그도록 허용합니다.</translation>
 <translation id="1472013873724362412">계정이 Chromium에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정을 사용하여 로그인하세요.</translation>
 <translation id="1507010443238049608">Chromium의 기능 및 성능 개선에 참여</translation>
@@ -31,7 +30,6 @@
 <translation id="2426113998523353159">조직에서 Chromium을 사용하려면 로그인해야 합니다.</translation>
 <translation id="2450140762465183767">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />을 선택합니다.</translation>
-<translation id="2567507405773541360">더욱 심플하고 안전하며 그 어느 때보다도 빠른 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>

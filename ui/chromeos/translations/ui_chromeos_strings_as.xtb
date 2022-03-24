@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" />ৰ বেকআপ লৈ থকা হৈছে</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />ৰ বাবে ব্যতিক্ৰম আঁতৰাওক</translation>
 <translation id="4261901459838235729">Googleৰ উপস্থাপন</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ফিল্টাৰটো অন হৈ আছে।</translation>
 <translation id="4290535918735525311">Linuxৰ মাধ্যমেৰে ১টা ফল্ডা’ৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4299729908419173967">ব্ৰাজিলিয়ান</translation>
 <translation id="4302605047395093221">এই ডিভাইচটো ব্যৱহাৰ কৰি থকা যিকোনো লোকে এই ম’বাইল নেটৱৰ্কটোৰ সৈতে সংযোগ কৰিবলৈ পিনটো দিব লাগিব</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">অধিক…</translation>
 <translation id="4579744207439506346">বাছনিত <ph name="ENTRY_NAME" /> যোগ কৰা হৈছে।</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />ৰ ফলাফল দেখুওৱা হৈছে।</translation>
+<translation id="4599600860674643278">ফিল্টাৰ ৰিছেট কৰা হৈছে।</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ফাইলটো <ph name="FOLDER_NAME" />লৈ প্ৰতিলিপি কৰি থকা হৈছে</translation>
 <translation id="4631887759990505102">শিল্পী</translation>
 <translation id="4642769377300286600">ম’বাইলৰ প্ৰ’ফাইল ইনষ্টল কৰি থকা হৈছে, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">ইটালিয়ান</translation>
 <translation id="5473333559083690127">আপোনাৰ নতুন পিনটো আকৌ দিয়ক</translation>
 <translation id="5489067830765222292">লাটভিয়ান</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টাৰটো অফ হৈ আছে।</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
 <translation id="5500122897333236901">আইচলেণ্ডীয়</translation>
 <translation id="5508696409934741614">ডট্‌</translation>

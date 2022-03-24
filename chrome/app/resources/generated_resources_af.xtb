@@ -2080,7 +2080,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2977480621796371840">Verwyder uit groep</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
 <translation id="2981113813906970160">Wys groot muismerker</translation>
-<translation id="2981474224638493138">Gehalte van oortjie- of werkskermprojeksie</translation>
 <translation id="2983373101216420412">Houer se batteryvlak <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Stuur 'n versoek na jou administrateur om "<ph name="EXTENSION_NAME" />" te installeer?</translation>
 <translation id="2987620471460279764">Teks van ander toestel af gedeel</translation>
@@ -3462,7 +3461,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4369121877634339065">Sleep oor enige prent om te soek</translation>
 <translation id="4369215744064167350">Webwerfversoek is goedgekeur</translation>
 <translation id="4370975561335139969">Die e-posadres en wagwoord wat jy ingevoer het, pas nie</translation>
-<translation id="4373966964907728675">Saai tans werkskerm uit</translation>
 <translation id="4374831787438678295">Linux-installeerder</translation>
 <translation id="4375035964737468845">Maak afgelaaide lêers oop</translation>
 <translation id="4376226992615520204">Ligging is afgeskakel</translation>
@@ -4039,6 +4037,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> kan dit vir aanvallers moontlik maak om jou persoonlike inligting te steel.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="4961361269522589229">resepidees</translation>
 <translation id="496185450405387901">Jou administrateur het hierdie program geïnstalleer.</translation>
 <translation id="4963789650715167449">Verwyder huidige oortjie</translation>
@@ -4737,6 +4736,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5659593005791499971">E-pos</translation>
 <translation id="5659833766619490117">Hierdie bladsy kon nie vertaal word nie</translation>
 <translation id="5662513737565158057">Verander hoe Linux-programme sal werk.</translation>
+<translation id="5667293444945855280">Wanware</translation>
 <translation id="5667546120811588575">Stel tans Google Play op …</translation>
 <translation id="5668351004957198136">Misluk</translation>
 <translation id="56702779821643359">Deel lêers met mense rondom jou. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -5144,7 +5144,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6080689532560039067">Gaan jou stelseltyd na</translation>
 <translation id="6082877069782862752">Sleutelkartering</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – deel van naamlose groep</translation>
-<translation id="6085457109149794212">Sien alle kaartopsies in Pasmaak Chrome</translation>
 <translation id="6085886413119427067">Bepaal hoe om met 'n beveiligde verbinding aan webwerwe te koppel</translation>
 <translation id="6086004606538989567">Die rekening wat jy geverifieer het, is nie gemagtig om toegang tot hierdie toestel te kry nie.</translation>
 <translation id="6086846494333236931">Deur jou administrateur geïnstalleer</translation>
@@ -5229,7 +5228,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6166185671393271715">Voer wagwoorde na Chrome in</translation>
 <translation id="6169040057125497443">Gaan jou mikrofoon na.</translation>
-<translation id="6169666352732958425">Kan nie werkskerm uitsaai nie.</translation>
 <translation id="6169967265765719844">Toestemmings vir speletjies en programme wat via Steam geïnstalleer is, kan in die <ph name="LINK_BEGIN" />Steam-programinstellings<ph name="LINK_END" /> bestuur word.</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
 <translation id="6170498031581934115">Kon nie ADB-ontfouting aktiveer nie. Gaan na Instellings toe en probeer weer.</translation>
@@ -5388,6 +5386,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6322370287306604163">Ontsluit vinniger met vingerafdruk</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6325191661371220117">Deaktiveer outo-begin</translation>
+<translation id="6325525973963619867">Misluk</translation>
 <translation id="6326175484149238433">Verwyder van Chrome af</translation>
 <translation id="6326855256003666642">Telling van aktiewe aktiwiteite</translation>
 <translation id="6327785803543103246">Webinstaanbediener-outo-ontdekking</translation>
@@ -5880,7 +5879,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6817174620439930047">Vra wanneer 'n werf stelseleksklusiewe boodskappe wil gebruik om toegang tot MIDI-toestelle te kry (aanbeveel)</translation>
 <translation id="6818198425579322765">Bladsytaal om te vertaal</translation>
 <translation id="6818802132960437751">Ingeboude virusbeskerming</translation>
-<translation id="682123305478866682">Saai werkskerm uit</translation>
 <translation id="6823174134746916417">Raakpaneel – tik-om-te-klik</translation>
 <translation id="6824564591481349393">Kopieer e-posadres</translation>
 <translation id="6824584962142919697">&amp;Ondersoek elemente</translation>
@@ -6885,7 +6883,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7826254698725248775">Teenstrydige toestelidentifiseerder.</translation>
 <translation id="7828731929332799387">Dit sal alle webkoekies en werfdata uitvee wat in derdeparty-kontekste beskikbaar is. Wil jy voortgaan?</translation>
 <translation id="7829877209233347340">Vra 'n ouer om aan te meld om toestemming te gee om 'n skoolrekening by te voeg</translation>
-<translation id="7830594666202422257">Koppel aan Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Jy sal dit op hierdie bladsy sien as Google afslag vind</translation>
 <translation id="7833720883933317473">Gestoorde gepasmaakte woorde sal hier verskyn</translation>
@@ -7802,7 +7799,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8755376271068075440">Groter</translation>
 <translation id="875604634276263540">Prent-URL is ongeldig</translation>
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>
-<translation id="8757090071857742562">Kan nie die werkskerm uitsaai nie. Kyk of jy die aanporboodskap om jou skerm te begin deel, bevestig het.</translation>
 <translation id="8757203080302669031">Hierdie oortjie soek tans aktief na Bluetooth-toestelle</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> is verwyder</translation>
 <translation id="8758418656925882523">Aktiveer diktee (praat om te tik)</translation>
@@ -8233,7 +8229,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9179524979050048593">Aanmeldskermgebruikernaam</translation>
 <translation id="9180281769944411366">Hierdie proses kan 'n paar minute neem. Begin tans die Linux-houer.</translation>
 <translation id="9180380851667544951">Werf kan jou skerm deel</translation>
-<translation id="918224512343736195">Koppel aan SSH</translation>
 <translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Program}other{# programme}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>

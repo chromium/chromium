@@ -375,6 +375,7 @@
 <translation id="4215448920900139318">Δημιουργία αντιγράφου ασφαλείας για το <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Κατάργηση εξαίρεσης για τον ιστότοπο <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Παρουσίαση Google</translation>
+<translation id="4277536868133419688">Το φίλτρο <ph name="FILTER_NAME" /> είναι ενεργό.</translation>
 <translation id="4290535918735525311">1 φάκελος που κοινοποιήθηκε με Linux</translation>
 <translation id="4299729908419173967">Βραζιλιάνικα</translation>
 <translation id="4302605047395093221">Όποιος χρησιμοποιεί αυτήν τη συσκευή θα πρέπει να εισαγάγει το PIN για να συνδεθεί σε αυτό το δίκτυο κινητής τηλεφωνίας.</translation>
@@ -414,6 +415,7 @@
 <translation id="457386861538956877">Περισσότερα...</translation>
 <translation id="4579744207439506346">Το <ph name="ENTRY_NAME" /> προστέθηκε στην επιλογή.</translation>
 <translation id="4594543368593301662">Εμφάνιση αποτελεσμάτων για <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Έγινε επαναφορά του φίλτρου.</translation>
 <translation id="4603392156942865207">Αντιγραφή αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Καλλιτέχνης</translation>
 <translation id="4642769377300286600">Εγκατάσταση προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -542,6 +544,7 @@
 <translation id="5469868506864199649">Ιταλικά</translation>
 <translation id="5473333559083690127">Εισαγάγετε ξανά το νέο PIN</translation>
 <translation id="5489067830765222292">Λετονικά</translation>
+<translation id="5489965683297092283">Το φίλτρο <ph name="FILTER_NAME" /> είναι ανενεργό.</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5500122897333236901">Ισλανδικά</translation>
 <translation id="5508696409934741614">Τελείες</translation>

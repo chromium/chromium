@@ -239,6 +239,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Prije prihvaćanja provjerite prikazuje li se na njemu ovaj pristupni ključ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="243878895369688216">Otvoreno jučer</translation>
+<translation id="2441427462554639370">Snimanje je završilo zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
 <translation id="2450205753526923158">Način rada za snimak ekrana</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -799,6 +800,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje performansi je omogućeno</translation>
+<translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Korisnik pod nadzorom</translation>
 <translation id="5977415296283489383">Slušalica</translation>
 <translation id="5978382165065462689">Dijeljenje kontrole nad vašim ekranom putem pomoći na daljinu.</translation>

@@ -6,9 +6,9 @@
 <translation id="1091252999271033193">This means that Chromium will request the mobile site every time.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
+<translation id="1266817106503861676">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
 <translation id="1289216811211435351">Switch to Chromium</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
-<translation id="1370204544543370355">To get the most out of Chromium, sign in to Chromium with your Google Account</translation>
 <translation id="1431818719585918472">Let Chromium lock your incognito tabs.</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="1507010443238049608">Help improve Chromium's features and performance</translation>
@@ -31,7 +31,6 @@
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
 <translation id="2450140762465183767">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
-<translation id="2567507405773541360">Get more done with a simple, secure and faster-than-ever Chromium</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
@@ -43,6 +42,7 @@
 <translation id="3256316712990552818">Copied to Chromium</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
+<translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> was using Chromium and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
@@ -86,6 +86,7 @@ Things to consider:
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="632825460376924298">Allow Chromium Sign-in</translation>
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
+<translation id="6364764337654495917">By using Chromium, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
@@ -106,6 +107,7 @@ Things to consider:
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
 <translation id="766897673682622022">Your password was exposed in a data breach. Chromium recommends changing the password now.</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
+<translation id="7724877991918731397">To help improve the app, Chromium sends usage and crash reports to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>

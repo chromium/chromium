@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">درحال پشتیبان‌ گرفتن از <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">برداشتن استثنا برای <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">‏ارائه Google </translation>
+<translation id="4277536868133419688">فیلتر <ph name="FILTER_NAME" /> روشن است.</translation>
 <translation id="4290535918735525311">‏۱ پوشه با Linux هم‌رسانی شد</translation>
 <translation id="4299729908419173967">برزیلی</translation>
 <translation id="4302605047395093221">افرادی که از این دستگاه استفاده می‌کنند برای اتصال به این شبکه تلفن همراه باید پین را وارد کنند</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">بیشتر...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> به موارد انتخابی اضافه شد.</translation>
 <translation id="4594543368593301662">درحال نمایش نتایج برای <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">فیلتر بازنشانی شد.</translation>
 <translation id="4603392156942865207">درحال کپی کردن <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">هنرمند</translation>
 <translation id="4642769377300286600">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">ایتالیایی</translation>
 <translation id="5473333559083690127">پین جدید را دوباره وارد کنید</translation>
 <translation id="5489067830765222292">لتونیایی</translation>
+<translation id="5489965683297092283">فیلتر <ph name="FILTER_NAME" /> خاموش است.</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>

@@ -2064,7 +2064,6 @@
 <translation id="2977480621796371840">Уклони из групе</translation>
 <translation id="2979639724566107830">Отворите у новом прозору</translation>
 <translation id="2981113813906970160">Прикажи велики курсор</translation>
-<translation id="2981474224638493138">Квалитет пројекције за картицу/радну површину</translation>
 <translation id="2983373101216420412">Ниво напуњености батерије футроле <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Желите ли да пошаљете захтев администратору да инсталира „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2987620471460279764">Текст који се дели са другог уређаја</translation>
@@ -3446,7 +3445,6 @@
 <translation id="4369121877634339065">Превуците било коју слику да бисте претражили</translation>
 <translation id="4369215744064167350">Захтев за веб-сајт је одобрен</translation>
 <translation id="4370975561335139969">Имејл и лозинка које сте унели се не подударају</translation>
-<translation id="4373966964907728675">Пребацујемо радну површину</translation>
 <translation id="4374831787438678295">Linux програм за инсталацију</translation>
 <translation id="4375035964737468845">Отварање преузетих датотека</translation>
 <translation id="4376226992615520204">Локација је искључена</translation>
@@ -4022,6 +4020,7 @@
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> може да дозволи нападачима да вам украду личне податке.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Пребацивање екрана</translation>
 <translation id="4961361269522589229">идеје за рецепте</translation>
 <translation id="496185450405387901">Администратор је инсталирао ову апликацију.</translation>
 <translation id="4963789650715167449">Уклони актуелну картицу</translation>
@@ -4719,6 +4718,7 @@
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5659833766619490117">Превођење ове странице није успело</translation>
 <translation id="5662513737565158057">Промените начин на који Linux апликације раде.</translation>
+<translation id="5667293444945855280">Малвер</translation>
 <translation id="5667546120811588575">Google Play се подешава…</translation>
 <translation id="5668351004957198136">Нисмо прошли</translation>
 <translation id="56702779821643359">Делите фајлове са људима у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -5126,7 +5126,6 @@
 <translation id="6080689532560039067">Проверите системско време</translation>
 <translation id="6082877069782862752">Мапирање кључа</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – део групе без назива</translation>
-<translation id="6085457109149794212">Прикажи све опције картица у менију Прилагодите Chrome</translation>
 <translation id="6085886413119427067">Одређује како да се повеже са веб-сајтовима преко безбедне везе</translation>
 <translation id="6086004606538989567">Налог који сте верификовали није овлашћен за приступ овом уређају.</translation>
 <translation id="6086846494333236931">Инсталирао је администратор</translation>
@@ -5211,7 +5210,6 @@
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6166185671393271715">Увезите лозинке у Chrome</translation>
 <translation id="6169040057125497443">Проверите микрофон.</translation>
-<translation id="6169666352732958425">Пребацивање радне површине није успело.</translation>
 <translation id="6169967265765719844">Дозволама за игре и апликације инсталиране преко Steam-а може да се управља у <ph name="LINK_BEGIN" />подешавањима апликације Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сендвич</translation>
 <translation id="6170498031581934115">Омогућавање ADB отклањања грешака није успело. Идите у Подешавања и пробајте поново.</translation>
@@ -5370,6 +5368,7 @@
 <translation id="6322370287306604163">Откључавајте брже помоћу отиска прста</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6325191661371220117">Онемогући аутоматско покретање</translation>
+<translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6326175484149238433">Уклони из Chrome-а</translation>
 <translation id="6326855256003666642">Број keepalive сигнала</translation>
 <translation id="6327785803543103246">Аутоматско откривање веб-проксија</translation>
@@ -5862,7 +5861,6 @@
 <translation id="6817174620439930047">Питај када сајт жели да користи ексклузивне поруке система за приступ MIDI уређајима (препоручено)</translation>
 <translation id="6818198425579322765">Језик странице са ког желите да преводите</translation>
 <translation id="6818802132960437751">Уграђена заштита од вируса</translation>
-<translation id="682123305478866682">Пребаците радну површину</translation>
 <translation id="6823174134746916417">Додирни за клик на тачпеду</translation>
 <translation id="6824564591481349393">Копирај имејл адресу</translation>
 <translation id="6824584962142919697">&amp;Провери елементе</translation>
@@ -6867,7 +6865,6 @@
 <translation id="7826254698725248775">Неусаглашени идентификатор уређаја.</translation>
 <translation id="7828731929332799387">Овим ћете избрисати све колачиће и податке о сајтовима који су доступни у контекстима трећих страна. Желите ли да наставите?</translation>
 <translation id="7829877209233347340">Затражи од родитеља да се пријави да би дао дозволу за додавање школског налога</translation>
-<translation id="7830594666202422257">Повежи са Linux-ом</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Ако Google пронађе попуст, видећете га на овој страници</translation>
 <translation id="7833720883933317473">Сачуване прилагођене речи ће се појавити овде</translation>
@@ -7784,7 +7781,6 @@
 <translation id="8755376271068075440">&amp;Веће</translation>
 <translation id="875604634276263540">URL слике је неважећи</translation>
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
-<translation id="8757090071857742562">Није успело пребацивање радне површине. Проверите да ли сте потврдили упит за почетак дељења екрана.</translation>
 <translation id="8757203080302669031">Картица активно тражи Bluetooth уређаје.</translation>
 <translation id="8757368836647541092">Уклонили сте: <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Омогући диктирање (говорите за куцање)</translation>
@@ -8217,7 +8213,6 @@
 <translation id="9179524979050048593">Корисничко име на екрану за пријављивање</translation>
 <translation id="9180281769944411366">Ово може да потраје пар минута. Покреће се Linux контејнер.</translation>
 <translation id="9180380851667544951">Сајт може да дели екран</translation>
-<translation id="918224512343736195">Повежите се на SSH</translation>
 <translation id="9182556968660520230">Не дозвољавај сајтовима да пуштају заштићени садржај</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}few{# апликације}other{# апликација}}</translation>
 <translation id="9186963452600581158">Пријавите се помоћу Google налога детета</translation>

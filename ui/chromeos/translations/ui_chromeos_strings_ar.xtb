@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">جارٍ الاحتفاظ بنسخة احتياطية من <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">إزالة الاستثناء للمضيف <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">‏عرض تقديمي من Google</translation>
+<translation id="4277536868133419688">تم تفعيل الفلتر <ph name="FILTER_NAME" />.</translation>
 <translation id="4290535918735525311">‏تمت مشاركة مجلد واحد مع نظام التشغيل Linux</translation>
 <translation id="4299729908419173967">البرازيلية</translation>
 <translation id="4302605047395093221">على جميع مستخدمي هذا الجهاز إدخال رقم التعريف الشخصي للاتصال بشبكة الجوّال هذه.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">المزيد...</translation>
 <translation id="4579744207439506346">تمت إضافة <ph name="ENTRY_NAME" /> إلى الاختيار.</translation>
 <translation id="4594543368593301662">يتم عرض نتائج عن <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">تمّ إعادة ضبط الفلتر.</translation>
 <translation id="4603392156942865207">جارٍ نسخ <ph name="FILE_NAME" /> إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">الفنان</translation>
 <translation id="4642769377300286600">‏جارٍ تثبيت الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">الإيطالية</translation>
 <translation id="5473333559083690127">إعادة إدخال رقم التعريف الشخصي الجديد</translation>
 <translation id="5489067830765222292">اللاتفية</translation>
+<translation id="5489965683297092283">تم إيقاف الفلتر <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5500122897333236901">الأيسلندية</translation>
 <translation id="5508696409934741614">نقاط</translation>

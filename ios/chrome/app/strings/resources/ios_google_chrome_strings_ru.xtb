@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
-<translation id="1096883626080133124">Успевайте больше вместе с удобным, безопасным и быстрым браузером Google Chrome.</translation>
 <translation id="1143896152279775643">Ваш пароль будет сохранен в Диспетчере паролей Google для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Помочь улучшить производительность и функции Chrome</translation>
 <translation id="1479202195792305274">Браузер Chrome сможет проверить ваши пароли, когда вы войдете в аккаунт Google.</translation>
@@ -39,7 +38,6 @@
 <translation id="3345341804167540816">Возьмите Chrome с собой</translation>
 <translation id="3522659714780527202">Чтобы ваши вкладки всегда были доступны вам при работе с Chrome, включите синхронизацию.</translation>
 <translation id="3533694711092285624">Сохраненных паролей нет. Чтобы браузер Chrome мог проверять пароли, сохраните их.</translation>
-<translation id="3634910711516114487">Чтобы пользоваться всеми возможностями браузера Chrome, войдите в аккаунт Google.</translation>
 <translation id="3655656110921623717">Chrome всегда будет запрашивать мобильный сайт.</translation>
 <translation id="3706101708757577809">При переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chrome.</translation>
 <translation id="3720541637541300822">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>

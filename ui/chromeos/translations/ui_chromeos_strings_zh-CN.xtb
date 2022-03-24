@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">正在备份 <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">为 <ph name="HOST_NAME" /> 移除例外情况</translation>
 <translation id="4261901459838235729">Google 演示文稿</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" />过滤器已开启。</translation>
 <translation id="4290535918735525311">与 Linux 共享了 1 个文件夹</translation>
 <translation id="4299729908419173967">巴西</translation>
 <translation id="4302605047395093221">任何使用该设备的用户都将需要输入 PIN 码，才能连接到此移动网络</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">更多...</translation>
 <translation id="4579744207439506346">已将<ph name="ENTRY_NAME" />增加到已选项。</translation>
 <translation id="4594543368593301662">目前显示的是与“<ph name="SEARCH_TERM" />”相符的搜索结果。</translation>
+<translation id="4599600860674643278">已重置过滤器。</translation>
 <translation id="4603392156942865207">正在将 <ph name="FILE_NAME" /> 复制到“<ph name="FOLDER_NAME" />”</translation>
 <translation id="4631887759990505102">艺术家</translation>
 <translation id="4642769377300286600">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
@@ -524,6 +526,7 @@
 <translation id="5469868506864199649">意大利语</translation>
 <translation id="5473333559083690127">请重新输入新的 PIN 码</translation>
 <translation id="5489067830765222292">拉脱维亚语</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" />过滤器已关闭。</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5500122897333236901">冰岛语</translation>
 <translation id="5508696409934741614">圆点</translation>

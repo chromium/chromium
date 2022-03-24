@@ -2059,7 +2059,6 @@
 <translation id="2977480621796371840">グループから削除</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2981113813906970160">大きいマウスカーソルを表示する</translation>
-<translation id="2981474224638493138">タブやデスクトップ投影の品質</translation>
 <translation id="2983373101216420412">ケースのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2985348301114641460">「<ph name="EXTENSION_NAME" />」をインストールするよう管理者にリクエストを送信しますか？</translation>
 <translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
@@ -3437,7 +3436,6 @@
 <translation id="4369121877634339065">画像をドラッグして検索</translation>
 <translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
-<translation id="4373966964907728675">デスクトップをキャスト中</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
 <translation id="4375035964737468845">ダウンロードしたファイルを開く</translation>
 <translation id="4376226992615520204">位置情報は OFF です</translation>
@@ -4013,6 +4011,7 @@
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> を開くと攻撃者に個人情報を盗まれる可能性があります。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4961361269522589229">レシピ</translation>
 <translation id="496185450405387901">このアプリは管理者によってインストールされています。</translation>
 <translation id="4963789650715167449">現在のタブを削除</translation>
@@ -4708,6 +4707,7 @@
 <translation id="5659593005791499971">メール</translation>
 <translation id="5659833766619490117">このページを翻訳できませんでした</translation>
 <translation id="5662513737565158057">Linux アプリの動作を変更します。</translation>
+<translation id="5667293444945855280">マルウェア</translation>
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
 <translation id="5668351004957198136">不合格</translation>
 <translation id="56702779821643359">近くのユーザーとファイルを共有できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5112,7 +5112,6 @@
 <translation id="6080689532560039067">システムの時刻の確認</translation>
 <translation id="6082877069782862752">キーのマッピング</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
-<translation id="6085457109149794212">[Chrome をカスタマイズ] ですべてのカード オプションをご覧ください</translation>
 <translation id="6085886413119427067">ウェブサイトに安全に接続する方法を決定します</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
@@ -5197,7 +5196,6 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
-<translation id="6169666352732958425">デスクトップをキャストできません。</translation>
 <translation id="6169967265765719844">Steam 経由でインストールしたゲームやアプリの権限は、<ph name="LINK_BEGIN" />Steam アプリの設定<ph name="LINK_END" />で管理できます。</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6170498031581934115">ADB デバッグを有効にできませんでした。設定に移動して、もう一度お試しください。</translation>
@@ -5356,6 +5354,7 @@
 <translation id="6322370287306604163">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6325191661371220117">自動起動を無効にする</translation>
+<translation id="6325525973963619867">失敗しました</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6326855256003666642">キープアライブ カウント</translation>
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
@@ -5846,7 +5845,6 @@
 <translation id="6817174620439930047">サイトがシステム エクスクルーシブ メッセージを使用して MIDI デバイスにアクセスする際に確認する（推奨）</translation>
 <translation id="6818198425579322765">翻訳するページの言語</translation>
 <translation id="6818802132960437751">組み込みのウィルス対策</translation>
-<translation id="682123305478866682">デスクトップをキャスト</translation>
 <translation id="6823174134746916417">タッチパッドのタップによるクリック</translation>
 <translation id="6824564591481349393">メール アドレスをコピー(&amp;E)</translation>
 <translation id="6824584962142919697">要素の検証(&amp;I)</translation>
@@ -6850,7 +6848,6 @@
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
 <translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
 <translation id="7829877209233347340">保護者の方に、ログインして学校用アカウントの追加を許可してもらってください。</translation>
-<translation id="7830594666202422257">Linux に接続</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">割引情報が見つかった場合は、このページに表示されます</translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
@@ -7767,7 +7764,6 @@
 <translation id="8755376271068075440">拡大(&amp;L)</translation>
 <translation id="875604634276263540">画像の URL は無効です</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
-<translation id="8757090071857742562">デスクトップをキャストできません。画面共有の開始を確認するメッセージで同意したかどうかを確認してください。</translation>
 <translation id="8757203080302669031">このタブでは Bluetooth デバイスのスキャンを実行中です。</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> を削除しました</translation>
 <translation id="8758418656925882523">音声入力を有効にする</translation>
@@ -8198,7 +8194,6 @@
 <translation id="9179524979050048593">ログイン画面のユーザー名</translation>
 <translation id="9180281769944411366">この処理には数分かかることがあります。Linux コンテナを起動します。</translation>
 <translation id="9180380851667544951">サイトに画面の共有が許可されています</translation>
-<translation id="918224512343736195">SSH に接続</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>

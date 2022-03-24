@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
-<translation id="1096883626080133124">Урадите више помоћу још једноставнијег, безбеднијег и бржег Google Chrome-а</translation>
 <translation id="1143896152279775643">Лозика се чува у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
 <translation id="1479202195792305274">Chrome може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
@@ -39,7 +38,6 @@
 <translation id="3345341804167540816">Користите Chrome свуда</translation>
 <translation id="3522659714780527202">Да бисте видели картице на било којем уређају на ком користите Chrome, укључите синхронизацију</translation>
 <translation id="3533694711092285624">Нема сачуваних лозинки. Chrome може да проверава лозинке када их сачувате.</translation>
-<translation id="3634910711516114487">Да бисте користили Chrome на најбољи начин, пријавите се на Chrome помоћу Google налога</translation>
 <translation id="3655656110921623717">То значи да ће Chrome сваки пут захтевати мобилни сајт.</translation>
 <translation id="3706101708757577809">Сада можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="3720541637541300822">Закључајте картице без архивирања после затварања Chrome-а</translation>

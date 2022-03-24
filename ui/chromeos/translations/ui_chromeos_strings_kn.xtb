@@ -363,6 +363,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ಗಾಗಿ ವಿನಾಯಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4261901459838235729">Google ಪ್ರಸ್ತುತಿ</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ಫಿಲ್ಟರ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="4290535918735525311">Linux ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4299729908419173967">ಬ್ರೆಜಿಲಿಯನ್</translation>
 <translation id="4302605047395093221">ಈ ಸಾಧನವನ್ನು ಬಳಸುತ್ತಿರುವ ಯಾರಾದರೂ ಈ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಲು ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಬೇಕಾಗುತ್ತದೆ</translation>
@@ -402,6 +403,7 @@
 <translation id="457386861538956877">ಇನ್ನಷ್ಟು...</translation>
 <translation id="4579744207439506346">ಆಯ್ಕೆಗೆ <ph name="ENTRY_NAME" /> ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ಗಾಗಿ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="4599600860674643278">ಫಿಲ್ಟರ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ಅನ್ನು <ph name="FOLDER_NAME" /> ಗೆ ನಕಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4631887759990505102">ಕಲೆಗಾರ</translation>
 <translation id="4642769377300286600">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -527,6 +529,7 @@
 <translation id="5469868506864199649">ಇಟಾಲಿಯನ್</translation>
 <translation id="5473333559083690127">ಹೊಸ ಪಿನ್ ಮರು-ನಮೂದಿಸಿ</translation>
 <translation id="5489067830765222292">ಲ್ಯಾಟ್ವಿಯನ್</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ಫಿಲ್ಟರ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="5500122897333236901">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="5508696409934741614">ಚುಕ್ಕೆಗಳು</translation>

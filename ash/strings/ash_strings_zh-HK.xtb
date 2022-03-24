@@ -465,6 +465,7 @@
 <translation id="3798670284305777884">喇叭 (內置)</translation>
 <translation id="3799080171973636491">您已按下全螢幕放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
+<translation id="3804737937830804242">收合相機調整大小的按鈕</translation>
 <translation id="3826099427150913765">改用密碼</translation>
 <translation id="383058930331066723">「省電模式」已開啟</translation>
 <translation id="3835880383832568924">如要查看更新，請開啟「快速鍵」應用程式</translation>
@@ -790,6 +791,7 @@
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5909862606227538307">唔係用緊嘅桌面。</translation>
+<translation id="5911231045062997865">目前不支援 Lacros 視窗。系統將儲存其他應用程式。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
@@ -797,6 +799,7 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
+<translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受管使用者</translation>
 <translation id="5977415296283489383">耳機</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
@@ -1003,6 +1006,7 @@
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="731589979057211264">「捷徑列群組」已開啟。</translation>
 <translation id="7319740667687257810">啟動器，部分檢視</translation>
 <translation id="7346909386216857016">好，我知道了</translation>

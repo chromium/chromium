@@ -2086,7 +2086,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
-<translation id="2981474224638493138">Tab/desktop projection quality</translation>
 <translation id="2983373101216420412">Case battery level <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
@@ -2460,6 +2459,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3390013585654699824">App details</translation>
 <translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="3393554941209044235">Chrome document analysis</translation>
+<translation id="3393582007140394275">Unable to cast screen.</translation>
 <translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
 <translation id="3396744558790608201">Right-click and select 'Search images with Google Lens' to search any region of the site to learn more about the visual content that you see while you browse and shop on the web.</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
@@ -2854,6 +2854,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3753033997400164841">Store once. Use everywhere</translation>
 <translation id="3755411799582650620">Your <ph name="PHONE_NAME" /> can now unlock this <ph name="DEVICE_TYPE" /> too.</translation>
 <translation id="375636864092143889">Site is using your microphone</translation>
+<translation id="3756485814916578707">Casting screen</translation>
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756795331760037744">Allow Google Assistant to use info on <ph name="SUPERVISED_USER_NAME" />’s screen to help</translation>
 <translation id="3757733214359997190">No sites found</translation>
@@ -3472,7 +3473,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4369121877634339065">Drag over any image to search</translation>
 <translation id="4369215744064167350">Website request approved</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
-<translation id="4373966964907728675">Casting desktop</translation>
 <translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
 <translation id="4376226992615520204">Location turned off</translation>
@@ -4020,6 +4020,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4924002401726507608">Submit feedback</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Your ports will appear here</translation>
+<translation id="49265687513387605">Unable to cast screen. Check to see if you confirmed the prompt to start sharing your screen.</translation>
 <translation id="4927753642311223124">Nothing to see here, move along.</translation>
 <translation id="4929386379796360314">Print destinations</translation>
 <translation id="4930447554870711875">Developers</translation>
@@ -4051,6 +4052,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> could let attackers steal your personal information.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Cast screen</translation>
 <translation id="4961361269522589229">recipe ideas</translation>
 <translation id="496185450405387901">This app has been installed by your administrator.</translation>
 <translation id="4963789650715167449">Remove current tab</translation>
@@ -4134,6 +4136,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5052499409147950210">Edit site</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Search image with Google Lens</translation>
+<translation id="5054374119096692193">See all card options in <ph name="BEGIN_LINK" />Customise Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="505776528429481161">Easily connect and set up devices close by</translation>
@@ -4753,6 +4756,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">This page could not be translated</translation>
 <translation id="5662513737565158057">Change how Linux apps will work.</translation>
+<translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Setting up Google Play…</translation>
 <translation id="5668351004957198136">Fail</translation>
 <translation id="56702779821643359">Share files with people around you. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -5161,7 +5165,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6080689532560039067">Check your system time</translation>
 <translation id="6082877069782862752">Key mapping</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
-<translation id="6085457109149794212">See all card options in Customise Chrome</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
@@ -5246,7 +5249,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166185671393271715">Import Passwords To Chrome</translation>
 <translation id="6169040057125497443">Please check your microphone.</translation>
-<translation id="6169666352732958425">Unable to cast desktop.</translation>
 <translation id="6169967265765719844">Permissions for games and apps installed via Steam can be managed in the <ph name="LINK_BEGIN" />Steam app settings<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Couldn't enable ADB debugging. Go to Settings and try again.</translation>
@@ -5406,6 +5408,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6322370287306604163">Unlock faster with fingerprint</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6325191661371220117">Disable auto-launch</translation>
+<translation id="6325525973963619867">Failed</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6326855256003666642">Keepalive Count</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
@@ -5531,6 +5534,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> complete</translation>
 <translation id="645286928527869380">Recipe ideas</translation>
 <translation id="6452961788130242735">Network problem or bad realm</translation>
+<translation id="6453191633103419909">Tab/screen projection quality</translation>
 <translation id="6453921811609336127">To switch to the next input method, press <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">On specific sites</translation>
 <translation id="6455894534188563617">&amp;New Folder</translation>
@@ -5902,7 +5906,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
 <translation id="6818802132960437751">Built-in virus protection</translation>
-<translation id="682123305478866682">Cast desktop</translation>
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
@@ -6912,7 +6915,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7826254698725248775">Conflicting device identifier.</translation>
 <translation id="7828731929332799387">This will delete all cookies and site data available in third-party contexts. Do you want to continue?</translation>
 <translation id="7829877209233347340">Ask a parent to sign in to grant permission to add a school account</translation>
-<translation id="7830594666202422257">Connect to Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">If Google finds a discount, you will see it on this page</translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
@@ -7836,7 +7838,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8755376271068075440">&amp;Larger</translation>
 <translation id="875604634276263540">Image URL is invalid</translation>
 <translation id="8756969031206844760">Update password?</translation>
-<translation id="8757090071857742562">Unable to cast desktop.  Check to see if you confirmed the prompt to start sharing your screen.</translation>
 <translation id="8757203080302669031">This tab is actively scanning for Bluetooth devices.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> removed</translation>
 <translation id="8758418656925882523">Enable dictation (speak to type)</translation>
@@ -7861,6 +7862,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8779944680596936487">Sites can only use cookies to see your browsing activity on their own site</translation>
 <translation id="8780123805589053431">Get image descriptions from Google</translation>
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
+<translation id="8780872768304638315">Failed to save to</translation>
 <translation id="8781834595282316166">New Tab in Group</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>
 <translation id="8783526165720272136">Messaging apps</translation>
@@ -8267,7 +8269,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9179524979050048593">Sign-in screen username</translation>
 <translation id="9180281769944411366">This process may take a few minutes. Starting the Linux container.</translation>
 <translation id="9180380851667544951">Site can share your screen</translation>
-<translation id="918224512343736195">Connect to SSH</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>

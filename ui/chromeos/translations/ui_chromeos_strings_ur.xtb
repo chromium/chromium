@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> بیک اپ لیا جا رہا ہے</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> کے لیے استثناء ہٹائیں</translation>
 <translation id="4261901459838235729">‏Google پیشکش</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> فلٹر آن ہے۔</translation>
 <translation id="4290535918735525311">‏Linux کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="4299729908419173967">برازیلی</translation>
 <translation id="4302605047395093221">‏اس آلے کا استعمال کرنے والے کسی بھی شخص کو اس موبائل نیٹ ورک سے منسلک ہونے کے لیے PIN درج کرنا ہوگا</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">مزید…</translation>
 <translation id="4579744207439506346">انتخاب میں <ph name="ENTRY_NAME" /> شامل کیا گیا۔</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> کے لیے نتائج دکھائے جا رہے ہیں۔</translation>
+<translation id="4599600860674643278">فلٹر کو ری سیٹ کیا گیا۔</translation>
 <translation id="4603392156942865207">‫<ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں کاپی کیا جا رہا ہے</translation>
 <translation id="4631887759990505102">فن کار</translation>
 <translation id="4642769377300286600">موبائل کی پروفائل انسٹال ہو رہی ہے، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">اطالوی</translation>
 <translation id="5473333559083690127">‏نیا PIN دوبارہ درج کریں</translation>
 <translation id="5489067830765222292">لیٹویائی</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> فلٹر آف ہے۔</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5500122897333236901">آئس لینڈک</translation>
 <translation id="5508696409934741614">نقطے</translation>

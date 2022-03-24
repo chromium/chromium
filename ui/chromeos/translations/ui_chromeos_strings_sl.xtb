@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Varnostno kopiranje: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Odstranitev izjeme za gostitelja <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Googlova predstavitev</translation>
+<translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je vklopljen.</translation>
 <translation id="4290535918735525311">1 mapa v skupni rabi z Linuxom</translation>
 <translation id="4299729908419173967">portugalščina (Brazilija)</translation>
 <translation id="4302605047395093221">Kdor koli bo uporabljal to napravo, bo moral vnesti kodo PIN, če se bo želel povezati z mobilnim omrežjem.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4579744207439506346">Vnos <ph name="ENTRY_NAME" /> je bil dodan v izbor.</translation>
 <translation id="4594543368593301662">Prikaz rezultatov za »<ph name="SEARCH_TERM" />«.</translation>
+<translation id="4599600860674643278">Filter je ponastavljen.</translation>
 <translation id="4603392156942865207">Kopiranje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Izvajalec</translation>
 <translation id="4642769377300286600">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">italijanščina</translation>
 <translation id="5473333559083690127">Vnovični vnos nove kode PIN</translation>
 <translation id="5489067830765222292">latvijščina</translation>
+<translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je izklopljen.</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5500122897333236901">islandščina</translation>
 <translation id="5508696409934741614">Pike</translation>

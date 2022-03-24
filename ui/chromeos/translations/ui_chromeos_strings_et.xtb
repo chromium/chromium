@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Varundamine: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Erandi eemaldamine seadmest <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google'i esitlus</translation>
+<translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> on sisse lülitatud.</translation>
 <translation id="4290535918735525311">1 kausta jagatakse Linuxiga</translation>
 <translation id="4299729908419173967">Brasiilia</translation>
 <translation id="4302605047395093221">Kõik, kes seda seadet kasutavad, peavad selle mobiilsidevõrguga ühenduse loomiseks sisestama PIN-koodi</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Rohkem ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> lisati valikusse.</translation>
 <translation id="4594543368593301662">Kuvatakse otsingu <ph name="SEARCH_TERM" /> tulemusi.</translation>
+<translation id="4599600860674643278">Filter on lähtestatud.</translation>
 <translation id="4603392156942865207">Fail <ph name="FILE_NAME" /> kopeeritakse kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Esitaja</translation>
 <translation id="4642769377300286600">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">itaalia keel</translation>
 <translation id="5473333559083690127">Sisestage uus PIN-kood uuesti</translation>
 <translation id="5489067830765222292">läti</translation>
+<translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> on välja lülitatud.</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5500122897333236901">islandi keel</translation>
 <translation id="5508696409934741614">Punktid</translation>

@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Turn the feature on to select screensaver options</translation>
 <translation id="2364498172489649528">Passed</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
+<translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Compression algorithm</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
+<translation id="5695599963893094957">Type any key on your keyboard. You can press up to four keys at the same time.</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
@@ -424,6 +427,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5860033963881614850">Off</translation>
+<translation id="5860491529813859533">Turn on</translation>
 <translation id="5866840822086176774">Very strong</translation>
 <translation id="588258955323874662">Full screen</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -472,6 +476,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6348738456043757611">Username and password</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
+<translation id="6381741036071372448">Test your keyboard</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
 <translation id="6410257289063177456">Image Files</translation>
 <translation id="641081527798843608">Subject match</translation>

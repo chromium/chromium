@@ -344,7 +344,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4930320165497208503">Gehen Sie zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4950314376641394653">Firmware Ihres Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
+<translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4985509611418653372">Ausführen</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -424,6 +424,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code des Homepageanbieters</translation>
 <translation id="5860033963881614850">Aus</translation>
+<translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5866840822086176774">Sehr stark</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5895138241574237353">Neu starten</translation>

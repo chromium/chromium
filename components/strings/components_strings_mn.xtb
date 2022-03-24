@@ -580,6 +580,7 @@
 <translation id="2505268675989099013">Бүртгэлийг хамгаалах</translation>
 <translation id="2509167091171468975">Хоол, хүнсний жижиглэн борлуулагч</translation>
 <translation id="2512101340618156538">Зөвшөөрөөгүй (өгөгдмөл)</translation>
+<translation id="2512413427717747692">Chrome-г өгөгдмөл хөтчийн товчлуур болгон тохируулах, iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд Enter дээр дарна уу</translation>
 <translation id="2515629240566999685">Таны байгаа газрын дохиог шалгаж байна</translation>
 <translation id="2521385132275182522">Баруун доод буланд үдэх</translation>
 <translation id="2521736961081452453">Маягт үүсгэх</translation>
@@ -883,6 +884,7 @@
 <translation id="3366477098757335611">Картыг харах</translation>
 <translation id="3369192424181595722">Цагийн тохиргооны алдаа</translation>
 <translation id="3369459162151165748">Тээврийн хэрэгслийн сэлбэг, дагалдах хэрэгсэл</translation>
+<translation id="3371064404604898522">Chrome-г өгөгдмөл хөтөч болгон тохируулах</translation>
 <translation id="3371076217486966826"><ph name="URL" /> нь дараахад зөвшөөрөл хүсэж байна:
       • Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын байршлыг хянах
       • Таны камерыг ашиглах</translation>
@@ -1100,6 +1102,7 @@
 <translation id="3969052498612555048">Кодоо олж чадахгүй байна уу? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-г блоклосон байна</translation>
+<translation id="3978338123949022456">Хайлтын горим, асуулга бичээд <ph name="KEYWORD_SUFFIX" />-р хайхын тулд Enter дээр дарна уу</translation>
 <translation id="398470910934384994">Шувуу</translation>
 <translation id="3986705137476756801">Одоохондоо Шууд тайлбарыг унтраах</translation>
 <translation id="3987940399970879459">1 МБ-аас бага</translation>
@@ -1928,6 +1931,7 @@
 <translation id="6319249456820053699">Камер, видео камер</translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
 <translation id="6322182122604171028">Windows Hello-г ашиглаж чадсангүй</translation>
+<translation id="6326947323444967009">iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулна уу</translation>
 <translation id="6328639280570009161">Сүлжээний таамаглалыг идэвхгүй болгох гээд үзээрэй</translation>
 <translation id="6328784461820205019">"Таны холболт хувийн биш" эсвэл "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" эсвэл "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" эсвэл "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" эсвэл "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" эсвэл "SSL гэрчилгээний алдаа"</translation>
 <translation id="6328786501058569169">Энэ сайт хуурамч байна</translation>
@@ -2890,6 +2894,7 @@
 <translation id="908796725011587895">Коллежийн спорт</translation>
 <translation id="9089260154716455634">Ажиллахгүй цагийн удирдамж:</translation>
 <translation id="9095388113577226029">Бусад хэл...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="9096679202588811390">ТВ шоу, хөтөлбөр</translation>
 <translation id="9101630580131696064">Гарах цаасны тавиур 1</translation>
 <translation id="9103537084693478942">Видео программ хангамж</translation>

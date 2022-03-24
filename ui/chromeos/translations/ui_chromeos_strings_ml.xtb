@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> ബാക്കപ്പ് ചെയ്യുന്നു</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ലെ ഒഴിവാക്കൽ നീക്കം ചെയ്യുക</translation>
 <translation id="4261901459838235729">Google അവതരണം</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓണാണ്.</translation>
 <translation id="4290535918735525311">Linux ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4299729908419173967">ബ്രസീലിയന്‍</translation>
 <translation id="4302605047395093221">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന ഏതൊരാളും ഈ മൊബൈൽ നെറ്റ്‌വര്‍ക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ പിൻ നൽകേണ്ടതുണ്ട്</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">കൂടുതൽ‍‌...</translation>
 <translation id="4579744207439506346">തിരഞ്ഞെടുക്കലിലേക്ക് <ph name="ENTRY_NAME" /> ചേർത്തു.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> എന്നതിനുള്ള ഫലങ്ങൾ കാണിക്കുന്നു.</translation>
+<translation id="4599600860674643278">ഫിൽട്ടർ റീസെറ്റ് ചെയ്തു.</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="FILE_NAME" /> പകർത്തുന്നു</translation>
 <translation id="4631887759990505102">ആര്‍ട്ടിസ്റ്റ്</translation>
 <translation id="4642769377300286600">മൊബെെൽ പ്രൊഫെെൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു, <ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">ഇറ്റാലിയന്‍</translation>
 <translation id="5473333559083690127">പുതിയ പിൻ വീണ്ടും നൽകുക</translation>
 <translation id="5489067830765222292">ലാത്വിയൻ</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓഫാണ്.</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5500122897333236901">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="5508696409934741614">ഡോട്ടുകൾ</translation>

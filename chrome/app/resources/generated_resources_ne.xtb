@@ -2063,7 +2063,6 @@
 <translation id="2977480621796371840">समूहबाट हटाउनुहोस्</translation>
 <translation id="2979639724566107830">नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
-<translation id="2981474224638493138">ट्याब/डेस्कटप प्रोजेक्सनको गुणस्तर</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
 <translation id="2987620471460279764">अर्को यन्त्रबाट आदान प्रदान गरिएको टेक्स्ट म्यासेज</translation>
@@ -3444,7 +3443,6 @@
 <translation id="4369121877634339065">खोज्नका लागि फोटोमा ड्र्याग गर्नुहोस्</translation>
 <translation id="4369215744064167350">तपाईंले वेबसाइट हेर्न पाऊँ भनी गर्नुभएको अनुरोध अनुमोदन गरिएको छ</translation>
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
-<translation id="4373966964907728675">डेस्कटप Cast गर्दै</translation>
 <translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
 <translation id="4375035964737468845">डाउनलोड गरिएका फाइलहरू खोल्नुहोस्</translation>
 <translation id="4376226992615520204">स्थान अफ गरिएको छ</translation>
@@ -4020,6 +4018,7 @@
 <translation id="4959262764292427323">तपाईं जुनसुकै बेला पासवर्ड प्रयोग गर्न सक्नुहोस् भन्नाका खातिर तिनलाई तपाईंको Google खातामा सुरक्षित गरिन्छ</translation>
 <translation id="496027654926814138">ह्याकरहरू <ph name="FILE_NAME" /> मार्फत तपाईंको व्यक्तिगत जानकारी चोरी गर्न सक्छन्।</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
 <translation id="4961361269522589229">खानेकुरा बनाउने तरिका</translation>
 <translation id="496185450405387901">तपाईंका प्रशासकले यो एप स्थापना गर्नुभएको हो।</translation>
 <translation id="4963789650715167449">हालको ट्याब हटाउनुहोस्</translation>
@@ -4717,6 +4716,7 @@
 <translation id="5659593005791499971">इमेल</translation>
 <translation id="5659833766619490117">यस पृष्ठलाई अनुवाद गर्न सकिएन</translation>
 <translation id="5662513737565158057">Linux एपहरूले काम गर्ने तरिका परिवर्तन गर्नुहोस्।</translation>
+<translation id="5667293444945855280">मालवेयर</translation>
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
 <translation id="5668351004957198136">सफ्टवेयर चलाउनका निम्ति आवश्यक पर्ने जाँच पूरा गर्न सकिएन</translation>
 <translation id="56702779821643359">आफू वरपरका मान्छेहरूसँग फाइल सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -5123,7 +5123,6 @@
 <translation id="6080689532560039067">तपाईंको प्रणाली समय जाँच्नुहोस्</translation>
 <translation id="6082877069782862752">की म्याप गर्ने सुविधा</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नामविहीन समूहको अंश</translation>
-<translation id="6085457109149794212">"Chrome कस्टमाइज गर्नुहोस्" मा गई कार्डसम्बन्धी सबै विकल्पहरू हेर्नुहोस्</translation>
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
 <translation id="6086004606538989567">तपाईंले पुष्टि गर्नुभएको खाता प्रयोग गरी यो डिभाइस चलाउन मिल्दैन।</translation>
 <translation id="6086846494333236931">तपाईँको प्रशासकद्वारा स्थापना गरियो</translation>
@@ -5208,7 +5207,6 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6166185671393271715">पासवर्डहरूलाई Chrome मा आयात गर्नुहोस्</translation>
 <translation id="6169040057125497443">कृपया आफ्नो माइक्रोफोनको जाँच गर्नुहोस्।</translation>
-<translation id="6169666352732958425">डेस्कटपलाई cast गर्न सकिएन।</translation>
 <translation id="6169967265765719844"><ph name="LINK_BEGIN" />Steam एपका सेटिङ<ph name="LINK_END" />मा गई Steam मार्फत इन्स्टल गरिएका गेम तथा एपहरूका हकमा अनुमतिहरू व्यवस्थापन गर्न सकिन्छ।</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6170498031581934115">ADB डिबग प्रक्रिया सक्षम पार्न सकिएन। सेटिङमा गएर फेरि प्रयास गर्नुहोस्।</translation>
@@ -5367,6 +5365,7 @@
 <translation id="6322370287306604163">फिंगरप्रिन्ट प्रयोग गरी अझ छिटो अनलक गर्नुहोस्</translation>
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6325191661371220117">स्वत: सुरुवात असक्षम गर्नुहोस्</translation>
+<translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="6326175484149238433">Chrome बाट हटाउनुहोस्</translation>
 <translation id="6326855256003666642">सक्रिय राख्ने गणना</translation>
 <translation id="6327785803543103246">वेब प्रोक्सीको स्वत:खोज</translation>
@@ -5859,7 +5858,6 @@
 <translation id="6817174620439930047">कुनै साइटले MIDI यन्त्रहरूमाथि पहुँच गर्नका लागि प्रणालीका विशिष्ट सन्देशहरू प्रयोग गर्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6818198425579322765">अनुवाद गरिनु पर्ने पृष्ठको भाषा</translation>
 <translation id="6818802132960437751">अन्तर्निर्मित भाइरस प्रोटेक्सन</translation>
-<translation id="682123305478866682">डेस्कटप cast गर्नुहोस्</translation>
 <translation id="6823174134746916417">टचप्याडको क्लिक गर्न ट्याप गर्नुहोस् नामक सुविधा</translation>
 <translation id="6824564591481349393">&amp;इमेल ठेगाना कपी गर्नुहोस्</translation>
 <translation id="6824584962142919697">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
@@ -6864,7 +6862,6 @@
 <translation id="7826254698725248775">यन्त्रको पहिचानकर्ता बाझियो।</translation>
 <translation id="7828731929332799387">यस कार्यले तेस्रो पक्षीय सन्दर्भहरूमा उपलब्ध सबै कुकी तथा साइटको डेटा मेटाउने छ। तपाईं जारी राख्न चाहनुहुन्छ?</translation>
 <translation id="7829877209233347340">आफ्ना अभिभावकलाई विद्यालयको खाता थप्ने अनुमति दिनका लागि साइन इन गर्न लगाउनुहोस्</translation>
-<translation id="7830594666202422257">Linux मा जोड्नुहोस्</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ले छुट भेट्टाएका खण्डमा तपाईं यो पेजमा उक्त छुटसम्बन्धी जानकारी देख्नु हुने छ</translation>
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
@@ -7781,7 +7778,6 @@
 <translation id="8755376271068075440">&amp;ठूलो</translation>
 <translation id="875604634276263540">इमेजको URL अवैध छ</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
-<translation id="8757090071857742562">डेस्कटपलाई cast गर्न असमर्थ।  तपाईँले आफ्नो स्क्रिन साझेदा‍री सुरु गर्नका लागि प्रोम्टलाई पुष्टि गरे-नगरेको हेर्नका लागि जाँच गर्नुहोस्।</translation>
 <translation id="8757203080302669031">यो ट्याब सक्रिय रूपमा वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू खोज्दै छ।</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> लाई हटाइयो</translation>
 <translation id="8758418656925882523">श्रुतिलेखन सेवा (टाइप गर्नका लागि बोल्नुहोस्) सक्षम पार्नुहोस्</translation>
@@ -8212,7 +8208,6 @@
 <translation id="9179524979050048593">साइन इन गर्ने स्क्रिनमा देखाइने युजरनेम</translation>
 <translation id="9180281769944411366">यो प्रक्रियामा केही मिनेट लाग्न सक्छ। Linux कन्टेनर सुरु गर्दै।</translation>
 <translation id="9180380851667544951">साइटले तपाईंको स्क्रिन आदान प्रदान गर्न सक्छ</translation>
-<translation id="918224512343736195">SSH मा कनेक्ट गर्नुहोस्</translation>
 <translation id="9182556968660520230">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति नदिइयोस्</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{एप}other{# वटा एप}}</translation>
 <translation id="9186963452600581158">आफ्ना बच्चाको Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>

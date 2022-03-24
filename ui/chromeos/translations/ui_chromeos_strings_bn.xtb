@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" />টির ব্যাক আপ নেওয়া হচ্ছে</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-এর জন্য ব্যতিক্রম সরানোর বোতাম</translation>
 <translation id="4261901459838235729">Google উপস্থাপনা</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> চালু আছে।</translation>
 <translation id="4290535918735525311">Linux ব্যবহার করে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="4299729908419173967">ব্রাজিলীয়</translation>
 <translation id="4302605047395093221">যেকোনও কেউ এই ডিভাইস ব্যবহার করতে চাইলে, তাকে এই মোবাইল নেটওয়ার্কের সাথে কানেক্ট করতে পিন লিখতে হবে</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">আরও...</translation>
 <translation id="4579744207439506346">বেছে নেওয়া ফাইল বা ফোল্ডারের সাথে <ph name="ENTRY_NAME" /> যোগ করা হয়েছে।</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />-এর ফলাফল দেখানো হচ্ছে।</translation>
+<translation id="4599600860674643278">ফিল্টার রিসেট করা হয়েছে।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> ফোল্ডারে <ph name="FILE_NAME" /> ফাইল কপি করা হচ্ছে</translation>
 <translation id="4631887759990505102">শিল্পী</translation>
 <translation id="4642769377300286600">মোবাইল প্রোফাইল ইনস্টল করা হচ্ছে, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">ইতালীয়</translation>
 <translation id="5473333559083690127">নতুন পিন পুনরায় লিখুন</translation>
 <translation id="5489067830765222292">লাতভিয়ান</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টার বন্ধ আছে।</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5500122897333236901">আইসল্যান্ডিক</translation>
 <translation id="5508696409934741614">বিন্দু</translation>

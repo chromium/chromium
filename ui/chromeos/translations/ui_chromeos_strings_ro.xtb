@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Se face backup pentru <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Elimină excepția pentru <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentare Google</translation>
+<translation id="4277536868133419688">Filtrul <ph name="FILTER_NAME" /> este activat.</translation>
 <translation id="4290535918735525311">Un dosar cu accesul permis pentru Linux</translation>
 <translation id="4299729908419173967">Braziliană</translation>
 <translation id="4302605047395093221">Oricine folosește dispozitivul va trebui să introducă PIN-ul pentru a se conecta la această rețea mobilă</translation>
@@ -385,6 +386,7 @@
 <translation id="4387004326333427325">Certificatul de autentificare a fost respins de la distanță</translation>
 <translation id="4394214039309501350">Link extern</translation>
 <translation id="4401287888955153199">Extrage tot</translation>
+<translation id="4410695710508688828">Operațiunea de extragere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4439427728133035643">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
@@ -406,6 +408,7 @@
 <translation id="457386861538956877">Mai multe...</translation>
 <translation id="4579744207439506346">S-a adăugat <ph name="ENTRY_NAME" /> la selecție.</translation>
 <translation id="4594543368593301662">Se afișează rezultate pentru <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filtrul a fost resetat.</translation>
 <translation id="4603392156942865207">Se copiază <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Se instalează profilul mobil, rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +532,7 @@
 <translation id="5469868506864199649">Italiană</translation>
 <translation id="5473333559083690127">Reintrodu noul cod PIN</translation>
 <translation id="5489067830765222292">Letonă</translation>
+<translation id="5489965683297092283">Filtrul <ph name="FILTER_NAME" /> este dezactivat.</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>

@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" />નો બૅકઅપ લઈ રહ્યાં છીએ</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> માટે અપવાદ કાઢી નાખો</translation>
 <translation id="4261901459838235729">Google પ્રસ્તુતિ</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ફિલ્ટર ચાલુ છે.</translation>
 <translation id="4290535918735525311">Linux વડે શેર કરેલું 1 ફોલ્ડર</translation>
 <translation id="4299729908419173967">બ્રાઝિલિયન</translation>
 <translation id="4302605047395093221">આ ડિવાઇસનો ઉપયોગ કરનાર કોઈપણ વ્યક્તિએ આ મોબાઇલ નેટવર્કથી કનેક્ટ થવા માટે પિન દાખલ કરવો જરૂરી રહેશે</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">વધુ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> પસંદગીમાં ઉમેર્યું.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> માટે પરિણામો બતાવી રહ્યાં છીએ.</translation>
+<translation id="4599600860674643278">ફિલ્ટર રીસેટ કરવામાં આવ્યું છે.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ની <ph name="FOLDER_NAME" />માં કૉપિ કરી રહ્યાં છીએ</translation>
 <translation id="4631887759990505102">કલાકાર</translation>
 <translation id="4642769377300286600">મોબાઇલ પ્રોફાઇલ ઇન્સ્ટૉલ કરી રહ્યાં છીએ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક</translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">ઇટાલિયન</translation>
 <translation id="5473333559083690127">નવો PIN ફરીથી દાખલ કરો</translation>
 <translation id="5489067830765222292">લૅતવિયન</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ફિલ્ટર બંધ છે.</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5500122897333236901">આઇસલેન્ડિક</translation>
 <translation id="5508696409934741614">બિંદુઓ</translation>

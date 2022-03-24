@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1096883626080133124">Get more done with a simple, secure and faster-than-ever Google Chrome</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Help improve Chrome's features and performance</translation>
 <translation id="1479202195792305274">Chrome can check your passwords when you sign in with your Google Account.</translation>
@@ -31,7 +30,9 @@
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2919738076569633423">By using Chrome, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Get more done with a simple, secure and faster-than-ever Google Chrome.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
+<translation id="3121002401028999199">To help improve the app, Chrome sends usage and crash reports to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="3173834708294760622">Google Chrome page</translation>
 <translation id="3196546062792660320">Chrome saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
@@ -39,7 +40,6 @@
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
-<translation id="3634910711516114487">To get the most out of Chrome, sign in to Chrome with your Google Account</translation>
 <translation id="3655656110921623717">This means that Chrome will request the mobile site every time.</translation>
 <translation id="3706101708757577809">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="3720541637541300822">Lock incognito tabs when you close Chrome</translation>
@@ -110,6 +110,7 @@ Things to consider:
 <translation id="766361182512894255">Your password was exposed in a data breach. Chrome recommends changing the password now.</translation>
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
+<translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
@@ -127,6 +128,7 @@ Things to consider:
 <translation id="8736550665979974340">Stay safe with Google Chrome</translation>
 <translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>
 <translation id="8788269841521769222">You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">By using Chrome, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
 </translationbundle>

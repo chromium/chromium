@@ -469,6 +469,7 @@
 ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಅನುಮತಿಗಳು ಈ ಖಾತೆಗೆ ಅನ್ವಯಿಸಬಹುದು. ನೀವು <ph name="APPS_LINK_BEGIN" />ಆ್ಯಪ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="APPS_LINK_END" /> Android ಆ್ಯಪ್‌ಗಳ ಅನುಮತಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಬಹುದು.</translation>
 <translation id="1448779317883494811">ಬ್ರಷ್ ಟೂಲ್</translation>
 <translation id="1449191289887455076">ನಿಯೋಜನೆಯನ್ನು ಖಚಿತಪಡಿಸಲು “<ph name="CURRENTKEY" />” ಅನ್ನು ಪುನಃ ಒತ್ತಿರಿ ಮತ್ತು <ph name="RESPONSE" /> ಆಗಿರಿ</translation>
+<translation id="1450646399865399771"><ph name="DEVICE_NAME" /> ನಿಂದ '<ph name="NETWORK_NAME" />' ಗಾಗಿ ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="1451375123200651445">ವೆಬ್‌ಪುಟ, ಒಂದೇ ಫೈಲ್</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     ಡೀಬಗ್‌ ಲಾಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ಕಳುಹಿಸಿ (ಶಿಫಾರಸು ಮಾಡಿರುವುದು)</translation>
@@ -1001,6 +1002,7 @@
 <translation id="1938351510777341717">ಬಾಹ್ಯ ಕಮಾಂಡ್ ಕೀ</translation>
 <translation id="1940546824932169984">ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="1941410638996203291">ಪ್ರಾರಂಭ ಸಮಯ <ph name="TIME" /></translation>
+<translation id="1941553344801134989">ಆವೃತ್ತಿ: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1942600407708803723">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
 <translation id="1944528062465413897">ಬ್ಲೂಟೂತ್ ಜೋಡಿಸುವ ಕೋಡ್:</translation>
@@ -1075,6 +1077,7 @@
 <translation id="202352106777823113">ಡೌನ್‌ಲೋಡ್ ತುಂಬಾ ಸಮಯವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ ಮತ್ತು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="2024195579772565064">ಹುಡುಕಾಟ ಎಂಜಿನ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ಕ್ರ್ಯಾಷ್ ಆಗಿದೆ. ವಿಸ್ತರಣೆಯನ್ನು ಮರುಲೋಡ್ ಮಾಡಲು ಈ ಬಲೂನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="2027138361022454492">ನಿಮ್ಮ ಜೊತೆಗೆ <ph name="DEVICE_NAME" /> ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="2028449514182362831">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗೆ ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
 <translation id="202918510990975568">ಸುರಕ್ಷತೆಯನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಮತ್ತು ಸೈನ್-ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2030455719695904263">ಟ್ರ್ಯಾಕ್‌ಪ್ಯಾಡ್</translation>
@@ -2069,7 +2072,6 @@
 <translation id="2977480621796371840">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2979639724566107830">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2981113813906970160">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್ ತೋರಿಸು</translation>
-<translation id="2981474224638493138">ಟ್ಯಾಬ್/ಡೆಸ್ಕ್‌ಟಾಪ್ ಪ್ರಕ್ಷೇಪಣೆ ಗುಣಮಟ್ಟ</translation>
 <translation id="2983373101216420412">ಕೇಸ್ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆಂದು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ವಿನಂತಿ ಸಲ್ಲಿಸಬೇಕೇ?</translation>
 <translation id="2987620471460279764">ಬೇರೆ ಸಾಧನದಿಂದ ಪಠ್ಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -2151,6 +2153,7 @@
 <translation id="3054766768827382232">ಅದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದರೆ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಬಹುದು, ಆದರೆ ಅನಧಿಕೃತ ಬಳಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಡೇಟಾವನ್ನು ಬಹಿರಂಗಪಡಿಸಬಹುದು.</translation>
 <translation id="3055113921564083271">ನೀವು ತೆಗೆದುಹಾಕಿದ ಆಸಕ್ತಿಗಳು</translation>
 <translation id="3055590424724986000">ನಿಮ್ಮ ಆಯ್ಕೆಯ ಪೂರೈಕೆದಾರರನ್ನು ಬಳಸಿ</translation>
+<translation id="3057660594186523687"><ph name="DEVICE_NAME" /> ನಿಂದ '<ph name="NETWORK_NAME" />' ಗಾಗಿ ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3058498974290601450">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಆನ್ ಮಾಡಬಹುದು</translation>
 <translation id="3058517085907878899">ಸಾಧನಕ್ಕೆ ಹೆಸರಿಸಿ</translation>
 <translation id="3059195548603439580">ಸಿಸ್ಟಂ ಕಾಂಪೋನೆಂಟ್‌ಗಳಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
@@ -2576,6 +2579,7 @@
 <translation id="3507888235492474624">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಮರು-ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3508492320654304609">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3508920295779105875">ಮತ್ತೊಂದು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ...</translation>
+<translation id="3509379002674019679">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಉಳಿಸಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ, ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3511200754045804813">ಮರು-ಸ್ಕ್ಯಾನ್</translation>
 <translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="351152300840026870">ಸ್ಥಿರ-ಅಗಲ ಫಾಂಟ್</translation>
@@ -3450,7 +3454,6 @@
 <translation id="4369121877634339065">ಹುಡುಕಲು ಯಾವುದೇ ಚಿತ್ರದ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4369215744064167350">ವೆಬ್‌ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಅನುಮೋದಿಸಲಾಗಿದೆ</translation>
 <translation id="4370975561335139969">ನೀವು ನಮೂದಿಸಿದ ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
-<translation id="4373966964907728675">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4374831787438678295">Linux ಇನ್‌ಸ್ಟಾಲರ್‌‌</translation>
 <translation id="4375035964737468845">ಡೌನ್‌ಲೋಡ್‌ ಆಗಿರುವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4376226992615520204">ಸ್ಥಳ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -4027,6 +4030,7 @@
 <translation id="4959262764292427323">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
 <translation id="496027654926814138">ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಕದಿಯಲು ದಾಳಿಕೋರರಿಗೆ <ph name="FILE_NAME" /> ಅವಕಾಶ ನೀಡಬಹುದು.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">ಪರದೆಯನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="4961361269522589229">ರೆಸಿಪಿ ಪರಿಕಲ್ಪನೆಗಳು</translation>
 <translation id="496185450405387901">ಈ ಆ್ಯಪ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="4963789650715167449">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಿ</translation>
@@ -4725,6 +4729,7 @@
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5659833766619490117">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5662513737565158057">Linux ಆ್ಯಪ್‌ಗಳು ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು ಎಂಬುದನ್ನು ಬದಲಾಯಿಸಿ.</translation>
+<translation id="5667293444945855280">ಮಾಲ್‌ವೇರ್</translation>
 <translation id="5667546120811588575">Google Play ಅನ್ನು ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5668351004957198136">ವಿಫಲ</translation>
 <translation id="56702779821643359">ನಿಮ್ಮ ಸುತ್ತಲಿನ ಜನರ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -5132,7 +5137,6 @@
 <translation id="6080689532560039067">ನಿಮ್ಮ ಸಿಸ್ಟಂ ಸಮಯವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6082877069782862752">ಕೀ ಮ್ಯಾಪಿಂಗ್</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ಹೆಸರಿಸದ ಗುಂಪಿಗೆ ಸೇರಿದೆ</translation>
-<translation id="6085457109149794212">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಎಲ್ಲಾ ಕಾರ್ಡ್ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6085886413119427067">ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ನ ಮೂಲಕ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದನ್ನು ನಿರ್ಣಯಿಸುತ್ತದೆ</translation>
 <translation id="6086004606538989567">ನೀವು ದೃಢೀಕರಿಸಿದ ಖಾತೆಗೆ ಈ ಸಾಧನವನ್ನು ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಯಿಲ್ಲ.</translation>
 <translation id="6086846494333236931">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸ್ಥಾಪಿಸಿದ್ದಾರೆ</translation>
@@ -5217,7 +5221,6 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6166185671393271715">Chrome ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="6169040057125497443">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
-<translation id="6169666352732958425">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6169967265765719844">Steam ಮೂಲಕ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಗೇಮ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳ ಅನುಮತಿಗಳನ್ನು <ph name="LINK_BEGIN" />Steam ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="LINK_END" /> ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="6170470584681422115">ಸ್ಯಾಂಡ್‌ವಿಚ್</translation>
 <translation id="6170498031581934115">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -5376,6 +5379,7 @@
 <translation id="6322370287306604163">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮೂಲಕ ವೇಗವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6324916366299863871">ಶಾರ್ಟ್‌ಕಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6325191661371220117">ಸ್ವಯಂ-ಪ್ರಾರಂಭವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6326175484149238433">Chrome ನಿಂದ ತೆಗೆದುಹಾಕು</translation>
 <translation id="6326855256003666642">ಎಣಿಕೆಯನ್ನು ಚಾಲ್ತಿಯಲ್ಲಿರಿಸಿ</translation>
 <translation id="6327785803543103246">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂಅನ್ವೇಷಣೆ</translation>
@@ -5420,6 +5424,7 @@
 <translation id="6374469231428023295">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6374635887697228982">ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯುವುದೇ?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ 1 ಫಲಿತಾಂಶ</translation>
+<translation id="6378392501584240055">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6380143666419481200">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> ಅನ್ನು ಓದಲು ಹಾಗೂ ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="6382958439467370461">ಯಾವುದೇ ನಿಷ್ಕ್ರಿಯ ಶಾಟ್‌ಕಟ್‌ಗಳಿಲ್ಲ</translation>
@@ -5537,6 +5542,7 @@
 <translation id="648927581764831596">ಯಾವುದೂ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6490471652906364588">USB-C ಸಾಧನ (ಬಲ ಪೋರ್ಟ್)</translation>
 <translation id="6491376743066338510">ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="6492526860459984042"><ph name="DEVICE_NAME" /> ನಿಂದ '<ph name="NETWORK_NAME" />' ಗಾಗಿ ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6494327278868541139">ವರ್ಧಿತ ಸುರಕ್ಷತಾ ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6494445798847293442">ಪ್ರಮಾಣೀಕರಣದ ಪ್ರಾಧಿಕಾರವಲ್ಲ</translation>
 <translation id="6494974875566443634">ಕಸ್ಟಮೈಸ್ ಮಾಡುವಿಕೆ</translation>
@@ -5796,6 +5802,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ಅದೃಶ್ಯ)</translation>
 <translation id="6758056191028427665">ನಮ್ಮ ಕೆಲಸದ ಕುರಿತು ನಿಮ್ಮ ಅಭಿಪ್ರಾಯವನ್ನು ತಿಳಿಸಿ.</translation>
 <translation id="6759193508432371551">ಫ್ಯಾಕ್ಟರಿ ರಿಸೆಟ್‌</translation>
+<translation id="6761431452438552910">ನಿಮ್ಮ ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಜೋಡಿಸುವಿಕೆ ಮೋಡ್‌ನಲ್ಲಿದೆ ಮತ್ತು ಸಮೀಪದಲ್ಲಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನೀವು ವಿಶ್ವಾಸ ಹೊಂದಿರುವ ಸಾಧನಗಳ ಜೊತೆ ಮಾತ್ರ ಜೋಡಿಸಿ.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">ಆನ್‌ ಆಗಿದೆ</translation>
 <translation id="676560328519657314">Google Pay ನಲ್ಲಿರುವ ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನಗಳು</translation>
@@ -5865,7 +5872,6 @@
 <translation id="6817174620439930047">MIDI ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸೈಟ್‌ವೊಂದು ಸಿಸ್ಟಮ್‌ನ ಪ್ರತ್ಯೇಕ ಸಂದೇಶಗಳನ್ನು ಬಳಸಬೇಕೆಂದಾಗ ನನ್ನನ್ನು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="6818198425579322765">ಅನುವಾದಿಸಬೇಕಾದ ಪುಟದ ಭಾಷೆ</translation>
 <translation id="6818802132960437751">ಅಂತರ್ನಿರ್ಮಿತ ವೈರಸ್‌ನಿಂದ ರಕ್ಷಣೆ</translation>
-<translation id="682123305478866682">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬಿತ್ತರಿಸಿ</translation>
 <translation id="6823174134746916417">ಟಚ್‌ಪ್ಯಾಡ್ ಕ್ಲಿಕ್‌ - ಮಾಡಲು - ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="6824564591481349393">ಇಮೇಲ್ &amp;ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ</translation>
 <translation id="6824584962142919697">&amp;ಅಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -6870,7 +6876,6 @@
 <translation id="7826254698725248775">ಸಾಧನದ ಗುರುತಿನಲ್ಲಿ ಸಂಘರ್ಷವಿದೆ.</translation>
 <translation id="7828731929332799387">ಇದು ಮೂರನೇ-ವ್ಯಕ್ತಿ ಸಂದರ್ಭಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ಎಲ್ಲಾ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ. ನೀವು ಮುಂದುವರಿಯಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="7829877209233347340">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸುವುದಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿ ನೀಡುವುದಕ್ಕೆ ಪೋಷಕರಿಗೆ ಹೇಳಿ</translation>
-<translation id="7830594666202422257">Linux ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ಗೆ ರಿಯಾಯಿತಿ ಕಂಡುಬಂದರೆ, ನೀವು ಅದನ್ನು ಈ ಪುಟದಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="7833720883933317473">ಉಳಿಸಲಾದ ಕಸ್ಟಮ್ ಪದಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
@@ -7785,7 +7790,6 @@
 <translation id="8755376271068075440">&amp;ದೊಡ್ಡದು</translation>
 <translation id="875604634276263540">ಚಿತ್ರದ URL ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
-<translation id="8757090071857742562">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.  ನಿಮ್ಮ ಪರದೆ ಹಂಚಿಕೊಳ್ಳುವದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನೀವು ಖಚಿತಪಡಿಸಿರುವಿರಾ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="8757203080302669031">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಈ ಟ್ಯಾಬ್ ಸಕ್ರಿಯವಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದೆ.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ಅವರನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="8758418656925882523">ಉಕ್ತಲೇಖನ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ (ಟೈಪ್ ಮಾಡಲು ಮಾತನಾಡಿ)</translation>
@@ -8217,7 +8221,6 @@
 <translation id="9179524979050048593">ಸೈನ್-ಇನ್ ಸ್ಕ್ರೀನ್ ಬಳಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="9180281769944411366">ಈ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು. Linux ಕಂಟೇನರ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="9180380851667544951">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಸೈಟ್‌ ಹಂಚಿಕೊಳ್ಳಬಹುದು</translation>
-<translation id="918224512343736195">SSH ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="9182556968660520230">ಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕೆ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ಆ್ಯಪ್}one{# ಆ್ಯಪ್‌ಗಳು}other{# ಆ್ಯಪ್‌ಗಳು}}</translation>
 <translation id="9186963452600581158">ಮಗುವಿನ Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್-ಇನ್ ಮಾಡಿ</translation>

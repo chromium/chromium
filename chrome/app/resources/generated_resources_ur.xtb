@@ -466,6 +466,7 @@
 ایپس کو پہلے سے آپ کی دی گئی اجازتیں اس اکاؤنٹ پر لاگو ہو سکتی ہیں۔ آپ <ph name="APPS_LINK_BEGIN" />ایپس کی ترتیبات<ph name="APPS_LINK_END" /> میں Android ایپس کے لیے اجازتیں کنٹرول کر سکتے ہیں۔</translation>
 <translation id="1448779317883494811">برش کا ٹول</translation>
 <translation id="1449191289887455076">تفویض اور <ph name="RESPONSE" /> کی تصدیق کرنے کے لیے "<ph name="CURRENTKEY" />" دوبارہ دبائيں</translation>
+<translation id="1450646399865399771"><ph name="DEVICE_NAME" /> سے '<ph name="NETWORK_NAME" />' کے لیے نیٹ ورک کنفیگریشن موصول ہوا</translation>
 <translation id="1451375123200651445">ویب صفحہ، واحد فائل</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />ڈیبگ لاگز<ph name="END_LINK" /> بھیجیں (تجویز کردہ)</translation>
 <translation id="1454223536435069390">اسکرین شاٹ &amp;لیں</translation>
@@ -996,6 +997,7 @@
 <translation id="1938351510777341717">بیرونی کمانڈ</translation>
 <translation id="1940546824932169984">منسلک آلات</translation>
 <translation id="1941410638996203291">وقت آغاز <ph name="TIME" /></translation>
+<translation id="1941553344801134989">ورژن: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="1942600407708803723">کوَر بند ہونے پر شٹ ڈاؤن کریں</translation>
 <translation id="1944528062465413897">بلوٹوتھ جوڑا بنانے کا کوڈ:</translation>
@@ -1070,6 +1072,7 @@
 <translation id="202352106777823113">ڈاؤن لوڈ میں بہت زیادہ وقت لگنے کی وجہ سے نیٹ ورک نے اسے روک دیا۔</translation>
 <translation id="2024195579772565064">سرچ انجن حذف کریں</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> کریش ہوگیا ہے۔ ایکسٹینشن دوبارہ لوڈ کرنے کیلئے اس غبارہ پر کلک کریں۔</translation>
+<translation id="2027138361022454492">‏<ph name="DEVICE_NAME" /> آپ کے ساتھ Wi-Fi نیٹ ورک کا اشتراک کر رہا ہے۔</translation>
 <translation id="2028449514182362831">وہ خصوصیات کام نہیں کریں گی جن کے لیے موشن سینسرز کی ضرورت ہوتی ہے</translation>
 <translation id="202918510990975568">سیکیورٹی اور سائن ان کو ترتیب دینے کے لیے اپنا پاس ورڈ درج کریں</translation>
 <translation id="2030455719695904263">ٹریک پیڈ</translation>
@@ -1503,6 +1506,7 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> لوڈ ہو رہی ہے</translation>
 <translation id="2440604414813129000">ما&amp;خذ دیکھیں</translation>
+<translation id="2441719842399509963">ڈیفالٹس پر ری سیٹ کریں</translation>
 <translation id="244231003699905658">غلط پتہ۔ براہ کرم پتہ چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2442916515643169563">متنی سایہ</translation>
 <translation id="2443487764245141020">سائٹس کو شناخت کنندہ کا استعمال کرتے ہوئے آپ کے آلے کی شناخت کرنے کی بھی ضرورت پڑ سکتی ہے</translation>
@@ -2060,7 +2064,6 @@
 <translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
 <translation id="2981113813906970160">بڑا ماؤس کرسر دکھائیں</translation>
-<translation id="2981474224638493138">ٹیب/ڈیسک ٹاپ پروجیکشن کوالٹی</translation>
 <translation id="2983373101216420412">کیس بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" انسٹال کرنے کے لیے آپ کے منتظم کو درخواست بھیجیں؟</translation>
 <translation id="2987620471460279764">دوسرے آلے سے اشتراک کردہ متن</translation>
@@ -2142,6 +2145,7 @@
 <translation id="3054766768827382232">غیر فعال کرنے سے آپ کے پیریفیرلز بہتر کام انجام دے سکتے ہیں لیکن غیر مجاز استعمال کے ذریعے آپ کے ذاتی ڈیٹا کو ظاہر کیا جا سکتا ہے۔</translation>
 <translation id="3055113921564083271">آپ کی ہٹائی گئی دلچسپیاں</translation>
 <translation id="3055590424724986000">اپنی پسند کے فراہم کنندہ کے ساتھ</translation>
+<translation id="3057660594186523687"><ph name="DEVICE_NAME" /> سے '<ph name="NETWORK_NAME" />' کے لیے نیٹ ورک کنفیگریشن موصول کرنے میں ناکام</translation>
 <translation id="3058498974290601450">آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں</translation>
 <translation id="3058517085907878899">آلہ کا نام</translation>
 <translation id="3059195548603439580">سسٹم کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
@@ -2567,6 +2571,7 @@
 <translation id="3507888235492474624">بلوٹوتھ آلات کو دوبارہ اسکین کریں</translation>
 <translation id="3508492320654304609">آپ کا سائن ان ڈیٹا حذف نہیں ہو سکا</translation>
 <translation id="3508920295779105875">کوئی دوسرا فولڈر منتخب کریں…</translation>
+<translation id="3509379002674019679">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔</translation>
 <translation id="3511200754045804813">دوبارہ اسکین کریں</translation>
 <translation id="3511307672085573050">لنک پ&amp;تہ کاپی کریں</translation>
 <translation id="351152300840026870">مقررہ چوڑائی کا فونٹ</translation>
@@ -3441,7 +3446,6 @@
 <translation id="4369121877634339065">تلاش کرنے کے لیے کسی بھی تصویر پر گھسیٹیں</translation>
 <translation id="4369215744064167350">ویب سائٹ کی درخواست منظور ہو گئی</translation>
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
-<translation id="4373966964907728675">ڈیسک ٹاپ کاسٹ کیا جا رہا ہے</translation>
 <translation id="4374831787438678295">‏Linux انسٹالر</translation>
 <translation id="4375035964737468845">ڈاؤن لوڈ کردہ فائلیں کھولیں</translation>
 <translation id="4376226992615520204">مقام آف ہے</translation>
@@ -4017,6 +4021,7 @@
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> حملہ آوروں کو آپ کی ذاتی معلومات چوری کرنے کی اجازت دے سکتی ہے۔</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4961361269522589229">پکوان کی ترکیب کے آئیڈیاز</translation>
 <translation id="496185450405387901">یہ ایپ آپ کے منتظم نے انسٹال کی ہے۔</translation>
 <translation id="4963789650715167449">موجودہ ٹیب ہٹائیں</translation>
@@ -5121,7 +5126,6 @@
 <translation id="6080689532560039067">اپنے سسٹم کا وقت چیک کریں</translation>
 <translation id="6082877069782862752">کلید کی نقشہ سازی</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بغیر نام والے گروپ کا حصہ</translation>
-<translation id="6085457109149794212">‏حسب ضرورت Chrome میں کارڈ کے تمام اختیارات دیکھیں</translation>
 <translation id="6085886413119427067">کسی محفوظ کنکشن پر ویب سائٹس سے منسلک ہونے کے طریقے کا تعین کرتا ہے</translation>
 <translation id="6086004606538989567">آپ کے توثیق کردہ اکاؤنٹ کو اس آلے تک رسائی حاصل کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
@@ -5206,7 +5210,6 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166185671393271715">‏Chrome پر پاس ورڈز درآمد کریں</translation>
 <translation id="6169040057125497443">براہ کرم اپنا مائیکروفون چیک کریں۔</translation>
-<translation id="6169666352732958425">ڈیسک ٹاپ کو کاسٹ کرنے سے قاصر۔</translation>
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
 <translation id="6170498031581934115">‏ADB ڈیبگنگ کو فعال نہیں کیا جا سکا۔ ترتیبات میں جائیں اور دوبارہ کوشش کریں۔</translation>
@@ -5365,6 +5368,7 @@
 <translation id="6322370287306604163">فنگر پرنٹ کے ساتھ تیزی سے غیر مقفل کریں</translation>
 <translation id="6324916366299863871">شارٹ کٹ میں ترمیم کریں</translation>
 <translation id="6325191661371220117">خودکار لانچ کو غیر فعال کریں</translation>
+<translation id="6325525973963619867">ناکام</translation>
 <translation id="6326175484149238433">‏Chrome سے ہٹائیں</translation>
 <translation id="6326855256003666642">کیپ الائیو شمار</translation>
 <translation id="6327785803543103246">ویب پراکسی کی خودکار دریافت</translation>
@@ -5409,6 +5413,7 @@
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6374635887697228982">رعایتیں حاصل کریں؟</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
+<translation id="6378392501584240055">‏Wi-Fi نیٹ ورکس میں کھولیں</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی اجازت دی گئی</translation>
 <translation id="6382958439467370461">کوئی غیر فعال شارٹ کٹ نہیں</translation>
@@ -5526,6 +5531,7 @@
 <translation id="648927581764831596">کوئی دستیاب نہیں ہے</translation>
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
 <translation id="6491376743066338510">اجازت دہندگی ناکام ہو گئی</translation>
+<translation id="6492526860459984042"><ph name="DEVICE_NAME" /> سے '<ph name="NETWORK_NAME" />' کے لیے نیٹ ورک کنفیگریشن موصول کرنا</translation>
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
 <translation id="6494445798847293442">سرٹیفیکیشن ادارہ نہیں ہے</translation>
 <translation id="6494974875566443634">حسب ضرورت بنانا</translation>
@@ -5785,6 +5791,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (پوشیدگی)</translation>
 <translation id="6758056191028427665">ہماری کارکردگی کے بارے میں ہمیں بتائیں۔</translation>
 <translation id="6759193508432371551">فیکٹری ری سیٹ</translation>
+<translation id="6761431452438552910">اس بات کو یقینی بنائیں کہ آپ کا بلوٹوتھ آلہ جوڑا بنانے والے موڈ میں اور قریبی ہے۔ صرف آپ کے بھروسے مند آلات کے ساتھ جوڑا بنائیں۔</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">آن</translation>
 <translation id="676560328519657314">‏Google Pay میں آپ کی ادائیگی کے طریقے</translation>
@@ -5854,7 +5861,6 @@
 <translation id="6817174620439930047">‏جب کوئی سائٹ MIDI آلات تک رسائی کیلئے سسٹم کے جامع پیغامات استعمال کرنا چاہے تو پوچھیں (تجویز کردہ)</translation>
 <translation id="6818198425579322765">ترجمہ کرنے کے لیے صفحے کی زبان</translation>
 <translation id="6818802132960437751">پہلے سے شامل وائرس سے تحفظ</translation>
-<translation id="682123305478866682">ڈیسک ٹاپ کاسٹ کریں</translation>
 <translation id="6823174134746916417">ٹچ پیڈ کلک کرنے کیلئے تھپتھپائیں</translation>
 <translation id="6824564591481349393">ای میل پتہ کاپی کریں</translation>
 <translation id="6824584962142919697">&amp;عناصر کا معائنہ کریں</translation>
@@ -6859,7 +6865,6 @@
 <translation id="7826254698725248775">متنازع آلہ شناخت کنندہ۔</translation>
 <translation id="7828731929332799387">اس سے فریق ثالث کے سیاق و سباق میں دستیاب تمام کوکیز اور سائٹ کا ڈیٹا حذف ہو جائے گا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="7829877209233347340">والدین سے اسکول اکاؤنٹ شامل کرنے کی اجازت دینے کے ليے سائن ان کرنے کو کہیں</translation>
-<translation id="7830594666202422257">‏Linux سے منسلک ہوں</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏اگر Google کو کوئی رعایت ملتی ہے تو آپ کو اس صفحے پر دکھائی دے گی</translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
@@ -7775,7 +7780,6 @@
 <translation id="8755376271068075440">&amp;بڑا</translation>
 <translation id="875604634276263540">‏تصویری URL غلط ہے</translation>
 <translation id="8756969031206844760">پاس ورڈ کو اپ ڈیٹ کریں؟</translation>
-<translation id="8757090071857742562">ڈیسک ٹاپ کاسٹ کرنے سے قاصر۔ چیک کر کے دیکھیں کہ آیا آپ نے اپنی اسکرین کا اشتراک کرنے کیلئے پرامپٹ کی توثیق کر دی ہے۔</translation>
 <translation id="8757203080302669031">یہ ٹیب بلوٹوتھ آلات کے لیے فعال طور پر اسکین کر رہا ہے۔</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> کو ہٹا دیا گیا</translation>
 <translation id="8758418656925882523">ڈکٹیشن فعال کریں (ٹائپ کرنے کیلئے بولیں)</translation>
@@ -8206,7 +8210,6 @@
 <translation id="9179524979050048593">سائن ان اسکرین کے لیے صارف کا نام</translation>
 <translation id="9180281769944411366">‏اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ Linux کنٹینر شروع ہو رہا ہے۔</translation>
 <translation id="9180380851667544951">سائٹ آپ کی اسکرین کا اشتراک کر سکتی ہے</translation>
-<translation id="918224512343736195">‏SSH سے منسلک ہوں</translation>
 <translation id="9182556968660520230">سائٹس کو تحفظ یافتہ مواد چلانے کی اجازت نہ دیں</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ایپ}other{# ایپس}}</translation>
 <translation id="9186963452600581158">‏بچے کے Google اکاؤنٹ سے سائن ان کریں</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1096883626080133124">Google Chrome 比以前更簡便、安全而快速，讓您事半功倍</translation>
 <translation id="1143896152279775643">系統會將密碼儲存在 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="1282031177488366470">協助改善 Chrome 的功能和效能</translation>
 <translation id="1479202195792305274">Chrome 可在您使用 Google 帳戶登入時檢查密碼。</translation>
@@ -39,7 +38,6 @@
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
-<translation id="3634910711516114487">如要充分運用 Chrome 的所有功能，請透過 Google 帳戶登入 Chrome</translation>
 <translation id="3655656110921623717">這代表 Chrome 每次都會要求取得流動網站。</translation>
 <translation id="3706101708757577809">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕式分頁</translation>

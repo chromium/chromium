@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
 <translation id="4261901459838235729">Google-Präsentation</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" />-Filter ist an.</translation>
 <translation id="4290535918735525311">1 Ordner für Linux freigegeben</translation>
 <translation id="4299729908419173967">Portugiesisch (Brasilien)</translation>
 <translation id="4302605047395093221">Jeder Nutzer dieses Geräts muss die PIN eingeben, um eine Verbindung mit diesem Mobilfunknetz herzustellen</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Mehr...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> wurde zur Auswahl hinzugefügt.</translation>
 <translation id="4594543368593301662">Ergebnisse für <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filter wurde zurückgesetzt.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" kopiert</translation>
 <translation id="4631887759990505102">Künstler</translation>
 <translation id="4642769377300286600">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Italienisch</translation>
 <translation id="5473333559083690127">Neue PIN noch einmal eingeben</translation>
 <translation id="5489067830765222292">Lettisch</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" />-Filter ist aus.</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>

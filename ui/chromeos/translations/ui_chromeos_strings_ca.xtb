@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">S'estan creant una còpia de seguretat de <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Suprimeix l'excepció de l'amfitrió <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentació de Google</translation>
+<translation id="4277536868133419688">El filtre <ph name="FILTER_NAME" /> està activat.</translation>
 <translation id="4290535918735525311">S'ha compartit 1 carpeta amb Linux</translation>
 <translation id="4299729908419173967">Brasiler</translation>
 <translation id="4302605047395093221">Qualsevol persona que faci servir aquest dispositiu haurà d'introduir el PIN per connectar-se a aquesta xarxa mòbil</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Més...</translation>
 <translation id="4579744207439506346">S'ha afegit <ph name="ENTRY_NAME" /> a la selecció.</translation>
 <translation id="4594543368593301662">Es mostren els resultats per a <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">S'ha restablert el filtre.</translation>
 <translation id="4603392156942865207">S'està copiant <ph name="FILE_NAME" /> a la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">S'està instal·lant el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Italià</translation>
 <translation id="5473333559083690127">Torna a introduir el PIN nou</translation>
 <translation id="5489067830765222292">Letó</translation>
+<translation id="5489965683297092283">El filtre <ph name="FILTER_NAME" /> està desactivat.</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>

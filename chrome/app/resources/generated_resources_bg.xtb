@@ -2073,7 +2073,6 @@
 <translation id="2977480621796371840">Премахване от групата</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2981113813906970160">Показване на голям курсор на мишката</translation>
-<translation id="2981474224638493138">Качество на прожектиране на разделите/работния плот</translation>
 <translation id="2983373101216420412">Нивото на батерията на калъфа е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Да се изпрати ли заявка до администратора ви за инсталиране на <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
@@ -3454,7 +3453,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4369121877634339065">Плъзгане върху което и да е изображение с цел търсене</translation>
 <translation id="4369215744064167350">Заявката за уебсайта е одобрена</translation>
 <translation id="4370975561335139969">Въведените имейл адрес и парола не съвпадат</translation>
-<translation id="4373966964907728675">Предава се работният плот</translation>
 <translation id="4374831787438678295">Инсталационна програма за Linux</translation>
 <translation id="4375035964737468845">Отваряне на изтеглени файлове</translation>
 <translation id="4376226992615520204">Местоположението е изключено</translation>
@@ -4031,6 +4029,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> може да даде възможност на хакери да откраднат личната ви информация.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4961361269522589229">идеи за рецепти</translation>
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
 <translation id="4963789650715167449">Премахване на текущия раздел</translation>
@@ -4729,6 +4728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5659833766619490117">Тази страница не можа да бъде преведена</translation>
 <translation id="5662513737565158057">Променете начина на работа на приложенията за Linux.</translation>
+<translation id="5667293444945855280">Злонамерен софтуер</translation>
 <translation id="5667546120811588575">Google Play се настройва...</translation>
 <translation id="5668351004957198136">Не отговаря на условията</translation>
 <translation id="56702779821643359">Споделяйте файлове с хора в района. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -5136,7 +5136,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6080689532560039067">Проверете системния си час</translation>
 <translation id="6082877069782862752">Задаване на функции за клавишите</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> е част от група без име</translation>
-<translation id="6085457109149794212">Вижте всички опции за картите на страницата за персонализиране на Chrome</translation>
 <translation id="6085886413119427067">Определя начин за свързване с уебсайтовете през сигурна връзка</translation>
 <translation id="6086004606538989567">Профилът, който потвърдихте, не е упълномощен да използва това устройство.</translation>
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
@@ -5221,7 +5220,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6166185671393271715">Импортиране на пароли в Chrome</translation>
 <translation id="6169040057125497443">Моля, проверете микрофона си.</translation>
-<translation id="6169666352732958425">Предаването на работния плот не е възможно.</translation>
 <translation id="6169967265765719844">Разрешенията за игри и приложения, инсталирани чрез Steam, могат да бъдат управлявани от <ph name="LINK_BEGIN" />настройките на едноименното приложение<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сандвич</translation>
 <translation id="6170498031581934115">Отстраняването на грешки през ADB не бе активирано. Отворете настройките и опитайте отново.</translation>
@@ -5380,6 +5378,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6322370287306604163">По-бързо отключване с отпечатък</translation>
 <translation id="6324916366299863871">Редактиране на прекия път</translation>
 <translation id="6325191661371220117">Деактивиране на автоматичното стартиране</translation>
+<translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6326175484149238433">Премахване от Chrome</translation>
 <translation id="6326855256003666642">Брой на активно използващите</translation>
 <translation id="6327785803543103246">Автоматично откриване на уеб прокси сървъра</translation>
@@ -5869,7 +5868,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6817174620439930047">Получаване на запитване, когато сайт иска да използва специални системни съобщения за достъп до MIDI устройствата (препоръчително)</translation>
 <translation id="6818198425579322765">Изходен език на страницата</translation>
 <translation id="6818802132960437751">Вградена защита от вируси</translation>
-<translation id="682123305478866682">Предаване на работния плот</translation>
 <translation id="6823174134746916417">Кликване с докосване на сензорния панел</translation>
 <translation id="6824564591481349393">Копиране на име&amp;йл адреса</translation>
 <translation id="6824584962142919697">&amp;Инспектиране на елементите</translation>
@@ -6874,7 +6872,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7826254698725248775">Идентификаторът на устройството е несъвместим.</translation>
 <translation id="7828731929332799387">Така ще бъдат изтрити всички „бисквитки“ и данни за сайтове, налични в контексти на трети страни. Искате ли да продължите?</translation>
 <translation id="7829877209233347340">Поискайте от родител да влезе в профила си, за да разреши добавянето на училищен профил</translation>
-<translation id="7830594666202422257">Свързване с Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Ако Google открие отстъпка, ще я видите на тази страница</translation>
 <translation id="7833720883933317473">Тук ще се покажат запазените персонализирани думи</translation>
@@ -7792,7 +7789,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8755376271068075440">&amp;По-голям</translation>
 <translation id="875604634276263540">URL адресът на изображението е невалиден</translation>
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
-<translation id="8757090071857742562">Предаването на работния плот не е възможно. Проверете дали сте потвърдили подканата за стартиране на споделянето на екрана.</translation>
 <translation id="8757203080302669031">Този раздел активно сканира за устройства с Bluetooth.</translation>
 <translation id="8757368836647541092">Премахнахте <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Активиране на режима на диктуване (въвеждане чрез говор)</translation>
@@ -8223,7 +8219,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9179524979050048593">Потребителски имена на екрана за вход</translation>
 <translation id="9180281769944411366">Това може да отнеме няколко минути. Контейнерът за Linux стартира.</translation>
 <translation id="9180380851667544951">Сайтът може да споделя екрана ви</translation>
-<translation id="918224512343736195">Свързване с SSH</translation>
 <translation id="9182556968660520230">Да не се разрешава на сайтовете да възпроизвеждат защитено съдържание</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Приложение}other{# приложения}}</translation>
 <translation id="9186963452600581158">Влизане с профил в Google на дете</translation>

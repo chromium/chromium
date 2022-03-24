@@ -125,6 +125,7 @@
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
+<translation id="1677582821739292812">На ваш экран смотрит другой человек</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрес IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активное окно прикреплено слева.</translation>
@@ -463,6 +464,7 @@
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799080171973636491">Вы нажали сочетание клавиш для включения полноэкранной лупы. Выполнить это действие?</translation>
 <translation id="380165613292957338">Привет! Чем могу помочь?</translation>
+<translation id="3804737937830804242">Скрыть кнопку изменения размера</translation>
 <translation id="3826099427150913765">Войти с помощью пароля</translation>
 <translation id="383058930331066723">Включен режим энергосбережения</translation>
 <translation id="3835880383832568924">Чтобы посмотреть изменения, откройте приложение Shortcuts.</translation>
@@ -795,6 +797,7 @@
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
+<translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
 <translation id="5977415296283489383">Наушники</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
@@ -1002,6 +1005,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="731589979057211264">Режим включен.</translation>
 <translation id="7319740667687257810">Панель запуска, частичный список приложений</translation>
 <translation id="7346909386216857016">ОК</translation>

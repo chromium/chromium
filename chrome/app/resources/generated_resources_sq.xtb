@@ -2058,7 +2058,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="2979639724566107830">Hape në një dritare të re</translation>
 <translation id="2981113813906970160">Shfaq kursorin e madh të miut</translation>
-<translation id="2981474224638493138">Cilësia e projektimit të skedës/desktopit</translation>
 <translation id="2983373101216420412">Niveli i baterisë i kasës - <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Të dërgohet një kërkesë te administratori yt për të instaluar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Teksti i ndarë nga pajisje tjetër</translation>
@@ -3438,7 +3437,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4369121877634339065">Zvarrit mbi cilindo imazh për të kërkuar</translation>
 <translation id="4369215744064167350">Kërkesa e sajtit të uebit u miratua</translation>
 <translation id="4370975561335139969">Mail-i dhe fjalëkalimi që ke futur nuk përputhen</translation>
-<translation id="4373966964907728675">Po transmeton desktopin</translation>
 <translation id="4374831787438678295">Instaluesi për Linux</translation>
 <translation id="4375035964737468845">Hap skedarët e shkarkuar</translation>
 <translation id="4376226992615520204">Vendndodhja është çaktivizuar</translation>
@@ -4014,6 +4012,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
 <translation id="496027654926814138">Skedari "<ph name="FILE_NAME" />" mund t'u lejojë sulmuesve të vjedhin informacionet e tua personale.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4961361269522589229">ide për receta</translation>
 <translation id="496185450405387901">Ky aplikacion është instaluar nga administratori yt.</translation>
 <translation id="4963789650715167449">Hiqe skedën aktuale</translation>
@@ -5118,7 +5117,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6080689532560039067">Kontrollo kohën e sistemit</translation>
 <translation id="6082877069782862752">Organizimi i tasteve</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - pjesë e grupit pa emër</translation>
-<translation id="6085457109149794212">Shiko të gjitha opsionet e kartave te "Personalizmi i Chrome"</translation>
 <translation id="6085886413119427067">Përcakton mënyrën e lidhjes me sajtet e uebit nëpërmjet një lidhjeje të sigurt</translation>
 <translation id="6086004606538989567">Llogaria që ke verifikuar nuk është e autorizuar të qaset në këtë pajisje.</translation>
 <translation id="6086846494333236931">Instaluar nga administratori yt</translation>
@@ -5203,7 +5201,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
 <translation id="6169040057125497443">Kontrollo mikrofonin.</translation>
-<translation id="6169666352732958425">Desktopi nuk mund të transmetohet.</translation>
 <translation id="6169967265765719844">Lejet për lojërat dhe aplikacionet e instaluara përmes Steam mund të menaxhohen te <ph name="LINK_BEGIN" />cilësimet e aplikacionit Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6170498031581934115">Korrigjimi i ADB-së nuk mund të aktivizohej. Shko te "Cilësimet" dhe provo përsëri.</translation>
@@ -5362,6 +5359,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6322370287306604163">Shkyç më shpejt me gjurmë gishti</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
 <translation id="6325191661371220117">Çaktivizo hapjen automatike</translation>
+<translation id="6325525973963619867">Dështoi</translation>
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6326855256003666642">Numërimi i proceseve të mbajtjes aktive</translation>
 <translation id="6327785803543103246">Zbulimi automatik i përfaqësuesit të uebit</translation>
@@ -5851,7 +5849,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6817174620439930047">Pyet kur një faqe kërkon të përdorë mesazhe ekskluzive të sistemit për t'u qasur në pajisjet MIDI (rekomandohet)</translation>
 <translation id="6818198425579322765">Faqja "Gjuha në të cilën do të përkthehet"</translation>
 <translation id="6818802132960437751">Mbrojtje e integruar kundër viruseve</translation>
-<translation id="682123305478866682">Transmeto desktopin</translation>
 <translation id="6823174134746916417">"Trokit për të klikuar" në bllokun me prekje</translation>
 <translation id="6824564591481349393">Kopjo adresën e &amp;mail-it</translation>
 <translation id="6824584962142919697">&amp;Inspekto elementet</translation>
@@ -6855,7 +6852,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7826254698725248775">Identifikuesi i pajisjes është në konflikt.</translation>
 <translation id="7828731929332799387">Kjo do të fshijë të gjitha kukit dhe të dhënat e sajtit që ofrohen në kontekstet e palëve të treta. Dëshiron të vazhdosh?</translation>
 <translation id="7829877209233347340">Kërkoji prindit që të të japë leje për të shtuar një llogari shkolle</translation>
-<translation id="7830594666202422257">Lidhe me Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Nëse Google gjen një ulje çmimi, do ta shikosh atë në këtë faqe</translation>
 <translation id="7833720883933317473">Fjalët e personalizuara të ruajtura do të shfaqen këtu</translation>
@@ -7771,7 +7767,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8755376271068075440">&amp;Më i madh</translation>
 <translation id="875604634276263540">URL e imazhit është e pavlefshme</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
-<translation id="8757090071857742562">Nuk mund të transmetojë desktopin. Kontrollo për të parë nëse ke konfirmuar kërkesën për të filluar ndarjen e ekranit.</translation>
 <translation id="8757203080302669031">Kjo skedë po skanon në mënyrë aktive për pajisje Bluetooth.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> u hoq</translation>
 <translation id="8758418656925882523">Aktivizo diktimin (fol për të shkruar)</translation>
@@ -8202,7 +8197,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9179524979050048593">Emri i përdoruesit të ekranit të identifikimit</translation>
 <translation id="9180281769944411366">Procesi mund të zgjasë disa minuta. Po hapet kontejneri i Linux.</translation>
 <translation id="9180380851667544951">Sajti mund të ndajë ekranin tënd</translation>
-<translation id="918224512343736195">Lidhu me SSH</translation>
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>

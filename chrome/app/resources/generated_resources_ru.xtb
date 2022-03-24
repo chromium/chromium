@@ -468,6 +468,7 @@
 Разрешения, предоставленные приложениям, могут применяться к этому аккаунту. Чтобы изменить их для приложений Android, перейдите в <ph name="APPS_LINK_BEGIN" />настройки приложений<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Инструмент "Кисть"</translation>
 <translation id="1449191289887455076">Чтобы подтвердить назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
+<translation id="1450646399865399771">Конфигурация сети "<ph name="NETWORK_NAME" />" получена от устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1451375123200651445">Веб-страница, один файл</translation>
 <translation id="1453561711872398978">Отправить <ph name="BEGIN_LINK" />журналы отладки<ph name="END_LINK" /> (рекомендуется)</translation>
 <translation id="1454223536435069390">С&amp;делать снимок экрана</translation>
@@ -996,6 +997,7 @@
 <translation id="1938351510777341717">Внешняя клавиша Command</translation>
 <translation id="1940546824932169984">Подключенные устройства</translation>
 <translation id="1941410638996203291">Время начала: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах.</translation>
 <translation id="1942600407708803723">Завершить работу, когда обложка закрыта</translation>
 <translation id="1944528062465413897">Код Bluetooth-подключения:</translation>
@@ -1070,6 +1072,7 @@
 <translation id="202352106777823113">Скачивание остановлено, так как превышено время ожидания.</translation>
 <translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2025632980034333559">Произошел сбой <ph name="APP_NAME" />. Нажмите на это сообщение, чтобы вновь загрузить это расширение.</translation>
+<translation id="2027138361022454492">Устройство "<ph name="DEVICE_NAME" />" передает данные о сети Wi-Fi.</translation>
 <translation id="2028449514182362831">Функции, которые используют датчики движения, не будут работать</translation>
 <translation id="202918510990975568">Чтобы настроить параметры безопасности и входа, введите пароль.</translation>
 <translation id="2030455719695904263">Сенсорная панель</translation>
@@ -2055,7 +2058,6 @@
 <translation id="2977480621796371840">Удалить из группы</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2981113813906970160">Показывать большой курсор мыши</translation>
-<translation id="2981474224638493138">Качество видео во вкладке или в приложении на компьютере</translation>
 <translation id="2983373101216420412">Чехол заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Отправить администратору запрос на установку расширения "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
@@ -2135,6 +2137,7 @@
 <translation id="3053273573829329829">Включить PIN-код пользователя</translation>
 <translation id="3054766768827382232">Это действие может повысить производительность периферийных устройств, но вместе с тем увеличить риск неправомерного использования ваших персональных данных.</translation>
 <translation id="3055590424724986000">Использовать выбранного вами поставщика услуг</translation>
+<translation id="3057660594186523687">Не удалось получить конфигурацию сети "<ph name="NETWORK_NAME" />" от устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3058498974290601450">Ее можно включить в настройках в любой момент.</translation>
 <translation id="3058517085907878899">Введите название устройства</translation>
 <translation id="3059195548603439580">Ищете компоненты системы? Перейдите на страницу</translation>
@@ -2559,6 +2562,7 @@
 <translation id="3507888235492474624">Повторите поиск устройств Bluetooth</translation>
 <translation id="3508492320654304609">Невозможно удалить ваши учетные данные</translation>
 <translation id="3508920295779105875">Выбрать другую папку...</translation>
+<translation id="3509379002674019679">Создавайте, сохраняйте и изменяйте пароли. Быстрый доступ к ним позволит вам легко входить в аккаунты на сайтах и в приложениях.</translation>
 <translation id="3511200754045804813">Повторное сканирование</translation>
 <translation id="3511307672085573050">Скопировать адрес ссылки</translation>
 <translation id="351152300840026870">Моноширинный шрифт</translation>
@@ -3198,6 +3202,10 @@
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4114524937989710624">Эти рекомендованные файлы помогут вам вернуться к действиям, которые вы недавно выполняли на Google Диске.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="4115002065223188701">Сеть вне зоны доступа</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="4116704186509653070">Открыть</translation>
@@ -3425,7 +3433,6 @@
 <translation id="4369121877634339065">Для поиска выделите нужное изображение, перетащив курсор.</translation>
 <translation id="4369215744064167350">Запрос на доступ к сайту одобрен</translation>
 <translation id="4370975561335139969">Указан неправильный адрес или пароль</translation>
-<translation id="4373966964907728675">Транслировать содержимое рабочего стола</translation>
 <translation id="4374831787438678295">Установщик Linux</translation>
 <translation id="4375035964737468845">Открывание скачанных файлов</translation>
 <translation id="4376226992615520204">Геолокация отключена</translation>
@@ -3705,6 +3712,10 @@
 <translation id="4651484272688821107">Не удалось загрузить онлайн-компонент с ресурсами демонстрационного режима.</translation>
 <translation id="4652935475563630866">Изменено разрешение на доступ к камере. Чтобы продолжить, перезапустите Parallels Desktop.</translation>
 <translation id="4653405415038586100">Ошибка при настройке Linux</translation>
+<translation id="465406513924180949">Эти корзины помогут вам вернуться к товарам, которые вы добавляли в заказы в интернет-магазинах.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="4654236001025007561">Делитесь файлами с устройствами Chromebook и Android поблизости.</translation>
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
 <translation id="4658285806588491142">Защитите данные на экране</translation>
@@ -3997,6 +4008,7 @@
 <translation id="4959262764292427323">Пароли сохраняются в аккаунте Google и будут доступны на любом устройстве.</translation>
 <translation id="496027654926814138">С помощью файла "<ph name="FILE_NAME" />" злоумышленники могут похитить ваши личные данные.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> (<ph name="PROFILE_NAME" />)</translation>
+<translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4961361269522589229">рецепты</translation>
 <translation id="496185450405387901">Это приложение установлено администратором</translation>
 <translation id="4963789650715167449">Удалить вкладку</translation>
@@ -4146,6 +4158,7 @@
 <translation id="5121130586824819730">Недостаточно места на диске. Выберите другой каталог или освободите место на диске.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5125751979347152379">Недопустимый URL.</translation>
+<translation id="5125967981703109366">Об этой карточке</translation>
 <translation id="5126611267288187364">Посмотреть изменения</translation>
 <translation id="5127242257756472928">Эти сайты не могут использовать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
@@ -4692,6 +4705,7 @@
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5659833766619490117">Не удалось перевести страницу</translation>
 <translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
+<translation id="5667293444945855280">Вредоносное ПО</translation>
 <translation id="5667546120811588575">Настройка Google Play…</translation>
 <translation id="5668351004957198136">Сбой</translation>
 <translation id="56702779821643359">Делитесь файлами с пользователями поблизости. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5132,6 +5146,10 @@
 <translation id="6116921718742659598">Изменение настроек языка и метода ввода</translation>
 <translation id="6119927814891883061">Присвоить название "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6120205520491252677">Прикрепить эту страницу к экрану запуска…</translation>
+<translation id="6120707837086723438">Эти рекомендованные рецепты показаны с учетом вашей истории поиска.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6121773125605585883">Показать пароль для имени пользователя <ph name="USERNAME" /> на сайте <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">С вашим интернет-соединением все не так просто</translation>
 <translation id="6122093587541546701">Адрес эл. почты (необязательно):</translation>
@@ -5178,7 +5196,6 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6166185671393271715">Импорт паролей в Chrome</translation>
 <translation id="6169040057125497443">Проверьте микрофон.</translation>
-<translation id="6169666352732958425">Не удается транслировать рабочий стол</translation>
 <translation id="6169967265765719844">Вы можете управлять разрешениями для игр и приложений, установленных через Steam, <ph name="LINK_BEGIN" />в настройках этой платформы<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">Не удалось включить отладку с ADB. Перейдите в настройки и повторите попытку.</translation>
@@ -5337,6 +5354,7 @@
 <translation id="6322370287306604163">Снимайте блокировку с помощью отпечатка пальца ещё быстрее</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6325191661371220117">Отключить автозапуск</translation>
+<translation id="6325525973963619867">Ошибка</translation>
 <translation id="6326175484149238433">Удалить</translation>
 <translation id="6326855256003666642">Количество соединений keepalive</translation>
 <translation id="6327785803543103246">Автоматическое определение настроек прокси-сервера</translation>
@@ -5381,6 +5399,7 @@
 <translation id="6374469231428023295">Повторить</translation>
 <translation id="6374635887697228982">Разрешить Chrome искать скидки?</translation>
 <translation id="6377268785556383139">1 результат поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Открыть список сетей Wi-Fi</translation>
 <translation id="6380143666419481200">Принять условия и продолжить</translation>
 <translation id="6382616130475191723">Разрешено чтение и изменение данных сайта "<ph name="SITE_NAME" />"</translation>
 <translation id="6382958439467370461">Нет неактивных сочетаний клавиш.</translation>
@@ -5498,6 +5517,7 @@
 <translation id="648927581764831596">Отсутствуют</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491376743066338510">Не удалось выполнить авторизацию</translation>
+<translation id="6492526860459984042">Получение конфигурации сети "<ph name="NETWORK_NAME" />" от устройства "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
 <translation id="6494974875566443634">Персонализация</translation>
@@ -5756,6 +5776,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (инкогнито)</translation>
 <translation id="6758056191028427665">Расскажите, как у вас дела.</translation>
 <translation id="6759193508432371551">Сброс настроек</translation>
+<translation id="6761431452438552910">Устройство Bluetooth должно находиться рядом. На нем нужно выбрать режим подключения. Рекомендуется устанавливать соединение только с надежными устройствами.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Включено</translation>
 <translation id="676560328519657314">Ваши способы оплаты в Google Pay</translation>
@@ -5824,7 +5845,6 @@
 <translation id="6817174620439930047">Уведомлять меня о сайтах, пытающихся использовать системные сообщения для доступа к MIDI-устройствам (рекомендуется)</translation>
 <translation id="6818198425579322765">Исходный язык страницы</translation>
 <translation id="6818802132960437751">Встроенная защита от вирусов</translation>
-<translation id="682123305478866682">Трансляция содержимого рабочего стола</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
 <translation id="6824564591481349393">Скопировать адрес электронной почты</translation>
 <translation id="6824584962142919697">&amp;Проверить элементы</translation>
@@ -6735,6 +6755,10 @@
 <translation id="7744192722284567281">Раскрыт при утечке данных</translation>
 <translation id="7744649840067671761">Нажмите на новый переключатель или клавишу, чтобы назначить их для действия.
 Нажмите на уже заданный переключатель или клавишу, чтобы отменить назначение.</translation>
+<translation id="7746739418892731373">Это фото и видео с лучшими моментами из вашей библиотеки Google Фото. Управлять ими можно на странице <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="7750228210027921155">Картинка в картинке</translation>
 <translation id="7751260505918304024">Показать все</translation>
 <translation id="7753735457098489144">Не удалось выполнить установку, так как на устройстве недостаточно места. Удалите файлы, которые больше не нужны.</translation>
@@ -6822,7 +6846,6 @@
 <translation id="7826254698725248775">Конфликт идентификаторов устройств.</translation>
 <translation id="7828731929332799387">Все сторонние файлы cookie и данные сайтов будут удалены. Продолжить?</translation>
 <translation id="7829877209233347340">Попросите родителя войти в систему, чтобы дать вам разрешение на добавление учебного аккаунта.</translation>
-<translation id="7830594666202422257">Подключить к Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Если скидка будет найдена, она появится на этой странице.</translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
@@ -7737,7 +7760,6 @@
 <translation id="8755376271068075440">&amp;Крупнее</translation>
 <translation id="875604634276263540">Недействительный URL изображения.</translation>
 <translation id="8756969031206844760">Обновить пароль?</translation>
-<translation id="8757090071857742562">Невозможно транслировать содержимое рабочего стола. Убедитесь, что вы открыли доступ к экрану.</translation>
 <translation id="8757203080302669031">На этой вкладке выполняется активный поиск устройств Bluetooth.</translation>
 <translation id="8757368836647541092">Пользователь <ph name="USER_NAME_OR_EMAIL" /> удален</translation>
 <translation id="8758418656925882523">Включить голосовой ввод (преобразование речи в текст)</translation>
@@ -8171,7 +8193,6 @@
 <translation id="9179524979050048593">Имя пользователя на экране входа</translation>
 <translation id="9180281769944411366">Подождите несколько минут. Запуск контейнера Linux…</translation>
 <translation id="9180380851667544951">Сайт может открыть доступ к вашему экрану</translation>
-<translation id="918224512343736195">Подключиться с помощью SSH</translation>
 <translation id="9182556968660520230">Запретить сайтам воспроизводить защищенный контент</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="9186963452600581158">Войти в аккаунт Google ребенка</translation>

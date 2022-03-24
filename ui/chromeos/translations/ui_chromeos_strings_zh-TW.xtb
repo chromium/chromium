@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">正在備份 <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">移除 <ph name="HOST_NAME" /> 的例外項目</translation>
 <translation id="4261901459838235729">Google 簡報</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> 篩選器已開啟。</translation>
 <translation id="4290535918735525311">已與 Linux 共用 1 個資料夾</translation>
 <translation id="4299729908419173967">巴西語系</translation>
 <translation id="4302605047395093221">使用這部裝置的所有使用者都必須輸入 PIN 碼才能連上行動網路</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">更多…</translation>
 <translation id="4579744207439506346">已將「<ph name="ENTRY_NAME" />」新增至選取範圍。</translation>
 <translation id="4594543368593301662">目前顯示的是「<ph name="SEARCH_TERM" />」的搜尋結果。</translation>
+<translation id="4599600860674643278">已重設篩選器。</translation>
 <translation id="4603392156942865207">正在將 <ph name="FILE_NAME" /> 複製到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4631887759990505102">演出者</translation>
 <translation id="4642769377300286600">正在安裝行動裝置設定檔，第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">義大利文</translation>
 <translation id="5473333559083690127">再次輸入新的 PIN 碼</translation>
 <translation id="5489067830765222292">拉脫維亞文</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> 篩選器已關閉。</translation>
 <translation id="5494920125229734069">全選</translation>
 <translation id="5500122897333236901">冰島文</translation>
 <translation id="5508696409934741614">圓點</translation>

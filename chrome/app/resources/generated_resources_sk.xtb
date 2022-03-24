@@ -2073,7 +2073,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
 <translation id="2979639724566107830">Otvoriť v novom okne</translation>
 <translation id="2981113813906970160">Zobraziť veľký kurzor myši</translation>
-<translation id="2981474224638493138">Kvalita projekcie karty alebo pracovnej plochy</translation>
 <translation id="2983373101216420412">Úroveň batérie puzdra je <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Chcete správcovi odoslať žiadosť o inštaláciu rozšírenia <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Text zdieľaný z iného zariadenia</translation>
@@ -3459,7 +3458,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4369121877634339065">Vyhľadávajte presunutím cez ľubovoľný obrázok</translation>
 <translation id="4369215744064167350">Žiadosť o web bola schválená</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo nesúhlasia.</translation>
-<translation id="4373966964907728675">Prenáša sa pracovná plocha</translation>
 <translation id="4374831787438678295">Inštalátor systému Linux</translation>
 <translation id="4375035964737468845">Otvárať stiahnuté súbory</translation>
 <translation id="4376226992615520204">Poloha je vypnutá</translation>
@@ -4037,6 +4035,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="496027654926814138"><ph name="FILE_NAME" /> môže útočníkom umožniť ukradnúť vaše osobné údaje.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961318399572185831">Prenášanie obrazovky</translation>
 <translation id="4961361269522589229">nápady na recepty</translation>
 <translation id="496185450405387901">Túto aplikáciu nainštaloval váš správca.</translation>
 <translation id="4963789650715167449">Odstrániť aktuálnu kartu</translation>
@@ -4739,6 +4738,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659833766619490117">Túto stránku sa nepodarilo preložiť</translation>
 <translation id="5662513737565158057">Zmeňte, ako budú aplikácie pre Linux fungovať.</translation>
+<translation id="5667293444945855280">Škodlivý softvér</translation>
 <translation id="5667546120811588575">Nastavuje sa služba Google Play...</translation>
 <translation id="5668351004957198136">Nepodarilo sa</translation>
 <translation id="56702779821643359">Zdieľanie súborov s ľuďmi okolo vás. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -5147,7 +5147,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6080689532560039067">Kontrola času systému</translation>
 <translation id="6082877069782862752">Priradenie klávesov</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – súčasť skupiny bez názvu</translation>
-<translation id="6085457109149794212">Zobraziť všetky možnosti karty v sekcii Prispôsobenie Chromu</translation>
 <translation id="6085886413119427067">Určuje, ako sa pripojiť k webom prostredníctvom zabezpečeného pripojenia</translation>
 <translation id="6086004606538989567">Účet, ktorý ste overili, nemá povolený prístup do tohto zariadenia.</translation>
 <translation id="6086846494333236931">Nainštalované vaším správcom</translation>
@@ -5232,7 +5231,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6166185671393271715">Import hesiel do Chromu</translation>
 <translation id="6169040057125497443">Skontrolujte mikrofón.</translation>
-<translation id="6169666352732958425">Plochu sa nepodarilo prenášať.</translation>
 <translation id="6169967265765719844">Povolenia pre hry a aplikácie nainštalované prostredníctvom služby Steam je možné spravovať v <ph name="LINK_BEGIN" />nastaveniach aplikácie Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6170498031581934115">Ladenie ADB sa nepodarilo aktivovať. Prejdite do Nastavení a skúste to znova.</translation>
@@ -5392,6 +5390,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6322370287306604163">Odomykajte rýchlejšie odtlačkom prsta</translation>
 <translation id="6324916366299863871">Upraviť skratku</translation>
 <translation id="6325191661371220117">Zakázať automatické spúšťanie</translation>
+<translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="6326175484149238433">Odstrániť z Chromu</translation>
 <translation id="6326855256003666642">Počet akcií zabraňujúcich ukončeniu</translation>
 <translation id="6327785803543103246">Automatické zisťovanie webového proxy servera</translation>
@@ -5888,7 +5887,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6817174620439930047">Opýtať sa, keď bude chcieť web použiť na prístup k zariadeniam MIDI správy exkluzívne pre systém (odporúča sa)</translation>
 <translation id="6818198425579322765">Jazyk stránky, ktorý chcete prekladať</translation>
 <translation id="6818802132960437751">Integrovaná antivírusová ochrana</translation>
-<translation id="682123305478866682">Prenášanie plochy</translation>
 <translation id="6823174134746916417">Kliknutie klepnutím na touchpade</translation>
 <translation id="6824564591481349393">Kopírovať &amp;e-mailovú adresu</translation>
 <translation id="6824584962142919697">&amp;Skontrolovať prvky</translation>
@@ -6898,7 +6896,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7826254698725248775">Kolidujúci identifikátor zariadenia.</translation>
 <translation id="7828731929332799387">Týmto odstránite všetky súbory cookie a údaje webu dostupné v kontextoch tretích strán. Chcete pokračovať?</translation>
 <translation id="7829877209233347340">Požiadajte rodiča, aby sa prihlásil a povolil pridanie školského účtu</translation>
-<translation id="7830594666202422257">Pripojiť k systému Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Ak Google nájde zľavu, zobrazí ju na tejto stránke</translation>
 <translation id="7833720883933317473">Tu sa zobrazia uložené vlastné slová</translation>
@@ -7811,7 +7808,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8750155211039279868"><ph name="ORIGIN" /> sa chce pripojiť k sériovému portu</translation>
 <translation id="8750346984209549530">Názov prístupového bodu mobilu</translation>
 <translation id="8752451679755290210">Prechádzajte medzi položkami automaticky</translation>
-<translation id="8753394285382137786">Karty médií Vyhľadávania kariet</translation>
+<translation id="8753394285382137786">Vyhľadávanie kariet – sekcia Karty médií</translation>
 <translation id="8753868764580670305">Zobraziť a spravovať heslá uložené v tomto zariadení</translation>
 <translation id="8753948258138515839">Aplikácia Súbory poskytuje rýchly prístup k súborom, ktoré ste uložili na Disk Google, do externého úložiska alebo zariadenia so systémom Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Pri spustení aplikácie <ph name="PRODUCT_NAME" /> v podporovanom prostredí počítača sa použijú systémové nastavenia servera proxy. Váš systém však nie je podporovaný alebo sa pri spúšťaní konfigurácie vášho systému vyskytol problém.&lt;/p&gt;
@@ -7821,7 +7818,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8755376271068075440">&amp;Väčší</translation>
 <translation id="875604634276263540">Webová adresa obrázka je neplatná</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
-<translation id="8757090071857742562">Plochu sa nepodarilo prenášať. Skontrolujte, či ste potvrdili výzvu na zdieľanie obrazovky.</translation>
 <translation id="8757203080302669031">Táto karta aktívne vyhľadáva zariadenia s rozhraním Bluetooth.</translation>
 <translation id="8757368836647541092">Používateľ <ph name="USER_NAME_OR_EMAIL" /> bol odobraný</translation>
 <translation id="8758418656925882523">Povoliť diktovanie (písanie hlasom)</translation>
@@ -8254,7 +8250,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9179524979050048593">Používateľské meno na prihlasovacej obrazovke</translation>
 <translation id="9180281769944411366">Tento proces môže trvať niekoľko minút. Spúšťa sa kontajner systému Linux.</translation>
 <translation id="9180380851667544951">Web môže zdieľať vašu obrazovku</translation>
-<translation id="918224512343736195">Pripojiť k SSH</translation>
 <translation id="9182556968660520230">Nepovoliť webom prehrávať chránený obsah</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikácia}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="9186963452600581158">Prihlásiť sa účtom Google dieťaťa</translation>

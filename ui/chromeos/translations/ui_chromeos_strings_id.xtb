@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Mencadangkan <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Hapus pengecualian untuk <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentasi Google</translation>
+<translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> aktif.</translation>
 <translation id="4290535918735525311">1 folder dibagikan dengan Linux</translation>
 <translation id="4299729908419173967">Brasil</translation>
 <translation id="4302605047395093221">Siapa pun yang menggunakan perangkat ini perlu memasukkan PIN untuk terhubung ke jaringan seluler ini</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Lainnya...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ditambahkan ke pilihan.</translation>
 <translation id="4594543368593301662">Menampilkan hasil untuk <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filter direset.</translation>
 <translation id="4603392156942865207">Menyalin <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artis</translation>
 <translation id="4642769377300286600">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Italia</translation>
 <translation id="5473333559083690127">Masukkan lagi PIN baru</translation>
 <translation id="5489067830765222292">Latvia</translation>
+<translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> nonaktif.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5500122897333236901">Islandia</translation>
 <translation id="5508696409934741614">Titik</translation>

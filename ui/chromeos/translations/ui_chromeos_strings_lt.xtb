@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Kuriama atsarginė kopija: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Pašalinti išimtį iš „<ph name="HOST_NAME" />“</translation>
 <translation id="4261901459838235729">„Google“ pristatymas</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtras įjungtas.</translation>
 <translation id="4290535918735525311">1 aplankas bendrinamas su „Linux“</translation>
 <translation id="4299729908419173967">Brazilų k.</translation>
 <translation id="4302605047395093221">Visi šio įrenginio naudotojai turės įvesti PIN kodą, kad prisijungtų prie šio mobiliojo ryšio tinklo</translation>
@@ -407,6 +408,7 @@
 <translation id="457386861538956877">Daugiau...</translation>
 <translation id="4579744207439506346">„<ph name="ENTRY_NAME" />“ įtraukta į pasirinkimo sritį.</translation>
 <translation id="4594543368593301662">Rodomi rezultatai pagal užklausą „<ph name="SEARCH_TERM" />“.</translation>
+<translation id="4599600860674643278">Filtras nustatytas iš naujo.</translation>
 <translation id="4603392156942865207">Failas „<ph name="FILE_NAME" />“ kopijuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4631887759990505102">Atlikėjas</translation>
 <translation id="4642769377300286600">Įdiegiamas mobiliojo ryšio profilis, <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
@@ -530,6 +532,7 @@
 <translation id="5469868506864199649">Italų</translation>
 <translation id="5473333559083690127">Iš naujo įveskite naują PIN kodą</translation>
 <translation id="5489067830765222292">Latvių k.</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtras išjungtas.</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5500122897333236901">Islandų</translation>
 <translation id="5508696409934741614">Taškai</translation>
