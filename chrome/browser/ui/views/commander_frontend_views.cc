@@ -158,6 +158,7 @@ void CommanderFrontendViews::Show(Browser* browser) {
   params.delegate = widget_delegate_.get();
   params.name = "Quick Commands";
   params.parent = parent->GetWidget()->GetNativeView();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 // On Windows, this defaults to DesktopNativeWidgetAura, which has incorrect
 // parenting behavior for this widget.
 #if BUILDFLAG(IS_WIN)
