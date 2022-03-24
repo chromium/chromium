@@ -31,7 +31,6 @@ namespace {
 
 using mojom::blink::IdleManagerError;
 
-const char kAbortMessage[] = "Idle detection aborted.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"idle-detection\" is disallowed by permissions "
     "policy.";
@@ -134,9 +133,7 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   }
 
   if (signal_ && signal_->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kAbortMessage);
-    return ScriptPromise();
+    return ScriptPromise::Reject(script_state, signal_->reason(script_state));
   }
 
   mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
@@ -165,15 +162,13 @@ void IdleDetector::Abort(AbortSignal* signal) {
   if (signal_ != signal)
     return;
 
-  ScriptState* resolver_script_state(nullptr);
-
-  if (resolver_ && (resolver_script_state = resolver_->GetScriptState()) &&
-      IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
-                                    resolver_script_state)) {
-    ScriptState::Scope script_state_scope(resolver_->GetScriptState());
-    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kAbortError, kAbortMessage));
+  if (resolver_) {
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope script_state_scope(script_state);
+      resolver_->Reject(signal_->reason(script_state));
+    }
   }
 
   resolver_ = nullptr;
