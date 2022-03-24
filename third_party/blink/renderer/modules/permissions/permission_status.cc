@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/permissions/permission_status.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"

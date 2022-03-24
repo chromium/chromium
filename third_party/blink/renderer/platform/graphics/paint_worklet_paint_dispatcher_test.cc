@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using ::testing::_;
 using ::testing::NiceMock;
