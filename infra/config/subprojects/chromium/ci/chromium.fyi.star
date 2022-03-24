@@ -477,12 +477,16 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb"],
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = "ios",
         ),
         gclient_config = builder_config.gclient_config(
-            config = "chromium",
+            config = "ios",
         ),
     ),
     cores = None,

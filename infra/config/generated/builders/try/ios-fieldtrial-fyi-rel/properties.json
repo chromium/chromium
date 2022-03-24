@@ -14,14 +14,16 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "mac_toolchain"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "ios"
               },
               "legacy_gclient_config": {
-                "config": "chromium"
+                "config": "ios"
               }
             }
           }

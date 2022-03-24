@@ -247,6 +247,7 @@ ios_builder(
 
 ios_builder(
     name = "ios-fieldtrial-fyi-rel",
+    builderless = True,
     mirrors = ["ci/ios-fieldtrial-rel"],
 )
 
