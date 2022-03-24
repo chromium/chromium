@@ -6,6 +6,7 @@
 #define CC_LAYERS_SCROLLBAR_LAYER_BASE_H_
 
 #include "cc/cc_export.h"
+#include "cc/input/scrollbar.h"
 #include "cc/layers/layer.h"
 
 namespace cc {
