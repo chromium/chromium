@@ -1052,8 +1052,10 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
-  GetPasswordManagerDriver().ShowTouchToFill(CalculateSubmissionReadiness(
-      *form_data, username_element, password_element));
+  GetPasswordManagerDriver().ShowTouchToFill(
+      form_data ? CalculateSubmissionReadiness(*form_data, username_element,
+                                               password_element)
+                : mojom::SubmissionReadinessState::kNoInformation);
 #else
   GetPasswordManagerDriver().ShowTouchToFill(
       mojom::SubmissionReadinessState::kNoInformation);
