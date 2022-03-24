@@ -136,9 +136,7 @@ class BindingState : public BindingStateBase {
 
   Interface* impl() { return ImplRefTraits::GetRawPointer(&stub_.sink()); }
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-    using std::swap;
-    swap(new_impl, stub_.sink());
-    return new_impl;
+    return std::exchange(stub_.sink(), std::move(new_impl));
   }
 
  private:

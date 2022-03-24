@@ -279,9 +279,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
   // possible.
   [[nodiscard]] ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-    Interface* old_impl = impl();
-    stub_.set_sink(std::move(new_impl));
-    return old_impl;
+    return std::exchange(stub_.sink(), std::move(new_impl));
   }
 
   // Reports the currently dispatching message as bad and resets this receiver.
