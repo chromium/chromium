@@ -1208,12 +1208,12 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   EXPECT_TRUE(decoded_draw_image.image());
   EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
-  EXPECT_EQ(decoded_draw_image.image()->colorType(), kRGBA_F16_SkColorType);
 
-  auto cs = gfx::ColorSpace(*decoded_draw_image.image()->colorSpace());
-  float sdr_white_level;
-  ASSERT_TRUE(cs.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_FLOAT_EQ(sdr_white_level, kCustomWhiteLevel);
+  // When testing in configurations that do not support rendering to F16, this
+  // will fall back to N32.
+  EXPECT_TRUE(decoded_draw_image.image()->colorType() ==
+                  kRGBA_F16_SkColorType ||
+              decoded_draw_image.image()->colorType() == kN32_SkColorType);
 
   EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
 
@@ -3087,6 +3087,9 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     gfx::ColorSpace decoded_cs;
     if (target_cs.IsHDR())
       decoded_cs = gfx::ColorSpace::CreateHDR10();
+    auto sk_decoded_cs = cache->SupportsColorSpaceConversion()
+                             ? decoded_cs.ToSkColorSpace()
+                             : nullptr;
 
     // An unknown SkColorType means we expect fallback to RGB.
     PaintImage image =
@@ -3094,13 +3097,10 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                                   decoded_cs.ToSkColorSpace())
                        : CreatePaintImageForFallbackToRGB(GetNormalImageSize());
 
-    float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
-    if (target_cs.IsHDR())
-      ASSERT_TRUE(target_cs.GetSDRWhiteLevel(&sdr_white_level));
-
     TargetColorParams target_color_params;
     target_color_params.color_space = target_cs;
-    target_color_params.sdr_max_luminance_nits = sdr_white_level;
+    target_color_params.sdr_max_luminance_nits =
+        gfx::ColorSpace::kDefaultSDRWhiteLevel;
 
     DrawImage draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),
@@ -3131,7 +3131,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     // If `draw_image` is tone mapped, then it will be converted to RGBA
     // during tone mapping.
     bool color_converted_to_rgba = use_transfer_cache_ &&
-                                   target_cs.IsPQOrHLG() &&
+                                   decoded_cs.IsPQOrHLG() &&
                                    cache->SupportsColorSpaceConversion();
 
     if (decodes_to_yuv && !color_converted_to_rgba) {
@@ -3144,22 +3144,18 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
       SkYUVAPixmapInfo yuva_pixmap_info =
           GetYUVAPixmapInfo(GetNormalImageSize(), yuv_format_, yuv_data_type_);
 
-      // Decoded HDR images should have their SDR white level adjusted to match
-      // the display so we avoid scaling them by variable SDR brightness levels.
-      auto expected_cs = decoded_cs.IsHDR()
-                             ? decoded_cs.GetWithSDRWhiteLevel(sdr_white_level)
-                             : decoded_cs;
-
       SkISize plane_sizes[SkYUVAInfo::kMaxPlanes];
       yuva_pixmap_info.yuvaInfo().planeDimensions(plane_sizes);
       VerifyUploadedPlaneSizes(cache, draw_image, transfer_cache_entry_id,
-                               plane_sizes, yuv_data_type,
-                               expected_cs.ToSkColorSpace().get());
+                               plane_sizes, yuv_data_type, sk_decoded_cs.get());
 
-      if (expected_cs.IsValid()) {
-        EXPECT_TRUE(
-            SkColorSpace::Equals(expected_cs.ToSkColorSpace().get(),
-                                 decoded_draw_image.image()->colorSpace()));
+      auto expected_image_cs =
+          cache->SupportsColorSpaceConversion() && sk_decoded_cs
+              ? target_color_params.color_space.ToSkColorSpace()
+              : nullptr;
+      if (expected_image_cs) {
+        EXPECT_TRUE(SkColorSpace::Equals(
+            expected_image_cs.get(), decoded_draw_image.image()->colorSpace()));
       }
     } else {
       if (use_transfer_cache_) {
@@ -3186,7 +3182,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     original_caps = context_provider_->ContextCapabilities();
   }
 
-  const auto hdr_cs = gfx::ColorSpace::CreateHDR10(/*sdr_white_level=*/200.0f);
+  const auto hdr_cs = gfx::ColorSpace::CreateHDR10();
 
   // Test that decoding to R16 works when supported.
   {
@@ -3252,7 +3248,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                  SkYUVAPixmapInfo::DataType::kFloat16,
                                  DefaultColorSpace());
 
-    // Verify HDR decoding has white level adjustment.
+    // Verify HDR decoding.
     yuv_format_ = YUVSubsampling::k420;
     decode_and_check_plane_sizes(f16_cache.get(), true,
                                  SkYUVAPixmapInfo::DataType::kFloat16, hdr_cs);

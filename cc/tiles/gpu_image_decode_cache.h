@@ -702,8 +702,6 @@ class CC_EXPORT GpuImageDecodeCache
   void UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
       const DrawImage& draw_image,
       ImageData* image_data,
-      bool needs_adjusted_color_space,
-      sk_sp<SkColorSpace> decoded_target_colorspace,
       absl::optional<TargetColorParams> target_color_params);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,
@@ -712,14 +710,11 @@ class CC_EXPORT GpuImageDecodeCache
       GrMipMapped image_needs_mips,
       sk_sp<SkColorSpace> decoded_target_colorspace,
       sk_sp<SkColorSpace> color_space);
-  void UploadImageIfNecessary_GpuCpu_RGBA(
-      const DrawImage& draw_image,
-      ImageData* image_data,
-      sk_sp<SkImage> uploaded_image,
-      GrMipMapped image_needs_mips,
-      bool needs_adjusted_color_space,
-      sk_sp<SkColorSpace> decoded_target_colorspace,
-      sk_sp<SkColorSpace> color_space);
+  void UploadImageIfNecessary_GpuCpu_RGBA(const DrawImage& draw_image,
+                                          ImageData* image_data,
+                                          sk_sp<SkImage> uploaded_image,
+                                          GrMipMapped image_needs_mips,
+                                          sk_sp<SkColorSpace> color_space);
 
   // Flush pending operations on context_->GrContext() for each element of
   // |yuv_images| and then clear the vector.
@@ -734,11 +729,6 @@ class CC_EXPORT GpuImageDecodeCache
 
   sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image,
                                                DecodedDataMode mode) const;
-
-  // HDR images need the SkColorSpace adjusted during upload to avoid white
-  // level issues on systems with variable SDR white levels (Windows).
-  bool NeedsColorSpaceAdjustedForUpload(const DrawImage& image) const;
-  sk_sp<SkColorSpace> ColorSpaceForImageUpload(const DrawImage& image) const;
 
   // Helper function to add a memory dump to |pmd| for a single texture
   // identified by |gl_id| with size |bytes| and |locked_size| equal to either
