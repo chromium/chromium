@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
-#include "build/build_config.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
@@ -97,19 +96,10 @@
 
 #endif
 
-// alignas(16) DebugKv causes breakpad_unittests and sandbox_linux_unittests
-// failures on android-marshmallow-x86-rel because of SIGSEGV.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY) && \
-    defined(ARCH_CPU_32_BITS)
-#define DEBUGKV_ALIGN alignas(8)
-#else
-#define DEBUGKV_ALIGN alignas(16)
-#endif
-
 namespace partition_alloc::internal {
 
 // Used for PA_DEBUG_DATA_ON_STACK, below.
-struct DEBUGKV_ALIGN DebugKv {
+struct alignas(16) DebugKv {
   // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
   // reports.
   char k[8] = {};  // Not necessarily 0-terminated.
