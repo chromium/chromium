@@ -67,6 +67,7 @@
 //third_party/blink/tools/blinkpy/web_tests/layout_package/bot_test_expectations.py
 //third_party/blink/tools/blinkpy/web_tests/layout_package/json_results_generator.py
 //third_party/blink/tools/blinkpy/web_tests/models/__init__.py
+//third_party/blink/tools/blinkpy/web_tests/models/failure_reason.py
 //third_party/blink/tools/blinkpy/web_tests/models/test_configuration.py
 //third_party/blink/tools/blinkpy/web_tests/models/test_expectations.py
 //third_party/blink/tools/blinkpy/web_tests/models/test_failures.py

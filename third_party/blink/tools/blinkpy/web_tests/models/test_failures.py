@@ -25,11 +25,13 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+import re
 import six
 from six.moves import cPickle
 
 from blinkpy.web_tests.controllers import repaint_overlay
 from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.models.failure_reason import FailureReason
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.unified_diff import unified_diff
 
@@ -100,6 +102,9 @@ FILENAME_SUFFIX_HTML_DIFF = "-pretty-diff"
 FILENAME_SUFFIX_OVERLAY = "-overlay"
 
 _ext_to_file_type = {'.txt': 'text', '.png': 'image', '.wav': 'audio'}
+
+# Matches new failures in TestHarness.js tests.
+FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
 
 
 def has_failure_type(failure_type, failure_list):
@@ -173,6 +178,13 @@ class AbstractTestResultType(object):
     def message(self):
         """Returns a string describing the failure in more detail."""
         raise NotImplementedError
+
+    def failure_reason(self):
+        """Returns a FailureReason object describing why the test failed, if
+        the test failed and suitable reasons are available.
+        The information is used in LUCI result viewing UIs and will be
+        used to cluster similar failures together."""
+        return None
 
     def __eq__(self, other):
         return self.__class__.__name__ == other.__class__.__name__
@@ -309,10 +321,39 @@ class FailureText(ActualAndBaselineArtifacts):
                                           expected_driver_output)
         self.has_repaint_overlay = (
             repaint_overlay.result_contains_repaint_rects(
-                actual_driver_output.text)
+                self._actual_text())
             or repaint_overlay.result_contains_repaint_rects(
-                expected_driver_output.text))
+                self._expected_text()))
         self.file_ext = '.txt'
+
+    def _actual_text(self):
+        if self.actual_driver_output and\
+                self.actual_driver_output.text is not None:
+            if six.PY3:
+                # TODO(crbug/1197331): We should not decode here looks like.
+                # html_diff expects it to be bytes for comparing to account
+                # various types of encodings.
+                # html_diff.py and unified_diff.py use str types during
+                # diff fixup. Will handle it later.
+                return self.actual_driver_output.text.decode('utf8', 'replace')
+            else:
+                return self.actual_driver_output.text
+        return ''
+
+    def _expected_text(self):
+        if self.expected_driver_output and\
+                self.expected_driver_output.text is not None:
+            if six.PY3:
+                # TODO(crbug/1197331): We should not decode here looks like.
+                # html_diff expects it to be bytes for comparing to account
+                # various types of encodings.
+                # html_diff.py and unified_diff.py use str types during
+                # diff fixup. Will handle it later.
+                return self.expected_driver_output.text.decode(
+                    'utf8', 'replace')
+            else:
+                return self.expected_driver_output.text
+        return ''
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         # TODO (rmhasan): See if you can can only output diff files for
@@ -320,27 +361,8 @@ class FailureText(ActualAndBaselineArtifacts):
         super(FailureText, self).create_artifacts(typ_artifacts,
                                                   force_overwrite)
 
-        actual_text = ''
-        expected_text = ''
-        if self.expected_driver_output.text is not None:
-            if six.PY3:
-                # TODO(crbug/1197331): We should not decode here looks like.
-                # html_diff expects it to be bytes for comparing to account
-                # various types of encodings.
-                # html_diff.py and unified_diff.py use str types during
-                # diff fixup. Will handle it later.
-                expected_text = self.expected_driver_output.text.decode(
-                    'utf8', 'replace')
-            else:
-                expected_text = self.expected_driver_output.text
-
-        if self.actual_driver_output.text is not None:
-            if six.PY3:
-                # TODO(crbug/1197331): ditto as in the case of expected_text above.
-                actual_text = self.actual_driver_output.text.decode(
-                    'utf8', 'replace')
-            else:
-                actual_text = self.actual_driver_output.text
+        actual_text = self._actual_text()
+        expected_text = self._expected_text()
 
         artifacts_abs_path = self.filesystem.join(
             self.result_directory, typ_artifacts.ArtifactsSubDirectory())
@@ -373,6 +395,72 @@ class FailureText(ActualAndBaselineArtifacts):
 
     def text_mismatch_category(self):
         raise NotImplementedError
+
+    def failure_reason(self):
+        actual_text = self._actual_text()
+        expected_text = self._expected_text()
+        diff_content = unified_diff(expected_text, actual_text, "expected",
+                                    "actual")
+        diff_lines = diff_content.splitlines()
+
+        # Drop the standard diff header with the following lines:
+        # --- expected
+        # +++ actual
+        diff_lines = diff_lines[2:]
+
+        # Find the first block of additions and/or deletions in the diff.
+        # E.g.
+        #  Unchanged line
+        # -Old line 1  <-- Start of block
+        # -Old line 2
+        # +New line 1
+        # +New line 2  <-- End of block
+        #  Unchanged line
+        deleted_lines = []
+        added_lines = []
+        match_state = ''
+        for i, line in enumerate(diff_lines):
+            # A block of diffs starts with removals (-)
+            # and then additions (+). Any variation from this
+            # pattern indicates an end of this block of diffs.
+            if ((line.startswith(' ') and match_state != '')
+                    or (line.startswith('-') and match_state == '+')):
+                # End of block of additions and deletions.
+                break
+            if line.startswith('-'):
+                match_state = '-'
+                deleted_lines.append(line)
+            if line.startswith('+'):
+                match_state = '+'
+                added_lines.append(line)
+
+        primary_error = None
+
+        if 'This is a testharness.js-based test.' in actual_text:
+            # Testharness.js test. Find the first new failure (if any) and
+            # report it as the failure reason.
+            for i, line in enumerate(added_lines):
+                match = FAILURE_RE.match(line)
+                if match:
+                    primary_error = match.group(1)
+                    break
+        else:
+            # Reconstitute the first diff block, but put added lines before
+            # the deleted lines as they are usually more interesting.
+            # (New actual output more interesting than missing expected
+            # output, as it is likely to contain errors.)
+            first_diff_block = '\n'.join(added_lines + deleted_lines)
+
+            if len(first_diff_block) >= 30:
+                # Only use the diff if it is not tiny. If it is only the
+                # addition of an empty line at the end of the file or
+                # similar, it is unlikely to be useful.
+                primary_error = ('Unexpected Diff (+got, -want):\n' +
+                                 first_diff_block)
+
+        if primary_error:
+            return FailureReason(primary_error)
+        return None
 
 
 class FailureMissingResult(FailureText):

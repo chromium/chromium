@@ -58,7 +58,8 @@ class TestResultsTest(unittest.TestCase):
         self.assertTrue(result.has_stderr)
 
     def test_results_has_repaint_overlay(self):
-        driver_output = DriverOutput('"invalidations": [', None, None, None)
+        text = '"invalidations": ['.encode('utf8')
+        driver_output = DriverOutput(text, None, None, None)
         failures = [test_failures.FailureTextMismatch(driver_output, None)]
         result = TestResult('foo', failures=failures)
         self.assertTrue(result.has_repaint_overlay)

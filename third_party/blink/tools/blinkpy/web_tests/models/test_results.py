@@ -113,6 +113,17 @@ class TestResult(object):
             # FIXME: Setting this in the constructor makes this class hard to mutate.
             self.type = results.pop()
 
+        self.failure_reason = None
+        for failure in self.failures:
+            # Take the failure reason from any failure that has one.
+            # At time of writing, only one type of failure defines failure
+            # reasons, if this changes, we may want to change this to be
+            # more deterministic.
+            failure_reason = failure.failure_reason()
+            if failure_reason:
+                self.failure_reason = failure_reason
+                break
+
         # These are set by the worker, not by the driver, so they are not passed to the constructor.
         self.worker_name = ''
         self.shard_name = ''

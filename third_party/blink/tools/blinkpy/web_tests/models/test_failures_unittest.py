@@ -36,7 +36,7 @@ from blinkpy.web_tests.models.test_failures import (ALL_FAILURE_CLASSES,
                                                     PassWithStderr,
                                                     FailureCrash,
                                                     FailureTimeout,
-                                                    TestFailure)
+                                                    TestFailure, FailureText)
 
 
 class TestFailuresTest(unittest.TestCase):
@@ -131,3 +131,61 @@ class TestFailuresTest(unittest.TestCase):
         pass_with_stderr.create_artifacts(artifacts)
         self.assertEqual('timeout with stderr',
                          host.filesystem.read_text_file('/dir/foo-stderr.txt'))
+
+    def test_failure_text_failure_reason_testharness_js(self):
+        expected_text = ''
+        actual_text = """Content-Type: text/plain
+This is a testharness.js-based test.
+FAIL Tests that the document gets overscroll event with right deltaX/Y attributes. promise_test: Unhandled rejection with value: "Document did not receive scrollend event."
+Harness: the test ran to completion."""
+
+        self._actual_output.text = actual_text.encode('utf8')
+        self._expected_output.text = expected_text.encode('utf8')
+
+        failure_text = FailureText(self._actual_output, self._expected_output)
+        failure_reason = failure_text.failure_reason()
+        self.assertIsNotNone(failure_reason)
+        self.assertEqual(
+            failure_reason.primary_error_message,
+            'Tests that the document gets overscroll event with right'
+            ' deltaX/Y attributes. promise_test: Unhandled rejection with'
+            ' value: "Document did not receive scrollend event."')
+
+    def test_failure_text_failure_reason_other(self):
+        expected_text = """retained line 1
+deleted line 1
+deleted line 2
+retained line 2
+"""
+
+        actual_text = """retained line 1
+new line 1
+retained line 2
+new line 2
+"""
+
+        self._actual_output.text = actual_text.encode('utf8')
+        self._expected_output.text = expected_text.encode('utf8')
+
+        failure_text = FailureText(self._actual_output, self._expected_output)
+        failure_reason = failure_text.failure_reason()
+        self.assertIsNotNone(failure_reason)
+        self.assertEqual(
+            failure_reason.primary_error_message,
+            'Unexpected Diff (+got, -want):\n'
+            '+new line 1\n'
+            '-deleted line 1\n'
+            '-deleted line 2')
+
+    def test_failure_text_failure_reason_empty(self):
+        # Construct a scenario in which the difference between the actual
+        # and expected text does not provide a useful failure reason.
+        expected_text = ''
+        actual_text = '\n'
+
+        self._actual_output.text = actual_text.encode('utf8')
+        self._expected_output.text = expected_text.encode('utf8')
+
+        failure_text = FailureText(self._actual_output, self._expected_output)
+        failure_reason = failure_text.failure_reason()
+        self.assertIsNone(failure_reason)
