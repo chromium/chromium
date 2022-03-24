@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
+import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TextEditHandler} from './editing/editing.js';
 

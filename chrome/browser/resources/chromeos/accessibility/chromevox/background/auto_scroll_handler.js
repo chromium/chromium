@@ -11,22 +11,13 @@
 // option modification.
 /* eslint prefer-const: ["error", {"ignoreReadBeforeAssign": true}] */
 
-goog.provide('AutoScrollHandler');
-
-goog.require('AutomationPredicate');
-goog.require('AutomationUtil');
-goog.require('CommandHandlerInterface');
-goog.require('constants');
-
-goog.scope(function() {
-const Dir = constants.Dir;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
 /**
  * Handler of auto scrolling. Most logics are for supporting ARC++.
  */
-AutoScrollHandler = class {
+export class AutoScrollHandler {
   constructor() {
     /** @private {boolean} */
     this.isScrolling_ = false;
@@ -41,12 +32,20 @@ AutoScrollHandler = class {
     this.relatedFocusEventHappened_ = false;
   }
 
+  /** @return {!AutoScrollHandler} */
+  static getInstance() {
+    if (!AutoScrollHandler.instance_) {
+      AutoScrollHandler.instance_ = new AutoScrollHandler();
+    }
+    return AutoScrollHandler.instance_;
+  }
+
   /**
    * This should be called before any command triggers ChromeVox navigation.
    *
    * @param {!cursors.Range} target The range that is going to be navigated
    *     before scrolling.
-   * @param {Dir} dir The direction to navigate.
+   * @param {constants.Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
    * @param {?cursors.Unit} unit The unit to navigate by.
    * @param {?Object} speechProps The optional speech properties given to
@@ -93,8 +92,9 @@ AutoScrollHandler = class {
       let current = target.start.node;
       let parent = current.parent;
       while (parent && parent.root === current.root) {
-        if (!(dir === Dir.BACKWARD && parent.firstChild === current) &&
-            !(dir === Dir.FORWARD && parent.lastChild === current)) {
+        if (!(dir === constants.Dir.BACKWARD &&
+              parent.firstChild === current) &&
+            !(dir === constants.Dir.FORWARD && parent.lastChild === current)) {
           // Currently on non-edge node. Don't try scrolling.
           scrollable = null;
           break;
@@ -118,7 +118,7 @@ AutoScrollHandler = class {
 
     (async () => {
       const scrollResult = await new Promise(resolve => {
-        if (dir === Dir.FORWARD) {
+        if (dir === constants.Dir.FORWARD) {
           scrollable.scrollForward(resolve);
         } else {
           scrollable.scrollBackward(resolve);
@@ -192,7 +192,7 @@ AutoScrollHandler = class {
           }
         } else if (pred) {
           let node;
-          if (dir === Dir.FORWARD) {
+          if (dir === constants.Dir.FORWARD) {
             node = AutomationUtil.findNextNode(
                 this.scrollingNode_, dir, pred,
                 {root: rootPred, skipInitialSubtree: false});
@@ -256,7 +256,7 @@ AutoScrollHandler = class {
     this.relatedFocusEventHappened_ = true;
     return false;
   }
-};
+}
 
 /**
  * An array of Automation event types that AutoScrollHandler observes when
@@ -297,5 +297,5 @@ AutoScrollHandler.TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
  */
 AutoScrollHandler.DELAY_HANDLE_SCROLLED_MS = 150;
 
-goog.addSingletonGetter(AutoScrollHandler);
-});  // goog.scope
+/** @private {?AutoScrollHandler} */
+AutoScrollHandler.instance_ = null;

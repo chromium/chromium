@@ -29,7 +29,6 @@ chromevox_modules = [
   "../common/key_code.js",
   "../common/string_util.js",
   "../common/tree_walker.js",
-  "background/auto_scroll_handler.js",
   "background/automation_object_constructor_installer.js",
   "background/braille_captions_background.js",
   "background/braille_command_data.js",
@@ -91,6 +90,7 @@ chromevox_modules = [
 # ES6 modules.
 chromevox_es6_modules = [
   "../common/instance_checker.js",
+  "background/auto_scroll_handler.js",
   "background/background.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",

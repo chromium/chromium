@@ -17,6 +17,13 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
     this.forceContextualLastOutput();
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js');
+  }
+
   runWithFakeArcSimpleScrollable(callback) {
     // This simulates a scrolling behavior of Android scrollable, where when a
     // scroll action is performed, a new item is added to the list.

@@ -10,7 +10,6 @@ goog.require('AbstractEarcons');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
-goog.require('AutoScrollHandler');
 goog.require('AutomationObjectConstructorInstaller');
 goog.require('BrailleCaptionsBackground');
 goog.require('BrailleCommandData');
