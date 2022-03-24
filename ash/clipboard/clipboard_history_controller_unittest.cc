@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <vector>
-#include "build/build_config.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -20,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -44,14 +44,6 @@ void FlushMessageLoop() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                    run_loop.QuitClosure());
   run_loop.Run();
-}
-
-void WriteToClipboard(const std::string& str) {
-  {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteText(base::UTF8ToUTF16(str));
-  }
-  FlushMessageLoop();
 }
 
 class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
@@ -113,6 +105,8 @@ class ClipboardHistoryControllerTest : public AshTestBase {
         chromeos::features::kClipboardHistory);
     AshTestBase::SetUp();
     mock_image_factory_ = std::make_unique<MockClipboardImageModelFactory>();
+    GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
+        operation_confirmed_future_.GetCallback());
   }
 
   ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
@@ -120,6 +114,26 @@ class ClipboardHistoryControllerTest : public AshTestBase {
   }
 
   void ShowMenu() { PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN); }
+
+  void WaitForOperationConfirmed() {
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  void WriteImageToClipboardAndConfirm(const SkBitmap& bitmap) {
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteImage(bitmap);
+    }
+    WaitForOperationConfirmed();
+  }
+
+  void WriteTextToClipboardAndConfirm(const std::u16string& str) {
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(str);
+    }
+    WaitForOperationConfirmed();
+  }
 
   base::Value::List GetHistoryValues() {
     base::test::TestFuture<base::Value> future;
@@ -155,6 +169,9 @@ class ClipboardHistoryControllerTest : public AshTestBase {
     EXPECT_EQ(0u, locked_before_query_result.size());
   }
 
+ protected:
+  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
@@ -178,7 +195,7 @@ TEST_F(ClipboardHistoryControllerTest, NoHistoryNoMenu) {
 TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
   base::HistogramTester histogram_tester;
   // Copy something to enable the clipboard history menu.
-  WriteToClipboard("test");
+  WriteTextToClipboardAndConfirm(u"test");
 
   ShowMenu();
 
@@ -233,7 +250,7 @@ TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
 // menu view should not show (https://crbug.com/1100739).
 TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
   // Write one item into the clipboard history.
-  WriteToClipboard("text");
+  WriteTextToClipboardAndConfirm(u"text");
 
   constexpr struct {
     user_manager::UserType user_type;
@@ -258,7 +275,21 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
     Shell::Get()->session_controller()->UpdateUserSession(session);
 
     // Write a new item into the clipboard buffer.
-    WriteToClipboard("test");
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(u"test");
+    }
+
+    if (test_case.is_enabled) {
+      WaitForOperationConfirmed();
+    } else {
+      FlushMessageLoop();
+      // Note: This check might not catch a scenario where a mode expected to be
+      // disabled actually allows writes to go through, because the operation
+      // might not have finished yet in that case. The history verification
+      // below mitigates the chance that such a bug would not be caught.
+      EXPECT_TRUE(operation_confirmed_future_.IsEmpty());
+    }
 
     const std::list<ClipboardHistoryItem>& items =
         Shell::Get()->clipboard_history_controller()->history()->GetItems();
@@ -298,7 +329,7 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
 // Verifies that the clipboard history menu is disabled when the screen for
 // user adding shows.
 TEST_F(ClipboardHistoryControllerTest, DisableInUserAddingScreen) {
-  WriteToClipboard("text");
+  WriteTextToClipboardAndConfirm(u"text");
 
   // Emulate that the user adding screen displays.
   Shell::Get()->session_controller()->ShowMultiProfileLogin();
@@ -330,7 +361,7 @@ TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
 // Tests that clearing the clipboard clears ClipboardHistory
 TEST_F(ClipboardHistoryControllerTest, ClearClipboardClearsHistory) {
   // Write a single item to ClipboardHistory.
-  WriteToClipboard("test");
+  WriteTextToClipboardAndConfirm(u"test");
 
   // Clear the clipboard.
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
@@ -350,7 +381,7 @@ TEST_F(ClipboardHistoryControllerTest, ClearClipboardClearsHistory) {
 TEST_F(ClipboardHistoryControllerTest,
        ClearingClipboardClosesClipboardHistory) {
   // Write a single item to ClipboardHistory.
-  WriteToClipboard("test");
+  WriteTextToClipboardAndConfirm(u"test");
 
   ASSERT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
@@ -370,15 +401,10 @@ TEST_F(ClipboardHistoryControllerTest,
 TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
   // Write a bitmap to ClipboardHistory.
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
-  {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteImage(test_bitmap);
-  }
-  FlushMessageLoop();
+  WriteImageToClipboardAndConfirm(test_bitmap);
 
-  // The bitmap should be encoded to a PNG once this task completes. Manually
-  // pry into the contents of the result to confirm that the newly-encoded PNG
-  // is included.
+  // The bitmap should be encoded to a PNG. Manually pry into the contents of
+  // the result to confirm that the newly-encoded PNG is included.
   auto result = GetHistoryValues();
   EXPECT_EQ(1u, result.size());
 
@@ -391,64 +417,60 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
-  for (const auto& test_bitmap : test_bitmaps) {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteImage(test_bitmap);
-    FlushMessageLoop();
-  }
+  for (const auto& test_bitmap : test_bitmaps)
+    WriteImageToClipboardAndConfirm(test_bitmap);
 
-  // The bitmaps should be encoded to PNGs once this task completes. Manually
-  // pry into the contents of the result to confirm that the newly-encoded PNGs
-  // are included.
   auto result = GetHistoryValues();
   auto num_results = result.size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
-  // History values should be sorted by recency.
+  // The bitmaps should be encoded to PNGs. Manually pry into the contents of
+  // the result to confirm that the newly-encoded PNGs are included. History
+  // values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
     ExpectHistoryValueMatchesBitmap(result[i].GetIfDict(),
                                     test_bitmaps[num_results - 1 - i]);
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_WriteBitmapWhileEncodingImage \
-  DISABLED_WriteBitmapWhileEncodingImage
-#else
-#define MAYBE_WriteBitmapWhileEncodingImage WriteBitmapWhileEncodingImage
-#endif
-TEST_F(ClipboardHistoryControllerTest, MAYBE_WriteBitmapWhileEncodingImage) {
+TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
   // Write a bitmap to ClipboardHistory.
   std::vector<const SkBitmap> test_bitmaps;
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
-  {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteImage(test_bitmaps[0]);
-  }
-  FlushMessageLoop();
+  WriteImageToClipboardAndConfirm(test_bitmaps[0]);
 
   // Write another bitmap to the clipboard while encoding the first bitmap.
   GetClipboardHistoryController()
       ->set_new_bitmap_to_write_while_encoding_for_test(test_bitmaps[1]);
 
-  // Both bitmaps should be encoded to a PNG once this task completes. Manually
-  // pry into the contents of the result to confirm that the newly-encoded PNGs
-  // are included.
-  auto result = GetHistoryValues();
-  auto num_results = result.size();
+  // Make sure the second bitmap is written to the clipboard before history
+  // values are returned.
+  GetClipboardHistoryController()->BlockGetHistoryValuesForTest();
+  base::test::TestFuture<base::Value> future;
+  GetClipboardHistoryController()->GetHistoryValuesForTest(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  WaitForOperationConfirmed();
+
+  GetClipboardHistoryController()->ResumeGetHistoryValuesForTest();
+  auto* result = future.Get().GetIfList();
+  ASSERT_TRUE(result);
+  auto num_results = result->size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
-  // History values should be sorted by recency.
+  // Both bitmaps should be encoded to PNGs. Manually pry into the contents of
+  // the result to confirm that the newly-encoded PNGs are included. History
+  // values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
-    ExpectHistoryValueMatchesBitmap(result[i].GetIfDict(),
+    ExpectHistoryValueMatchesBitmap((*result)[i].GetIfDict(),
                                     test_bitmaps[num_results - 1 - i]);
   }
 }
 
 TEST_F(ClipboardHistoryControllerTest, LockedScreenText) {
   // Write text to ClipboardHistory and verify that it can be retrieved.
-  WriteToClipboard("test");
+  WriteTextToClipboardAndConfirm(u"test");
   auto history_list_value = GetHistoryValues();
   EXPECT_EQ(1u, history_list_value.size());
   auto* history_list_item = history_list_value[0].GetIfDict();
@@ -463,11 +485,7 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenText) {
 TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
   // Write a bitmap to ClipboardHistory and verify that it can be returned.
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
-  {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteImage(test_bitmap);
-  }
-  FlushMessageLoop();
+  WriteImageToClipboardAndConfirm(test_bitmap);
   auto result = GetHistoryValues();
   EXPECT_EQ(1u, result.size());
   ExpectHistoryValueMatchesBitmap(result[0].GetIfDict(), test_bitmap);
