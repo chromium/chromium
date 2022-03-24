@@ -1,0 +1,55 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
+
+#include "base/test/task_environment.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
+
+namespace {
+
+const char kAppId[] = "test_app";
+const char kUrl[] = "https://www.google.com";
+const int32_t event_flag = ui::EF_NONE;
+const apps::mojom::LaunchSource launch_source =
+    apps::mojom::LaunchSource::kFromTest;
+
+// Expected container and disposition for ui::EF_NONE event flag;
+const crosapi::mojom::LaunchContainer expected_container =
+    crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+const crosapi::mojom::WindowOpenDisposition expected_disposition =
+    crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
+
+}  // namespace
+
+namespace apps {
+
+TEST(AppServiceProxyLacrosTest, Launch) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  AppServiceProxy proxy(nullptr);
+  MockCrosapiAppServiceProxy mock_proxy;
+  proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
+
+  proxy.LaunchAppWithUrl(kAppId, event_flag, GURL(kUrl), launch_source,
+                         apps::MakeWindowInfo(display::kDefaultDisplayId));
+  mock_proxy.Wait();
+  ASSERT_EQ(mock_proxy.launched_apps().size(), 1U);
+  auto& launched_app = mock_proxy.launched_apps()[0];
+  EXPECT_EQ(launched_app->app_id, kAppId);
+  EXPECT_EQ(launched_app->container, expected_container);
+  EXPECT_EQ(launched_app->disposition, expected_disposition);
+  EXPECT_EQ(launched_app->launch_source, launch_source);
+  auto intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      apps_util::CreateIntentFromUrl(GURL(kUrl)), nullptr);
+  EXPECT_EQ(launched_app->intent, intent);
+}
+
+}  // namespace apps

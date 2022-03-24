@@ -246,6 +246,9 @@ class AppServiceProxyLacros : public KeyedService,
 
   web_app::LacrosWebAppsController* LacrosWebAppsControllerForTesting();
 
+  void SetCrosapiAppServiceProxyForTesting(
+      crosapi::mojom::AppServiceProxy* proxy);
+
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
   // Mojo service (or on a fake implementation for testing).
@@ -367,6 +370,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   std::unique_ptr<web_app::LacrosWebAppsController> lacros_web_apps_controller_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
+  crosapi::mojom::AppServiceProxy* remote_crosapi_app_service_proxy_ = nullptr;
   int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};

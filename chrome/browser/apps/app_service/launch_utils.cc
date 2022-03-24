@@ -371,12 +371,15 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
   std::string id = params.app_id;
   // In Lacros, all platform apps must be converted to use a muxed id.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::Extension* extension =
-      registry->GetExtensionById(id, extensions::ExtensionRegistry::ENABLED);
-  if (extension && extension->is_platform_app()) {
-    id = lacros_extensions_util::MuxId(profile, extension);
+  // During testing, the profile could be nullptr.
+  if (profile) {
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(profile);
+    const extensions::Extension* extension =
+        registry->GetExtensionById(id, extensions::ExtensionRegistry::ENABLED);
+    if (extension && extension->is_platform_app()) {
+      id = lacros_extensions_util::MuxId(profile, extension);
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
