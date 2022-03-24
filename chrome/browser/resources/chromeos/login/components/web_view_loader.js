@@ -8,7 +8,7 @@
  * @fileoverview web view loader.
  */
 
-const CLEAR_ANCHORS_CONTENT_SCRIPT = {
+/* #export */ const CLEAR_ANCHORS_CONTENT_SCRIPT = {
   code: 'A=Array.from(document.getElementsByTagName("a"));' +
       'for(var i = 0; i < A.length; ++i) {' +
       '  const el = A[i];' +

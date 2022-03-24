@@ -370,7 +370,11 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
           this.$.arcTosOverlayWebview, TERMS_URL,
           WebViewHelper.ContentType.PDF);
     } else {
-      this.$.arcTosOverlayWebview.src = targetUrl;
+      let overlayWebview = this.$.arcTosOverlayWebview;
+      if (this.isDemoModeSetup_()) {
+        this.setClearAnchorScriptForWebview_(overlayWebview);
+      }
+      overlayWebview.src = targetUrl;
     }
 
     this.lastFocusedElement_ = this.shadowRoot.activeElement;
@@ -482,6 +486,9 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
         }
       });
     } else {
+      if (this.isDemoModeSetup_()) {
+        this.setClearAnchorScriptForWebview_(termsView);
+      }
       this.reloadPlayStoreToS();
     }
   }
@@ -815,6 +822,20 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
   getDialogTitle_(locale, isChild) {
     return isChild ? this.i18n('arcTermsOfServiceScreenHeadingForChild') :
                      this.i18n('arcTermsOfServiceScreenHeading');
+  }
+
+  /**
+   * Set up a script for webview to clear anchor of the page after loading.
+   */
+  setClearAnchorScriptForWebview_(webview) {
+    webview.addContentScripts([{
+      name: 'clearAnchors',
+      matches: ['<all_urls>'],
+      js: CLEAR_ANCHORS_CONTENT_SCRIPT,
+    }]);
+    webview.addEventListener('contentload', () => {
+      webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT);
+    });
   }
 }
 

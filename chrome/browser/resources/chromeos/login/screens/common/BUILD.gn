@@ -103,9 +103,7 @@ js_type_check("closure_compile_module_local") {
 js_type_check("closure_compile_module_multidevice_setup") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [
-    ":multidevice_setup.m",
-  ]
+  deps = [ ":multidevice_setup.m" ]
 }
 
 ###############################
@@ -151,6 +149,7 @@ js_library("arc_terms_of_service.m") {
     "../../:display_manager.m",
     "../../components:oobe_select.m",
     "../../components:web_view_helper.m",
+    "../../components:web_view_loader.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_back_button.m",
