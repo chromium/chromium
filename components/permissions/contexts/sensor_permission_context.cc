@@ -22,10 +22,9 @@ SensorPermissionContext::SensorPermissionContext(
 
 SensorPermissionContext::~SensorPermissionContext() {}
 
-void SensorPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
-    bool allowed) {
+void SensorPermissionContext::UpdateTabContext(const PermissionRequestID& id,
+                                               const GURL& requesting_frame,
+                                               bool allowed) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           id.render_process_id(), id.render_frame_id());
