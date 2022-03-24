@@ -31,6 +31,15 @@ blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
       /*matches_opaque_src=*/false)};
 }
 
+// The default policy allows same-origin with ancestors, but this creates one
+// with value 'none'.
+blink::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
+  return {blink::ParsedPermissionsPolicyDeclaration(
+      blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
+      /*values=*/{}, /*matches_all_origins=*/false,
+      /*matches_opaque_src=*/false)};
+}
+
 blink::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
   return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPayment, /*values=*/{},
@@ -234,6 +243,86 @@ INSTANTIATE_TEST_SUITE_P(
             CreatePolicyToAllowWebPayments(),
             WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential,
             /*expected_is_cross_origin=*/true,
+            blink::mojom::AuthenticatorStatus::SUCCESS)));
+
+struct SingleFrameTestCase {
+  SingleFrameTestCase(const blink::ParsedPermissionsPolicy& policy,
+                      WebAuthRequestSecurityChecker::RequestType request_type,
+                      blink::mojom::AuthenticatorStatus expected_status)
+      : policy(policy),
+        request_type(request_type),
+        expected_status(expected_status) {}
+
+  ~SingleFrameTestCase() = default;
+
+  const blink::ParsedPermissionsPolicy policy;
+  const WebAuthRequestSecurityChecker::RequestType request_type;
+  const blink::mojom::AuthenticatorStatus expected_status;
+};
+
+class WebAuthRequestSecurityCheckerSingleFrameTest
+    : public testing::TestWithParam<SingleFrameTestCase> {
+ protected:
+  WebAuthRequestSecurityCheckerSingleFrameTest()
+      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
+
+  ~WebAuthRequestSecurityCheckerSingleFrameTest() override = default;
+
+  content::WebContents* web_contents() const { return web_contents_; }
+
+ private:
+  // Must be first because ScopedFeatureList must be initialized before other
+  // threads are started.
+  base::test::ScopedFeatureList features_{
+      /*enable_feature=*/features::kSecurePaymentConfirmation};
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext context_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
+};
+
+TEST_P(WebAuthRequestSecurityCheckerSingleFrameTest,
+       ValidateAncestorOriginsOnRoot) {
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://same-origin.com"), web_contents());
+  navigation->SetPermissionsPolicyHeader(GetParam().policy);
+  navigation->Commit();
+  ASSERT_NE(nullptr, web_contents()->GetMainFrame());
+
+  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+      static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame())
+          ->GetWebAuthRequestSecurityChecker();
+
+  bool actual_is_cross_origin = false;
+  blink::mojom::AuthenticatorStatus actual_status =
+      checker->ValidateAncestorOrigins(
+          url::Origin::Create(GURL("https://same-origin.com")),
+          GetParam().request_type, &actual_is_cross_origin);
+
+  EXPECT_EQ(GetParam().expected_status, actual_status);
+  EXPECT_EQ(false, actual_is_cross_origin);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    WebAuthnSingleFrame,
+    WebAuthRequestSecurityCheckerSingleFrameTest,
+    testing::Values(
+        SingleFrameTestCase(
+            CreatePolicyToAllowWebAuthn(),
+            WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+            blink::mojom::AuthenticatorStatus::SUCCESS),
+        SingleFrameTestCase(
+            CreatePolicyToDenyWebAuthn(),
+            WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR),
+        SingleFrameTestCase(
+            CreatePolicyToAllowWebAuthn(),
+            WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
+            blink::mojom::AuthenticatorStatus::SUCCESS),
+        SingleFrameTestCase(
+            CreatePolicyToDenyWebAuthn(),
+            WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
             blink::mojom::AuthenticatorStatus::SUCCESS)));
 
 }  // namespace
