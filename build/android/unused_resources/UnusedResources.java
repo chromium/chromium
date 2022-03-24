@@ -382,10 +382,7 @@ public class UnusedResources {
         ReferenceChecker callback = new ReferenceChecker() {
             @Override
             public boolean shouldProcess(String internalName) {
-                // We do not need to ignore R subclasses since R8 now removes
-                // unused resource id fields in R subclasses thus their
-                // remaining presence means real usage.
-                return true;
+                return !isResourceClass(internalName + DOT_CLASS);
             }
 
             @Override
@@ -403,12 +400,6 @@ public class UnusedResources {
                 Resource resource = getResourceFromCode(internalName, fieldName);
                 if (resource != null) {
                     ResourceUsageModel.markReachable(resource);
-                    if (mDebugPrinter != null) {
-                        mDebugPrinter.println("Marking " + resource
-                                + " reachable: referenced from dex"
-                                + " in " + file + ":" + name + " (static field access "
-                                + internalName + "." + fieldName + ")");
-                    }
                 }
             }
 
