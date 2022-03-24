@@ -138,7 +138,10 @@ TEST_F(CrossOtrObserverTest, FinishedNavigation) {
   scoped_refptr<net::HttpResponseHeaders> response =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
+
+  ASSERT_TRUE(observer->IsCrossOtrState());
   histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
   histogram_tester.ExpectUniqueSample(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
@@ -177,6 +180,7 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
 
   handle->set_response_headers(nullptr);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
   histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
 
@@ -202,9 +206,11 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
   scoped_refptr<net::HttpResponseHeaders> response =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
 
   handle->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
   observer->WebContentsDestroyed();
 
@@ -232,7 +238,9 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
   scoped_refptr<net::HttpResponseHeaders> response =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
 
   // Finish a non-reload navigation, but one that isn't committed (so no actual
   // navigation away from the monitored page)
@@ -241,10 +249,15 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
   handle->set_is_same_document(false);
   handle->set_has_committed(false);
 
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
+  // We just observed another navigation not due to a client redirect, so should
+  // no longer be in the cross-OTR state.
+  ASSERT_FALSE(observer->IsCrossOtrState());
 
   // After that uncommitted navigation, trigger a redirect, then destroy.
   handle->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
   observer->WebContentsDestroyed();
 
@@ -273,11 +286,16 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   scoped_refptr<net::HttpResponseHeaders> response =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
 
   // Reload twice and ensure the count is persisted.
   handle->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidStartNavigation(handle.get());
+  // With the refresh navigation started, we are no longer in cross-OTR mode.
+  ASSERT_FALSE(observer->IsCrossOtrState());
   observer->DidFinishNavigation(handle.get());
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
 
   // Navigating away means no more observer.
@@ -285,6 +303,7 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   handle->set_is_in_primary_main_frame(true);
   handle->set_is_same_document(false);
   handle->set_has_committed(true);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
 
   ASSERT_EQ(CrossOtrObserver::FromWebContents(contents), nullptr);
@@ -313,10 +332,20 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   scoped_refptr<net::HttpResponseHeaders> response =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
+  // The first navigation has finished, but we remain cross-OTR until either
+  // user activation or a non-client redirect navigation begins
+  ASSERT_TRUE(observer->IsCrossOtrState());
 
-  // Redirects observed after the first navigation has committed should not
+  // Redirects observed on navigations after the first should not
   // write responses.
+  observer->DidStartNavigation(handle.get());
+
+  // A new, non-client redirect navigation began, so we should no longer be
+  // filtering.
+  ASSERT_FALSE(observer->IsCrossOtrState());
+
   response = base::MakeRefCounted<net::HttpResponseHeaders>(
       "HTTP/1.1 302 Moved Temporarily");
   handle->set_response_headers(response);
@@ -326,5 +355,78 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   histogram_tester.ExpectUniqueSample(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
+}
+TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  // The first navigation has finished, but we remain cross-OTR until either
+  // user activation or a non-client redirect navigation begins
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  handle->set_page_transition(ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  observer->DidStartNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
+  observer->DidFinishNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  handle->set_page_transition(ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  observer->DidStartNavigation(handle.get());
+  // A new, non-client redirect navigation began, so we should no longer be
+  // filtering.
+  ASSERT_FALSE(observer->IsCrossOtrState());
+}
+TEST_F(CrossOtrObserverTest, ClientRedirectAfterActivationNotCrossOtr) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  // The first navigation has finished, but we remain cross-OTR until either
+  // user activation or a non-client redirect navigation begins
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  handle->set_page_transition(ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  observer->DidStartNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
+  observer->DidFinishNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  observer->FrameReceivedUserActivation(nullptr);
+  // Receiving user activation means we leave the cross-OTR state and instead
+  // allow client redirects to occur unfiltered.
+  ASSERT_FALSE(observer->IsCrossOtrState());
+  handle->set_page_transition(ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  observer->DidStartNavigation(handle.get());
+  // The client redirect should not reset the OTR state.
+  ASSERT_FALSE(observer->IsCrossOtrState());
 }
 }  // namespace url_param_filter

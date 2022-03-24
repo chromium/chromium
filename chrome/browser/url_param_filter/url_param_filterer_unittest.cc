@@ -338,6 +338,47 @@ TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
   ASSERT_EQ(result, expected);
 }
 
+TEST_F(UrlParamFiltererTest, FeatureActivatedNoQueryString) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination = GURL{"https://destination.xyz"};
+
+  std::string encoded_classification =
+      CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL expected = GURL{"https://destination.xyz"};
+  GURL result = FilterUrl(source, destination);
+
+  ASSERT_EQ(result, expected);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureActivatedAllRemoved) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination =
+      GURL{"https://destination.xyz?plzblock=adf&plzblock1=asdffdsa"};
+
+  std::string encoded_classification =
+      CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL expected = GURL{"https://destination.xyz"};
+  GURL result = FilterUrl(source, destination);
+
+  ASSERT_EQ(result, expected);
+}
+
 TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
   GURL source = GURL{"http://source.xyz"};
   GURL destination =

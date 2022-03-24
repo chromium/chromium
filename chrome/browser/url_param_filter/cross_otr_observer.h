@@ -12,7 +12,14 @@
 namespace url_param_filter {
 
 // Observes navigations that originate in normal browsing and move into OTR
-// browsing.
+// browsing. This class can be thought of as a state machine:
+// start-->blocking-->monitoring-->detached
+// where the initial cross-OTR navigation moves to blocking; user activation or
+// the start of a second navigation not initiated via client redirect moves to
+// monitoring; and the next completed non-refresh navigation after that point,
+// regardless of cause, detaches. Note that for our purposes, navigation above
+// refers to top-level, main frame navigations only; we do not consider e.g.,
+// subframe loads.
 class CrossOtrObserver : public content::WebContentsObserver,
                          public content::WebContentsUserData<CrossOtrObserver> {
  public:
@@ -20,12 +27,17 @@ class CrossOtrObserver : public content::WebContentsObserver,
   // unchanged otherwise.
   static void MaybeCreateForWebContents(content::WebContents* web_contents,
                                         const NavigateParams& params);
+  bool IsCrossOtrState();
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   explicit CrossOtrObserver(content::WebContents* web_contents);
@@ -39,10 +51,16 @@ class CrossOtrObserver : public content::WebContentsObserver,
   // Drives state machine logic; we write the cross-OTR response code metric
   // only for the first navigation, which is that which would have parameters
   // filtered.
-  bool wrote_response_metric_ = false;
+  bool observed_response_ = false;
   // Tracks refreshes observed, which could point to an issue with param
   // filtering causing unexpected behavior for the user.
   int refresh_count_ = 0;
+
+  // Whether top-level navigations should have filtering applied. Starts true,
+  // and switched to false once a navigation completes and then either:
+  // user interaction is observed or a new navigation starts that is not a
+  // client redirect.
+  bool protecting_navigations_ = true;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

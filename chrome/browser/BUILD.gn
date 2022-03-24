@@ -1795,6 +1795,8 @@ static_library("browser") {
     "url_param_filter/cross_otr_observer.h",
     "url_param_filter/url_param_classifications_loader.cc",
     "url_param_filter/url_param_classifications_loader.h",
+    "url_param_filter/url_param_filter_throttle.cc",
+    "url_param_filter/url_param_filter_throttle.h",
     "url_param_filter/url_param_filterer.cc",
     "url_param_filter/url_param_filterer.h",
     "usb/frame_usb_services.cc",

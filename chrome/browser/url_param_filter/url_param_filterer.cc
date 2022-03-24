@@ -49,6 +49,11 @@ FilterResult FilterUrl(const GURL& source_url,
   GURL result = GURL{destination_url};
   int filtered_params_count = 0;
 
+  // If there's no query string, we can short-circuit immediately.
+  if (!destination_url.has_query()) {
+    return FilterResult{destination_url, filtered_params_count};
+  }
+
   std::string source_etld_plus1 = GetEtldPlusOne(source_url);
   std::string destination_etld_plus1 = GetEtldPlusOne(destination_url);
 
@@ -106,7 +111,11 @@ FilterResult FilterUrl(const GURL& source_url,
 
   std::string new_query = base::JoinString(query_parts, "&");
   GURL::Replacements replacements;
-  replacements.SetQueryStr(new_query);
+  if (new_query == "") {
+    replacements.ClearQuery();
+  } else {
+    replacements.SetQueryStr(new_query);
+  }
   result = result.ReplaceComponents(replacements);
   return FilterResult{result, filtered_params_count};
 }

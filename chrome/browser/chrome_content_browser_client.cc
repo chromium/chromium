@@ -143,6 +143,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/universal_web_contents_observers.h"
+#include "chrome/browser/url_param_filter/url_param_filter_throttle.h"
 #include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -4637,6 +4638,9 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 
   ChromeNavigationUIData* chrome_navigation_ui_data =
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
+
+  url_param_filter::UrlParamFilterThrottle::MaybeCreateThrottle(
+      wc_getter.Run(), request, &result);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(

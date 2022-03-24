@@ -5195,6 +5195,7 @@ test("unit_tests") {
     "../browser/update_client/chrome_update_query_params_delegate_unittest.cc",
     "../browser/url_param_filter/cross_otr_observer_unittest.cc",
     "../browser/url_param_filter/url_param_classifications_loader_unittest.cc",
+    "../browser/url_param_filter/url_param_filter_throttle_unittest.cc",
     "../browser/url_param_filter/url_param_filterer_unittest.cc",
     "../browser/visibility_timer_tab_helper_unittest.cc",
     "../browser/vr/vr_tab_helper_unittest.cc",
