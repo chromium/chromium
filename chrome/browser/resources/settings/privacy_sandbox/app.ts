@@ -148,19 +148,20 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     CrSettingsPrefs.initialized.then(() => {
       // Wait for preferences to be initialized before writing.
       this.setPrefValue('privacy_sandbox.page_viewed', true);
+
+      // Opening a subpage may result in attempted pref access.
+      const view = new URLSearchParams(window.location.search).get('view');
+      if (Object.values(PrivacySandboxSettingsView)
+              .includes(view as PrivacySandboxSettingsView)) {
+        this.privacySandboxSettingsView_ = view as PrivacySandboxSettingsView;
+      } else {
+        // If no view has been specified, then navigate to main page.
+        this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+      }
     });
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
-
-    const view = new URLSearchParams(window.location.search).get('view');
-    if (Object.values(PrivacySandboxSettingsView)
-            .includes(view as PrivacySandboxSettingsView)) {
-      this.privacySandboxSettingsView_ = view as PrivacySandboxSettingsView;
-    } else {
-      // If no view has been specified, then navigate to main page.
-      this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
-    }
   }
 
   private onFlocChanged_() {
