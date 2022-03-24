@@ -84575,6 +84575,84 @@
         ],
         {}
        ]
+      ],
+      "table-cell-expansion-001.html": [
+       "b10d516787ac03841f8720b2d84d2081fe73f52a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-expansion-002.html": [
+       "6df44aa7636ac37d5b33cdf40e7d08d9ea48f0b6",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-expansion-003.html": [
+       "32e12012ac894558f695982516e9f95efe419606",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-expansion-004.html": [
+       "2390e218c9ec8216957e8e71019b52203ad48b6d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-expansion-005.html": [
+       "23fcc73e166e95aafc3008981e0e961225c9816d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-cell-expansion-006.html": [
+       "102866477454ab75a034f32269238345e3533e6e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "tall-break-inside-avoid-at-start.html": [
@@ -140168,7 +140246,7 @@
       ]
      ],
      "overflow-body-propagation-010.html": [
-      "7a9966c151afff318959fef9f6c760d6bde078cd",
+      "a3fcdaf3c5f1faf6d2675cf59c53a4d81e3f1031",
       [
        null,
        [
@@ -234861,6 +234939,10 @@
     "README.md": [
      "05bacb7f16db124a998a98ce242775fae91078bd",
      []
+    ],
+    "compute_pressure_take_records.tentative.https.window-expected.txt": [
+     "375f8f449013c2d2f5a7c2f4f61d9999f4c236ac",
+     []
     ]
    },
    "console": {
@@ -289764,6 +289846,42 @@
      "2a444bd5a75e385d1a68618c16f302a4df682246",
      []
     ],
+    "anonymous-iframe": {
+     "anonymous-window.tentative.https.js": [
+      "14ea26dab5bcf069e8b4d1179b4a3754b0865bf6",
+      []
+     ],
+     "cookie.tentative.https.window-expected.txt": [
+      "377c7296a781adb8ce5792cda50a4ded28472339",
+      []
+     ],
+     "fenced-frame-bypass.tentative.https.window-expected.txt": [
+      "dc538e12907885d23b2fa5b3a6f9c6364b88fdc4",
+      []
+     ],
+     "fenced-frame.tentative.https.window-expected.txt": [
+      "dc538e12907885d23b2fa5b3a6f9c6364b88fdc4",
+      []
+     ],
+     "require-corp-embed-anonymous-iframe.tentative.https.window.js.headers": [
+      "6604450991a122e3e241e40b1b9e0516c525389d",
+      []
+     ],
+     "resources": {
+      "common.js": [
+       "e83bd094670dd4a8541031c4a66d738045484dc1",
+       []
+      ],
+      "serviceworker-partitioning-helper.js": [
+       "288ad5954e2d51c17c1088dac428927f63321bbf",
+       []
+      ],
+      "sharedworker-partitioning-helper.js": [
+       "8b416c33d72cf55f080e1a1011bdb45718c8f258",
+       []
+      ]
+     }
+    },
     "browsers": {
      "browsing-the-web": {
       "back-forward-cache": {
@@ -293735,42 +293853,6 @@
       "6604450991a122e3e241e40b1b9e0516c525389d",
       []
      ],
-     "anonymous-iframe": {
-      "anonymous-window.tentative.https.js": [
-       "dc63dc262aa5dbbe1e905e7f8791fa54e0e33979",
-       []
-      ],
-      "cookie.tentative.https.window-expected.txt": [
-       "377c7296a781adb8ce5792cda50a4ded28472339",
-       []
-      ],
-      "fenced-frame-bypass.tentative.https.window-expected.txt": [
-       "dc538e12907885d23b2fa5b3a6f9c6364b88fdc4",
-       []
-      ],
-      "fenced-frame.tentative.https.window-expected.txt": [
-       "dc538e12907885d23b2fa5b3a6f9c6364b88fdc4",
-       []
-      ],
-      "require-corp-embed-anonymous-iframe.tentative.https.window.js.headers": [
-       "6604450991a122e3e241e40b1b9e0516c525389d",
-       []
-      ],
-      "resources": {
-       "common.js": [
-        "e83bd094670dd4a8541031c4a66d738045484dc1",
-        []
-       ],
-       "serviceworker-partitioning-helper.js": [
-        "288ad5954e2d51c17c1088dac428927f63321bbf",
-        []
-       ],
-       "sharedworker-partitioning-helper.js": [
-        "8b416c33d72cf55f080e1a1011bdb45718c8f258",
-        []
-       ]
-      }
-     },
      "blob.https.html.headers": [
       "6604450991a122e3e241e40b1b9e0516c525389d",
       []
@@ -308039,7 +308121,7 @@
        []
       ],
       "multiple-early-hints-responses.h2.py": [
-       "70f2476016cf4715d7ec36b8ac136e6f6b4c3676",
+       "3cc221abf23a452ac7abb35fc23bdebcdaedcb6b",
        []
       ],
       "multiple-early-hints-responses.html": [
@@ -310521,6 +310603,10 @@
      },
      "return-value": {
       "resources": {
+       "204-205-download-on-second-visit.py": [
+        "c18b0dec3dc6adc4a95b7b18bbe0f369d0dbcc7a",
+        []
+       ],
        "back-forward-opaque-origin-page.html": [
         "ec633639524aaa04917eb38505e47a59d9686e24",
         []
@@ -310543,7 +310629,7 @@
      ],
      "resources": {
       "helpers.mjs": [
-       "359774de4f72c4c0bcb19ff33081ab7325b1756a",
+       "341befc10565d0759fd517258b2a6883fe6d564a",
        []
       ],
       "notify-top-early.html": [
@@ -315120,7 +315206,7 @@
     ],
     "support": {
      "testcases.sub.js": [
-      "9b75105de8b05909f5fb514f1874f29ee196c3f1",
+      "e0efa1c67c46deee7cc2cc24d2c157a02fbaa672",
       []
      ]
     }
@@ -325674,6 +325760,10 @@
      "8070938baf26dbd0bfdc46ef60082cfbb30f5a8e",
      []
     ],
+    "localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative-expected.txt": [
+     "61813b8d683ba40dbd4b37a6cd3c9d3e33f2f12a",
+     []
+    ],
     "localstorage-basic-partitioned.tentative.sub-expected.txt": [
      "6cdbef6d2703cfeef2f7f24033335411cfa27aae",
      []
@@ -325703,8 +325793,16 @@
       "7451594c898c40dbe7ddb14eee81469db3eab46d",
       []
      ],
-     "localstorage-basic-partitioned-iframe.html": [
+     "localstorage-about-blank-partitioned-iframe.html": [
       "5cb2c4f7e2effae73ff52427d03c1a2c7243b2e4",
+      []
+     ],
+     "localstorage-about-blank-partitioned-win-open.html": [
+      "90d3a4309ec32596faa2084c91b21915d0c798a9",
+      []
+     ],
+     "partitioning-utils.js": [
+      "9d9e0b8ac5ccdff2fd4358766fa219979b1ad589",
       []
      ],
      "session_change_item_iframe.html": [
@@ -328802,10 +328900,6 @@
       []
      ]
     },
-    "opaque-origin-expected.txt": [
-     "d912a280011abd9cc377d991b6c477d0866ef487",
-     []
-    ],
     "postMessage_block.https.html.headers": [
      "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
      []
@@ -351845,86 +351939,107 @@
    },
    "compute-pressure": {
     "compute_pressure_arguments.tentative.https.window.js": [
-     "515c9d72423b93f4f76ea32a3b94e0f89d540889",
+     "4b14fd0add8cf05757dfae107637015dd6f643cb",
      [
       "compute-pressure/compute_pressure_arguments.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_basic.tentative.https.window.js": [
-     "dac1dabee0fa40f5402ef02a3065a6ff434904b7",
+     "2cdd36e0183644b0e4967c77e4d1f392a66577de",
      [
       "compute-pressure/compute_pressure_basic.tentative.https.window.html",
       {}
      ]
     ],
-    "compute_pressure_detached_iframe.tenative.https.html": [
-     "be0b9380c35e430e84f00ab7ba9401199e8f6e2c",
+    "compute_pressure_detached_iframe.tentative.https.html": [
+     "4ebb1ca4a59feda2745bf0834dadd27c29180f25",
      [
       null,
       {}
      ]
     ],
     "compute_pressure_different_quantizations.tentative.https.window.js": [
-     "6f1d6d8784187dbf3066e676ad9915b37a29530f",
+     "923a4b6890b9399f51a50c7c9d3aae2c1f74948c",
      [
       "compute-pressure/compute_pressure_different_quantizations.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_different_quantizations_across_iframes.tentative.https.window.js": [
-     "e0429b2d04fb6d25294d2fe3b06919135ce75eb2",
+     "b0bd879d1f4e1c1658e7f4642ca1246f324963c4",
      [
       "compute-pressure/compute_pressure_different_quantizations_across_iframes.tentative.https.window.html",
       {}
      ]
     ],
+    "compute_pressure_disconnect.tentative.https.window.js": [
+     "1abecf313558c9268089a9ccd7417169773237c4",
+     [
+      "compute-pressure/compute_pressure_disconnect.tentative.https.window.html",
+      {}
+     ]
+    ],
+    "compute_pressure_disconnect_idempotent.tentative.https.window.js": [
+     "766f8a90ccec20d3114293190df2361679b8725b",
+     [
+      "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html",
+      {}
+     ]
+    ],
+    "compute_pressure_disconnect_immediately.tentative.https.window.js": [
+     "766f8a90ccec20d3114293190df2361679b8725b",
+     [
+      "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html",
+      {}
+     ]
+    ],
     "compute_pressure_multiple.tentative.https.window.js": [
-     "d1650cb873765e93ceff3b48448c8e3bf17ea3ee",
+     "25961893722831722feca91cd00806a3d937a789",
      [
       "compute-pressure/compute_pressure_multiple.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_multiple_across_iframes.tentative.https.window.js": [
-     "5a020ad8a0cc55326e618879c032da3ef3625954",
+     "1e00c9f7e037a39f5e1404939e10e3c50d2636ba",
      [
       "compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_observe_idempotent.tentative.https.window.js": [
-     "773512f4be5cdadba59150be842929ef45885c92",
+     "b4e87dbfb270a654ab7c99d7a0f94b4f330f9e91",
      [
       "compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html",
       {}
      ]
     ],
-    "compute_pressure_stop.tentative.https.window.js": [
-     "5dbd50574692a95faab5286eba10cc5e8f1a4476",
+    "compute_pressure_observe_unobserve_failure.tentative.https.window.js": [
+     "26d8c962122614f67ede751f0bfa3b77d5907714",
      [
-      "compute-pressure/compute_pressure_stop.tentative.https.window.html",
+      "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.window.html",
       {}
      ]
     ],
-    "compute_pressure_stop_idempotent.tentative.https.window.js": [
-     "785c55be4dc0cc2b18563e3e5732e5f0652c5cfb",
+    "compute_pressure_supported_sources.tentative.https.window.js": [
+     "692a92c52db3ad119b3f143d1d822ae1ea9cd6f1",
      [
-      "compute-pressure/compute_pressure_stop_idempotent.tentative.https.window.html",
+      "compute-pressure/compute_pressure_supported_sources.tentative.https.window.html",
       {}
      ]
     ],
-    "compute_pressure_stop_immediately.tentative.https.window.js": [
-     "0d9929c47a9cbeb645ab1e30c0610d3a505e7075",
+    "compute_pressure_take_records.tentative.https.window.js": [
+     "fdd21592d26c2e2ce8d6aa2e36a017e231af73a4",
      [
-      "compute-pressure/compute_pressure_stop_immediately.tentative.https.window.html",
+      "compute-pressure/compute_pressure_take_records.tentative.https.window.html",
       {}
      ]
     ],
-    "compute_pressure_values.tenative.https.window.js": [
-     "837fa9d62df5805892f8db0c2cf1ff9742bde72c",
+    "compute_pressure_values.tentative.https.window.js": [
+     "ebe384a5ad4cb7abefa829005da6d3b8cfa99595",
      [
-      "compute-pressure/compute_pressure_values.tenative.https.window.html",
+      "compute-pressure/compute_pressure_values.tentative.https.window.html",
       {}
      ]
     ]
@@ -364087,7 +364202,7 @@
       ]
      ],
      "system-color-consistency.html": [
-      "5c5cc796f6c0aca80a09ef10fda6fcedf4fff4a6",
+      "34570ede7ebf22f50c8171e66657bf7d1d4e298a",
       [
        null,
        {}
@@ -364544,6 +364659,13 @@
       ],
       "get-animations.html": [
        "dca41c6adad8355411999e56982806168d671ad0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "idlharness.html": [
+       "4e329644aff7ea2e47344fea9d059980132b73ee",
        [
         null,
         {}
@@ -424494,6 +424616,306 @@
     ]
    },
    "html": {
+    "anonymous-iframe": {
+     "anonymous-iframe-popup.tentative.https.window.js": [
+      "66ca0bf2938fcfbdc18a25317611dda63b1614a2",
+      [
+       "html/anonymous-iframe/anonymous-iframe-popup.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cookie-store.tentative.https.window.js": [
+      "5338c8551f01e1e8d7f472609fb958ad79864b23",
+      [
+       "html/anonymous-iframe/cookie-store.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cookie.tentative.https.window.js": [
+      "18d8f4b492d3d98ffa8ac3927889cd61b603111a",
+      [
+       "html/anonymous-iframe/cookie.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "fenced-frame-bypass.tentative.https.window.js": [
+      "6cfd2c34d19d52d8a59ef7b95746be593ad7e0d3",
+      [
+       "html/anonymous-iframe/fenced-frame-bypass.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "fenced-frame.tentative.https.window.js": [
+      "552036ec1c135fd0c9c54900c5d226813683a9b7",
+      [
+       "html/anonymous-iframe/fenced-frame.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "local-storage.tentative.https.window.js": [
+      "4ccb4c2eb12bb9e485d5a5b6e92bb130ec208756",
+      [
+       "html/anonymous-iframe/local-storage.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "require-corp-embed-anonymous-iframe.tentative.https.window.js": [
+      "d720008ccc744715b80784a7d2a7fc4aa38c1882",
+      [
+       "html/anonymous-iframe/require-corp-embed-anonymous-iframe.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "serviceworker-partitioning.tentative.https.window.js": [
+      "dd78195a3c8ba9d2b8b84b14d89dd04de166c2ea",
+      [
+       "html/anonymous-iframe/serviceworker-partitioning.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "session-storage.tentative.https.window.js": [
+      "5af2dc2b3bdf1957ef5cfafb25c8c54d66c425a2",
+      [
+       "html/anonymous-iframe/session-storage.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "sharedworker-partitioning.tentative.https.window.js": [
+      "a6eb551759d865059064fcfa43fdd6519a6b05f1",
+      [
+       "html/anonymous-iframe/sharedworker-partitioning.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "web-lock.tentative.https.window.js": [
+      "ed1da0b9ad710696b530b3de3a6c12cbf15a7b15",
+      [
+       "html/anonymous-iframe/web-lock.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
     "browsers": {
      "browsing-the-web": {
       "back-forward-cache": {
@@ -447919,306 +448341,6 @@
        {}
       ]
      ],
-     "anonymous-iframe": {
-      "anonymous-iframe-popup.tentative.https.window.js": [
-       "6e82aefc65bc048dd552cd851db9f2276a8e5ed0",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/anonymous-iframe-popup.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "timeout",
-           "long"
-          ],
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ]
-         ],
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cookie-store.tentative.https.window.js": [
-       "60a856c7584681d20d12b72dcd951cd4fd43e2a1",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/cookie-store.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "timeout",
-           "long"
-          ],
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ]
-         ],
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cookie.tentative.https.window.js": [
-       "e9921330dde11d5b985ae835e5b1464aa6ea8a96",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/cookie.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "fenced-frame-bypass.tentative.https.window.js": [
-       "f2c3090750661536774e00794d25db5887b9cfcb",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/fenced-frame-bypass.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ],
-          [
-           "timeout",
-           "long"
-          ]
-         ],
-         "timeout": "long"
-        }
-       ]
-      ],
-      "fenced-frame.tentative.https.window.js": [
-       "8f6bfd35d761a69725f88efe484a31555c5d5b8a",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/fenced-frame.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ],
-          [
-           "timeout",
-           "long"
-          ]
-         ],
-         "timeout": "long"
-        }
-       ]
-      ],
-      "local-storage.tentative.https.window.js": [
-       "9ce8b0f00250e3231cf3013b975426d92cf56d5a",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/local-storage.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "require-corp-embed-anonymous-iframe.tentative.https.window.js": [
-       "a62c7a9a2e04fa679c6338dad518f867456ab7a2",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/require-corp-embed-anonymous-iframe.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/utils.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "serviceworker-partitioning.tentative.https.window.js": [
-       "dd78195a3c8ba9d2b8b84b14d89dd04de166c2ea",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/serviceworker-partitioning.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/utils.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "session-storage.tentative.https.window.js": [
-       "418e17f018373af23b807963f45fa3a57b87b947",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/session-storage.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "sharedworker-partitioning.tentative.https.window.js": [
-       "a6eb551759d865059064fcfa43fdd6519a6b05f1",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/sharedworker-partitioning.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/utils.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "web-lock.tentative.https.window.js": [
-       "fad21dfec9b901c6c48be3d28c22825bf43d37b2",
-       [
-        "html/cross-origin-embedder-policy/anonymous-iframe/web-lock.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "../credentialless/resources/common.js"
-          ],
-          [
-           "script",
-           "./resources/common.js"
-          ]
-         ]
-        }
-       ]
-      ]
-     },
      "blob.https.html": [
       "ce72f247ef7b6fc6b54196dbc47582b5118d54ca",
       [
@@ -474306,7 +474428,7 @@
       ]
      ],
      "multiple-early-hints-responses.h2.window.js": [
-      "24230c07f503a2145ddccc575526426e9dd40e51",
+      "2aba051ead3a6ae3c856b11dd86db3275cc96044",
       [
        "loading/early-hints/multiple-early-hints-responses.h2.window.html",
        {
@@ -483084,6 +483206,13 @@
       ]
      ],
      "return-value": {
+      "back-204-205-download.html": [
+       "5bedbf21e8681250fede0c573c80985eea44d292",
+       [
+        null,
+        {}
+       ]
+      ],
       "back-already-detached.html": [
        "f9ff04f923c80b3d224a11c155f87f391ad1fe2d",
        [
@@ -483170,6 +483299,13 @@
       ],
       "forward.html": [
        "36bdba8daafd877b6ad274dfab8167110e524c03",
+       [
+        null,
+        {}
+       ]
+      ],
+      "navigate-204-205-download.html": [
+       "f1e89b694057aae8c0ae2bff7f4ca8a9a08cf40f",
        [
         null,
         {}
@@ -483682,6 +483818,13 @@
        {}
       ]
      ],
+     "navigate-204-205-download-then-same-document.html": [
+      "b7b6283fa70b9147c8c252a5fbba933448ad07d3",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigate-canceled.html": [
       "2604a60e37bfc240e84df5c7bf02fda31425a303",
       [
@@ -483690,7 +483833,7 @@
       ]
      ],
      "navigate-cross-document-double.html": [
-      "353cfa1b4e4b5fbc98a1f5827024ab8e73b98058",
+      "147b8d55ef150e32493d0395df756a78a15a8018",
       [
        null,
        {}
@@ -536176,7 +536319,7 @@
       ]
      ],
      "cross-partition.https.tentative.html": [
-      "163e6c00a93a95364a044aa7c8f01e5d4b5a4fd5",
+      "97ae55b6b9ec80dfb25dd6330930db8fd3361764",
       [
        null,
        {}
@@ -550748,8 +550891,15 @@
       }
      ]
     ],
+    "localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html": [
+     "de94fb2cf435de13665e5d7aa0abc0ac2fcc035d",
+     [
+      null,
+      {}
+     ]
+    ],
     "localstorage-basic-partitioned.tentative.sub.html": [
-     "39209eaea97bcf2bd966e8d17951f632755c54fa",
+     "7ed49b1e9a0eb5f576a61674332ebb92611561e8",
      [
       null,
       {}
