@@ -65,6 +65,7 @@ void WebAppLaunchManager::LaunchApplication(
     const base::FilePath& current_directory,
     const absl::optional<GURL>& url_handler_launch_url,
     const absl::optional<GURL>& protocol_handler_launch_url,
+    const absl::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
@@ -79,10 +80,12 @@ void WebAppLaunchManager::LaunchApplication(
   apps::mojom::LaunchSource launch_source =
       apps::mojom::LaunchSource::kFromCommandLine;
 
-  if (url_handler_launch_url.has_value())
+  if (url_handler_launch_url.has_value()) {
     launch_source = apps::mojom::LaunchSource::kFromUrlHandler;
-  else if (!launch_files.empty())
+  } else if (!launch_files.empty()) {
+    DCHECK(file_launch_url.has_value());
     launch_source = apps::mojom::LaunchSource::kFromFileManager;
+  }
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
@@ -99,8 +102,12 @@ void WebAppLaunchManager::LaunchApplication(
   params.launch_files = launch_files;
   params.url_handler_launch_url = url_handler_launch_url;
   params.protocol_handler_launch_url = protocol_handler_launch_url;
-  params.override_url = GURL(command_line.GetSwitchValueASCII(
-      switches::kAppLaunchUrlForShortcutsMenuItem));
+  if (file_launch_url) {
+    params.override_url = *file_launch_url;
+  } else {
+    params.override_url = GURL(command_line.GetSwitchValueASCII(
+        switches::kAppLaunchUrlForShortcutsMenuItem));
+  }
 
   // Wait for the web applications database to load.
   // If the profile and WebAppLaunchManager are destroyed,

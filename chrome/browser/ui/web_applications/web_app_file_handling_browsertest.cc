@@ -69,9 +69,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   WebAppFileHandlerManager& file_handler_manager() {
-    return provider()
-        ->os_integration_manager()
-        .file_handler_manager_for_testing();
+    return provider()->os_integration_manager().file_handler_manager();
   }
 
   WebAppRegistrar& registrar() { return provider()->registrar(); }
@@ -177,37 +175,6 @@ void AttachTestConsumer(content::WebContents* web_contents) {
                                 "});");
 }
 
-// Launches the |app_id| web app with |files| handles, awaits for
-// |expected_launch_url| to load and stashes any launch params on
-// "window.launchParams" for further inspection.
-content::WebContents* LaunchApplication(
-    Profile* profile,
-    const std::string& app_id,
-    const GURL& expected_launch_url,
-    const apps::mojom::LaunchContainer launch_container =
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
-    const apps::mojom::LaunchSource launch_source =
-        apps::mojom::LaunchSource::kFromTest,
-    const std::vector<base::FilePath>& files = std::vector<base::FilePath>()) {
-  apps::AppLaunchParams params(app_id, launch_container,
-                               WindowOpenDisposition::NEW_WINDOW,
-                               launch_source);
-
-  if (files.size())
-    params.launch_files = files;
-
-  content::TestNavigationObserver navigation_observer(expected_launch_url);
-  navigation_observer.StartWatchingNewWebContents();
-  content::WebContents* web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParamsForTesting(std::move(params));
-
-  navigation_observer.Wait();
-  AttachTestConsumer(web_contents);
-  return web_contents;
-}
-
 }  // namespace
 
 class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
@@ -279,6 +246,45 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   }
 
  protected:
+  // Launches the |app_id| web app with |files| handles, awaits for
+  // |expected_launch_url| to load and stashes any launch params on
+  // "window.launchParams" for further inspection.
+  content::WebContents* LaunchApplication(
+      Profile* profile,
+      const std::string& app_id,
+      const GURL& expected_launch_url,
+      const apps::mojom::LaunchContainer launch_container =
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      const apps::mojom::LaunchSource launch_source =
+          apps::mojom::LaunchSource::kFromTest,
+      const std::vector<base::FilePath>& files =
+          std::vector<base::FilePath>()) {
+    apps::AppLaunchParams params(app_id, launch_container,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 launch_source);
+
+    if (files.size()) {
+      auto launch_infos =
+          file_handler_manager().GetMatchingFileHandlerUrls(app_id, files);
+      EXPECT_EQ(1u, launch_infos.size());
+
+      const auto& [url, files] = launch_infos[0];
+      params.launch_files = files;
+      params.override_url = url;
+    }
+
+    content::TestNavigationObserver navigation_observer(expected_launch_url);
+    navigation_observer.StartWatchingNewWebContents();
+    content::WebContents* web_contents =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParamsForTesting(std::move(params));
+
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents);
+    return web_contents;
+  }
+
   TestServerRedirectHandle redirect_handle_;
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
@@ -353,17 +359,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
                   {NewTestFilePath("csv")},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
-}
-
-// Regression test for crbug.com/1205528
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       LaunchParamsEmptyIfFileUnhandled) {
-  InstallFileHandlingPWA();
-
-  // Test that file handler dispatches to the normal start URL when the file
-  // path is not a handled file type, and `launchParams` remains undefined.
-  LaunchWithFiles(app_id(), GetSecureAppURL(), {NewTestFilePath("png")});
-  VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
 // Regression test for crbug.com/1126091

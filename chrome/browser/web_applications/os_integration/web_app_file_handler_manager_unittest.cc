@@ -242,10 +242,11 @@ TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
 }
 
 TEST_F(WebAppFileHandlerManagerTest, NoHandlersRegistered) {
-  // Returns nullopt when no file handlers are registered.
+  // Returns an empty list when no file handlers are registered.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(absl::nullopt,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {path}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  EXPECT_TRUE(launch_infos.empty());
 }
 
 TEST_F(WebAppFileHandlerManagerTest, NoLaunchFilesPassed) {
@@ -253,9 +254,10 @@ TEST_F(WebAppFileHandlerManagerTest, NoLaunchFilesPassed) {
                                             GURL("https://app.site/handle-foo"),
                                             {{"application/foo", {".foo"}}});
 
-  // Returns nullopt when no launch files are passed.
-  EXPECT_EQ(absl::nullopt,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {}));
+  // Returns an empty list when no launch files are passed.
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {});
+  EXPECT_TRUE(launch_infos.empty());
 }
 
 TEST_F(WebAppFileHandlerManagerTest,
@@ -267,8 +269,10 @@ TEST_F(WebAppFileHandlerManagerTest,
 
   // Matches on single valid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(url,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {path}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
 }
 
 TEST_F(WebAppFileHandlerManagerTest,
@@ -280,8 +284,9 @@ TEST_F(WebAppFileHandlerManagerTest,
 
   // Returns nullopt on single invalid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.bar"));
-  EXPECT_EQ(absl::nullopt,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {path}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  EXPECT_TRUE(launch_infos.empty());
 }
 
 TEST_F(WebAppFileHandlerManagerTest,
@@ -294,8 +299,10 @@ TEST_F(WebAppFileHandlerManagerTest,
 
   // Matches on single valid extension for multi-extension handler.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(url,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {path}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
 }
 
 TEST_F(WebAppFileHandlerManagerTest, MultipleValidExtensions) {
@@ -308,8 +315,15 @@ TEST_F(WebAppFileHandlerManagerTest, MultipleValidExtensions) {
   // Matches on multiple valid extensions for multi-extension handler.
   const base::FilePath path1(FILE_PATH_LITERAL("file.foo"));
   const base::FilePath path2(FILE_PATH_LITERAL("file.bar"));
-  EXPECT_EQ(url, file_handler_manager().GetMatchingFileHandlerURL(
-                     app_id(), {path1, path2}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(),
+                                                        {path1, path2});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
+  const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
+  EXPECT_EQ(2u, paths.size());
+  EXPECT_TRUE(base::Contains(paths, path1));
+  EXPECT_TRUE(base::Contains(paths, path2));
 }
 
 TEST_F(WebAppFileHandlerManagerTest, PartialExtensionMatch) {
@@ -318,11 +332,18 @@ TEST_F(WebAppFileHandlerManagerTest, PartialExtensionMatch) {
   file_handler_manager().InstallFileHandler(app_id(), url,
                                             {{"application/foo", {".foo"}}});
 
-  // Returns nullopt on partial extension match.
+  // Works with partial extension match.
   const base::FilePath path1(FILE_PATH_LITERAL("file.foo"));
   const base::FilePath path2(FILE_PATH_LITERAL("file.bar"));
-  EXPECT_EQ(absl::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
-                               app_id(), {path1, path2}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(),
+                                                        {path1, path2});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
+  const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
+  EXPECT_EQ(1u, paths.size());
+  EXPECT_TRUE(base::Contains(paths, path1));
+  EXPECT_FALSE(base::Contains(paths, path2));
 }
 
 TEST_F(WebAppFileHandlerManagerTest, SingleFileWithoutExtension) {
@@ -333,8 +354,9 @@ TEST_F(WebAppFileHandlerManagerTest, SingleFileWithoutExtension) {
 
   // Returns nullopt where a file has no extension.
   const base::FilePath path(FILE_PATH_LITERAL("file"));
-  EXPECT_EQ(absl::nullopt,
-            file_handler_manager().GetMatchingFileHandlerURL(app_id(), {path}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  EXPECT_TRUE(launch_infos.empty());
 }
 
 TEST_F(WebAppFileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
@@ -346,8 +368,51 @@ TEST_F(WebAppFileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
   // Returns nullopt where one file has no extension while others do.
   const base::FilePath path1(FILE_PATH_LITERAL("file"));
   const base::FilePath path2(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(absl::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
-                               app_id(), {path1, path2}));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(),
+                                                        {path1, path2});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
+  const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
+  EXPECT_EQ(1u, paths.size());
+  EXPECT_FALSE(base::Contains(paths, path1));
+  EXPECT_TRUE(base::Contains(paths, path2));
+}
+
+TEST_F(WebAppFileHandlerManagerTest, MultiLaunch) {
+  const GURL foo_url("https://app.site/handle-foo");
+  const GURL bar_url("https://app.site/handle-bar");
+
+  file_handler_manager().InstallFileHandler(app_id(), foo_url,
+                                            {{"application/foo", {".foo"}}});
+  file_handler_manager().InstallFileHandler(app_id(), bar_url,
+                                            {{"application/bar", {".bar"}}});
+
+  // Finds multiple different handlers for multiple different file types, but
+  // coalesces matching file types.
+  const base::FilePath foo_path1(FILE_PATH_LITERAL("file.foo"));
+  const base::FilePath foo_path2(FILE_PATH_LITERAL("file2.foo"));
+  const base::FilePath bar_path(FILE_PATH_LITERAL("file.bar"));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(
+          app_id(), {foo_path1, foo_path2, bar_path});
+  ASSERT_EQ(2u, launch_infos.size());
+  EXPECT_NE(std::get<GURL>(launch_infos[0]), std::get<GURL>(launch_infos[1]));
+  for (int i = 0; i < 2; ++i) {
+    GURL launch_url = std::get<GURL>(launch_infos[i]);
+    const auto& launch_paths =
+        std::get<std::vector<base::FilePath>>(launch_infos[i]);
+    if (launch_url == foo_url) {
+      EXPECT_EQ(2u, launch_paths.size());
+      EXPECT_TRUE(base::Contains(launch_paths, foo_path1));
+      EXPECT_TRUE(base::Contains(launch_paths, foo_path2));
+    } else if (launch_url == bar_url) {
+      EXPECT_EQ(1u, launch_paths.size());
+      EXPECT_TRUE(base::Contains(launch_paths, bar_path));
+    } else {
+      FAIL() << " Got unexpected URL " << launch_url;
+    }
+  }
 }
 
 }  // namespace web_app

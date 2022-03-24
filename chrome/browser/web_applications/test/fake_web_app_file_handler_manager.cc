@@ -16,10 +16,10 @@ FakeWebAppFileHandlerManager::~FakeWebAppFileHandlerManager() = default;
 
 const apps::FileHandlers* FakeWebAppFileHandlerManager::GetAllFileHandlers(
     const AppId& app_id) const {
-  if (!base::Contains(file_handlers_, app_id))
-    return nullptr;
+  if (base::Contains(file_handlers_, app_id))
+    return &file_handlers_.at(app_id);
 
-  return &file_handlers_.at(app_id);
+  return WebAppFileHandlerManager::GetAllFileHandlers(app_id);
 }
 
 void FakeWebAppFileHandlerManager::InstallFileHandler(const AppId& app_id,

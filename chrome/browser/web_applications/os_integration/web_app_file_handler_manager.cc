@@ -4,12 +4,17 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 
+#include <set>
+#include <tuple>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -26,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -188,43 +194,54 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
              : nullptr;
 }
 
-absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
+WebAppFileHandlerManager::LaunchInfos
+WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
+  LaunchInfos launch_infos;
   if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty() ||
       GetRegistrar()->IsAppFileHandlerPermissionBlocked(app_id)) {
-    return absl::nullopt;
+    return launch_infos;
   }
+
+  std::map<const apps::FileHandler*, std::vector<base::FilePath>>
+      launch_handlers;
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
   if (!file_handlers)
-    return absl::nullopt;
+    return launch_infos;
 
-  std::set<std::string> launch_file_extensions;
   for (const auto& file_path : launch_files) {
     std::string file_extension =
         base::FilePath(file_path.Extension()).AsUTF8Unsafe();
     if (file_extension.length() <= 1)
-      return absl::nullopt;
-    launch_file_extensions.insert(file_extension);
-  }
+      continue;
 
-  for (const auto& file_handler : *file_handlers) {
-    bool all_launch_file_extensions_supported = true;
-    std::set<std::string> supported_file_extensions =
-        apps::GetFileExtensionsFromFileHandlers({file_handler});
-    for (const auto& file_extension : launch_file_extensions) {
-      if (!base::Contains(supported_file_extensions, file_extension)) {
-        all_launch_file_extensions_supported = false;
+    for (const auto& file_handler : *file_handlers) {
+      std::set<std::string> supported_file_extensions =
+          apps::GetFileExtensionsFromFileHandlers({file_handler});
+      if (base::Contains(supported_file_extensions, file_extension)) {
+        launch_handlers[&file_handler].push_back(file_path);
         break;
       }
     }
-
-    if (all_launch_file_extensions_supported)
-      return file_handler.action;
   }
 
-  return absl::nullopt;
+  for (auto& launch_handler : launch_handlers) {
+    const GURL& action = launch_handler.first->action;
+    // TODO(estade): this should come from `FileHandler`.
+    bool single_file_per_window = false;
+    if (single_file_per_window) {
+      for (base::FilePath& file : launch_handler.second) {
+        launch_infos.emplace_back(action,
+                                  std::vector<base::FilePath>{std::move(file)});
+      }
+    } else {
+      launch_infos.emplace_back(action, std::move(launch_handler.second));
+    }
+  }
+
+  return launch_infos;
 }
 
 void WebAppFileHandlerManager::SetOsIntegrationState(

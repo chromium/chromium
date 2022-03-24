@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -136,7 +137,7 @@ class StartupWebAppCreator
     if (MaybeLaunchFileHandler() == LaunchResult::kHandled)
       return;
 
-    DCHECK(launch_files_.empty());
+    DCHECK(file_launch_infos_.empty());
 
     launch_mode_ = LaunchMode::kAsWebAppInWindowByAppId;
 
@@ -146,15 +147,29 @@ class StartupWebAppCreator
   }
 
   void LaunchApp() {
-    absl::optional<GURL> protocol;
-    if (!protocol_url_.is_empty())
-      protocol = protocol_url_;
+    if (file_launch_infos_.empty()) {
+      absl::optional<GURL> protocol;
+      if (!protocol_url_.is_empty())
+        protocol = protocol_url_;
 
-    web_app_launch_manager_.LaunchApplication(
-        app_id_, command_line_, cur_dir_,
-        /*url_handler_launch_url=*/absl::nullopt, protocol, launch_files_,
-        base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
-                       base::WrapRefCounted(this)));
+      web_app_launch_manager_.LaunchApplication(
+          app_id_, command_line_, cur_dir_,
+          /*url_handler_launch_url=*/absl::nullopt, protocol,
+          /*file_launch_url=*/absl::nullopt, /*launch_files=*/{},
+          base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
+                         base::WrapRefCounted(this)));
+      return;
+    }
+
+    for (const auto& [url, paths] : file_launch_infos_) {
+      web_app_launch_manager_.LaunchApplication(
+          app_id_, command_line_, cur_dir_,
+          /*url_handler_launch_url=*/absl::nullopt,
+          /*protocol_handler_launch_url=*/absl::nullopt,
+          /*file_launch_url=*/url, /*launch_files=*/paths,
+          base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
+                         base::WrapRefCounted(this)));
+    }
   }
 
   // Determines if the launch is a protocol handler launch. If so, takes
@@ -238,13 +253,11 @@ class StartupWebAppCreator
       return LaunchResult::kNotHandled;
 
     WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile_);
-    absl::optional<GURL> file_handler_url =
-        provider->os_integration_manager().GetMatchingFileHandlerURL(
-            app_id_, launch_files);
-    if (!file_handler_url)
+    file_launch_infos_ = provider->os_integration_manager()
+                             .file_handler_manager()
+                             .GetMatchingFileHandlerUrls(app_id_, launch_files);
+    if (file_launch_infos_.empty())
       return LaunchResult::kNotHandled;
-
-    launch_files_ = std::move(launch_files);
 
     const WebApp* web_app = provider->registrar().GetAppById(app_id_);
     DCHECK(web_app);
@@ -256,7 +269,7 @@ class StartupWebAppCreator
 
     switch (web_app->file_handler_approval_state()) {
       case ApiApprovalState::kRequiresPrompt:
-        chrome::ShowWebAppFileLaunchDialog(launch_files_, profile_, app_id_,
+        chrome::ShowWebAppFileLaunchDialog(launch_files, profile_, app_id_,
                                            std::move(launch_callback));
         break;
       case ApiApprovalState::kAllowed:
@@ -289,7 +302,7 @@ class StartupWebAppCreator
         PersistProtocolHandlersUserChoice(profile_, app_id_, protocol_url_,
                                           allowed, std::move(persist_callback));
       } else {
-        DCHECK(!launch_files_.empty());
+        DCHECK(!file_launch_infos_.empty());
         PersistFileHandlersUserChoice(profile_, app_id_, allowed,
                                       std::move(persist_callback));
       }
@@ -299,8 +312,13 @@ class StartupWebAppCreator
   }
 
   void OnAppLaunched(Browser* browser, apps::mojom::LaunchContainer container) {
+    // The finalization step should only occur for the first app launch.
+    if (app_window_has_been_launched_)
+      return;
+
     FinalizeWebAppLaunch(launch_mode_, command_line_, is_first_run_, browser,
                          container);
+    app_window_has_been_launched_ = true;
   }
 
   // Command line for this launch.
@@ -324,8 +342,12 @@ class StartupWebAppCreator
   // At most one of the following members should be non-empty.
   // If non-empty, this launch will be treated as a protocol handler launch.
   GURL protocol_url_;
+
   // If non-empty, this launch will be treated as a file handler launch.
-  std::vector<base::FilePath> launch_files_;
+  WebAppFileHandlerManager::LaunchInfos file_launch_infos_;
+
+  // True after at least one app window has been launched.
+  bool app_window_has_been_launched_ = false;
 };
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -79,6 +80,16 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   // normal scenarios, no code path should trigger this.
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       browser()->profile()));
+
+  if (!params.launch_files.empty()) {
+    // SWA browser tests bypass the code in `WebAppPublisherHelper` that fills
+    // in `override_url`, so fill it in here, assuming the file handler action
+    // URL matches the start URL.
+    params.override_url =
+        WebAppProvider::GetForSystemWebApps(browser()->profile())
+            ->registrar()
+            .GetAppStartUrl(params.app_id);
+  }
 
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

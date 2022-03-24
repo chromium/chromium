@@ -53,6 +53,7 @@ class WebAppLaunchManager {
       const base::FilePath& current_directory,
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
+      const absl::optional<GURL>& file_launch_url,
       const std::vector<base::FilePath>& launch_files,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
