@@ -119,10 +119,6 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
       views::MenuItemView* item,
       const ui::DropTargetEvent& event,
       views::MenuDelegate::DropPosition* position);
-  ui::mojom::DragOperation OnPerformDrop(
-      views::MenuItemView* menu,
-      views::MenuDelegate::DropPosition position,
-      const ui::DropTargetEvent& event);
   views::View::DropCallback GetDropCallback(
       views::MenuItemView* menu,
       views::MenuDelegate::DropPosition position,

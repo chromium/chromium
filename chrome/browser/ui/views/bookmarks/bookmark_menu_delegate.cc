@@ -335,16 +335,6 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
       profile_, event, drop_data_, drop_parent, index_to_drop_at);
 }
 
-ui::mojom::DragOperation BookmarkMenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    views::MenuDelegate::DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
     views::MenuItemView* menu,
     views::MenuDelegate::DropPosition position,
