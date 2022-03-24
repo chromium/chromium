@@ -574,6 +574,7 @@ import itertools
 import json
 import optparse
 import os
+import shutil
 import sys
 import xml.dom.minidom
 
@@ -586,6 +587,9 @@ _ROOT_TYPES = ('android_apk', 'java_binary', 'java_annotation_processor',
                'junit_binary', 'android_app_bundle')
 # Types that should not allow code deps to pass through.
 _RESOURCE_TYPES = ('android_assets', 'android_resources', 'system_java_library')
+
+# Cache of path -> JSON dict.
+_dep_config_cache = {}
 
 
 class OrderedSet(collections.OrderedDict):
@@ -653,12 +657,15 @@ class AndroidManifest:
     return self.manifest.getAttribute('package')
 
 
-dep_config_cache = {}
-def GetDepConfig(path):
-  if not path in dep_config_cache:
+def GetDepConfigRoot(path):
+  if not path in _dep_config_cache:
     with open(path) as jsonfile:
-      dep_config_cache[path] = json.load(jsonfile)['deps_info']
-  return dep_config_cache[path]
+      _dep_config_cache[path] = json.load(jsonfile)
+  return _dep_config_cache[path]
+
+
+def GetDepConfig(path):
+  return GetDepConfigRoot(path)['deps_info']
 
 
 def DepsOfType(wanted_type, configs):
@@ -934,10 +941,23 @@ def _CompareClasspathPriority(dep):
   return 1 if dep.get('low_classpath_priority') else 0
 
 
+def _CopyBuildConfigsForDebugging(debug_dir):
+  shutil.rmtree(debug_dir, ignore_errors=True)
+  os.makedirs(debug_dir)
+  for src_path in _dep_config_cache:
+    dst_path = os.path.join(debug_dir, src_path)
+    assert dst_path.startswith(debug_dir), dst_path
+    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+    shutil.copy(src_path, dst_path)
+  print(f'Copied {len(_dep_config_cache)} .build_config.json into {debug_dir}')
+
+
 def main(argv):
   parser = optparse.OptionParser()
   build_utils.AddDepfileOption(parser)
   parser.add_option('--build-config', help='Path to build_config output.')
+  parser.add_option('--store-deps-for-debugging-to',
+                    help='Path to copy all transitive build config files to.')
   parser.add_option(
       '--type',
       help='Type of this target (e.g. android_library).')
@@ -1314,8 +1334,8 @@ def main(argv):
 
   base_module_build_config = None
   if options.base_module_build_config:
-    with open(options.base_module_build_config, 'r') as f:
-      base_module_build_config = json.load(f)
+    base_module_build_config = GetDepConfigRoot(
+        options.base_module_build_config)
 
   # Initialize some common config.
   # Any value that needs to be queryable by dependents must go within deps_info.
@@ -2107,6 +2127,11 @@ def main(argv):
   if options.depfile:
     build_utils.WriteDepfile(options.depfile, options.build_config,
                              sorted(set(all_inputs)))
+
+  if options.store_deps_for_debugging_to:
+    GetDepConfig(options.build_config)  # Add it to cache.
+    _CopyBuildConfigsForDebugging(options.store_deps_for_debugging_to)
+
   return 0
 
 
