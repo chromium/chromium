@@ -53,6 +53,7 @@ js_modulizer("modulize") {
     "app_management/reducers_test.js",
     "app_management/resize_lock_item_test.js",
     "app_management/supported_links_item_test.js",
+    "app_management/file_handling_item_test.js",
     "app_management/test_plugin_vm_browser_proxy.js",
     "app_management/toggle_row_test.js",
     "app_management/test_store.js",

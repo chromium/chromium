@@ -64,7 +64,7 @@ const char* kAppIdsWithHiddenPinToShelf[] = {
 
 #if BUILDFLAG(IS_WIN)
 const char kFileHandlingLearnMore[] = "";
-#elif !BUILDFLAG(IS_CHROMEOS)
+#else
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
 #endif
@@ -401,16 +401,16 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         std::move(run_on_os_login.value()));
   }
 
-// TODO(crbug/1245293): implement on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS)
   if (update.AppType() == apps::AppType::kWeb) {
-    auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    auto* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
     const bool fh_enabled =
         !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
     std::string file_handling_types;
     std::string file_handling_types_label;
     if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
             app->id) &&
+        !provider->registrar().IsSystemApp(app->id) &&
         !provider->registrar().GetAppFileHandlers(app->id)->empty()) {
       auto [file_handling_types16, count] =
           web_app::GetFileTypeAssociationsHandledByWebAppForDisplay(profile_,
@@ -439,7 +439,6 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         fh_enabled, /*is_managed=*/false, file_handling_types,
         file_handling_types_label, GURL(kFileHandlingLearnMore));
   }
-#endif
 
   return app;
 }

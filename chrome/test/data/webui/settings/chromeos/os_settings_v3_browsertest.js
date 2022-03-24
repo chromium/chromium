@@ -356,6 +356,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['AppManagementBorealisDetailView', 'borealis_detail_view_test.m.js'],
  ['AppManagementChromeAppDetailView', 'chrome_app_detail_view_test.m.js'],
  ['AppManagementDomSwitch', 'dom_switch_test.m.js'],
+ ['AppManagementFileHandlingItem', 'file_handling_item_test.m.js'],
  ['AppManagementMainView', 'main_view_test.m.js'],
  ['AppManagementManagedApp', 'managed_apps_test.m.js'],
  ['AppManagementPage', 'app_management_page_tests.m.js'],

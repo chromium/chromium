@@ -30,6 +30,7 @@
 #include "chrome/grit/os_settings_resources.h"
 #include "components/app_restore/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -197,6 +198,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},
       {"appManagementContactsPermissionLabel", IDS_APP_MANAGEMENT_CONTACTS},
+      {"appManagementFileHandlingHeader",
+       IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER},
       {"appManagementIntentOverlapChangeButton",
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_CHANGE_BUTTON},
       {"appManagementIntentOverlapDialogText1App",
@@ -248,6 +251,11 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementSearchPrompt", IDS_APP_MANAGEMENT_SEARCH_PROMPT},
       {"appManagementStoragePermissionLabel", IDS_APP_MANAGEMENT_STORAGE},
       {"appManagementUninstallLabel", IDS_APP_MANAGEMENT_UNINSTALL_APP},
+      {"close", IDS_CLOSE},
+      {"fileHandlingOverflowDialogTitle",
+       IDS_APP_MANAGEMENT_FILE_HANDLING_OVERFLOW_DIALOG_TITLE},
+      {"fileHandlingSetDefaults",
+       IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
