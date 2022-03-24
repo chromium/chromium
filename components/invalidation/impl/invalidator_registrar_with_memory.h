@@ -58,12 +58,14 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // topics associated with |handler| from the server.
   void UnregisterHandler(InvalidationHandler* handler);
 
-  // Updates the set of topics associated with |handler|.  |handler| must
-  // not be nullptr, and must already be registered.  A topic must be registered
-  // for at most one handler. If any of the |topics| is already registered
-  // to a different handler, returns false.
-  // Note that this also updates the *subscribed* topics - assuming that whoever
-  // called this will also send (un)subscription requests to the server.
+  // Updates the set of topics associated with |handler|. |handler| must not be
+  // nullptr, and must already be registered. A topic must be registered for at
+  // most one handler. If any of the |topics| is already registered to a
+  // different handler, returns false. Note that this also updates the
+  // *subscribed* topics - assuming that whoever called this will also send
+  // (un)subscription requests to the server. However, this method does *not*
+  // unsubscribe from the topics which were not registered since browser
+  // startup.
   [[nodiscard]] bool UpdateRegisteredTopics(InvalidationHandler* handler,
                                             const std::set<TopicData>& topics);
 
