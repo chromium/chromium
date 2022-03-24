@@ -663,11 +663,13 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
   // UI (i.e. calling ViewClosing).
   CallViewClosing();
 
-  // Verify the search results are cleared async.
   EXPECT_FALSE(results().empty());
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(results().empty());
+  if (!app_list_features::IsCategoricalSearchEnabled()) {
+    // Verify the search results are cleared async.
+    EXPECT_TRUE(results().empty());
+  }
 
   EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 

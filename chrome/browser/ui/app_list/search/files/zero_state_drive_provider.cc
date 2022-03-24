@@ -251,12 +251,7 @@ bool ZeroStateDriveProvider::ShouldBlockZeroState() const {
 }
 
 void ZeroStateDriveProvider::Start(const std::u16string& query) {
-  // Results should be cleared on search only in the classic launcher. In the
-  // productivity launcher, this is handled automatically by the search
-  // controller.
-  if (!ash::features::IsProductivityLauncherEnabled()) {
-    ClearResultsSilently();
-  }
+  ClearResultsSilently();
 }
 
 void ZeroStateDriveProvider::StartZeroState() {

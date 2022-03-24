@@ -39,23 +39,14 @@ void SearchProvider::SwapResults(Results* new_results) {
 }
 
 void SearchProvider::ClearResults() {
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    Results results;
-    SwapResults(&results);
-    FireResultChanged();
-  } else {
+  if (!app_list_features::IsCategoricalSearchEnabled()) {
     results_.clear();
     FireResultChanged();
   }
 }
 
 void SearchProvider::ClearResultsSilently() {
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    // Don't call `SwapResults()` to avoid calling `FireResultsChanged()`.
-    Results results;
-    if (search_controller_)
-      search_controller_->SetResults(this, std::move(results));
-  } else {
+  if (!app_list_features::IsCategoricalSearchEnabled()) {
     results_.clear();
   }
 }
