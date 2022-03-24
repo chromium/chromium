@@ -178,7 +178,7 @@ def EncodeStackPointerUpdate(offset: int) -> bytes:
         instruction_code | ((min(abs_offset, 0x100) - 4) >> 2)
     ]
     # For vsp increments of 0x104-0x200 we use 00xxxxxx twice.
-    if abs_offset > 0x104:
+    if abs_offset >= 0x104:
       instructions.append(instruction_code | ((abs_offset - 0x100 - 4) >> 2))
     try:
       return EncodeAsBytes(*instructions)

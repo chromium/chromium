@@ -142,6 +142,8 @@ class _TestEncodeStackPointerUpdate(unittest.TestCase):
     self.assertEqual(bytes([0b00000000 | 3]), EncodeStackPointerUpdate(16))
     self.assertEqual(bytes([0b01000000 | 3]), EncodeStackPointerUpdate(-16))
 
+    self.assertEqual(bytes([0b00111111]), EncodeStackPointerUpdate(0x100))
+
     # 10110010 uleb128
     # vsp = vsp + 0x204 + (uleb128 << 2)
     self.assertEqual(bytes([0b10110010, 0b00000000]),
@@ -150,6 +152,8 @@ class _TestEncodeStackPointerUpdate(unittest.TestCase):
                      EncodeStackPointerUpdate(0x208))
 
     # For vsp increments of 0x104-0x200, use 00xxxxxx twice.
+    self.assertEqual(bytes([0b00111111, 0b00000000]),
+                     EncodeStackPointerUpdate(0x104))
     self.assertEqual(bytes([0b00111111, 0b00111111]),
                      EncodeStackPointerUpdate(0x200))
     self.assertEqual(bytes([0b01111111, 0b01111111]),
