@@ -49313,6 +49313,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="Failed to load policy for kiosk account"/>
   <int value="11" label="Unable to download crx"/>
   <int value="12" label="Unable to launch app"/>
+  <int value="13" label="Failed to authorise ARC session"/>
+  <int value="14" label="Timeout loading force-installed extensions"/>
+  <int value="15" label="Invalid ExtensionInstallForcelist policy"/>
 </enum>
 
 <enum name="KioskLaunchType">

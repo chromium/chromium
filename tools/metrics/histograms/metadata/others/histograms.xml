@@ -6381,10 +6381,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
-    expires_after="2021-10-04">
+    expires_after="2022-10-04">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
-  <summary>Tracks kiosk launch errors.</summary>
+  <summary>
+    Tracks Chrome OS Kiosk launch errors. Recorded when a Kiosk app fails to
+    launch and returns to the login screen.
+  </summary>
 </histogram>
 
 <histogram name="Kiosk.LaunchDuration.{KioskType}" units="ms"
