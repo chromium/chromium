@@ -88,9 +88,10 @@ Referrer SecurityPolicy::GenerateReferrer(
     const String& referrer) {
   network::mojom::ReferrerPolicy referrer_policy_no_default =
       ReferrerUtils::MojoReferrerPolicyResolveDefault(referrer_policy);
-  if (referrer == Referrer::NoReferrer())
+  // Empty (a possible input) and default (the value of `Referrer::NoReferrer`)
+  // strings are not equivalent.
+  if (referrer == Referrer::NoReferrer() || referrer.IsEmpty())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
-  DCHECK(!referrer.IsEmpty());
 
   KURL referrer_url = KURL(NullURL(), referrer).UrlStrippedForUseAsReferrer();
 

@@ -107,6 +107,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
       "blob:http://a.test/b3aae9c8-7f90-440d-8d7c-43aa20d72fde";
   const char kFilesystemURL[] = "filesystem:http://a.test/path/t/file.html";
   const char kInvalidURL[] = "not-a-valid-url";
+  const char kEmptyURL[] = "";
 
   bool reduced_granularity =
       base::FeatureList::IsEnabled(features::kReducedReferrerGranularity);
@@ -248,6 +249,8 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
       {network::mojom::ReferrerPolicy::kAlways, kInsecureURLA, kInvalidURL,
        kInsecureURLA},
       {network::mojom::ReferrerPolicy::kAlways, kInvalidURL, kInsecureURLA,
+       nullptr},
+      {network::mojom::ReferrerPolicy::kAlways, kEmptyURL, kInsecureURLA,
        nullptr},
   };
 
