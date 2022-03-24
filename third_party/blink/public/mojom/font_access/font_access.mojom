@@ -19,8 +19,6 @@ enum FontEnumerationStatus {
   kNotVisible,
   // The site doesn't have permission for the requested operation.
   kPermissionDenied,
-  // The user canceled the operation.
-  kCanceled,
 };
 
 // Bag of data representing a font, used to pass structured data from

@@ -48,7 +48,7 @@ class CONTENT_EXPORT FontEnumerationDataSource {
   //
   // Tests can expect that GetData() returns a non-empty list on supported
   // operating systems.
-  static bool IsOsSupportedForTesting();
+  static bool IsOsSupported();
 };
 
 }  // namespace content

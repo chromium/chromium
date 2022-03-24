@@ -91,8 +91,9 @@ function isPlatformSupported() {
 function font_access_test(test_function, name, properties) {
   return promise_test(async (t) => {
     if (!isPlatformSupported()) {
-      await promise_rejects_dom(
-          t, 'NotSupportedError', navigator.fonts.query());
+      const fonts = navigator.fonts.query();
+      assert_equals(
+          fonts.length, 0, 'Fonts are not returned on non-supported platform.');
       return;
     }
     await test_driver.set_permission({name: 'font-access'}, 'granted');

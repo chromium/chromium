@@ -27,7 +27,7 @@ class FontEnumerationDataSourceTest : public testing::Test {
 TEST_F(FontEnumerationDataSourceTest, GetFonts_EnUsLocale) {
   blink::FontEnumerationTable font_table = data_source_->GetFonts("en-us");
 
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+  if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_GT(font_table.fonts_size(), 0);
   } else {
     EXPECT_EQ(font_table.fonts_size(), 0);
@@ -38,7 +38,7 @@ TEST_F(FontEnumerationDataSourceTest, GetFonts_DefaultLocale) {
   std::string locale = base::i18n::GetConfiguredLocale();
   blink::FontEnumerationTable font_table = data_source_->GetFonts(locale);
 
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+  if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_GT(font_table.fonts_size(), 0);
   } else {
     EXPECT_EQ(font_table.fonts_size(), 0);

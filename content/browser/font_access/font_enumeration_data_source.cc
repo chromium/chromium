@@ -69,7 +69,7 @@ std::unique_ptr<FontEnumerationDataSource> FontEnumerationDataSource::Create() {
 }
 
 // static
-bool FontEnumerationDataSource::IsOsSupportedForTesting() {
+bool FontEnumerationDataSource::IsOsSupported() {
   // The structure below parallels Create(), for ease of maintenance.
 
 #if BUILDFLAG(IS_WIN)

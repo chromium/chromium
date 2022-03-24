@@ -124,12 +124,12 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
                                "  return fonts.length;"
                                "})()");
 
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+  if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_LT(0, result.ExtractInt())
         << "Enumeration should return at least one font on supported OS.";
   } else {
-    // TODO(crbug.com/1296792): Figure out Android situation.
-    EXPECT_TRUE(!result.error.empty());
+    EXPECT_EQ(0, result.ExtractInt())
+        << "Enumeration should return no font on non-supported OS.";
   }
 }
 
@@ -146,13 +146,8 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
              "  return fonts.length;"
              "})()");
 
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
-    EXPECT_EQ(0, result.ExtractInt())
-        << "Enumeration should return no fonts with an invalid select query.";
-  } else {
-    // TODO(crbug.com/1296792): Figure out Android situation.
-    EXPECT_TRUE(!result.error.empty());
-  }
+  EXPECT_EQ(0, result.ExtractInt())
+      << "Enumeration should return no fonts with an invalid select query.";
 }
 
 #if BUILDFLAG(IS_WIN)

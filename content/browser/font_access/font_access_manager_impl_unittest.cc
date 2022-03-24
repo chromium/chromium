@@ -221,12 +221,11 @@ TEST_F(FontAccessManagerImplTest, EnumerationConsumesUserActivation) {
 
   {
     const auto [status, region] = manager_sync_->EnumerateLocalFonts();
-    if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    if (FontEnumerationDataSource::IsOsSupported()) {
       EXPECT_EQ(status, FontEnumerationStatus::kOk)
           << "Font Enumeration was successful.";
     } else {
-      // TODO(crbug.com/1296792): Figure out Android situation.
-      EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+      EXPECT_EQ(status, FontEnumerationStatus::kUnimplemented);
     }
   }
 
@@ -243,12 +242,11 @@ TEST_F(FontAccessManagerImplTest, PreviouslyGrantedValidateEnumerationBasic) {
   SimulateUserActivation();
 
   auto [status, region] = manager_sync_->EnumerateLocalFonts();
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+  if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_EQ(status, FontEnumerationStatus::kOk);
     ValidateFontEnumerationBasic(std::move(status), std::move(region));
   } else {
-    // TODO(crbug.com/1296792): Figure out Android situation.
-    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+    EXPECT_EQ(status, FontEnumerationStatus::kUnimplemented);
   }
 }
 
@@ -257,11 +255,10 @@ TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
   SimulateUserActivation();
 
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();
-  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+  if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_EQ(status, FontEnumerationStatus::kOk);
   } else {
-    // TODO(crbug.com/1296792): Figure out Android situation.
-    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+    EXPECT_EQ(status, FontEnumerationStatus::kUnimplemented);
   }
 }
 

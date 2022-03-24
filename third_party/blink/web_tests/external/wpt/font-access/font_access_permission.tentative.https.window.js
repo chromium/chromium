@@ -4,12 +4,16 @@
 'use strict';
 
 promise_test(async t => {
-  await promise_rejects_dom(t, 'NotAllowedError', navigator.fonts.query());
+  const fonts = await navigator.fonts.query();
+  assert_equals(
+      fonts.length, 0, 'Fonts are not returned with permission not given.');
 }, 'query(): permission not given');
 
 promise_test(async t => {
   await test_driver.set_permission({name: 'font-access'}, 'denied');
-  await promise_rejects_dom(t, 'NotAllowedError', navigator.fonts.query());
+  const fonts = await navigator.fonts.query();
+  assert_equals(
+      fonts.length, 0, 'Fonts are not returned with permission denied.');
 }, 'query(): permission denied');
 
 promise_test(async t => {

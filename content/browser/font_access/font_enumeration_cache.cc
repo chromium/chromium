@@ -78,6 +78,11 @@ void FontEnumerationCache::BuildEnumerationCache(
     blink::FontEnumerationTable& table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!FontEnumerationDataSource::IsOsSupported()) {
+    data_.status = blink::mojom::FontEnumerationStatus::kUnimplemented;
+    return;
+  }
+
   // Postscript names, according to spec, are expected to be encoded in a subset
   // of ASCII. See:
   // https://docs.microsoft.com/en-us/typography/opentype/spec/name This is why

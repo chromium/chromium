@@ -76,6 +76,16 @@ void FontManager::DidGetEnumerationResponse(
   if (RejectPromiseIfNecessary(status, resolver))
     return;
 
+  // Return an empty font list if user has denied the permission request,
+  // or it is not implemented for this platform.
+  if (status == FontEnumerationStatus::kUnimplemented ||
+      status == FontEnumerationStatus::kPermissionDenied) {
+    HeapVector<Member<FontMetadata>> entries;
+    resolver->Resolve(std::move(entries));
+    return;
+  }
+
+  // Font data exists; process and fill in the data.
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   FontEnumerationTable table;
 
@@ -120,18 +130,9 @@ bool FontManager::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
                                            ScriptPromiseResolver* resolver) {
   switch (status) {
     case FontEnumerationStatus::kOk:
-      break;
     case FontEnumerationStatus::kUnimplemented:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kNotSupportedError,
-          "Not yet supported on this platform."));
-      return true;
-    case FontEnumerationStatus::kCanceled:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kAbortError, "The user canceled the operation."));
-      return true;
+    case FontEnumerationStatus::kPermissionDenied:
+      break;
     case FontEnumerationStatus::kNeedsUserActivation:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
@@ -141,11 +142,6 @@ bool FontManager::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kSecurityError, "Page needs to be visible."));
-      return true;
-    case FontEnumerationStatus::kPermissionDenied:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kNotAllowedError, "Permission not granted."));
       return true;
     case FontEnumerationStatus::kUnexpectedError:
     default:
