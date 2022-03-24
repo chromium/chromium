@@ -223,6 +223,23 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
   EXPECT_TRUE(simple_menu_model.HasIcons());
 }
 
+TEST(SimpleMenuModelTest, InheritsSubMenuAlert) {
+  DelegateBase delegate;
+  SimpleMenuModel submenu_model(&delegate);
+  submenu_model.AddItem(kAlertedCommandId + 1, u"menu item");
+
+  // The alerted menu item is not present in the submenu.
+  SimpleMenuModel parent_menu_model(&delegate);
+  parent_menu_model.AddSubMenu(/*command_id*/ 10, u"submenu", &submenu_model);
+  EXPECT_FALSE(parent_menu_model.IsAlertedAt(0));
+
+  // Add the alerted menu item to the submenu. Now both the submenu item and
+  // the item in the submenu should show as alerted.
+  submenu_model.AddItem(kAlertedCommandId, u"alerted item");
+  EXPECT_TRUE(submenu_model.IsAlertedAt(1));
+  EXPECT_TRUE(parent_menu_model.IsAlertedAt(0));
+}
+
 }  // namespace
 
 }  // namespace ui

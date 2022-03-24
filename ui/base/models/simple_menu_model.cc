@@ -469,6 +469,15 @@ bool SimpleMenuModel::IsAlertedAt(int index) const {
   if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId)
     return false;
 
+  // This method needs to be recursive, because if the highlighted command is
+  // in a submenu then the submenu item should also be highlighted.
+  if (auto* const submenu = GetSubmenuModelAt(index)) {
+    for (int i = 0; i < submenu->GetItemCount(); ++i) {
+      if (submenu->IsAlertedAt(i))
+        return true;
+    }
+  }
+
   return delegate_->IsCommandIdAlerted(command_id);
 }
 

@@ -32,7 +32,8 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   ExistingBaseSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
                            TabStripModel* model,
                            int context_index,
-                           int min_command_id);
+                           int min_command_id,
+                           int parent_new_command_id_);
 
   // ui::SimpleMenuModel
   bool GetAcceleratorForCommandId(int command_id,
@@ -40,6 +41,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   const gfx::FontList* GetLabelFontListAt(int index) const override;
 
   // ui::SimpleMenuModel::Delegate
+  bool IsCommandIdAlerted(int command_id) const override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) final;
@@ -94,13 +96,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
   // Helper method for checking if the command is to add a tab to a new object
   // model.
-  bool IsNewCommand(int command_id) const {
-    return command_id == min_command_id_;
-  }
-
-  // Performs the action for adding the tab to a new object model (e.g. group or
-  // window).
-  virtual void ExecuteNewCommand(int event_flags);
+  bool IsNewCommand(int command_id) const;
 
   // Performs the action for adding the tab to an existing object model (e.g.
   // group or window) at |target_index|.
@@ -120,6 +116,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   const raw_ptr<TabStripModel> model_;
   const raw_ptr<const content::WebContents> context_contents_;
   const int min_command_id_;
+  const int parent_new_command_id_;
 
   // Stores a mapping from a menu item's command id to its target index (e.g.
   // tab-group index or browser index).

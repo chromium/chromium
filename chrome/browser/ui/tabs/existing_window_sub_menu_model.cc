@@ -50,7 +50,8 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
     : ExistingBaseSubMenuModel(parent_delegate,
                                model,
                                context_index,
-                               kMinExistingWindowCommandId) {
+                               kMinExistingWindowCommandId,
+                               TabStripModel::CommandMoveTabsToNewWindow) {
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW,
         BuildMenuItemInfoVectorForBrowsers(
             tab_menu_model_delegate->GetExistingWindowsForMoveMenu()));
@@ -109,11 +110,6 @@ ExistingWindowSubMenuModel::BuildMenuItemInfoVectorForBrowsers(
     menu_item_infos.back().target_index = static_cast<int>(i);
   }
   return menu_item_infos;
-}
-
-void ExistingWindowSubMenuModel::ExecuteNewCommand(int event_flags) {
-  parent_delegate()->ExecuteCommand(TabStripModel::CommandMoveTabsToNewWindow,
-                                    event_flags);
 }
 
 void ExistingWindowSubMenuModel::ExecuteExistingCommand(int target_index) {

@@ -66,7 +66,6 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
 
  private:
   // ExistingBaseSubMenuModel:
-  void ExecuteNewCommand(int event_flags) override;
   void ExecuteExistingCommand(int target_index) override;
 };
 

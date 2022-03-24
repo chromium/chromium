@@ -6468,6 +6468,7 @@ test("unit_tests") {
       "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",
       "../browser/ui/tab_contents/tab_contents_iterator_unittest.cc",
       "../browser/ui/tab_sharing/tab_sharing_infobar_delegate_unittest.cc",
+      "../browser/ui/tabs/existing_base_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/existing_tab_group_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/existing_window_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/pinned_tab_codec_unittest.cc",

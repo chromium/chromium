@@ -11,12 +11,14 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabStripModel* model,
     int context_index,
-    int min_command_id)
+    int min_command_id,
+    int parent_new_command_id)
     : SimpleMenuModel(this),
       parent_delegate_(parent_delegate),
       model_(model),
       context_contents_(model->GetWebContentsAt(context_index)),
-      min_command_id_(min_command_id) {}
+      min_command_id_(min_command_id),
+      parent_new_command_id_(parent_new_command_id) {}
 
 bool ExistingBaseSubMenuModel::GetAcceleratorForCommandId(
     int command_id,
@@ -33,6 +35,11 @@ const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
   return nullptr;
 }
 
+bool ExistingBaseSubMenuModel::IsCommandIdAlerted(int command_id) const {
+  return IsNewCommand(command_id) &&
+         parent_delegate()->IsCommandIdAlerted(parent_new_command_id_);
+}
+
 bool ExistingBaseSubMenuModel::IsCommandIdChecked(int command_id) const {
   return false;
 }
@@ -46,7 +53,7 @@ constexpr int ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId;
 
 void ExistingBaseSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (IsNewCommand(command_id)) {
-    ExecuteNewCommand(event_flags);
+    parent_delegate()->ExecuteCommand(parent_new_command_id_, event_flags);
     return;
   }
   ExecuteExistingCommand(command_id_to_target_index_[command_id]);
@@ -110,7 +117,9 @@ void ExistingBaseSubMenuModel::ClearMenu() {
   command_id_to_target_index_.clear();
 }
 
-void ExistingBaseSubMenuModel::ExecuteNewCommand(int event_flags) {}
+bool ExistingBaseSubMenuModel::IsNewCommand(int command_id) const {
+  return command_id == min_command_id_;
+}
 
 void ExistingBaseSubMenuModel::ExecuteExistingCommand(int target_index) {}
 

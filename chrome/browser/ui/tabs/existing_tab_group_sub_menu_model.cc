@@ -32,7 +32,8 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     : ExistingBaseSubMenuModel(parent_delegate,
                                model,
                                context_index,
-                               kMinExistingTabGroupCommandId) {
+                               kMinExistingTabGroupCommandId,
+                               TabStripModel::CommandAddToNewGroup) {
   DCHECK(model->SupportsTabGroups());
   const ui::ColorProvider& color_provider =
       model->GetWebContentsAt(context_index)->GetColorProvider();
@@ -91,11 +92,6 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
     }
   }
   return false;
-}
-
-void ExistingTabGroupSubMenuModel::ExecuteNewCommand(int event_flags) {
-  parent_delegate()->ExecuteCommand(TabStripModel::CommandAddToNewGroup,
-                                    event_flags);
 }
 
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
