@@ -9,6 +9,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -17,6 +18,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#import "ios/chrome/browser/autocomplete/omnibox_pedal_implementation.h"
 #include "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
@@ -49,7 +51,10 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
                   SyncServiceFactory::GetForBrowserState(browser_state_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
-      tab_matcher_(browser_state_) {}
+      tab_matcher_(browser_state_) {
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
+      *this, GetPedalImplementations(IsOffTheRecord(), false));
+}
 
 AutocompleteProviderClientImpl::~AutocompleteProviderClientImpl() {}
 
@@ -123,7 +128,7 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
 }
 
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {
-  return nullptr;
+  return pedal_provider_.get();
 }
 
 scoped_refptr<ShortcutsBackend>
