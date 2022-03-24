@@ -127,7 +127,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                                   (os.path.join('layout-test-results',
                                                 'external', 'wpt', 'fail',
                                                 'test_variant1-actual.txt'))]}
-        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+        self.assertEqual(self.wpt_adapter.sink.sink_requests,
                           [{'test': os.path.join('external','wpt', 'fail',
                                                  'test.html?variant1'),
                             'test_path': test_abs_path,
@@ -160,7 +160,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                                   (os.path.join('layout-test-results',
                                                 'external', 'wpt', 'fail',
                                                 'test_variant1-actual.txt'))]}
-        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+        self.assertEqual(self.wpt_adapter.sink.sink_requests,
                           [{'test': os.path.join('external', 'wpt', 'fail',
                                                  'test.html?variant1'),
                             'test_path': test_abs_path,
@@ -193,7 +193,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                                   os.path.join('layout-test-results',
                                                'external', 'wpt', 'fail',
                                                'test-actual.txt')]}
-        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+        self.assertEqual(self.wpt_adapter.sink.sink_requests,
                           [{'test': os.path.join('external', 'wpt', 'fail',
                                                  'test.html'),
                             'test_path': test_abs_path,
@@ -248,14 +248,16 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         full_results_jsonp = written_files[os.path.join(
             self.wpt_adapter.layout_test_results_subdir,
             'full_results_jsonp.js')]
-        match = re.match(r'ADD_FULL_RESULTS\((.*)\);$', full_results_jsonp)
+        match = re.match(r'ADD_FULL_RESULTS\((.*)\);$',
+                         full_results_jsonp.decode('utf-8'))
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1),
             written_files[OUTPUT_JSON_FILENAME].decode(encoding='utf-8'))
         failing_results_jsonp = written_files[os.path.join(
             self.wpt_adapter.layout_test_results_subdir,
             'failing_results.json')]
-        match = re.match(r'ADD_RESULTS\((.*)\);$', failing_results_jsonp)
+        match = re.match(r'ADD_RESULTS\((.*)\);$',
+                         failing_results_jsonp.decode('utf-8'))
         self.assertIsNotNone(match)
         failing_results = json.loads(match.group(1))
         # Verify filtering of failing_results.json

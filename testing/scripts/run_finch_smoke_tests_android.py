@@ -584,11 +584,10 @@ def main(args):
     test_results_dict = OrderedDict({'version': 3, 'interrupted': False,
                                      'num_failures_by_type': {}, 'tests': {}})
 
-    ret = test_case.run_tests('without_finch_seed', test_results_dict)
-    test_case.install_seed()
-    ret |= test_case.run_tests('with_finch_seed', test_results_dict)
-
     if test_case.product_name() == 'webview':
+      ret = test_case.run_tests('without_finch_seed', test_results_dict)
+      test_case.install_seed()
+      ret |= test_case.run_tests('with_finch_seed', test_results_dict)
       # WebView needs several restarts to fetch and load a new finch seed
       # TODO(b/187185389): Figure out why the first restart is needed
       ret |= test_case.run_tests('extra_restart', test_results_dict,
@@ -600,6 +599,13 @@ def main(args):
       # variations_seed_new to variations_seed
       ret |= test_case.run_tests('load_new_seed_restart', test_results_dict,
                                  test_case.finch_seed_download_args())
+    else:
+      test_case.install_seed()
+      ret = test_case.run_tests('with_finch_seed', test_results_dict)
+      # Clears out the finch seed. Need to run finch_seed tests first.
+      # See crbug/1305430
+      device.ClearApplicationState(test_case.browser_package_name)
+      ret |= test_case.run_tests('without_finch_seed', test_results_dict)
 
     test_results_dict['seconds_since_epoch'] = int(time.time())
     test_results_dict['path_delimiter'] = '/'
