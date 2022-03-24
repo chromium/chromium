@@ -30,7 +30,9 @@ RestrictAccountsPolicyHandler::~RestrictAccountsPolicyHandler() {}
 bool RestrictAccountsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValue(policy_name());
+  // |GetValueUnsafe| is used to differentiate between the policy value being
+  // unset vs being set with an incorrect type.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
   if (!ArePatternsValid(value)) {
@@ -45,8 +47,9 @@ bool RestrictAccountsPolicyHandler::CheckPolicySettings(
 void RestrictAccountsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_list())
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (value)
     prefs->SetValue(prefs::kRestrictAccountsToPatterns, value->Clone());
 }
 

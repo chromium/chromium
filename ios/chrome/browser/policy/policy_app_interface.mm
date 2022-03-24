@@ -86,7 +86,8 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   const policy::PolicyBundle& policyBundle = platformProvider->policies();
   const policy::PolicyMap& policyMap = policyBundle.Get(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, ""));
-  return SerializeValue(policyMap.GetValue(key));
+  // |GetValueUnsafe| is used due to multiple policy types being handled.
+  return SerializeValue(policyMap.GetValueUnsafe(key));
 }
 
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey {

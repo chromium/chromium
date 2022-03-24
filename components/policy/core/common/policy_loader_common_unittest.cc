@@ -68,8 +68,8 @@ TEST_F(SensitivePolicyFilterTest, TestExtensionInstallForceListFilter) {
 
   FilterSensitivePolicies(policies());
 
-  const auto* actual_filtered_policy =
-      policies()->GetValue(key::kExtensionInstallForcelist);
+  const auto* actual_filtered_policy = policies()->GetValue(
+      key::kExtensionInstallForcelist, base::Value::Type::LIST);
   ASSERT_TRUE(actual_filtered_policy);
   base::Value expected_filtered_policy = ToListValue(
       {"extension0", "[BLOCKED]extension1;example.com", "[BLOCKED]extension2;",
@@ -113,7 +113,8 @@ TEST_F(SensitivePolicyFilterTest, TestExtensionSettingsFilter) {
 
   FilterSensitivePolicies(policies());
 
-  const auto* filtered_policy = policies()->GetValue(key::kExtensionSettings);
+  const auto* filtered_policy =
+      policies()->GetValue(key::kExtensionSettings, base::Value::Type::DICT);
   ASSERT_TRUE(filtered_policy);
   EXPECT_EQ(policy.DictSize(), filtered_policy->DictSize());
   for (const auto entry : policy.DictItems()) {

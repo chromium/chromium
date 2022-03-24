@@ -76,8 +76,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   policy::PolicySource inherited_source =
       policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
-  for (size_t i = 0; i < std::size(kDeprecatedProxyPolicies); ++i) {
-    const PolicyMap::Entry* entry = policies.Get(kDeprecatedProxyPolicies[i]);
+  for (auto* policy : kDeprecatedProxyPolicies) {
+    const PolicyMap::Entry* entry = policies.Get(policy);
     if (!entry)
       continue;
     if (policies.EntryHasHigherPriority(*entry, current_priority)) {
@@ -89,8 +89,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
     // If two priorities are the same.
     if (!policies.EntryHasHigherPriority(*entry, current_priority) &&
         !policies.EntryHasHigherPriority(current_priority, *entry)) {
-      proxy_settings.SetKey(kDeprecatedProxyPolicies[i],
-                            entry->value()->Clone());
+      // |value_unsafe| is used due to multiple policy types being handled.
+      proxy_settings.SetKey(policy, entry->value_unsafe()->Clone());
     }
   }
   // Sets the new |proxy_settings| if kProxySettings isn't set yet, or if the
@@ -100,8 +100,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
       (!existing ||
        policies.EntryHasHigherPriority(current_priority, *existing))) {
     return proxy_settings;
-  } else if (existing && existing->value()) {
-    return existing->value()->Clone();
+  } else if (existing && existing->value(base::Value::Type::DICT)) {
+    return existing->value(base::Value::Type::DICT)->Clone();
   }
   return base::Value();
 }

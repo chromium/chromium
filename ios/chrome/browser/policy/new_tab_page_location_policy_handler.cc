@@ -29,7 +29,9 @@ bool NewTabPageLocationPolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
-  const base::Value* value = policies.GetValue(policy_name());
+  // |GetValueUnsafe| is used to differentiate between the policy value being
+  // unset vs being set with an incorrect type.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value && !GURL(value->GetString()).is_valid()) {
     errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
     return false;
@@ -40,8 +42,9 @@ bool NewTabPageLocationPolicyHandler::CheckPolicySettings(
 void NewTabPageLocationPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_string()) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
+  if (value) {
     prefs->SetValue(prefs::kNewTabPageLocationOverride, value->Clone());
   }
 }
