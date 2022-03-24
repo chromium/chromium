@@ -527,6 +527,33 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
 
   // We don't need the loader anymore.
   loader_.reset();
+
+  DownloadFileType::InspectionType inspection_type =
+      FileTypePolicies::GetInstance()
+          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
+          .inspection_type();
+  switch (inspection_type) {
+    case DownloadFileType::NONE:
+      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.None",
+                          base::TimeTicks::Now() - start_time_);
+      break;
+    case DownloadFileType::ZIP:
+      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Zip",
+                          base::TimeTicks::Now() - start_time_);
+      break;
+    case DownloadFileType::RAR:
+      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Rar",
+                          base::TimeTicks::Now() - start_time_);
+      break;
+    case DownloadFileType::DMG:
+      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Dmg",
+                          base::TimeTicks::Now() - start_time_);
+      break;
+    case DownloadFileType::OFFICE_DOCUMENT:
+      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Document",
+                          base::TimeTicks::Now() - start_time_);
+      break;
+  }
   UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration",
                       base::TimeTicks::Now() - start_time_);
   UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestNetworkDuration",
