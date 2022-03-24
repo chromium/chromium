@@ -17,6 +17,7 @@
 #include "media/mojo/clients/mojo_cdm.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -82,11 +83,15 @@ void MojoCdmFactory::Create(
     return;
   }
 
+  // Use `mojo::WrapCallbackWithDefaultInvokeIfNotRun()` in case the CDM process
+  // crashes.
   interface_factory_->CreateCdm(
       cdm_config,
-      base::BindOnce(&OnCdmCreated, session_message_cb, session_closed_cb,
-                     session_keys_change_cb, session_expiration_update_cb,
-                     std::move(cdm_created_cb)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnCdmCreated, session_message_cb, session_closed_cb,
+                         session_keys_change_cb, session_expiration_update_cb,
+                         std::move(cdm_created_cb)),
+          mojo::NullRemote(), nullptr, "disconnection error"));
 }
 
 }  // namespace media
