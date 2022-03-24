@@ -50,6 +50,7 @@
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "dcheck_always_on": false,
       "is_chromeos_device": true,
+      "is_component_build": false,
       "is_debug": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",

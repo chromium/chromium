@@ -1959,7 +1959,7 @@
     ],
 
     'chromeos_amd64-generic_lacros_dbg': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'debug',
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'debug', 'static',
     ],
 
     'chromeos_amd64-generic_dbg': [
