@@ -1581,7 +1581,6 @@ if (enable_java_templates) {
         requires_android =
             defined(invoker.requires_android) && invoker.requires_android
         possible_config_deps = _deps
-        ignore_dependency_public_deps = _direct_deps_only
         build_config = _build_config
       }
 
@@ -1760,7 +1759,6 @@ if (enable_java_templates) {
       possible_config_deps = _deps
       supports_android = true
       requires_android = true
-      ignore_dependency_public_deps = _direct_deps_only
       build_config = _build_config
     }
 

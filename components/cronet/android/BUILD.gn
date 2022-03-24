@@ -679,6 +679,11 @@ _jar_excluded_patterns = [
   "org/chromium/base/memory/MemoryPressureMonitor*.class",
 ]
 
+# Excluded from repackage_jars, but not from jar_src().
+_build_jar_excluded_patterns = [
+  "org/chromium/build/NativeLibraries.class",
+]
+
 template("repackage_jars") {
   dist_jar(target_name) {
     requires_android = true
@@ -718,7 +723,7 @@ repackage_jars("repackage_native") {
     ":cronet_jni_registration_java",
     ":repackage_native_java",
   ]
-  jar_excluded_patterns = _jar_excluded_patterns
+  jar_excluded_patterns = _jar_excluded_patterns + _build_jar_excluded_patterns
 }
 
 _native_intermediate_jar_path = "$target_out_dir/repackage_native_impl.jar"
@@ -728,7 +733,7 @@ repackage_jars("repackage_native_impl") {
   output = _native_intermediate_jar_path
   deps = cronet_impl_native_java_deps_to_package +
          [ ":cronet_impl_native_base_java" ]
-  jar_excluded_patterns = _jar_excluded_patterns
+  jar_excluded_patterns = _jar_excluded_patterns + _build_jar_excluded_patterns
 }
 
 # Do not depend on this target directly. Use :repackage_native.

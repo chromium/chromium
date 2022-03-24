@@ -186,11 +186,6 @@ template("write_build_config") {
       _target_label,
     ]
 
-    if (defined(invoker.ignore_dependency_public_deps) &&
-        invoker.ignore_dependency_public_deps) {
-      args += [ "--ignore-dependency-public-deps" ]
-    }
-
     if (defined(invoker.aar_path)) {
       args += [
         "--aar-path",

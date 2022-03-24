@@ -243,11 +243,7 @@ by compiling sources, or providing them with a prebuilt jar.
 
 * `deps_info['public_deps_configs']`: List of paths to the `.build_config` files
 of *direct* dependencies of the current target which are exposed as part of the
-current target's public API. This should be a subset of
-deps_info['deps_configs'].
-
-* `deps_info['ignore_dependency_public_deps']`: If true, 'public_deps' will not
-be collected from the current target's direct deps.
+current target's public API.
 
 * `deps_info['unprocessed_jar_path']`:
 Path to the original .jar file for this target, before any kind of processing
@@ -566,8 +562,6 @@ This type corresponds to an Android app bundle (`.aab` file).
 
 --------------- END_MARKDOWN ---------------------------------------------------
 """
-
-from __future__ import print_function
 
 import collections
 import itertools
@@ -1009,11 +1003,6 @@ def main(argv):
   parser.add_option('--public-deps-configs',
                     help='GN list of config files of deps which are exposed as '
                     'part of the target\'s public API.')
-  parser.add_option(
-      '--ignore-dependency-public-deps',
-      action='store_true',
-      help='If true, \'public_deps\' will not be collected from the current '
-      'target\'s direct deps.')
   parser.add_option('--aar-path', help='Path to containing .aar file.')
   parser.add_option('--device-jar-path', help='Path to .jar for dexing.')
   parser.add_option('--host-jar-path', help='Path to .jar for java_binary.')
@@ -1613,13 +1602,9 @@ def main(argv):
 
 
   if is_java_target:
-    if options.ignore_dependency_public_deps:
-      classpath_direct_deps = deps.Direct()
-      classpath_direct_library_deps = deps.Direct('java_library')
-    else:
-      classpath_direct_deps = deps.DirectAndChildPublicDeps()
-      classpath_direct_library_deps = deps.DirectAndChildPublicDeps(
-          'java_library')
+    classpath_direct_deps = deps.DirectAndChildPublicDeps()
+    classpath_direct_library_deps = deps.DirectAndChildPublicDeps(
+        'java_library')
 
     # The classpath used to compile this target when annotation processors are
     # present.
