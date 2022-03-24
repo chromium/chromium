@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -22,7 +23,7 @@ String CSSContainerRule::cssText() const {
 
   String name = ContainerQuery().Selector().Name();
   if (!name.IsEmpty()) {
-    result.Append(name);
+    SerializeIdentifier(name, result);
     result.Append(' ');
   }
   result.Append(ContainerQuery().ToString());
