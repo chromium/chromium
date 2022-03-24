@@ -175,6 +175,8 @@ static_library("utility") {
       "//chromeos/assistant:buildflags",
       "//chromeos/components/local_search_service:local_search_service",
       "//chromeos/components/local_search_service/public/mojom",
+      "//chromeos/components/quick_answers/public/cpp",
+      "//chromeos/components/quick_answers/public/mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

@@ -2,6 +2,7 @@ include_rules = [
   "+ash/public",
   "+components/language/core/browser",
   "+services/data_decoder/public",
+  "+third_party/hunspell",
   "+ui/base/l10n",
   "+ui/base/resource/resource_bundle.h",
   "+ui/color",

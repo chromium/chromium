@@ -110,6 +110,8 @@
 #include "chromeos/assistant/buildflags.h"  // nogncheck
 #include "chromeos/components/local_search_service/local_search_service.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
+#include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
+#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
@@ -333,6 +335,12 @@ auto RunQuickPairService(
       std::move(receiver));
 }
 
+auto RunQuickAnswersSpellCheckService(
+    mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
+  return std::make_unique<quick_answers::SpellCheckService>(
+      std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 auto RunAssistantAudioDecoder(
     mojo::PendingReceiver<
@@ -436,6 +444,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
+  services.Add(RunQuickAnswersSpellCheckService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);

@@ -30,6 +30,7 @@ include_rules = [
   "+chromeos/assistant/buildflags.h",
   "+chromeos/components/local_search_service/local_search_service.h",
   "+chromeos/components/local_search_service/public/mojom",
+  "+chromeos/components/quick_answers/public",
   "+chromeos/services/assistant",
   "+chromeos/services/libassistant/libassistant_service.h",
   "+chromeos/services/tts",
