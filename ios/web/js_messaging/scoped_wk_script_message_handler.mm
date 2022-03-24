@@ -48,12 +48,11 @@ ScopedWKScriptMessageHandler::ScopedWKScriptMessageHandler(
                                                name:script_handler_name_];
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 ScopedWKScriptMessageHandler::ScopedWKScriptMessageHandler(
     WKUserContentController* user_content_controller,
     NSString* script_handler_name,
     WKContentWorld* content_world,
-    ScriptMessageCallback callback) API_AVAILABLE(ios(14.0))
+    ScriptMessageCallback callback)
     : content_world_(content_world),
       user_content_controller_(user_content_controller),
       script_handler_name_(script_handler_name),
@@ -69,20 +68,14 @@ ScopedWKScriptMessageHandler::ScopedWKScriptMessageHandler(
                                                  name:script_handler_name_];
   }
 }
-#endif  // defined(__IPHONE14_0)
 
 ScopedWKScriptMessageHandler::~ScopedWKScriptMessageHandler() {
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    if (content_world_) {
-      [user_content_controller_
-          removeScriptMessageHandlerForName:script_handler_name_
-                               contentWorld:content_world_];
-      return;
-    }
+  if (content_world_) {
+    [user_content_controller_
+        removeScriptMessageHandlerForName:script_handler_name_
+                             contentWorld:content_world_];
+  } else {
+    [user_content_controller_
+        removeScriptMessageHandlerForName:script_handler_name_];
   }
-#endif  // defined(__IPHONE14_0)
-
-  [user_content_controller_
-      removeScriptMessageHandlerForName:script_handler_name_];
 }
