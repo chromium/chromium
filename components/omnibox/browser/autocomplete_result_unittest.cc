@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
@@ -80,24 +81,6 @@ void PopulateAutocompleteMatchesFromTestData(const T* data,
   }
 }
 
-// A simple AutocompleteProvider that does nothing.
-class FakeAutocompleteProvider : public AutocompleteProvider {
- public:
-  explicit FakeAutocompleteProvider(Type type) : AutocompleteProvider(type) {}
-
-  void Start(const AutocompleteInput& input, bool minimal_changes) override {}
-
-  // For simplicity, |FakeAutocompleteProvider|'s retrieved through
-  // |GetProvider| have types 0, 1, ... 5. This is fine for most tests, but for
-  // tests where the provider type matters (e.g. tests that involve deduping
-  // document suggestions), provider types need to be consistent with
-  // |AutocompleteProvider::Type|.
-  void SetType(Type type) { type_ = type; }
-
- private:
-  ~FakeAutocompleteProvider() override = default;
-};
-
 }  // namespace
 
 class AutocompleteResultTest : public testing::Test {
@@ -132,11 +115,17 @@ class AutocompleteResultTest : public testing::Test {
   AutocompleteResultTest() {
     variations::testing::ClearAllVariationParams();
 
-    // Create the list of mock providers.  5 is enough.
-    for (size_t i = 0; i < 5; ++i) {
-      mock_provider_list_.push_back(new FakeAutocompleteProvider(
-          static_cast<AutocompleteProvider::Type>(i)));
-    }
+    // Create the list of mock providers. 5 is enough.
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_HISTORY_URL));
+    mock_provider_list_.push_back(
+        new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_VERBATIM_MATCH));
   }
   AutocompleteResultTest(const AutocompleteResultTest&) = delete;
   AutocompleteResultTest& operator=(const AutocompleteResultTest&) = delete;

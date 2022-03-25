@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -25,17 +26,6 @@
 using bookmarks::TitledUrlMatchToAutocompleteMatch;
 
 namespace {
-
-// A simple AutocompleteProvider that does nothing.
-class FakeAutocompleteProvider : public AutocompleteProvider {
- public:
-  explicit FakeAutocompleteProvider(Type type) : AutocompleteProvider(type) {}
-
-  void Start(const AutocompleteInput& input, bool minimal_changes) override {}
-
- private:
-  ~FakeAutocompleteProvider() override = default;
-};
 
 class MockTitledUrlNode : public bookmarks::TitledUrlNode {
  public:

@@ -536,17 +536,26 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
       return false;
   }
 
-  // Prefer live document suggestions. We check provider type instead of match
-  // type in order to distinguish live suggestions from the document provider
-  // from stale suggestions from the shortcuts providers, because the latter
-  // omits changing metadata such as last access date.
-  if (match1.provider->type() == AutocompleteProvider::TYPE_DOCUMENT &&
-      match2.provider->type() != AutocompleteProvider::TYPE_DOCUMENT) {
-    return true;
-  }
-  if (match1.provider->type() != AutocompleteProvider::TYPE_DOCUMENT &&
-      match2.provider->type() == AutocompleteProvider::TYPE_DOCUMENT) {
-    return false;
+  // Prefer some providers over others.
+  const std::vector<AutocompleteProvider::Type> preferred_providers = {
+      // Prefer live document suggestions. We check provider type instead of
+      // match type in order to distinguish live suggestions from the document
+      // provider from stale suggestions from the shortcuts providers, because
+      // the latter omits changing metadata such as last access date.
+      AutocompleteProvider::TYPE_DOCUMENT,
+      // Prefer bookmark suggestions, as 1) their titles may be explicitly set,
+      // and 2) they may display enhanced information such as the bookmark
+      // folders path.
+      AutocompleteProvider::TYPE_BOOKMARK,
+  };
+
+  if (match1.provider->type() != match2.provider->type()) {
+    for (const auto& preferred_provider : preferred_providers) {
+      if (match1.provider->type() == preferred_provider)
+        return true;
+      if (match2.provider->type() == preferred_provider)
+        return false;
+    }
   }
 
   // By default, simply prefer the more relevant match.
