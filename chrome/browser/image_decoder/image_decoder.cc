@@ -98,8 +98,8 @@ ImageDecoder::ImageRequest::~ImageRequest() {
 
 // static
 ImageDecoder* ImageDecoder::GetInstance() {
-  static auto* image_decoder = new ImageDecoder();
-  return image_decoder;
+  static base::NoDestructor<ImageDecoder> image_decoder;
+  return image_decoder.get();
 }
 
 // static
