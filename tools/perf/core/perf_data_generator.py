@@ -433,7 +433,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-16.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -521,7 +521,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-16.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -539,7 +539,7 @@ BUILDERS = {
         }],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-16.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -969,7 +969,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-16.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -989,7 +989,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-16.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
