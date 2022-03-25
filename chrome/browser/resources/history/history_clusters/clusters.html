@@ -6,16 +6,11 @@
     overflow-y: auto;
   }
 
-  #clusters,
-  #header {
+  #clusters {
     margin: 0 auto;
     max-width: var(--cluster-max-width);
     min-width: var(--cluster-min-width);
     padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
-  }
-
-  #header {
-    font-size: 1.25rem;  /* 20px */
   }
 
   #placeholder {
@@ -29,7 +24,6 @@
         0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
   }
 </style>
-<div id="header" hidden="[[!headerText_]]">[[headerText_]]</div>
 <div id="placeholder" class="centered-message" hidden="[[!placeholderText_]]">
   [[placeholderText_]]
 </div>

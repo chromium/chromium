@@ -72,14 +72,6 @@ class HistoryClustersElement extends PolymerElement {
       },
 
       /**
-       * The header text to show when the query and the results are non-empty.
-       */
-      headerText_: {
-        type: String,
-        computed: `computeHeaderText_(result_.*)`,
-      },
-
-      /**
        * The placeholder text to show when the results are empty.
        */
       placeholderText_: {
@@ -256,12 +248,6 @@ class HistoryClustersElement extends PolymerElement {
   //============================================================================
   // Helper methods
   //============================================================================
-
-  private computeHeaderText_(): string {
-    return this.result_ && this.result_.query && this.result_.clusters.length ?
-        loadTimeData.getStringF('headerText', this.result_.query) :
-        '';
-  }
 
   private computePlaceholderText_(): string {
     if (!this.result_) {

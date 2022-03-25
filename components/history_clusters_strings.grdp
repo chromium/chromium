@@ -9,9 +9,6 @@
   <message name="IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn on the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
     Turn on Journeys
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_HEADER_TEXT" desc="Header text shown when the history items related to a given user search term are shown.">
-    Based on activity related to "<ph name="SEARCH_TERM"><ex>dual kitchen range</ex>$1</ph>"
-  </message>
   <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'.">
     Journeys
   </message>

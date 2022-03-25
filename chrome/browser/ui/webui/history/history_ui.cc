@@ -147,7 +147,6 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},
       {"enableHistoryClusters", IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL},
-      {"headerText", IDS_HISTORY_CLUSTERS_HEADER_TEXT},
       {"historyClustersTabLabel", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},
       {"historyListTabLabel", IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL},
       {"loadMoreButtonLabel", IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL},
