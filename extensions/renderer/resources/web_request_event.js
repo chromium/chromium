@@ -8,7 +8,7 @@ var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
 
 function getUniqueSubEventName(eventName) {
-  return eventName + '/' + idGeneratorNatives.GetNextScopedId();
+  return eventName + '/' + idGeneratorNatives.GetNextId();
 }
 
 // WebRequestEventImpl object. This is used for special webRequest events
