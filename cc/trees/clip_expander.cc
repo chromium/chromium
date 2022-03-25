@@ -28,7 +28,7 @@ gfx::Rect ClipExpander::MapRect(const gfx::Rect& rect,
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());
   return effect_node->filters.MapRect(rect,
-                                      SkMatrix(filter_draw_transform.matrix()));
+                                      filter_draw_transform.matrix().asM33());
 }
 
 gfx::Rect ClipExpander::MapRectReverse(
@@ -40,7 +40,7 @@ gfx::Rect ClipExpander::MapRectReverse(
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());
   return effect_node->filters.MapRectReverse(
-      rect, SkMatrix(filter_draw_transform.matrix()));
+      rect, filter_draw_transform.matrix().asM33());
 }
 
 }  // namespace cc

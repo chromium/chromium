@@ -344,7 +344,7 @@ void ViewTreeHostRootView::Paint() {
   int stride = resource->gpu_memory_buffer->stride(0);
   std::unique_ptr<SkCanvas> canvas =
       SkCanvas::MakeRasterDirect(info, data, stride);
-  canvas->setMatrix(static_cast<SkMatrix>(rotate_transform_.matrix()));
+  canvas->setMatrix(rotate_transform_.matrix().asM33());
   display_item_list->Raster(canvas.get());
 
   {

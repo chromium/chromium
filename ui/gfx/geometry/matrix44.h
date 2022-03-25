@@ -49,6 +49,13 @@ struct Vector4 {
 
 // This is the underlying data structure of Transform. Don't use this type
 // directly. The public methods can be called through Transform::matrix().
+//
+// This class was originally SkMatrix44, then moved into Chromium as
+// skia::Matrix44, then moved here. For now this class mostly follows the
+// Skia coding style, especially the naming convention. This is to make the
+// API of this class similar to SkM44 to ease experiment with different
+// underlying matrix data structure of Transform.
+//
 class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
   enum Uninitialized_Constructor { kUninitialized_Constructor };
@@ -111,15 +118,10 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    * [ g h i ]      [ 0 0 1 0 ]
    *                [ g h 0 i ]
    */
-  explicit Matrix44(const SkMatrix&);
-  Matrix44& operator=(const SkMatrix& src);
+  explicit Matrix44(const SkMatrix& sk_matrix);
 
-  // TODO: make this explicit (will need to guard that change to update chrome,
-  // etc.
-#ifndef SK_SUPPORT_LEGACY_IMPLICIT_CONVERSION_MATRIX44
-  explicit
-#endif
-  operator SkMatrix() const;
+  // Inverse conversion of the above.
+  SkMatrix asM33() const;
 
   /**
    *  Return a reference to a const identity matrix

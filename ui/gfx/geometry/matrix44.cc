@@ -1054,41 +1054,32 @@ void Matrix44::dump() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static void initFromMatrix(SkScalar dst[4][4], const SkMatrix& src) {
-  dst[0][0] = src[SkMatrix::kMScaleX];
-  dst[1][0] = src[SkMatrix::kMSkewX];
-  dst[2][0] = 0;
-  dst[3][0] = src[SkMatrix::kMTransX];
-  dst[0][1] = src[SkMatrix::kMSkewY];
-  dst[1][1] = src[SkMatrix::kMScaleY];
-  dst[2][1] = 0;
-  dst[3][1] = src[SkMatrix::kMTransY];
-  dst[0][2] = 0;
-  dst[1][2] = 0;
-  dst[2][2] = 1;
-  dst[3][2] = 0;
-  dst[0][3] = src[SkMatrix::kMPersp0];
-  dst[1][3] = src[SkMatrix::kMPersp1];
-  dst[2][3] = 0;
-  dst[3][3] = src[SkMatrix::kMPersp2];
-}
-
 Matrix44::Matrix44(const SkMatrix& src) {
-  this->operator=(src);
-}
-
-Matrix44& Matrix44::operator=(const SkMatrix& src) {
-  initFromMatrix(fMat, src);
+  fMat[0][0] = src[SkMatrix::kMScaleX];
+  fMat[1][0] = src[SkMatrix::kMSkewX];
+  fMat[2][0] = 0;
+  fMat[3][0] = src[SkMatrix::kMTransX];
+  fMat[0][1] = src[SkMatrix::kMSkewY];
+  fMat[1][1] = src[SkMatrix::kMScaleY];
+  fMat[2][1] = 0;
+  fMat[3][1] = src[SkMatrix::kMTransY];
+  fMat[0][2] = 0;
+  fMat[1][2] = 0;
+  fMat[2][2] = 1;
+  fMat[3][2] = 0;
+  fMat[0][3] = src[SkMatrix::kMPersp0];
+  fMat[1][3] = src[SkMatrix::kMPersp1];
+  fMat[2][3] = 0;
+  fMat[3][3] = src[SkMatrix::kMPersp2];
 
   if (src.isIdentity()) {
     this->setTypeMask(kIdentity_Mask);
   } else {
     this->recomputeTypeMask();
   }
-  return *this;
 }
 
-Matrix44::operator SkMatrix() const {
+SkMatrix Matrix44::asM33() const {
   SkMatrix dst;
 
   dst[SkMatrix::kMScaleX] = fMat[0][0];

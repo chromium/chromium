@@ -63,7 +63,7 @@ void DrawTriangle(int x_offset,
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
   rotate_transform.ConcatTransform(move_transform);
-  base_path.transform(SkMatrix(rotate_transform.matrix()), &path);
+  base_path.transform(rotate_transform.matrix().asM33(), &path);
 
   canvas->DrawPath(path, content_flags);
   canvas->DrawPath(path, border_flags);

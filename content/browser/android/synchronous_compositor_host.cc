@@ -384,7 +384,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
                            canvas->getBaseLayerSize().height());
   SkIRect canvas_clip = canvas->getDeviceClipBounds();
   params->clip = gfx::SkIRectToRect(canvas_clip);
-  params->transform.matrix() = canvas->getTotalMatrix();
+  params->transform = gfx::Transform(canvas->getTotalMatrix());
   if (params->size.IsEmpty())
     return true;
 

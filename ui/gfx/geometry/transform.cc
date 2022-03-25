@@ -477,7 +477,7 @@ void Transform::TransformRect(RectF* rect) const {
     return;
 
   SkRect src = RectFToSkRect(*rect);
-  SkMatrix(matrix_).mapRect(&src);
+  matrix_.asM33().mapRect(&src);
   *rect = SkRectToRectF(src);
 }
 
@@ -490,7 +490,7 @@ bool Transform::TransformRectReverse(RectF* rect) const {
     return false;
 
   SkRect src = RectFToSkRect(*rect);
-  SkMatrix(inverse).mapRect(&src);
+  inverse.asM33().mapRect(&src);
   *rect = SkRectToRectF(src);
   return true;
 }
@@ -501,7 +501,7 @@ bool Transform::TransformRRectF(RRectF* rrect) const {
   // SkMatrix::preservesAxisAlignment is stricter (it lacks the kEpsilon
   // test).  So after converting our Matrix44 to SkMatrix, round
   // relevant values less than kEpsilon to zero.
-  SkMatrix rounded_matrix(matrix_);
+  SkMatrix rounded_matrix = matrix_.asM33();
   if (std::abs(rounded_matrix.get(SkMatrix::kMScaleX)) < kEpsilon)
     rounded_matrix.set(SkMatrix::kMScaleX, 0.0f);
   if (std::abs(rounded_matrix.get(SkMatrix::kMSkewX)) < kEpsilon)
