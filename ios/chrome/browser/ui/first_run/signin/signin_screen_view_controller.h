@@ -10,14 +10,13 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@protocol TOSCommands;
+
 // Delegate of sign-in screen view controller.
 @protocol SigninScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
-
-// Called when the user taps on "terms of service" link.
-- (void)showTOSDialog;
 
 // Called when the user taps on "Manage" related to metric reporting.
 - (void)showUMADialog;
@@ -28,6 +27,8 @@
 @interface SigninScreenViewController
     : PromoStyleViewController <SigninScreenConsumer>
 
+// Handler to open the terms of service dialog.
+@property(nonatomic, weak) id<TOSCommands> TOSHandler;
 @property(nonatomic, weak) id<SigninScreenViewControllerDelegate> delegate;
 
 @end

@@ -32,8 +32,6 @@
 @property(nonatomic, assign) PrefService* prefService;
 // Sync service.
 @property(nonatomic, assign) syncer::SyncService* syncService;
-// The identity currently selected.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 
 @end
 

@@ -9,6 +9,7 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+@class ChromeIdentity;
 class PrefService;
 @protocol SigninScreenConsumer;
 namespace syncer {
@@ -20,6 +21,8 @@ class SyncService;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
+// The identity currently selected.
+@property(nonatomic, strong, readwrite) ChromeIdentity* selectedIdentity;
 
 // The designated initializer.
 // |accountManagerService| account manager service.
