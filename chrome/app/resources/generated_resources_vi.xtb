@@ -468,6 +468,7 @@
 Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể kiểm soát các quyền đối với ứng dụng Android trong phần <ph name="APPS_LINK_BEGIN" />Cài đặt ứng dụng<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Công cụ vẽ</translation>
 <translation id="1449191289887455076">Hãy nhấn phím “<ph name="CURRENTKEY" />” một lần nữa để xác nhận công tắc đã gán và <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Đã nhận được cấu hình mạng cho "<ph name="NETWORK_NAME" />" qua <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Trang web, Tệp đơn</translation>
 <translation id="1453561711872398978">Gửi <ph name="BEGIN_LINK" />
     nhật ký gỡ lỗi<ph name="END_LINK" /> (khuyến nghị)</translation>
@@ -1008,6 +1009,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1938351510777341717">Lệnh bên ngoài</translation>
 <translation id="1940546824932169984">Thiết bị đã kết nối</translation>
 <translation id="1941410638996203291">Thời gian bắt đầu <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Phiên bản: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Đọc và thay đổi tất cả dữ liệu của bạn trên mọi trang web</translation>
 <translation id="1942600407708803723">Tắt máy khi đóng nắp màn hình</translation>
 <translation id="1944528062465413897">Mã ghép nối Bluetooth:</translation>
@@ -1082,6 +1084,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="202352106777823113">Quá trình tải xuống mất quá nhiều thời gian và đã bị ngừng bởi mạng.</translation>
 <translation id="2024195579772565064">Xoá công cụ tìm kiếm</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> đã xảy ra lỗi. Nhấp vào bong bóng này để tải lại tiện ích.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> đang chia sẻ một mạng Wi-Fi với bạn</translation>
 <translation id="2028449514182362831">Các tính năng cần dùng cảm biến chuyển động sẽ không hoạt động</translation>
 <translation id="202918510990975568">Nhập mật khẩu để định cấu hình tùy chọn cài đặt bảo mật và đăng nhập</translation>
 <translation id="2030455719695904263">Bàn di chuột</translation>
@@ -2158,6 +2161,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3054766768827382232">Khi bạn tắt chế độ này, thiết bị ngoại vi có thể đạt hiệu suất cao hơn nhưng có thể làm lộ dữ liệu cá nhân của bạn thông qua hoạt động sử dụng trái phép.</translation>
 <translation id="3055113921564083271">Mối quan tâm bạn đã xoá</translation>
 <translation id="3055590424724986000">Với nhà cung cấp mà bạn lựa chọn</translation>
+<translation id="3057660594186523687">Không nhận được cấu hình mạng cho "<ph name="NETWORK_NAME" />" qua <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Bạn có thể bật tính năng đồng bộ hóa bất cứ lúc nào trong phần cài đặt</translation>
 <translation id="3058517085907878899">Tên thiết bị</translation>
 <translation id="3059195548603439580">Bạn đang tìm các thành phần hệ thống? Hãy truy cập</translation>
@@ -2583,6 +2587,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3507888235492474624">Quét lại các thiết bị Bluetooth</translation>
 <translation id="3508492320654304609">Không thể xóa dữ liệu đăng nhập của bạn</translation>
 <translation id="3508920295779105875">Chọn Thư mục Khác...</translation>
+<translation id="3509379002674019679">Tạo, lưu và quản lý mật khẩu để bạn có thể dễ dàng đăng nhập vào các trang web và ứng dụng.</translation>
 <translation id="3511200754045804813">Quét lại</translation>
 <translation id="3511307672085573050">S&amp;ao chép Địa chỉ Liên kết</translation>
 <translation id="351152300840026870">Phông chữ có chiều rộng cố định</translation>
@@ -5425,6 +5430,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6374469231428023295">Thử lại</translation>
 <translation id="6374635887697228982">Nhận chiết khấu?</translation>
 <translation id="6377268785556383139">1 kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6378392501584240055">Mở danh sách mạng Wi-Fi</translation>
 <translation id="6380143666419481200">Đồng ý và tiếp tục</translation>
 <translation id="6382616130475191723">Đã cho phép đọc và thay đổi <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Không có phím tắt không hoạt động</translation>
@@ -5542,6 +5548,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="648927581764831596">Không có</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="6491376743066338510">Ủy quyền không thành công</translation>
+<translation id="6492526860459984042">Đang nhận cấu hình mạng cho "<ph name="NETWORK_NAME" />" qua <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
 <translation id="6494445798847293442">Không phải tổ chức phát hành chứng chỉ</translation>
 <translation id="6494974875566443634">Tùy chỉnh</translation>
@@ -5801,6 +5808,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Ẩn danh)</translation>
 <translation id="6758056191028427665">Hãy cho chúng tôi biết ý kiến của bạn về dịch vụ của chúng tôi.</translation>
 <translation id="6759193508432371551">Khôi phục cài đặt gốc</translation>
+<translation id="6761431452438552910">Hãy đảm bảo thiết bị Bluetooth của bạn đang ở gần và đã bật chế độ ghép nối. Chỉ ghép nối với các thiết bị mà bạn tin tưởng.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Đang bật</translation>
 <translation id="676560328519657314">Phương thức thanh toán của bạn trong Google Pay</translation>

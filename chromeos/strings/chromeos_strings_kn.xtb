@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ಸಮೀಪದ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2346474577291266260">ಅತ್ಯುತ್ತಮ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ವೈಶಿಷ್ಟ್ಯವನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2364498172489649528">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="4782311465517282004">ನೀವು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ಪಠ್ಯವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿದಾಗ ವಿವರಣೆಗಳು, ಅನುವಾದಗಳು ಅಥವಾ ಯೂನಿಟ್ ಪರಿವರ್ತನೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ಫೋಟೋ</translation>
+<translation id="4793710386569335688">ಹೆಚ್ಚಿನ ಸಹಾಯ ಬೇಕಿದ್ದರೆ <ph name="BEGIN_LINK" />ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4793756956024303490">ಕುಗ್ಗಿಸುವಿಕೆ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="4794140124556169553">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾರ್ಯಕ್ಷಮತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲಾಗಿದೆ</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">ಸಕ್ರಿಯವಾಗುತ್ತಿದೆ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ಕುಟುಂಬ</translation>
+<translation id="5695599963893094957">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಯಾವುದೇ ಕೀ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ. ನೀವು ಒಂದೇ ಸಮಯದಲ್ಲಿ 4 ಕೀಗಳನ್ನು ಒತ್ತಬಹುದು.</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
@@ -471,6 +474,7 @@
 <translation id="6348738456043757611">ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
 <translation id="6379086450106841622">ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
+<translation id="6381741036071372448">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6388847657025262518">ಸ್ಕ್ಯಾನರ್‌ನ ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ ಜಾಮ್ ಆಗಿದೆ. ಫೀಡರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6410257289063177456">ಇಮೇಜ್ ಫೈಲ್‌ಗಳು</translation>
 <translation id="641081527798843608">ವಿಷಯದ ಹೊಂದಾಣಿಕೆ</translation>

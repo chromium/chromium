@@ -6,6 +6,8 @@
       Quando a política estiver ativada, o recurso <ph name="PRODUCT_NAME" /> enviará cabeçalhos de solicitação granulares, fornecendo informações sobre o ambiente e o navegador do usuário.
       Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
       Se esta política for ativada ou for deixada sem definição, o recurso <ph name="PRODUCT_NAME" /> será ativado. Se ela for desativada, o recurso ficará indisponível.</translation>
+<translation id="1001728814256572466">Se esta política for definida como falsa, os dados do <ph name="PRODUCT_NAME" />, incluindo armazenamento local de sites e cookies, serão excluídos do iCloud e dos backups locais no iOS.
+          Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá ser incluído nos backups.</translation>
 <translation id="1002439864875515590">Se esta política for definida como uma string em branco ou não for configurada, a opção de preenchimento automático não será exibida no <ph name="PRODUCT_OS_NAME" /> durante o fluxo de login do usuário.
       Se esta política for definida como uma string que representa um nome de domínio, uma opção de preenchimento automático será exibida no <ph name="PRODUCT_OS_NAME" /> durante o login, permitindo que o usuário digite apenas o nome dele sem a extensão de nome de domínio.  O usuário não poderá substituir essa extensão de nome de domínio.
       Se o valor da política não for um domínio válido, a política não será aplicada.</translation>
@@ -1406,6 +1408,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
+<translation id="2497751676088107779">Script de usuário</translation>
 <translation id="2497965601277442929">Não permitir que os usuários ativem o HTTPS-Only Mode</translation>
 <translation id="2498238926436517902">Sempre ocultar automaticamente a estante</translation>
 <translation id="250022556568924228">A definição desta política significa que o <ph name="PRODUCT_OS_NAME" /> faz o download dos Termos de Serviço e os apresenta aos usuários ao início de cada sessão de uma conta local do dispositivo. Os usuários só poderão fazer login na sessão após aceitarem os Termos de Serviço.
@@ -1791,6 +1794,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de relatório ao qual as configurações correspondem. O campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica os eventos ativados por esse provedor.
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
+<translation id="2943242293289396843">App empacotado legado</translation>
 <translation id="2947111924404450461">A definição desta política configura impressoras corporativas. O formato corresponde ao dicionário <ph name="NATIVE_PRINTERS_POLICY_NAME" />, com campos extras <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> e <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Esta política não afeta a possibilidade de os usuários configurarem impressoras em dispositivos individuais. Ela tem o objetivo de complementar a configuração de impressoras por usuários individuais.
@@ -3121,6 +3125,31 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4463675333222095358">Ativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="4464365009416584564">Desativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
+<translation id="4471718219410856003">Essa política é uma forma de substituir a lista de conjuntos que o Chrome usa para recursos do First-Party Sets.
+
+      Quando essa política é fornecida com um dicionário vazio, o Chrome usa a lista pública de First-Party Sets.
+
+      Quando a política recebe um conjunto na lista "substituições", todos os conjuntos na lista pública que
+      se cruzam com ela são removidos da lista do Chrome e o conjunto fornecido é adicionado a ela.
+
+      Quando essa política recebe um conjunto na lista "adições", todos os conjuntos na lista do Chrome que
+      se cruzam com ela são atualizados para adicionar o conjunto fornecido à lista ao mesmo tempo em que mantêm
+      a lista do Chrome de First-Party Sets desvinculada.
+
+      A lista de First-Party Sets usada pelo Chrome precisa permanecer desvinculada. Portanto, aplicar essa política exige
+      que as duas listas de políticas de First-Party Sets estejam desvinculadas internamente e uma da outra.
+
+      Além disso, todos os conjuntos nas duas listas precisam aderir às invariantes de um First-Party Sets.
+      Um First-Party Set consiste em um site proprietário e um ou mais sites membros. Todos os sites em um First-Party Set precisam
+      ser um domínio registrável exibido por HTTPS, independentemente de ser um site proprietário ou membro.
+      Cada site em um First-Party Set também precisa ser único, o que significa que um site não pode ser proprietário e membro ao mesmo tempo, nem ser
+      listado mais de uma vez como membro de um First-Party Set.
+      Consulte https://github.com/privacycg/first-party-sets (link em inglês) para ver mais informações sobre First-Party Sets.
+
+      Caracteres curinga (*) não têm suporte como valor da política, nem dentro de qualquer First-Party Set nessas listas.
+
+      Todos os conjuntos fornecidos por essa política precisam ser First-Party Set válidos. Se não forem, será gerado
+      um erro adequado.</translation>
 <translation id="4472740647327683596">Largura da página em micrômetros.</translation>
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
 <translation id="4476769083125004742">Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os apps Android não poderão acessar as informações de local. Se você configurar essa política para qualquer outro valor ou deixá-la sem definição, será solicitado o consentimento do usuário quando um app Android quiser acessar as informações de local.</translation>
@@ -4357,6 +4386,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5975765799383881158">Se a política for definida como "Ativada" ou não for definida, os usuários poderão enviar feedback ao Google em "Menu &gt; Ajuda &gt; Informar um problema" ou usando uma combinação de teclas.
 
       Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
+<translation id="5979376378555121803">App hospedado</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
 <translation id="5997543603646547632">Usar relógido de 24 horas por padrão</translation>
 <translation id="5997846976342452720">Especifica se o localizador de plug-ins deve ser desativado (uso suspenso)</translation>
@@ -4605,6 +4635,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
+<translation id="6278428485366576908">Tema</translation>
 <translation id="6279722058145292462">A definição da política especifica, em dias, com que frequência um cliente muda a senha da conta da máquina. A senha é gerada aleatoriamente pelo cliente e não fica visível para o usuário. Se a política for desativada ou definida com um número alto de dias, poderá haver um impacto negativo na segurança, porque possíveis invasores terão mais tempo para descobrir a senha da conta da máquina e usá-la.
 
       Se a política for deixada sem definição, a senha da conta da máquina mudará a cada 30 dias.
@@ -4754,6 +4785,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se esta política for definida como desativada ou não for definida, o menu de acessibilidade flutuante nunca será exibido.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realizar as verificações do "Navegação segura" em todos os arquivos transferidos por download</translation>
+<translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="6435570845618943258">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
       Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
       Quando a configuração não for definida, tanto o verificador de certificados integrado quanto o legado poderão ser usados.
@@ -5528,6 +5560,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Para ver informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
 <translation id="7194407337890404814">Nome do provedor de pesquisa padrão</translation>
+<translation id="7198134478421755850">Extensão</translation>
 <translation id="7199304109870655950">Configurar opções de acesso remoto no host da Área de trabalho remota do Google Chrome.
 
 O host da Área de trabalho remota do Google Chrome é um serviço nativo executado na máquina de destino à qual um usuário pode se conectar usando o app Área de trabalho remota do Google Chrome. O serviço nativo é empacotado e executado separadamente do navegador <ph name="PRODUCT_NAME" />.
@@ -5610,6 +5643,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
 <translation id="7295019613773647480">Ativar usuários supervisionados</translation>
 <translation id="7297476773981993405">Permitir que o algoritmo User-Agent GREASE atualizado seja executado.</translation>
+<translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
 <translation id="731208205557053914">Enviar informações sobre os VPD</translation>
@@ -5685,6 +5719,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7407441173422042771">Esta política controla a previsão de rede no <ph name="PRODUCT_NAME" />. Ela controla a pré-busca de DNS, a pré-conexão SSL e TCP e a pré-renderização das páginas da Web.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a previsão de rede será ativada, mas os usuários poderão mudar a configuração.</translation>
+<translation id="7408815947231046196">Permitir o backup de dados do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7410074797376205571">Permitir que a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> execute solicitações de API do WebAuthn transmitidas por proxy de um host remoto.</translation>
 <translation id="7412456346709338637">Ativar acesso a dados de periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permitir conexões de acesso remoto a esta máquina</translation>
@@ -6092,6 +6127,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
        Se a política for definida como "Desativada" ou não for definida, o modo de desenvolvedor continuará disponível no dispositivo.</translation>
 <translation id="782661371433719637">Não permitir que nenhum site solicite acesso de leitura de arquivos e diretórios pela API File System</translation>
+<translation id="7827127381981620448">App de plataforma</translation>
 <translation id="7833148823006528332">Identificador do app Android, por exemplo, "com.google.android.gm" para o Gmail.</translation>
 <translation id="7839180815400079700">Se <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> estiver "Ativada", a definição de <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> determinará a configuração do dia para a economia de energia no período de pico.
 
@@ -6819,6 +6855,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8626826495474944836">Exigir isolamento de sites para todos os sites</translation>
 <translation id="8631434304112909927">até a versão <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">A lista de apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8633550872001751090">Permitir que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="8637566476051166626">Portas de rede explicitamente permitidas</translation>
 <translation id="8643838501942693770">Permitir cookies de terceiros, mas deixar os usuários mudarem essa configuração</translation>

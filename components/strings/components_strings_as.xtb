@@ -259,6 +259,7 @@
 <translation id="1662550410081243962">পৰিশোধ পদ্ধতি ছেভ কৰক আৰু পূৰ কৰক</translation>
 <translation id="1663943134801823270">কাৰ্ড আৰু ঠিকনাসমূহ Chromeৰ পৰা লোৱা হয়। আপুনি সেয়া <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />-ত পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1671391448414634642">এতিয়াৰ পৰা <ph name="SOURCE_LANGUAGE" />ত থকা পৃষ্ঠাসমূহ <ph name="TARGET_LANGUAGE" />লৈ অনুবাদ কৰা হ’ব।</translation>
+<translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ৰ পৰা <ph name="TARGET_LANGUAGE" />লৈ</translation>
 <translation id="1682696192498422849">চুটি কাষটো প্ৰথমে</translation>
 <translation id="168693727862418163">এই নীতিৰ মানটোৱে ইয়াৰ স্কীমাৰ বিৰুদ্ধে সত্যাপন কৰিব নোৱাৰিলে আৰু ইয়াক উপেক্ষা কৰা হ’ব।</translation>
 <translation id="168841957122794586">ছার্ভাৰ প্ৰমাণপত্ৰখনত এটা দুৰ্বল ক্ৰিপ্টগ্ৰাফিক কী আছে।</translation>
@@ -519,6 +520,7 @@
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2505268675989099013">একাউণ্ট সুৰক্ষিত কৰক</translation>
 <translation id="2512101340618156538">অনুমতি নাই (ডিফ’ল্ট)</translation>
+<translation id="2512413427717747692">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ বুটাম হিচাপে ছেট কৰক, iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="2515629240566999685">আপোনাৰ অঞ্চলৰ ছিংগনেল পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2521385132275182522">তলৰ অংশৰ সোঁফালে ষ্টে'পল কৰক</translation>
 <translation id="2521736961081452453">ফ’ৰ্ম সৃষ্টি কৰক</translation>
@@ -776,6 +778,7 @@
 <translation id="3364869320075768271"><ph name="URL" />এ আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা ব্যৱহাৰ কৰিব বিচাৰিছে</translation>
 <translation id="3366477098757335611">কার্ড চাওক</translation>
 <translation id="3369192424181595722">ঘড়ীৰ আসোঁৱাহ</translation>
+<translation id="3371064404604898522">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="3371076217486966826"><ph name="URL" />এ:
       • আপোনাৰ ওচৰ-পাজৰৰ ঠাইসমূহৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ দিশ ট্ৰেক কৰিবলৈ বিচাৰে
       • আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰে</translation>
@@ -974,6 +977,7 @@
 <translation id="3969052498612555048">আপোনাৰ ক’ডটো বিচাৰি পোৱা নাই নেকি? <ph name="BEGIN_LINK" />নতুন ক’ড পাওক<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />ক অৱৰোধ কৰা হৈছে</translation>
+<translation id="3978338123949022456">সন্ধান কৰক ম’ড, <ph name="KEYWORD_SUFFIX" />ৰ জৰিয়তে সন্ধান কৰিবলৈ এটা প্ৰশ্ন টাইপ কৰক আৰু এণ্টাৰ টিপক</translation>
 <translation id="3986705137476756801">এতিয়াৰ বাবে লাইভ কেপশ্বন অফ কৰক</translation>
 <translation id="3987940399970879459">১ এম. বি.তকৈ কম</translation>
 <translation id="3990250421422698716">লাহেকৈ অফছেটক হেঁচক</translation>
@@ -1708,6 +1712,7 @@
 <translation id="63172326633386613">সাধ্য সুবিধাৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="6321917430147971392">আপোনাৰ DNS ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="6322182122604171028">Windows Hello ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
+<translation id="6326947323444967009">iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="6328639280570009161">নেটৱৰ্কৰ পূৰ্বানুমান অক্ষম কৰি চাওক</translation>
 <translation id="6328784461820205019">"আপোনাৰ সংযোগটো ব্যক্তিগত নহয়" বা "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" বা "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" বা "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" বা "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" বা "SSL প্ৰমাণপত্ৰৰ আসোঁৱাহ"</translation>
 <translation id="6328786501058569169">এই ছাইটটো বিভ্ৰান্তিকৰ</translation>
@@ -2552,6 +2557,7 @@
 <translation id="9080712759204168376">অ’ৰ্ডাৰৰ সাৰাংশ</translation>
 <translation id="9089260154716455634">কৰ্মবিৰতিৰ সময়ৰ নীতি:</translation>
 <translation id="9095388113577226029">অধিক ভাষা...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="9101630580131696064">ট্ৰে’ ১</translation>
 <translation id="9103872766612412690">আপোনাৰ তথ্য সুৰক্ষিত কৰিবলৈ <ph name="SITE" />এ সচৰাচৰতে এনক্ৰিপশ্বন ব্যৱহাৰ কৰে৷ Chromiumএ <ph name="SITE" />ৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰোঁতে ৱেবছাইটটোৱে সচৰাচৰতে ব্যৱহাৰ নোহোৱা আৰু অশুদ্ধ ক্ৰেডেনশ্বিয়েল পঠিয়াইছে৷ কোনো আক্ৰমণকাৰীয়ে <ph name="SITE" />ৰ ভেশ ধৰিলে বা কোনো ৱাই-ফাই ছাইন ইন স্ক্ৰীণে সংযোগত বাধা প্ৰদান কৰিলে এনে হ’ব পাৰে৷ আপোনাৰ ডেটা এতিয়াও সুৰক্ষিত হৈ আছে কিয়নো Chromiumএ কোনো ডেটা আদান-প্ৰদান হোৱাৰ পূৰ্বেই সংযোগ বন্ধ কৰিছে৷</translation>
 <translation id="9106062320799175032">বিলিঙৰ ঠিকনা যোগ কৰক</translation>

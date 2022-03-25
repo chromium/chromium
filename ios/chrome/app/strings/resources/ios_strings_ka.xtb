@@ -124,6 +124,7 @@
 <translation id="199425419756152024">პაროლის ნახვა</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="2021670401941426298">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია.</translation>
+<translation id="202292859882676807">მიკროფონზე წვდომა დაშვებულია</translation>
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">ყველა დროის</translation>
 <translation id="4334428914252001502">1 წაუკითხავი სტატია.</translation>
 <translation id="4338650699862464074">Google-ს უგზავნის თქვენ მიერ მონახულებული გვერდების URL-ებს.</translation>
+<translation id="4343046787186034850">კამერასა და მიკროფონზე წვდომა დაშვებულია</translation>
 <translation id="4359125752503270327">ეს გვერდი სხვა აპლიკაციაში გაიხსნება.</translation>
 <translation id="4375040482473363939">QR კოდების ძიება</translation>
 <translation id="4378154925671717803">ტელეფონი</translation>
@@ -389,6 +391,7 @@
 <translation id="4540780316273593836">წარმოიქმნა შეფერხება</translation>
 <translation id="457386861538956877">მეტი…</translation>
 <translation id="4592368184551360546">კლავიატურა</translation>
+<translation id="4606247758155004938">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია.</translation>
 <translation id="461440297010471931">ძიებისთვის გამოიყენება Google</translation>
 <translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4619615317237390068">ჩანართები სხვა მოწყობილობებიდან</translation>
@@ -510,6 +513,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ვერსია <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ახლა ნაჩვენებია Chrome-ის 1 ფანჯარა}other{ახლა ნაჩვენებია Chrome-ის {count} ფანჯარა}}</translation>
+<translation id="5701270923492462699">კამერაზე წვდომა დაშვებულია</translation>
 <translation id="5704908597376970822">სისტემაში შესვლა ვერ მოხერხდა.</translation>
 <translation id="5706552126692816153">აქტიური იყო 1 დღის წინ</translation>
 <translation id="5711039611392265845">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია და Google-ის სერვისები<ph name="END_LINK" />.</translation>
@@ -538,7 +542,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5896576662943111387">შექმნილია iOS-ისთვის</translation>
 <translation id="5897956970858271241">კოპირებულ ბმულზე გადასვლა</translation>
 <translation id="5899314093904173337">ახლოს მყოფ ადამიანებთან გასაზიარებლად სთხოვეთ მათ ამ QR კოდის სკანირება კამერით ან QR კოდების სკანირების აპით</translation>
-<translation id="5902639236448164449">მართეთ საიტის ნებართვები <ph name="URL" />-ისთვის. აღნიშნული ნებართვები გადაყენდება, როცა ჩანართს დახურავთ.</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">გვერდის თარგმნის ვარიანტები</translation>
 <translation id="5938160824633642847">თქვენი მოწყობილობის მეხსიერება თითქმის სავსეა. გაათავისუფლეთ სივრცე და ცადეთ ხელახლა.</translation>
@@ -630,6 +633,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="650279896687777322">შეიტყვეთ მეტი...</translation>
 <translation id="651505212789431520">გსურთ სინქრონიზაციის გაუქმება? სინქრონიზაციის ჩართვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="6524918542306337007">ინკოგნიტო რეჟიმი მიუწვდომელია</translation>
+<translation id="6530992499366869131">გაფრთხილების მიღება მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">მასშტაბის გადიდება</translation>
 <translation id="6583087784430677195">გამოსართავად გახსენით <ph name="BEGIN_LINK" />პარამეტრები<ph name="END_LINK" /> და გადადით „პაროლების ავტომატურ შევსებაზე“.</translation>

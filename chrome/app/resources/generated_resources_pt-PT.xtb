@@ -2439,6 +2439,7 @@ Pretende pará-lo?</translation>
 <translation id="3390013585654699824">Detalhes da app</translation>
 <translation id="3391512812407811893">Avaliações da Privacy Sandbox</translation>
 <translation id="3393554941209044235">Análise de documentos do Chrome</translation>
+<translation id="3393582007140394275">Não é possível transmitir o ecrã.</translation>
 <translation id="3394850431319394743">Com autorização para utilizar identificadores para reproduzir conteúdo protegido</translation>
 <translation id="3396744558790608201">Clique com o botão direito do rato e selecione "Pesquisar imagens com o Google Lens" para pesquisar qualquer região do site e saber mais acerca do conteúdo visual apresentado enquanto procura e compra na Web.</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e continuar", está a aceitar o processamento descrito acima para estes serviços Google.</translation>
@@ -2832,6 +2833,7 @@ Pretende pará-lo?</translation>
 <translation id="3753033997400164841">Armazene uma vez. Utilize em todas as plataformas.</translation>
 <translation id="3755411799582650620">O seu <ph name="PHONE_NAME" /> pode agora desbloquear também este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">O site está a utilizar o microfone.</translation>
+<translation id="3756485814916578707">A transmitir o ecrã</translation>
 <translation id="3756578970075173856">Defina o PIN</translation>
 <translation id="3756795331760037744">Permita que o Assistente Google utilize as informações do ecrã de <ph name="SUPERVISED_USER_NAME" /> para ajudar</translation>
 <translation id="3757733214359997190">Não foram encontrados sites.</translation>
@@ -3991,6 +3993,7 @@ Pretende pará-lo?</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">As suas portas irão aparecer aqui.</translation>
+<translation id="49265687513387605">Não é possível transmitir o ecrã. Verifique se confirmou a mensagem para começar a partilhar o seu ecrã.</translation>
 <translation id="4927753642311223124">Nada de novo a apresentar por aqui.</translation>
 <translation id="4929386379796360314">Destinos de impressão</translation>
 <translation id="4930447554870711875">Programadores</translation>
@@ -4104,6 +4107,7 @@ Pretende pará-lo?</translation>
 <translation id="5052499409147950210">Editar site</translation>
 <translation id="505347685865235222">Grupo sem nome – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Pesquisar imagem com o Google Lens</translation>
+<translation id="5054374119096692193">Veja todas as opções de cartões em <ph name="BEGIN_LINK" />Personalizar o Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">A ligar ao contentor</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
 <translation id="505776528429481161">Ligue e configure facilmente dispositivos nas proximidades</translation>
@@ -4531,7 +4535,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5483785310822538350">Revogar o acesso a ficheiros e a dispositivos</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}other{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> dentro de {NUM_DAYS} dias. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">O <ph name="DEVICE_TYPE" /> foi bloqueado por motivos de segurança. Introduza manualmente a palavra-passe para continuar.</translation>
-<translation id="5485102783864353244">Adicionar aplicação</translation>
+<translation id="5485102783864353244">Adicionar app</translation>
 <translation id="5485754497697573575">Restaurar todos os separadores</translation>
 <translation id="5486261815000869482">Confirmar palavra-passe</translation>
 <translation id="5486561344817861625">Simular Reinício do Navegador</translation>
@@ -5497,6 +5501,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> concluído</translation>
 <translation id="645286928527869380">Ideias de receitas</translation>
 <translation id="6452961788130242735">Ocorreu um problema de rede ou o domínio é incorreto.</translation>
+<translation id="6453191633103419909">Qualidade de projeção do separador/ecrã</translation>
 <translation id="6453921811609336127">Para mudar para o método de introdução seguinte, prima <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
@@ -7809,6 +7814,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8779944680596936487">Os sites apenas podem utilizar cookies para ver a sua atividade de navegação no respetivo site</translation>
 <translation id="8780123805589053431">Obter descrições de imagens a partir do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
+<translation id="8780872768304638315">Falha ao guardar em</translation>
 <translation id="8781834595282316166">Novo separador no grupo</translation>
 <translation id="8782565991310229362">A iniciação da app de quiosque foi cancelada.</translation>
 <translation id="8783526165720272136">Apps de mensagens</translation>
@@ -8126,7 +8132,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="909554839118732438">Fechar janelas de navegação anónima</translation>
 <translation id="9100416672768993722">Para mudar para o último método de introdução utilizado, prima <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Definições avançadas</translation>
-<translation id="9101691533782776290">Iniciar aplicação</translation>
+<translation id="9101691533782776290">Iniciar app</translation>
 <translation id="9102610709270966160">Ativar extensão</translation>
 <translation id="9103479157856427471">O ecrã com o zoom aumentado segue o foco do teclado</translation>
 <translation id="9103868373786083162">Premir para voltar, menu de contexto para ver o histórico</translation>

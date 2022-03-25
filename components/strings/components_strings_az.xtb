@@ -291,6 +291,7 @@
 <translation id="1662550410081243962">Ödəniş üsullarını yadda saxlayın və doldurun</translation>
 <translation id="1663943134801823270">Kart və ünvanlar Chrome'dandır. Onları <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən idarə edə bilərsiniz.</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> dilindəki səhifələr artıq <ph name="TARGET_LANGUAGE" /> dilinə tərcümə ediləcək.</translation>
+<translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilindən <ph name="TARGET_LANGUAGE" /> dilinə</translation>
 <translation id="1682696192498422849">Qısa kənar əvvəldə</translation>
 <translation id="168693727862418163">Bu siyasət dəyəri sxem əsasında doğrulanmadı və nəzərə alınmayacaq.</translation>
 <translation id="168841957122794586">Server sertifikatının kriptoqrafik açarı zəifdir.</translation>
@@ -580,6 +581,7 @@
 <translation id="2505268675989099013">Hesabınızı Qoruyun</translation>
 <translation id="2509167091171468975">Qida və ərzaq pərakəndə satıcıları</translation>
 <translation id="2512101340618156538">İcazə verilməyib (defolt)</translation>
+<translation id="2512413427717747692">"Chrome'u defolt brauzer kimi ayarlayın" düyməsi, Enter düyməsinə basaraq iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="2515629240566999685">Ərazinizdəki siqnal yoxlanılır</translation>
 <translation id="2521385132275182522">Aşağı sağdan ştapel vurun</translation>
 <translation id="2521736961081452453">Forma yaradın</translation>
@@ -880,6 +882,7 @@
 <translation id="3366477098757335611">Kartlara baxın</translation>
 <translation id="3369192424181595722">Saat xətası</translation>
 <translation id="3369459162151165748">Nəqliyyat hissələri və aksesuarlar</translation>
+<translation id="3371064404604898522">Chrome'u defolt brauzer kimi ayarlayın</translation>
 <translation id="3371076217486966826"><ph name="URL" /> bunun üçün icazə istəyir:
       • Ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək
       • Kameranızı istifadə etmək</translation>
@@ -1095,6 +1098,7 @@
 <translation id="3969052498612555048">Kodunuzu tapa bilmirsiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> blok edilib</translation>
+<translation id="3978338123949022456">Axtarış rejimi, <ph name="KEYWORD_SUFFIX" /> ilə axtarmaq üçün sorğu yazın və Enter düyməsinə basın</translation>
 <translation id="398470910934384994">Quşlar</translation>
 <translation id="3986705137476756801">Canlı Subtitri hələlik deaktiv edin</translation>
 <translation id="3987940399970879459">1 MB-dan az</translation>
@@ -1923,6 +1927,7 @@
 <translation id="6319249456820053699">Foto və video kameralar</translation>
 <translation id="6321917430147971392">DNS ayarlarınızı yoxlayın</translation>
 <translation id="6322182122604171028">Windows Hello istifadə etmək mümkün olmadı</translation>
+<translation id="6326947323444967009">iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="6328639280570009161">Şəbəkə proqnozunu deaktiv etməyə çalışın</translation>
 <translation id="6328784461820205019">"Bağlantınız məxfi deyil" və ya "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" , "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;", yaxud "SSL sertifikat xətası"</translation>
 <translation id="6328786501058569169">Bu sayt aldadıcıdır</translation>
@@ -2885,6 +2890,7 @@
 <translation id="908796725011587895">Kollec idmanı</translation>
 <translation id="9089260154716455634">Qeyri-iş saatları siyasəti:</translation>
 <translation id="9095388113577226029">Digər dillər...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="9096679202588811390">TV şoular və proqramlar</translation>
 <translation id="9101630580131696064">Qab 1</translation>
 <translation id="9103537084693478942">Video proqramı</translation>

@@ -469,6 +469,7 @@
 Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikningi. Hægt er að stjórna heimildum fyrir Android forrit í <ph name="APPS_LINK_BEGIN" />stillingum forrita<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Pensilverkfæri</translation>
 <translation id="1449191289887455076">Ýttu aftur á „<ph name="CURRENTKEY" />“ til að staðfesta úthlutun og <ph name="RESPONSE" />.</translation>
+<translation id="1450646399865399771">Stilling netkerfis fyrir „<ph name="NETWORK_NAME" />“ móttekin frá <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Vefsíða, stök skrá</translation>
 <translation id="1453561711872398978">Senda <ph name="BEGIN_LINK" />
     villuleitarskrár<ph name="END_LINK" /> (mælt með)</translation>
@@ -1009,6 +1010,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1938351510777341717">Ytri skipanalykill</translation>
 <translation id="1940546824932169984">Tengd tæki</translation>
 <translation id="1941410638996203291">Upphafstími <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Útgáfa: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Lesa og breyta öllum gögnum þínum á öllum vefsvæðum</translation>
 <translation id="1942600407708803723">Slökkva þegar hulstrið er lokað</translation>
 <translation id="1944528062465413897">Bluetooth-pörunarkóði:</translation>
@@ -1083,6 +1085,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="202352106777823113">Niðurhalið tók of langan tíma og netið stöðvaði það.</translation>
 <translation id="2024195579772565064">Eyða leitarvél</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> hrundi. Smelltu á þessa blöðru að endurhlaða viðbótina.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> deilir WiFi-netkerfi með þér.</translation>
 <translation id="2028449514182362831">Eiginleikar sem þurfa hreyfiskynjara virka ekki</translation>
 <translation id="202918510990975568">Færðu inn aðgangsorðið til að stilla öryggi og innskráningu</translation>
 <translation id="2030455719695904263">Snertiflötur</translation>
@@ -1519,6 +1522,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="2439626940657133600">Hleður <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Sk&amp;oða frumkóða</translation>
+<translation id="2441719842399509963">Endurstilla á sjálfgildi</translation>
 <translation id="244231003699905658">Ógilt vistfang. Athugaðu vistfangið og reyndu aftur.</translation>
 <translation id="2442916515643169563">Skuggi texta</translation>
 <translation id="2443487764245141020">Vefsvæði þurfa hugsanlega að staðfesta tækið þitt með auðkenni</translation>
@@ -2157,6 +2161,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3054766768827382232">Með því að slökkva er hægt að bæta afköst jaðartækja en þá eykst hætta á óheimilli notkun persónuupplýsinga þinna.</translation>
 <translation id="3055113921564083271">Áhugasvið sem þú fjarlægðir</translation>
 <translation id="3055590424724986000">Með veitu sem þú velur</translation>
+<translation id="3057660594186523687">Ekki tókst að taka við stillingu netkerfis fyrir „<ph name="NETWORK_NAME" />“ frá <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Hægt er að kveikja á samstillingu hvenær sem er í stillingunum</translation>
 <translation id="3058517085907878899">Nefna tæki</translation>
 <translation id="3059195548603439580">Ertu að leita að kerfisíhlutum? Opna</translation>
@@ -2582,6 +2587,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3507888235492474624">Leita aftur að Bluetooth-tækjum</translation>
 <translation id="3508492320654304609">Ekki var hægt að eyða innskráningargögnum þínum</translation>
 <translation id="3508920295779105875">Velja aðra möppu...</translation>
+<translation id="3509379002674019679">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt.</translation>
 <translation id="3511200754045804813">Leita aftur</translation>
 <translation id="3511307672085573050">Afrita slóð t&amp;engils</translation>
 <translation id="351152300840026870">Letur með fastri breidd</translation>
@@ -5424,6 +5430,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6374469231428023295">Reyna aftur</translation>
 <translation id="6374635887697228982">Fá afslætti?</translation>
 <translation id="6377268785556383139">Ein niðurstaða fyrir „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6378392501584240055">Opna í WiFi-netkerfum</translation>
 <translation id="6380143666419481200">Samþykkja og halda áfram</translation>
 <translation id="6382616130475191723">Heimilað að lesa og gera breytingar á <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Engar óvirkar flýtileiðir</translation>
@@ -5541,6 +5548,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="648927581764831596">Ekki í boði</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="6491376743066338510">Auðkenning mistókst</translation>
+<translation id="6492526860459984042">Móttekur stillingu netkerfis fyrir „<ph name="NETWORK_NAME" />“ frá <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Sýna upplýsingar um aukna vernd</translation>
 <translation id="6494445798847293442">Ekki vottunarstöð</translation>
 <translation id="6494974875566443634">Sérsnið</translation>
@@ -5800,6 +5808,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (huliðsgluggi)</translation>
 <translation id="6758056191028427665">Láttu okkur vita hvernig við stöndum okkur.</translation>
 <translation id="6759193508432371551">Núllstilling</translation>
+<translation id="6761431452438552910">Gakktu úr skugga um að Bluetooth-tækið þitt sé nálægt og í pörunarstillingu. Paraðu eingöngu við tæki sem þú treystir.</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6762833852331690540">Kveikt</translation>
 <translation id="676560328519657314">Þínir greiðslumátar á Google Pay</translation>

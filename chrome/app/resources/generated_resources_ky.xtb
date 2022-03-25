@@ -2453,6 +2453,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3390013585654699824">Колдонмонун чоо-жайы</translation>
 <translation id="3391512812407811893">Privacy Sandbox сыноолору</translation>
 <translation id="3393554941209044235">Chrome документин талдоо</translation>
+<translation id="3393582007140394275">Экранды тышкы экранга чыгаруу мүмкүн эмес.</translation>
 <translation id="3394850431319394743">Сайттар корголгон мазмунду сиздин уруксатыңыз менен ойното алат</translation>
 <translation id="3396744558790608201">Сайтты карап же Интернеттен бир нерсе сатып алып жатканда барактын визуалдык мазмуну менен жакшыраак тааныша аласыз. Ал үчүн оң баскычты чыкылдатып, “Сүрөттөрдү Google Lens аркылуу издөө” дегенди тандаңыз.</translation>
 <translation id="3396800784455899911">"Кабыл алып, улантуу" баскычын басуу менен, бул Google кызматтарын жогоруда сүрөттөлгөн шарттарга ылайык пайдаланууга макулдугуңузду билдиресиз.</translation>
@@ -2846,6 +2847,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3753033997400164841">Бир жолу сактайсыз. Бардык жерде колдоносуз</translation>
 <translation id="3755411799582650620">Эми сиздин <ph name="PHONE_NAME" /> бул <ph name="DEVICE_TYPE" /> түзмөктүн да кулпусун ача алат.</translation>
 <translation id="375636864092143889">Сайт микрофонуңузду колдонууда</translation>
+<translation id="3756485814916578707">Тышкы экранга чыгарылууда</translation>
 <translation id="3756578970075173856">PIN код коюу</translation>
 <translation id="3756795331760037744">Жардам берүү үчүн <ph name="SUPERVISED_USER_NAME" /> балаңыздын экранындагы маалыматын колдонууга Google Жардамчыга уруксат бериңиз</translation>
 <translation id="3757733214359997190">Эч бир сайт табылган жок</translation>
@@ -4006,6 +4008,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4924002401726507608">Пикир билдирүү</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Оюкчалар ушул жерде көрүнөт</translation>
+<translation id="49265687513387605">Экрандагы нерселер тышкы экранга чыгарылбай жатат. Экранды бөлүшүү мүмкүнчүлүгү ырасталышы керек.</translation>
 <translation id="4927753642311223124">Бул жерде көрө тургандай эч нерсе жок, ары өтүңүз.</translation>
 <translation id="4929386379796360314">Басып чыгара турган принтер</translation>
 <translation id="4930447554870711875">Иштеп чыгуучулар</translation>
@@ -4119,6 +4122,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5052499409147950210">Сайтты түзөтүү</translation>
 <translation id="505347685865235222">Аталышы жок топ – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens аркылуу издөө</translation>
+<translation id="5054374119096692193">Картанын бардык параметрлерин <ph name="BEGIN_LINK" />Chrome'ду ыңгайлаштыруу<ph name="END_LINK" /> бөлүмүнөн караңыз</translation>
 <translation id="5056950756634735043">Контейнерге туташууда</translation>
 <translation id="5057110919553308744">Кеңейтүүнү чыкылдатканда</translation>
 <translation id="505776528429481161">Жакын жердеги түзмөктөрдү оңой туташтырып, тууралайсыз</translation>
@@ -5511,6 +5515,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6452251728599530347"><ph name="PERCENT" /> бүттү</translation>
 <translation id="645286928527869380">Рецепттер</translation>
 <translation id="6452961788130242735">Тармакта маселе бар же чөйрө начар</translation>
+<translation id="6453191633103419909">Tab/Экранда көрсөтүү сапаты</translation>
 <translation id="6453921811609336127">Кийинки киргизүү ыкмасына которулуу үчүн <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Боштук<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> баскычтарын басыңыз</translation>
 <translation id="6455264371803474013">Белгилүү бир сайттарда</translation>
 <translation id="6455894534188563617">&amp;Жаңы папка</translation>
@@ -7822,6 +7827,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8779944680596936487">Сайттар cookie файлдары аркылуу гана сайтында көрүлгөн барактарды көрө алышат</translation>
 <translation id="8780123805589053431">Google'дан сүрөттөрдүн түшүндүрмөлөрүн алуу</translation>
 <translation id="8780443667474968681">Айтып издөө функциясы өчүрүлгөн.</translation>
+<translation id="8780872768304638315">Төмөнкүгө сакталбай калды:</translation>
 <translation id="8781834595282316166">Топтогу жаңы өтмөк</translation>
 <translation id="8782565991310229362">Киоск колдонмосун ишке киргизүү аракети жокко чыгарылды.</translation>
 <translation id="8783526165720272136">Жазышуу колдонмолору</translation>

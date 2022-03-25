@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Kapcsolja be a funkciót a képernyőkímélő-beállítások kiválasztásához</translation>
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotó</translation>
+<translation id="4793710386569335688">Ha további segítségére van szüksége, látogasson el a <ph name="BEGIN_LINK" />Súgó oldalára<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Tömörítési algoritmus</translation>
 <translation id="4794140124556169553">CPU-teszt futtatása befolyásolhatja a rendszer teljesítményét.</translation>
 <translation id="4808449224298348341">Nyomtatási feladat (<ph name="DOCUMENT_TITLE" />) megszakítva</translation>
@@ -412,6 +414,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Család</translation>
+<translation id="5695599963893094957">Nyomja le a billentyűzet bármely gombját. Egyszerre legfeljebb négy gombot nyomhat le.</translation>
 <translation id="5701381305118179107">Középre</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109">A(z) <ph name="DEVICE_NAME" /> frissítése</translation>
@@ -449,6 +452,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
 <translation id="6113701710518389813">Felfelé nyíl</translation>
+<translation id="6117895505466548728"><ph name="TITLE" /> és <ph name="NUMBER" /> további album</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
@@ -472,6 +476,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6348738456043757611">Felhasználónév és jelszó</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
+<translation id="6381741036071372448">Billentyűzet tesztelése</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
 <translation id="6410257289063177456">Képfájlok</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>

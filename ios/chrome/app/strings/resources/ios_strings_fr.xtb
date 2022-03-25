@@ -538,7 +538,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897956970858271241">Consulter le lien copié</translation>
 <translation id="5899314093904173337">Pour partager un contenu avec des personnes à proximité, laissez-les scanner ce code QR avec leur appareil photo ou leur application de lecture de codes QR</translation>
-<translation id="5902639236448164449">Gérez les autorisations du site pour <ph name="URL" />. Celles-ci seront réinitialisées après fermeture de l'onglet.</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5913600720976431809">Options de traduction de la page</translation>
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
@@ -630,6 +629,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
+<translation id="6530992499366869131">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>

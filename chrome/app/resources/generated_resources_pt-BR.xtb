@@ -2455,6 +2455,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3390013585654699824">Detalhes do app</translation>
 <translation id="3391512812407811893">Testes do Sandbox de privacidade</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
+<translation id="3393582007140394275">Não foi possível transmitir a tela.</translation>
 <translation id="3394850431319394743">Com permissão para usar identificadores para abrir conteúdo protegido</translation>
 <translation id="3396744558790608201">Clique com o botão direito do mouse e selecione "Pesquisar imagens usando o Google Lens" para pesquisar em qualquer área do site e saber mais sobre o conteúdo visual exibido, enquanto você navega e faz compras na Internet.</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e concluir", você aceita o processo descrito acima para esses serviços do Google.</translation>
@@ -2848,6 +2849,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3753033997400164841">Salve uma vez. Use em qualquer lugar</translation>
 <translation id="3755411799582650620">Seu <ph name="PHONE_NAME" /> agora pode desbloquear este <ph name="DEVICE_TYPE" /> também.</translation>
 <translation id="375636864092143889">O site está usando seu microfone</translation>
+<translation id="3756485814916578707">Transmitindo tela</translation>
 <translation id="3756578970075173856">Definir PIN</translation>
 <translation id="3756795331760037744">Permita que o Google Assistente use as informações na tela de <ph name="SUPERVISED_USER_NAME" /> para ajudar</translation>
 <translation id="3757733214359997190">Nenhum site encontrado</translation>
@@ -4008,6 +4010,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Suas portas aparecerão aqui</translation>
+<translation id="49265687513387605">Não foi possível transmitir a tela. Verifique se você confirmou a solicitação para começar a compartilhar sua tela.</translation>
 <translation id="4927753642311223124">Nada para ver aqui, siga em frente.</translation>
 <translation id="4929386379796360314">Destinos de impressão</translation>
 <translation id="4930447554870711875">Desenvolvedores</translation>
@@ -4121,6 +4124,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5052499409147950210">Editar site</translation>
 <translation id="505347685865235222">Grupo sem nome: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Pesquisar imagem com o Lens</translation>
+<translation id="5054374119096692193">Veja todas as opções de cards em <ph name="BEGIN_LINK" />Personalizar o Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando ao contêiner</translation>
 <translation id="5057110919553308744">Quando você clicar na extensão</translation>
 <translation id="505776528429481161">Configure e se conecte a dispositivos próximos com facilidade</translation>
@@ -5514,6 +5518,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> concluído</translation>
 <translation id="645286928527869380">Ideias de receitas</translation>
 <translation id="6452961788130242735">Problema de rede ou domínio incorreto</translation>
+<translation id="6453191633103419909">Qualidade da projeção de guia/tela</translation>
 <translation id="6453921811609336127">Para alternar para o próximo método de entrada, pressione <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
@@ -7827,6 +7832,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8779944680596936487">Os sites só podem usar os cookies para ver sua atividade de navegação na própria página</translation>
 <translation id="8780123805589053431">Ver descrições de imagens do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
+<translation id="8780872768304638315">Falha ao salvar neste local:</translation>
 <translation id="8781834595282316166">Nova guia no grupo</translation>
 <translation id="8782565991310229362">A inicialização do aplicativo de quiosque foi cancelada.</translation>
 <translation id="8783526165720272136">Apps de mensagens</translation>

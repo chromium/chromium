@@ -2460,6 +2460,7 @@
 <translation id="3390013585654699824">Детали за апликацијата</translation>
 <translation id="3391512812407811893">Пробни периоди за Privacy Sandbox</translation>
 <translation id="3393554941209044235">Анализа на документ од Chrome</translation>
+<translation id="3393582007140394275">Не може да се емитува екранот.</translation>
 <translation id="3394850431319394743">Има дозвола да користи идентификатори за да пушта заштитени содржини</translation>
 <translation id="3396744558790608201">Кликнете со десно копче и изберете „Пребарајте слики со Google Lens“ за да пребарате некој регион на сајтот и да дознаете повеќе за визуелните содржини што ги гледате додека прелистувате и купувате на интернет.</translation>
 <translation id="3396800784455899911">Ако кликнете на копчето „Прифати и продолжи“, се согласувате со обработката опишана погоре за овие услуги на Google.</translation>
@@ -2854,6 +2855,7 @@
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
 <translation id="3755411799582650620">Вашиот <ph name="PHONE_NAME" /> сега исто така може да го отклучи и овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сајтот го користи микрофонот</translation>
+<translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3756578970075173856">Поставете PIN</translation>
 <translation id="3756795331760037744">Дозволете „Помошникот на Google“ да ги користи податоците од екранот на <ph name="SUPERVISED_USER_NAME" /> за да помогне</translation>
 <translation id="3757733214359997190">Не се најдени сајтови</translation>
@@ -4019,6 +4021,7 @@
 <translation id="4924002401726507608">Испратете повратни информации</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Вашите порти ќе се појават тука</translation>
+<translation id="49265687513387605">Не може да се емитува екранот. Проверете дали сте го потврдиле известувањето да започнете со споделување на екранот.</translation>
 <translation id="4927753642311223124">Овде нема што да се види, продолжи.</translation>
 <translation id="4929386379796360314">Дестинации за печатење</translation>
 <translation id="4930447554870711875">Програмери</translation>
@@ -4134,6 +4137,7 @@
 <translation id="5052499409147950210">Изменете го сајтот</translation>
 <translation id="505347685865235222">Неименувана група - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Пребарај ја сликата со Google Lens</translation>
+<translation id="5054374119096692193">Видете ги сите опции за картички во <ph name="BEGIN_LINK" />Приспособете го Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Се поврзува со контејнерот</translation>
 <translation id="5057110919553308744">Кога ќе кликнете на екстензијата</translation>
 <translation id="505776528429481161">Лесно поврзувајте и поставувајте уреди во близина</translation>
@@ -5531,6 +5535,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> завршено</translation>
 <translation id="645286928527869380">Идеи за рецепти</translation>
 <translation id="6452961788130242735">Проблем со мрежата или лош домен</translation>
+<translation id="6453191633103419909">Квалитет на проекција на картичка/екран</translation>
 <translation id="6453921811609336127">За да се префрлите на следниот метод за внесување, притиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Празно место<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На одредени сајтови</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
@@ -7826,7 +7831,6 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сака да се поврзе со сериска порта</translation>
 <translation id="8750346984209549530">Мрежна APN</translation>
 <translation id="8752451679755290210">Автоматски преместувајте се од ставка на ставка</translation>
-<translation id="8753394285382137786">Пребарување картички за аудиовизуелни содржини</translation>
 <translation id="8753868764580670305">Видете ги и управувајте со лозинките зачувани на уредов</translation>
 <translation id="8753948258138515839">Апликацијата Датотеки овозможува брз пристап до датотеки што сте ги зачувале на Google Drive, надворешен склад или уред со ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Кога <ph name="PRODUCT_NAME" /> работи во поддржана околина за работна површина, ќе се користат поставките за прокси на системот. Меѓутоа, или системот не е поддржан или имаше проблем при стартувањето на системската конфигурација.&lt;/p&gt;
@@ -7861,6 +7865,7 @@
 <translation id="8779944680596936487">Сајтовите може да ги користат колачињата само за да ја гледаат вашата активност од прелистувањето на нив</translation>
 <translation id="8780123805589053431">Добивајте описи за слики од Google</translation>
 <translation id="8780443667474968681">Гласовното пребарување е исклучено.</translation>
+<translation id="8780872768304638315">Неуспешно зачувување во</translation>
 <translation id="8781834595282316166">Нова картичка во групата</translation>
 <translation id="8782565991310229362">Откажано е стартувањето на апликацијата Киоск.</translation>
 <translation id="8783526165720272136">Апликации за разменување пораки</translation>

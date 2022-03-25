@@ -538,7 +538,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5896576662943111387">Realizzato per iOS</translation>
 <translation id="5897956970858271241">Visita il link copiato</translation>
 <translation id="5899314093904173337">Per condividere i contenuti con le persone qui vicino, chiedi loro di scansionare questo codice QR con la fotocamera o con un'app scanner QR</translation>
-<translation id="5902639236448164449">Gestisci le autorizzazioni del sito per <ph name="URL" />. Queste autorizzazioni verranno reimpostate quando chiudi la scheda.</translation>
 <translation id="5911030830365207728">Google Traduttore</translation>
 <translation id="5913600720976431809">Opzioni per tradurre la pagina</translation>
 <translation id="5938160824633642847">Il dispositivo è quasi pieno. Libera spazio e riprova.</translation>
@@ -630,6 +629,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="650279896687777322">Scopri di più…</translation>
 <translation id="651505212789431520">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
+<translation id="6530992499366869131">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6583087784430677195">Per disattivare la funzionalità, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Riempimento automatico password.</translation>

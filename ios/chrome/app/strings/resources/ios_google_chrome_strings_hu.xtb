@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2919738076569633423">A Chrome használatával elfogadja az <ph name="BEGIN_LINK_TOS" />általános szerződési feltételeket<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
+<translation id="2993413480261249761">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Google Chrome segítségével.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
+<translation id="3121002401028999199">Az alkalmazás továbbfejlesztése érdekében a Chrome használati és hibajelentéseket küld a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="3173834708294760622">A Google Chrome oldala</translation>
 <translation id="3196546062792660320">A Chrome időt takarít meg Önnek azzal, hogy a fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
@@ -107,6 +109,7 @@ Fontos tudnivalók:
 <translation id="766361182512894255">Jelszava adatvédelmi incidens során nyilvánosságra került. A Chrome a jelszó azonnali módosítását javasolja.</translation>
 <translation id="7693590760643069321">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
+<translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
@@ -124,6 +127,7 @@ Fontos tudnivalók:
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
+<translation id="9064404358728865190">A Chrome használatával elfogadja az <ph name="BEGIN_LINK" />Általános Szerződési Feltételeket<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>
 <translation id="9122931302567044771">Ez azt jelenti, hogy a Chrome mindig az asztali webhelyet kéri majd.</translation>
 </translationbundle>

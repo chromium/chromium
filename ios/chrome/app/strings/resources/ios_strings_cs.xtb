@@ -538,7 +538,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5896576662943111387">Vytvořeno pro iOS</translation>
 <translation id="5897956970858271241">Navštívit zkopírovaný odkaz</translation>
 <translation id="5899314093904173337">Chcete-li obsah sdílet s lidmi z okolí, nechte je naskenovat tento QR kód (pomocí fotoaparátu nebo aplikace na skenování QR kódů)</translation>
-<translation id="5902639236448164449">Spravovat výjimky pro <ph name="URL" />. Po zavření karty budou se tato oprávnění resetují.</translation>
 <translation id="5911030830365207728">Překladač Google</translation>
 <translation id="5913600720976431809">Možnosti překladu stránky</translation>
 <translation id="5938160824633642847">Zařízení je téměř plné. Uvolněte místo a zkuste to znovu.</translation>
@@ -630,6 +629,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="650279896687777322">Další informace…</translation>
 <translation id="651505212789431520">Zrušit synchronizaci? Synchronizaci můžete kdykoliv zapnout v Nastavení.</translation>
 <translation id="6524918542306337007">Anonymní režim není k dispozici</translation>
+<translation id="6530992499366869131">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Přiblížit</translation>
 <translation id="6583087784430677195">Pokud tuto funkci chcete vypnout, otevřete <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> a přejděte na Automatické vyplnění hesel.</translation>

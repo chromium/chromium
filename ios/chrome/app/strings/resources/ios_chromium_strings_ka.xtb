@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">ეს იმას ნიშნავს, რომ Chromium ყოველ ჯერზე მოითხოვს მობილურ საიტს.</translation>
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
 <translation id="1257458525759135959">სურათების შესანახად შეეხეთ „პარამეტრებს“ და მიეცით საშუალება Chromium-ს, დაამატოს თქვენი ფოტოები</translation>
+<translation id="1266817106503861676">შეძელით მეტი კიდევ უფრო გამარტივებული, დაცული და დაჩქარებული Chromium-ის მეშვეობით.</translation>
 <translation id="1289216811211435351">გადაერთეთ Chromium-ზე</translation>
 <translation id="1361748954329991663">Chromium მოძველდა. თუ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />-ში განახლება მიუწვდომელია, შესაძლოა, რომ თქვენს მოწყობილობაზე Chromium-ის ახალი ვერსიები მხარდაჭერილი აღარ იყოს.</translation>
 <translation id="1431818719585918472">მიეცით საშუალება Chromium-ს, ჩაკეტოს თქვენი ინკოგნიტო ჩანართები.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">დაკოპირდა Chromium-ში</translation>
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3472200483164753384">მხარდაუჭერელია Chromium Canary-ში</translation>
+<translation id="3567399274263440288">Chromium-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით Chromium-ში თქვენი Google ანგარიშით.</translation>
 <translation id="3639997914391704523">პაროლების Chromium-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> იყენებდა Chromium-ს და ამ მოწყობილობაზე დატოვა სანიშნეები, პაროლები და სხვა პარამეტრები.</translation>
 <translation id="3805899903892079518">Chromium-ს არ აქვს წვდომა თქვენს ფოტოებსა და ვიდეოებზე. ჩართეთ წვდომა iOS-ის მენიუში: პარამეტრები &gt; კონფიდენციალურობა &gt; ფოტოები.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="632825460376924298">Chromium-ში შესვლის დაშვება</translation>
 <translation id="6337530241089703714">აირჩიეთ, რა გსურთ — თქვენი Chromium მონაცემების გასუფთავება ამ მოწყობილობიდან თუ მათი შენარჩუნება</translation>
+<translation id="6364764337654495917">Chromium-ის გამოყენებით თქვენ ეთანხმებით <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium გაუმჯობესდა! ხელმისაწვდომია ახალი ვერსია.</translation>
 <translation id="6752854822223394465">თქვენი ორგანიზაცია აყენებს Chromium-ს...</translation>
 <translation id="6820823224820483452">Chromium-მა ვერ შეამოწმა ყველა პაროლი. ცადეთ ხვალ.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">გამოიყენეთ Chromium ყველგან</translation>
 <translation id="766897673682622022">თქვენი პაროლი გამოაშკარავდა მონაცემთა გაჟონვისას. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="7674213385180944843">გახსენით: პარამეტრები &gt; კონფიდენციალურობა &gt; კამერა &gt; Chromium და ჩართეთ კამერა.</translation>
+<translation id="7724877991918731397">ამ აპის გაუმჯობესების მიზნით, Chromium უგზავნის მოხმარებისა და ავარიულად გათიშვის ანგარიშებს Google-ს. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium მინიშნება: ზოგიერთი ღილაკი (როგორიცაა „უკან“, „წინ“ და „ძიება“) ახლა მდებარეობს ეკრანის ქვედა ნაწილში.</translation>
 <translation id="7763454117143368771">გამოიყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ თავი აარიდოთ სახიფათო საიტებს და დაიცვათ პაროლები</translation>
 <translation id="786327964234957808">თქვენ ცვლით სინქრონიზაციის ანგარიშს — <ph name="USER_EMAIL1" /> ანგარიშით — <ph name="USER_EMAIL2" />. თქვენს არსებულ Chromium მონაცემებს მართავს <ph name="DOMAIN" />. ეს მოქმედება წაშლის თქვენს მონაცემებს ამ მოწყობილობიდან, თუმცა ისინი <ph name="USER_EMAIL1" />-ში შენარჩუნდება.</translation>

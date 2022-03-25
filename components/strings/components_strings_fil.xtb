@@ -291,6 +291,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1662550410081243962">I-save at punan ang mga paraan ng pagbabayad</translation>
 <translation id="1663943134801823270">Ang mga card at address ay mula sa Chrome. Maaari mong pamahalaan ang mga ito sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Simula ngayon ay ita-translate na sa <ph name="TARGET_LANGUAGE" /> ang mga page na nasa <ph name="SOURCE_LANGUAGE" />.</translation>
+<translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Short edge muna</translation>
 <translation id="168693727862418163">Hindi na-validate ang value ng patakarang ito sa schema nito at babalewalain ito.</translation>
 <translation id="168841957122794586">Naglalaman ang server certificate ng isang mahinang cryptographic key.</translation>
@@ -580,6 +581,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2505268675989099013">Protektahan ang Account</translation>
 <translation id="2509167091171468975">Mga retailer ng pagkain at grocery</translation>
 <translation id="2512101340618156538">Hindi pinapayagan (default)</translation>
+<translation id="2512413427717747692">Itakda ang Chrome bilang default na button ng browser, pindutin ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="2515629240566999685">Suriin ang signal sa iyong lugar</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Gumawa ng form</translation>
@@ -882,6 +884,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3366477098757335611">Tingnan ang mga card</translation>
 <translation id="3369192424181595722">Error sa orasan</translation>
 <translation id="3369459162151165748">Mga piyesa at accessory ng sasakyan</translation>
+<translation id="3371064404604898522">Itakda ang Chrome bilang default na browser</translation>
 <translation id="3371076217486966826">Gusto ng <ph name="URL" /> na:
       • Gumawa ng 3D na mapa ng iyong kapaligiran at subaybayan ang posisyon ng camera
       • Gamitin ang iyong camera</translation>
@@ -1099,6 +1102,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3969052498612555048">Hindi makita ang iyong code? <ph name="BEGIN_LINK" />Kumuha ng bagong code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3973234410852337861">Naka-block ang <ph name="HOST_NAME" /></translation>
+<translation id="3978338123949022456">Search mode, mag-type ng query, at pindutin ang Enter para maghanap gamit ang <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Mga ibon</translation>
 <translation id="3986705137476756801">I-off muna sa ngayon ang Instant Caption</translation>
 <translation id="3987940399970879459">Wala pang 1 MB</translation>
@@ -1928,6 +1932,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6319249456820053699">Mga camera at camcorder</translation>
 <translation id="6321917430147971392">Suriin ang iyong mga setting ng DNS</translation>
 <translation id="6322182122604171028">Hindi magamit ang Windows Hello</translation>
+<translation id="6326947323444967009">Itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
 <translation id="6328784461820205019">"Hindi pribado ang iyong koneksyon" o "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" o "SSL certificate error"</translation>
 <translation id="6328786501058569169">Mapanlinlang ang site na ito</translation>
@@ -2890,6 +2895,7 @@ Mga karagdagang detalye:
 <translation id="908796725011587895">College sports</translation>
 <translation id="9089260154716455634">Patakaran sa Mga Off Hour:</translation>
 <translation id="9095388113577226029">Higit pang wika...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="9096679202588811390">Mga palabas at programa sa TV</translation>
 <translation id="9101630580131696064">Tray 1</translation>
 <translation id="9103537084693478942">Software sa video</translation>

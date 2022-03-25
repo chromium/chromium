@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2919738076569633423">Sa paggamit ng Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK_TOS" />Mga Tuntunin ng Serbisyo<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Google Chrome.</translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
+<translation id="3121002401028999199">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng mga ulat ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Hindi gumagana ang iyong account sa Google Chrome. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="3173834708294760622">Page ng Google Chrome</translation>
 <translation id="3196546062792660320">Nakakatipid ka ng oras sa Chrome sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
@@ -108,6 +110,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="766361182512894255">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
 <translation id="7693590760643069321">Magagamit mo na ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
+<translation id="7780154209050837198">Para masulit ang Chrome, mag-sign in sa Chrome gamit ang iyong Google Account.</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="8160472928944011082">Hindi makapag-update ang Chrome</translation>
@@ -125,6 +128,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="8736550665979974340">Manatiling Ligtas sa Google Chrome</translation>
 <translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>
 <translation id="8788269841521769222">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Sa pamamagitan ng paggamit ng Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Itakda ang Chrome bilang Default?</translation>
 <translation id="9122931302567044771">Nangangahulugan itong hihilingin ng Chrome ang pang-desktop na site sa lahat ng pagkakataon.</translation>
 </translationbundle>

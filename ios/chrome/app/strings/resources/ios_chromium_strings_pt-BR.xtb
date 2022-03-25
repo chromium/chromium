@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Isso significa que o Chromium vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
+<translation id="1266817106503861676">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="1289216811211435351">Mudar para o Chromium</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie suas guias anônimas.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Copiado no Chromium</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
+<translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
@@ -84,6 +86,7 @@ Considerações:
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="632825460376924298">Permitir login no Chromium</translation>
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
+<translation id="6364764337654495917">Ao usar o Chromium, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6752854822223394465">Sua organização está configurando o Chromium…</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
@@ -104,6 +107,7 @@ Considerações:
 <translation id="7400689562045506105">Use o Chromium em qualquer lugar</translation>
 <translation id="766897673682622022">Sua senha foi exposta em uma violação de dados. Por recomendação do Chromium, mude a senha imediatamente.</translation>
 <translation id="7674213385180944843">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Chromium e ative a câmera.</translation>
+<translation id="7724877991918731397">Para ajudar a melhorar o app, o Chromium envia relatórios de uso e de erros ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Dica do Chromium. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
 <translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="786327964234957808">Você está trocando a conta de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os dados do Chromium são gerenciados por <ph name="DOMAIN" />. Eles serão excluídos deste dispositivo, mas permanecerão no <ph name="USER_EMAIL1" />.</translation>

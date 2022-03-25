@@ -469,6 +469,7 @@
 Дазволы, якія вы ўжо далі праграмам, могуць дзейнічаць для гэтага ўліковага запісу. Вы можаце кіраваць дазволамі, дадзенымі праграмам для Android, у <ph name="APPS_LINK_BEGIN" />Наладах праграм<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Інструмент "Пэндзаль"</translation>
 <translation id="1449191289887455076">Каб пацвердзіць прызначэнне і <ph name="RESPONSE" />, яшчэ раз націсніце "<ph name="CURRENTKEY" />"</translation>
+<translation id="1450646399865399771">Атрымана канфігурацыя для сеткі "<ph name="NETWORK_NAME" />" ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1451375123200651445">Вэб-старонка адным файлам</translation>
 <translation id="1453561711872398978">Адправіць <ph name="BEGIN_LINK" />журналы адладкі<ph name="END_LINK" /> (рэкамендуецца)</translation>
 <translation id="1454223536435069390">З&amp;рабіць здымак экрана</translation>
@@ -999,6 +1000,7 @@
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
 <translation id="1941410638996203291">Час пачатку: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Праглядаць і змяняць усе вашы даныя на ўсіх вэб-сайтах</translation>
 <translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
 <translation id="1944528062465413897">Код спалучэння па Bluetooth</translation>
@@ -1073,6 +1075,7 @@
 <translation id="202352106777823113">Спампоўванне ішло занадта доўга і было спынена сеткай.</translation>
 <translation id="2024195579772565064">Выдаленне пошукавай сістэмы</translation>
 <translation id="2025632980034333559">Збой праграмы "<ph name="APP_NAME" />". Націсніце на гэта выплыўное папярэджанне, каб перазагрузіць пашырэнне.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> абагульвае з вамі даныя сеткі Wi-Fi.</translation>
 <translation id="2028449514182362831">Функцыі, якім патрэбны датчыкі руху, не будуць працаваць</translation>
 <translation id="202918510990975568">Каб наладзіць сістэму бяспекі і працэдуру ўваходу, увядзіце пароль</translation>
 <translation id="2030455719695904263">Сэнсарная панэль</translation>
@@ -1506,6 +1509,7 @@
 <translation id="2435457462613246316">Паказаць пароль</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />: ідзе загрузка</translation>
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
+<translation id="2441719842399509963">Аднавіць стандартныя налады</translation>
 <translation id="244231003699905658">Несапраўдны адрас. Праверце адрас і паўтарыце спробу.</translation>
 <translation id="2442916515643169563">Цень ад тэксту</translation>
 <translation id="2443487764245141020">Магчыма, сайтам таксама трэба будзе распазнаць вашу прыладу пры дапамозе ідэнтыфікатара</translation>
@@ -2144,6 +2148,7 @@
 <translation id="3054766768827382232">Адключэнне абмежавання можа палепшыць прадукцыйнасць перыферыйных прылад, але разам з тым прывесці да раскрыцця асабістых даных у выніку несанкцыянаванага доступу.</translation>
 <translation id="3055113921564083271">Інтарэсы, якія вы выдалілі</translation>
 <translation id="3055590424724986000">З дапамогай выбранага вамі пастаўшчыка</translation>
+<translation id="3057660594186523687">Не ўдалося атрымаць канфігурацыю для сеткі "<ph name="NETWORK_NAME" />" ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3058498974290601450">Сінхранізацыю можна ўключыць у любы момант у наладах</translation>
 <translation id="3058517085907878899">Даць назву прыладзе</translation>
 <translation id="3059195548603439580">Шукаеце кампаненты сістэмы? Наведайце старонку</translation>
@@ -2569,6 +2574,7 @@
 <translation id="3507888235492474624">Пашукаць прылады Bluetooth яшчэ раз</translation>
 <translation id="3508492320654304609">Не ўдалося выдаліць даныя для ўваходу</translation>
 <translation id="3508920295779105875">Выбраць іншую папку...</translation>
+<translation id="3509379002674019679">Стварайце паролі, захоўвайце іх і кіруйце імі, каб мець магчымасць з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах.</translation>
 <translation id="3511200754045804813">Паўторны пошук</translation>
 <translation id="3511307672085573050">Капіраваць &amp;адрас спасылкі</translation>
 <translation id="351152300840026870">Монашырынны шрыфт</translation>
@@ -5409,6 +5415,7 @@
 <translation id="6374469231428023295">Паўтарыць спробу</translation>
 <translation id="6374635887697228982">Атрымліваць скідкі?</translation>
 <translation id="6377268785556383139">1 вынік па запыце "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Адкрыць у сетках Wi-Fi</translation>
 <translation id="6380143666419481200">Прыняць і працягнуць</translation>
 <translation id="6382616130475191723">Атрымалі дазвол на чытанне і змяненне сайта <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Неактыўных каманд няма</translation>
@@ -5526,6 +5533,7 @@
 <translation id="648927581764831596">Даступных няма</translation>
 <translation id="6490471652906364588">Прылада USB-C (правы порт)</translation>
 <translation id="6491376743066338510">Памылка аўтарызацыі</translation>
+<translation id="6492526860459984042">Ідзе атрыманне канфігурацыі для сеткі "<ph name="NETWORK_NAME" />" ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6494327278868541139">Паказаць падрабязныя звесткі аб палепшанай абароне</translation>
 <translation id="6494445798847293442">Не з'яўляецца цэнтрам сертыфікацыі</translation>
 <translation id="6494974875566443634">Наладжванне</translation>
@@ -5785,6 +5793,7 @@
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (інкогніта)</translation>
 <translation id="6758056191028427665">Паведаміце нам, што вы думаеце пра наш прадукт.</translation>
 <translation id="6759193508432371551">Скід да заводскіх налад</translation>
+<translation id="6761431452438552910">Упэўніцеся, што прылада з Bluetooth знаходзіцца паблізу і пераведзена ў рэжым спалучэння. Ажыццяўляйце спалучэнне толькі з надзейнымі прыладамі.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Уключана</translation>
 <translation id="676560328519657314">Вашы спосабы аплаты ў Google Pay</translation>

@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Dublēšana: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Noņemt izņēmumu, kas paredzēts <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google prezentācija</translation>
+<translation id="4277536868133419688">Filtrs “<ph name="FILTER_NAME" />” ir ieslēgts.</translation>
 <translation id="4290535918735525311">1 mape kopīgota ar Linux</translation>
 <translation id="4299729908419173967">Brazīliešu</translation>
 <translation id="4302605047395093221">Lai varētu izveidot savienojumu ar mobilo tīklu, ikvienam, kas izmanto šo ierīci, būs jāievada PIN.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Vēl...</translation>
 <translation id="4579744207439506346">Vienums “<ph name="ENTRY_NAME" />” ir pievienots atlasei.</translation>
 <translation id="4594543368593301662">Tiek rādīti rezultāti šādam vaicājumam: <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filtrs ir atiestatīts.</translation>
 <translation id="4603392156942865207">Fails “<ph name="FILE_NAME" />” tiek kopēts uz mapi “<ph name="FOLDER_NAME" />”</translation>
 <translation id="4631887759990505102">Izpildītājs</translation>
 <translation id="4642769377300286600">Notiek mobilo sakaru profila instalēšana, <ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Itāļu valoda</translation>
 <translation id="5473333559083690127">Atkārtoti ievadiet jauno PIN.</translation>
 <translation id="5489067830765222292">Latviešu</translation>
+<translation id="5489965683297092283">Filtrs “<ph name="FILTER_NAME" />” ir izslēgts.</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5500122897333236901">Īslandiešu valoda</translation>
 <translation id="5508696409934741614">Punkti</translation>

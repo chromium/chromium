@@ -2453,6 +2453,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3390013585654699824">Programbesonderhede</translation>
 <translation id="3391512812407811893">Privacy Sandbox-proeflopies</translation>
 <translation id="3393554941209044235">Chrome-dokumentontleding</translation>
+<translation id="3393582007140394275">Kan nie skerm uitsaai nie.</translation>
 <translation id="3394850431319394743">Word toegelaat om identifiseerders te gebruik om beskermde inhoud te speel</translation>
 <translation id="3396744558790608201">Regsklik en kies “Deursoek prente met Google Lens” om enige deel van die werf te deursoek om meer te wete te kom oor die visuele inhoud wat jy sien terwyl jy op die web blaai en koop.</translation>
 <translation id="3396800784455899911">Deur die "Aanvaar en gaan voort"-knoppie te klik, stem jy in tot die verwerking wat hierbo vir hierdie Google-dienste beskryf word.</translation>
@@ -2846,6 +2847,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3753033997400164841">Berg een keer. Gebruik oral</translation>
 <translation id="3755411799582650620">Jou <ph name="PHONE_NAME" /> kan nou ook hierdie <ph name="DEVICE_TYPE" /> ontsluit.</translation>
 <translation id="375636864092143889">Werf gebruik tans jou mikrofoon</translation>
+<translation id="3756485814916578707">Skerm word tans uitgesaai</translation>
 <translation id="3756578970075173856">Stel PIN</translation>
 <translation id="3756795331760037744">Laat Google Assistent toe om inligting op <ph name="SUPERVISED_USER_NAME" /> se skerm te gebruik om te help</translation>
 <translation id="3757733214359997190">Geen werwe gekry nie</translation>
@@ -4006,6 +4008,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4924002401726507608">Dien terugvoer in</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Jou poorte sal hier verskyn</translation>
+<translation id="49265687513387605">Kan nie die skerm uitsaai nie. Kyk of jy die aanporboodskap om jou skerm te begin deel, bevestig het.</translation>
 <translation id="4927753642311223124">Niks hier te sien nie, beweeg aan.</translation>
 <translation id="4929386379796360314">Drukbestemmings</translation>
 <translation id="4930447554870711875">Ontwikkelaars</translation>
@@ -4119,6 +4122,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5052499409147950210">Redigeer werf</translation>
 <translation id="505347685865235222">Naamlose groep – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Soek prent met Google Lens</translation>
+<translation id="5054374119096692193">Sien alle kaartopsies in <ph name="BEGIN_LINK" />Pasmaak Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Koppel tans aan die houer</translation>
 <translation id="5057110919553308744">Wanneer jy die uitbreiding klik</translation>
 <translation id="505776528429481161">Verbind toestelle in die omtrek maklik en stel hulle op</translation>
@@ -5512,6 +5516,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> voltooi</translation>
 <translation id="645286928527869380">Resepidees</translation>
 <translation id="6452961788130242735">Netwerkprobleem of slegte domein</translation>
+<translation id="6453191633103419909">Gehalte van oortjie- of skermprojeksie</translation>
 <translation id="6453921811609336127">Druk <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spasiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> om na die volgende invoermetode oor te skakel</translation>
 <translation id="6455264371803474013">Op spesifieke werwe</translation>
 <translation id="6455894534188563617">&amp;Nuwe vouer</translation>
@@ -7823,6 +7828,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8779944680596936487">Werwe kan webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien</translation>
 <translation id="8780123805589053431">Kry prentbeskrywings van Google af</translation>
 <translation id="8780443667474968681">Stemsoektog is afgeskakel.</translation>
+<translation id="8780872768304638315">Kon nie op die volgende plek stoor nie:</translation>
 <translation id="8781834595282316166">Nuwe oortjie in groep</translation>
 <translation id="8782565991310229362">Kioskprogram se begin is gekanselleer.</translation>
 <translation id="8783526165720272136">Boodskapprogramme</translation>

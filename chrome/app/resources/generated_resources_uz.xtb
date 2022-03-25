@@ -2440,6 +2440,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3390013585654699824">Ilova axboroti</translation>
 <translation id="3391512812407811893">Privacy Sandbox sinov versiyalari</translation>
 <translation id="3393554941209044235">Chrome hujjatlar tahlili</translation>
+<translation id="3393582007140394275">Ekran namoyish qilinmadi.</translation>
 <translation id="3394850431319394743">Himoyalangan kontentni ijro etish uchun identifikatorlardan foydalanishga ruxsat berilgan saytlar</translation>
 <translation id="3396744558790608201">Sahifalarni kezish va xarid qilish vaqtida aks etgan vizual kontent haqida batafsil axborot olish uchun oʻng klikni bosib, “Rasmlarni Google Lens yordamida qidirish” bandini tanlang.</translation>
 <translation id="3396800784455899911">“Roziman va davom etish” tugmasini bosish orqali siz yuqorida keltirilgan Google xizmatlari shartlariga rozilik bildirgan hisoblanasiz.</translation>
@@ -2833,6 +2834,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3753033997400164841">Bir marta saqlash. Doim ishlatish</translation>
 <translation id="3755411799582650620">Endi <ph name="PHONE_NAME" /> telefonni <ph name="DEVICE_TYPE" /> qulfdan yechishi mumkin.</translation>
 <translation id="375636864092143889">Sayt mikrofondan foydalanmoqda</translation>
+<translation id="3756485814916578707">Ekran namoyish qilinmoqda</translation>
 <translation id="3756578970075173856">PIN kod oʻrnatish</translation>
 <translation id="3756795331760037744">Google Assistentga <ph name="SUPERVISED_USER_NAME" /> ekranidagi axborotdan foydalanishga ruxsat bering</translation>
 <translation id="3757733214359997190">Hech qanday sayt topilmadi</translation>
@@ -3993,6 +3995,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4924002401726507608">Fikr-mulohaza yuborish</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portlar bu yerda chiqadi</translation>
+<translation id="49265687513387605">Ekran namoyish qilinmadi.  Ekran namoyishi soʻrovini tasdiqlaganingizni tekshiring.</translation>
 <translation id="4927753642311223124">Hech qanday bildirishnoma yo‘q.</translation>
 <translation id="4929386379796360314">Belgilangan joyni chop etish</translation>
 <translation id="4930447554870711875">Dasturchilar</translation>
@@ -4106,6 +4109,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5052499409147950210">Saytni tahrirlash</translation>
 <translation id="505347685865235222">Nomsiz guruh – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens orqali rasm qidirish</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeni moslash<ph name="END_LINK" /> sahifasidagi barcha kartochka sozlamalarini ochish</translation>
 <translation id="5056950756634735043">Konteynerga ulanmoqda</translation>
 <translation id="5057110919553308744">Kengaytma bosilganda</translation>
 <translation id="505776528429481161">Yaqin-atrofdagi qurilmalarga oson ulanish va ularni sozlash</translation>
@@ -4722,6 +4726,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Bu sahifa tarjima qilinmadi</translation>
 <translation id="5662513737565158057">Linux ilovalari qanday ishlashini sozlash.</translation>
+<translation id="5667293444945855280">Zararli dastur</translation>
 <translation id="5667546120811588575">Google Play sozlanmoqda</translation>
 <translation id="5668351004957198136">Muvaffaqiyatsiz</translation>
 <translation id="56702779821643359">Atrofdagi odamlarga fayllarni ulashing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -5497,6 +5502,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6452251728599530347"><ph name="PERCENT" /> bajarildi</translation>
 <translation id="645286928527869380">Retseptlar</translation>
 <translation id="6452961788130242735">Tarmoq yoki server xatosi</translation>
+<translation id="6453191633103419909">Varaq/Ekran namoyishi sifati</translation>
 <translation id="6453921811609336127">Keyingi matn kiritish usuliga almashtirish uchun <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> tugmalarini bosing</translation>
 <translation id="6455264371803474013">Tanlangan saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yangi jild</translation>
@@ -7808,6 +7814,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8779944680596936487">Saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi</translation>
 <translation id="8780123805589053431">Rasmlarni tavsiflash (Google orqali)</translation>
 <translation id="8780443667474968681">Ovozli qidiruv o‘chiq.</translation>
+<translation id="8780872768304638315">Saqlanmadi</translation>
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
 <translation id="8783526165720272136">Xabarlar</translation>

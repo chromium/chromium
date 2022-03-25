@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> po rezervohen</translation>
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
+<translation id="4277536868133419688">Filtri <ph name="FILTER_NAME" /> është aktiv.</translation>
 <translation id="4290535918735525311">1 dosje e ndarë me Linux</translation>
 <translation id="4299729908419173967">Braziliane</translation>
 <translation id="4302605047395093221">Çdo person që përdor këtë pajisje do të duhet të futë kodin PIN për t'u lidhur me këtë rrjet celular</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Më shumë...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> u shtua te zgjedhja.</translation>
 <translation id="4594543368593301662">Po shfaq rezultate për <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filtri është rivendosur.</translation>
 <translation id="4603392156942865207">Po kopjon <ph name="FILE_NAME" /> në <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artisti</translation>
 <translation id="4642769377300286600">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">Italisht</translation>
 <translation id="5473333559083690127">Fut përsëri kodin e ri PIN</translation>
 <translation id="5489067830765222292">Letonisht</translation>
+<translation id="5489965683297092283">Filtri <ph name="FILTER_NAME" /> është joaktiv.</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>

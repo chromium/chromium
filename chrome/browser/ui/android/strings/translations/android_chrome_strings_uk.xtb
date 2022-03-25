@@ -176,7 +176,6 @@
 <translation id="200114059308480249">Враховувати контекст у пошуку Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="2015836039326522978">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
-<translation id="2019145049163614359">Вилучити інтерес?</translation>
 <translation id="2020309681647789787">Історія зберігатиметься на всіх синхронізованих пристроях, щоб ви могли продовжувати те, що ви робили</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
 <translation id="2038563949887743358">Увімкнути опцію "Запитувати версію сайту для комп’ютера"</translation>
@@ -724,7 +723,6 @@
 <translation id="5091199029769593641">Незабаром, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="SITE_NAME" />. Сайти, на які ви підписалися, зберігаються в обліковому записі Google. Керувати ними можна в налаштуваннях рекомендацій.</translation>
 <translation id="5091249083535528968">Розширені дані про використання</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
-<translation id="5098190077610408701">Додати інтерес?</translation>
 <translation id="5102401324271069229">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
 <translation id="510275257476243843">Залишилась 1 година</translation>
 <translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>

@@ -266,6 +266,7 @@
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
 <translation id="2689613560355655046">เดสก์ 8</translation>
+<translation id="2695305337569143674">เว็บ</translation>
 <translation id="2700493154570097719">ตั้งค่าแป้นพิมพ์</translation>
 <translation id="2704781753052663061">เข้าร่วมเครือข่าย Wi-Fi อื่น</translation>
 <translation id="2705001408393684014">เปิด/ปิดไมค์ <ph name="STATE_TEXT" /></translation>
@@ -826,6 +827,7 @@
 <translation id="6062360702481658777">คุณจะออกจากระบบโดยอัตโนมัติใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
+<translation id="6103838137565245112">ระบบ</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>

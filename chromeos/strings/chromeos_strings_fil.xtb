@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">I-on ang Bluetooth upang tuklasin ang mga kalapit na device</translation>
 <translation id="2346474577291266260">Napakabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">I-on ang feature para pumili ng mga opsyon sa screensaver</translation>
 <translation id="2364498172489649528">Nakapasa</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
+<translation id="4793710386569335688">Para sa higit pang tulong, pumunta sa <ph name="BEGIN_LINK" />Help Center<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm ng pag-compress</translation>
 <translation id="4794140124556169553">Posibleng makaapekto sa performance ng iyong system ang pagpapatakbo ng pagsusuri sa CPU</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
+<translation id="5695599963893094957">Mag-type ng anumang key sa iyong keyboard. Puwede kang pumindot ng hanggang 4 na key nang sabay-sabay.</translation>
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
@@ -473,6 +476,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6348738456043757611">Username at password</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
+<translation id="6381741036071372448">Subukan ang iyong keyboard</translation>
 <translation id="6388847657025262518">Nag-jam ang document feeder ng scanner. Tingnan ang feeder at subukan ulit.</translation>
 <translation id="6410257289063177456">Mga File ng Larawan</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>

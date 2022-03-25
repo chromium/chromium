@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Inahifadhi nakala ya <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Ondoa hali zisizofuata kanuni katika <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Wasilisho la Google</translation>
+<translation id="4277536868133419688">Kichujio cha <ph name="FILTER_NAME" /> kimewashwa.</translation>
 <translation id="4290535918735525311">Folda 1 imeshirikiwa na Linux</translation>
 <translation id="4299729908419173967">Kibrazili</translation>
 <translation id="4302605047395093221">Mtu yeyote anayetumia kifaa hiki atahitaji kuweka PIN hii ili aunganishe kwenye mtandao huu wa simu</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Zaidi...</translation>
 <translation id="4579744207439506346">Umeongeza <ph name="ENTRY_NAME" /> kwenye vipengee ulivyochagua.</translation>
 <translation id="4594543368593301662">Inaonyesha matokeo ya <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Kichujio kimewekwa upya.</translation>
 <translation id="4603392156942865207">Inanakili <ph name="FILE_NAME" /> kwenye <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Msanii</translation>
 <translation id="4642769377300286600">Inasakinisha maelezo ya eSIM ya vifaa vya mkononi, Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Kiitaliano</translation>
 <translation id="5473333559083690127">Weka tena PIN mpya</translation>
 <translation id="5489067830765222292">Kilativia</translation>
+<translation id="5489965683297092283">Kichujio cha <ph name="FILTER_NAME" /> kimezimwa.</translation>
 <translation id="5494920125229734069">Chagua zote</translation>
 <translation id="5500122897333236901">Kiaislandi</translation>
 <translation id="5508696409934741614">Nukta</translation>

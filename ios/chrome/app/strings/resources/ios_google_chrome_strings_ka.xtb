@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">შედით Chrome-ში</translation>
 <translation id="2919738076569633423">Chrome-ის გამოყენებით თქვენ ეთანხმებით <ph name="BEGIN_LINK_TOS" />მომსახურების პირობებს<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">აირჩიეთ <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">შეძელით მეტი კიდევ უფრო გამარტივებული, დაცული და დაჩქარებული Google Chrome-ის მეშვეობით.</translation>
 <translation id="3030414234702425231">ვინაიდან თქვენ გადიხართ ანგარიშიდან, რომელსაც მართავს <ph name="SIGNOUT_MANAGED_DOMAIN" />, ამ მოწყობილობიდან წაიშლება თქვენი Chrome მონაცემები, თუმცა ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
+<translation id="3121002401028999199">ამ აპის გაუმჯობესების მიზნით, Chrome უგზავნის მოხმარებისა და ავარიულად გათიშვის ანგარიშებს Google-ს. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">თქვენი ანგარიში არ მუშაობს Google Chrome-ში. გთხოვთ, დაუკავშირდეთ თქვენი დომენის ადმინისტრატორს, ან სისტემაში შესასვლელად, ჩვეულებრივი Google ანგარიში გამოიყენოთ.</translation>
 <translation id="3173834708294760622">Google Chrome-ის გვერდი</translation>
 <translation id="3196546062792660320">თქვენი ანგარიშების ვებში გამოყენებით, Chrome დროის დაზოგვაში დაგეხმარებათ. ანგარიშების დამატება ან ამოშლა პარამეტრებიდან შეგიძლიათ.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">თქვენი პაროლი გამოაშკარავდა მონაცემთა გაჟონვისას. Chrome გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="7693590760643069321">ამიერიდან შეგიძლიათ გამოიყენოთ Chrome, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით.</translation>
 <translation id="7698568245838009292">Chrome-ს კამერაზე წვდომის მიღება სურს</translation>
+<translation id="7780154209050837198">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით Chrome-ში თქვენი Google ანგარიშით.</translation>
 <translation id="7855730255114109580">Google Chrome განახლებულია</translation>
 <translation id="8022947259858476807">გამოიყენეთ Chrome ნაგულისხმევ ბრაუზერად, რომ გახსნათ ბმულები, მოიძიოთ ვიჯეტებიდან და ავტომატურად შეავსოთ პაროლები სხვა აპებში</translation>
 <translation id="8160472928944011082">Chrome ვერ განახლდება</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">იყავით უსაფრთხოდ Google Chrome-თან ერთად</translation>
 <translation id="8772179140489533211">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს.</translation>
 <translation id="8788269841521769222">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში <ph name="EMAIL" />-თვის</translation>
+<translation id="9064404358728865190">Chrome-ის გამოყენებით თქვენ ეთანხმებით <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">გსურთ, ნაგულისხმევად დააყენოთ Chrome?</translation>
 <translation id="9122931302567044771">ეს იმას ნიშნავს, რომ Chrome ყოველ ჯერზე მოითხოვს დესკტოპის საიტს.</translation>
 </translationbundle>

@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2346474577291266260">Эң жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Көшөгөнүн параметрлерин тандоо үчүн функцияны күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Токтотулду</translation>
 <translation id="4782311465517282004">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп же аныктамаларды жана котормолорду аласыз</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> сүрөт</translation>
+<translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4793756956024303490">Кысуунун алгоритми</translation>
 <translation id="4794140124556169553">CPU сыноосу иштетилсе, тутумдун ишине кедергиси тийиши мүмкүн</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Үй-бүлөлүк</translation>
+<translation id="5695599963893094957">Баскычтоптобу бир баскычты басып көрүңүз. Бир убакта 4 баскычка чейин бассаңыз болот.</translation>
 <translation id="5701381305118179107">Борбор</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> түзмөгүн жаңыртыңыз</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">Колдонуучунун аты жана сырсөзү</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
 <translation id="6379086450106841622">Сенсордук экран</translation>
+<translation id="6381741036071372448">Баскычтопту колдонуп көрүңүз</translation>
 <translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайра аракет кылыңыз.</translation>
 <translation id="6410257289063177456">Сүрөт файлдары</translation>
 <translation id="641081527798843608">Темасы дал келди</translation>

@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">파일 <ph name="FILE_COUNT" />개 백업 중</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> 예외 삭제</translation>
 <translation id="4261901459838235729">Google 프레젠테이션</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> 필터가 설정되었습니다.</translation>
 <translation id="4290535918735525311">폴더 1개가 Linux와 공유됨</translation>
 <translation id="4299729908419173967">브라질어</translation>
 <translation id="4302605047395093221">이 모바일 네트워크에 연결하려면 설정 중인 기기를 사용하는 모든 사용자는 PIN을 입력해야 합니다.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">더보기...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />에 관한 검색결과를 표시합니다.</translation>
+<translation id="4599600860674643278">필터를 초기화했습니다.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> 파일을 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
 <translation id="4631887759990505102">아티스트</translation>
 <translation id="4642769377300286600">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">이탈리아어</translation>
 <translation id="5473333559083690127">새 PIN 다시 입력</translation>
 <translation id="5489067830765222292">라트비아어</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> 필터가 해제되었습니다.</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5500122897333236901">아이슬란드어</translation>
 <translation id="5508696409934741614">점</translation>

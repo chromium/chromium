@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Създаваме резервно копие на <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Премахване на изключението за <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Презентация в Google</translation>
+<translation id="4277536868133419688">Филтърът „<ph name="FILTER_NAME" />“ е включен.</translation>
 <translation id="4290535918735525311">1 папка е споделена с Linux</translation>
 <translation id="4299729908419173967">бразилска</translation>
 <translation id="4302605047395093221">Всеки, който използва устройството, ще трябва да въведе ПИН кода, за да се свърже с тази мобилна мрежа</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Още...</translation>
 <translation id="4579744207439506346">Добавихте <ph name="ENTRY_NAME" /> към избраните.</translation>
 <translation id="4594543368593301662">Показани са резултати за „<ph name="SEARCH_TERM" />“.</translation>
+<translation id="4599600860674643278">Филтърът е нулиран.</translation>
 <translation id="4603392156942865207">„<ph name="FILE_NAME" />“ се копира в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4631887759990505102">Изпълнител</translation>
 <translation id="4642769377300286600">Мобилният потребителски профил се инсталира, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">италиански</translation>
 <translation id="5473333559083690127">Въведете пак новия ПИН</translation>
 <translation id="5489067830765222292">Латвийски</translation>
+<translation id="5489965683297092283">Филтърът „<ph name="FILTER_NAME" />“ е изключен.</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>

@@ -176,7 +176,6 @@
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />गोपनीयता धोरण<ph name="END_LINK3" /> देखील लागू होते.</translation>
-<translation id="2019145049163614359">स्वारस्य काढून टाकायचे आहे का?</translation>
 <translation id="2020309681647789787">तुमच्याकडे तुमच्या सर्व डिव्हाइसवर सिंक केलेला इतिहास असेल, जेणेकरून तुम्ही जे करत होता ते पुढे सुरू ठेवू शकता</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
 <translation id="2038563949887743358">डेस्कटॉप साइट विनंती सुरू करा</translation>
@@ -724,7 +723,6 @@
 <translation id="5091199029769593641">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="SITE_NAME" /> वरील स्टोरी दिसतील. तुम्ही फॉलो करता त्या साइट तुमच्या Google खात्यामध्ये सेव्ह केल्या जातात. तुम्ही त्या Discover सेटिंग्जमध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="5091249083535528968">वाढलेला वापर डेटा</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
-<translation id="5098190077610408701">स्वारस्य जोडायचे आहे का?</translation>
 <translation id="5102401324271069229">साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानिकारक फाइल डाउनलोड केल्यास, Chrome कदाचित पेज आशयाच्या भागांसह URLs सुरक्षित ब्राउझिंग ला पाठवेल</translation>
 <translation id="510275257476243843">1 तास शिल्लक</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> वर</translation>
@@ -1197,6 +1195,7 @@
 <translation id="7704317875155739195">ऑटोकंप्लीट शोध आणि URL</translation>
 <translation id="770741401784017797">GIF तयार करत आहे</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
+<translation id="7709094866268987903">तुम्ही काढून टाकलेली स्वारस्ये येथे दिसतील</translation>
 <translation id="7725024127233776428">तुम्ही बुकमार्क केलेली पेज येथे दिसतील</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
 <translation id="7761849928583394409">तारीख आणि वेळ निवडा</translation>

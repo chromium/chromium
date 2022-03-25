@@ -178,7 +178,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2600682495497606169">Esborra les galetes del lloc web</translation>
 <translation id="2625189173221582860">S'ha copiat la contrasenya</translation>
 <translation id="2626236249646841566">Comprova la connexió i torna a provar d'iniciar la sessió.</translation>
-<translation id="2637313651144986786">Cerca a les pestanyes...</translation>
+<translation id="2637313651144986786">Cerca pestanyes</translation>
 <translation id="2647269890314209800">Galetes en ús</translation>
 <translation id="2648803196158606475">Suprimeix els elements llegits</translation>
 <translation id="2653659639078652383">Envia</translation>
@@ -538,7 +538,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5896576662943111387">Dissenyat per a iOS</translation>
 <translation id="5897956970858271241">Ves a l'enllaç copiat</translation>
 <translation id="5899314093904173337">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR amb la càmera o l'aplicació d'escaneig QR</translation>
-<translation id="5902639236448164449">Gestiona els permisos del lloc web <ph name="URL" />. Es restabliran quan tanquis la pestanya.</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5913600720976431809">Opcions per traduir la pàgina</translation>
 <translation id="5938160824633642847">El dispositiu està gairebé ple. Allibera espai i torna-ho a provar.</translation>

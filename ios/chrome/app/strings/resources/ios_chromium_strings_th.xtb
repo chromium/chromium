@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์ในอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
+<translation id="1266817106503861676">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Chromium ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
 <translation id="1289216811211435351">เปลี่ยนไปใช้ Chromium</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">คัดลอกลงใน Chromium แล้ว</translation>
 <translation id="3344973607274501920">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
+<translation id="3567399274263440288">ลงชื่อเข้าใช้ Chromium ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="3639997914391704523">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ได้ใช้ Chromium และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="632825460376924298">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="6337530241089703714">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>
+<translation id="6364764337654495917">การใช้ Chromium หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" /></translation>
 <translation id="6424492062988593837">Chromium พัฒนาใหม่! มีรุ่นใหม่ให้ใช้งานแล้ว</translation>
 <translation id="6752854822223394465">องค์กรของคุณกำลังตั้งค่า Chromium...</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">ใช้ Chromium ได้ทุกที่</translation>
 <translation id="766897673682622022">รหัสผ่านของคุณถูกเปิดเผยในการละเมิดข้อมูล Chromium ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="7674213385180944843">เปิดการตั้งค่า &gt; ความเป็นส่วนตัว &gt; กล้อง &gt; Chromium แล้วเปิดกล้องถ่ายรูป</translation>
+<translation id="7724877991918731397">Chromium จะส่งรายงานการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">เคล็ดลับสำหรับ Chromium ตอนนี้บางปุ่มแสดงอยู่ที่ด้านล่างของหน้าจอแล้ว เช่น ปุ่มกลับ ไปข้างหน้า และค้นหา</translation>
 <translation id="7763454117143368771">ใช้ Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อป้องกันเว็บไซต์อันตรายและรักษารหัสผ่านให้ปลอดภัย</translation>
 <translation id="786327964234957808">คุณกำลังเปลี่ยนบัญชีในการซิงค์จาก <ph name="USER_EMAIL1" /> เป็น <ph name="USER_EMAIL2" /> ข้อมูล Chromium ที่มีอยู่ของคุณจัดการโดย <ph name="DOMAIN" /> การเปลี่ยนบัญชีจะลบข้อมูลจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ใน <ph name="USER_EMAIL1" /></translation>

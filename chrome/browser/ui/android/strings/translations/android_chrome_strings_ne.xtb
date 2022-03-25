@@ -176,7 +176,6 @@
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइलहरू}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
-<translation id="2019145049163614359">रुचि हटाउने हो?</translation>
 <translation id="2020309681647789787">तपाईंका सबै डिभाइसमा तपाईंको ब्राउजिङ इतिहास सिंक गरिने भएकाले तपाईं जुनसुकै डिभाइसबाट आफूले गर्दै गरेको कार्य जारी राख्न सक्नुहुन्छ</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
@@ -723,7 +722,6 @@
 <translation id="5091199029769593641">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> का लेखहरू देखाइने छन्। तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="5091249083535528968">प्रयोगसम्बन्धी थप डेटा</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
-<translation id="5098190077610408701">रुचि थप्ने हो?</translation>
 <translation id="5102401324271069229">कुनै साइटले तपाईंको पासवर्ड चोरी गर्न खोज्दा वा तपाईंले कुनै हानिकारक फाइल डाउनलोड गर्दा Chrome ले पेजमा भएका केही सामग्रीसहित उक्त साइटका URL हरू Safe Browsing मा पठाउन सक्छ</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>

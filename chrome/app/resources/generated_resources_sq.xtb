@@ -466,6 +466,7 @@
 Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. Lejet për aplikacionet për Android mund t'i kontrollosh te <ph name="APPS_LINK_BEGIN" />Cilësimet e aplikacioneve<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Vegla e furçës</translation>
 <translation id="1449191289887455076">Shtyp përsëri "<ph name="CURRENTKEY" />" për të konfirmuar caktimin dhe <ph name="RESPONSE" />.</translation>
+<translation id="1450646399865399771">U mor konfigurimi i rrjetit për "<ph name="NETWORK_NAME" />" nga <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Faqja e uebit, një skedar i vetëm</translation>
 <translation id="1453561711872398978">Dërgo <ph name="BEGIN_LINK" />evidencat e korrigjimit<ph name="END_LINK" /> (rekomandohet)</translation>
 <translation id="1454223536435069390">&amp;Nxirr një pamje të ekranit</translation>
@@ -993,6 +994,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1938351510777341717">Komandë e jashtme</translation>
 <translation id="1940546824932169984">Pajisjet e lidhura</translation>
 <translation id="1941410638996203291">Koha e nisjes: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Versioni: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Lexo dhe ndrysho të gjitha të dhënat e tua në të gjitha sajtet e uebit</translation>
 <translation id="1942600407708803723">Fike kur mbyllet kapaku</translation>
 <translation id="1944528062465413897">Kodi i çiftimit të Bluetooth-it:</translation>
@@ -1067,6 +1069,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="202352106777823113">Shkarkimi po vonohej dhe u ndalua nga rrjeti.</translation>
 <translation id="2024195579772565064">Fshi motorin e kërkimit</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> është ndërprerë aksidentalisht. Kliko te kjo balonë për të ngarkuar përsëri shtesën.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> po ndan një rrjet Wi-Fi me ty.</translation>
 <translation id="2028449514182362831">Veçoritë që kanë nevojë për sensorët e lëvizjes nuk do të funksionojnë</translation>
 <translation id="202918510990975568">Fut fjalëkalimin për të konfiguruar sigurinë dhe identifikimin</translation>
 <translation id="2030455719695904263">Blloku i prekjes</translation>
@@ -1501,6 +1504,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> po ngarkohet</translation>
 <translation id="2440604414813129000">Shiko b&amp;urimin</translation>
+<translation id="2441719842399509963">Rivendos te parazgjedhjet</translation>
 <translation id="244231003699905658">Adresë e pavlefshme. Kontrollo adresën dhe provo përsëri.</translation>
 <translation id="2442916515643169563">Hija e tekstit</translation>
 <translation id="2443487764245141020">Sajtet mund të kenë nevojë po ashtu ta njohin pajisjen tënde duke përdorur një identifikues</translation>
@@ -2139,6 +2143,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3054766768827382232">Çaktivizimi mund t'i bëjë pajisjet tuaja periferike të kenë cilësi funksionimi më të mirë, por mund të ekspozojë të dhënat e tua personale përmes përdorimit të paautorizuar.</translation>
 <translation id="3055113921564083271">Interesat që hoqe</translation>
 <translation id="3055590424724986000">Me një ofrues që e zgjedh vetë</translation>
+<translation id="3057660594186523687">Konfigurimi i rrjetit për "<ph name="NETWORK_NAME" />" nga <ph name="DEVICE_NAME" /> nuk mund të merrej</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
 <translation id="3058517085907878899">Emërto pajisjen</translation>
 <translation id="3059195548603439580">Po kërkon për komponentët e sistemit? Vizito</translation>
@@ -2564,6 +2569,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3507888235492474624">Skano sërish pajisjet me Bluetooth</translation>
 <translation id="3508492320654304609">Të dhënat e tua të identifikimit nuk mund të fshiheshin</translation>
 <translation id="3508920295779105875">Zgjidh një dosje tjetër...</translation>
+<translation id="3509379002674019679">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione.</translation>
 <translation id="3511200754045804813">Skano sërish</translation>
 <translation id="3511307672085573050">Kopjo adr&amp;esën e lidhjes</translation>
 <translation id="351152300840026870">Shkrim me gjerësi fikse</translation>
@@ -5404,6 +5410,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6374635887697228982">Të merren zbritjet?</translation>
 <translation id="6377268785556383139">1 rezultat për "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Hape në rrjetet e Wi-Fi</translation>
 <translation id="6380143666419481200">Prano dhe vazhdo</translation>
 <translation id="6382616130475191723">Lejuar për të lexuar dhe për të ndryshuar <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Nuk ka shkurtore joaktive</translation>
@@ -5521,6 +5528,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="648927581764831596">Nuk ofrohet asnjë</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
 <translation id="6491376743066338510">Autorizimi dështoi</translation>
+<translation id="6492526860459984042">Marrja e konfigurimit të rrjetit për "<ph name="NETWORK_NAME" />" nga <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Shfaq detajet e mbrojtjes së përforcuar</translation>
 <translation id="6494445798847293442">Nuk është një autoritet certifikimi</translation>
 <translation id="6494974875566443634">Personalizimi</translation>
@@ -5780,6 +5788,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (e fshehtë)</translation>
 <translation id="6758056191028427665">Na trego se si po ecim.</translation>
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
+<translation id="6761431452438552910">Sigurohu që pajisja jote me Bluetooth të jetë në modalitetin e çiftimit dhe në afërsi. Çiftoje vetëm me pajisjet të cilave u beson.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Aktiv</translation>
 <translation id="676560328519657314">Metodat e tua të pagesës në Google Pay</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2919738076569633423">Deur Chrome te gebruik, stem jy in tot die <ph name="BEGIN_LINK_TOS" />diensbepalings<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Kies <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Kry meer gedoen met 'n eenvoudige, veilige Google Chrome wat vinniger as ooit tevore is.</translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
+<translation id="3121002401028999199">Chrome stuur gebruik- en omvalverslae na Google toe om te help om die program beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Jou rekening werk nie in Google Chrome nie. Kontak asseblief jou domeinadministrateur of gebruik 'n gewone Google-rekening om aan te meld.</translation>
 <translation id="3173834708294760622">Google Chrome-bladsy</translation>
 <translation id="3196546062792660320">Chrome spaar jou tyd deur jou rekeninge na die web te bring. Jy kan rekeninge in instellings byvoeg of verwyder.</translation>
@@ -108,6 +110,7 @@ Dinge om te oorweeg:
 <translation id="766361182512894255">Jou wagwoord is in 'n dataskending blootgestel. Chrome beveel aan dat jy die wagwoord nou verander.</translation>
 <translation id="7693590760643069321">Jy kan Chrome nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
 <translation id="7698568245838009292">Chrome wil toegang tot die kamera hê</translation>
+<translation id="7780154209050837198">Meld met jou Google-rekening by Chrome aan om die meeste voordeel daaruit te trek.</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
 <translation id="8022947259858476807">Gebruik by verstek Chrome om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
@@ -125,6 +128,7 @@ Dinge om te oorweeg:
 <translation id="8736550665979974340">Bly veilig met Google Chrome</translation>
 <translation id="8772179140489533211">Wys porboodskappe om by Chrome aan te meld.</translation>
 <translation id="8788269841521769222">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word</translation>
+<translation id="9064404358728865190">Deur Chrome te gebruik, stem jy in tot die <ph name="BEGIN_LINK" />diensbepalings<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Stel Chrome as verstek?</translation>
 <translation id="9122931302567044771">Dit beteken dat Chrome elke keer die rekenaarwerf sal versoek.</translation>
 </translationbundle>

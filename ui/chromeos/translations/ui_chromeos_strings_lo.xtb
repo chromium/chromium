@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">ກຳລັງສຳຮອງ <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">ລຶບຂໍ້ຍົກເວັ້ນສຳລັບ <ph name="HOST_NAME" /> ອອກ</translation>
 <translation id="4261901459838235729">ການນໍາສະເໜີ Google</translation>
+<translation id="4277536868133419688">ເປີດຕົວກັ່ນຕອງ <ph name="FILTER_NAME" /> ແລ້ວ.</translation>
 <translation id="4290535918735525311">ແບ່ງປັນ 1 ໂຟນເດີກັບ Linux ແລ້ວ</translation>
 <translation id="4299729908419173967">ພາສາບຣາຊິລ</translation>
 <translation id="4302605047395093221">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະຕ້ອງລະບຸ PIN ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍມືຖືນີ້</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">ເພີ່ມເຕີມ...</translation>
 <translation id="4579744207439506346">ເພີ່ມ <ph name="ENTRY_NAME" /> ໃສ່ການເລືອກແລ້ວ.</translation>
 <translation id="4594543368593301662">ກຳລັງສະແດງຜົນການຊອກຫາສຳລັບ <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">ຣີເຊັດຕົວກັ່ນຕອງແລ້ວ.</translation>
 <translation id="4603392156942865207">ກຳລັງສຳເນົາ <ph name="FILE_NAME" /> ໄວ້ໃນ <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">ສິລະປິນ</translation>
 <translation id="4642769377300286600">ກຳລັງຕິດຕັ້ງໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">ພາສາອີຕາລີ</translation>
 <translation id="5473333559083690127">ປ້ອນ​ PIN ໃໝ່​ຄືນອີກ</translation>
 <translation id="5489067830765222292">ພາສາລັດວຽນ</translation>
+<translation id="5489965683297092283">ປິດຕົວກັ່ນຕອງ <ph name="FILTER_NAME" /> ແລ້ວ.</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>

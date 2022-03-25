@@ -468,6 +468,7 @@
 이 계정에는 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="APPS_LINK_BEGIN" />앱 설정<ph name="APPS_LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
 <translation id="1448779317883494811">브러시 도구</translation>
 <translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
+<translation id="1450646399865399771"><ph name="DEVICE_NAME" />에서 '<ph name="NETWORK_NAME" />' 네트워크 구성 수신함</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />디버그 로그
     <ph name="END_LINK" /> 보내기(권장)</translation>
@@ -1008,6 +1009,7 @@
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
 <translation id="1942600407708803723">커버를 닫으면 종료</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
@@ -1082,6 +1084,7 @@
 <translation id="202352106777823113">다운로드가 너무 오래 걸려 네트워크에서 중단했습니다.</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />이(가) 다운되었습니다. 확장 프로그램을 다시 로드하려면 이 풍선을 클릭하세요.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" />에서 Wi-Fi 네트워크를 나와 공유 중입니다.</translation>
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
@@ -2158,6 +2161,7 @@
 <translation id="3054766768827382232">방화벽을 사용 중지하면 주변기기 성능이 향상될 수 있으나 개인 정보가 노출되어 무단 사용될 수 있습니다.</translation>
 <translation id="3055113921564083271">삭제한 관심분야</translation>
 <translation id="3055590424724986000">원하는 제공업체 이용</translation>
+<translation id="3057660594186523687"><ph name="DEVICE_NAME" />에서 '<ph name="NETWORK_NAME" />' 네트워크 구성 수신 실패</translation>
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3058517085907878899">기기 이름 지정</translation>
 <translation id="3059195548603439580">시스템 구성요소를 찾는다면 다음으로 이동하세요.</translation>
@@ -2583,6 +2587,7 @@
 <translation id="3507888235492474624">블루투스 기기 다시 검색</translation>
 <translation id="3508492320654304609">로그인 데이터를 삭제할 수 없음</translation>
 <translation id="3508920295779105875">다른 폴더 선택...</translation>
+<translation id="3509379002674019679">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요.</translation>
 <translation id="3511200754045804813">다시 스캔</translation>
 <translation id="3511307672085573050">링크 주소 복사(&amp;E)</translation>
 <translation id="351152300840026870">고정폭 글꼴</translation>
@@ -5424,6 +5429,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6374635887697228982">할인을 받으시겠습니까?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
+<translation id="6378392501584240055">Wi-Fi 네트워크에서 열기</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> 사이트를 읽고 변경할 수 있도록 허용됨</translation>
 <translation id="6382958439467370461">비활성 바로가기 없음</translation>
@@ -5541,6 +5547,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="648927581764831596">사용할 수 없음</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6491376743066338510">승인에 실패했습니다.</translation>
+<translation id="6492526860459984042"><ph name="DEVICE_NAME" />에서 '<ph name="NETWORK_NAME" />' 네트워크 구성 수신 중</translation>
 <translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
 <translation id="6494974875566443634">맞춤설정</translation>
@@ -5800,6 +5807,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (시크릿 모드)</translation>
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
 <translation id="6759193508432371551">초기화</translation>
+<translation id="6761431452438552910">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">사용</translation>
 <translation id="676560328519657314">Google Pay 결제 수단</translation>

@@ -176,7 +176,6 @@
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />也适用。</translation>
-<translation id="2019145049163614359">移除兴趣？</translation>
 <translation id="2020309681647789787">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
@@ -724,7 +723,6 @@
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
-<translation id="5098190077610408701">添加兴趣？</translation>
 <translation id="5102401324271069229">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5115811374190515607">已移至<ph name="PRODUCT_NAME" /></translation>

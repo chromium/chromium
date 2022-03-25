@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">เปิดฟีเจอร์นี้เพื่อเลือกตัวเลือกโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">หยุดแล้ว</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="4791000909649665275">รูปภาพ <ph name="NUMBER" /> รูป</translation>
+<translation id="4793710386569335688">ดูความช่วยเหลือเพิ่มเติมได้ที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ครอบครัว</translation>
+<translation id="5695599963893094957">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">อัปเดต <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">ชื่อผู้ใช้และรหัสผ่าน</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6379086450106841622">หน้าจอสัมผัส</translation>
+<translation id="6381741036071372448">ทดสอบแป้นพิมพ์</translation>
 <translation id="6388847657025262518">ตัวป้อนเอกสารของเครื่องสแกนมีกระดาษติด ตรวจสอบตัวป้อนเอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6410257289063177456">ไฟล์ภาพ</translation>
 <translation id="641081527798843608">หัวเรื่องที่ตรงกัน</translation>

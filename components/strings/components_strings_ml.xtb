@@ -259,6 +259,7 @@
 <translation id="1662550410081243962">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
 <translation id="1663943134801823270">കാർഡുകളും വിലാസങ്ങളും Chrome-ൽ നിന്നുള്ളതാണ്. നിങ്ങൾക്ക് അവ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
 <translation id="1671391448414634642">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും.</translation>
+<translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
 <translation id="1682696192498422849">നീളം കുറഞ്ഞ അരിക് ആദ്യം</translation>
 <translation id="168693727862418163">ഈ നയ മൂല്യം അതിന്റെ സ്‌കീമയുമായി സാധൂകരിക്കാൻ കഴിയാത്തതിനാൽ അത് അവഗണിക്കപ്പെടും.</translation>
 <translation id="168841957122794586">സെർവർ സർട്ടിഫിക്കറ്റിൽ ഒരു ദുർബലമായ ഗൂഢഭാഷ കീ ഉൾപ്പെടുന്നു.</translation>
@@ -518,6 +519,7 @@
 <translation id="2501278716633472235">പിന്നോട്ട് പോകുക</translation>
 <translation id="2505268675989099013">അക്കൗണ്ട് പരിരക്ഷിക്കുക</translation>
 <translation id="2512101340618156538">അനുവദനീയമല്ല (ഡിഫോൾട്ട്)</translation>
+<translation id="2512413427717747692">ഡിഫോൾട്ട് ബ്രൗസർ ബട്ടണായി Chrome സജ്ജീകരിക്കുക, iOS ക്രമീകരണത്തിൽ സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുന്നതിന് Enter അമർത്തുക</translation>
 <translation id="2515629240566999685">നിങ്ങളുടെ ഏരിയയിലെ സിഗ്‌നൽ പരിശോധിക്കുന്നു</translation>
 <translation id="2521385132275182522">താഴെ വലതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="2521736961081452453">ഫോം സൃഷ്ടിക്കുക</translation>
@@ -776,6 +778,7 @@
 <translation id="3364869320075768271">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="3366477098757335611">കാർഡുകൾ കാണുക</translation>
 <translation id="3369192424181595722">ക്ലോക്കിലെ പിശക്</translation>
+<translation id="3371064404604898522">ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
 <translation id="3371076217486966826">ഇനിപ്പറയുന്നത് ചെയ്യാൻ <ph name="URL" /> താൽപ്പര്യപ്പെടുന്നു:
       • നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും
       • നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ</translation>
@@ -975,6 +978,7 @@
 <translation id="3969052498612555048">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="3978338123949022456">തിരയൽ മോഡ്, <ph name="KEYWORD_SUFFIX" /> ഉപയോഗിച്ച് തിരയാൻ തിരയൽ പദം ടൈപ്പ് ചെയ്ത ശേഷം Enter അമർത്തുക</translation>
 <translation id="3986705137476756801">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
 <translation id="3987940399970879459">ഒരു MB-യിൽ കുറവാണ്</translation>
 <translation id="3990250421422698716">ജോഗ് ഓഫ്‌സെറ്റ്</translation>
@@ -1710,6 +1714,7 @@
 <translation id="63172326633386613">ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6321917430147971392">നിങ്ങളുടെ DNS ക്രമീകരണങ്ങൾ പരിശോധിക്കുക</translation>
 <translation id="6322182122604171028">Windows Hello ഉപയോഗിക്കാനായില്ല</translation>
+<translation id="6326947323444967009">iOS ക്രമീകരണത്തിൽ സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
 <translation id="6328639280570009161">നെറ്റ്‌വർക്ക് പ്രവചനം പ്രവർത്തനരഹിതമാക്കാൻ ശ്രമിക്കുക</translation>
 <translation id="6328784461820205019">"നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" അല്ലെങ്കിൽ "SSL സർട്ടിഫിക്കറ്റ് പിശക്"</translation>
 <translation id="6328786501058569169">ഈ സൈറ്റ് വഞ്ചനാപരമായതാണ്</translation>
@@ -2553,6 +2558,7 @@
 <translation id="9080712759204168376">ഓർഡർ സംഗ്രഹം</translation>
 <translation id="9089260154716455634">ഓഫ് അവേഴ്‌സ് നയം:</translation>
 <translation id="9095388113577226029">കൂടുതൽ ഭാഷകൾ...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS ക്രമീകരണത്തിൽ സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുന്നതിന് ടാബ് അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="9101630580131696064">ട്രേ 1</translation>
 <translation id="9103872766612412690">നിങ്ങളുടെ വിവരങ്ങൾ പരിരക്ഷിക്കാൻ സാധാരണയായി <ph name="SITE" />, എൻക്രിപ്‌ഷൻ ഉപയോഗിക്കുന്നു. ഇപ്പോൾ <ph name="SITE" /> സൈറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ Chromium ശ്രമിച്ചപ്പോൾ, അസാധാരണമായതും തെറ്റായതുമായ ക്രെഡൻഷ്യലുകൾ വെബ്‌സൈറ്റ് തിരികെ അയച്ചു. ഒരു ആക്രമണകാരി <ph name="SITE" /> എന്നതായി ഭാവിക്കാൻ ശ്രമിക്കുമ്പോഴോ Wi-Fi സൈൻ ഇൻ സ്‌ക്രീൻ, കണക്ഷനെ തടസ്സപ്പെടുത്തുമ്പോഴോ ആണ് ഇങ്ങനെ സംഭവിക്കാനിടയുള്ളത്. ഏതെങ്കിലും ഡാറ്റ കൈമാറുന്നതിനുമുമ്പ് Chromium കണക്ഷൻ അവസാനിപ്പിച്ചതിനാൽ, നിങ്ങളുടെ വിവരങ്ങൾ തുടർന്നും സുരക്ഷിതമായിരിക്കും.</translation>
 <translation id="9106062320799175032">ബില്ലിംഗ് വിലാസം ചേർക്കുക</translation>

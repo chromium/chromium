@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ਲਈ ਅਪਵਾਦ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="4261901459838235729">Google ਪ੍ਰਸਤੁਤੀ</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> ਫਿਲਟਰ ਚਾਲੂ ਹੈ।</translation>
 <translation id="4290535918735525311">Linux ਨਾਲ ਇੱਕ ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4299729908419173967">ਬ੍ਰਾਜ਼ਿਲਿਆਈ</translation>
 <translation id="4302605047395093221">ਇਹ ਡੀਵਾਈਸ ਵਰਤਣ ਵਾਲੇ ਹਰੇਕ ਵਿਅਕਤੀ ਨੂੰ ਇਸ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪਿੰਨ ਦਾਖਲ ਕਰਨਾ ਪਵੇਗਾ</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">ਹੋਰ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੋਣ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ਦੇ ਨਤੀਜੇ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ।</translation>
+<translation id="4599600860674643278">ਫਿਲਟਰ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4631887759990505102">ਕਲਾਕਾਰ</translation>
 <translation id="4642769377300286600">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">ਇਤਾਲਵੀ</translation>
 <translation id="5473333559083690127">ਨਵਾਂ PIN ਮੁੜ-ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5489067830765222292">ਲਾਤਵੀਅਨ</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> ਫਿਲਟਰ ਬੰਦ ਹੈ।</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">ਬਿੰਦੀਆਂ</translation>

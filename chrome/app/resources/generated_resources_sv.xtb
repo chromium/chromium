@@ -468,6 +468,7 @@
 Behörigheter som du redan har gett appar kan gälla för det här kontot. Du kan styra behörigheter för Android-appar i <ph name="APPS_LINK_BEGIN" />appinställningarna<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Penselverktyg</translation>
 <translation id="1449191289887455076">Tryck på <ph name="CURRENTKEY" /> igen för att bekräfta tilldelningen och <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Mottagen nätverkskonfiguration för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
 <translation id="1453561711872398978">Skicka <ph name="BEGIN_LINK" />
     felsökningsloggar<ph name="END_LINK" /> (rekommenderas)</translation>
@@ -1008,6 +1009,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
 <translation id="1941410638996203291">Starttid <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Version <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Läsa och ändra all din data på alla webbplatser</translation>
 <translation id="1942600407708803723">Stäng av när fodralet stängs</translation>
 <translation id="1944528062465413897">Kopplingskod för Bluetooth:</translation>
@@ -1082,6 +1084,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="202352106777823113">Nedladdningen tog för lång tid och avbröts av nätverket.</translation>
 <translation id="2024195579772565064">Ta bort sökmotor</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> har kraschat. Klicka på ballongen för att ladda om tillägget.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> delar ett wifi-nätverk med dig.</translation>
 <translation id="2028449514182362831">Funktioner som kräver rörelsesensorer slutar fungera</translation>
 <translation id="202918510990975568">Ange lösenordet om du vill konfigurera säkerhet och inloggning</translation>
 <translation id="2030455719695904263">Styrplatta</translation>
@@ -2158,6 +2161,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3054766768827382232">Om du inaktiverar dataåtkomstskyddet kanske din kringutrustning fungerar bättre, men dina personuppgifter kan läcka genom obehörig användning.</translation>
 <translation id="3055113921564083271">Intressen som du har tagit bort</translation>
 <translation id="3055590424724986000">Med en leverantör du väljer</translation>
+<translation id="3057660594186523687">Mottagningen av nätverkskonfigurationen för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /> misslyckades</translation>
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3058517085907878899">Namnge enheten</translation>
 <translation id="3059195548603439580">Letar du efter systemets komponenter? Besök</translation>
@@ -2583,6 +2587,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3507888235492474624">Sök efter Bluetooth-enheter igen</translation>
 <translation id="3508492320654304609">Det gick inte att radera inloggningsuppgifterna</translation>
 <translation id="3508920295779105875">Välj en annan mapp...</translation>
+<translation id="3509379002674019679">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar.</translation>
 <translation id="3511200754045804813">Sök igen</translation>
 <translation id="3511307672085573050">Kopiera länk&amp;adress</translation>
 <translation id="351152300840026870">Teckensnitt med fast bredd</translation>
@@ -5425,6 +5430,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6374469231428023295">Försök igen</translation>
 <translation id="6374635887697228982">Vill du få erbjudanden?</translation>
 <translation id="6377268785556383139">1 resultat för <ph name="SEARCH_TEXT" /></translation>
+<translation id="6378392501584240055">Öppna i wifi-nätverk</translation>
 <translation id="6380143666419481200">Godkänn och fortsätt</translation>
 <translation id="6382616130475191723">Har tillåtits att läsa och ändra <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Inga inaktiva genvägar</translation>
@@ -5542,6 +5548,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
+<translation id="6492526860459984042">Tar emot nätverkskonfigurationen för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6494974875566443634">Anpassning</translation>
@@ -5801,6 +5808,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
 <translation id="6759193508432371551">Återställ standardinställningar</translation>
+<translation id="6761431452438552910">Kontrollera att Bluetooth-enheten är i parkopplingsläge och finns i närheten. Parkoppla bara betrodda enheter.</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6762833852331690540">På</translation>
 <translation id="676560328519657314">Dina betalningsmetoder i Google Pay</translation>

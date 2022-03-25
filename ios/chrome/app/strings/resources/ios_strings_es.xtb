@@ -538,7 +538,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897956970858271241">Ir al enlace copiado</translation>
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
-<translation id="5902639236448164449">Gestiona los permisos de <ph name="URL" />. Estos permisos se restablecerán cuando cierres la pestaña.</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5913600720976431809">Opciones para traducir la página</translation>
 <translation id="5938160824633642847">Tu dispositivo está casi lleno. Libera espacio y vuelve a intentarlo.</translation>
@@ -630,6 +629,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="650279896687777322">Más información...</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo de incógnito no está disponible</translation>
+<translation id="6530992499366869131">Avisarte si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Ampliar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> y ve a Autorellenar contraseñas.</translation>

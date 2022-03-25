@@ -466,6 +466,7 @@
 Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Puedes controlar los permisos de aplicaciones Android en <ph name="APPS_LINK_BEGIN" />Configuración de aplicaciones<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Herramienta de pincel</translation>
 <translation id="1449191289887455076">Pulsa <ph name="CURRENTKEY" /> otra vez para confirmar la asignación y <ph name="RESPONSE" />.</translation>
+<translation id="1450646399865399771">Configuración de red recibida para <ph name="NETWORK_NAME" /> de <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">H&amp;acer captura de pantalla</translation>
@@ -996,6 +997,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1938351510777341717">Tecla Comando externa</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
 <translation id="1941410638996203291">Hora de inicio: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Versión: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Leer y cambiar todos tus datos en todos los sitios web</translation>
 <translation id="1942600407708803723">Apagar cuando se cierre la tapa</translation>
 <translation id="1944528062465413897">Código de emparejamiento por Bluetooth:</translation>
@@ -1070,6 +1072,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="202352106777823113">La descarga estaba tardando demasiado y la red la ha detenido.</translation>
 <translation id="2024195579772565064">Eliminar buscador</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ha dejado de funcionar. Haz clic en este globo a para volver a cargar la extensión.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> está compartiendo una red Wi‑Fi contigo.</translation>
 <translation id="2028449514182362831">Las funciones que necesiten sensores de movimiento no se podrán utilizar</translation>
 <translation id="202918510990975568">Introduce tu contraseña para configurar la seguridad y el inicio de sesión</translation>
 <translation id="2030455719695904263">Panel táctil</translation>
@@ -2143,6 +2146,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3054766768827382232">Al inhabilitarla, tus periféricos funcionan mejor, pero puede que expongan tus datos personales mediante un uso no autorizado.</translation>
 <translation id="3055113921564083271">Intereses que has eliminado</translation>
 <translation id="3055590424724986000">Con el proveedor que elijas</translation>
+<translation id="3057660594186523687">No se ha recibido la configuración de red para <ph name="NETWORK_NAME" /> de <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en cualquier momento desde la configuración</translation>
 <translation id="3058517085907878899">Nombre del dispositivo</translation>
 <translation id="3059195548603439580">¿Buscas componentes del sistema? Visita</translation>
@@ -2568,6 +2572,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3507888235492474624">Volver a buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">No se han podido eliminar tus datos de inicio de sesión</translation>
 <translation id="3508920295779105875">Seleccionar otra carpeta...</translation>
+<translation id="3509379002674019679">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones.</translation>
 <translation id="3511200754045804813">Volver a buscar</translation>
 <translation id="3511307672085573050">Copiar dire&amp;cción de enlace</translation>
 <translation id="351152300840026870">Fuente de ancho fijo</translation>
@@ -5408,6 +5413,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6374469231428023295">Reintentar</translation>
 <translation id="6374635887697228982">¿Obtener descuentos?</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Abrir en Redes Wi‑Fi</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="6382616130475191723">Se ha permitido que lea y modifique <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">No hay accesos directos inactivos</translation>
@@ -5525,6 +5531,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="648927581764831596">Ningún medio disponible</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491376743066338510">Error de autorización</translation>
+<translation id="6492526860459984042">Recibiendo configuración de red para <ph name="NETWORK_NAME" /> de <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad emisora de certificados</translation>
 <translation id="6494974875566443634">Personalización</translation>
@@ -5784,6 +5791,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>
 <translation id="6758056191028427665">Envíanos tu opinión sobre nuestro servicio.</translation>
 <translation id="6759193508432371551">Restablecer estado de fábrica</translation>
+<translation id="6761431452438552910">Comprueba que tu dispositivo Bluetooth esté cerca y en modo de emparejamiento. Emparéjalo solo con dispositivos de confianza.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Activado</translation>
 <translation id="676560328519657314">Tus métodos de pago en Google Pay</translation>
@@ -6030,7 +6038,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6992554835374084304">Activa la revisión ortográfica mejorada</translation>
 <translation id="6993000214273684335">Pestaña quitada de grupo sin nombre (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6994069045767983299">Colores invertidos</translation>
-<translation id="6995899638241819463">Avisar si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
+<translation id="6995899638241819463">Avisarte si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
 <translation id="6998793565256476099">Registrar dispositivo para hacer videoconferencias</translation>

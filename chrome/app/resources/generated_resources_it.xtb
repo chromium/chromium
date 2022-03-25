@@ -466,6 +466,7 @@
 A questo account potrebbero essere applicate le autorizzazioni già concesse alle app. Puoi gestire le autorizzazioni relative alle app per Android nelle <ph name="APPS_LINK_BEGIN" />Impostazioni app<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Strumento Pennello</translation>
 <translation id="1449191289887455076">Premi di nuovo "<ph name="CURRENTKEY" />" per confermare l'assegnazione e <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Hai ricevuto la configurazione di rete per "<ph name="NETWORK_NAME" />" da <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Pagina web, singolo file</translation>
 <translation id="1453561711872398978">Invia <ph name="BEGIN_LINK" />log di debug<ph name="END_LINK" /> (opzione consigliata)</translation>
 <translation id="1454223536435069390">&amp;Acquisisci screenshot</translation>
@@ -996,6 +997,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1938351510777341717">Comando esterno</translation>
 <translation id="1940546824932169984">Dispositivi connessi</translation>
 <translation id="1941410638996203291">Ora di inizio: <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Versione: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Leggere e modificare tutti i tuoi dati su tutti i siti web</translation>
 <translation id="1942600407708803723">Spegni alla chiusura del coperchio</translation>
 <translation id="1944528062465413897">Codice di accoppiamento Bluetooth:</translation>
@@ -1070,6 +1072,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="202352106777823113">Il download stava richiedendo troppo tempo ed è stato interrotto dalla rete.</translation>
 <translation id="2024195579772565064">Elimina motore di ricerca</translation>
 <translation id="2025632980034333559">Arresto anomalo di <ph name="APP_NAME" />. Fai clic su questo fumetto per riavviare l'estensione.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> sta condividendo una rete Wi-Fi con te.</translation>
 <translation id="2028449514182362831">Le funzionalità che richiedono sensori di movimento non funzioneranno</translation>
 <translation id="202918510990975568">Inserisci la password per configurare sicurezza e accesso</translation>
 <translation id="2030455719695904263">Trackpad</translation>
@@ -2143,6 +2146,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3054766768827382232">La disattivazione può migliorare le prestazioni delle periferiche, ma può esporre i dati personali all'utilizzo non autorizzato.</translation>
 <translation id="3055113921564083271">Interessi rimossi</translation>
 <translation id="3055590424724986000">Con un fornitore scelto da te</translation>
+<translation id="3057660594186523687">Impossibile ricevere la configurazione di rete per "<ph name="NETWORK_NAME" />" da <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3058517085907878899">Nome del dispositivo</translation>
 <translation id="3059195548603439580">Stai cercando i componenti del sistema? Visita la pagina</translation>
@@ -2568,6 +2572,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3507888235492474624">Ripeti la ricerca di dispositivi Bluetooth</translation>
 <translation id="3508492320654304609">Impossibile eliminare i dati di accesso</translation>
 <translation id="3508920295779105875">Scegli un'altra cartella...</translation>
+<translation id="3509379002674019679">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app.</translation>
 <translation id="3511200754045804813">Ripeti scansione</translation>
 <translation id="3511307672085573050">Copia indir&amp;izzo link</translation>
 <translation id="351152300840026870">Carattere a larghezza fissa</translation>
@@ -5409,6 +5414,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6374469231428023295">Riprova</translation>
 <translation id="6374635887697228982">Vuoi ricevere sconti?</translation>
 <translation id="6377268785556383139">1 risultato per "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Apri nelle reti Wi-Fi</translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
 <translation id="6382616130475191723">Lettura e modifica del sito <ph name="SITE_NAME" /> consentite</translation>
 <translation id="6382958439467370461">Nessuna scorciatoia non attiva</translation>
@@ -5526,6 +5532,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="648927581764831596">Nessuno disponibile</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="6491376743066338510">Autorizzazione negata</translation>
+<translation id="6492526860459984042">Ricezione della configurazione di rete per "<ph name="NETWORK_NAME" />" da <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="6494327278868541139">Mostra dettagli della protezione avanzata</translation>
 <translation id="6494445798847293442">Non è un'autorità di certificazione</translation>
 <translation id="6494974875566443634">Personalizzazione</translation>
@@ -5785,6 +5792,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (In incognito)</translation>
 <translation id="6758056191028427665">Comunicaci la tua opinione sul nostro lavoro.</translation>
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
+<translation id="6761431452438552910">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">On</translation>
 <translation id="676560328519657314">I tuoi metodi di pagamento in Google Pay</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
 <translation id="2919738076569633423">Ако го користите Chrome, се согласувате со <ph name="BEGIN_LINK_TOS" />Условите за користење<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Google Chrome.</translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
+<translation id="3121002401028999199">За да се подобри апликацијата, Chrome испраќа извештаи за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Сметката не работи на Google Chrome. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
 <translation id="3173834708294760622">Страница на Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ви заштедува време со тоа што ви ги носи сметките на Интернет. Може да додавате или отстранувате сметки во „Поставки“.</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">Вашата лозинка е откриена при упад во податоци. Chrome ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="7693590760643069321">Сега може да го користите Chrome секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="7698568245838009292">Chrome би сакал да пристапи до камерата</translation>
+<translation id="7780154209050837198">За да го извлечете максимумот од Chrome, најавете се на Chrome со вашата сметка на Google.</translation>
 <translation id="7855730255114109580">Google Chrome е ажуриран</translation>
 <translation id="8022947259858476807">Користете го Chrome како стандарден прелистувач за отворање линкови, пребарување од виџети и автоматско пополнување лозинки во другите апликации</translation>
 <translation id="8160472928944011082">Chrome не може да се ажурира</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">Останете безбедни со Google Chrome</translation>
 <translation id="8772179140489533211">Прикажува prompt за најава на Chrome.</translation>
 <translation id="8788269841521769222">Не треба да ја помните лозинкава. Ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Ако го користите Chrome, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Да се постави Chrome како стандарден?</translation>
 <translation id="9122931302567044771">Ова значи дека Chrome ќе го бара сајтот за компјутер секој пат.</translation>
 </translationbundle>

@@ -467,6 +467,7 @@
 Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer à ce compte. Vous pouvez contrôler les autorisations pour les applis Android dans <ph name="APPS_LINK_BEGIN" />Paramètres des applications<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Outil Pinceau</translation>
 <translation id="1449191289887455076">Appuyez de nouveau sur <ph name="CURRENTKEY" /> pour confirmer cette association et <ph name="RESPONSE" /></translation>
+<translation id="1450646399865399771">Configuration du réseau "<ph name="NETWORK_NAME" />" provenant de <ph name="DEVICE_NAME" /> reçue</translation>
 <translation id="1451375123200651445">Page Web, un seul fichier</translation>
 <translation id="1453561711872398978">Envoyer les <ph name="BEGIN_LINK" />journaux de débogage<ph name="END_LINK" /> (recommandé)</translation>
 <translation id="1454223536435069390">F&amp;aire une capture d'écran</translation>
@@ -997,6 +998,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1938351510777341717">Commande externe</translation>
 <translation id="1940546824932169984">Appareils connectés</translation>
 <translation id="1941410638996203291">Heure de début : <ph name="TIME" /></translation>
+<translation id="1941553344801134989">Version : <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Lire et modifier toutes vos données sur tous les sites Web</translation>
 <translation id="1942600407708803723">Éteindre lorsque l'appareil est refermé</translation>
 <translation id="1944528062465413897">Code d'association Bluetooth :</translation>
@@ -1071,6 +1073,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="202352106777823113">Le téléchargement a été trop long et a été interrompu par le réseau.</translation>
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> a planté. Cliquez sur cette info-bulle pour actualiser l'extension.</translation>
+<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> partage un réseau Wi-Fi avec vous.</translation>
 <translation id="2028449514182362831">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ne seront pas disponibles</translation>
 <translation id="202918510990975568">Saisissez votre mot de passe pour configurer la sécurité et la connexion</translation>
 <translation id="2030455719695904263">Pavé tactile</translation>
@@ -2144,6 +2147,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3054766768827382232">Vous pourrez améliorer les performances de vos périphériques, mais vos données à caractère personnel risquent d'être divulguées via une utilisation non autorisée.</translation>
 <translation id="3055113921564083271">Centres d'intérêt que vous avez supprimés</translation>
 <translation id="3055590424724986000">Avec un fournisseur de votre choix</translation>
+<translation id="3057660594186523687">Échec de la réception de la configuration du réseau "<ph name="NETWORK_NAME" />" provenant de <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3058517085907878899">Nommer l'appareil</translation>
 <translation id="3059195548603439580">Vous recherchez des composants du système ? Accédez à la page</translation>
@@ -2260,7 +2264,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3183944777708523606">Mode d'affichage du moniteur</translation>
 <translation id="3184536091884214176">Configurer ou gérer des imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette appli est bloquée}one{Cette appli est bloquée}other{Certaines applis sont bloquées}}</translation>
-<translation id="3187472288455401631">API Ad measurement</translation>
+<translation id="3187472288455401631">Mesure des performances des annonces</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne glissante</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
@@ -2569,6 +2573,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
 <translation id="3508920295779105875">Choisir un autre dossier...</translation>
+<translation id="3509379002674019679">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis.</translation>
 <translation id="3511200754045804813">Nouvelle recherche</translation>
 <translation id="3511307672085573050">Copier l'adr&amp;esse du lien</translation>
 <translation id="351152300840026870">Police à largeur fixe</translation>
@@ -5411,6 +5416,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374635887697228982">Obtenir des remises ?</translation>
 <translation id="6377268785556383139">1 résultat pour "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6378392501584240055">Ouvrir la liste des réseaux Wi-Fi</translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
 <translation id="6382616130475191723">Autorisées à consulter et modifier <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Aucun raccourci inactif</translation>
@@ -5528,6 +5534,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="648927581764831596">Aucun média disponible</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
+<translation id="6492526860459984042">Réception de la configuration du réseau "<ph name="NETWORK_NAME" />" provenant de <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Afficher les détails de la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6494974875566443634">Personnalisation</translation>
@@ -5787,6 +5794,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
 <translation id="6758056191028427665">Faites-nous part de vos commentaires.</translation>
 <translation id="6759193508432371551">Rétablir la configuration d'usine</translation>
+<translation id="6761431452438552910">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance.</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6762833852331690540">Activé</translation>
 <translation id="676560328519657314">Vos modes de paiement dans Google Pay</translation>

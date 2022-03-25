@@ -2437,6 +2437,7 @@
 <translation id="3390013585654699824">ആപ്പ് വിശദാംശങ്ങൾ</translation>
 <translation id="3391512812407811893">സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ് ട്രയലുകൾ</translation>
 <translation id="3393554941209044235">Chrome ഡോക്യുമെന്റ് അനാലിസിസ്</translation>
+<translation id="3393582007140394275">സ്ക്രീൻ കാസ്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="3394850431319394743">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിന് ഐഡന്റിഫയറുകൾ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="3396744558790608201">വെബിൽ ബ്രൗസ് ചെയ്യുമ്പോഴും ഷോപ്പ് ചെയ്യുമ്പോഴും നിങ്ങൾ കാണുന്ന വിഷ്വൽ ഉള്ളടക്കത്തെക്കുറിച്ച് കൂടുതലറിയാൻ സൈറ്റിന്റെ ഏതെങ്കിലും ഭാഗം തിരയുന്നതിന്, വലത്-ക്ലിക്ക് ചെയ്ത ശേഷം “Google Lens ഉപയോഗിച്ച് ചിത്രങ്ങൾ തിരയുക” തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3396800784455899911">"അംഗീകരിച്ച് തുടരുക" ബട്ടൺ ക്ലിക്ക് ചെയ്യുക വഴി, ഈ Google സേവനങ്ങൾക്കായി മുകളിൽ വിവരിച്ചിട്ടുള്ള പ്രോസസിംഗിന് നിങ്ങൾ സമ്മതിക്കുകയാണ്.</translation>
@@ -2830,6 +2831,7 @@
 <translation id="3753033997400164841">ഒരു തവണ സംഭരിക്കൂ. എല്ലായിടത്തും ഉപയോഗിക്കൂ</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> എന്നതിന് ഇപ്പോൾ <ph name="DEVICE_TYPE" /> എന്നതും അൺലോക്ക് ചെയ്യാനാവും.</translation>
 <translation id="375636864092143889">സൈറ്റ് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
+<translation id="3756485814916578707">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3756578970075173856">പിൻ സജ്ജീകരിക്കുക</translation>
 <translation id="3756795331760037744">സഹായിക്കുന്നതിന് <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിയുടെ സ്ക്രീനിലെ വിവരങ്ങൾ ഉപയോഗിക്കാൻ Google Assistant-നെ അനുവദിക്കുക</translation>
 <translation id="3757733214359997190">സൈറ്റുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -3988,6 +3990,7 @@
 <translation id="4924002401726507608">ഫീഡ്‌ബാക്ക് സമർപ്പിക്കുക</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">നിങ്ങളുടെ പോർട്ടുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
+<translation id="49265687513387605">സ്ക്രീൻ കാസ്‌റ്റ് ചെയ്യാനാകുന്നില്ല.  നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടാനുള്ള നിർദ്ദേശം സ്ഥിരീകരിച്ചിട്ടുണ്ടോ എന്ന് മനസ്സിലാക്കാൻ പരിശോധിക്കുക.</translation>
 <translation id="4927753642311223124">ഇവിടെ കാണുന്നതിനായി ഒന്നുമില്ല, തുടരുക.</translation>
 <translation id="4929386379796360314">പ്രിന്റ് ചെയ്യുന്നതിനുള്ള ലക്ഷ്യകേന്ദ്രങ്ങൾ</translation>
 <translation id="4930447554870711875">ഡെവലപ്പർമാർ</translation>
@@ -4101,6 +4104,7 @@
 <translation id="5052499409147950210">സൈറ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="505347685865235222">പേരില്ലാത്ത ഗ്രൂപ്പ് - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens-ലൂടെ ചിത്രം തിരയൂ</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome ഇഷ്‌ടാനുസൃതമാക്കുക<ph name="END_LINK" /> എന്നതിൽ എല്ലാ കാർഡ് ഓപ്ഷനുകളും കാണുക</translation>
 <translation id="5056950756634735043">കണ്ടെയ്‌നറിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="5057110919553308744">നിങ്ങൾ വിപുലീകരണം ക്ലിക്ക് ചെയ്യുമ്പോൾ</translation>
 <translation id="505776528429481161">സമീപമുള്ള ഉപകരണങ്ങൾ എളുപ്പത്തിൽ കണക്റ്റ് ചെയ്ത് സജ്ജീകരിക്കുക</translation>
@@ -5495,6 +5499,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> പൂർത്തിയായി</translation>
 <translation id="645286928527869380">റെസിപ്പി ആശയങ്ങൾ</translation>
 <translation id="6452961788130242735">നെറ്റ്‌വർക്ക് പ്രശ്‌നം അല്ലെങ്കിൽ മോശം മേഖല</translation>
+<translation id="6453191633103419909">ടാബ്/സ്ക്രീൻ പ്രൊജക്ഷൻ നിലവാരം</translation>
 <translation id="6453921811609336127">അടുത്ത ഇൻപുട്ട് രീതിയിലേക്ക് മാറാൻ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> അമർത്തുക</translation>
 <translation id="6455264371803474013">നിർദിഷ്‌ട സൈറ്റുകളിൽ</translation>
 <translation id="6455894534188563617">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>
@@ -7805,6 +7810,7 @@
 <translation id="8779944680596936487">സൈറ്റുകൾക്ക് അവരുടെ സ്വന്തം സൈറ്റിലെ നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി കാണാൻ മാത്രമേ കുക്കികൾ ഉപയോഗിക്കാനാകൂ</translation>
 <translation id="8780123805589053431">Google-ൽ നിന്ന് ചിത്ര വിവരണങ്ങൾ നേടുക</translation>
 <translation id="8780443667474968681">ശബ്‌ദ തിരയൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
+<translation id="8780872768304638315">ഇനിപ്പറയുന്നതിലേക്ക് സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="8781834595282316166">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="8782565991310229362">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യൽ റദ്ദാക്കി.</translation>
 <translation id="8783526165720272136">സന്ദേശമയയ്‌ക്കൽ ആപ്പുകൾ</translation>

@@ -2438,6 +2438,7 @@
 <translation id="3390013585654699824">รายละเอียดแอป</translation>
 <translation id="3391512812407811893">ทดลองใช้ Privacy Sandbox</translation>
 <translation id="3393554941209044235">การวิเคราะห์เอกสารของ Chrome</translation>
+<translation id="3393582007140394275">แคสต์หน้าจอไม่ได้</translation>
 <translation id="3394850431319394743">ได้รับอนุญาตให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="3396744558790608201">คลิกขวาแล้วเลือก "ค้นหารูปภาพด้วย Google Lens" เพื่อค้นหาภูมิภาคของเว็บไซต์หากต้องการดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาภาพที่คุณเห็นขณะเรียกดูและเลือกซื้อในเว็บ</translation>
 <translation id="3396800784455899911">การคลิกปุ่ม "ยอมรับและดำเนินการต่อ" แสดงว่าคุณยอมรับการดำเนินการของบริการต่างๆ ของ Google ตามที่ชี้แจ้งไว้ด้านบน</translation>
@@ -2830,6 +2831,7 @@
 <translation id="3753033997400164841">บันทึกครั้งเดียว แล้วใช้ได้ทุกที่</translation>
 <translation id="3755411799582650620">ขณะนี้ <ph name="PHONE_NAME" /> สามารถปลดล็อก <ph name="DEVICE_TYPE" /> ได้เช่นกัน</translation>
 <translation id="375636864092143889">เว็บไซต์กำลังใช้ไมโครโฟนของคุณ</translation>
+<translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
 <translation id="3756578970075173856">ตั้ง PIN</translation>
 <translation id="3756795331760037744">อนุญาตให้ Google Assistant ใช้ข้อมูลบนหน้าจอของ <ph name="SUPERVISED_USER_NAME" /> เพื่อให้ความช่วยเหลือ</translation>
 <translation id="3757733214359997190">ไม่พบเว็บไซต์</translation>
@@ -3989,6 +3991,7 @@
 <translation id="4924002401726507608">ส่งความคิดเห็น</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">พอร์ตจะแสดงที่นี่</translation>
+<translation id="49265687513387605">แคสต์หน้าจอไม่ได้ โปรดตรวจสอบว่าได้ยืนยันในข้อความเตือนแล้วเพื่อเริ่มแชร์หน้าจอ</translation>
 <translation id="4927753642311223124">ที่นี่ไม่มีอะไรต้องดู ไปต่อได้</translation>
 <translation id="4929386379796360314">ปลายทางของการพิมพ์</translation>
 <translation id="4930447554870711875">นักพัฒนาซอฟต์แวร์</translation>
@@ -4102,6 +4105,7 @@
 <translation id="5052499409147950210">แก้ไขเว็บไซต์</translation>
 <translation id="505347685865235222">กลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">ค้นหาภาพด้วย Google Lens</translation>
+<translation id="5054374119096692193">ดูตัวเลือกการ์ดทั้งหมดใน<ph name="BEGIN_LINK" />ปรับแต่ง Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">กำลังเชื่อมต่อกับคอนเทนเนอร์</translation>
 <translation id="5057110919553308744">เมื่อคุณคลิกส่วนขยาย</translation>
 <translation id="505776528429481161">เชื่อมต่อและตั้งค่าอุปกรณ์ที่อยู่ใกล้ๆ ได้โดยง่าย</translation>
@@ -5494,6 +5498,7 @@
 <translation id="6452251728599530347">สมบูรณ์แล้ว <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">ไอเดียสูตรอาหาร</translation>
 <translation id="6452961788130242735">พบปัญหาเกี่ยวกับเครือข่ายหรือขอบเขตไม่ดี</translation>
+<translation id="6453191633103419909">คุณภาพการฉายภาพของแท็บ/หน้าจอ</translation>
 <translation id="6453921811609336127">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
@@ -7805,6 +7810,7 @@
 <translation id="8779944680596936487">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณเฉพาะในเว็บไซต์นั้นๆ</translation>
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>
+<translation id="8780872768304638315">ไม่สามารถบันทึกลงใน</translation>
 <translation id="8781834595282316166">แท็บใหม่ในกลุ่ม</translation>
 <translation id="8782565991310229362">การเรียกใช้แอปพลิเคชันคีออสก์ถูกยกเลิก</translation>
 <translation id="8783526165720272136">แอปรับส่งข้อความ</translation>

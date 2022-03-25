@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2919738076569633423">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK_TOS" />Termos de Serviço<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
+<translation id="3121002401028999199">Para ajudar a melhorar o app, o Chrome envia relatórios de uso e de erros ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Sua conta não funciona no Google Chrome. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
 <translation id="3196546062792660320">O Chrome permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
@@ -108,6 +110,7 @@ Considerações:
 <translation id="766361182512894255">Sua senha foi exposta em uma violação de dados. Por recomendação do Chrome, mude a senha imediatamente.</translation>
 <translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
+<translation id="7780154209050837198">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
@@ -125,6 +128,7 @@ Considerações:
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
+<translation id="9064404358728865190">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 </translationbundle>

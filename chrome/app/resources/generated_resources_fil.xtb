@@ -2460,6 +2460,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3390013585654699824">Mga detalye ng app</translation>
 <translation id="3391512812407811893">Mga trial ng Privacy Sandbox</translation>
 <translation id="3393554941209044235">Pagsusuri ng Chrome sa Dokumento</translation>
+<translation id="3393582007140394275">Hindi ma-cast ang screen.</translation>
 <translation id="3394850431319394743">Pinapayagang gumamit ng mga identifier para mag-play ng pinoprotektahang content</translation>
 <translation id="3396744558790608201">Mag-right click at piliin ang “Maghanap ng mga larawan gamit ang Google Lens” para hanapin ang anumang bahagi ng site at matuto pa tungkol sa visual na content na nakikita mo habang nagba-browse at namimili ka sa web.</translation>
 <translation id="3396800784455899911">Sa pamamagitan ng pag-click sa button na "Tanggapin at magpatuloy," sumasang-ayon ka sa pagpoproseso na inilarawan sa itaas para sa mga serbisyong ito ng Google.</translation>
@@ -2854,6 +2855,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3753033997400164841">I-store nang isang beses. Gamitin kahit saan</translation>
 <translation id="3755411799582650620">Maaari na rin ngayong i-unlock ng iyong <ph name="PHONE_NAME" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="375636864092143889">Ginagamit ng site ang iyong mikropono</translation>
+<translation id="3756485814916578707">Kina-cast ang screen</translation>
 <translation id="3756578970075173856">Magtakda ng PIN</translation>
 <translation id="3756795331760037744">Payagan ang Google Assistant na gamitin ang impormasyon tungkol sa screen ni <ph name="SUPERVISED_USER_NAME" /> para makatulong</translation>
 <translation id="3757733214359997190">Walang nakitang site</translation>
@@ -4019,6 +4021,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4924002401726507608">Magsumite ng Feedback</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Lalabas dito ang iyong mga port</translation>
+<translation id="49265687513387605">Hindi ma-cast ang screen. Tingnan kung nakumpirma mo ang prompt para simulan ang pagbabahagi ng iyong screen.</translation>
 <translation id="4927753642311223124">Walang makikita rito, magpatuloy.</translation>
 <translation id="4929386379796360314">Mga Destinasyon sa Pag-print</translation>
 <translation id="4930447554870711875">Mga Developer</translation>
@@ -4134,6 +4137,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5052499409147950210">I-edit ang site</translation>
 <translation id="505347685865235222">Grupong walang pangalan - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Hanapin gamit ang Google Lens</translation>
+<translation id="5054374119096692193">Tingnan ang lahat ng opsyon sa card sa <ph name="BEGIN_LINK" />I-customize ang Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Kumokonekta sa container</translation>
 <translation id="5057110919553308744">Kapag iki-click mo ang extension</translation>
 <translation id="505776528429481161">Kumonekta at mag-set up ng malalapit na device nang walang kahirap-hirap</translation>
@@ -5531,6 +5535,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6452251728599530347"><ph name="PERCENT" /> kumpleto</translation>
 <translation id="645286928527869380">Mga ideya sa recipe</translation>
 <translation id="6452961788130242735">May problema sa network o sira ang realm</translation>
+<translation id="6453191633103419909">Kalidad ng Pag-project ng Tab/Screen</translation>
 <translation id="6453921811609336127">Para lumipat sa susunod na pamamaraan ng pag-input, pindutin ang <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Sa mga partikular na site</translation>
 <translation id="6455894534188563617">&amp;Bagong Folder</translation>
@@ -7825,7 +7830,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8750155211039279868">Gustong kumonekta ng <ph name="ORIGIN" /> sa isang serial port</translation>
 <translation id="8750346984209549530">Cellular APN</translation>
 <translation id="8752451679755290210">Awtomatikong magpalipat-lipat sa mga item</translation>
-<translation id="8753394285382137786">Mga Tab ng Media sa Paghahanap sa Tab</translation>
 <translation id="8753868764580670305">Tingnan at pamahalaan ang mga password na naka-save sa device na ito</translation>
 <translation id="8753948258138515839">Nagbibigay ang Files app ng mabilisang access sa mga file na na-save mo sa Google Drive, external na storage, o sa iyong ChromeOS Flex device.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kapag pinapatakbo ang <ph name="PRODUCT_NAME" /> sa isang sinusuportahang desktop environment, gagamitin ang mga setting ng proxy ng system.  Gayunpaman, hindi sinusuportahan ang iyong system o nagkaroon ng problema sa paglulunsad ng configuration ng iyong system.&lt;/p&gt;
@@ -7860,6 +7864,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8779944680596936487">Magagamit lang ng mga site ang cookies para makita ang iyong aktibidad sa pag-browse sa sarili nilang site</translation>
 <translation id="8780123805589053431">Kumuha ng mga paglalarawan ng larawan mula sa Google</translation>
 <translation id="8780443667474968681">Na-off na ang paghahanap gamit ang boses.</translation>
+<translation id="8780872768304638315">Hindi na-save sa</translation>
 <translation id="8781834595282316166">Bagong Tab sa Grupo</translation>
 <translation id="8782565991310229362">Kinansela ang paglulunsad sa kiosk application.</translation>
 <translation id="8783526165720272136">Mga app sa pagmemensahe</translation>

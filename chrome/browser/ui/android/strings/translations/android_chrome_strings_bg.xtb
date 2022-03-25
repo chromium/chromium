@@ -49,6 +49,7 @@
 <translation id="1239792311949352652">Бързо споделяне на страницата. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="1240190568154816272">Съвети за Chrome</translation>
 <translation id="1240288207750131269">Зарежда се <ph name="LANG" /></translation>
+<translation id="1240903469550363138">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />общите условия<ph name="END_LINK2" /> на сайта.</translation>
 <translation id="1242883863226959074">устройството</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1246905108078336582">Искате ли да премахнете предложението от буферната памет?</translation>
@@ -170,11 +171,11 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
+<translation id="1995884366040846621">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
-<translation id="2019145049163614359">Да се премахне ли интересът?</translation>
 <translation id="2020309681647789787">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства и ще можете да продължите това, което сте правили</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
@@ -722,7 +723,6 @@
 <translation id="5091199029769593641">Скоро ще виждате материали от <ph name="SITE_NAME" />, когато отворите нов раздел. Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
 <translation id="5091249083535528968">Разширени данни за употребата</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
-<translation id="5098190077610408701">Да се добави ли интересът?</translation>
 <translation id="5102401324271069229">Ако сайт се опита да открадне паролата ви или ако изтеглите опасен файл, Chrome може да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
 <translation id="510275257476243843">Остава 1 час</translation>
 <translation id="5115811374190515607">до <ph name="PRODUCT_NAME" /></translation>

@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2346474577291266260">შესანიშნავი (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">ეკრანმზოგის ვარიანტების ასარჩევად ჩართეთ ეს ფუნქცია</translation>
 <translation id="2364498172489649528">გავლილია</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">შეწყვეტილია</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ფოტო</translation>
+<translation id="4793710386569335688">დამატებითი დახმარებისთვის გადადით <ph name="BEGIN_LINK" />დახმარების ცენტრზე<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">შეკუმშვის ალგორითმი</translation>
 <translation id="4794140124556169553">CPU-ს ტესტის გაშვება, შესაძლოა, აისახოს სისტემის წარმადობაზე</translation>
 <translation id="4808449224298348341">ბეჭდვის დავალება გაუქმდა <ph name="DOCUMENT_TITLE" />-ისთვის</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ოჯახი</translation>
+<translation id="5695599963893094957">აკრიფეთ ნებისმიერი კლავიში თქვენს კლავიატურაზე. ერთდროულად მაქსიმუმ 4 კლავიშზე დაჭერა შეგიძლიათ.</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ის <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109">განახლდეს <ph name="DEVICE_NAME" /></translation>
@@ -449,6 +452,7 @@
 <translation id="6106186594183574873">დასასრულებლად შეიყვანეთ თქვენი ძველი პაროლი</translation>
 <translation id="6108689792487843350">გეითვეი მიუწვდომელია</translation>
 <translation id="6113701710518389813">ისარი ზემოთ</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> სხვა ალბომი</translation>
 <translation id="6122191549521593678">ონლაინ</translation>
 <translation id="6137767437444130246">მომხმარებლის სერტიფიკატი</translation>
 <translation id="6146993107019042706">დასასრულებლად შეიყვანეთ თქვენი ახალი პაროლი</translation>
@@ -472,6 +476,7 @@
 <translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
+<translation id="6381741036071372448">შეამოწმეთ თქვენი კლავიატურა</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>

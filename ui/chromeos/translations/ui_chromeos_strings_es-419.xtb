@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Guardando una copia de seguridad de <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Quitar la excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentación de Google</translation>
+<translation id="4277536868133419688">El filtro <ph name="FILTER_NAME" /> está activado.</translation>
 <translation id="4290535918735525311">Se compartió 1 carpeta con Linux</translation>
 <translation id="4299729908419173967">Brasileño</translation>
 <translation id="4302605047395093221">La persona que use este dispositivo deberá ingresar el PIN para conectarse a esta red móvil.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Más...</translation>
 <translation id="4579744207439506346">Se agregó <ph name="ENTRY_NAME" /> a la selección.</translation>
 <translation id="4594543368593301662">Se muestran los resultados de <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Se restableció el filtro.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">Se está instalando el perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5473333559083690127">Vuelve a ingresar el PIN nuevo</translation>
 <translation id="5489067830765222292">Letón</translation>
+<translation id="5489965683297092283">El filtro <ph name="FILTER_NAME" /> está desactivado.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>

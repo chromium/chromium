@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Nangangahulugan itong hihilingin ng Chromium ang pang-mobile na site sa lahat ng pagkakataon.</translation>
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1257458525759135959">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chromium na magdagdag sa iyong mga larawan</translation>
+<translation id="1266817106503861676">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium.</translation>
 <translation id="1289216811211435351">Lumipat sa Chromium</translation>
 <translation id="1361748954329991663">Luma na ang Chromium. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chromium.</translation>
 <translation id="1431818719585918472">Payagan ang Chromium na i-lock ang iyong mga tab na Incognito.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Kinopya sa Chromium</translation>
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
+<translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3650632991272923014">Ginamit ni <ph name="USER_EMAIL1" /> ang Chromium at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
@@ -84,6 +86,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
+<translation id="6364764337654495917">Sa pamamagitan ng paggamit ng Chromium, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6752854822223394465">Sine-set up ng iyong organisasyon ang Chromium...</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
@@ -104,6 +107,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="7400689562045506105">Gamitin ang Chromium Kahit Saan</translation>
 <translation id="766897673682622022">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
 <translation id="7674213385180944843">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Chromium at i-on ang camera.</translation>
+<translation id="7724877991918731397">Para tumulong na pahusayin ang app, nagpapadala ang Chromium ng mga ulat ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Tip sa Chromium. Nasa ibaba na ng iyong screen ang ilang button, tulad ng Bumalik, Susunod, at Maghanap.</translation>
 <translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="786327964234957808">Pinapalitan mo ang mga sync account mula sa <ph name="USER_EMAIL1" /> patungo sa <ph name="USER_EMAIL2" />. Ang iyong data ng Chromium ay pinamamahalaan ng <ph name="DOMAIN" />. Ide-delete nito ang iyong data mula sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>

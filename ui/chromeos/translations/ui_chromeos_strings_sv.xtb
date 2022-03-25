@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Säkerhetskopierar <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Ta bort undantag för <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentation i Google Dokument</translation>
+<translation id="4277536868133419688">Filtret <ph name="FILTER_NAME" /> är på.</translation>
 <translation id="4290535918735525311">1 mapp delas med Linux</translation>
 <translation id="4299729908419173967">brasilianska</translation>
 <translation id="4302605047395093221">Alla som använder enheten måste ange pinkoden innan de kan ansluta till det här mobilnätverket.</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Mer...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> har lagts till som markerad.</translation>
 <translation id="4594543368593301662">Visar resultat för <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filtret har återställts.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopieras till <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Installerar mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -529,6 +531,7 @@
 <translation id="5469868506864199649">italienska</translation>
 <translation id="5473333559083690127">Ange ny pinkod igen</translation>
 <translation id="5489067830765222292">lettiska</translation>
+<translation id="5489965683297092283">Filtret <ph name="FILTER_NAME" /> är av.</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5500122897333236901">isländska</translation>
 <translation id="5508696409934741614">Punkter</translation>

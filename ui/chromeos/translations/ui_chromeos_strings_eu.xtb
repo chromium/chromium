@@ -367,6 +367,7 @@
 <translation id="4215448920900139318">Hauen babeskopia egiten: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Kendu <ph name="HOST_NAME" /> webgunearen salbuespena</translation>
 <translation id="4261901459838235729">Google aurkezpena</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" /> iragazkia aktibo dago.</translation>
 <translation id="4290535918735525311">Karpeta bat partekatu da Linux erabilita</translation>
 <translation id="4299729908419173967">Brasildarra</translation>
 <translation id="4302605047395093221">Gailua erabiltzen duten guztiek PINa idatzi beharko dute gailua sare mugikorrera konektatzeko</translation>
@@ -406,6 +407,7 @@
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4579744207439506346">Gehitu da <ph name="ENTRY_NAME" /> hautapenean.</translation>
 <translation id="4594543368593301662">"<ph name="SEARCH_TERM" />" bilaketaren emaitzak daude ikusgai.</translation>
+<translation id="4599600860674643278">Berrezarri da iragazkia.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetan kopiatzen</translation>
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +530,7 @@
 <translation id="5469868506864199649">Italiarra</translation>
 <translation id="5473333559083690127">Idatzi berriro PINa</translation>
 <translation id="5489067830765222292">Letoniarra</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" /> iragazkia inaktibo dago.</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5500122897333236901">Islandiarra</translation>
 <translation id="5508696409934741614">Puntuak</translation>

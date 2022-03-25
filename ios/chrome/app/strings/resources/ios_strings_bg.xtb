@@ -538,7 +538,6 @@
 <translation id="5896576662943111387">Браузър, създаден за iOS</translation>
 <translation id="5897956970858271241">Отваряне на копираната връзка</translation>
 <translation id="5899314093904173337">За да споделите с хората в близост, те трябва да сканират този QR код с камерата си или с приложение за целта</translation>
-<translation id="5902639236448164449">Управлявайте разрешенията за <ph name="URL" />. Те ще бъдат нулирани, когато затворите раздела.</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5913600720976431809">Опции за превод на страницата</translation>
 <translation id="5938160824633642847">Хранилището на устройството ви е почти пълно. Освободете място и опитайте отново.</translation>
@@ -630,6 +629,7 @@
 <translation id="650279896687777322">Научете повече...</translation>
 <translation id="651505212789431520">Да се анулира ли синхронизирането? Можете да го включите по всяко време в „Настройки“.</translation>
 <translation id="6524918542306337007">Режимът „инкогнито“ не е налице</translation>
+<translation id="6530992499366869131">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>

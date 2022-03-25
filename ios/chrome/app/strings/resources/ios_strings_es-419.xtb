@@ -538,7 +538,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897956970858271241">Visitar el vínculo copiado</translation>
 <translation id="5899314093904173337">Para habilitar el uso compartido con personas cercanas, permíteles que escaneen este código QR con la cámara o una app de lectura de código QR</translation>
-<translation id="5902639236448164449">Administra los permisos de sitios de <ph name="URL" />. Estos permisos se restablecerán cuando cierres la pestaña.</translation>
 <translation id="5911030830365207728">Google Traductor</translation>
 <translation id="5913600720976431809">Opciones para traducir la página</translation>
 <translation id="5938160824633642847">El dispositivo está casi lleno. Libera espacio y vuelve a intentarlo.</translation>
@@ -630,6 +629,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="650279896687777322">Más información…</translation>
 <translation id="651505212789431520">¿Quieres cancelar la sincronización? Puedes activarla en la Configuración en cualquier momento.</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
+<translation id="6530992499366869131">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="6537746030088321027">ejemplo.com</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>

@@ -176,7 +176,6 @@
 <translation id="200114059308480249">Google'да издегенде көбүрөөк текст камтылсынбы?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз. <ph name="BEGIN_LINK3" />Купуялык саясаты<ph name="END_LINK3" /> да колдонулат.</translation>
-<translation id="2019145049163614359">Кызыккан нерсени өчүрөсүзбү?</translation>
 <translation id="2020309681647789787">Бардык шайкештирилген түзмөктөрүңүздө таржымал күйгүзүлөт, андыктан ишиңизди токтогон жериңизден уланта аласыз</translation>
 <translation id="2021896219286479412">Сайтты толук экран режиминде көзөмөлдөө</translation>
 <translation id="2038563949887743358">Иш тактасынын сайтындагы суроо-талапты күйгүзүү</translation>
@@ -724,7 +723,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5091199029769593641">Жакында жаңы өтмөктү ачкан сайын, <ph name="SITE_NAME" /> окуяларын көрүп турасыз. Сиз жазылган сайттар Google аккаунтуңузда сакталат. Аларды Сунуштардын жөндөөлөрүнөн башкара аласыз.</translation>
 <translation id="5091249083535528968">Кеңейтилген колдонуу статистикасы</translation>
 <translation id="509429900233858213">Ката кетти.</translation>
-<translation id="5098190077610408701">Кызыккан нерсеңизди кошосузбу?</translation>
 <translation id="5102401324271069229">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chrome URL даректерди, анын ичинде барактардагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
 <translation id="510275257476243843">1 саат калды</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>

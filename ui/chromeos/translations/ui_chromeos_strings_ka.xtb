@@ -367,6 +367,7 @@
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> კოპირდება სარეზერვო საცავში</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ისთვის გამონაკლისის ამოშლა</translation>
 <translation id="4261901459838235729">Google პრეზენტაცია</translation>
+<translation id="4277536868133419688">ფილტრი <ph name="FILTER_NAME" /> ჩართულია.</translation>
 <translation id="4290535918735525311">1 საქაღალდე გაზიარებულია Linux-თან</translation>
 <translation id="4299729908419173967">ბრაზილიური</translation>
 <translation id="4302605047395093221">ამ მობილურ ქსელთან დასაკავშირებლად მოწყობილობის ყველა მომხმარებელს მოუწევს PIN-კოდის შეყვანა</translation>
@@ -385,6 +386,7 @@
 <translation id="4387004326333427325">ავთენტიფიკაციის სერტიფიკატი დისტანციურად უარყოფილი იქნა</translation>
 <translation id="4394214039309501350">გარე ბმული</translation>
 <translation id="4401287888955153199">ყველას ამოღება</translation>
+<translation id="4410695710508688828">ამოღების ოპერაცია ვერ შესრულდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">შექმენით თქვენი ფაილების მალსახმობი</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4439427728133035643">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
@@ -406,6 +408,7 @@
 <translation id="457386861538956877">მეტი…</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> დაემატა არჩეულს.</translation>
 <translation id="4594543368593301662">ნაჩვენებია შედეგები მოთხოვნაზე „<ph name="SEARCH_TERM" />“.</translation>
+<translation id="4599600860674643278">ფილტრი გადაყენებულია.</translation>
 <translation id="4603392156942865207">მიმდინარეობს „<ph name="FILE_NAME" />“-ის კოპირება „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="4631887759990505102">შემსრულებელი</translation>
 <translation id="4642769377300286600">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -528,6 +531,7 @@
 <translation id="5469868506864199649">იტალიური</translation>
 <translation id="5473333559083690127">ხელახლა შეიყვანეთ ახალი PIN-კოდი</translation>
 <translation id="5489067830765222292">ლატვიური</translation>
+<translation id="5489965683297092283">ფილტრი <ph name="FILTER_NAME" /> გამორთულია.</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5500122897333236901">ისლანდიური</translation>
 <translation id="5508696409934741614">წერტილები</translation>
