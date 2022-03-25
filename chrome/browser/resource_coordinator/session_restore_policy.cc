@@ -30,15 +30,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #endif
 
 namespace resource_coordinator {
@@ -206,15 +204,14 @@ void TabDataAccess::SetUsedInBgFromSiteData(
   if (!tab_data->is_pinned && reader_data.updates_title_in_bg)
     used_in_bg = true;
 
-  const GURL last_committed_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(contents);
-  auto notif_permission =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))
-          ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                last_committed_origin, last_committed_origin);
-  if (notif_permission.content_setting == CONTENT_SETTING_ALLOW)
+  content::PermissionController* permission_controller =
+      contents->GetBrowserContext()->GetPermissionController();
+
+  if (permission_controller->GetPermissionStatusForCurrentDocument(
+          content::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED) {
     used_in_bg = true;
+  }
 
   tab_data->used_in_bg = used_in_bg;
 }

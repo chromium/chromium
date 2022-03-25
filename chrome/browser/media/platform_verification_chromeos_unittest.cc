@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,8 @@ class PlatformVerificationChromeOSTest
     : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    profile()->SetPermissionControllerDelegate(
+        permissions::GetPermissionControllerDelegate(profile()));
     NavigateAndCommit(GetTestURL());
   }
 };

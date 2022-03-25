@@ -9,9 +9,9 @@
 
 namespace content {
 
-MockPermissionManager::MockPermissionManager() {}
+MockPermissionManager::MockPermissionManager() = default;
 
-MockPermissionManager::~MockPermissionManager() {}
+MockPermissionManager::~MockPermissionManager() = default;
 
 void MockPermissionManager::RequestPermission(
     PermissionType permission,

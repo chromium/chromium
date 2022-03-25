@@ -26,6 +26,7 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/cookie_store.h"
@@ -407,6 +408,11 @@ class TestingProfile : public Profile {
     profile_destruction_callback_ = std::move(callback);
   }
 
+  void SetPermissionControllerDelegate(
+      std::unique_ptr<content::PermissionControllerDelegate> delegate) {
+    permission_controller_delegate_ = std::move(delegate);
+  }
+
  private:
   // Called when profile is deleted.
   ProfileDestructionCallback profile_destruction_callback_;
@@ -468,6 +474,9 @@ class TestingProfile : public Profile {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+
+  std::unique_ptr<content::PermissionControllerDelegate>
+      permission_controller_delegate_;
 
   base::FilePath last_selected_directory_;
 

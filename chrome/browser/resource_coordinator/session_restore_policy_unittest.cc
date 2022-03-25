@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "chrome/browser/notifications/notification_permission_context.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/test_support/site_data_utils.h"
 #endif
@@ -27,6 +26,7 @@
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -457,10 +457,8 @@ TEST_F(SessionRestorePolicyTest, NotificationPermissionSetUsedInBgBit) {
 
   // Allow |contents1_| to display notifications, this should cause the
   // |used_in_bg| bit to change to true.
-  NotificationPermissionContext::UpdatePermission(
-      profile(),
-      contents1_.get()->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
-      CONTENT_SETTING_ALLOW);
+  GetBrowserContext()->SetPermissionControllerForTesting(
+      std::make_unique<content::MockPermissionController>());
 
   // Adding/Removing the tab for scoring will cause the callback to be called a
   // few times, ignore this.

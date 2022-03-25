@@ -9,12 +9,9 @@
 
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_request_id.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -31,8 +28,8 @@ namespace extensions {
 namespace {
 
 void CallbackWrapper(base::OnceCallback<void(bool)> callback,
-                     ContentSetting status) {
-  std::move(callback).Run(status == CONTENT_SETTING_ALLOW);
+                     blink::mojom::PermissionStatus status) {
+  std::move(callback).Run(status == blink::mojom::PermissionStatus::GRANTED);
 }
 
 }  // anonymous namespace
@@ -180,21 +177,21 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
 
 void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
     bool user_gesture,
-    base::OnceCallback<void(ContentSetting)> callback,
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
     bool allow,
     const std::string& user_input) {
   // The <webview> embedder has allowed the permission. We now need to make sure
   // that the embedder has geolocation permission.
   if (!allow || !web_view_guest()->attached()) {
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(
-      web_view_guest()->browser_context());
-  PermissionManagerFactory::GetForProfile(profile)
+  web_view_guest()
+      ->browser_context()
+      ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          ContentSettingsType::GEOLOCATION,
+          content::PermissionType::GEOLOCATION,
           web_view_guest()->embedder_web_contents()->GetMainFrame(),
           user_gesture, std::move(callback));
 }

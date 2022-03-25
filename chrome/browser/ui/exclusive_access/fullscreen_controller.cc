@@ -15,8 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -25,11 +23,9 @@
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -428,12 +424,13 @@ void FullscreenController::EnterFullscreenModeInternal(
   if (display_id != display::kInvalidDisplayId) {
     // Check, but do not prompt, for permission to request a specific screen.
     // Sites generally need permission to get the display id in the first place.
-    auto* manager = PermissionManagerFactory::GetForProfile(
-        exclusive_access_manager()->context()->GetProfile());
-    if (!manager || !requesting_frame ||
-        manager->GetPermissionStatusForCurrentDocument(
-                   ContentSettingsType::WINDOW_PLACEMENT, requesting_frame)
-                .content_setting != ContentSetting::CONTENT_SETTING_ALLOW) {
+    if (!requesting_frame ||
+        requesting_frame->GetBrowserContext()
+                ->GetPermissionController()
+                ->GetPermissionStatusForCurrentDocument(
+                    content::PermissionType::WINDOW_PLACEMENT,
+                    requesting_frame) !=
+            blink::mojom::PermissionStatus::GRANTED) {
       display_id = display::kInvalidDisplayId;
     }
   }

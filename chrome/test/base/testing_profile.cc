@@ -944,7 +944,8 @@ content::SSLHostStateDelegate* TestingProfile::GetSSLHostStateDelegate() {
 
 content::PermissionControllerDelegate*
 TestingProfile::GetPermissionControllerDelegate() {
-  return nullptr;
+  return permission_controller_delegate_ ? permission_controller_delegate_.get()
+                                         : nullptr;
 }
 
 content::ClientHintsControllerDelegate*

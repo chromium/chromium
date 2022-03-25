@@ -14,16 +14,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/permission_controller.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/api/notifications.h"
@@ -69,10 +67,11 @@ bool NotifierStateTracker::IsNotifierEnabled(
       return disabled_extension_ids_.find(notifier_id.id) ==
           disabled_extension_ids_.end();
     case message_center::NotifierType::WEB_PAGE:
-      return PermissionManagerFactory::GetForProfile(profile_)
-                 ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                       notifier_id.url, notifier_id.url)
-                 .content_setting == CONTENT_SETTING_ALLOW;
+      return profile_->GetPermissionController()
+                 ->GetPermissionStatusForOriginWithoutContext(
+                     content::PermissionType::NOTIFICATIONS,
+                     url::Origin::Create(notifier_id.url)) ==
+             blink::mojom::PermissionStatus::GRANTED;
     case message_center::NotifierType::SYSTEM_COMPONENT:
       // We do not disable system component notifications.
       return true;

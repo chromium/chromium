@@ -5,11 +5,8 @@
 #include "chrome/browser/media/platform_verification_chromeos.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_util.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -35,15 +32,11 @@ void ReportResult(Result result) {
 // Whether platform verification is permitted by the user-configurable content
 // setting.
 bool IsPermittedByContentSettings(content::RenderFrameHost* render_frame_host) {
-  ContentSetting content_setting =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
-          ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-              render_frame_host)
-          .content_setting;
-
-  return content_setting == CONTENT_SETTING_ALLOW;
+  return render_frame_host->GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(
+                 content::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+                 render_frame_host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 // Whether platform verification is permitted by the profile type. Currently

@@ -197,6 +197,8 @@ source_set("test_support") {
     "test/object_permission_context_base_mock_permission_observer.h",
     "test/permission_request_observer.cc",
     "test/permission_request_observer.h",
+    "test/permission_test_util.cc",
+    "test/permission_test_util.h",
     "test/test_permissions_client.cc",
     "test/test_permissions_client.h",
   ]

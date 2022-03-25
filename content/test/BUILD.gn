@@ -185,6 +185,8 @@ static_library("test_support") {
     "../public/test/mock_navigation_handle.h",
     "../public/test/mock_notification_observer.cc",
     "../public/test/mock_notification_observer.h",
+    "../public/test/mock_permission_controller.cc",
+    "../public/test/mock_permission_controller.h",
     "../public/test/mock_permission_manager.cc",
     "../public/test/mock_permission_manager.h",
     "../public/test/mock_policy_container_host.cc",
