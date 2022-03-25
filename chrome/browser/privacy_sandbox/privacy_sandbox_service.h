@@ -177,13 +177,18 @@ class PrivacySandboxService : public KeyedService,
   // Sets the FLoC preference to |enabled|.
   void SetFlocPrefEnabled(bool enabled) const;
 
-  // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
-  // is true, more granular checks will still be performed to determine if
-  // specific APIs are available in specific contexts.
+  // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
+  // is true, context specific as well as restriction/confirmation checks
+  // will still be performed to determine if specific APIs are available in
+  // specific contexts.
   void SetPrivacySandboxEnabled(bool enabled);
 
-  // Used by the UI to check if the API is enabled. Checks the primary
-  // pref directly.
+  // Used by the UI to check if the API is enabled. This is a UI function ONLY.
+  // Checks the primary pref directly, and _only_ the primary pref. There are
+  // many other reasons that API access may be denied that are not checked by
+  // this function. All decisions for allowing access to APIs should be routed
+  // through the PrivacySandboxSettings class.
+  // TODO(crbug.com/1310157): Rename this function to better reflect this.
   bool IsPrivacySandboxEnabled();
 
   // Returns whether the state of the API is managed.
@@ -288,6 +293,9 @@ class PrivacySandboxService : public KeyedService,
                            NoMetricsRecorded);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, RestrictedDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, ManagedNoDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest,
+                           ManuallyControlledNoDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, NoParamNoDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
                            GetRequiredDialogType);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
@@ -314,6 +322,15 @@ class PrivacySandboxService : public KeyedService,
                            PrivacySandboxManagedEnabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxManagedDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxManuallyControlledEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxManuallyControlledDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxNoDialogDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           PrivacySandboxNoDialogEnabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, InitializeV2Pref);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
 
   // Should be used only for tests when mocking the service.
@@ -357,10 +374,14 @@ class PrivacySandboxService : public KeyedService,
     kDialogOffManagedEnabled = 9,
     kDialogOffManagedDisabled = 10,
     kDialogOffRestricted = 11,
+    kDialogOffManuallyControlledEnabled = 12,
+    kDialogOffManuallyControlledDisabled = 13,
+    kNoDialogRequiredEnabled = 14,
+    kNoDialogRequiredDisabled = 15,
 
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kDialogOffRestricted,
+    kMaxValue = kNoDialogRequiredDisabled,
   };
 
   // Inspects the current sync state and settings to determine if the Privacy
@@ -374,6 +395,10 @@ class PrivacySandboxService : public KeyedService,
   // As the sandbox is default enabled, reconcilliation will only ever opt a
   // user out of the sandbox.
   void ReconcilePrivacySandboxPref();
+
+  // Potentially enables the Privacy Sandbox V2 pref if required based on
+  // feature parameters and the profiles current state.
+  void InitializePrivacySandboxV2Pref();
 
   // Stops any observation of services being performed by this class.
   void StopObserving();

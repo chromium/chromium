@@ -7,7 +7,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
@@ -47,4 +49,21 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() {
   }
   // No restrictions apply otherwise.
   return false;
+}
+
+bool PrivacySandboxSettingsDelegate::IsPrivacySandboxConfirmed() {
+  // Confirmation is only required for Privacy Sandbox release 3.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
+    return true;
+
+  // Confirmation requires that either the Privacy Sandbox is manually
+  // controlled, or the user has seen the appropriate level of confirmation.
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kPrivacySandboxManuallyControlledV2))
+    return true;
+
+  return profile_->GetPrefs()->GetBoolean(
+      privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get()
+          ? prefs::kPrivacySandboxConsentDecisionMade
+          : prefs::kPrivacySandboxNoticeDisplayed);
 }

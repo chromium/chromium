@@ -14,8 +14,14 @@ const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 
 const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
 
+const char kPrivacySandboxApisEnabledV2Init[] =
+    "privacy_sandbox.apis_enabled_v2_init";
+
 const char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
+
+const char kPrivacySandboxManuallyControlledV2[] =
+    "privacy_sandbox.manually_controlled_v2";
 
 const char kPrivacySandboxPreferencesReconciled[] =
     "privacy_sandbox.preferences_reconciled";
@@ -53,6 +59,9 @@ extern const char kPrivacySandboxNoConfirmationSandboxManaged[] =
 extern const char kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked[] =
     "privacy_sandbox.no_confirmation_3PC_blocked";
 
+extern const char kPrivacySandboxNoConfirmationManuallyControlled[] =
+    "privacy_sandbox.no_confirmation_manually_controlled";
+
 extern const char kPrivacySandboxDisabledInsufficientConfirmation[] =
     "privacy_sandbox.disabled_insufficient_confirmation";
 
@@ -65,9 +74,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxApisEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabledV2, false);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabledV2Init, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxManuallyControlled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxManuallyControlledV2,
+                                false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPreferencesReconciled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
@@ -91,6 +103,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxNoConfirmationSandboxManaged, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked, false);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxNoConfirmationManuallyControlled, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxDisabledInsufficientConfirmation, false);
 }

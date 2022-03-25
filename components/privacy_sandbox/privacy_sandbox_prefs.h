@@ -22,11 +22,23 @@ extern const char kPrivacySandboxApisEnabled[];
 // enabled.
 extern const char kPrivacySandboxApisEnabledV2[];
 
+// Un-synced boolean pref. This is set to true when the one-time initialization
+// of the users kPrivacySandboxApisEnabledV2 has run. Some users may have the V2
+// pref enabled by default by the PrivacySandboxService.
+extern const char kPrivacySandboxApisEnabledV2Init[];
+
 // Synced boolean that indicates if a user has manually toggled the settings
 // associated with the PrivacySandboxSettings feature.
+// TODO(crbug.com/1292898): Deprecate this preference once all users have been
+// migrated to the V2 pref.
 extern const char kPrivacySandboxManuallyControlled[];
 
-// Boolean to indicate whether or not the preferecnes have been reconciled for
+// Un-synced boolean pref. This is a replacement for the synced preference
+// above. It it set to true when the user manually toggles the setting on the
+// updated settings page.
+extern const char kPrivacySandboxManuallyControlledV2[];
+
+// Boolean to indicate whether or not the preferences have been reconciled for
 // this device. This occurs for each device once when privacy sandbox is first
 // enabled.
 extern const char kPrivacySandboxPreferencesReconciled[];
@@ -83,6 +95,10 @@ extern const char kPrivacySandboxNoConfirmationSandboxManaged[];
 // Boolean that indicates a Privacy Sandbox confirmation was not shown to the
 // profile because the third party cookies were being blocked.
 extern const char kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked[];
+
+// Boolean that indicates a Privacy Sandbox confirmation was not shown to the
+// profile because the Privacy Sandbox is being manually controlled.
+extern const char kPrivacySandboxNoConfirmationManuallyControlled[];
 
 // Boolean that indicates the user's Privacy Sandbox setting was disabled
 // automatically because they do not have the correct level of confirmation.

@@ -59,6 +59,12 @@ class PrivacySandboxSettings : public KeyedService {
     // consulted on every access check, and it is acceptable for this to change
     // return value over the life of the service.
     virtual bool IsPrivacySandboxRestricted() = 0;
+
+    // Allows the delegate to express the concept of confirmation, e.g. a notice
+    // or consent, required before Privacy Sandbox operation can occur. This is
+    // checked on every access check, and must return true for Privacy Sandbox
+    // APIs to run.
+    virtual bool IsPrivacySandboxConfirmed() = 0;
   };
 
   PrivacySandboxSettings(
@@ -149,16 +155,18 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const std::vector<GURL>& auction_parties);
 
-  // Returns whether the profile has the Privacy Sandbox enabled. This directly
-  // reflects the state of the main privacy sandbox control, and does not
-  // consider any cookie settings. A return value of false means that no
-  // Privacy Sandbox operations can occur. A return value of true must be
-  // followed up with the appropriate IsXAllowed() call.
+  // Returns whether the profile has the Privacy Sandbox enabled. This consults
+  // the main preference, as well as the delegate to check whether the sandbox
+  // is restricted, or has not been confirmed.  It does not consider any cookie
+  // settings. A return value of false means that no Privacy Sandbox operations
+  // can occur. A return value of true must be followed up with the appropriate
+  // IsXAllowed() call.
   bool IsPrivacySandboxEnabled() const;
 
   // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
-  // is true, more granular checks will still be performed to determine if
-  // specific APIs are available in specific contexts.
+  // is true, more granular checks will still be performed, and the delegate
+  // consulted, to determine if specific APIs are available in specific
+  // contexts.
   void SetPrivacySandboxEnabled(bool enabled);
 
   // Returns whether Trust Tokens are "generally" available. A return value of
@@ -181,6 +189,9 @@ class PrivacySandboxSettings : public KeyedService {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Overrides the internal delegate for test purposes.
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
  protected:
   // Protected default constructor to allow mocking in tests.

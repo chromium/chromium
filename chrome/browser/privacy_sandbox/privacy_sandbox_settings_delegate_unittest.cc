@@ -9,6 +9,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,6 +52,9 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
     return adapter_->identity_test_env();
   }
   TestingProfile* profile() { return profile_.get(); }
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return profile()->GetTestingPrefService();
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -103,3 +107,37 @@ TEST_F(PrivacySandboxSettingsDelegateTest, SupervisedUser) {
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 }
 #endif
+
+TEST_F(PrivacySandboxSettingsDelegateTest, Confirmation_Release3Enabled) {
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxSettings3);
+  EXPECT_FALSE(delegate()->IsPrivacySandboxConfirmed());
+
+  // Manually controlling V1 should not count as confirmation, while V2 should.
+  prefs()->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
+  EXPECT_FALSE(delegate()->IsPrivacySandboxConfirmed());
+  prefs()->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, true);
+  EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
+  prefs()->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, false);
+
+  // While a consent is not required, seeing a notice should suffice.
+  prefs()->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+  EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
+
+  // If a notice is required, it should not suffice.
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings3,
+      {{"consent-required", "true"}});
+  EXPECT_FALSE(delegate()->IsPrivacySandboxConfirmed());
+  prefs()->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade, true);
+  EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest, Confirmation_Release3Disabled) {
+  // If the Privacy Sandbox Settings 3 feature is disabled, no confirmation is
+  // required.
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxSettings3);
+  EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
+}
