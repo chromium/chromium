@@ -103,7 +103,7 @@ KNOWN_COMPUTED_USERS = (
     'render_process_host_impl.cc',  # browser side impl for
     # RenderThread::RecordComputedAction()
     'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
-    'pepper_pdf_host.cc',  # see AddClosedSourceActions()
+    'pdf_view_plugin_base.cc',  # see AddPDFPluginActions()
     'blink_platform_impl.cc',  # see WebKit/public/platform/Platform.h
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
