@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -38,6 +39,9 @@ namespace {
 constexpr char kPrintCapabilities[] = "psf:PrintCapabilities";
 constexpr char kFeature[] = "psf:Feature";
 constexpr char kPageOutputQuality[] = "psk:PageOutputQuality";
+constexpr char kOption[] = "psf:Option";
+constexpr char kProperty[] = "psf:Property";
+constexpr char kValue[] = "psf:Value";
 constexpr char kName[] = "name";
 
 // Wrapper class to close provider automatically.
@@ -58,8 +62,53 @@ class ScopedProvider {
 mojom::ResultCode LoadPageOutputQuality(
     const base::Value& page_output_quality,
     PrinterSemanticCapsAndDefaults* printer_info) {
-  // TODO(crbug.com/1291257): Need to parse `page_output_quality` into
-  // `printer_info`. More work is expected here.
+  PageOutputQuality printer_page_output_quality;
+  std::vector<const base::Value*> options;
+  data_decoder::GetAllXmlElementChildrenWithTag(page_output_quality, kOption,
+                                                &options);
+  if (options.empty()) {
+    LOG(WARNING) << "Incorrect XML format";
+    return mojom::ResultCode::kFailed;
+  }
+  for (const auto* option : options) {
+    PageOutputQualityAttribute quality;
+    quality.name = data_decoder::GetXmlElementAttribute(*option, kName);
+    int property_count =
+        data_decoder::GetXmlElementChildrenCount(*option, kProperty);
+
+    // TODO(crbug.com/1291257): Each formatted option is expected to have zero
+    // or one property. Each property inside an option is expected to
+    // have one value.
+    // Source:
+    // https://docs.microsoft.com/en-us/windows/win32/printdocs/pageoutputquality
+    // If an option has more than one property or a property has more than one
+    // value, more work is expected here.
+
+    // In the case an option looks like <psf:Option name="psk:Text />,
+    // property_count is 0. In this case, an option only has `name`
+    // and does not have `display_name`.
+    if (property_count > 1) {
+      LOG(WARNING) << "Incorrect XML format";
+      return mojom::ResultCode::kFailed;
+    }
+    if (property_count == 1) {
+      const base::Value* property_element = data_decoder::FindXmlElementPath(
+          *option, {kOption, kProperty}, /*unique_path=*/nullptr);
+      int value_count =
+          data_decoder::GetXmlElementChildrenCount(*property_element, kValue);
+      if (value_count != 1) {
+        LOG(WARNING) << "Incorrect XML format";
+        return mojom::ResultCode::kFailed;
+      }
+      const base::Value* value_element = data_decoder::FindXmlElementPath(
+          *option, {kOption, kProperty, kValue}, /*unique_path=*/nullptr);
+      std::string text;
+      data_decoder::GetXmlElementText(*value_element, &text);
+      quality.display_name = std::move(text);
+    }
+    printer_page_output_quality.qualities.push_back(std::move(quality));
+  }
+  printer_info->page_output_quality = std::move(printer_page_output_quality);
   return mojom::ResultCode::kSuccess;
 }
 

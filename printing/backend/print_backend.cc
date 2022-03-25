@@ -95,6 +95,30 @@ bool AdvancedCapability::operator==(const AdvancedCapability& other) const {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+
+PageOutputQualityAttribute::PageOutputQualityAttribute() = default;
+
+PageOutputQualityAttribute::PageOutputQualityAttribute(
+    const std::string& display_name,
+    const std::string& name)
+    : display_name(display_name), name(name) {}
+
+PageOutputQualityAttribute::~PageOutputQualityAttribute() = default;
+
+bool PageOutputQualityAttribute::operator==(
+    const PageOutputQualityAttribute& other) const {
+  return display_name == other.display_name && name == other.name;
+}
+
+PageOutputQuality::PageOutputQuality() = default;
+
+PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
+
+PageOutputQuality::~PageOutputQuality() = default;
+
+#endif  // BUILDFLAG(IS_WIN)
+
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {
   return display_name == other.display_name && vendor_id == other.vendor_id &&
