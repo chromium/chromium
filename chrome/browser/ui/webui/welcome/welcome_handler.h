@@ -45,8 +45,8 @@ class WelcomeHandler : public content::WebUIMessageHandler {
     WELCOME_RESULT_MAX
   };
 
-  void HandleActivateSignIn(const base::ListValue* args);
-  void HandleUserDecline(const base::ListValue* args);
+  void HandleActivateSignIn(const base::Value::List& args);
+  void HandleUserDecline(const base::Value::List& args);
   void GoToNewTabPage();
   void GoToURL(GURL url);
   bool isValidRedirectUrl();

@@ -26,8 +26,8 @@ class BookmarkHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleToggleBookmarkBar(const base::ListValue* args);
-  void HandleIsBookmarkBarShown(const base::ListValue* args);
+  void HandleToggleBookmarkBar(const base::Value::List& args);
+  void HandleIsBookmarkBarShown(const base::Value::List& args);
 
  private:
   // Weak reference.

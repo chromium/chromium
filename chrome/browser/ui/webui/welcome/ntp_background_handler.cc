@@ -35,32 +35,33 @@ NtpBackgroundHandler::NtpBackgroundHandler() {}
 NtpBackgroundHandler::~NtpBackgroundHandler() {}
 
 void NtpBackgroundHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearBackground",
       base::BindRepeating(&NtpBackgroundHandler::HandleClearBackground,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getBackgrounds",
       base::BindRepeating(&NtpBackgroundHandler::HandleGetBackgrounds,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setBackground",
       base::BindRepeating(&NtpBackgroundHandler::HandleSetBackground,
                           base::Unretained(this)));
 }
 
-void NtpBackgroundHandler::HandleClearBackground(const base::ListValue* args) {
+void NtpBackgroundHandler::HandleClearBackground(
+    const base::Value::List& args) {
   auto* service = NtpCustomBackgroundServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
   service->ResetCustomBackgroundInfo();
 }
 
-void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
+void NtpBackgroundHandler::HandleGetBackgrounds(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   base::Value::List list_value;
   std::array<GURL, kNtpBackgroundsCount> NtpBackgrounds = GetNtpBackgrounds();
@@ -121,10 +122,9 @@ void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
   ResolveJavascriptCallback(callback_id, base::Value(std::move(list_value)));
 }
 
-void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  CHECK_EQ(1U, list.size());
-  int background_index = list[0].GetInt();
+void NtpBackgroundHandler::HandleSetBackground(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  int background_index = args[0].GetInt();
 
   std::array<GURL, kNtpBackgroundsCount> NtpBackgrounds = GetNtpBackgrounds();
   auto* service = NtpCustomBackgroundServiceFactory::GetForProfile(

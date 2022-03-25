@@ -37,8 +37,8 @@ class GoogleAppsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleCacheGoogleAppIcon(const base::ListValue* args);
-  void HandleGetGoogleAppsList(const base::ListValue* args);
+  void HandleCacheGoogleAppIcon(const base::Value::List& args);
+  void HandleGetGoogleAppsList(const base::Value::List& args);
 
  private:
   std::vector<BookmarkItem> google_apps_;

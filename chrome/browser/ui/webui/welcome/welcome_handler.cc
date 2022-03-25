@@ -52,7 +52,7 @@ bool WelcomeHandler::isValidRedirectUrl() {
 }
 
 // Handles backend events necessary when user clicks "Sign in."
-void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
+void WelcomeHandler::HandleActivateSignIn(const base::Value::List& args) {
   result_ = WelcomeResult::STARTED_SIGN_IN;
   base::RecordAction(base::UserMetricsAction("WelcomePage_SignInClicked"));
 
@@ -65,8 +65,8 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
     GoToNewTabPage();
   } else {
     GURL redirect_url = GURL::EmptyGURL();
-    if (args->GetListDeprecated().size() == 1U) {
-      const std::string& url_string = args->GetListDeprecated()[0].GetString();
+    if (args.size() == 1U) {
+      const std::string& url_string = args[0].GetString();
       redirect_url = GURL(url_string);
       DCHECK(redirect_url.is_valid());
     }
@@ -79,7 +79,7 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
 }
 
 // Handles backend events necessary when user clicks "Get started."
-void WelcomeHandler::HandleUserDecline(const base::ListValue* args) {
+void WelcomeHandler::HandleUserDecline(const base::Value::List& args) {
   result_ = WelcomeResult::DECLINED_SIGN_IN;
   GoToNewTabPage();
 }
@@ -91,11 +91,11 @@ void WelcomeHandler::RegisterMessages() {
   // constructor, because web_ui hasn't loaded yet at that time.
   is_redirected_welcome_impression_ = isValidRedirectUrl();
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "handleActivateSignIn",
       base::BindRepeating(&WelcomeHandler::HandleActivateSignIn,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "handleUserDecline",
       base::BindRepeating(&WelcomeHandler::HandleUserDecline,
                           base::Unretained(this)));

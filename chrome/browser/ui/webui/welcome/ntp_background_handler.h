@@ -22,9 +22,9 @@ class NtpBackgroundHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleClearBackground(const base::ListValue* args);
-  void HandleGetBackgrounds(const base::ListValue* args);
-  void HandleSetBackground(const base::ListValue* args);
+  void HandleClearBackground(const base::Value::List& args);
+  void HandleGetBackgrounds(const base::Value::List& args);
+  void HandleSetBackground(const base::Value::List& args);
 };
 
 }  // namespace welcome
