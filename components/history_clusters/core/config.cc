@@ -64,10 +64,6 @@ Config::Config() {
           internal::kJourneys, "JourneysSortClustersWithinBatchForQuery",
           sort_clusters_within_batch_for_query);
 
-  alternate_omnibox_action_text = base::GetFieldTrialParamByFeatureAsBool(
-      internal::kJourneys, "JourneysAlternateOmniboxActionText",
-      alternate_omnibox_action_text);
-
   omnibox_action = base::FeatureList::IsEnabled(internal::kOmniboxAction);
 
   non_user_visible_debug =

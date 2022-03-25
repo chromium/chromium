@@ -28,18 +28,10 @@ class HistoryClustersAction : public OmniboxAction {
   explicit HistoryClustersAction(const std::string& query)
       : OmniboxAction(
             OmniboxAction::LabelStrings(
-                GetConfig().alternate_omnibox_action_text
-                    ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT_ALTERNATE
-                    : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-                GetConfig().alternate_omnibox_action_text
-                    ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS_ALTERNATE
-                    : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-                GetConfig().alternate_omnibox_action_text
-                    ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX_ALTERNATE
-                    : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-                GetConfig().alternate_omnibox_action_text
-                    ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_ALTERNATE
-                    : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
+                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
+                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
+                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
             GURL(base::StringPrintf(
                 "chrome://history/journeys?q=%s",
                 net::EscapeQueryParamValue(query, /*use_plus=*/false)

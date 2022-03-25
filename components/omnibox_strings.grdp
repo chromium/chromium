@@ -154,18 +154,6 @@
   <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH" desc="Announcement when the Search History Clusters action button is focused.">
     Resume your journey button, press Enter to resume your journey and see relevant activity in your Chrome history
   </message>
-  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT_ALTERNATE" desc="The button text for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
-    Resume your research
-  </message>
-  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS_ALTERNATE" desc="The button tooltip for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
-    Resume your research to see relevant activity in your Chrome history
-  </message>
-  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX_ALTERNATE" desc="Suffix for spoken suggestion description with action button to explain keystroke used to Search History Clusters.">
-    <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>dog food</ex></ph>, press Tab, then Enter to resume your research and see relevant activity in your Chrome history
-  </message>
-  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_ALTERNATE" desc="Announcement when the Search History Clusters action button is focused.">
-    Resume your research button, press Enter to resume your research and see relevant activity in your Chrome history
-  </message>
 
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
