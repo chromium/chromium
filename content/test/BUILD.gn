@@ -711,6 +711,9 @@ static_library("test_support") {
 # Fuchsia performance tests on smart displays use web_engine and a browser
 # like shell instead of an actual browser, so Fuchsia needs a separate target.
 if (is_fuchsia) {
+  # TODO(crbug.com/1310086): Split this test suite into chrome/WebEngine
+  # versions.
+  # TODO(crbug.com/1309686): Move WebEngine-specific suites to //fuchsia/engine
   group("performance_web_engine_test_suite") {
     testonly = true
     data = [ "//content/test/gpu/run_telemetry_benchmark_fuchsia.py" ]

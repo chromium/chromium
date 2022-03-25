@@ -4750,7 +4750,9 @@ if (!is_android) {
 }
 
 if (is_fuchsia) {
-  # Currently no perf tests for Fuchsia.
+  # TODO(crbug.com/1310086): Split performance_web_engine_test_suite
+  # into fuchsia-chrome and web_engine test, and put fuchsia-chrome
+  # test target here.
 } else if (!is_android) {
   performance_test_suite_template("performance_test_suite") {
   }
