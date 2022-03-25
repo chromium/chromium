@@ -148,7 +148,6 @@ template("write_build_config") {
     outputs = [ invoker.build_config ]
 
     _deps_configs = []
-    _public_deps_configs = []
     if (defined(invoker.possible_config_deps)) {
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
@@ -161,12 +160,22 @@ template("write_build_config") {
           _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
 
           _deps_configs += [ _dep_config ]
-          if (defined(invoker.possible_config_public_deps)) {
-            if (filter_include([ _possible_dep ],
-                               invoker.possible_config_public_deps) != []) {
-              _public_deps_configs += [ _dep_config ]
-            }
-          }
+        }
+      }
+    }
+    _public_deps_configs = []
+    if (defined(invoker.possible_config_public_deps)) {
+      foreach(_possible_dep, invoker.possible_config_public_deps) {
+        _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
+        if (filter_exclude([ _dep_label ], java_target_patterns) == []) {
+          # Put the bug number in the target name so that false-positives
+          # have a hint in the error message about non-existent dependencies.
+          deps += [ "$_dep_label$build_config_target_suffix" ]
+          _dep_gen_dir = get_label_info(_possible_dep, "target_gen_dir")
+          _dep_name = get_label_info(_possible_dep, "name")
+          _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+
+          _public_deps_configs += [ _dep_config ]
         }
       }
     }
@@ -3281,11 +3290,6 @@ if (enable_java_templates) {
       _invoker_deps += invoker.deps
     }
     if (defined(invoker.public_deps)) {
-      foreach(_public_dep, invoker.public_deps) {
-        if (filter_include([ _public_dep ], _invoker_deps) != []) {
-          assert(false, "'public_deps' and 'deps' overlap: $_public_dep")
-        }
-      }
       _invoker_deps += invoker.public_deps
     }
 
@@ -3569,16 +3573,18 @@ if (enable_java_templates) {
 
       # Specifically avoid passing in invoker.base_module_target as one of the
       # possible_config_deps.
-      possible_config_deps = _invoker_deps
+      possible_config_deps = []
+      if (defined(invoker.deps)) {
+        possible_config_deps = invoker.deps
+      }
+      if (defined(invoker.public_deps)) {
+        possible_config_public_deps = invoker.public_deps
+      }
       if (defined(_extra_java_deps)) {
         possible_config_deps += _extra_java_deps
       }
       if (defined(apk_under_test)) {
         possible_config_deps += [ apk_under_test ]
-      }
-
-      if (defined(invoker.public_deps)) {
-        possible_config_public_deps = invoker.public_deps
       }
 
       supports_android = _supports_android
@@ -3646,12 +3652,9 @@ if (enable_java_templates) {
         # it does act like one (and other resources patterns need to depend on
         # this before they can read its output R.txt).
         _fake_rjava_target = "${target_name}__rjava_resources"
-        _possible_resource_deps = _invoker_deps
         generate_r_java(_fake_rjava_target) {
           deps = [ ":$_build_config_target_name" ]
-          if (defined(_possible_resource_deps)) {
-            possible_resource_deps = _possible_resource_deps
-          }
+          possible_resource_deps = _invoker_deps
           build_config = _build_config
 
           # Filepath has to be exactly this because compile_java looks for the

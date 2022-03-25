@@ -1271,6 +1271,9 @@ def main(argv):
   }
 
   deps_configs_paths = build_utils.ParseGnList(options.deps_configs)
+  public_deps_configs_paths = build_utils.ParseGnList(
+      options.public_deps_configs)
+  deps_configs_paths += public_deps_configs_paths
   deps = _DepsFromPaths(deps_configs_paths,
                         options.type,
                         recursive_resource_deps=options.recursive_resource_deps)
@@ -1449,9 +1452,8 @@ def main(argv):
     if options.unprocessed_jar_path:
       deps_info['unprocessed_jar_path'] = options.unprocessed_jar_path
       deps_info['interface_jar_path'] = options.interface_jar_path
-    if options.public_deps_configs:
-      deps_info['public_deps_configs'] = build_utils.ParseGnList(
-          options.public_deps_configs)
+    if public_deps_configs_paths:
+      deps_info['public_deps_configs'] = public_deps_configs_paths
     if options.device_jar_path:
       deps_info['device_jar_path'] = options.device_jar_path
     if options.host_jar_path:
