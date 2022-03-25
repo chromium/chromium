@@ -88,7 +88,6 @@ class PLATFORM_EXPORT DynamicsCompressor {
   // Static compression curve.
   float KneeCurve(float x, float k) const;
   float Saturate(float x, float k) const;
-  float SlopeAt(float x, float k) const;
   float KAtSlope(float desired_slope) const;
 
   float UpdateStaticCurveParameters(float db_threshold,

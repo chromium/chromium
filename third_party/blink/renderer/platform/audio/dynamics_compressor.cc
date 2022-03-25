@@ -54,6 +54,27 @@ constexpr float kReleaseZone2 = 0.16f;
 constexpr float kReleaseZone3 = 0.42f;
 constexpr float kReleaseZone4 = 0.98f;
 
+constexpr float kABase = 0.9999999999999998f * kReleaseZone1 +
+                         1.8432219684323923e-16f * kReleaseZone2 -
+                         1.9373394351676423e-16f * kReleaseZone3 +
+                         8.824516011816245e-18f * kReleaseZone4;
+constexpr float kBBase =
+    -1.5788320352845888f * kReleaseZone1 + 2.3305837032074286f * kReleaseZone2 -
+    0.9141194204840429f * kReleaseZone3 + 0.1623677525612032f * kReleaseZone4;
+constexpr float kCBase =
+    0.5334142869106424f * kReleaseZone1 - 1.272736789213631f * kReleaseZone2 +
+    0.9258856042207512f * kReleaseZone3 - 0.18656310191776226f * kReleaseZone4;
+constexpr float kDBase =
+    0.08783463138207234f * kReleaseZone1 - 0.1694162967925622f * kReleaseZone2 +
+    0.08588057951595272f * kReleaseZone3 - 0.00429891410546283f * kReleaseZone4;
+constexpr float kEBase = -0.042416883008123074f * kReleaseZone1 +
+                         0.1115693827987602f * kReleaseZone2 -
+                         0.09764676325265872f * kReleaseZone3 +
+                         0.028494263462021576f * kReleaseZone4;
+
+// Detector release time.
+constexpr float kSatReleaseTime = 0.0025f;
+
 // Returns x if x is finite (not NaN or infinite), otherwise returns
 // default_value
 float EnsureFinite(float x, float default_value) {
@@ -128,7 +149,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   const float db_threshold = ParameterValue(kParamThreshold);
   const float db_knee = ParameterValue(kParamKnee);
   const float ratio = ParameterValue(kParamRatio);
-  float attack_time = ParameterValue(kParamAttack);
+  const float attack_time = ParameterValue(kParamAttack);
   const float release_time = ParameterValue(kParamRelease);
 
   // Apply compression to the source signal.
@@ -141,49 +162,29 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
   const float k = UpdateStaticCurveParameters(db_threshold, db_knee, ratio);
 
-  // Makeup gain.
-  const float full_range_gain = Saturate(1, k);
-  float full_range_makeup_gain = 1 / full_range_gain;
-
-  // Empirical/perceptual tuning.
-  full_range_makeup_gain = fdlibm::powf(full_range_makeup_gain, 0.6f);
-
-  const float linear_post_gain = full_range_makeup_gain;
+  // Makeup gain with empirical/perceptual tuning.
+  const float linear_post_gain = fdlibm::powf(1 / Saturate(1, k), 0.6f);
 
   // Attack parameters.
-  attack_time = std::max(0.001f, attack_time);
-  const float attack_frames = attack_time * sample_rate;
+  const float attack_frames = std::max(0.001f, attack_time) * sample_rate;
 
   // Release parameters.
   const float release_frames = sample_rate * release_time;
 
-  // Detector release time.
-  constexpr float sat_release_time = 0.0025f;
-  const float sat_release_frames = sat_release_time * sample_rate;
+  const float sat_release_frames = kSatReleaseTime * sample_rate;
 
   // Create a smooth function which passes through four points.
 
   // Polynomial of the form
   // y = a + b*x + c*x^2 + d*x^3 + e*x^4;
-
-  const float y1 = release_frames * kReleaseZone1;
-  const float y2 = release_frames * kReleaseZone2;
-  const float y3 = release_frames * kReleaseZone3;
-  const float y4 = release_frames * kReleaseZone4;
-
   // All of these coefficients were derived for 4th order polynomial curve
   // fitting where the y values match the evenly spaced x values as follows:
   // (y1 : x == 0, y2 : x == 1, y3 : x == 2, y4 : x == 3)
-  const float a = 0.9999999999999998f * y1 + 1.8432219684323923e-16f * y2 -
-                  1.9373394351676423e-16f * y3 + 8.824516011816245e-18f * y4;
-  const float b = -1.5788320352845888f * y1 + 2.3305837032074286f * y2 -
-                  0.9141194204840429f * y3 + 0.1623677525612032f * y4;
-  const float c = 0.5334142869106424f * y1 - 1.272736789213631f * y2 +
-                  0.9258856042207512f * y3 - 0.18656310191776226f * y4;
-  const float d = 0.08783463138207234f * y1 - 0.1694162967925622f * y2 +
-                  0.08588057951595272f * y3 - 0.00429891410546283f * y4;
-  const float e = -0.042416883008123074f * y1 + 0.1115693827987602f * y2 -
-                  0.09764676325265872f * y3 + 0.028494263462021576f * y4;
+  const float a = release_frames * kABase;
+  const float b = release_frames * kBBase;
+  const float c = release_frames * kCBase;
+  const float d = release_frames * kDBase;
+  const float e = release_frames * kEBase;
 
   // x ranges from 0 -> 3       0    1    2   3
   //                           -15  -10  -5   0db
@@ -193,9 +194,9 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
   SetPreDelayTime(kPreDelay);
 
-  constexpr int number_of_division_frames = 32;
+  constexpr int kNumberOfDivisionFrames = 32;
 
-  const int number_of_divisions = frames_to_process / number_of_division_frames;
+  const int number_of_divisions = frames_to_process / kNumberOfDivisionFrames;
 
   unsigned frame_index = 0;
   for (int i = 0; i < number_of_divisions; ++i) {
@@ -251,8 +252,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       const float x4 = x2 * x2;
       const float calc_release_frames = a + b * x + c * x2 + d * x3 + e * x4;
 
-      constexpr float spacing_db = 5;
-      const float db_per_frame = spacing_db / calc_release_frames;
+      constexpr float kSpacingDb = 5;
+      const float db_per_frame = kSpacingDb / calc_release_frames;
 
       envelope_rate = audio_utilities::DecibelsToLinear(db_per_frame);
     } else {
@@ -280,14 +281,14 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     float detector_average = detector_average_;
     float compressor_gain = compressor_gain_;
 
-    int loop_frames = number_of_division_frames;
+    int loop_frames = kNumberOfDivisionFrames;
     while (loop_frames--) {
       float compressor_input = 0;
 
       // Predelay signal, computing compression amount from un-delayed
       // version.
       for (unsigned j = 0; j < number_of_channels; ++j) {
-        float* delay_buffer = pre_delay_buffers_[j]->Data();
+        float* const delay_buffer = pre_delay_buffers_[j]->Data();
         const float undelayed_source = source_channels[j][frame_index];
         delay_buffer[pre_delay_write_index] = undelayed_source;
 
@@ -306,15 +307,16 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       // Put through shaping curve.
       // This is linear up to the threshold, then enters a "knee" portion
       // followed by the "ratio" portion.  The transition from the threshold
-      // to the knee is smooth (1st derivative matched).  The transition from
-      // the knee to the ratio portion is smooth (1st derivative matched).
+      // to the knee is smooth (1st derivative matched).  The transition
+      // from the knee to the ratio portion is smooth (1st derivative
+      // matched).
       const float shaped_input = Saturate(abs_input, k);
 
       const float attenuation =
           abs_input <= 0.0001f ? 1 : shaped_input / abs_input;
 
-      float attenuation_db = -audio_utilities::LinearToDecibels(attenuation);
-      attenuation_db = std::max(2.0f, attenuation_db);
+      const float attenuation_db =
+          std::max(2.0f, -audio_utilities::LinearToDecibels(attenuation));
 
       const float db_per_frame = attenuation_db / sat_release_frames;
 
@@ -359,7 +361,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
       // Apply final gain.
       for (unsigned j = 0; j < number_of_channels; ++j) {
-        const float* delay_buffer = pre_delay_buffers_[j]->Data();
+        const float* const delay_buffer = pre_delay_buffers_[j]->Data();
         destination_channels[j][frame_index] =
             delay_buffer[pre_delay_read_index] * total_gain;
       }
@@ -458,12 +460,12 @@ bool DynamicsCompressor::RequiresTailProcessing() const {
 
 void DynamicsCompressor::InitializeParameters() {
   // Initializes compressor to default values.
-  parameters_[kParamThreshold] = -24;    // dB
-  parameters_[kParamKnee] = 30;          // dB
-  parameters_[kParamRatio] = 12;         // unit-less
-  parameters_[kParamAttack] = 0.003f;    // seconds
-  parameters_[kParamRelease] = 0.250f;   // seconds
-  parameters_[kParamReduction] = 0;      // dB
+  parameters_[kParamThreshold] = -24;   // dB
+  parameters_[kParamKnee] = 30;         // dB
+  parameters_[kParamRatio] = 12;        // unit-less
+  parameters_[kParamAttack] = 0.003f;   // seconds
+  parameters_[kParamRelease] = 0.250f;  // seconds
+  parameters_[kParamReduction] = 0;     // dB
 }
 
 void DynamicsCompressor::SetPreDelayTime(float pre_delay_time) {
@@ -500,56 +502,44 @@ float DynamicsCompressor::KneeCurve(float x, float k) const {
 
 // Full compression curve with constant ratio after knee.
 float DynamicsCompressor::Saturate(float x, float k) const {
-  float y;
-
   if (x < knee_threshold_) {
-    y = KneeCurve(x, k);
-  } else {
-    // Constant ratio after knee.
-    const float x_db = audio_utilities::LinearToDecibels(x);
-    const float y_db =
-        yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
-
-    y = audio_utilities::DecibelsToLinear(y_db);
+    return KneeCurve(x, k);
   }
-
-  return y;
-}
-
-// Approximate 1st derivative with input and output expressed in dB.
-// This slope is equal to the inverse of the compression "ratio".
-// In other words, a compression ratio of 20 would be a slope of 1/20.
-float DynamicsCompressor::SlopeAt(float x, float k) const {
-  if (x < linear_threshold_) {
-    return 1;
-  }
-
-  const float x2 = x * 1.001;
-
+  // Constant ratio after knee.
   const float x_db = audio_utilities::LinearToDecibels(x);
-  const float x2_db = audio_utilities::LinearToDecibels(x2);
-
-  const float y_db = audio_utilities::LinearToDecibels(KneeCurve(x, k));
-  const float y2_db = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
-
-  const float m = (y2_db - y_db) / (x2_db - x_db);
-
-  return m;
+  const float y_db = yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
+  return audio_utilities::DecibelsToLinear(y_db);
 }
 
 float DynamicsCompressor::KAtSlope(float desired_slope) const {
   const float x_db = db_threshold_ + db_knee_;
   const float x = audio_utilities::DecibelsToLinear(x_db);
+  float x2 = 1;
+  float x2_db = 0;
+
+  if (!(x < linear_threshold_)) {
+    x2 = x * 1.001;
+    x2_db = audio_utilities::LinearToDecibels(x2);
+  }
 
   // Approximate k given initial values.
   float min_k = 0.1;
   float max_k = 10000;
   float k = 5;
 
+  float slope = 1;
   for (int i = 0; i < 15; ++i) {
     // A high value for k will more quickly asymptotically approach a slope of
     // 0.
-    float slope = SlopeAt(x, k);
+
+    // Approximate 1st derivative with input and output expressed in dB.
+    // This slope is equal to the inverse of the compression "ratio".
+    // In other words, a compression ratio of 20 would be a slope of 1/20.
+    if (!(x < linear_threshold_)) {
+      const float y_db = audio_utilities::LinearToDecibels(KneeCurve(x, k));
+      const float y2_db = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
+      slope = (y2_db - y_db) / (x2_db - x_db);
+    }
 
     if (slope < desired_slope) {
       // k is too high.
