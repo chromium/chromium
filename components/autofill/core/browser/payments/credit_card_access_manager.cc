@@ -616,27 +616,6 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
         unmask_auth_flow_type_);
   }
 
-  // Local boolean denotes whether to fill the form immediately. If CVC
-  // authentication failed, report error immediately. If GetRealPan did not
-  // return card authorization token (we can't call any FIDO-related flows,
-  // either opt-in or register new card, without token), fill the form
-  // immediately.
-  bool should_respond_immediately =
-      !response.did_succeed || response.card_authorization_token.empty();
-#if BUILDFLAG(IS_ANDROID)
-  // GetRealPan did not return RequestOptions (user did not specify intent to
-  // opt-in) AND flow is not registering a new card, also fill the form
-  // directly.
-  should_respond_immediately |=
-      (!response.request_options.has_value() &&
-       unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido);
-#else
-  // On desktop, if flow is not kCvcThenFido, it means it is not registering a
-  // new card, we can fill the form immediately.
-  should_respond_immediately |=
-      unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido;
-#endif
-
   // Local boolean denotes whether to call AdditionallyPerformFidoAuth which
   // delays the form filling and invokes an Authorization flow. If
   // |unmask_auth_flow_type_| is kCvcThenFido, then the user is already opted-in
@@ -674,10 +653,10 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
                                 ->IsMaxStrikesLimitReached();
 #endif
 
-  // Ensure that |should_respond_immediately| and |should_authorize_with_fido|
-  // can't be true at the same time
-  DCHECK(!(should_respond_immediately && should_authorize_with_fido));
-  if (should_respond_immediately) {
+  if (ShouldRespondImmediately(response)) {
+    // If ShouldRespondImmediately() returns true, |should_authorize_with_fido|
+    // should be false.
+    DCHECK(!should_authorize_with_fido);
     accessor_->OnCreditCardFetched(response.did_succeed
                                        ? CreditCardFetchResult::kSuccess
                                        : CreditCardFetchResult::kTransientError,
@@ -875,6 +854,27 @@ bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
   return IsUserOptedInToFidoAuth() &&
          unmask_details_.fido_eligible_card_ids.find(card_->server_id()) !=
              unmask_details_.fido_eligible_card_ids.end();
+}
+
+bool CreditCardAccessManager::ShouldRespondImmediately(
+    const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
+#if BUILDFLAG(IS_ANDROID)
+  // GetRealPan did not return RequestOptions (user did not specify intent to
+  // opt-in) AND flow is not registering a new card, so fill the form
+  // directly.
+  if (!response.request_options.has_value() &&
+      unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
+    return true;
+  }
+#else
+  if (unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido)
+    return true;
+#endif
+  // If the response did not succeed, report the error immediately. If
+  // GetRealPan did not return a card authorization token (we can't call any
+  // FIDO-related flows, either opt-in or register new card, without the token),
+  // fill the form immediately.
+  return !response.did_succeed || response.card_authorization_token.empty();
 }
 
 void CreditCardAccessManager::ShowWebauthnOfferDialog(

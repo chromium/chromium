@@ -308,9 +308,16 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // FIDO eligible.
   bool IsSelectedCardFidoAuthorized();
 
+  // Returns true if there should be an immediate response after a CVC
+  // Authentication. The cases where we would have an immediate response is if
+  // there is no need for FIDO authentication after a successful CVC
+  // authentication, or the CVC authentication was unsuccessful.
+  bool ShouldRespondImmediately(
+      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
+
   // TODO(crbug.com/991037): Move this function under the build flags after the
-  // refactoring is done.
-  // Offer the option to use WebAuthn for authenticating future card unmasking.
+  // refactoring is done. Offer the option to use WebAuthn for authenticating
+  // future card unmasking.
   void ShowWebauthnOfferDialog(std::string card_authorization_token);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
