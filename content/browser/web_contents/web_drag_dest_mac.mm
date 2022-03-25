@@ -204,8 +204,11 @@ void DropCompletionCallback(
   NSDragOperation mask = info->operation_mask;
 
   // Give the delegate an opportunity to cancel the drag.
-  _canceled = !_webContents->GetDelegate()->CanDragEnter(
-      _webContents, *dropData, static_cast<DragOperationsMask>(mask));
+  if (auto* delegate = _webContents->GetDelegate()) {
+    _canceled = !delegate->CanDragEnter(_webContents, *dropData,
+                                        static_cast<DragOperationsMask>(mask));
+  }
+
   if (_canceled)
     return NSDragOperationNone;
 
