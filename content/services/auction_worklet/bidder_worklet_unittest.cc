@@ -601,13 +601,13 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: function() {return 1;}, bid:1, render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
 
   // Make sure recursive structures aren't allowed in ad field.
@@ -621,7 +621,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
       )",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
 
   // --------
@@ -651,34 +651,45 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
       mojom::BidderWorkletBidPtr() /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-10, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid of -10.000000 is not a valid "
+       "bid."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1.5, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid of -1.500000 is not a valid bid."});
 
   // Infinite and NaN bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1/0, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid of inf is not a valid bid."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1/0, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid of -inf is not a valid bid."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0/0, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid of nan is not a valid bid."});
 
   // Non-numeric bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"1", render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1], render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
 
   // ---------
@@ -696,51 +707,51 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
       R"({ad: ["ad"], bid:1, render:"http://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL 'http://response.test/' "
+       "isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"chrome-extension://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL "
+       "'chrome-extension://response.test/' isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"about:blank"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL 'about:blank' isn't a "
+       "valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"data:,foo"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL 'data:,foo' isn't a "
+       "valid https:// URL."});
 
   // Invalid render URLs.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"test"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL '' isn't a valid "
+       "https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned "
-       "render URL that isn't a valid https:// URL."});
+      {"https://url.test/ generateBid() bid render URL 'http:' isn't a valid "
+       "https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:9})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
 
   // ----------------------
@@ -757,7 +768,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         adComponents:["http://response.test/"]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value contains adComponents but "
+      {"https://url.test/ generateBid() bid contains adComponents but "
        "InterestGroup has no adComponents."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad",
@@ -766,7 +777,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         adComponents:[]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value contains adComponents but "
+      {"https://url.test/ generateBid() bid contains adComponents but "
        "InterestGroup has no adComponents."});
 
   // Auction should fail if adComponents in return value is an unexpected type.
@@ -777,7 +788,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         adComponents:5})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value contains adComponents but "
+      {"https://url.test/ generateBid() bid contains adComponents but "
        "InterestGroup has no adComponents."});
 
   // Not present and null adComponents fields should result in success.
@@ -820,8 +831,8 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         adComponents:5})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned adComponents value must be "
-       "an array."});
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array."});
 
   // Unexpected value types in adComponents should fail.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -831,7 +842,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         adComponents:[{}]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned adComponents value must be an "
+      {"https://url.test/ generateBid() bid adComponents value must be an "
        "array of strings."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
@@ -921,8 +932,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
         ]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned adComponents with over 20 "
-       "items."});
+      {"https://url.test/ generateBid() bid adComponents with over 20 items."});
 
   // ------------
   // Other cases.
@@ -932,26 +942,26 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   RunGenerateBidWithReturnValueExpectingResult(
       "", /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value not an object."});
+      {"https://url.test/ generateBid() bid not an object."});
 
   // Missing value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:"a", render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"a"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value "
+      {"https://url.test/ generateBid() bid "
        "has incorrect structure."});
 
   // Valid JS, but missing function.
@@ -979,6 +989,311 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:1 Uncaught ReferenceError: "
        "shrimp is not defined."});
+}
+
+// Test parsing of setBid arguments.
+TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
+  // --------
+  // Vary ad
+  // --------
+
+  // Other values JSON can't represent result in failing instead of null.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: globalThis.not_defined, bid:1, render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: function() {return 1;}, bid:1, render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+
+  // Make sure recursive structures aren't allowed in ad field.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(
+        function generateBid() {
+          var a = [];
+          a[0] = a;
+          setBid({ad: a, bid:1, render:"https://response.test/"});
+          return {};
+        }
+      )",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: bid has incorrect structure."});
+
+  // --------
+  // Vary bid
+  // --------
+
+  // Non-numeric bid.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:"1", render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid "
+       "has incorrect structure."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:[1], render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+
+  // ---------
+  // Vary URL.
+  // ---------
+
+  // Disallowed render schemes.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:"http://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL "
+       "'http://response.test/' isn't a valid https:// URL."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"],
+                 bid:1,
+                 render:"chrome-extension://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL "
+       "'chrome-extension://response.test/' isn't a valid https:// URL."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:"about:blank"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL 'about:blank' "
+       "isn't a valid https:// URL."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:"data:,foo"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL 'data:,foo' "
+       "isn't a valid https:// URL."});
+
+  // Invalid render URLs.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:"test"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL '' isn't a "
+       "valid https:// URL."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:"http://"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid render URL 'http:' isn't a "
+       "valid https:// URL."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:["http://response.test/"]});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:1, render:9});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+
+  // ----------------------
+  // No adComponents in IG.
+  // ----------------------
+
+  interest_group_ad_components_ = absl::nullopt;
+
+  // Auction should fail if adComponents in return value is an array.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:["http://response.test/"]});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid contains adComponents but "
+       "InterestGroup has no adComponents."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:[]});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid contains adComponents but "
+       "InterestGroup has no adComponents."});
+
+  // Auction should fail if adComponents in return value is an unexpected type.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:5});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid contains adComponents but "
+       "InterestGroup has no adComponents."});
+
+  SetDefaultParameters();
+
+  // -----------------------------
+  // Non-empty adComponents in IG.
+  // -----------------------------
+
+  // Auction should fail if adComponents in return value is an unexpected type.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:5});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid adComponents value must be "
+       "an array."});
+
+  // Unexpected value types in adComponents should fail.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:[{}]});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid adComponents value must be "
+       "an array of strings."});
+
+  // Up to 20 values in the output adComponents output array are allowed (And
+  // they can all be the same URL).
+  static_assert(blink::kMaxAdAuctionAdComponents == 20,
+                "Unexpected value of kMaxAdAuctionAdComponents");
+
+  // Results with 21 or more values are rejected.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: "ad",
+                 bid:1,
+                 render:"https://response.test/",
+                 adComponents:[
+                   "https://ad_component.test/" /* 1 */,
+                   "https://ad_component.test/" /* 2 */,
+                   "https://ad_component.test/" /* 3 */,
+                   "https://ad_component.test/" /* 4 */,
+                   "https://ad_component.test/" /* 5 */,
+                   "https://ad_component.test/" /* 6 */,
+                   "https://ad_component.test/" /* 7 */,
+                   "https://ad_component.test/" /* 8 */,
+                   "https://ad_component.test/" /* 9 */,
+                   "https://ad_component.test/" /* 10 */,
+                   "https://ad_component.test/" /* 11 */,
+                   "https://ad_component.test/" /* 12 */,
+                   "https://ad_component.test/" /* 13 */,
+                   "https://ad_component.test/" /* 14 */,
+                   "https://ad_component.test/" /* 15 */,
+                   "https://ad_component.test/" /* 16 */,
+                   "https://ad_component.test/" /* 17 */,
+                   "https://ad_component.test/" /* 18 */,
+                   "https://ad_component.test/" /* 19 */,
+                   "https://ad_component.test/" /* 20 */,
+                   "https://ad_component.test/" /* 21 */,
+        ]});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid adComponents with over 20 "
+       "items."});
+
+  // ------------
+  // Other cases.
+  // ------------
+
+  // No return value.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid(1);
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid not an object."});
+
+  // Missing value.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({bid:"a", render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid "
+       "has incorrect structure."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid "
+       "has incorrect structure."});
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ad: ["ad"], bid:"a"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
 }
 
 // Make sure Date() is not available when running generateBid().
@@ -1667,8 +1982,8 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
       R"({ad: 0, bid:1, render:"https://response2.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned render URL that isn't one of "
-       "the registered creative URLs."});
+      {"https://url.test/ generateBid() bid render URL "
+       "'https://response2.test/' isn't one of the registered creative URLs."});
 
   // Adding an ad with a corresponding `renderUrl` should result in success.
   // Also check the `interestGroup.ads` field passed to Javascript.
@@ -1711,9 +2026,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:["https://response.test/"]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() returned adComponents URL that isn't "
-       "one "
-       "of the registered creative URLs."});
+      {"https://url.test/ generateBid() bid adComponents URL "
+       "'https://response.test/' isn't one of the registered creative URLs."});
 
   // Add a second ad component URL, this time with metadata.
   // Returning a list with both ads should result in success.
@@ -1777,21 +2091,21 @@ TEST_F(BidderWorkletTest, GenerateBidAllowComponentAuction) {
       R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: false})",
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() return value does not have "
+      {"https://url.test/ generateBid() bid does not have "
        "allowComponentAuction set to true. Bid dropped from component "
        "auction."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: null, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() return value does not have "
+      {"https://url.test/ generateBid() bid does not have "
        "allowComponentAuction set to true. Bid dropped from component "
        "auction."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: 0})",
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() return value does not have "
+      {"https://url.test/ generateBid() bid does not have "
        "allowComponentAuction set to true. Bid dropped from component "
        "auction."});
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2148,6 +2462,22 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
       7u);
 }
 
+// Even though the script had set an intermediate result with setBid, the
+// returned value should be used instead.
+TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "returned", bid:2, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setBid({ad: "ad", bid:1, render:"https://response.test/"})
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New(
+          "\"returned\"", 2, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
 TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
   // Use a very long default script timeout, and a short per buyer timeout, so
   // that if the bidder script with endless loop times out, we know that the per
@@ -2168,6 +2498,81 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(/*raw_return_value=*/"", R"(while (1))"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+}
+
+// Even though the script timed out, it had set an intermediate result with
+// setBid, so we should use that instead.
+TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
+  // Use a very long default script timeout, and a short per buyer timeout, so
+  // that if the bidder script with endless loop times out, we know that the per
+  // buyer timeout overwrote the default script timeout and worked.
+  const base::TimeDelta kScriptTimeout = base::Days(360);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper,
+             const base::TimeDelta script_timeout) {
+            v8_helper->set_script_timeout_for_testing(script_timeout);
+          },
+          v8_helper_, kScriptTimeout));
+  // Make sure set_script_timeout_for_testing is called.
+  task_environment_.RunUntilIdle();
+
+  per_buyer_timeout_ = base::Milliseconds(20);
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            setBid({ad: "ad", bid:1, render:"https://response.test/"});
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+}
+
+// Even though the script timed out, it had set an intermediate result with
+// setBid, so we should use that instead. The bid value should not change if we
+// mutate the object passed to setBid after it returns.
+TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
+  // Use a very long default script timeout, and a short per buyer timeout, so
+  // that if the bidder script with endless loop times out, we know that the per
+  // buyer timeout overwrote the default script timeout and worked.
+  const base::TimeDelta kScriptTimeout = base::Days(360);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper,
+             const base::TimeDelta script_timeout) {
+            v8_helper->set_script_timeout_for_testing(script_timeout);
+          },
+          v8_helper_, kScriptTimeout));
+  // Make sure set_script_timeout_for_testing is called.
+  task_environment_.RunUntilIdle();
+
+  per_buyer_timeout_ = base::Milliseconds(20);
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            let result = {ad: "ad", bid:1, render:"https://response.test/"};
+            setBid(result);
+            result.ad = "ad2";
+            result.bid = 3;
+            result.render = "https://response.test/3";
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -3053,7 +3458,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() return value has incorrect structure."},
+      {"https://url.test/ generateBid() bid has incorrect structure."},
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt);
 }

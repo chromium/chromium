@@ -24,7 +24,7 @@ class ReportBindings {
   // the template.
   ReportBindings(AuctionV8Helper* v8_helper,
                  v8::Local<v8::ObjectTemplate> global_template);
-  ReportBindings WorkletLoader(const ReportBindings&) = delete;
+  ReportBindings(const ReportBindings&) = delete;
   ReportBindings& operator=(const ReportBindings&) = delete;
   ~ReportBindings();
 

@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -548,9 +547,9 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params->has_bid =
           result_dict.Get("bid", &component_auction_modified_bid_params->bid);
       if (component_auction_modified_bid_params->has_bid) {
-        // Fail if the new bid is not valid.
-        if (!BidderWorklet::IsValidBid(
-                component_auction_modified_bid_params->bid)) {
+        // Fail if the new bid is not valid or is 0 or less.
+        if (!std::isfinite(component_auction_modified_bid_params->bid) ||
+            component_auction_modified_bid_params->bid <= 0.0) {
           errors_out.push_back(
               base::StrCat({decision_logic_url_.spec(),
                             " scoreAd() returned an invalid bid."}));

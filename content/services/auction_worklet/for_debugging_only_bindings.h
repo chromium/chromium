@@ -24,8 +24,7 @@ class ForDebuggingOnlyBindings {
   // ForDebuggingOnlyBindings must outlive the template.
   ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper,
                            v8::Local<v8::ObjectTemplate> global_template);
-  ForDebuggingOnlyBindings WorkletLoader(const ForDebuggingOnlyBindings&) =
-      delete;
+  ForDebuggingOnlyBindings(const ForDebuggingOnlyBindings&) = delete;
   ForDebuggingOnlyBindings& operator=(const ForDebuggingOnlyBindings&) = delete;
   ~ForDebuggingOnlyBindings();
 
