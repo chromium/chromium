@@ -84,6 +84,29 @@ bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
   return false;
 }
 
+// This helper is used to determine main *and* shadow backends. Technically,
+// some "Enable" groups don't require shadow traffic but they use it for safe
+// deletions.
+bool UsesAndroidBackendAsMainBackend(bool is_syncing) {
+  if (!is_syncing)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
+    return false;
+
+  features::UpmExperimentVariation variation =
+      features::kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case features::UpmExperimentVariation::kEnableForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+      return true;
+    case features::UpmExperimentVariation::kShadowSyncingUsers:
+      return false;
+  }
+  NOTREACHED() << "Define explicitly whether Android is the main backend!";
+  return false;
+}
+
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
 struct LoginsResultImpl {
@@ -299,12 +322,12 @@ class ShadowTrafficMetricsRecorder
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
-    PasswordStoreBackend* main_backend,
-    PasswordStoreBackend* shadow_backend,
+    PasswordStoreBackend* built_in_backend,
+    PasswordStoreBackend* android_backend,
     PrefService* prefs,
     SyncDelegate* sync_delegate)
-    : main_backend_(main_backend),
-      shadow_backend_(shadow_backend),
+    : built_in_backend_(built_in_backend),
+      android_backend_(android_backend),
       prefs_(prefs),
       sync_delegate_(sync_delegate) {}
 
@@ -319,25 +342,32 @@ void PasswordStoreProxyBackend::InitBackend(
           /*num_callbacks=*/2, base::BindOnce(&InvokeCallbackWithCombinedStatus,
                                               std::move(completion)));
 
-  main_backend_->InitBackend(std::move(remote_form_changes_received),
-                             std::move(sync_enabled_or_disabled_cb),
-                             base::BindOnce(pending_initialization_calls));
-  shadow_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
-                               base::BindOnce(pending_initialization_calls));
+  // TODO(crbug.com/1279341): Ensure that `remote_form_changes_received is
+  // always invoked by the current main backend. Same for
+  // `sync_enabled_or_disabled`.
+
+  // Both backends need to be initialized, so using the helpers for main/shadow
+  // backend is unnecessary and won't work since the sync status may not be
+  // available yet.
+  built_in_backend_->InitBackend(std::move(remote_form_changes_received),
+                                 std::move(sync_enabled_or_disabled_cb),
+                                 base::BindOnce(pending_initialization_calls));
+  android_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
+                                base::BindOnce(pending_initialization_calls));
 }
 
 void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
   base::RepeatingClosure pending_shutdown_calls = base::BarrierClosure(
       /*num_closures=*/2, std::move(shutdown_completed));
-  main_backend_->Shutdown(pending_shutdown_calls);
-  shadow_backend_->Shutdown(pending_shutdown_calls);
+  android_backend_->Shutdown(pending_shutdown_calls);
+  built_in_backend_->Shutdown(pending_shutdown_calls);
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
       ShadowTrafficMetricsRecorder<LoginsResultOrErrorImpl>>(
       MethodName("GetAllLoginsAsync"));
-  main_backend_->GetAllLoginsAsync(
+  main_backend()->GetAllLoginsAsync(
       base::BindOnce(&ShadowTrafficMetricsRecorder<
                          LoginsResultOrErrorImpl>::RecordMainResult,
                      handler)
@@ -345,7 +375,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->GetAllLoginsAsync(
+    shadow_backend()->GetAllLoginsAsync(
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            LoginsResultOrErrorImpl>::RecordShadowResult,
                        handler));
@@ -357,7 +387,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
   auto handler = base::MakeRefCounted<
       ShadowTrafficMetricsRecorder<LoginsResultOrErrorImpl>>(
       MethodName("GetAutofillableLoginsAsync"));
-  main_backend_->GetAutofillableLoginsAsync(
+  main_backend()->GetAutofillableLoginsAsync(
       base::BindOnce(&ShadowTrafficMetricsRecorder<
                          LoginsResultOrErrorImpl>::RecordMainResult,
                      handler)
@@ -365,7 +395,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->GetAutofillableLoginsAsync(
+    shadow_backend()->GetAutofillableLoginsAsync(
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            LoginsResultOrErrorImpl>::RecordShadowResult,
                        handler));
@@ -379,7 +409,7 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
   auto handler =
       base::MakeRefCounted<ShadowTrafficMetricsRecorder<LoginsResultImpl>>(
           MethodName("FillMatchingLoginsAsync"));
-  main_backend_->FillMatchingLoginsAsync(
+  main_backend()->FillMatchingLoginsAsync(
       base::BindOnce(
           &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordMainResult,
           handler)
@@ -388,7 +418,7 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->FillMatchingLoginsAsync(
+    shadow_backend()->FillMatchingLoginsAsync(
         base::BindOnce(
             &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordShadowResult,
             handler),
@@ -403,14 +433,14 @@ void PasswordStoreProxyBackend::AddLoginAsync(
       ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
       MethodName("AddLoginAsync"));
 
-  main_backend_->AddLoginAsync(
+  main_backend()->AddLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
                                PasswordStoreChangeListImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->AddLoginAsync(
+    shadow_backend()->AddLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            PasswordStoreChangeListImpl>::RecordShadowResult,
@@ -425,14 +455,14 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
       ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
       MethodName("UpdateLoginAsync"));
 
-  main_backend_->UpdateLoginAsync(
+  main_backend()->UpdateLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
                                PasswordStoreChangeListImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->UpdateLoginAsync(
+    shadow_backend()->UpdateLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            PasswordStoreChangeListImpl>::RecordShadowResult,
@@ -447,14 +477,14 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
       ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
       MethodName("RemoveLoginAsync"));
 
-  main_backend_->RemoveLoginAsync(
+  main_backend()->RemoveLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
                                PasswordStoreChangeListImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->RemoveLoginAsync(
+    shadow_backend()->RemoveLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            PasswordStoreChangeListImpl>::RecordShadowResult,
@@ -472,7 +502,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
       ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
       MethodName("RemoveLoginsByURLAndTimeAsync"));
 
-  main_backend_->RemoveLoginsByURLAndTimeAsync(
+  main_backend()->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
       base::BindOnce(&ShadowTrafficMetricsRecorder<
                          PasswordStoreChangeListImpl>::RecordMainResult,
@@ -480,7 +510,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
           .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->RemoveLoginsByURLAndTimeAsync(
+    shadow_backend()->RemoveLoginsByURLAndTimeAsync(
         url_filter, std::move(delete_begin), std::move(delete_end),
         base::OnceCallback<void(bool)>(),
         base::BindOnce(&ShadowTrafficMetricsRecorder<
@@ -497,7 +527,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
       ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
       MethodName("RemoveLoginsCreatedBetweenAsync"));
 
-  main_backend_->RemoveLoginsCreatedBetweenAsync(
+  main_backend()->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
       base::BindOnce(&ShadowTrafficMetricsRecorder<
                          PasswordStoreChangeListImpl>::RecordMainResult,
@@ -505,7 +535,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
           .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->RemoveLoginsCreatedBetweenAsync(
+    shadow_backend()->RemoveLoginsCreatedBetweenAsync(
         std::move(delete_begin), std::move(delete_end),
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            PasswordStoreChangeListImpl>::RecordShadowResult,
@@ -516,27 +546,34 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreProxyBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  main_backend_->DisableAutoSignInForOriginsAsync(origin_filter,
-                                                  std::move(completion));
+  main_backend()->DisableAutoSignInForOriginsAsync(origin_filter,
+                                                   std::move(completion));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
-    shadow_backend_->DisableAutoSignInForOriginsAsync(
+    shadow_backend()->DisableAutoSignInForOriginsAsync(
         origin_filter,
         /*completion=*/base::DoNothing());
   }
 }
 
 SmartBubbleStatsStore* PasswordStoreProxyBackend::GetSmartBubbleStatsStore() {
-  return main_backend_->GetSmartBubbleStatsStore();
+  return main_backend()->GetSmartBubbleStatsStore();
 }
 
 FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
-  return main_backend_->GetFieldInfoStore();
+  return main_backend()->GetFieldInfoStore();
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
-  return main_backend_->CreateSyncControllerDelegate();
+  switch (features::kUpmExperimentVariationParam.Get()) {
+    case features::UpmExperimentVariation::kEnableForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+    case features::UpmExperimentVariation::kShadowSyncingUsers:
+      return built_in_backend_->CreateSyncControllerDelegate();
+  }
+  NOTREACHED() << "Define which backend creates the sync delegate.";
+  return nullptr;
 }
 
 void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
@@ -546,6 +583,20 @@ void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
 void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   NOTIMPLEMENTED();
+}
+
+PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {
+  return UsesAndroidBackendAsMainBackend(
+             sync_delegate_->IsSyncingPasswordsEnabled())
+             ? android_backend_
+             : built_in_backend_;
+}
+
+PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
+  return UsesAndroidBackendAsMainBackend(
+             sync_delegate_->IsSyncingPasswordsEnabled())
+             ? built_in_backend_
+             : android_backend_;
 }
 
 }  // namespace password_manager

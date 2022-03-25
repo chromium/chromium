@@ -21,10 +21,10 @@ namespace password_manager {
 // while the shadow backend is only queried to record shadow traffic.
 class PasswordStoreProxyBackend : public PasswordStoreBackend {
  public:
-  // `main_backend` and `shadow_backend` must not be null and must outlive this
-  // object as long as Shutdown() is not called.
-  PasswordStoreProxyBackend(PasswordStoreBackend* main_backend,
-                            PasswordStoreBackend* shadow_backend,
+  // `built_in_backend` and `android_backend` must not be null and must outlive
+  // this object as long as Shutdown() is not called.
+  PasswordStoreProxyBackend(PasswordStoreBackend* built_in_backend,
+                            PasswordStoreBackend* android_backend,
                             PrefService* prefs,
                             SyncDelegate* sync_delegate);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
@@ -72,8 +72,11 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
-  const raw_ptr<PasswordStoreBackend> main_backend_;
-  const raw_ptr<PasswordStoreBackend> shadow_backend_;
+  PasswordStoreBackend* main_backend();
+  PasswordStoreBackend* shadow_backend();
+
+  const raw_ptr<PasswordStoreBackend> built_in_backend_;
+  const raw_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
   const raw_ptr<SyncDelegate> sync_delegate_;
 };
