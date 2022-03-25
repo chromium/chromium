@@ -172,6 +172,14 @@ tast_disabled_tests_from_chrome_all = [
   "arc.SettingsBridge.vm",
   "arc.StartStop.vm",
   "arc.TextToSpeech.vm",
+
+  # Flaky on chromeos-eve-chrome. b/226284050.
+  "crostini.UninstallInvalidApp.bullseye_stable",
+  "crostini.Xattrs.bullseye_stable",
+  "crostini.SSHFSMount.bullseye_stable",
+  "crostini.GPUEnabled.gpu_bullseye_stable",
+  "crostini.Basic.bullseye_stable",
+  "crostini.CrashReporter.bullseye_stable",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
