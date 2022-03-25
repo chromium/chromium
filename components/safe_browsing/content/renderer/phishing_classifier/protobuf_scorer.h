@@ -52,9 +52,7 @@ class ProtobufModelScorer : public Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const override;
 
-// TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;

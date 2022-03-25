@@ -289,9 +289,7 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
       *bitmap_, std::move(verdict),
       base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
                      weak_factory_.GetWeakPtr()));
-// TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
-#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));
@@ -308,10 +306,7 @@ void PhishingClassifier::OnVisualTargetsMatched(
   }
   base::UmaHistogramTimes("SBClientPhishing.VisualComparisonTime",
                           base::TimeTicks::Now() - visual_matching_start_);
-
-// TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));

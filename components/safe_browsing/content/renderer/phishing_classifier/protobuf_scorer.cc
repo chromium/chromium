@@ -150,8 +150,7 @@ void ProtobufModelScorer::GetMatchingVisualTargets(
       std::move(callback));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void ProtobufModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<double>)> callback) const {
