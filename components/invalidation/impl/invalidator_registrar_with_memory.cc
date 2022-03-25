@@ -194,9 +194,6 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     registered_handler_to_topics_map_[handler] = topics;
   }
 
-  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
-  base::Value* pref_data = update->FindDictKey(sender_id_);
-
   // This does *not* remove subscribed topics which are not registered. This
   // behaviour is used by some handlers to keep topic subscriptions after
   // browser startup even if they are not included in the first call of this
@@ -205,14 +202,12 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   //
   // TODO(crbug.com/1051893): make the unsubscription behaviour consistent
   // regardless of browser restart in between.
-  auto to_unregister =
+  auto topics_to_unregister =
       base::STLSetDifference<std::set<TopicData>>(old_topics, topics);
-  for (const auto& topic : to_unregister) {
-    pref_data->RemoveKey(topic.name);
-    handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].erase(
-        topic);
-  }
+  RemoveSubscribedTopics(handler, topics_to_unregister);
 
+  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
+  base::Value* pref_data = update->FindDictKey(sender_id_);
   for (const auto& topic : topics) {
     handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].insert(
         topic);
@@ -222,6 +217,19 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     pref_data->SetKey(topic.name, std::move(handler_pref));
   }
   return true;
+}
+
+void InvalidatorRegistrarWithMemory::RemoveUnregisteredTopics(
+    InvalidationHandler* handler) {
+  auto topics_to_unregister =
+      handler_name_to_subscribed_topics_map_[handler->GetOwnerName()];
+  if (registered_handler_to_topics_map_.find(handler) !=
+      registered_handler_to_topics_map_.end()) {
+    topics_to_unregister = base::STLSetDifference<std::set<TopicData>>(
+        topics_to_unregister, registered_handler_to_topics_map_[handler]);
+  }
+
+  RemoveSubscribedTopics(handler, std::move(topics_to_unregister));
 }
 
 Topics InvalidatorRegistrarWithMemory::GetRegisteredTopics(
@@ -330,6 +338,19 @@ base::DictionaryValue InvalidatorRegistrarWithMemory::CollectDebugData() const {
     }
   }
   return return_value;
+}
+
+void InvalidatorRegistrarWithMemory::RemoveSubscribedTopics(
+    const InvalidationHandler* handler,
+    const std::set<TopicData>& topics_to_unsubscribe) {
+  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
+  base::Value* pref_data = update->FindDictKey(sender_id_);
+  DCHECK(pref_data);
+  for (const TopicData& topic : topics_to_unsubscribe) {
+    pref_data->RemoveKey(topic.name);
+    handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].erase(
+        topic);
+  }
 }
 
 }  // namespace invalidation

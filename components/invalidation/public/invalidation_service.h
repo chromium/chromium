@@ -46,6 +46,14 @@ class InvalidationLogger;
 //   service->UpdateInterestedTopics(client_handler, {});
 //   service->UnregisterInvalidationHandler(client_handler);
 //
+// Note that UpdateInterestedTopics() unsubscribes only from previously
+// registered topics during current browser session. To unsubscribe from *all*
+// topics, UnsubscribeFromUnregisteredTopics() should be used:
+//
+//   service->UpdateInterestedTopics(client_handler, {});
+//   service->UnsubscribeFromUnregisteredTopics(client_handler);
+//   service->UnregisterInvalidationHandler(client_handler);
+//
 // If an invalidation handler cares about the invalidator state, it should also
 // do the following when starting the client:
 //
@@ -73,24 +81,32 @@ class InvalidationService {
   // Starts sending notifications to |handler|.  |handler| must not be NULL,
   // and it must not already be registered.
   //
-  // Handler registrations are persisted across restarts of sync.
+  // Handler must unregister before browser shutdown.
   virtual void RegisterInvalidationHandler(InvalidationHandler* handler) = 0;
 
   // Updates the set of topics associated with |handler|. |handler| must not be
   // nullptr, and must already be registered. A topic must be subscribed for at
   // most one handler. If topic is already subscribed for another
-  // InvalidationHandler function returns false.
+  // InvalidationHandler function returns false. Note that this method
+  // unsubscribes only from the topics which were previously added (and does
+  // *not* unsubscribe from topics which were added before browser restart). Use
+  // UnsubscribeFromUnregisteredTopics() to explicitly unsubscribe from all
+  // unregistered topics.
   //
   // Subscribed topics are persisted across restarts of sync.
   [[nodiscard]] virtual bool UpdateInterestedTopics(
       InvalidationHandler* handler,
       const TopicSet& topics) = 0;
 
+  // Unsubscribes from all topics associated with |handler| which were not added
+  // using UpdateInterestedTopics(), even from those which were registered
+  // before browser restart.
+  virtual void UnsubscribeFromUnregisteredTopics(
+      InvalidationHandler* handler) = 0;
+
   // Stops sending notifications to |handler|.  |handler| must not be NULL, and
   // it must already be registered.  Note that this doesn't unregister the IDs
   // associated with |handler|.
-  //
-  // Handler registrations are persisted across restarts of sync.
   virtual void UnregisterInvalidationHandler(InvalidationHandler* handler) = 0;
 
   // Returns the current invalidator state.  When called from within

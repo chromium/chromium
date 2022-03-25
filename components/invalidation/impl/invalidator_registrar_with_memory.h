@@ -69,6 +69,11 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   [[nodiscard]] bool UpdateRegisteredTopics(InvalidationHandler* handler,
                                             const std::set<TopicData>& topics);
 
+  // Unsubscribes from all topics which are associated with |handler| but were
+  // not added using UpdateRegisteredTopics(). It's useful to unsubscribe from
+  // all topics even if they were added before browser restart.
+  void RemoveUnregisteredTopics(InvalidationHandler* handler);
+
   // Returns all topics currently registered to |handler|.
   Topics GetRegisteredTopics(InvalidationHandler* handler) const;
 
@@ -117,6 +122,9 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // Generate a Dictionary with all the debugging information.
   base::DictionaryValue CollectDebugData() const;
+
+  void RemoveSubscribedTopics(const InvalidationHandler* handler,
+                              const std::set<TopicData>& topics_to_unsubscribe);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

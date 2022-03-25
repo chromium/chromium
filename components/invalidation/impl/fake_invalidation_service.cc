@@ -39,6 +39,11 @@ bool FakeInvalidationService::UpdateInterestedTopics(
   return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
 }
 
+void FakeInvalidationService::UnsubscribeFromUnregisteredTopics(
+    InvalidationHandler* handler) {
+  invalidator_registrar_->RemoveUnregisteredTopics(handler);
+}
+
 void FakeInvalidationService::UnregisterInvalidationHandler(
     InvalidationHandler* handler) {
   invalidator_registrar_->UnregisterHandler(handler);

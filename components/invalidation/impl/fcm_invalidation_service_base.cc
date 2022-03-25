@@ -102,6 +102,15 @@ bool FCMInvalidationServiceBase::UpdateInterestedTopics(
   return true;
 }
 
+void FCMInvalidationServiceBase::UnsubscribeFromUnregisteredTopics(
+    InvalidationHandler* handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << "Unsubscribing from unregistered topics";
+  invalidator_registrar_.RemoveUnregisteredTopics(handler);
+  DoUpdateSubscribedTopicsIfNeeded();
+  logger_.OnUpdatedTopics(invalidator_registrar_.GetHandlerNameToTopicsMap());
+}
+
 void FCMInvalidationServiceBase::UnregisterInvalidationHandler(
     InvalidationHandler* handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

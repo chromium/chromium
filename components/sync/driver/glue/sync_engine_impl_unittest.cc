@@ -135,6 +135,10 @@ class MockInvalidationService : public invalidation::InvalidationService {
                const invalidation::TopicSet& topics),
               (override));
   MOCK_METHOD(void,
+              UnsubscribeFromUnregisteredTopics,
+              (invalidation::InvalidationHandler * handler),
+              (override));
+  MOCK_METHOD(void,
               UnregisterInvalidationHandler,
               (invalidation::InvalidationHandler * handler),
               (override));
@@ -752,6 +756,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   // an empty TopicSet upon initialization.
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(_, invalidation::TopicSet()));
+  EXPECT_CALL(invalidator_, UnsubscribeFromUnregisteredTopics);
   InitializeBackend(/*expect_success=*/true);
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);

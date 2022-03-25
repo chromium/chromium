@@ -184,6 +184,7 @@ void SyncEngineImpl::Initialize(InitParams params) {
     invalidator_->RegisterInvalidationHandler(this);
     bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
     DCHECK(success);
+    invalidator_->UnsubscribeFromUnregisteredTopics(this);
     invalidator_->UnregisterInvalidationHandler(this);
     invalidator_ = nullptr;
   }
