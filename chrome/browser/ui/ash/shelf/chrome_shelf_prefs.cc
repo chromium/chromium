@@ -235,7 +235,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   for (const auto& policy_dict_entry : policy_apps->GetListDeprecated()) {
     const std::string* policy_entry =
         policy_dict_entry.is_dict()
-            ? policy_dict_entry.FindStringKey(
+            ? policy_dict_entry.GetDict().FindString(
                   ChromeShelfPrefs::kPinnedAppsPrefAppIDKey)
             : nullptr;
 

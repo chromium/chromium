@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -826,9 +829,9 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   // Do a best effort of retrieving the correct settings from the local state.
   // Use the default settings of the value if it fails to be retrieved.
   const std::string* sorted_col_id =
-      dictionary->FindStringKey(kSortColumnIdKey);
+      dictionary->GetDict().FindString(kSortColumnIdKey);
   bool sort_is_ascending =
-      dictionary->FindBoolKey(kSortIsAscendingKey).value_or(true);
+      dictionary->GetDict().FindBool(kSortIsAscendingKey).value_or(true);
 
   int current_visible_column_index = 0;
   for (size_t i = 0; i < kColumnsSize; ++i) {
@@ -874,13 +877,14 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
   // Store the current sort status to be restored again at startup.
   if (!table_view_delegate_->IsTableSorted()) {
-    dict_update->SetStringKey(kSortColumnIdKey, "");
+    dict_update->GetDict().Set(kSortColumnIdKey, "");
   } else {
     const auto& sort_descriptor = table_view_delegate_->GetSortDescriptor();
-    dict_update->SetStringKey(
+    dict_update->GetDict().Set(
         kSortColumnIdKey,
         GetColumnIdAsString(sort_descriptor.sorted_column_id));
-    dict_update->SetBoolKey(kSortIsAscendingKey, sort_descriptor.is_ascending);
+    dict_update->GetDict().Set(kSortIsAscendingKey,
+                               sort_descriptor.is_ascending);
   }
 }
 

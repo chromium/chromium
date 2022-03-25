@@ -133,8 +133,8 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     if (!policy_dict_entry.is_dict())
       return AppListControllerDelegate::PIN_EDITABLE;
 
-    const std::string* policy_entry =
-        policy_dict_entry.FindStringKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey);
+    const std::string* policy_entry = policy_dict_entry.GetDict().FindString(
+        ChromeShelfPrefs::kPinnedAppsPrefAppIDKey);
     if (!policy_entry)
       return AppListControllerDelegate::PIN_EDITABLE;
 

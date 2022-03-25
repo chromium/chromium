@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
+#include <algorithm>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -183,7 +186,8 @@ std::string GetDailyRefreshCollectionId(value_store::ValueStore* value_store) {
     return std::string();
 
   const auto* daily_refresh_info_string =
-      read_result.settings().FindStringKey(kChromeAppDailyRefreshInfoPref);
+      read_result.settings().GetDict().FindString(
+          kChromeAppDailyRefreshInfoPref);
 
   if (!daily_refresh_info_string)
     return std::string();
@@ -195,7 +199,7 @@ std::string GetDailyRefreshCollectionId(value_store::ValueStore* value_store) {
     return std::string();
 
   const auto* collection_id =
-      daily_refresh_info->FindStringKey(kChromeAppCollectionId);
+      daily_refresh_info->GetDict().FindString(kChromeAppCollectionId);
 
   if (!collection_id)
     return std::string();

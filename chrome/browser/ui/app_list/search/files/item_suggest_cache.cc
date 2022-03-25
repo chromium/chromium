@@ -108,7 +108,7 @@ absl::optional<std::string> GetString(const base::Value* value,
                                       const std::string& key) {
   if (!value->is_dict())
     return absl::nullopt;
-  const std::string* field = value->FindStringKey(key);
+  const std::string* field = value->GetDict().FindString(key);
   if (!field)
     return absl::nullopt;
   return *field;

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "ash/public/cpp/image_downloader.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -195,8 +198,8 @@ void HandleParsedThumbnailResponse(
   }
 
   const std::string* received_request_id =
-      result.value->FindStringKey("taskId");
-  const std::string* data = result.value->FindStringKey("data");
+      result.value->GetDict().FindString("taskId");
+  const std::string* data = result.value->GetDict().FindString("data");
 
   if (!data || !received_request_id || *received_request_id != request_id) {
     std::move(callback).Run("");
@@ -401,15 +404,16 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   // Generate an image loader request. The request type is defined in
   // ui/file_manager/image_loader/load_image_request.js.
   base::Value request_value(base::Value::Type::DICTIONARY);
-  request_value.SetKey("taskId", base::Value(request_id.ToString()));
-  request_value.SetKey("url", base::Value(thumbnail_url.spec()));
-  request_value.SetKey("timestamp", base::TimeToValue(file_info.last_modified));
+  base::Value::Dict& request_dict = request_value.GetDict();
+  request_dict.Set("taskId", base::Value(request_id.ToString()));
+  request_dict.Set("url", base::Value(thumbnail_url.spec()));
+  request_dict.Set("timestamp", base::TimeToValue(file_info.last_modified));
   // TODO(crbug.com/2650014) : Add an arg to set this to false for sharesheet.
-  request_value.SetBoolKey("cache", true);
-  request_value.SetBoolKey("crop", true);
-  request_value.SetKey("priority", base::Value(1));
-  request_value.SetKey("width", base::Value(size));
-  request_value.SetKey("height", base::Value(size));
+  request_dict.Set("cache", true);
+  request_dict.Set("crop", true);
+  request_dict.Set("priority", base::Value(1));
+  request_dict.Set("width", base::Value(size));
+  request_dict.Set("height", base::Value(size));
 
   std::string request_message;
   base::JSONWriter::Write(request_value, &request_message);
