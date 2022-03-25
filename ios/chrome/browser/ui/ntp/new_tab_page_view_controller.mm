@@ -48,6 +48,9 @@
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
 
+// Whether or not the fake omnibox is pineed to the top of the NTP.
+@property(nonatomic, assign) BOOL fakeOmniboxPinnedToTop;
+
 // The collection view layout for the uppermost content suggestions collection
 // view.
 @property(nonatomic, weak) ContentSuggestionsLayout* contentSuggestionsLayout;
@@ -619,30 +622,16 @@
   }
 }
 
-// Pins sticky elements to the top of the NTP. This includes the fake omnibox
-// and if Web Channels is enabled, the feed header.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
-- (void)pinStickyElements {
-  [self setIsScrolledIntoFeed:YES];
-
+// Pins the fake omnibox to the top of the NTP.
+- (void)pinFakeOmniboxToTop {
+  self.fakeOmniboxPinnedToTop = YES;
   [self stickFakeOmniboxToTop];
-
-  if (IsWebChannelsEnabled() && self.feedHeaderViewController) {
-    [self stickFeedHeaderToTop];
-  }
 }
 
-// Resets the sticky elements to their original position. This includes the fake
-// omnibox and if Web Channels is enabled, the feed header.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
-- (void)resetStickyElements {
-  [self setIsScrolledIntoFeed:NO];
-
+// Resets the fake omnibox to its original position.
+- (void)resetFakeOmniboxConstraints {
+  self.fakeOmniboxPinnedToTop = NO;
   [self resetFakeOmnibox];
-
-  if (IsWebChannelsEnabled()) {
-    [self setInitialFeedHeaderConstraints];
-  }
 }
 
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
@@ -816,12 +805,28 @@
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
-  if ((!self.isScrolledIntoFeed || force) &&
-      scrollPosition > [self offsetToStickOmniboxAndHeader]) {
-    [self pinStickyElements];
-  } else if ((self.isScrolledIntoFeed || force) &&
-             scrollPosition <= [self offsetToStickOmniboxAndHeader]) {
-    [self resetStickyElements];
+  if (scrollPosition > [self offsetToStickOmnibox] &&
+      !self.fakeOmniboxPinnedToTop) {
+    [self pinFakeOmniboxToTop];
+  } else if (scrollPosition <= [self offsetToStickOmnibox] &&
+             self.fakeOmniboxPinnedToTop) {
+    [self resetFakeOmniboxConstraints];
+  }
+
+  if (IsWebChannelsEnabled()) {
+    if ((!self.isScrolledIntoFeed || force) &&
+        scrollPosition > [self offsetWhenScrolledIntoFeed]) {
+      [self setIsScrolledIntoFeed:YES];
+      if (self.feedHeaderViewController) {
+        [self stickFeedHeaderToTop];
+      }
+    } else if ((self.isScrolledIntoFeed || force) &&
+               scrollPosition <= [self offsetWhenScrolledIntoFeed]) {
+      [self setIsScrolledIntoFeed:NO];
+      if (IsWebChannelsEnabled()) {
+        [self setInitialFeedHeaderConstraints];
+      }
+    }
   }
 
   // Content suggestions header will sometimes glitch when swiping quickly from
@@ -953,9 +958,16 @@
              : 0;
 }
 
-// The y-position content offset for when the feed header and fake omnibox
+// The y-position content offset for when the user has completely scrolled into
+// the Feed.
+- (CGFloat)offsetWhenScrolledIntoFeed {
+  return -(self.headerController.view.frame.size.height -
+           [self stickyOmniboxHeight]);
+}
+
+// The y-position content offset for when the fake omnibox
 // should stick to the top of the NTP.
-- (CGFloat)offsetToStickOmniboxAndHeader {
+- (CGFloat)offsetToStickOmnibox {
   CGFloat offset = -(self.headerController.view.frame.size.height -
                      [self stickyOmniboxHeight]);
   if (IsSplitToolbarMode(self) &&
@@ -1103,7 +1115,7 @@
 // position.
 - (void)setContentOffset:(CGFloat)offset {
   self.collectionView.contentOffset = CGPointMake(0, offset);
-  self.scrolledIntoFeed = offset > -[self offsetToStickOmniboxAndHeader];
+  self.scrolledIntoFeed = offset > -[self offsetWhenScrolledIntoFeed];
 }
 
 @end
