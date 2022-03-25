@@ -1720,6 +1720,8 @@ source_set("browser") {
     "renderer_host/stored_page.h",
     "renderer_host/text_input_manager.cc",
     "renderer_host/text_input_manager.h",
+    "renderer_host/transient_allow_popup.cc",
+    "renderer_host/transient_allow_popup.h",
     "renderer_host/ui_events_helper.cc",
     "renderer_host/ui_events_helper.h",
     "renderer_host/visible_time_request_trigger.cc",

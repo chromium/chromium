@@ -18,6 +18,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_within_tab_helper.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -163,6 +165,14 @@ void FullscreenController::EnterFullscreenModeForTab(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWindowPlacementFullscreenCompanionWindow)) {
+    if (!popunder_preventer_)
+      popunder_preventer_ = std::make_unique<PopunderPreventer>(web_contents);
+    else
+      popunder_preventer_->WillActivateWebContents(web_contents);
+  }
+
   SetTabWithExclusiveAccess(web_contents);
   requesting_origin_ =
       requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
@@ -197,6 +207,8 @@ void FullscreenController::EnterFullscreenModeForTab(
 }
 
 void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
+  popunder_preventer_.reset();
+
   if (MaybeToggleFullscreenWithinTab(web_contents, false)) {
     // During tab capture of fullscreen-within-tab views, the browser window
     // fullscreen state is unchanged, so return now.
@@ -235,6 +247,16 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
   PostFullscreenChangeNotification();
+}
+
+void FullscreenController::FullscreenTabOpeningPopup(
+    content::WebContents* opener,
+    content::WebContents* popup) {
+  DCHECK(base::FeatureList::IsEnabled(
+      blink::features::kWindowPlacementFullscreenCompanionWindow));
+  DCHECK_EQ(exclusive_access_tab(), opener);
+  DCHECK(popunder_preventer_);
+  popunder_preventer_->AddPotentialPopunder(popup);
 }
 
 void FullscreenController::OnTabDeactivated(

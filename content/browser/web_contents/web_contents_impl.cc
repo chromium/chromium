@@ -479,7 +479,7 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
   return set_holder->set();
 }
 
-// Returns true if |host| has the Window Placement permission granted.
+// Returns true if `host` has the Window Placement permission granted.
 bool IsWindowPlacementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();

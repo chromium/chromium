@@ -2802,13 +2802,12 @@
     // exposes requisite information about displays connected to the device.
     {
       name: "WindowPlacement",
-      origin_trial_feature_name: "WindowPlacementOT2",
-      implied_by: ["WindowPlacementV2"],
       status: "stable",
     },
-    // Further extends window placement functionality for multi-screen devices.
+    // Allows sites to request fullscreen when the set of screens change.
     {
-      name: "WindowPlacementV2",
+      name: "WindowPlacementFullscreenOnScreensChange",
+      depends_on: ["WindowPlacement"],
       status: "experimental",
     },
     {

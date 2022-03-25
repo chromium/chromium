@@ -667,8 +667,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kEditContext;
 BLINK_COMMON_EXPORT extern const base::Feature
     kFreeNonRequiredTileResourcesForInactiveWindows;
 
-// Enables the WindowPlacement RuntimeEnabledFeature.
+// Gates Multi-Screen Window Placement features and additional enhancements.
 BLINK_COMMON_EXPORT extern const base::Feature kWindowPlacement;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWindowPlacementFullscreenCompanionWindow;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWindowPlacementFullscreenOnScreensChange;
 
 // Gates the non-standard API Event.path to help its deprecation and removal.
 BLINK_COMMON_EXPORT extern const base::Feature kEventPath;

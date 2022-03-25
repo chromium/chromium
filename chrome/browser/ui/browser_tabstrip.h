@@ -39,14 +39,17 @@ content::WebContents* AddSelectedTabWithURL(Browser* browser,
 
 // Creates a new tab with the already-created WebContents 'new_contents'.
 // The window for the added contents will be reparented correctly when this
-// method returns.  If |disposition| is NEW_POPUP, |initial_rect| should hold
-// the initial position and size.
-void AddWebContents(Browser* browser,
-                    content::WebContents* source_contents,
-                    std::unique_ptr<content::WebContents> new_contents,
-                    const GURL& target_url,
-                    WindowOpenDisposition disposition,
-                    const gfx::Rect& initial_rect);
+// method returns. If |disposition| is NEW_POPUP, |initial_rect| should hold the
+// initial position and size. |window_action| may optionally specify whether the
+// window should be shown or activated.
+void AddWebContents(
+    Browser* browser,
+    content::WebContents* source_contents,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    NavigateParams::WindowAction window_action = NavigateParams::SHOW_WINDOW);
 
 // Closes the specified WebContents in the specified Browser. If
 // |add_to_history| is true, an entry in the historical tab database is created.

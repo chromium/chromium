@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -30,6 +31,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/display/screen_base.h"
@@ -645,21 +647,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// Tests experimental multi-screen functionality of FullscreenController.
+// Tests FullscreenController support of Multi-Screen Window Placement features.
 // Sites with the Window Placement permission can request fullscreen on a
-// specific screen, move fullscreen windows to different displays, and gain new
-// affordances to request fullscreen on permission grants and screen changes.
-class ExperimentalFullscreenControllerInteractiveTest
-    : public FullscreenControllerInteractiveTest,
-      public testing::WithParamInterface<bool> {
+// specific screen, move fullscreen windows to different displays, and more.
+class MultiScreenFullscreenControllerInteractiveTest
+    : public FullscreenControllerInteractiveTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        (GetParam() ? "WindowPlacementV2" : "WindowPlacement"));
-    FullscreenControllerInteractiveTest::SetUpCommandLine(command_line);
-  }
-
   // Perform common setup operations for multi-screen fullscreen testing:
   // Mock a screen with two displays, move the browser onto the first display,
   // and auto-grant the Window Placement permission on its active tab.
@@ -778,6 +771,8 @@ class ExperimentalFullscreenControllerInteractiveTest
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kWindowPlacement};
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<display::Screen> original_screen_ = nullptr;
   display::ScreenBase screen_;
@@ -796,7 +791,7 @@ class ExperimentalFullscreenControllerInteractiveTest
 #define MAYBE_SeparateDisplay SeparateDisplay
 #endif
 // Test requesting fullscreen on a separate display.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplay) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -824,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayMaximized SeparateDisplayMaximized
 #endif
 // Test requesting fullscreen on a separate display from a maximized window.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayMaximized) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -859,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SameDisplayAndSwap SameDisplayAndSwap
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwap) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -889,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 #endif
 // Test requesting fullscreen on the current display and then swapping displays
 // from a maximized window.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwapMaximized) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -928,7 +923,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayAndSwap SeparateDisplayAndSwap
 #endif
 // Test requesting fullscreen on a separate display and then swapping displays.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayAndSwap) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -961,7 +956,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SwapShowsBubble SwapShowsBubble
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SwapShowsBubble) {
   SetUpTestScreenAndWindowPlacementTab();
 
@@ -994,62 +989,13 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
 
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
-// TODO(crbug.com/1183791): Disabled on Mac due to flaky ObserverList crashes.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_FullscreenOnScreensChange DISABLED_FullscreenOnScreensChange
-#else
-#define MAYBE_FullscreenOnScreensChange FullscreenOnScreensChange
-#endif
-// Tests async fullscreen requests on screenschange event.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
-                       MAYBE_FullscreenOnScreensChange) {
-  content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
-
-  // Add a screenschange handler to requestFullscreen using the transient
-  // affordance granted on screen change events, after user activation expiry.
-  const std::string request_fullscreen_script = R"(
-    (async () => {
-      const screenDetails = await window.getScreenDetails();
-      screenDetails.onscreenschange = async () => {
-        if (!navigator.userActivation.isActive)
-          await document.body.requestFullscreen();
-      };
-    })();
-  )";
-  EXPECT_TRUE(ExecJs(tab, request_fullscreen_script));
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
-  WaitForUserActivationExpiry();
-
-  // Update the display configuration to trigger window.onscreenschange.
-  FullscreenNotificationObserver fullscreen_observer(browser());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("0+0-800x800");
-#else
-  display_list().RemoveDisplay(2);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  if (GetParam())  // The request will only be honored with WindowPlacementV2.
-    fullscreen_observer.Wait();
-  EXPECT_EQ(GetParam(), browser()->window()->IsFullscreen());
-
-  // Close all tabs to avoid assertions failing when their cached screen info
-  // differs from the restored original Screen instance.
-  browser()->tab_strip_model()->CloseAllTabs();
-}
-
-INSTANTIATE_TEST_SUITE_P(V2,
-                         ExperimentalFullscreenControllerInteractiveTest,
-                         testing::Bool());
-
-// TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
-// blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
 #else
 #define MAYBE_FullscreenOnPermissionGrant FullscreenOnPermissionGrant
 #endif
 // Test requesting fullscreen using the permission grant's transient activation.
-IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnPermissionGrant) {
   EXPECT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/simple.html"));
@@ -1075,3 +1021,132 @@ IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
   RequestContentFullscreenFromScript(request_fullscreen_from_prompt_script,
                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
 }
+
+// Tests FullscreenController support for fullscreen companion windows.
+class FullscreenCompanionWindowFullscreenControllerInteractiveTest
+    : public MultiScreenFullscreenControllerInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FullscreenCompanionWindowFullscreenControllerInteractiveTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kWindowPlacementFullscreenCompanionWindow, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
+// display::Screen configuration used in this test. Disabled on Mac and Linux,
+// where the window server's async handling of the fullscreen window state may
+// transition the window into fullscreen on the actual (non-mocked) display
+// bounds before or after the window bounds checks, yielding flaky results.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_FullscreenCompanionWindow DISABLED_FullscreenCompanionWindow
+#else
+#define MAYBE_FullscreenCompanionWindow FullscreenCompanionWindow
+#endif
+// Test requesting fullscreen on a specific screen and opening a cross-screen
+// popup window from one gesture. Check the expected window activation pattern.
+IN_PROC_BROWSER_TEST_P(
+    FullscreenCompanionWindowFullscreenControllerInteractiveTest,
+    MAYBE_FullscreenCompanionWindow) {
+  SetUpTestScreenAndWindowPlacementTab();
+
+  // Execute JS to request fullscreen and open a popup on separate screens.
+  const std::string fullscreen_and_popup_script = R"(
+    (async () => {
+      if (!window.screenDetails)
+          window.screenDetails = await window.getScreenDetails();
+      const options = { screen: window.screenDetails.screens[0] };
+      await document.body.requestFullscreen(options);
+      if (navigator.userActivation.isActive)
+        return false;
+      const s = window.screenDetails.screens[1];
+      const f = `left=${s.availLeft},top=${s.availTop},width=300,height=200`;
+      window.open('.', '', f);
+      return !!document.fullscreenElement;
+    })();
+  )";
+  BrowserList* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(1u, browser_list->size());
+  RequestContentFullscreenFromScript(fullscreen_and_popup_script);
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
+  // The popup opens iff kWindowPlacementFullscreenCompanionWindow is enabled.
+  EXPECT_EQ(GetParam() ? 2u : 1u, browser_list->size());
+  // Popup window activation is delayed until its opener exits fullscreen.
+  EXPECT_EQ(browser(), browser_list->GetLastActive());
+  ToggleTabFullscreen(/*enter_fullscreen=*/false);
+  EXPECT_EQ(GetParam(), browser() != browser_list->GetLastActive());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FullscreenCompanionWindowFullscreenControllerInteractiveTest,
+    ::testing::Bool());
+
+// Tests FullscreenController support for fullscreen on screenschange events.
+class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
+    : public MultiScreenFullscreenControllerInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FullscreenOnScreensChangeFullscreenControllerInteractiveTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kWindowPlacementFullscreenOnScreensChange, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
+// blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
+// TODO(crbug.com/1183791): Disabled on Mac due to flaky ObserverList crashes.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenOnScreensChange DISABLED_FullscreenOnScreensChange
+#else
+#define MAYBE_FullscreenOnScreensChange FullscreenOnScreensChange
+#endif
+// Tests async fullscreen requests on screenschange event.
+IN_PROC_BROWSER_TEST_P(
+    FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
+    MAYBE_FullscreenOnScreensChange) {
+  content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
+
+  // Add a screenschange handler to requestFullscreen using the transient
+  // affordance granted on screen change events, after user activation expiry.
+  const std::string request_fullscreen_script = R"(
+    (async () => {
+      const screenDetails = await window.getScreenDetails();
+      screenDetails.onscreenschange = async () => {
+        if (!navigator.userActivation.isActive)
+          await document.body.requestFullscreen();
+      };
+    })();
+  )";
+  EXPECT_TRUE(ExecJs(tab, request_fullscreen_script));
+  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  WaitForUserActivationExpiry();
+
+  // Update the display configuration to trigger window.onscreenschange.
+  FullscreenNotificationObserver fullscreen_observer(browser());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("0+0-800x800");
+#else
+  display_list().RemoveDisplay(2);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (GetParam())  // The request will only be honored with the flag enabled.
+    fullscreen_observer.Wait();
+  EXPECT_EQ(GetParam(), browser()->window()->IsFullscreen());
+
+  // Close all tabs to avoid assertions failing when their cached screen info
+  // differs from the restored original Screen instance.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
+    ::testing::Bool());

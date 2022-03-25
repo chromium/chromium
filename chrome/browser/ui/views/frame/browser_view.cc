@@ -3999,9 +3999,8 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         // occluding the active window receiving key events on Mac and Linux,
         // and also prevents an inactive fullscreen window and its exit bubble
         // from being occluded by the active window on Windows and Chrome OS.
-        // Initial content fullscreen requests require user activation (so the
-        // window should already be active), but swapping the screen used for
-        // fullscreen does not require user activation on the fullscreen window.
+        // Content fullscreen requests require user activation (so the window
+        // should already be active), but it is safer to ensure activation here.
         Activate();
       }
 

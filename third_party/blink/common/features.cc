@@ -1361,9 +1361,19 @@ const base::Feature kFreeNonRequiredTileResourcesForInactiveWindows{
     "FreeNonRequiredTileResourcesForInactiveWindows",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the WindowPlacement RuntimeEnabledFeature.
+// Enables basic Multi-Screen Window Placement functionality.
 const base::Feature kWindowPlacement{"WindowPlacement",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Allows sites to request fullscreen and open a popup from a single gesture.
+const base::Feature kWindowPlacementFullscreenCompanionWindow{
+    "WindowPlacementFullscreenCompanionWindow",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows sites to request fullscreen when the set of screens change.
+const base::Feature kWindowPlacementFullscreenOnScreensChange{
+    "WindowPlacementFullscreenOnScreensChange",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // TODO(crbug.com/1277431): This flag should be eventually disabled.
 const base::Feature kEventPath{"EventPath", base::FEATURE_ENABLED_BY_DEFAULT};

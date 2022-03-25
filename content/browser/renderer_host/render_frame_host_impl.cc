@@ -243,6 +243,7 @@
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1056,6 +1057,17 @@ bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
   return base::FeatureList::IsEnabled(
              features::kAvoidUnnecessaryBeforeUnloadCheckPostTask) &&
          !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
+}
+
+// Returns true if `host` has the Window Placement permission granted.
+bool IsWindowPlacementGranted(RenderFrameHost* host) {
+  content::PermissionController* permission_controller =
+      host->GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
+
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             PermissionType::WINDOW_PLACEMENT, host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 }  // namespace
@@ -6238,6 +6250,20 @@ void RenderFrameHostImpl::EnterFullscreen(
     std::move(callback).Run(/*granted=*/false);
     return;
   }
+
+  // Allow sites with the window-placement permission to open a popup window
+  // after requesting fullscreen on a specific screen of a multi-screen device.
+  // This enables multi-screen content experiences from a single user gesture.
+  const display::Screen* screen = display::Screen::GetScreen();
+  display::Display display;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWindowPlacementFullscreenCompanionWindow) &&
+      screen && screen->GetNumDisplays() > 1 &&
+      screen->GetDisplayWithDisplayId(options->display_id, &display) &&
+      IsWindowPlacementGranted(this)) {
+    transient_allow_popup_.Activate();
+  }
+
   std::move(callback).Run(/*granted=*/true);
 
   // Entering fullscreen from a cross-process subframe also affects all
@@ -6868,7 +6894,9 @@ void RenderFrameHostImpl::CreateNewWindow(
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool effective_transient_activation_state =
-      params->allow_popup || frame_tree_node_->HasTransientUserActivation();
+      params->allow_popup || frame_tree_node_->HasTransientUserActivation() ||
+      (transient_allow_popup_.IsActive() &&
+       params->disposition == WindowOpenDisposition::NEW_POPUP);
 
   // Ignore window creation when sent from a frame that's not active or
   // created.
@@ -6996,6 +7024,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   FrameTree* new_frame_tree =
       delegate_->CreateNewWindow(this, *params, is_new_browsing_instance,
                                  was_consumed, cloned_namespace.get());
+
+  transient_allow_popup_.Deactivate();
 
   if (is_new_browsing_instance || !new_frame_tree) {
     // Opener suppressed, Javascript access disabled, or delegate did not
@@ -9385,16 +9415,8 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
 }
 
 bool RenderFrameHostImpl::WindowPlacementAllowsFullscreen() {
-  if (!delegate_->IsTransientAllowFullscreenActive())
-    return false;
-
-  content::PermissionController* permission_controller =
-      GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
-
-  return permission_controller->GetPermissionStatusForCurrentDocument(
-             PermissionType::WINDOW_PLACEMENT, this) ==
-         blink::mojom::PermissionStatus::GRANTED;
+  return IsWindowPlacementGranted(this) &&
+         delegate_->IsTransientAllowFullscreenActive();
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>

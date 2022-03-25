@@ -328,7 +328,7 @@ bool AllowedToRequestFullscreen(Document& document) {
 
   // The algorithm is triggered by another event with transient affordances,
   // e.g. permission-gated events for user-generated screens changes.
-  if (RuntimeEnabledFeatures::WindowPlacementV2Enabled(
+  if (RuntimeEnabledFeatures::WindowPlacementFullscreenOnScreensChangeEnabled(
           document.GetExecutionContext()) &&
       document.GetFrame()->IsTransientAllowFullscreenActive()) {
     UseCounter::Count(document, WebFeature::kFullscreenAllowedByScreensChange);

@@ -6,9 +6,6 @@
 
 namespace blink {
 
-// static
-constexpr base::TimeDelta TransientAllowFullscreen::kActivationLifespan;
-
 TransientAllowFullscreen::TransientAllowFullscreen() = default;
 
 void TransientAllowFullscreen::Activate() {

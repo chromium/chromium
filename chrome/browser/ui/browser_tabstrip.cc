@@ -57,7 +57,8 @@ void AddWebContents(Browser* browser,
                     std::unique_ptr<content::WebContents> new_contents,
                     const GURL& target_url,
                     WindowOpenDisposition disposition,
-                    const gfx::Rect& initial_rect) {
+                    const gfx::Rect& initial_rect,
+                    NavigateParams::WindowAction window_action) {
   // No code for this yet.
   DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
   // Can't create a new contents for the current tab - invalid case.
@@ -68,7 +69,7 @@ void AddWebContents(Browser* browser,
   params.url = target_url;
   params.disposition = disposition;
   params.window_bounds = initial_rect;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = window_action;
   // At this point, we're already beyond the popup blocker. Even if the popup
   // was created without a user gesture, we have to set |user_gesture| to true,
   // so it gets correctly focused.
