@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -1821,53 +1820,5 @@ public class ImeTest {
         // EditorInfo in onCreateInputConnection(...).
         Assert.assertArrayEquals(
                 new String[] {"sometext", "othertext"}, mRule.getLastTextHistory());
-    }
-
-    private void assertHasEditableContentValues(
-            int notEditableSample, int contentEditableSample, int textAreaSample, int inputSample) {
-        Assert.assertEquals(notEditableSample,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.Input.EditableContentTypes", /* sample=Not editable */ 0));
-        Assert.assertEquals(contentEditableSample,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.Input.EditableContentTypes", /* sample=Content editable */ 1));
-        Assert.assertEquals(textAreaSample,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.Input.EditableContentTypes", /* sample=Text area */ 2));
-        Assert.assertEquals(inputSample,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.Input.EditableContentTypes", /* sample=Input */ 3));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"TextInput"})
-    public void testLogsHasEditableContent() throws Exception {
-        final int notEditableStartingValue = RecordHistogram.getHistogramValueCountForTesting(
-                "Android.Input.EditableContentTypes", /* sample=Not editable */ 0);
-        final int contentEditableStartingValue = RecordHistogram.getHistogramValueCountForTesting(
-                "Android.Input.EditableContentTypes", /* sample=Content editable */ 1);
-        final int textAreaStartingValue = RecordHistogram.getHistogramValueCountForTesting(
-                "Android.Input.EditableContentTypes", /* sample=Text area */ 2);
-        final int inputStartingValue = RecordHistogram.getHistogramValueCountForTesting(
-                "Android.Input.EditableContentTypes", /* sample=Input */ 3);
-
-        DOMUtils.focusNode(mRule.getWebContents(), "link");
-        mRule.assertWaitForKeyboardStatus(false);
-        assertHasEditableContentValues(notEditableStartingValue + 1, contentEditableStartingValue,
-                textAreaStartingValue, inputStartingValue);
-        DOMUtils.focusNode(mRule.getWebContents(), "contenteditable1");
-        mRule.assertWaitForKeyboardStatus(true);
-        assertHasEditableContentValues(notEditableStartingValue + 1,
-                contentEditableStartingValue + 1, textAreaStartingValue, inputStartingValue);
-        DOMUtils.focusNode(mRule.getWebContents(), "textarea");
-        mRule.assertWaitForKeyboardStatus(true);
-        assertHasEditableContentValues(notEditableStartingValue + 1,
-                contentEditableStartingValue + 1, textAreaStartingValue + 1, inputStartingValue);
-        DOMUtils.focusNode(mRule.getWebContents(), "input_text1");
-        mRule.assertWaitForKeyboardStatus(true);
-        assertHasEditableContentValues(notEditableStartingValue + 1,
-                contentEditableStartingValue + 1, textAreaStartingValue + 1,
-                inputStartingValue + 1);
     }
 }
