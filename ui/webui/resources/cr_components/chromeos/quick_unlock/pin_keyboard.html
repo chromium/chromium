@@ -69,7 +69,6 @@
 
       .digit-button {
         align-items: center;
-        background: none;
         border: 0;
         box-shadow: none;
         box-sizing: border-box;
@@ -94,6 +93,27 @@
 
       .digit-button inner-text {
         font-family: 'Roboto';
+      }
+
+      /* TODO(https://crbug.com/1307255): Figure out how to use variables of the
+                                          cr-button component to add hovering
+                                          effect */
+      cr-button {
+        background-color: var(--cros-icon-button-background-color);
+        border-radius: 50%;
+      }
+
+      cr-button:hover {
+        background-color: var(--cros-highlight-color-focus);
+      }
+
+      cr-icon-button {
+        background-color: var(--cros-icon-button-background-color);
+        border-radius: 50%;
+      }
+
+      cr-icon-button:hover {
+        background-color: var(--cros-highlight-color-focus);
       }
 
       inner-text.letter {
@@ -177,22 +197,16 @@
               id="digitButton1" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
-            <inner-text class="letter empty"
-                hidden="[[!enableLetters]]">ABC</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="2"
               id="digitButton2" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">ABC</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="3"
               id="digitButton3" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">DEF</inner-text>
           </cr-button>
         </div>
         <div class="row">
@@ -200,22 +214,16 @@
               id="digitButton4" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">GHI</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="5"
               id="digitButton5" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">JKL</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="6"
               id="digitButton6" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">MNO</inner-text>
           </cr-button>
         </div>
         <div class="row">
@@ -223,22 +231,16 @@
               id="digitButton7" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">PQRS</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="8"
               id="digitButton8" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">TUV</inner-text>
           </cr-button>
           <cr-button class="digit-button" on-click="onNumberTap_" value="9"
               id="digitButton9" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">WXYZ</inner-text>
           </cr-button>
         </div>
         <div class="row bottom-row">
@@ -257,8 +259,6 @@
               id="digitButton0" disabled="[[disabled]]" circle-ripple
               custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">+</inner-text>
           </cr-button>
           <div class="digit-button"></div>
         </div>

@@ -72,7 +72,7 @@ Where:
         on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
         has-error="[[hasError_(problemMessageId_, problemClass_)]]"
         disabled="[[isSetModesCallPending_]]"
-        enable-placeholder="[[enablePlaceholder]]" enable-letters>
+        enable-placeholder="[[enablePlaceholder]]">
       <!-- Warning/error; only shown if title is hidden. -->
       <div id="problemDiv" class$="[[problemClass_]]"
           invisible$="[[!problemMessageId_]]" problem>
