@@ -42,7 +42,8 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataManager {
   virtual void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_main_frame_host,
       const base::flat_set<browsing_topics::HashedDomain>&
-          hashed_context_domains) = 0;
+          hashed_context_domains,
+      base::Time time) = 0;
 };
 
 }  // namespace content

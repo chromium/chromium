@@ -69,13 +69,20 @@ class BrowsingTopicsState
   // remove the entry from `epochs_`.
   void ClearOneEpoch(size_t epoch_index);
 
-  // Append `epoch_topics` to `epochs_`.
+  // Append `epoch_topics` to `epochs_`. This is invoked at the end of each
+  // epoch calculation.
   void AddEpoch(EpochTopics epoch_topics);
 
-  // Set `next_scheduled_calculation_time_` to
-  // `next_scheduled_calculation_time`.
-  void UpdateNextScheduledCalculationTime(
-      base::Time next_scheduled_calculation_time);
+  // Set `next_scheduled_calculation_time_` to one epoch later from
+  // base::Time::Now(). This is invoked at the end of each epoch calculation.
+  void UpdateNextScheduledCalculationTime();
+
+  // Calculate the candidate epochs to derive the topics from on `top_domain`.
+  // The caller (i.e. BrowsingTopicsServiceImpl, which also holds `this`) is
+  // responsible for ensuring that the `EpochTopic` objects that the pointers
+  // refer to remain alive when the caller is accessing them.
+  std::vector<const EpochTopics*> EpochsForSite(
+      const std::string& top_domain) const;
 
   const base::circular_deque<EpochTopics>& epochs() const {
     DCHECK(loaded_);
@@ -95,6 +102,14 @@ class BrowsingTopicsState
   bool HasScheduledSaveForTesting() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_OneEpoch_SwitchTimeNotArrived);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_OneEpoch_SwitchTimeArrived);
+
+  base::TimeDelta CalculateSiteStickyTimeDelta(
+      const std::string& top_domain) const;
+
   // ImportantFileWriter::BackgroundDataSerializer implementation.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
@@ -127,10 +142,8 @@ class BrowsingTopicsState
   base::circular_deque<EpochTopics> epochs_;
 
   // The next time a calculation should occur. This will be updated when a
-  // calculation is scheduled:
-  // - at the start of a browser session.
-  // - or, after a topics calculation.
-  // - or, when the user explicitly resets the timer from the UX.
+  // calculation is scheduled at the end of a topics calculation and is always
+  // synchronously updated with `epochs_`.
   //
   // next_scheduled_calculation_time_.is_null() indicates this is a new profile
   // or there was an update to the configuration version when this

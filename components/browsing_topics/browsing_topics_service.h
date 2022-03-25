@@ -7,6 +7,8 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
 #include "url/origin.h"
 
 namespace browsing_topics {
@@ -15,6 +17,14 @@ namespace browsing_topics {
 // to other internal components (e.g. UX).
 class BrowsingTopicsService : public KeyedService {
  public:
+  // Return the browsing topics for a particular requesting context. The
+  // calling context and top context information will also be used for the
+  // access permission check, and for the `BrowsingTopicsPageLoadDataTracker` to
+  // track the API usage.
+  virtual std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+      const url::Origin& context_origin,
+      content::RenderFrameHost* main_frame) = 0;
+
   // Return the topics (i.e. one topic from each epoch) that can be potentially
   // exposed to a given site. Up to `kBrowsingTopicsNumberOfEpochsToExpose`
   // epochs' topics can be returned.

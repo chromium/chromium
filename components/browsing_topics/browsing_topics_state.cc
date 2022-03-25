@@ -109,16 +109,73 @@ void BrowsingTopicsState::AddEpoch(EpochTopics epoch_topics) {
   ScheduleSave();
 }
 
-void BrowsingTopicsState::UpdateNextScheduledCalculationTime(
-    base::Time next_scheduled_calculation_time) {
+void BrowsingTopicsState::UpdateNextScheduledCalculationTime() {
   DCHECK(loaded_);
 
-  next_scheduled_calculation_time_ = next_scheduled_calculation_time;
+  next_scheduled_calculation_time_ =
+      base::Time::Now() +
+      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+
   ScheduleSave();
+}
+
+std::vector<const EpochTopics*> BrowsingTopicsState::EpochsForSite(
+    const std::string& top_domain) const {
+  DCHECK(loaded_);
+
+  const size_t kNumberOfEpochsToExpose = static_cast<size_t>(
+      blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get());
+
+  DCHECK_GT(kNumberOfEpochsToExpose, 0u);
+
+  // Derive a per-user per-site time delta in the range of
+  // [0, kBrowsingTopicsTimePeriodPerEpoch). The latest epoch will be switched
+  // to use when the current time is within `site_sticky_time_delta` apart from
+  // the `next_scheduled_calculation_time_`. This way, each site will see a
+  // different epoch switch time.
+  base::TimeDelta site_sticky_time_delta =
+      CalculateSiteStickyTimeDelta(top_domain);
+
+  size_t end_epoch_index = 0;
+
+  if (base::Time::Now() + site_sticky_time_delta <
+      next_scheduled_calculation_time_) {
+    if (epochs_.size() < 2)
+      return {};
+
+    end_epoch_index = epochs_.size() - 2;
+  } else {
+    if (epochs_.empty())
+      return {};
+
+    end_epoch_index = epochs_.size() - 1;
+  }
+
+  size_t start_epoch_index = (end_epoch_index + 1 >= kNumberOfEpochsToExpose)
+                                 ? end_epoch_index + 1 - kNumberOfEpochsToExpose
+                                 : 0;
+
+  std::vector<const EpochTopics*> result;
+
+  for (size_t i = start_epoch_index; i <= end_epoch_index; ++i) {
+    result.emplace_back(&epochs_[i]);
+  }
+
+  return result;
 }
 
 bool BrowsingTopicsState::HasScheduledSaveForTesting() const {
   return writer_.HasPendingWrite();
+}
+
+base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
+    const std::string& top_domain) const {
+  uint64_t epoch_switch_time_decision_hash =
+      HashTopDomainForEpochSwitchTimeDecision(hmac_key_, top_domain);
+
+  return base::Seconds(
+      epoch_switch_time_decision_hash %
+      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get().InSeconds());
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

@@ -4,7 +4,42 @@
 
 #include "components/browsing_topics/test_util.h"
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/history/core/browser/history_service.h"
+
 namespace browsing_topics {
+
+bool BrowsingTopicsEligibleForURLVisit(history::HistoryService* history_service,
+                                       const GURL& url) {
+  bool topics_eligible;
+
+  history::QueryOptions options;
+  options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+
+  base::RunLoop run_loop;
+  base::CancelableTaskTracker tracker;
+
+  history_service->QueryHistory(
+      std::u16string(), options,
+      base::BindLambdaForTesting([&](history::QueryResults results) {
+        size_t num_matches = 0;
+        const size_t* match_index = results.MatchesForURL(url, &num_matches);
+
+        DCHECK_EQ(1u, num_matches);
+
+        topics_eligible =
+            results[*match_index].content_annotations().annotation_flags &
+            history::VisitContentAnnotationFlag::kBrowsingTopicsEligible;
+        run_loop.Quit();
+      }),
+      &tracker);
+
+  run_loop.Run();
+
+  return topics_eligible;
+}
 
 TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
@@ -20,6 +55,20 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
                                std::move(callback)),
       rand_uint64_queue_(std::move(rand_uint64_queue)) {}
 
+TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
+    CalculateCompletedCallback callback,
+    EpochTopics mock_result,
+    base::TimeDelta mock_result_delay)
+    : BrowsingTopicsCalculator(nullptr,
+                               nullptr,
+                               nullptr,
+                               nullptr,
+                               base::DoNothing()),
+      use_mock_result_(true),
+      mock_result_(std::move(mock_result)),
+      mock_result_delay_(mock_result_delay),
+      finish_callback_(std::move(callback)) {}
+
 TesterBrowsingTopicsCalculator::~TesterBrowsingTopicsCalculator() = default;
 
 uint64_t TesterBrowsingTopicsCalculator::GenerateRandUint64() {
@@ -29,6 +78,25 @@ uint64_t TesterBrowsingTopicsCalculator::GenerateRandUint64() {
   rand_uint64_queue_.pop();
 
   return next_rand_uint64;
+}
+
+void TesterBrowsingTopicsCalculator::CheckCanCalculate() {
+  if (use_mock_result_) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TesterBrowsingTopicsCalculator::MockDelayReached,
+                       weak_ptr_factory_.GetWeakPtr()),
+        mock_result_delay_);
+    return;
+  }
+
+  BrowsingTopicsCalculator::CheckCanCalculate();
+}
+
+void TesterBrowsingTopicsCalculator::MockDelayReached() {
+  DCHECK(use_mock_result_);
+
+  std::move(finish_callback_).Run(std::move(mock_result_));
 }
 
 }  // namespace browsing_topics

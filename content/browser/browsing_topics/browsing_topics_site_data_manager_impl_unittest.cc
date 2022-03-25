@@ -37,7 +37,8 @@ TEST_F(BrowsingTopicsSiteDataManagerImplTest, GetBrowsingTopicsApiUsage) {
 
   topics_manager_->OnBrowsingTopicsApiUsed(
       /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
-      /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
+      /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)},
+      initial_time);
 
   size_t query_result_count = 0;
 

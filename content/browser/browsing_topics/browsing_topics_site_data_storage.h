@@ -58,7 +58,8 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
   void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_main_frame_host,
       const base::flat_set<browsing_topics::HashedDomain>&
-          hashed_context_domains);
+          hashed_context_domains,
+      base::Time time);
 
  private:
   enum class InitStatus {

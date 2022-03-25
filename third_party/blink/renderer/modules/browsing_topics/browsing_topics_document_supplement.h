@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BROWSING_TOPICS_BROWSING_TOPICS_DOCUMENT_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BROWSING_TOPICS_BROWSING_TOPICS_DOCUMENT_SUPPLEMENT_H_
 
+#include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -36,6 +37,10 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;
+
+ private:
+  // Mojo remote used to query the browsing topics.
+  HeapMojoRemote<mojom::blink::BrowsingTopicsDocumentService> document_host_;
 };
 
 }  // namespace blink

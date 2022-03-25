@@ -619,6 +619,8 @@ source_set("browser") {
     "browsing_data/storage_partition_code_cache_data_remover.h",
     "browsing_instance.cc",
     "browsing_instance.h",
+    "browsing_topics/browsing_topics_document_host.cc",
+    "browsing_topics/browsing_topics_document_host.h",
     "browsing_topics/browsing_topics_site_data_manager_impl.cc",
     "browsing_topics/browsing_topics_site_data_manager_impl.h",
     "browsing_topics/browsing_topics_site_data_storage.cc",
