@@ -236,6 +236,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlReauthenticationOnLockscreen;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableSavedDesks;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableWireGuard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnforceAshExtensionKeeplist;
@@ -712,6 +713,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSamlReauthenticationOnLockscreenEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSavedDesksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsScalableStatusAreaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeparateNetworkIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

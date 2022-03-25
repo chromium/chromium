@@ -583,6 +583,9 @@ const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
 const base::Feature kEnableSamlReauthenticationOnLockscreen{
     "EnableSamlReauthenticationOnLockScreen", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnableSavedDesks{"EnableSavedDesks",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables WireGuard VPN, if running a compatible kernel.
 const base::Feature kEnableWireGuard{"EnableWireGuard",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2035,6 +2038,10 @@ bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
 
 bool IsSamlReauthenticationOnLockscreenEnabled() {
   return base::FeatureList::IsEnabled(kEnableSamlReauthenticationOnLockscreen);
+}
+
+bool IsSavedDesksEnabled() {
+  return base::FeatureList::IsEnabled(kEnableSavedDesks);
 }
 
 bool IsScalableStatusAreaEnabled() {
