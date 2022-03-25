@@ -112,13 +112,7 @@ const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTailoredSecurityIntegration{
-  "TailoredSecurityIntegration",
-#if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+    "TailoredSecurityIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
