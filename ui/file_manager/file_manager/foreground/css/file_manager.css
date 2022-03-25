@@ -2525,12 +2525,12 @@ files-toast {
 #file-type-filter-container {
   display: flex;
   font-size: 13px;
-  padding: 12px 0 16px 12px;
+  padding: 12px 0 12px 12px;
 }
 
 .file-type-filter-button {
   --border-color: var(--cros-button-stroke-color-secondary);
-  --cr-button-height: 28px;
+  --cr-button-height: 32px;
   --hover-bg-color: var(--cros-ripple-color);
   --hover-border-color: var(--cros-button-stroke-color-secondary);
   --ink-color: var(--cros-ripple-color);
@@ -2538,6 +2538,7 @@ files-toast {
   --text-color: var(--cros-text-color-secondary);
   border-radius: 20px;
   margin-inline: 4px;
+  min-width: auto;
   outline: none;
 }
 
