@@ -42,6 +42,38 @@ namespace blink {
 
 class CSSSelector;
 
+// SelectorFilter is a bloom filter for rapidly discarding style rules that
+// have ancestor requirements. When we traverse the DOM, we call PushParent()
+// for each parent, which inserts a number of relevant properties for that
+// parent (e.g. ID, tag name, attributes etc.) into the filter. (We also call
+// PopParent() when exiting a node, which is possible because the filter is
+// a counting filter.) Then, when we want to match a style rule with at least
+// one such ancestor attribute, we can very cheaply check whether an ancestor
+// exists in the filter (with some false positives, but that's fine).
+// For instance, assume this tree:
+//
+//   <div id="a" data-foo="bar">
+//     <div class="cls">
+//       <div id="b">
+//
+// When we get to computing style for the innermost element, the bloom filter
+// will contain hashes corresponding to <div> (twice), [data-foo], #a and .cls.
+// If we then have a rule saying e.g. “article #b”, we can look up <article> in
+// the bloom filter and get a negative result (save for false positives),
+// proving that the rule definitely does not apply, discarding it right away.
+// However, a rule like “.cls[data-foo] #b” would pass the filter, as there are
+// indeed hashes for both .cls and [data-foo] in the filter. Thus, any rule
+// passing the filter must still be subjected to match checking as usual.
+//
+// For performance reasons, we compute the ancestor hash values for each style
+// rule ahead-of-time. We stop after at most four hashes to avoid allocating
+// memory dynamically, but elements (represented by ParentStackFrame) cannot
+// have such a limit, or we would risk false negatives, causing us to miss
+// applicable style rules in matching.
+//
+// For practical web pages as of 2022, we've seen SelectorFilter discard 60-70%
+// of rules in early processing, which makes the 4 kB of RAM/cache it uses
+// worthwhile.
 class CORE_EXPORT SelectorFilter {
   DISALLOW_NEW();
 
