@@ -137,6 +137,39 @@ bool GetAppOutputInternal(CommandLine::StringPieceType cl,
          status != TERMINATION_STATUS_ABNORMAL_TERMINATION;
 }
 
+Process LaunchElevatedProcess(const CommandLine& cmdline,
+                              bool start_hidden,
+                              bool wait) {
+  TRACE_EVENT0("base", "LaunchElevatedProcess");
+  const FilePath::StringType file = cmdline.GetProgram().value();
+  const CommandLine::StringType arguments = cmdline.GetArgumentsString();
+
+  SHELLEXECUTEINFO shex_info = {};
+  shex_info.cbSize = sizeof(shex_info);
+  shex_info.fMask = SEE_MASK_NOCLOSEPROCESS;
+  shex_info.hwnd = GetActiveWindow();
+  shex_info.lpVerb = L"runas";
+  shex_info.lpFile = file.c_str();
+  shex_info.lpParameters = arguments.c_str();
+  shex_info.lpDirectory = nullptr;
+  shex_info.nShow = start_hidden ? SW_HIDE : SW_SHOWNORMAL;
+  shex_info.hInstApp = nullptr;
+
+  if (!ShellExecuteEx(&shex_info)) {
+    DPLOG(ERROR);
+    return Process();
+  }
+
+  if (wait) {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+    WaitForSingleObject(shex_info.hProcess, INFINITE);
+  }
+
+  debug::GlobalActivityTracker::RecordProcessLaunchIfEnabled(
+      GetProcessId(shex_info.hProcess), file, arguments);
+  return Process(shex_info.hProcess);
+}
+
 }  // namespace
 
 void RouteStdioToConsole(bool create_console_if_not_found) {
@@ -210,13 +243,18 @@ void RouteStdioToConsole(bool create_console_if_not_found) {
 
 Process LaunchProcess(const CommandLine& cmdline,
                       const LaunchOptions& options) {
+  if (options.elevated)
+    return LaunchElevatedProcess(cmdline, options.start_hidden, options.wait);
   return LaunchProcess(cmdline.GetCommandLineString(), options);
 }
 
 Process LaunchProcess(const CommandLine::StringType& cmdline,
                       const LaunchOptions& options) {
+  if (options.elevated) {
+    return LaunchElevatedProcess(base::CommandLine::FromString(cmdline),
+                                 options.start_hidden, options.wait);
+  }
   TRACE_EVENT0("base", "LaunchProcess");
-  CHECK(!options.elevated);
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -410,39 +448,6 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
   debug::GlobalActivityTracker::RecordProcessLaunchIfEnabled(
       process_info.process_id(), cmdline);
   return Process(process_info.TakeProcessHandle());
-}
-
-Process LaunchElevatedProcess(const CommandLine& cmdline,
-                              const LaunchOptions& options) {
-  TRACE_EVENT0("base", "LaunchElevatedProcess");
-  CHECK(options.elevated);
-  const FilePath::StringType file = cmdline.GetProgram().value();
-  const CommandLine::StringType arguments = cmdline.GetArgumentsString();
-
-  SHELLEXECUTEINFO shex_info = {};
-  shex_info.cbSize = sizeof(shex_info);
-  shex_info.fMask = SEE_MASK_NOCLOSEPROCESS;
-  shex_info.hwnd = GetActiveWindow();
-  shex_info.lpVerb = L"runas";
-  shex_info.lpFile = file.c_str();
-  shex_info.lpParameters = arguments.c_str();
-  shex_info.lpDirectory = nullptr;
-  shex_info.nShow = options.start_hidden ? SW_HIDE : SW_SHOWNORMAL;
-  shex_info.hInstApp = nullptr;
-
-  if (!ShellExecuteEx(&shex_info)) {
-    DPLOG(ERROR);
-    return Process();
-  }
-
-  if (options.wait) {
-    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-    WaitForSingleObject(shex_info.hProcess, INFINITE);
-  }
-
-  debug::GlobalActivityTracker::RecordProcessLaunchIfEnabled(
-      GetProcessId(shex_info.hProcess), file, arguments);
-  return Process(shex_info.hProcess);
 }
 
 bool SetJobObjectLimitFlags(HANDLE job_object, DWORD limit_flags) {

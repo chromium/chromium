@@ -94,7 +94,11 @@ struct BASE_EXPORT LaunchOptions {
 #if BUILDFLAG(IS_WIN)
   bool start_hidden = false;
 
-  // Process will be started using a shell helper so that it is elevated.
+  // Process will be started using ShellExecuteEx instead of CreateProcess so
+  // that it is elevated. LaunchProcess with this flag will have different
+  // behaviour due to ShellExecuteEx. Some common operations like OpenProcess
+  // will fail. Currently the only other supported LaunchOptions are
+  // |start_hidden| and |wait|.
   bool elevated = false;
 
   // Sets STARTF_FORCEOFFFEEDBACK so that the feedback cursor is forced off
@@ -332,7 +336,9 @@ BASE_EXPORT Process LaunchProcess(const CommandLine& cmdline,
 // Windows-specific LaunchProcess that takes the command line as a
 // string.  Useful for situations where you need to control the
 // command line arguments directly, but prefer the CommandLine version
-// if launching Chrome itself.
+// if launching Chrome itself. Also prefer the CommandLine version if
+// `options.elevated` is set because `cmdline` needs to be parsed for
+// ShellExecuteEx.
 //
 // The first command line argument should be the path to the process,
 // and don't forget to quote it.
@@ -341,14 +347,6 @@ BASE_EXPORT Process LaunchProcess(const CommandLine& cmdline,
 //  cmdline = "c:\windows\explorer.exe" -foo "c:\bar\"
 BASE_EXPORT Process LaunchProcess(const CommandLine::StringType& cmdline,
                                   const LaunchOptions& options);
-
-// Launches a process with elevated privileges.  This does not behave exactly
-// like LaunchProcess as it uses ShellExecuteEx instead of CreateProcess to
-// create the process.  This means the process will have elevated privileges
-// and thus some common operations like OpenProcess will fail. Currently the
-// only supported LaunchOptions are |start_hidden| and |wait|.
-BASE_EXPORT Process LaunchElevatedProcess(const CommandLine& cmdline,
-                                          const LaunchOptions& options);
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of LaunchProcess that takes an argv array

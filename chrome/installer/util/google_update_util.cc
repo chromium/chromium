@@ -88,13 +88,8 @@ void ElevateIfNeededToReenableUpdates() {
 
   base::LaunchOptions launch_options;
   launch_options.force_breakaway_from_job_ = true;
-
-  if (base::win::UserAccountControlIsEnabled()) {
-    launch_options.elevated = true;
-    base::LaunchElevatedProcess(cmd, launch_options);
-  } else {
-    base::LaunchProcess(cmd, launch_options);
-  }
+  launch_options.elevated = base::win::UserAccountControlIsEnabled();
+  base::LaunchProcess(cmd, launch_options);
 }
 
 }  // namespace google_update

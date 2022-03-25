@@ -25,7 +25,7 @@ BASE_EXPORT IntegrityLevel GetCurrentProcessIntegrityLevel();
 
 // Determines whether the current process is elevated. Note: in some
 // configurations this may be true for processes launched without using
-// base::LaunchElevatedProcess().
+// LaunchOptions::elevated.
 BASE_EXPORT bool IsCurrentProcessElevated();
 
 // Determines whether the current process is running within an App Container.

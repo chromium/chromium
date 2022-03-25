@@ -202,7 +202,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   base::LaunchOptions options;
   options.start_hidden = true;
   options.elevated = true;
-  base::Process process = base::LaunchElevatedProcess(cmdline, options);
+  base::Process process = base::LaunchProcess(cmdline, options);
 #elif BUILDFLAG(IS_MAC)
   base::mac::ScopedAuthorizationRef authRef(
       base::mac::AuthorizationCreateToRunAsRoot(nullptr));

@@ -73,7 +73,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     win_options.start_hidden = true;
     win_options.elevated = true;
     ChildProcessLauncherHelper::Process process;
-    process.process = base::LaunchElevatedProcess(*command_line(), win_options);
+    process.process = base::LaunchProcess(*command_line(), win_options);
     *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
                                                : LAUNCH_RESULT_FAILURE;
     return process;
