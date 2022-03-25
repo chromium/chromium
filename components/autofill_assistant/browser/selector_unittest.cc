@@ -38,6 +38,17 @@ TEST(SelectorTest, FromProto) {
   EXPECT_EQ(Selector({"#test"}), Selector(proto));
 }
 
+TEST(SelectorTest, EmptySelector) {
+  EXPECT_TRUE(Selector().empty());
+  EXPECT_FALSE(Selector({"#test"}).empty());
+}
+
+TEST(SelectorTest, EmptySelectorWithSemanticInformation) {
+  SelectorProto proto;
+  proto.mutable_semantic_information();
+  EXPECT_FALSE(Selector(proto).empty());
+}
+
 TEST(SelectorTest, Comparison) {
   // Note that comparison tests cover < indirectly through ==, since a == b is
   // defined as !(a < b) && !(b < a). This makes sense, as what matters is that
