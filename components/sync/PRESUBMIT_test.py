@@ -162,7 +162,7 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
   def _testChange(self, modeltype_literal):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockFile(os.path.abspath('./protocol/sync.proto'),
+      MockFile(os.path.abspath('./protocol/entity_specifics.proto'),
         MOCK_PROTOFILE_CONTENTS),
       MockFile(os.path.abspath('./base/model_type.cc'),
         MOCK_MODELTYPE_CONTENTS % (modeltype_literal))

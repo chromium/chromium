@@ -220,8 +220,7 @@ def StripTrailingS(string):
 
 
 def IsTitleCased(string):
-  return reduce(lambda bool1, bool2: bool1 and bool2,
-    [s[0].isupper() for s in string.split(' ')])
+  return all([s[0].isupper() for s in string.split(' ')])
 
 
 def FormatPresubmitError(output_api, message, affected_lines):
@@ -334,7 +333,7 @@ def CheckRootTagMatchesModelType(output_api, map_entry):
     StripTrailingS(map_entry.root_tag)):
     return [
       FormatPresubmitError(
-        output_api,'root tag "%s" does not match model type. It should'
+        output_api,'root tag "%s" does not match model type. It should '
         'be "%s"' % (map_entry.root_tag, expected_root_tag),
         map_entry.affected_lines)]
   return []
