@@ -46,6 +46,7 @@ import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
 
+import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,7 +58,7 @@ public class SigninManagerImplTest {
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
     private static final AccountInfo ACCOUNT_INFO =
             new AccountInfo(new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user",
-                    "full name", "given name", null, new AccountCapabilities());
+                    "full name", "given name", null, new AccountCapabilities(new HashMap<>()));
 
     @Rule
     public final JniMocker mocker = new JniMocker();

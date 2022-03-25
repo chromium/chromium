@@ -5,6 +5,7 @@
 package org.chromium.components.signin.base;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
@@ -19,10 +20,11 @@ import java.util.Map;
  * This class has a native counterpart.
  */
 public class AccountCapabilities {
-    private final Map<String, Boolean> mAccountCapabilities = new HashMap<>();
+    private final Map<String, Boolean> mAccountCapabilities;
 
     @CalledByNative
     public AccountCapabilities(String[] capabilityNames, boolean[] capabilityValues) {
+        mAccountCapabilities = new HashMap<>();
         assert capabilityNames.length == capabilityValues.length;
         for (int i = 0; i < capabilityNames.length; i += 1) {
             final String capabilityName = capabilityNames[i];
@@ -34,46 +36,31 @@ public class AccountCapabilities {
         }
     }
 
-    public AccountCapabilities() {}
+    @VisibleForTesting
+    public AccountCapabilities(HashMap<String, Boolean> accountCapabilities) {
+        mAccountCapabilities = accountCapabilities;
+    }
 
     /**
-     * @param account the given account to retrieve capabilities from.
-     * @param managerDelegate the manager used to query capability responses.
+     * @param capabilityResponses the mapping from capability name to value.
      * @return the supported account capabilities values.
      */
     public static AccountCapabilities parseFromCapabilitiesResponse(
             Map<String, Integer> capabilityResponses) {
         assert capabilityResponses.size()
                 == AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.size();
-        AccountCapabilities capabilities = new AccountCapabilities();
+        HashMap<String, Boolean> capabilities = new HashMap<>();
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
             assert capabilityResponses.containsKey(capabilityName);
             @AccountManagerDelegate.CapabilityResponse
             int hasCapability = capabilityResponses.get(capabilityName);
-            capabilities.setAccountCapability(capabilityName, hasCapability);
+            if (hasCapability != AccountManagerDelegate.CapabilityResponse.EXCEPTION) {
+                capabilities.put(capabilityName,
+                        hasCapability == AccountManagerDelegate.CapabilityResponse.YES);
+            }
         }
-        return capabilities;
-    }
-
-    /**
-     * Stores the Capability Value for the given capability name.
-     * @param capabilityName One of the supported capability names {@link
-     *         #AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES}.
-     * @param hasCapability Capability Response for this capability.
-     */
-    public void setAccountCapability(@NonNull String capabilityName,
-            @AccountManagerDelegate.CapabilityResponse int hasCapability) {
-        assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.contains(
-                capabilityName)
-            : "Capability name not supported: "
-                + capabilityName;
-        if (hasCapability == AccountManagerDelegate.CapabilityResponse.EXCEPTION) {
-            /* The value of the capability is unknown, no need to change the map of capabilities. */
-            return;
-        }
-        mAccountCapabilities.put(
-                capabilityName, hasCapability == AccountManagerDelegate.CapabilityResponse.YES);
+        return new AccountCapabilities(capabilities);
     }
 
     /**

@@ -117,40 +117,25 @@ public final class AccountCapabilitiesTest {
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseException(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities();
-        capabilities.setAccountCapability(
-                capabilityName, AccountManagerDelegate.CapabilityResponse.EXCEPTION);
+        AccountCapabilities capabilities = new AccountCapabilities(new HashMap<>());
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseYes(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities();
-        capabilities.setAccountCapability(
-                capabilityName, AccountManagerDelegate.CapabilityResponse.YES);
+        AccountCapabilities capabilities = new AccountCapabilities(new HashMap<String, Boolean>() {
+            { put(capabilityName, true); }
+        });
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseNo(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities();
-        capabilities.setAccountCapability(
-                capabilityName, AccountManagerDelegate.CapabilityResponse.NO);
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
-    }
-
-    @Test
-    @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
-    public void testCapabilityResponseFalseAfterException(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities();
-        capabilities.setAccountCapability(
-                capabilityName, AccountManagerDelegate.CapabilityResponse.NO);
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
-
-        capabilities.setAccountCapability(
-                capabilityName, AccountManagerDelegate.CapabilityResponse.EXCEPTION);
+        AccountCapabilities capabilities = new AccountCapabilities(new HashMap<String, Boolean>() {
+            { put(capabilityName, false); }
+        });
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
     }
 

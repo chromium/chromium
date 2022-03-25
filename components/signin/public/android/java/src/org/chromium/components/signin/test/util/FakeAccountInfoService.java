@@ -73,7 +73,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
                 email, FakeAccountManagerFacade.toGaiaId(email));
         final AccountInfo accountInfo = new AccountInfo(coreAccountInfo.getId(),
                 coreAccountInfo.getEmail(), coreAccountInfo.getGaiaId(), fullName, givenName,
-                avatar, new AccountCapabilities());
+                avatar, new AccountCapabilities(new HashMap<>()));
         mAccountInfos.put(email, accountInfo);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {

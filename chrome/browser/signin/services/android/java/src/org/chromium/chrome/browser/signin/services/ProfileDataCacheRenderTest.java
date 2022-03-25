@@ -62,6 +62,7 @@ import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -107,9 +108,9 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
 
-    private final AccountInfo mAccountInfoWithAvatar =
-            new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
-                    "full name", "given name", createAvatar(), new AccountCapabilities());
+    private final AccountInfo mAccountInfoWithAvatar = new AccountInfo(
+            new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test", "full name",
+            "given name", createAvatar(), new AccountCapabilities(new HashMap<>()));
 
     private FrameLayout mContentView;
     private ImageView mImageView;
@@ -193,7 +194,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
             mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
             final AccountInfo emptyAccountInfo = new AccountInfo(mAccountInfoWithAvatar.getId(),
                     mAccountInfoWithAvatar.getEmail(), mAccountInfoWithAvatar.getGaiaId(), null,
-                    null, null, new AccountCapabilities());
+                    null, null, new AccountCapabilities(new HashMap<>()));
             mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
             checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
         });

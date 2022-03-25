@@ -24,6 +24,7 @@ import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountCapabilities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -113,7 +114,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
-        return Promise.fulfilled(new AccountCapabilities());
+        return Promise.fulfilled(new AccountCapabilities(new HashMap<>()));
     }
 
     @Override
