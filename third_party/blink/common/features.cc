@@ -1386,5 +1386,10 @@ const base::Feature kUserAgentOverrideExperiment{
 const base::Feature kWebSQLAccess{"kWebSQLAccess",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Changes behavior of User-Agent Client Hints to send blank headers when the
+// User-Agent string is overridden, instead of disabling the headers altogether.
+const base::Feature kUACHOverrideBlank{"UACHOverrideBlank",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

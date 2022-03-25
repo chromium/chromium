@@ -282,6 +282,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.AUTOFILL_SHADOW_DOM,
                     "Enables Autofill associate form elements with form "
                             + "control elements across shadow boundaries."),
+            Flag.baseFeature(BlinkFeatures.UACH_OVERRIDE_BLANK,
+                    "Changes behavior of User-Agent Client Hints to send blank headers "
+                            + "when the User-Agent string is overriden"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

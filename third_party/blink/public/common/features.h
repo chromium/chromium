@@ -688,6 +688,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kUserAgentOverrideExperiment;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebSQLAccess;
 
+BLINK_COMMON_EXPORT extern const base::Feature kUACHOverrideBlank;
+
 }  // namespace features
 }  // namespace blink
 
