@@ -459,12 +459,6 @@ ProfileImpl::ProfileImpl(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  create_session_service_timer_.Start(
-      FROM_HERE, kCreateSessionServiceDelay, this,
-      &ProfileImpl::EnsureSessionServiceCreated);
-#endif
-
   if (path == ProfileManager::GetGuestProfilePath()) {
       profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
@@ -1147,6 +1141,15 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
   }
 #else
   OnLocaleReady(create_mode);
+#endif
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  // SessionService depends on Profile::GetPrefs() and therefore shouldn't be
+  // forced initialized before prefs are loaded. Starting this Timer before
+  // that point resulted in a racy use-before-initialized in the past.
+  create_session_service_timer_.Start(
+      FROM_HERE, kCreateSessionServiceDelay, this,
+      &ProfileImpl::EnsureSessionServiceCreated);
 #endif
 }
 
