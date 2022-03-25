@@ -4791,28 +4791,40 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
     return false;
 
   HeapVector<std::pair<Member<Element>, Member<Element>>> activatable_targets;
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
-    auto* ancestor_element = DynamicTo<Element>(ancestor);
-    if (!ancestor_element)
+  for (Node* previous = this; previous;
+       previous = FlatTreeTraversal::Previous(*previous)) {
+    Element* prior_element = DynamicTo<Element>(previous);
+    if (!prior_element)
       continue;
-    if (auto* context = ancestor_element->GetDisplayLockContext()) {
+    if (auto* context = prior_element->GetDisplayLockContext()) {
       // If any of the ancestors is not activatable for the given reason, we
       // can't activate.
       if (context->IsLocked() && !context->IsActivatable(reason))
         return false;
-      activatable_targets.push_back(std::make_pair(
-          ancestor_element, &ancestor.GetTreeScope().Retarget(*this)));
+      // Collect display-locked ancestors and shaping-deferred prior elements.
+      if (FlatTreeTraversal::Contains(*prior_element, *this) ||
+          (prior_element->GetLayoutObject() &&
+           prior_element->GetLayoutObject()->IsShapingDeferred())) {
+        activatable_targets.push_back(std::make_pair(
+            prior_element, &prior_element->GetTreeScope().Retarget(*this)));
+      }
     }
   }
 
   bool activated = false;
   for (const auto& target : activatable_targets) {
-    // Dispatch event on activatable ancestor (target.first), with
-    // the retargeted element (target.second) as the |activatedElement|.
     if (auto* context = target.first->GetDisplayLockContext()) {
       if (context->ShouldCommitForActivation(reason)) {
         activated = true;
-        context->CommitForActivationWithSignal(target.second, reason);
+        if (target.first->GetLayoutObject() &&
+            target.first->GetLayoutObject()->IsShapingDeferred()) {
+          // Unlock shaping-deferred IFCs permanently.
+          context->SetRequestedState(EContentVisibility::kVisible);
+        } else {
+          // Dispatch event on activatable ancestor (target.first), with
+          // the retargeted element (target.second) as the |activated_element|.
+          context->CommitForActivationWithSignal(target.second, reason);
+        }
       }
     }
   }

@@ -254,6 +254,25 @@ TEST_F(DeferredShapingTest, UnlockNestedDeferred) {
             GetElementById("target2")->clientWidth());
 }
 
+TEST_F(DeferredShapingTest, ScrollIntoView) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<div><p id="prior">IFC</p></div>
+<div style="height:3600px"></div>
+<p id="ancestor">IFC<span style="display:inline-block" id="target"></sapn></p>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("prior"));
+  EXPECT_TRUE(IsLocked("prior"));
+  EXPECT_TRUE(IsDefer("ancestor"));
+  EXPECT_TRUE(IsLocked("ancestor"));
+
+  GetElementById("target")->scrollIntoView();
+  EXPECT_FALSE(IsDefer("prior"));
+  EXPECT_FALSE(IsLocked("prior"));
+  EXPECT_FALSE(IsDefer("ancestor"));
+  EXPECT_FALSE(IsLocked("ancestor"));
+}
+
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>
