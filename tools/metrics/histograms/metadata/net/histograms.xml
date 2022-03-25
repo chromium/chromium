@@ -1907,19 +1907,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.NetworkChangeNotifierMac.GetCurrentConnectionTypeWaitTime"
-    units="ms" expires_after="2022-05-01">
-  <owner>ajuma@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    The amount of time (ms) spent waiting for the connection type to be
-    determined in NetworkChangeNotifierMac::GetCurrentConnectionType. This is
-    recorded the first time GetCurrentConnectionType is called, before the
-    connection type has been determined; it is not recorded again on subsequent
-    calls to this function.
-  </summary>
-</histogram>
-
 <histogram name="Net.NetworkConfigWatcherMac.SCDynamicStore.Create"
     enum="SCStatusCode" expires_after="M85">
   <owner>mef@chromium.org</owner>

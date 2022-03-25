@@ -81,9 +81,6 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   if (connection_type_initialized_)
     return connection_type_;
 
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Net.NetworkChangeNotifierMac.GetCurrentConnectionTypeWaitTime");
-
   // Wait up to a limited amount of time for the connection type to be
   // determined, to avoid blocking the main thread indefinitely. Since
   // ConditionVariables are susceptible to spurious wake-ups, each call to
