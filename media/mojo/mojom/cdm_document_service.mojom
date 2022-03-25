@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(xhwang): Move this out of media if it is needed anywhere else.
 module media.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "media/mojo/mojom/media_types.mojom";
 
 // Contains data linked to an origin that the CDM stores in the browser
 // process.
@@ -71,4 +71,9 @@ interface CdmDocumentService {
   // be reused by the CDM for that same origin in the future.
   [EnableIf=is_win]
   SetCdmClientToken(array<uint8> client_token);
+
+  // Reports a CDM event, which can facilitate metrics reporting or fallback
+  // logic.
+  [EnableIf=is_win]
+  OnCdmEvent(CdmEvent event);
 };

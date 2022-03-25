@@ -699,6 +699,15 @@ mojom("mojom") {
       {
         types = [
           {
+            mojom = "media.mojom.CdmEvent"
+            cpp = "::media::CdmEvent"
+          },
+        ]
+        traits_headers = [ "media_types_enum_mojom_traits.h" ]
+      },
+      {
+        types = [
+          {
             mojom = "media.mojom.MediaFoundationCdmData"
             cpp = "::std::unique_ptr<::media::MediaFoundationCdmData>"
             move_only = true

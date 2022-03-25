@@ -203,6 +203,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // The represents the rendering mode of the Media Engine.
   RenderingMode rendering_mode_ = RenderingMode::DirectComposition;
 
+  bool has_reported_significant_playback_ = false;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRenderer> weak_factory_{this};
 };

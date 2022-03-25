@@ -196,6 +196,15 @@ struct VideoDecoderConfig {
 [Native]
 struct SubsampleEntry;
 
+// Important events happened to the CDM.
+[EnableIf=is_win]
+enum CdmEvent {
+  kSignificantPlayback,  // Significant (e.g. played >1 minute) successful
+                         // playback happened using the CDM.
+  kPlaybackError,  // Error happened during playback using the CDM.
+  kCdmError,       // Error happened in the CDM.
+};
+
 // See media::CdmSessionClosedReason for descriptions.
 enum CdmSessionClosedReason {
   kInternalError,

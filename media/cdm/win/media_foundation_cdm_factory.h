@@ -70,6 +70,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
                        IsTypeSupportedResultCB is_type_supported_result_cb);
 
   void StoreClientToken(const std::vector<uint8_t>& client_token);
+  void OnCdmEvent(CdmEvent event);
 
   HRESULT CreateMfCdmInternal(
       const CdmConfig& cdm_config,

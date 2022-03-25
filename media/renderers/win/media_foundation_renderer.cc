@@ -679,6 +679,13 @@ void MediaFoundationRenderer::SendStatistics() {
     return;
   }
 
+  const int kSignificantPlaybackFrames = 1800;  // About 30 fps for 1 minute.
+  if (!has_reported_significant_playback_ && cdm_proxy_ &&
+      new_stats.video_frames_decoded >= kSignificantPlaybackFrames) {
+    has_reported_significant_playback_ = true;
+    cdm_proxy_->OnSignificantPlayback();
+  }
+
   if (statistics_ != new_stats) {
     // OnStatisticsUpdate() expects delta values.
     PipelineStatistics delta;
@@ -878,26 +885,31 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
       (hresult.has_value() ? (" (" + PrintHr(hresult.value()) + ")") : "");
 
   DLOG(ERROR) << error;
-  MEDIA_LOG(ERROR, media_log_) << error;
-  ReportErrorReason(reason);
 
-  if (!hresult.has_value()) {
-    renderer_client_->OnError(status);
-    return;
-  }
+  // Report to MediaLog so the error will show up in media internals and
+  // MediaError.message.
+  MEDIA_LOG(ERROR, media_log_) << error;
+
+  // Report the error to UMA.
+  ReportErrorReason(reason);
 
   // HRESULT 0x8004CD12 is DRM_E_TEE_INVALID_HWDRM_STATE, which can happen
   // during OS sleep/resume, or moving video to different graphics adapters.
   // This is not an error, so special case it here.
-  PipelineStatus status_to_report = status;
-  if (hresult == static_cast<HRESULT>(0x8004CD12)) {
-    status_to_report = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+  PipelineStatus new_status = status;
+  if (hresult.has_value() && hresult == static_cast<HRESULT>(0x8004CD12)) {
+    new_status = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
     if (cdm_proxy_)
       cdm_proxy_->OnHardwareContextReset();
+  } else if (cdm_proxy_) {
+    cdm_proxy_->OnPlaybackError();
   }
 
-  status_to_report.WithData("hresult", static_cast<uint32_t>(hresult.value()));
-  renderer_client_->OnError(status_to_report);
+  // Attach hresult to `new_status` for logging and metrics reporting.
+  if (hresult.has_value())
+    new_status.WithData("hresult", static_cast<uint32_t>(hresult.value()));
+
+  renderer_client_->OnError(new_status);
 }
 
 void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(

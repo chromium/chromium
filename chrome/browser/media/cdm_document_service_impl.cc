@@ -361,6 +361,11 @@ void CdmDocumentServiceImpl::SetCdmClientToken(
   CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
 }
 
+void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event) {
+  DVLOG(1) << __func__ << ": event=" << static_cast<int>(event);
+  NOTIMPLEMENTED();
+}
+
 // This function goes over each folder located under the MediaFoundationCdm
 // store root path and delete them as needed. A folder needs to be deleted for
 // the following reason:

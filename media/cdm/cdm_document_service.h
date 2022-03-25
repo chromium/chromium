@@ -18,6 +18,14 @@
 
 namespace media {
 
+// Important events happened to the CDM.
+enum class CdmEvent {
+  kSignificantPlayback,  // Significant (e.g. played >1 minute) successful
+                         // playback happened using the CDM.
+  kPlaybackError,        // Error happened during playback using the CDM.
+  kCdmError,             // Error happened in the CDM.
+};
+
 class MEDIA_EXPORT CdmDocumentService {
  public:
   CdmDocumentService() = default;
@@ -74,6 +82,10 @@ class MEDIA_EXPORT CdmDocumentService {
   // Pref Service so that it can be reused next time the CDM request a new
   // license for that origin.
   virtual void SetCdmClientToken(const std::vector<uint8_t>& client_token) = 0;
+
+  // Reports a CDM event. This can be used for metrics reporting or fallback
+  // logic, e.g. disable the CDM in the current robustness level.
+  virtual void OnCdmEvent(CdmEvent event) = 0;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

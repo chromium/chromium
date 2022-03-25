@@ -258,6 +258,8 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
                           weak_factory_.GetWeakPtr(), cdm_config.key_system),
       base::BindRepeating(&MediaFoundationCdmFactory::StoreClientToken,
                           weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaFoundationCdmFactory::OnCdmEvent,
+                          weak_factory_.GetWeakPtr()),
       session_message_cb, session_closed_cb, session_keys_change_cb,
       session_expiration_update_cb);
 
@@ -319,6 +321,10 @@ void MediaFoundationCdmFactory::IsTypeSupported(
 void MediaFoundationCdmFactory::StoreClientToken(
     const std::vector<uint8_t>& client_token) {
   helper_->SetCdmClientToken(client_token);
+}
+
+void MediaFoundationCdmFactory::OnCdmEvent(CdmEvent event) {
+  helper_->OnCdmEvent(event);
 }
 
 HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(

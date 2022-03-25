@@ -127,9 +127,11 @@ int GetHdcpValue(HdcpVersion hdcp_version) {
 class CdmProxyImpl : public MediaFoundationCdmProxy {
  public:
   CdmProxyImpl(ComPtr<IMFContentDecryptionModule> mf_cdm,
-               base::RepeatingClosure hardware_context_reset_cb)
+               base::RepeatingClosure hardware_context_reset_cb,
+               MediaFoundationCdm::CdmEventCB cdm_event_cb)
       : mf_cdm_(mf_cdm),
-        hardware_context_reset_cb_(std::move(hardware_context_reset_cb)) {}
+        hardware_context_reset_cb_(std::move(hardware_context_reset_cb)),
+        cdm_event_cb_(std::move(cdm_event_cb)) {}
 
   // MediaFoundationCdmProxy implementation
 
@@ -229,6 +231,14 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
     hardware_context_reset_cb_.Run();
   }
 
+  void OnSignificantPlayback() override {
+    cdm_event_cb_.Run(CdmEvent::kSignificantPlayback);
+  }
+
+  void OnPlaybackError() override {
+    cdm_event_cb_.Run(CdmEvent::kPlaybackError);
+  }
+
  private:
   ~CdmProxyImpl() override = default;
 
@@ -251,8 +261,9 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
 
   ComPtr<IMFContentDecryptionModule> mf_cdm_;
 
-  // A callback to notify hardware context reset.
+  // Callbacks to notify hardware context reset and playback error.
   base::RepeatingClosure hardware_context_reset_cb_;
+  MediaFoundationCdm::CdmEventCB cdm_event_cb_;
 
   // Store IMFTrustedInput to avoid potential performance cost.
   ComPtr<IMFTrustedInput> trusted_input_;
@@ -279,6 +290,7 @@ MediaFoundationCdm::MediaFoundationCdm(
     const CreateMFCdmCB& create_mf_cdm_cb,
     const IsTypeSupportedCB& is_type_supported_cb,
     const StoreClientTokenCB& store_client_token_cb,
+    const CdmEventCB& cdm_event_cb,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
@@ -287,6 +299,7 @@ MediaFoundationCdm::MediaFoundationCdm(
       create_mf_cdm_cb_(create_mf_cdm_cb),
       is_type_supported_cb_(is_type_supported_cb),
       store_client_token_cb_(store_client_token_cb),
+      cdm_event_cb_(cdm_event_cb),
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
@@ -311,6 +324,10 @@ HRESULT MediaFoundationCdm::Initialize() {
   create_mf_cdm_cb_.Run(hresult, mf_cdm);
   if (!mf_cdm) {
     DCHECK(FAILED(hresult));
+    // Only report CdmEvent::kCdmError here as this is where most failures
+    // happen, and other errors can be easily triggered by sites, e.g. a bad
+    // server certificate or a bad license.
+    OnCdmEvent(CdmEvent::kCdmError);
     return hresult;
   }
 
@@ -505,6 +522,8 @@ bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
     cdm_proxy_ = base::MakeRefCounted<CdmProxyImpl>(
         mf_cdm_,
         base::BindRepeating(&MediaFoundationCdm::OnHardwareContextReset,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&MediaFoundationCdm::OnCdmEvent,
                             weak_factory_.GetWeakPtr()));
   }
 
@@ -610,6 +629,11 @@ void MediaFoundationCdm::OnHardwareContextReset() {
     DLOG(ERROR) << __func__ << ": Re-initialization failed";
     DCHECK(!mf_cdm_);
   }
+}
+
+void MediaFoundationCdm::OnCdmEvent(CdmEvent event) {
+  DVLOG_FUNC(1);
+  cdm_event_cb_.Run(event);
 }
 
 void MediaFoundationCdm::OnIsTypeSupportedResult(

@@ -63,6 +63,11 @@ void MojoCdmHelper::SetCdmClientToken(
   ConnectToCdmDocumentService();
   cdm_document_service_->SetCdmClientToken(client_token);
 }
+
+void MojoCdmHelper::OnCdmEvent(CdmEvent event) {
+  ConnectToCdmDocumentService();
+  cdm_document_service_->OnCdmEvent(event);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {

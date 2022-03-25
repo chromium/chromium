@@ -50,6 +50,8 @@ class MockMediaFoundationCdmProxy : public MediaFoundationCdmProxy {
   MOCK_METHOD2(ProcessContentEnabler,
                HRESULT(IUnknown* request, IMFAsyncResult* result));
   MOCK_METHOD0(OnHardwareContextReset, void());
+  MOCK_METHOD0(OnSignificantPlayback, void());
+  MOCK_METHOD0(OnPlaybackError, void());
 
  protected:
   ~MockMediaFoundationCdmProxy() override;

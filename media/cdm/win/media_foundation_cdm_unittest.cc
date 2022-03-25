@@ -67,6 +67,7 @@ class MediaFoundationCdmTest : public testing::Test {
                                 base::Unretained(this)),
             is_type_supported_cb_.Get(),
             store_client_token_cb_.Get(),
+            cdm_event_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -93,6 +94,7 @@ class MediaFoundationCdmTest : public testing::Test {
 
   void InitializeAndExpectFailure() {
     can_initialize_ = false;
+    EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError));
     ASSERT_FAILED(cdm_->Initialize());
   }
 
@@ -161,6 +163,7 @@ class MediaFoundationCdmTest : public testing::Test {
       is_type_supported_cb_;
   base::MockCallback<MediaFoundationCdm::StoreClientTokenCB>
       store_client_token_cb_;
+  StrictMock<base::MockCallback<MediaFoundationCdm::CdmEventCB>> cdm_event_cb_;
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;
@@ -515,6 +518,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
 
   // Make the next `Initialize()` fail.
   can_initialize_ = false;
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError));
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
   EXPECT_CALL(cdm_client_,

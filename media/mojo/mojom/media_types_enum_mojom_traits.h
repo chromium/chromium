@@ -6,10 +6,12 @@
 #define MEDIA_MOJO_MOJOM_MEDIA_TYPES_ENUM_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
+#include "media/cdm/cdm_document_service.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 
 // Most enums have automatically generated traits, in media_types.mojom.h, due
@@ -17,6 +19,45 @@
 // in files that cannot directly include media_types.mojom.h.
 
 namespace mojo {
+
+#if BUILDFLAG(IS_WIN)
+template <>
+struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
+  static media::mojom::CdmEvent ToMojom(::media::CdmEvent input) {
+    switch (input) {
+      case ::media::CdmEvent::kSignificantPlayback:
+        return media::mojom::CdmEvent::kSignificantPlayback;
+      case ::media::CdmEvent::kPlaybackError:
+        return media::mojom::CdmEvent::kPlaybackError;
+      case ::media::CdmEvent::kCdmError:
+        return media::mojom::CdmEvent::kCdmError;
+    }
+
+    NOTREACHED();
+    return media::mojom::CdmEvent::kCdmError;
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::CdmEvent input,
+                        ::media::CdmEvent* output) {
+    switch (input) {
+      case media::mojom::CdmEvent::kSignificantPlayback:
+        *output = ::media::CdmEvent::kSignificantPlayback;
+        return true;
+      case media::mojom::CdmEvent::kPlaybackError:
+        *output = ::media::CdmEvent::kPlaybackError;
+        return true;
+      case media::mojom::CdmEvent::kCdmError:
+        *output = ::media::CdmEvent::kCdmError;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct EnumTraits<media::mojom::CdmSessionClosedReason,

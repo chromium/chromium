@@ -60,6 +60,12 @@ class MediaFoundationCdmProxy
   // because they are in bad state.
   virtual void OnHardwareContextReset() = 0;
 
+  // Notify the CDM that significant playback (e.g. >1 minutes) has happened.
+  virtual void OnSignificantPlayback() = 0;
+
+  // Notify the CDM that playback error happened.
+  virtual void OnPlaybackError() = 0;
+
  protected:
   friend base::RefCountedThreadSafe<MediaFoundationCdmProxy>;
   virtual ~MediaFoundationCdmProxy() = default;
