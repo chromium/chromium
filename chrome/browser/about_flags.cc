@@ -5132,10 +5132,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppsShortcutDefaultOffDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(bookmarks::features::kAppsShortcutDefaultOff)},
 
-    {"tab-groups-auto-create", flag_descriptions::kTabGroupsAutoCreateName,
-     flag_descriptions::kTabGroupsAutoCreateDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupsAutoCreate)},
-
     {"tab-groups-new-badge-promo",
      flag_descriptions::kTabGroupsNewBadgePromoName,
      flag_descriptions::kTabGroupsNewBadgePromoDescription, kOsDesktop,
