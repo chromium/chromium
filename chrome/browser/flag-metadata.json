@@ -5446,6 +5446,11 @@
     "expiry_milestone" : 101
   },
   {
+    "name" : "side-panel-improved-clobbering",
+    "owners": [ "chrome-cros@google.com", "tluk" ],
+    "expiry_milestone" : 104
+  },
+  {
     "name" : "side-search",
     "owners": [ "chrome-cros@google.com", "tluk" ],
     "expiry_milestone" : 104
