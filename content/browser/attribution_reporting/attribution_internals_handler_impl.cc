@@ -148,7 +148,6 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
       Visitor{.attribution_logic = attribution_info.source.attribution_logic()},
       report.data());
   return mojom::WebUIAttributionReport::New(
-      attribution_info.source.common_info().ConversionDestination().Serialize(),
       report.ReportURL(is_debug_report),
       /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(),

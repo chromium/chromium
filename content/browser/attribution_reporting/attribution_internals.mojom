@@ -63,7 +63,6 @@ union WebUIAttributionReportData {
 // Struct containing stored data that will be sent in a future attribution
 // report.
 struct WebUIAttributionReport {
-  string attribution_destination;
   url.mojom.Url report_url;
   double trigger_time;
   double report_time;

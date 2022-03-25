@@ -549,7 +549,6 @@ class Report extends Selectable {
 
     this.id = id;
     this.reportBody = mojo.reportBody;
-    this.attributionDestination = mojo.attributionDestination;
     this.reportUrl = mojo.reportUrl.url;
     this.triggerTime = new Date(mojo.triggerTime);
     this.reportTime = new Date(mojo.reportTime);
@@ -753,7 +752,6 @@ class EventLevelReportTableModel extends ReportTableModel {
       this.selectionColumn,
       new CodeColumn('Report Body', (e) => e.reportBody),
       new ValueColumn('Status', (e) => e.status),
-      new ValueColumn('Destination', (e) => e.attributionDestination),
       new ReportUrlColumn(),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
@@ -763,7 +761,7 @@ class EventLevelReportTableModel extends ReportTableModel {
     ];
 
     // Sort by report time by default.
-    this.sortIdx = 6;
+    this.sortIdx = 5;
   }
 }
 
@@ -779,7 +777,6 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
       this.selectionColumn,
       new CodeColumn('Report Body', (e) => e.reportBody),
       new ValueColumn('Status', (e) => e.status),
-      new ValueColumn('Destination', (e) => e.attributionDestination),
       new ReportUrlColumn(),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
@@ -787,7 +784,7 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
     ];
 
     // Sort by report time by default.
-    this.sortIdx = 6;
+    this.sortIdx = 5;
   }
 }
 
