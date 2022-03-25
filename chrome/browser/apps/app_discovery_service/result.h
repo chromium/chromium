@@ -11,6 +11,7 @@
 namespace apps {
 
 enum class AppSource;
+class GameExtras;
 class PlayExtras;
 
 // Can be overridden by Sources that have unique fields.
@@ -23,6 +24,7 @@ class SourceExtras {
   // virtual FooExtras* AsFooExtras { return nullptr; }
 
   // Safe downcasts:
+  virtual GameExtras* AsGameExtras();
   virtual PlayExtras* AsPlayExtras();
 };
 
