@@ -451,8 +451,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             @DelayedInitMethod
             int delayedInitMethod = getDelayedInitMethod();
             if (delayedInitMethod == DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT) {
-                PostTask.runOrPostTask(
-                        UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
             } else if (delayedInitMethod == DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT) {
                 sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
             } else {
@@ -466,7 +465,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
         if (tab.isIncognito() || tab.isCustomTab()) {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
             return;
         }
         PersistedTabData.from(tab,
@@ -477,7 +476,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                 ShoppingPersistedTabData.from(tab);
                         PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
                             shoppingPersistedTabData.deserializeAndLog(data);
-                            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                                     () -> { factoryCallback.onResult(shoppingPersistedTabData); });
                         });
                     });
@@ -487,8 +486,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     if (tab.isDestroyed()
                             || getTimeSinceTabLastOpenedMs(tab)
                                     > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
-                        PostTask.runOrPostTask(
-                                UiThreadTaskTraits.DEFAULT, () -> supplierCallback.onResult(null));
+                        supplierCallback.onResult(null);
                         return;
                     }
                     PriceDataSnapshot previous = PersistedTabData.from(tab, USER_DATA_KEY) == null
@@ -496,10 +494,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             : new PriceDataSnapshot(PersistedTabData.from(tab, USER_DATA_KEY));
                     ShoppingPersistedTabData.isShoppingPage(tab.getUrl(), (isShoppingPage) -> {
                         if (!isShoppingPage) {
-                            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                                    ()
-                                            -> supplierCallback.onResult(
-                                                    getEmptyShoppingPersistedTabData(tab)));
+                            supplierCallback.onResult(getEmptyShoppingPersistedTabData(tab));
                             return;
                         }
 
@@ -510,9 +505,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                             HintsProto.OptimizationType.PRICE_TRACKING,
                                             (decision, metadata) -> {
                                                 if (tab.isDestroyed()) {
-                                                    PostTask.runOrPostTask(
-                                                            UiThreadTaskTraits.DEFAULT,
-                                                            () -> supplierCallback.onResult(null));
+                                                    supplierCallback.onResult(null);
                                                     return;
                                                 }
                                                 if (decision != OptimizationGuideDecision.TRUE) {
@@ -520,9 +513,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                             getEmptyShoppingPersistedTabData(tab);
                                                     res.logPriceDropMetrics(
                                                             METRICS_IDENTIFIER_PREFIX);
-                                                    PostTask.runOrPostTask(
-                                                            UiThreadTaskTraits.DEFAULT,
-                                                            () -> supplierCallback.onResult(res));
+                                                    supplierCallback.onResult(res);
                                                     return;
                                                 }
                                                 try {
@@ -535,9 +526,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                             tab, priceTrackingDataProto, previous);
                                                     sptd.logPriceDropMetrics(
                                                             METRICS_IDENTIFIER_PREFIX);
-                                                    PostTask.runOrPostTask(
-                                                            UiThreadTaskTraits.DEFAULT,
-                                                            () -> supplierCallback.onResult(sptd));
+                                                    supplierCallback.onResult(sptd);
                                                 } catch (InvalidProtocolBufferException e) {
                                                     Log.i(TAG,
                                                             String.format(Locale.US,
@@ -547,18 +536,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                                             + "DataProto. "
                                                                             + "Details %s.",
                                                                     e));
-                                                    PostTask.runOrPostTask(
-                                                            UiThreadTaskTraits.DEFAULT,
-                                                            () -> supplierCallback.onResult(null));
+                                                    supplierCallback.onResult(null);
                                                 }
                                             });
                         } else {
                             sPageAnnotationsServiceFactory.getForLastUsedProfile().getAnnotations(
                                     tab.getUrl(), (result) -> {
-                                        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                                                ()
-                                                        -> supplierCallback.onResult(
-                                                                build(tab, result, previous)));
+                                        supplierCallback.onResult(build(tab, result, previous));
                                     });
                         }
                     });
@@ -1136,7 +1120,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             // If Tab was destroyed we should just return null and not try and
             // create and associate {@link ShoppingPersistedTabData} with a
             // destroyed {@link Tab}.
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     () -> { shoppingDataRequest.callback.onResult(null); });
             processNextItemOnQueue();
             return;

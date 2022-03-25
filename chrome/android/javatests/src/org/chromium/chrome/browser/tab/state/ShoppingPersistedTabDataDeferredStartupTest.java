@@ -129,9 +129,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
             });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ShoppingPersistedTabData.onDeferredStartup(); });
         final Semaphore newSemaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.onDeferredStartup();
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertNotNull(shoppingPersistedTabData);
                 Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UPDATED_PRICE_MICROS,

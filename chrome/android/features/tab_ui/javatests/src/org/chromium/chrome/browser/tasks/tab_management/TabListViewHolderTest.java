@@ -861,29 +861,39 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @UiThreadTest
     public void testPriceDropEndToEnd() {
-        ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
-        ShoppingPersistedTabData.onDeferredStartup();
-        PersistedTabDataConfiguration.setUseTestConfig(true);
-        setPriceTrackingEnabledForTesting(true);
-        mockCurrencyFormatter();
-        mockUrlUtilities();
-        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
-        MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
-        tab.setGurlOverrideForTesting(TEST_GURL);
-        tab.setIsInitialized(true);
-        CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
-        TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
-                new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
-        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-        testGridSelected(mTabGridView, mGridModel);
-        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
-        TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
-        TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
-        Assert.assertEquals(EXPECTED_PRICE, currentPrice.getText());
-        Assert.assertEquals(EXPECTED_PREVIOUS_PRICE, previousPrice.getText());
-        Assert.assertEquals(EXPECTED_CONTENT_DESCRIPTION, priceCardView.getContentDescription());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
+            ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
+            PersistedTabDataConfiguration.setUseTestConfig(true);
+            setPriceTrackingEnabledForTesting(true);
+            mockCurrencyFormatter();
+            mockUrlUtilities();
+            mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
+            MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
+            tab.setGurlOverrideForTesting(TEST_GURL);
+            tab.setIsInitialized(true);
+            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
+                    new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
+            mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
+            testGridSelected(mTabGridView, mGridModel);
+        });
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> EXPECTED_PRICE.equals(
+                                ((TextView) mTabGridView.findViewById(R.id.current_price))
+                                        .getText()));
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> EXPECTED_PREVIOUS_PRICE.equals(
+                                ((TextView) mTabGridView.findViewById(R.id.previous_price))
+                                        .getText()));
+        CriteriaHelper.pollUiThread(()
+                                            -> EXPECTED_CONTENT_DESCRIPTION.equals(
+                                                    ((PriceCardView) mTabGridView.findViewById(
+                                                             R.id.price_info_box_outer))
+                                                            .getContentDescription()));
     }
 
     private void mockCurrencyFormatter() {

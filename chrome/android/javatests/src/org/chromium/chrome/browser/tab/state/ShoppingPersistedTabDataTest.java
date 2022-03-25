@@ -295,7 +295,6 @@ public class ShoppingPersistedTabDataTest {
                 mOptimizationGuideBridgeJniMock, 1);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -593,7 +592,6 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -617,7 +615,6 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -641,7 +638,6 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -664,7 +660,6 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testSPTDNullOptimizationGuideFalse() {
@@ -849,30 +844,32 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertTrue(shoppingPersistedTabData.needsUpdate());
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testIncognitoTabDisabled() throws TimeoutException {
         TabImpl tab = mock(TabImpl.class);
         doReturn(true).when(tab).isIncognito();
         CallbackHelper callbackHelper = new CallbackHelper();
-        ShoppingPersistedTabData.from(tab, (res) -> {
-            Assert.assertNull(res);
-            callbackHelper.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (res) -> {
+                Assert.assertNull(res);
+                callbackHelper.notifyCalled();
+            });
         });
         callbackHelper.waitForCallback(0);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testCustomTabsDisabled() throws TimeoutException {
         TabImpl tab = mock(TabImpl.class);
         doReturn(true).when(tab).isCustomTab();
         CallbackHelper callbackHelper = new CallbackHelper();
-        ShoppingPersistedTabData.from(tab, (res) -> {
-            Assert.assertNull(res);
-            callbackHelper.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (res) -> {
+                Assert.assertNull(res);
+                callbackHelper.notifyCalled();
+            });
         });
         callbackHelper.waitForCallback(0);
     }
