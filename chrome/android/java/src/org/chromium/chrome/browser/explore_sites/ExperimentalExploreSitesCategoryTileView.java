@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
@@ -27,7 +26,7 @@ public class ExperimentalExploreSitesCategoryTileView extends LinearLayout {
     /** The data represented by this tile. */
     private ExploreSitesCategoryTile mCategoryData;
 
-    private Resources mResources;
+    private final Context mContext;
     private RoundedIconGenerator mIconGenerator;
 
     private TextView mTitleView;
@@ -39,7 +38,7 @@ public class ExperimentalExploreSitesCategoryTileView extends LinearLayout {
     /** Constructor for inflating from XML. */
     public ExperimentalExploreSitesCategoryTileView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mResources = context.getResources();
+        mContext = context;
     }
 
     @Override
@@ -50,30 +49,29 @@ public class ExperimentalExploreSitesCategoryTileView extends LinearLayout {
     }
 
     public void initialize(ExploreSitesCategoryTile category, int widthPx) {
+        Resources resources = mContext.getResources();
         mCategoryData = category;
         mIconWidthPx = widthPx
-                - (2
-                          * mResources.getDimensionPixelSize(
-                                    R.dimen.experimental_explore_sites_padding));
+                - (2 * resources.getDimensionPixelSize(R.dimen.experimental_explore_sites_padding));
         mIconHeightPx = mIconWidthPx * 2 / 3;
         mIconGenerator = new RoundedIconGenerator(mIconWidthPx, mIconHeightPx,
-                mResources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius),
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.default_favicon_background_color),
-                mResources.getDimensionPixelSize(R.dimen.tile_view_icon_text_size));
+                resources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius),
+                mContext.getColor(R.color.default_favicon_background_color),
+                resources.getDimensionPixelSize(R.dimen.tile_view_icon_text_size));
         updateIcon(null);
         mTitleView.setText(mCategoryData.getCategoryName());
     }
 
     public void updateIcon(Bitmap bitmap) {
+        Resources resources = mContext.getResources();
         Drawable drawable;
         if (bitmap == null) {
-            drawable = new BitmapDrawable(mResources,
-                    mIconGenerator.generateIconForText(mCategoryData.getCategoryName()));
+            drawable = new BitmapDrawable(
+                    resources, mIconGenerator.generateIconForText(mCategoryData.getCategoryName()));
         } else {
-            drawable = ViewUtils.createRoundedBitmapDrawable(mResources,
+            drawable = ViewUtils.createRoundedBitmapDrawable(resources,
                     Bitmap.createScaledBitmap(bitmap, mIconWidthPx, mIconHeightPx, false),
-                    mResources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius));
+                    resources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius));
         }
         mCategoryData.setIconDrawable(drawable);
         mIconView.setImageDrawable(drawable);

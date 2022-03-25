@@ -40,7 +40,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
@@ -1672,8 +1671,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     protected Drawable getBackgroundDrawable() {
-        return new ColorDrawable(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.light_background_color));
+        return new ColorDrawable(getColor(R.color.light_background_color));
     }
 
     /**
@@ -1683,8 +1681,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * ColorDrawable.
      */
     protected void changeBackgroundColorForResizing() {
-        getWindow().setBackgroundDrawable(new ColorDrawable(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.resizing_background_color)));
+        getWindow().setBackgroundDrawable(
+                new ColorDrawable(getColor(R.color.resizing_background_color)));
     }
 
     private void maybeRemoveWindowBackground() {

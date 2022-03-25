@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.content_creation.reactions;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
@@ -41,15 +40,13 @@ public class LightweightReactionsProgressDialog extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Activity activity = getActivity();
         View dialogView =
-                getActivity().getLayoutInflater().inflate(R.layout.reactions_loading_view, null);
-        Resources resources = getActivity().getResources();
+                activity.getLayoutInflater().inflate(R.layout.reactions_loading_view, null);
 
         mProgressBar = dialogView.findViewById(R.id.reactions_progress_bar);
-        mProgressBar.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(resources, R.color.modern_grey_300));
-        mProgressBar.setProgressColor(
-                ApiCompatibilityUtils.getColor(resources, R.color.modern_white));
+        mProgressBar.setBackgroundColor(activity.getColor(R.color.modern_grey_300));
+        mProgressBar.setProgressColor(activity.getColor(R.color.modern_white));
         mProgressBar.setContentDescription(
                 getActivity().getString(R.string.lightweight_reactions_creating_gif_announcement));
         mProgressPercentage = dialogView.findViewById(R.id.reactions_progress_percentage);

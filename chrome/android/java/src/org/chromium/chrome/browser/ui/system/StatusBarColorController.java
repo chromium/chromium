@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.system;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
@@ -372,8 +371,8 @@ public class StatusBarColorController
 
         if (mScrimColor == 0) {
             final View root = mWindow.getDecorView().getRootView();
-            final Resources resources = root.getResources();
-            mScrimColor = ApiCompatibilityUtils.getColor(resources, R.color.default_scrim_color);
+            final Context context = root.getContext();
+            mScrimColor = context.getColor(R.color.default_scrim_color);
         }
         // Apply a color overlay if the scrim is showing.
         float scrimColorAlpha = (mScrimColor >>> 24) / 255f;

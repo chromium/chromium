@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -14,7 +14,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -44,7 +43,7 @@ import org.chromium.ui.vr.VrModeObserver;
 class TabbedNavigationBarColorController implements VrModeObserver {
     private final Window mWindow;
     private final ViewGroup mRootView;
-    private final Resources mResources;
+    private final Context mContext;
     private final FullscreenManager mFullScreenManager;
     private final @ColorInt int mDefaultScrimColor;
 
@@ -78,14 +77,13 @@ class TabbedNavigationBarColorController implements VrModeObserver {
 
         mWindow = window;
         mRootView = (ViewGroup) mWindow.getDecorView().getRootView();
-        mResources = mRootView.getResources();
-        mDefaultScrimColor =
-                ApiCompatibilityUtils.getColor(mResources, R.color.default_scrim_color);
+        mContext = mRootView.getContext();
+        mDefaultScrimColor = mContext.getColor(R.color.default_scrim_color);
         mFullScreenManager = fullscreenManager;
 
         // If we're not using a light navigation bar, it will always be the same dark color so
         // there's no need to register observers and manipulate coloring.
-        if (!mResources.getBoolean(R.bool.window_light_navigation_bar)) {
+        if (!mContext.getResources().getBoolean(R.bool.window_light_navigation_bar)) {
             mTabModelSelector = null;
             mTabModelSelectorObserver = null;
             mFullscreenObserver = null;
@@ -237,15 +235,13 @@ class TabbedNavigationBarColorController implements VrModeObserver {
 
     private @ColorInt int getNavigationBarColor(boolean forceDarkNavigationBar) {
         return forceDarkNavigationBar
-                ? ApiCompatibilityUtils.getColor(
-                        mResources, R.color.toolbar_background_primary_dark)
+                ? mContext.getColor(R.color.toolbar_background_primary_dark)
                 : SemanticColorUtils.getBottomSystemNavColor(mWindow.getContext());
     }
 
     private @ColorInt int getNavigationBarDividerColor(boolean forceDarkNavigationBar) {
         return forceDarkNavigationBar
-                ? ApiCompatibilityUtils.getColor(
-                        mResources, R.color.bottom_system_nav_divider_color_light)
+                ? mContext.getColor(R.color.bottom_system_nav_divider_color_light)
                 : SemanticColorUtils.getBottomSystemNavDividerColor(mWindow.getContext());
     }
 

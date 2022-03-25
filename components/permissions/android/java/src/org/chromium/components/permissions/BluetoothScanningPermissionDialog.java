@@ -114,7 +114,7 @@ public class BluetoothScanningPermissionDialog {
         final boolean useDarkColors = !ColorUtils.inNightMode(mContext);
         AutocompleteSchemeClassifier autocompleteSchemeClassifier =
                 mDelegate.createAutocompleteSchemeClassifier();
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mContext.getResources(),
+        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mContext,
                 autocompleteSchemeClassifier, securityLevel,
                 /*isInternalPage=*/false, useDarkColors,
                 /*emphasizeScheme=*/true);

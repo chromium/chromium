@@ -190,8 +190,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
-        mScrim = new ScrimCoordinator(this,
-                new ScrimCoordinator.SystemUiScrimDelegate() {
+        mScrim =
+                new ScrimCoordinator(this, new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
                         // TODO: Implement if status bar needs to change color with the scrim.
@@ -201,9 +201,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     public void setNavigationBarScrimFraction(float scrimFraction) {
                         // TODO: Implement if navigation bar needs to change color with the scrim.
                     }
-                },
-                (ViewGroup) sheetContainer.getParent(),
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_scrim_color));
+                }, (ViewGroup) sheetContainer.getParent(), getColor(R.color.default_scrim_color));
 
         // clang-format off
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(

@@ -198,8 +198,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mContainer = new PageInfoContainer(mContext);
         PageInfoContainer.Params containerParams = new PageInfoContainer.Params();
         boolean useDarkText = !ColorUtils.inNightMode(mContext);
-        OmniboxUrlEmphasizer.emphasizeUrl(displayUrlBuilder, mContext.getResources(),
-                autocompleteSchemeClassifier, mSecurityLevel, mIsInternalPage, useDarkText,
+        OmniboxUrlEmphasizer.emphasizeUrl(displayUrlBuilder, mContext, autocompleteSchemeClassifier,
+                mSecurityLevel, mIsInternalPage, useDarkText,
                 /*emphasizeScheme=*/true);
         containerParams.url = displayUrlBuilder;
         containerParams.urlOriginLength = OmniboxUrlEmphasizer.getOriginEndIndex(

@@ -489,7 +489,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
             setEnabled(!anySelection);
         }
 
-        mBackgroundColor = ApiCompatibilityUtils.getColor(resources, bgColorId);
+        mBackgroundColor = mContext.getColor(bgColorId);
         setBackgroundColor(mCategoryView.isZoomSwitchingInEffect() && !special ? Color.TRANSPARENT
                                                                                : mBackgroundColor);
 

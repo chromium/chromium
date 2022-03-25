@@ -188,7 +188,7 @@ class PasswordCheckViewBinder {
             PasswordCheckIconHelper.FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
             imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
                     data.mUrlOrAppName,
-                    PasswordCheckIconHelper.getIconColor(data, view.getResources()),
+                    PasswordCheckIconHelper.getIconColor(data, view.getContext()),
                     FaviconUtils.createCircularIconGenerator(view.getResources()),
                     view.getResources(),
                     view.getResources().getDimensionPixelSize(

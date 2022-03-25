@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 
 /**
@@ -22,8 +21,8 @@ public class StripScrim {
     private float mAlpha;
     private boolean mIsShowing;
 
-    public StripScrim(Resources resources, float width, float height) {
-        mScrimColor = ApiCompatibilityUtils.getColor(resources, R.color.default_scrim_color);
+    public StripScrim(Context context, float width, float height) {
+        mScrimColor = context.getColor(R.color.default_scrim_color);
         mWidth = width;
         mHeight = height;
     }

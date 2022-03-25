@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
@@ -82,8 +81,7 @@ public class TileRenderer {
         mLayout = getLayout();
         mTopSitesLayout = getTopSitesLayout();
 
-        int iconColor = ApiCompatibilityUtils.getColor(
-                mResources, R.color.default_favicon_background_color);
+        int iconColor = context.getColor(R.color.default_favicon_background_color);
         int iconTextSize = mResources.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator = new RoundedIconGenerator(
                 mDesiredIconSize, mDesiredIconSize, mDesiredIconSize / 2, iconColor, iconTextSize);

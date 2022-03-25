@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Build;
 import android.view.Window;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -25,14 +24,14 @@ public class CustomTabNavigationBarController {
     /**
      * Sets the navigation bar color and navigation divider color according to intent extras.
      */
-    public static void update(Window window, BrowserServicesIntentDataProvider intentDataProvider,
-            Resources resources) {
+    public static void update(
+            Window window, BrowserServicesIntentDataProvider intentDataProvider, Context context) {
         Integer navigationBarColor = intentDataProvider.getColorProvider().getNavigationBarColor();
         Integer navigationBarDividerColor =
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor();
 
-        int lightBackgroundDividerColor = ApiCompatibilityUtils.getColor(
-                resources, org.chromium.chrome.R.color.black_alpha_12);
+        int lightBackgroundDividerColor =
+                context.getColor(org.chromium.chrome.R.color.black_alpha_12);
 
         boolean needsDarkButtons = navigationBarColor != null
                 && !ColorUtils.shouldUseLightForegroundOnBackground(navigationBarColor);

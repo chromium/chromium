@@ -68,9 +68,9 @@ public class PaymentRequestHeader extends FrameLayout {
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(profile);
-        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext.getResources(),
-                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
-                useDarkColors, true /* emphasizeHttpsScheme */);
+        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext, chromeAutocompleteSchemeClassifier,
+                securityLevel, false /* isInternalPage */, useDarkColors,
+                true /* emphasizeHttpsScheme */);
         chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 

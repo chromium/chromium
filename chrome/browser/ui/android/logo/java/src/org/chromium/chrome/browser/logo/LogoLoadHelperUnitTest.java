@@ -115,7 +115,7 @@ public class LogoLoadHelperUnitTest {
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext.getResources()));
+        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
@@ -125,7 +125,7 @@ public class LogoLoadHelperUnitTest {
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext.getResources()));
+        Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
