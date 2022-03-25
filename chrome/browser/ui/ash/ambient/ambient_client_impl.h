@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 
@@ -27,6 +28,7 @@ class AmbientClientImpl : public ash::AmbientClient {
 
   // ash::AmbientClient:
   bool IsAmbientModeAllowed() override;
+  void SetAmbientModeAllowedForTesting(bool allowed) override;
   void RequestAccessToken(GetAccessTokenCallback callback) override;
   void DownloadImage(const std::string& url,
                      ash::ImageDownloader::DownloadCallback callback) override;
@@ -50,6 +52,7 @@ class AmbientClientImpl : public ash::AmbientClient {
 
   std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
       token_fetchers_;
+  absl::optional<bool> is_allowed_for_testing_;
   base::WeakPtrFactory<AmbientClientImpl> weak_factory_{this};
 };
 

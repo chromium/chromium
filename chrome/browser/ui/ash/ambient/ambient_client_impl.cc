@@ -111,6 +111,10 @@ AmbientClientImpl::~AmbientClientImpl() = default;
 bool AmbientClientImpl::IsAmbientModeAllowed() {
   DCHECK(chromeos::features::IsAmbientModeEnabled());
 
+  if (is_allowed_for_testing_.has_value()) {
+    return is_allowed_for_testing_.value();
+  }
+
   if (ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
@@ -139,6 +143,10 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
     return false;
 
   return true;
+}
+
+void AmbientClientImpl::SetAmbientModeAllowedForTesting(bool allowed) {
+  is_allowed_for_testing_ = allowed;
 }
 
 void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {

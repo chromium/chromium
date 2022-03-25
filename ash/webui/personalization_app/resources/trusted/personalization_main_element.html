@@ -62,13 +62,16 @@
         <personalization-theme></personalization-theme>
       </template>
     </wallpaper-preview>
-    <ambient-preview main-page>
-      <div id="ambientLabel">
-        <p>$i18n{screensaverLabel}</p>
-        <cr-button id="ambientSubpageLink" on-click="onClickAmbientSubpageLink_">
-          <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
-        </cr-button>
-      </div>
-    </ambient-preview>
+    <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
+      <ambient-preview main-page>
+        <div id="ambientLabel">
+          <p>$i18n{screensaverLabel}</p>
+          <cr-button id="ambientSubpageLink"
+                on-click="onClickAmbientSubpageLink_">
+            <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+          </cr-button>
+        </div>
+      </ambient-preview>
+    </template>
   </div>
 </div>

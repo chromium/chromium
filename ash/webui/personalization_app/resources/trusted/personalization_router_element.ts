@@ -29,6 +29,10 @@ export function isPersonalizationHubEnabled(): boolean {
   return loadTimeData.getBoolean('isPersonalizationHubEnabled');
 }
 
+export function isAmbientModeAllowed(): boolean {
+  return loadTimeData.getBoolean('isAmbientModeAllowed');
+}
+
 export class PersonalizationRouter extends PolymerElement {
   static get is() {
     return 'personalization-router';
@@ -42,6 +46,7 @@ export class PersonalizationRouter extends PolymerElement {
     return {
       path_: {
         type: String,
+        observer: 'onPathChanged_',
       },
 
       query_: {
@@ -119,11 +124,19 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   private shouldShowRootPage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && path === Paths.Root;
+    if (!isPersonalizationHubEnabled()) {
+      return false;
+    }
+
+    // If the ambient mode is not allowed, will not show Ambient/AmbientAlbums
+    // subpages.
+    return (path === Paths.Root) ||
+        (!!path && path.startsWith(Paths.Ambient) && !isAmbientModeAllowed());
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.Ambient);
+    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.Ambient) &&
+        isAmbientModeAllowed();
   }
 
   private shouldShowUserSubpage_(path: string|null): boolean {
@@ -136,6 +149,18 @@ export class PersonalizationRouter extends PolymerElement {
 
   private shouldShowBreadcrumb_(path: string|null): boolean {
     return path !== Paths.Root;
+  }
+
+  /**
+   * When navigating to Ambient/AmbientAlbums subpages, but the ambient mode is
+   * not allowed, will not show Ambient/AmbientAlbums subpages. Reset path to
+   * root in this case.
+   */
+  private onPathChanged_(path: string|null) {
+    if (!!path && path.startsWith(Paths.Ambient) && !isAmbientModeAllowed()) {
+      // Reset the path to root.
+      this.setProperties({path_: Paths.Root, queryParams_: {}});
+    }
   }
 }
 

@@ -5,6 +5,7 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
@@ -31,6 +32,11 @@ inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
 
 GURL GetGooglePhotosURL() {
   return GURL(kGooglePhotosURL);
+}
+
+bool IsAmbientModeAllowed() {
+  return ash::AmbientClient::Get() &&
+         ash::AmbientClient::Get()->IsAmbientModeAllowed();
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -192,6 +198,8 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
+
+  source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
 }
 
 }  // namespace

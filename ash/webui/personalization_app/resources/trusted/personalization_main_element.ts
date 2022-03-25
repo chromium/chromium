@@ -9,7 +9,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {isAmbientModeAllowed, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 export class PersonalizationMain extends WithPersonalizationStore {
@@ -32,6 +32,10 @@ export class PersonalizationMain extends WithPersonalizationStore {
 
   private isDarkLightModeEnabled_(): boolean {
     return loadTimeData.getBoolean('isDarkLightModeEnabled');
+  }
+
+  private isAmbientModeAllowed_(): boolean {
+    return isAmbientModeAllowed();
   }
 
   private onClickUserSubpageLink_() {
