@@ -32,7 +32,7 @@ public class NetworkFetcherTask {
     private static final String TAG = "AWNetworkFetcherTask";
     private static final int REQUEST_TIMEOUT = 30000;
     private static final int READ_TIMEOUT_MS = 30000;
-    private static final int BUFFER_SIZE_BYTES = 1024;
+    private static final int BUFFER_SIZE_BYTES = 8192;
 
     private static final String CONTENTTYPE = "Content-Type";
 
@@ -83,16 +83,16 @@ public class NetworkFetcherTask {
 
             connection.setConnectTimeout(READ_TIMEOUT_MS);
 
-            InputStream inputStream = connection.getInputStream();
-            OutputStream outputStream = new FileOutputStream(outputFile);
-            byte[] buffer = new byte[BUFFER_SIZE_BYTES];
-
-            int bytesCount;
-            while ((bytesCount = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, bytesCount);
-                bytesDownloaded += bytesCount;
-                NetworkFetcherTaskJni.get().callProgressCallback(
-                        nativeDownloadFileTask, mainTaskRunner, bytesDownloaded);
+            try (InputStream inputStream = connection.getInputStream();
+                    OutputStream outputStream = new FileOutputStream(outputFile)) {
+                byte[] buffer = new byte[BUFFER_SIZE_BYTES];
+                int bytesCount;
+                while ((bytesCount = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, bytesCount);
+                    bytesDownloaded += bytesCount;
+                    NetworkFetcherTaskJni.get().callProgressCallback(
+                            nativeDownloadFileTask, mainTaskRunner, bytesDownloaded);
+                }
             }
 
             NetworkFetcherTaskJni.get().callDownloadToFileCompleteCallback(
@@ -167,9 +167,9 @@ public class NetworkFetcherTask {
             }
 
             connection.setFixedLengthStreamingMode(postData.length);
-            OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(postData);
-            outputStream.close();
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(postData);
+            }
 
             long contentLength = getHeaderFieldAsLong(connection, "Content-Length");
 
@@ -188,19 +188,18 @@ public class NetworkFetcherTask {
 
             connection.setConnectTimeout(READ_TIMEOUT_MS);
 
-            InputStream inputStream = connection.getInputStream();
-            byte[] buffer = new byte[BUFFER_SIZE_BYTES];
-            int bytesCount;
-            ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
-            while ((bytesCount = inputStream.read(buffer)) > 0) {
-                bytesDownloaded += bytesCount;
-                outBuffer.write(buffer, /*offset = */ 0, bytesCount);
-                NetworkFetcherTaskJni.get().callProgressCallback(
-                        nativeNetworkFetcherTask, mainTaskRunner, bytesDownloaded);
+            try (InputStream inputStream = connection.getInputStream();
+                    ByteArrayOutputStream outBuffer = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[BUFFER_SIZE_BYTES];
+                int bytesCount;
+                while ((bytesCount = inputStream.read(buffer)) > 0) {
+                    bytesDownloaded += bytesCount;
+                    outBuffer.write(buffer, /*offset = */ 0, bytesCount);
+                    NetworkFetcherTaskJni.get().callProgressCallback(
+                            nativeNetworkFetcherTask, mainTaskRunner, bytesDownloaded);
+                }
+                responseBody = outBuffer.toByteArray();
             }
-
-            outBuffer.flush();
-            responseBody = outBuffer.toByteArray();
 
             NetworkFetcherTaskJni.get().callPostRequestCompleteCallback(nativeNetworkFetcherTask,
                     mainTaskRunner, responseBody,
