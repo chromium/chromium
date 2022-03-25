@@ -18,6 +18,7 @@ extern const char kHasDismissedSetupRequiredUi[];
 extern const char kNeedsOneTimeNotificationAccessUpdate[];
 extern const char kScreenLockStatus[];
 extern const char kRecentAppsHistory[];
+extern const char kFeatureSetupRequestSupported[];
 
 }  // namespace prefs
 }  // namespace phonehub

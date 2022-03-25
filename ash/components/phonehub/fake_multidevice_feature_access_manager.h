@@ -31,7 +31,8 @@ class FakeMultideviceFeatureAccessManager
       AccessProhibitedReason reason = AccessProhibitedReason::kWorkProfile);
   ~FakeMultideviceFeatureAccessManager() override;
 
-  using MultideviceFeatureAccessManager::IsSetupOperationInProgress;
+  using MultideviceFeatureAccessManager::IsCombinedSetupOperationInProgress;
+  using MultideviceFeatureAccessManager::IsNotificationSetupOperationInProgress;
 
   void SetNotificationAccessStatusInternal(
       AccessStatus notification_access_status,
@@ -48,12 +49,18 @@ class FakeMultideviceFeatureAccessManager
   void SetCameraRollAccessStatusInternal(
       AccessStatus camera_roll_access_status) override;
   AccessStatus GetCameraRollAccessStatus() const override;
+  void SetCombinedSetupOperationStatus(
+      CombinedAccessSetupOperation::Status new_status);
+
   AccessStatus GetAppsAccessStatus() const override;
   bool IsAccessRequestAllowed(Feature feature) override;
 
   // Test-only.
   void SetAppsAccessStatusInternal(AccessStatus apps_access_status);
   void SetFeatureReadyForAccess(Feature feature);
+
+  void SetFeatureSetupRequestSupportedInternal(bool supported) override;
+  bool GetFeatureSetupRequestSupported() const override;
 
  private:
   AccessStatus notification_access_status_;
@@ -62,6 +69,7 @@ class FakeMultideviceFeatureAccessManager
   AccessProhibitedReason access_prohibited_reason_;
   bool has_notification_setup_ui_been_dismissed_ = false;
   std::vector<Feature> ready_for_access_features_;
+  bool is_feature_setup_request_supported_ = false;
 };
 
 }  // namespace phonehub

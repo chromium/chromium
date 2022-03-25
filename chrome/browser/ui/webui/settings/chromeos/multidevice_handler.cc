@@ -66,6 +66,8 @@ const char kIsPhoneHubPermissionsDialogSupported[] =
     "isPhoneHubPermissionsDialogSupported";
 const char kIsCameraRollFilePermissionGranted[] =
     "isCameraRollFilePermissionGranted";
+const char kIsPhoneHubFeatureCombinedSetupSupported[] =
+    "isPhoneHubFeatureCombinedSetupSupported";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
 constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
@@ -160,6 +162,15 @@ void MultideviceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "cancelAppsSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelAppsSetup,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "attemptCombinedFeatureSetup",
+      base::BindRepeating(
+          &MultideviceHandler::HandleAttemptCombinedFeatureSetup,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "cancelCombinedFeatureSetup",
+      base::BindRepeating(&MultideviceHandler::HandleCancelCombinedFeatureSetup,
                           base::Unretained(this)));
 }
 
@@ -271,6 +282,10 @@ void MultideviceHandler::OnNotificationAccessChanged() {
 }
 
 void MultideviceHandler::OnCameraRollAccessChanged() {
+  UpdatePageContent();
+}
+
+void MultideviceHandler::OnFeatureSetupRequestSupportedChanged() {
   UpdatePageContent();
 }
 
@@ -516,7 +531,60 @@ void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
   apps_access_operation_.reset();
 }
 
-void MultideviceHandler::OnStatusChange(
+void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
+    const base::Value::List& args) {
+  bool camera_roll = false;
+  if (args[0].is_bool())
+    camera_roll = args[0].GetBool();
+  bool notifications = false;
+  if (args[1].is_bool())
+    notifications = args[1].GetBool();
+
+  DCHECK(features::IsPhoneHubEnabled());
+  DCHECK(!combined_access_operation_);
+
+  if (!multidevice_feature_access_manager_->GetFeatureSetupRequestSupported()) {
+    PA_LOG(WARNING) << "Cannot request combined access setup flow; "
+                    << "FeatureSetupRequest is not supported by the phone.";
+    return;
+  }
+
+  phonehub::MultideviceFeatureAccessManager::AccessStatus
+      notification_access_status =
+          multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  phonehub::MultideviceFeatureAccessManager::AccessStatus
+      camera_roll_access_status =
+          multidevice_feature_access_manager_->GetCameraRollAccessStatus();
+  if (camera_roll_access_status != phonehub::MultideviceFeatureAccessManager::
+                                       AccessStatus::kAvailableButNotGranted &&
+      camera_roll) {
+    PA_LOG(WARNING) << "Cannot request combined access setup flow; current "
+                    << "Camera Roll status: " << camera_roll_access_status;
+    return;
+  }
+  if (notification_access_status != phonehub::MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted &&
+      notifications) {
+    PA_LOG(WARNING) << "Cannot request combined access setup flow; current "
+                    << "Notification status: " << notification_access_status;
+    return;
+  }
+
+  combined_access_operation_ =
+      multidevice_feature_access_manager_->AttemptCombinedFeatureSetup(
+          camera_roll, notifications, /*delegate=*/this);
+  DCHECK(combined_access_operation_);
+}
+
+void MultideviceHandler::HandleCancelCombinedFeatureSetup(
+    const base::Value::List& args) {
+  DCHECK(features::IsPhoneHubEnabled());
+  DCHECK(combined_access_operation_);
+
+  combined_access_operation_.reset();
+}
+
+void MultideviceHandler::OnNotificationStatusChange(
     phonehub::NotificationAccessSetupOperation::Status new_status) {
   FireWebUIListener("settings.onNotificationAccessSetupStatusChanged",
                     base::Value(static_cast<int32_t>(new_status)));
@@ -532,6 +600,15 @@ void MultideviceHandler::OnAppsStatusChange(
 
   if (ash::eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status))
     apps_access_operation_.reset();
+}
+
+void MultideviceHandler::OnCombinedStatusChange(
+    phonehub::CombinedAccessSetupOperation::Status new_status) {
+  FireWebUIListener("settings.onCombinedAccessSetupStatusChanged",
+                    base::Value(static_cast<int32_t>(new_status)));
+
+  if (phonehub::CombinedAccessSetupOperation::IsFinalStatus(new_status))
+    combined_access_operation_.reset();
 }
 
 void MultideviceHandler::OnSetFeatureStateEnabledResult(
@@ -676,6 +753,13 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   page_content_dictionary->SetBoolean(
       kIsPhoneHubPermissionsDialogSupported,
       is_phone_hub_permissions_dialog_supported);
+
+  page_content_dictionary->SetBoolKey(
+      kIsPhoneHubFeatureCombinedSetupSupported,
+      multidevice_feature_access_manager_
+          ? multidevice_feature_access_manager_
+                ->GetFeatureSetupRequestSupported()
+          : false);
 
   return page_content_dictionary;
 }

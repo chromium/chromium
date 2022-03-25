@@ -46,6 +46,10 @@ class MessageSender {
   // Requests that the phone should show the notification access set up.
   virtual void SendShowNotificationAccessSetupRequest() = 0;
 
+  // Requests that the phone should show the feature access set up.
+  virtual void SendFeatureSetupRequest(bool camera_roll,
+                                       bool notifications) = 0;
+
   // Requests that the phone enables or disables ringing.
   virtual void SendRingDeviceRequest(bool device_ringing_enabled) = 0;
 

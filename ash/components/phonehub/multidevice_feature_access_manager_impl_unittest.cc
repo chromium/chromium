@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/combined_access_setup_operation.h"
 #include "ash/components/phonehub/fake_connection_scheduler.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_message_sender.h"
@@ -41,22 +42,25 @@ class FakeObserver : public MultideviceFeatureAccessManager::Observer {
   void OnCameraRollAccessChanged() override { ++num_calls_; }
 
   // MultideviceFeatureAccessManager::Observer:
+  void OnFeatureSetupRequestSupportedChanged() override { ++num_calls_; }
+
+  // MultideviceFeatureAccessManager::Observer:
   void OnAppsAccessChanged() override { ++num_calls_; }
 
  private:
   size_t num_calls_ = 0;
 };
 
-class FakeOperationDelegate
+class FakeNotificationAccessSetupOperationDelegate
     : public NotificationAccessSetupOperation::Delegate {
  public:
-  FakeOperationDelegate() = default;
-  ~FakeOperationDelegate() override = default;
+  FakeNotificationAccessSetupOperationDelegate() = default;
+  ~FakeNotificationAccessSetupOperationDelegate() override = default;
 
   NotificationAccessSetupOperation::Status status() const { return status_; }
 
   // NotificationAccessSetupOperation::Delegate:
-  void OnStatusChange(
+  void OnNotificationStatusChange(
       NotificationAccessSetupOperation::Status new_status) override {
     status_ = new_status;
   }
@@ -64,6 +68,25 @@ class FakeOperationDelegate
  private:
   NotificationAccessSetupOperation::Status status_ =
       NotificationAccessSetupOperation::Status::kConnecting;
+};
+
+class FakeCombinedAccessSetupOperationDelegate
+    : public CombinedAccessSetupOperation::Delegate {
+ public:
+  FakeCombinedAccessSetupOperationDelegate() = default;
+  ~FakeCombinedAccessSetupOperationDelegate() override = default;
+
+  CombinedAccessSetupOperation::Status status() const { return status_; }
+
+  // CombinedAccessSetupOperation::Delegate:
+  void OnCombinedStatusChange(
+      CombinedAccessSetupOperation::Status new_status) override {
+    status_ = new_status;
+  }
+
+ private:
+  CombinedAccessSetupOperation::Status status_ =
+      CombinedAccessSetupOperation::Status::kConnecting;
 };
 
 }  // namespace
@@ -97,13 +120,16 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
   void InitializeAccessStatus(
       AccessStatus notification_expected_status,
       AccessStatus camera_roll_expected_status,
-      AccessProhibitedReason reason = AccessProhibitedReason::kUnknown) {
+      AccessProhibitedReason reason = AccessProhibitedReason::kUnknown,
+      bool feature_setup_request_supported = false) {
     pref_service_.SetInteger(prefs::kNotificationAccessStatus,
                              static_cast<int>(notification_expected_status));
     pref_service_.SetInteger(prefs::kCameraRollAccessStatus,
                              static_cast<int>(camera_roll_expected_status));
     pref_service_.SetInteger(prefs::kNotificationAccessProhibitedReason,
                              static_cast<int>(reason));
+    pref_service_.SetBoolean(prefs::kFeatureSetupRequestSupported,
+                             feature_setup_request_supported);
     SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/false);
     manager_ = std::make_unique<MultideviceFeatureAccessManagerImpl>(
         &pref_service_, fake_multidevice_setup_client_.get(),
@@ -120,7 +146,11 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
 
   NotificationAccessSetupOperation::Status
   GetNotificationAccessSetupOperationStatus() {
-    return fake_delegate_.status();
+    return fake_notification_delegate_.status();
+  }
+
+  CombinedAccessSetupOperation::Status GetCombinedAccessSetupOperationStatus() {
+    return fake_combined_delegate_.status();
   }
 
   void VerifyNotificationAccessGrantedState(AccessStatus expected_status) {
@@ -154,18 +184,31 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     EXPECT_EQ(expected_status, manager_->GetAppsAccessStatus());
   }
 
+  void VerifyFeatureSetupRequestSupported(bool expected) {
+    EXPECT_EQ(expected,
+              pref_service_.GetBoolean(prefs::kFeatureSetupRequestSupported));
+    EXPECT_EQ(expected, manager_->GetFeatureSetupRequestSupported());
+  }
+
   bool HasMultideviceFeatureSetupUiBeenDismissed() {
     return manager_->HasMultideviceFeatureSetupUiBeenDismissed();
   }
 
   void DismissSetupRequiredUi() { manager_->DismissSetupRequiredUi(); }
 
-  std::unique_ptr<NotificationAccessSetupOperation> StartSetupOperation() {
-    return manager_->AttemptNotificationSetup(&fake_delegate_);
+  std::unique_ptr<NotificationAccessSetupOperation>
+  StartNotificationSetupOperation() {
+    return manager_->AttemptNotificationSetup(&fake_notification_delegate_);
+  }
+  std::unique_ptr<CombinedAccessSetupOperation> StartCombinedSetupOperation(
+      bool camera_roll,
+      bool notifications) {
+    return manager_->AttemptCombinedFeatureSetup(camera_roll, notifications,
+                                                 &fake_combined_delegate_);
   }
 
-  bool IsSetupOperationInProgress() {
-    return manager_->IsSetupOperationInProgress();
+  bool IsNotificationSetupOperationInProgress() {
+    return manager_->IsNotificationSetupOperationInProgress();
   }
 
   void SetNotificationAccessStatusInternal(AccessStatus status,
@@ -175,6 +218,10 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
 
   void SetCameraRollAccessStatusInternal(AccessStatus status) {
     manager_->SetCameraRollAccessStatusInternal(status);
+  }
+
+  void SetFeatureSetupRequestSupportedInternal(bool supported) {
+    manager_->SetFeatureSetupRequestSupportedInternal(supported);
   }
 
   void SetFeatureStatus(FeatureStatus status) {
@@ -191,6 +238,10 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
 
   size_t GetNumShowNotificationAccessSetupRequestCount() const {
     return fake_message_sender_->show_notification_access_setup_request_count();
+  }
+
+  size_t GetCombinedAccessSetupRequestCallCount() const {
+    return fake_message_sender_->GetFeatureSetupRequestCallCount();
   }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
@@ -213,7 +264,8 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   FakeObserver fake_observer_;
-  FakeOperationDelegate fake_delegate_;
+  FakeNotificationAccessSetupOperationDelegate fake_notification_delegate_;
+  FakeCombinedAccessSetupOperationDelegate fake_combined_delegate_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
@@ -278,7 +330,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, AllAccessInitiallyGranted) {
 
   // Cannot start the notification access setup flow if notification and camera
   // roll access have already been granted.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_FALSE(operation);
 }
 
@@ -301,7 +353,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, OnFeatureStatusChanged) {
             GetNotificationAccessSetupOperationStatus());
   // Simulate setup operation is in progress. This will trigger a sent
   // request.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
@@ -326,7 +378,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartDisconnectedAndNoAccess) {
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
   EXPECT_EQ(1u, GetNumScheduleConnectionNowCalls());
 
@@ -361,7 +413,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
   EXPECT_EQ(1u, GetNumScheduleConnectionNowCalls());
 
@@ -399,7 +451,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectingAndNoAccess) {
 
   // Start a setup operation with enabled and connecting status and access
   // not granted.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate changing states from connecting to connected.
@@ -431,7 +483,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, StartConnectedAndNoAccess) {
 
   // Start a setup operation with enabled and connected status and access
   // not granted.
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
 
   // Verify that the request message has been sent and our operation status
@@ -459,7 +511,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
   VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
   VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate a disconnection and expect that status has been updated.
@@ -478,7 +530,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
   VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
   VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
 
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
@@ -498,7 +550,7 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, SimulateConnectedToDisabled) {
   VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
   VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
-  auto operation = StartSetupOperation();
+  auto operation = StartNotificationSetupOperation();
   EXPECT_TRUE(operation);
 
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
@@ -676,6 +728,216 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, AppsAccessChanged) {
   VerifyAppsAccessGrantedState(
       MultideviceFeatureAccessManager::AccessStatus::kProhibited);
   EXPECT_EQ(3u, GetNumObserverCalls());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       FlipFeatureSetupRequestSupportedOn) {
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(false);
+
+  SetFeatureSetupRequestSupportedInternal(true);
+  VerifyFeatureSetupRequestSupported(true);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_FeatureSetupRequestNotSupported) {
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(false);
+
+  // Cannot start the combined access setup flow if FeatureSetupRequest is not
+  // supported.
+  auto operation =
+      StartCombinedSetupOperation(/*camera_roll=*/true, /*notifications=*/true);
+  EXPECT_FALSE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_AllFeaturesGranted_AllFeaturesRequested) {
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Cannot start the combined access setup flow if requested feature access
+  // has already been granted.
+  auto operation =
+      StartCombinedSetupOperation(/*camera_roll=*/true, /*notifications=*/true);
+  EXPECT_FALSE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_CameraRollGranted_AllFeaturesRequested) {
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAccessGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Cannot start the combined access setup flow if requested feature access
+  // has already been granted.
+  auto operation =
+      StartCombinedSetupOperation(/*camera_roll=*/true, /*notifications=*/true);
+  EXPECT_FALSE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_NotificationsGranted_AllFeaturesRequested) {
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAvailableButNotGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Cannot start the combined access setup flow if requested feature access
+  // has already been granted.
+  auto operation =
+      StartCombinedSetupOperation(/*camera_roll=*/true, /*notifications=*/true);
+  EXPECT_FALSE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_CameraRollGranted_NotificationsRequested) {
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAccessGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Can start the combined access setup flow if requested feature access is not
+  // granted, even if other feature is granted.
+  auto operation = StartCombinedSetupOperation(/*camera_roll=*/false,
+                                               /*notifications=*/true);
+  EXPECT_TRUE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_NotificationsGranted_CameraRollRequested) {
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAvailableButNotGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Can start the combined access setup flow if requested feature access is not
+  // granted, even if other feature is granted.
+  auto operation = StartCombinedSetupOperation(/*camera_roll=*/true,
+                                               /*notifications=*/false);
+  EXPECT_TRUE(operation);
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_FullSetupFromDisconnected) {
+  // Set initial state to disconnected.
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Start combined setup operation
+  auto operation = StartCombinedSetupOperation(/*camera_roll=*/true,
+                                               /*notifications=*/true);
+  EXPECT_TRUE(operation);
+  EXPECT_EQ(0u, GetCombinedAccessSetupRequestCallCount());
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kConnecting,
+            GetCombinedAccessSetupOperationStatus());
+  EXPECT_EQ(1u, GetNumScheduleConnectionNowCalls());
+
+  // Simulate changing state to connecting.
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+  EXPECT_EQ(0u, GetCombinedAccessSetupRequestCallCount());
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kConnecting,
+            GetCombinedAccessSetupOperationStatus());
+  EXPECT_EQ(1u, GetNumScheduleConnectionNowCalls());
+
+  // Simulate changing state to connected.
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+  EXPECT_EQ(1u, GetCombinedAccessSetupRequestCallCount());
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetCombinedAccessSetupOperationStatus());
+
+  // Simulate Camera Roll being granted on phone.
+  SetCameraRollAccessStatusInternal(AccessStatus::kAccessGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAccessGranted);
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetCombinedAccessSetupOperationStatus());
+
+  // Simulate Notifications being granted on phone.
+  SetNotificationAccessStatusInternal(AccessStatus::kAccessGranted,
+                                      AccessProhibitedReason::kUnknown);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAccessGranted);
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kCompletedSuccessfully,
+            GetCombinedAccessSetupOperationStatus());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_SimulateTimeout) {
+  // Set initial state to connecting.
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Start combined setup operation
+  auto operation = StartCombinedSetupOperation(/*camera_roll=*/true,
+                                               /*notifications=*/true);
+  EXPECT_TRUE(operation);
+
+  // Simulate a disconnection and expect that status has been updated.
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kTimedOutConnecting,
+            GetCombinedAccessSetupOperationStatus());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       CombinedFeatureSetup_SimulateDisconnect) {
+  // Set initial state to connected.
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted,
+                         AccessProhibitedReason::kUnknown,
+                         /*feature_setup_request_supported=*/true);
+  VerifyNotificationAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyCameraRollAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  VerifyFeatureSetupRequestSupported(true);
+
+  // Start combined setup operation
+  auto operation = StartCombinedSetupOperation(/*camera_roll=*/true,
+                                               /*notifications=*/true);
+  EXPECT_TRUE(operation);
+
+  // Simulate a disconnection and expect that status has been updated.
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kConnectionDisconnected,
+            GetCombinedAccessSetupOperationStatus());
 }
 
 }  // namespace phonehub

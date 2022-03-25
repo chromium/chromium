@@ -173,5 +173,17 @@ TEST_F(MessageSenderImplTest, SendInitiateCameraRollItemTransferRequest) {
                 &request, fake_connection_manager_->sent_messages().back());
 }
 
+TEST_F(MessageSenderImplTest, SendFeatureSetupRequest) {
+  proto::FeatureSetupRequest request;
+  request.set_camera_roll_setup_requested(true);
+  request.set_notification_setup_requested(true);
+
+  message_sender_->SendFeatureSetupRequest(/*camera_roll=*/true,
+                                           /*notifications=*/true);
+
+  VerifyMessage(proto::MessageType::FEATURE_SETUP_REQUEST, &request,
+                fake_connection_manager_->sent_messages().back());
+}
+
 }  // namespace phonehub
 }  // namespace ash
