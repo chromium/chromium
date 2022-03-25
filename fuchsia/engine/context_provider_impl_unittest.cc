@@ -166,9 +166,9 @@ class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
     // Bind /tmp in the new Component's flat namespace, to allow it to see
     // the GTest flagfile, if any.
     fuchsia::io::DirectoryHandle tmp_directory;
-    zx_status_t status =
-        fdio_open("/tmp", fuchsia::io::OPEN_RIGHT_READABLE,
-                  tmp_directory.NewRequest().TakeChannel().release());
+    zx_status_t status = fdio_open(
+        "/tmp", static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE),
+        tmp_directory.NewRequest().TakeChannel().release());
     ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
     launch_info.flat_namespace->paths.push_back("/tmp");
     launch_info.flat_namespace->directories.push_back(
@@ -730,12 +730,12 @@ TEST_F(ContextProviderImplTest, WithGoogleApiKeyValue) {
   base::RunLoop loop;
   provider_->set_config_for_test(std::move(config_dict));
   fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop, kDummyApiKey](
-                                     const base::CommandLine& command) {
-        loop.Quit();
-        EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey),
-                  kDummyApiKey);
-      }));
+      base::BindLambdaForTesting(
+          [&loop, kDummyApiKey](const base::CommandLine& command) {
+            loop.Quit();
+            EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey),
+                      kDummyApiKey);
+          }));
 
   fuchsia::web::ContextPtr context;
   context.set_error_handler([&loop](zx_status_t status) {

@@ -312,9 +312,10 @@ net::Error OpenFileFromDirectory(
           .Append(content_directory_name)
           .Append(relative_file_path);
 
-  zx_status_t status = fdio_open(absolute_file_path.value().c_str(),
-                                 fuchsia::io::OPEN_RIGHT_READABLE,
-                                 file_request.TakeChannel().release());
+  const zx_status_t status =
+      fdio_open(absolute_file_path.value().c_str(),
+                static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE),
+                file_request.TakeChannel().release());
   if (status != ZX_OK) {
     ZX_DLOG(WARNING, status) << "fdio_open";
     return net::ERR_FILE_NOT_FOUND;

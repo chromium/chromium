@@ -236,11 +236,12 @@ int main(int argc, char** argv) {
   } else {
     web_instance_host = std::make_unique<cr_fuchsia::WebInstanceHost>();
     if (enable_web_instance_tmp) {
-      zx_status_t status = fdio_open(
-          "/tmp",
-          fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE |
-              fuchsia::io::OPEN_FLAG_DIRECTORY,
-          tmp_directory.NewRequest().TakeChannel().release());
+      const zx_status_t status =
+          fdio_open("/tmp",
+                    static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE |
+                                          fuchsia::io::OPEN_RIGHT_WRITABLE |
+                                          fuchsia::io::OPEN_FLAG_DIRECTORY),
+                    tmp_directory.NewRequest().TakeChannel().release());
       ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
       web_instance_host->set_tmp_dir(std::move(tmp_directory));
     }
