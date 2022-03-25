@@ -181,7 +181,7 @@ void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
   handling_key_event_ = false;
 }
 
-void InputMethodAsh::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
 

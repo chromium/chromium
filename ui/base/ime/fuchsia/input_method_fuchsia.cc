@@ -64,7 +64,7 @@ void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {
   }
 }
 
-void InputMethodFuchsia::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodFuchsia::OnTextInputTypeChanged(TextInputClient* client) {
   DVLOG(1) << __func__;
 
   InputMethodBase::OnTextInputTypeChanged(client);

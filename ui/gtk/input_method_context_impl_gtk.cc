@@ -252,7 +252,8 @@ void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
 }
 
 void InputMethodContextImplGtk::SetContentType(ui::TextInputType input_type,
-                                               int input_flags) {
+                                               int input_flags,
+                                               bool should_do_learning) {
   // Do nothing.
 }
 

@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   void DetachTextInputClient(TextInputClient* client) override;
   TextInputClient* GetTextInputClient() const override;
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
-  void OnTextInputTypeChanged(const TextInputClient* client) override;
+  void OnTextInputTypeChanged(TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   TextInputType GetTextInputType() const override;

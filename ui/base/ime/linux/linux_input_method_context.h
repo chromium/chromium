@@ -46,7 +46,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
                                   const gfx::Range& selection_range) = 0;
 
   // Tells the system IME the content type of the text input client is changed.
-  virtual void SetContentType(TextInputType input_type, int input_flags) = 0;
+  virtual void SetContentType(TextInputType input_type,
+                              int input_flags,
+                              bool should_do_learning) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().

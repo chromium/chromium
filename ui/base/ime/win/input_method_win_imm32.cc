@@ -86,8 +86,7 @@ bool InputMethodWinImm32::OnUntranslatedIMEMessage(
   return !!handled;
 }
 
-void InputMethodWinImm32::OnTextInputTypeChanged(
-    const TextInputClient* client) {
+void InputMethodWinImm32::OnTextInputTypeChanged(TextInputClient* client) {
   InputMethodBase::OnTextInputTypeChanged(client);
   if (!IsTextInputClientFocused(client) || !IsWindowFocused(client))
     return;

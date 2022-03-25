@@ -388,12 +388,15 @@ void WaylandInputMethodContext::SetSurroundingText(
 }
 
 void WaylandInputMethodContext::SetContentType(TextInputType input_type,
-                                               int input_flags) {
+                                               int input_flags,
+                                               bool should_do_learning) {
   if (!text_input_)
     return;
 
   uint32_t content_purpose = InputTypeToContentPurpose(input_type);
   uint32_t content_hint = InputFlagsToContentHint(input_flags);
+  if (should_do_learning)
+    content_hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA;
   text_input_->SetContentType(content_hint, content_purpose);
 }
 

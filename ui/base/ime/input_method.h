@@ -116,7 +116,7 @@ class InputMethod {
   // existing composition text and call InputMethod::CancelComposition() when
   // necessary. Otherwise unexpected behavior may happen. This method has no
   // effect if the client is not the focused client.
-  virtual void OnTextInputTypeChanged(const TextInputClient* client) = 0;
+  virtual void OnTextInputTypeChanged(TextInputClient* client) = 0;
 
   // Called by the focused client whenever its caret bounds is changed.
   // This method has no effect if the client is not the focused client.

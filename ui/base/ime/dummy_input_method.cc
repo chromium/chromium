@@ -53,8 +53,7 @@ ui::EventDispatchDetails DummyInputMethod::DispatchKeyEvent(
   return ui::EventDispatchDetails();
 }
 
-void DummyInputMethod::OnTextInputTypeChanged(const TextInputClient* client) {
-}
+void DummyInputMethod::OnTextInputTypeChanged(TextInputClient* client) {}
 
 void DummyInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
 }

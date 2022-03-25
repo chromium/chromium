@@ -36,7 +36,8 @@ void FakeInputMethodContext::SetSurroundingText(
     const gfx::Range& selection_range) {}
 
 void FakeInputMethodContext::SetContentType(TextInputType input_type,
-                                            int input_flags) {}
+                                            int input_flags,
+                                            bool should_do_learning) {}
 
 VirtualKeyboardController*
 FakeInputMethodContext::GetVirtualKeyboardController() {

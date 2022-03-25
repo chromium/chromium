@@ -80,7 +80,7 @@ void InputMethodBase::SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {
     text_input_client_->EnsureCaretNotInRect(keyboard_bounds_);
 }
 
-void InputMethodBase::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodBase::OnTextInputTypeChanged(TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
   NotifyTextInputStateChanged(client);

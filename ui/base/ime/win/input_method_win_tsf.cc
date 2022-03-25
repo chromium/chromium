@@ -93,7 +93,7 @@ bool InputMethodWinTSF::OnUntranslatedIMEMessage(
   return !!handled;
 }
 
-void InputMethodWinTSF::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodWinTSF::OnTextInputTypeChanged(TextInputClient* client) {
   InputMethodBase::OnTextInputTypeChanged(client);
   if (!ui::TSFBridge::GetInstance() || !IsTextInputClientFocused(client) ||
       !IsWindowFocused(client)) {

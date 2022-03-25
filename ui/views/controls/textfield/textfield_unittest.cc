@@ -158,7 +158,7 @@ class MockInputMethod : public ui::InputMethodBase {
 
   // InputMethod:
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* key) override;
-  void OnTextInputTypeChanged(const ui::TextInputClient* client) override;
+  void OnTextInputTypeChanged(ui::TextInputClient* client) override;
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
   void CancelComposition(const ui::TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
@@ -273,8 +273,7 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
   return dispatch_details;
 }
 
-void MockInputMethod::OnTextInputTypeChanged(
-    const ui::TextInputClient* client) {
+void MockInputMethod::OnTextInputTypeChanged(ui::TextInputClient* client) {
   if (IsTextInputClientFocused(client))
     text_input_type_changed_ = true;
   InputMethodBase::OnTextInputTypeChanged(client);

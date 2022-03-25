@@ -110,7 +110,7 @@ class FakeInputMethod : public ui::DummyInputMethod {
       client_ = nullptr;
   }
 
-  void OnTextInputTypeChanged(const ui::TextInputClient* client) override {
+  void OnTextInputTypeChanged(ui::TextInputClient* client) override {
     count_on_text_input_type_changed_++;
   }
 

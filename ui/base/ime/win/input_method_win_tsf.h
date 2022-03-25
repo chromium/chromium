@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
   void OnBlur() override;
   bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
-  void OnTextInputTypeChanged(const TextInputClient* client) override;
+  void OnTextInputTypeChanged(TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   void DetachTextInputClient(TextInputClient* client) override;

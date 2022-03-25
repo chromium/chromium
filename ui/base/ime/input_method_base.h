@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
 
   // If a derived class overrides this method, it should call parent's
   // implementation.
-  void OnTextInputTypeChanged(const TextInputClient* client) override;
+  void OnTextInputTypeChanged(TextInputClient* client) override;
   TextInputType GetTextInputType() const override;
   void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override;
 

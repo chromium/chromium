@@ -364,8 +364,7 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
     context_simple_->Blur();
 }
 
-void InputMethodAuraLinux::OnTextInputTypeChanged(
-    const TextInputClient* client) {
+void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
   UpdateContextFocusState();
   InputMethodBase::OnTextInputTypeChanged(client);
 
@@ -375,7 +374,8 @@ void InputMethodAuraLinux::OnTextInputTypeChanged(
           ? context_.get()
           : context_simple_.get();
   int flags = client ? client->GetTextInputFlags() : TEXT_INPUT_FLAG_NONE;
-  context->SetContentType(text_input_type_, flags);
+  context->SetContentType(text_input_type_, flags,
+                          client && client->ShouldDoLearning());
   // TODO(yoichio): Support inputmode HTML attribute.
 }
 

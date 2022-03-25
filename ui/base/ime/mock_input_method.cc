@@ -85,7 +85,7 @@ bool MockInputMethod::IsInputLocaleCJK() const {
 }
 #endif
 
-void MockInputMethod::OnTextInputTypeChanged(const TextInputClient* client) {
+void MockInputMethod::OnTextInputTypeChanged(TextInputClient* client) {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnTextInputStateChanged(client);
 }
