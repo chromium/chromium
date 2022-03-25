@@ -213,6 +213,17 @@ void ExternalVkImageSkiaRepresentation::EndAccess(bool readonly) {
   DCHECK_NE(access_mode_, kNone);
   DCHECK(backing_impl()->need_synchronization() || !end_access_semaphore_);
 
+  // TODO(crbug.com/1307914): This check is specific to the interop case i.e.
+  // when need_synchronization() is true, but we can generalize this by making
+  // the client TakeEndState() and asserting that the |end_state_| is null here.
+#if DCHECK_IS_ON()
+  GrVkImageInfo info;
+  auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
+  DCHECK(result);
+  DCHECK(!backing_impl()->need_synchronization() ||
+         info.fCurrentQueueFamily == VK_QUEUE_FAMILY_EXTERNAL);
+#endif
+
   backing_impl()->EndAccess(readonly, std::move(end_access_semaphore_),
                             false /* is_gl */);
 

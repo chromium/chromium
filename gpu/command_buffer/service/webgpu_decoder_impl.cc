@@ -37,6 +37,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ipc/ipc_channel.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -691,6 +692,17 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Unmap the buffer.
       procs_.bufferUnmap(buffer);
 
+      // Transition the image back to the desired end state. This is used for
+      // transitioning the image to the external queue for Vulkan/GL interop.
+      if (scoped_read_access->end_state()) {
+        if (!shared_context_state_->gr_context()->setBackendTextureState(
+                scoped_read_access->promise_image_texture()->backendTexture(),
+                *scoped_read_access->end_state())) {
+          DLOG(ERROR) << "setBackendTextureState() failed.";
+          return false;
+        }
+      }
+
       // ReadPixels finished; signal the semaphores.
       SignalSemaphores(std::move(end_semaphores));
 
@@ -832,6 +844,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                            /*x*/ 0, /*y*/ 0);
 
       procs_.bufferRelease(buffer);
+
+      // Transition the image back to the desired end state. This is used for
+      // transitioning the image to the external queue for Vulkan/GL interop.
+      if (scoped_write_access->end_state()) {
+        // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
+        // will populate it with semaphores and call GrDirectContext::flush.
+        scoped_write_access->surface()->flush(/*info=*/{},
+                                              scoped_write_access->end_state());
+      }
+
       SignalSemaphores(std::move(end_semaphores));
 
       return true;
