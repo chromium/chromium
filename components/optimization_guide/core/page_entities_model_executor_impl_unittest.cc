@@ -64,8 +64,11 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
  public:
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
+
     model_executor_ = std::make_unique<PageEntitiesModelExecutorImpl>(
-        model_observer_tracker_.get());
+        model_observer_tracker_.get(),
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 
     // Wait for PageEntitiesModelExecutor to set everything up.
     task_environment_.RunUntilIdle();

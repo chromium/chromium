@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "components/history_clusters/core/cluster_finalizer.h"
 #include "components/history_clusters/core/cluster_processor.h"
 #include "components/history_clusters/core/clusterer.h"
@@ -102,8 +103,12 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // The task runners to run clustering passes on.
   // |user_visible_priority_background_task_runner_| should be used iff
   // clustering is blocking content on a page that user is actively looking at.
+  const base::TaskTraits user_visible_task_traits_;
+  const base::TaskTraits continue_on_shutdown_user_visible_task_traits_;
   scoped_refptr<base::SequencedTaskRunner>
       user_visible_priority_background_task_runner_;
+  const base::TaskTraits best_effort_task_traits_;
+  const base::TaskTraits continue_on_shutdown_best_effort_task_traits_;
   scoped_refptr<base::SequencedTaskRunner>
       best_effort_priority_background_task_runner_;
 

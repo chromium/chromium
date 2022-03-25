@@ -213,6 +213,9 @@ Config::Config() {
                                  base::WhitespaceHandling::TRIM_WHITESPACE,
                                  base::SplitResult::SPLIT_WANT_NONEMPTY);
   hosts_to_skip_clustering_for = {hosts.begin(), hosts.end()};
+
+  use_continue_on_shutdown = base::FeatureList::IsEnabled(
+      internal::kHistoryClustersUseContinueOnShutdown);
 }
 
 Config::Config(const Config& other) = default;

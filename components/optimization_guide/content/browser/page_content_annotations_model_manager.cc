@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
@@ -123,9 +124,22 @@ void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
       "PageEntitiesModelRequested",
       true);
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+  base::TaskTraits task_traits = {base::MayBlock(),
+                                  base::TaskPriority::BEST_EFFORT};
+  if (base::FeatureList::IsEnabled(
+          features::
+              kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations)) {
+    task_traits = {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                   base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(task_traits);
+
   page_entities_model_executor_ =
       std::make_unique<PageEntitiesModelExecutorImpl>(
-          optimization_guide_model_provider);
+          optimization_guide_model_provider, background_task_runner);
 #endif
 }
 
@@ -212,10 +226,18 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsModel(
       proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
   page_topics_model_metadata.SerializeToString(model_metadata.mutable_value());
 
+  base::TaskTraits task_traits = {base::MayBlock(),
+                                  base::TaskPriority::BEST_EFFORT};
+  if (base::FeatureList::IsEnabled(
+          features::
+              kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations)) {
+    task_traits = {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                   base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+  }
+
   page_topics_model_handler_ = std::make_unique<BertModelHandler>(
       optimization_guide_model_provider,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      base::ThreadPool::CreateSequencedTaskRunner(task_traits),
       proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
 }
 

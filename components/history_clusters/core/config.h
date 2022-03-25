@@ -194,6 +194,9 @@ struct Config {
   // any cluster.
   base::flat_set<std::string> hosts_to_skip_clustering_for;
 
+  // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
+  bool use_continue_on_shutdown = true;
+
   Config();
   Config(const Config& other);
   ~Config();
