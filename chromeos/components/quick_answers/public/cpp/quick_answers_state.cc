@@ -134,12 +134,17 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       kQuickAnswersUnitConversionEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateUnitConversionEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      language::prefs::kApplicationLocale,
+      base::BindRepeating(&QuickAnswersState::OnApplicationLocaleReady,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
   UpdateDefinitionEnabled();
   UpdateTranslationEnabled();
   UpdateUnitConversionEnabled();
+  OnApplicationLocaleReady();
 
   prefs_initialized_ = true;
 
@@ -267,14 +272,30 @@ void QuickAnswersState::UpdateUnitConversionEnabled() {
   unit_conversion_enabled_ = unit_conversion_enabled;
 }
 
+void QuickAnswersState::OnApplicationLocaleReady() {
+  auto locale = pref_change_registrar_->prefs()->GetString(
+      language::prefs::kApplicationLocale);
+  if (application_locale_ == locale) {
+    return;
+  }
+  application_locale_ = locale;
+
+  for (auto& observer : observers_) {
+    observer.OnApplicationLocaleReady(locale);
+  }
+
+  UpdateEligibility();
+}
+
 void QuickAnswersState::UpdateEligibility() {
   if (!pref_change_registrar_)
     return;
 
-  std::string locale = pref_change_registrar_->prefs()->GetString(
-      language::prefs::kApplicationLocale);
+  if (application_locale_.empty())
+    return;
+
   std::string resolved_locale;
-  l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+  l10n_util::CheckAndResolveLocale(application_locale_, &resolved_locale,
                                    /*perform_io=*/false);
   is_eligible_ = IsQuickAnswersAllowedForLocale(
       resolved_locale, icu::Locale::getDefault().getName());

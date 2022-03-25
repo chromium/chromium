@@ -24,11 +24,17 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
   void OnSettingsEnabled(bool settings_enabled) override {
     settings_enabled_ = settings_enabled;
   }
+  void OnApplicationLocaleReady(
+      const std::string& application_locale) override {
+    application_locale_ = application_locale;
+  }
 
   bool settings_enabled() const { return settings_enabled_; }
+  const std::string& application_locale() const { return application_locale_; }
 
  private:
   bool settings_enabled_ = false;
+  std::string application_locale_;
 };
 
 class QuickAnswersStateControllerTest : public ChromeQuickAnswersTestBase {
@@ -87,6 +93,22 @@ TEST_F(QuickAnswersStateControllerTest, NotifySettingsEnabled) {
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
   EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_TRUE(observer()->settings_enabled());
+
+  QuickAnswersState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(QuickAnswersStateControllerTest, NotifyApplicationLocaleReady) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_TRUE(QuickAnswersState::Get()->application_locale().empty());
+  EXPECT_TRUE(observer()->application_locale().empty());
+
+  const std::string application_locale = "en-US";
+
+  // The observer class should get an notification when the pref value changes.
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+  EXPECT_EQ(QuickAnswersState::Get()->application_locale(), application_locale);
+  EXPECT_EQ(observer()->application_locale(), application_locale);
 
   QuickAnswersState::Get()->RemoveObserver(observer());
 }

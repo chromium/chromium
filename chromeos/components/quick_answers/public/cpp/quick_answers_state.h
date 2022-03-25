@@ -35,6 +35,7 @@ enum class ConsentResultType {
 class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
+  virtual void OnApplicationLocaleReady(const std::string& locale) {}
 };
 
 // A class that holds Quick Answers related prefs and states.
@@ -66,6 +67,7 @@ class QuickAnswersState {
   bool definition_enabled() const { return definition_enabled_; }
   bool translation_enabled() const { return translation_enabled_; }
   bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
+  const std::string& application_locale() const { return application_locale_; }
   bool is_eligible() const { return is_eligible_; }
 
   void set_eligibility_for_testing(bool is_eligible) {
@@ -84,6 +86,7 @@ class QuickAnswersState {
   void UpdateDefinitionEnabled();
   void UpdateTranslationEnabled();
   void UpdateUnitConversionEnabled();
+  void OnApplicationLocaleReady();
 
   // Called when the feature eligibility might change.
   void UpdateEligibility();
@@ -103,6 +106,9 @@ class QuickAnswersState {
 
   // Whether the Quick Answers unit conversion is enabled.
   bool unit_conversion_enabled_ = true;
+
+  // The application locale.
+  std::string application_locale_;
 
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.
