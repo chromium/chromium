@@ -28,8 +28,6 @@ namespace content {
 // browser_task_traits.h on BrowserThread::ID is broken.
 class BrowserTaskTraits;
 
-class BrowserThreadImpl;
-
 // Use DCHECK_CURRENTLY_ON(BrowserThread::ID) to assert that a function can only
 // be called on the named BrowserThread.
 #define DCHECK_CURRENTLY_ON(thread_identifier)                      \

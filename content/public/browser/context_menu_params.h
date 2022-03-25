@@ -11,8 +11,6 @@
 
 namespace content {
 
-class RenderFrameHostImpl;
-
 // FIXME(beng): This would be more useful in the future and more efficient
 //              if the parameters here weren't so literally mapped to what
 //              they contain for the ContextMenu task. It might be better

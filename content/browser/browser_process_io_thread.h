@@ -22,6 +22,7 @@ class ScopedCOMInitializer;
 #endif
 
 namespace content {
+class BrowserThreadImpl;
 class NotificationService;
 }
 

@@ -55,7 +55,6 @@ namespace content {
 
 class RendererPpapiHost;
 class RenderFrame;
-class RenderFrameImpl;
 
 // Base class for objects that want to filter incoming IPCs, and also get
 // notified of changes to the frame.

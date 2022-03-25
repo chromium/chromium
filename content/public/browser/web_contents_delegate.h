@@ -60,7 +60,6 @@ class RenderFrameHost;
 class RenderWidgetHost;
 class SessionStorageNamespace;
 class SiteInstance;
-class WebContentsImpl;
 struct ContextMenuParams;
 struct DropData;
 struct MediaPlayerWatchTime;
