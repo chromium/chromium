@@ -23,7 +23,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
@@ -205,12 +207,15 @@ void PageInfoBubbleView::OpenSecurityPage() {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_SECURITY_DETAILS_OPENED);
   page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER));
 }
 
 void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_PERMISSION_DIALOG_OPENED);
   page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
+  AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
 }
 
 void PageInfoBubbleView::OpenAboutThisSitePage(
@@ -219,6 +224,8 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
   page_container_->SwitchToPage(
       view_factory_->CreateAboutThisSitePageView(info));
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER));
 }
 
 void PageInfoBubbleView::OpenAdPersonalizationPage() {
@@ -226,6 +233,8 @@ void PageInfoBubbleView::OpenAdPersonalizationPage() {
       PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
   page_container_->SwitchToPage(
       view_factory_->CreateAdPersonalizationPageView());
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER));
 }
 
 void PageInfoBubbleView::CloseBubble() {
@@ -274,6 +283,23 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
 void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
   SizeToContents();
+}
+
+void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {
+  // Announce that the subpage was opened to inform the user about the changes
+  // in the UI.
+#if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().OverrideName(announcement);
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+  GetViewAccessibility().AnnounceText(announcement);
+#endif
+
+  // Focus the back button by default to ensure that focus is set when new
+  // content is displayed.
+  auto* back_button = page_container_->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BACK_BUTTON);
+  back_button->RequestFocus();
 }
 
 void ShowPageInfoDialogImpl(Browser* browser,
