@@ -313,15 +313,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
 #undef UMA_HISTOGRAM_TIMES_ALL_GC_PHASES
 }
 
-namespace {
-
-void ReportCppIncrementalLatencyEvent(int64_t duration_us) {
-  UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Incremental.Cpp",
-                      base::Microseconds(duration_us));
-}
-
-}  // namespace
-
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
     ContextId context_id) {
@@ -334,7 +325,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
     UMA_HISTOGRAM_TIMES(
         "V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp",
         base::Microseconds(event.cpp_wall_clock_duration_in_us));
-    ReportCppIncrementalLatencyEvent(event.cpp_wall_clock_duration_in_us);
   }
 }
 
@@ -350,7 +340,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
     UMA_HISTOGRAM_TIMES(
         "V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp",
         base::Microseconds(event.cpp_wall_clock_duration_in_us));
-    ReportCppIncrementalLatencyEvent(event.cpp_wall_clock_duration_in_us);
   }
 }
 

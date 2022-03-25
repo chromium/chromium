@@ -44255,7 +44255,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="182499697" label="DevTools.PanelShown"/>
   <int value="192918458"
       label="DataUse.MessageSize.AllServices.Downstream.Unknown.Cellular"/>
-  <int value="294030175" label="V8.GC.Event.MainThread.Full.Incremental.Cpp"/>
+  <int value="294030175"
+      label="V8.GC.Event.MainThread.Full.Incremental.Cpp (deprecated)"/>
   <int value="410893025" label="Crashpad.CrashUpload.AttemptSuccessful"/>
   <int value="424952287"
       label="Network.Shill.Wifi.LinkMonitorResponseTimeSample"/>

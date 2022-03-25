@@ -869,16 +869,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Event.MainThread.Full.Incremental.Cpp" units="ms"
-    expires_after="M109">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual incremental steps on the main thread during a garbage
-    collection of the managed C++ heap.
-  </summary>
-</histogram>
-
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark" units="ms"
     expires_after="M109">
   <owner>nikolaos@chromium.org</owner>
