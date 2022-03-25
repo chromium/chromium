@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -137,6 +139,8 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         final int iconColor = panel.getIconColor();
         final int dragHandlebarColor = panel.getDragHandlebarColor();
+        final @ColorInt int progressBarBackgroundColor = panel.getProgressBarBackgroundColor();
+        final @ColorInt int progressBarColor = panel.getProgressBarColor();
 
         float closeIconOpacity = panel.getCloseIconOpacity();
 
@@ -165,12 +169,13 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 searchContextViewId, searchTermViewId, searchCaptionViewId,
                 R.drawable.modern_toolbar_shadow, R.drawable.ic_logo_googleg_24dp,
                 quickActionIconResId, dragHandlebarId, openNewTabIconId, closeIconResourceId,
-                R.drawable.progress_bar_background, R.drawable.progress_bar_foreground,
-                searchPromoViewId, R.drawable.contextual_search_promo_ripple,
-                searchBarBannerTextViewId, mDpToPx, panel.getFullscreenWidth() * mDpToPx,
-                panel.getTabHeight() * mDpToPx, panel.getBasePageBrightness(),
-                panel.getBasePageY() * mDpToPx, panelWebContents, searchPromoVisible,
-                searchPromoHeightPx, searchPromoOpacity, searchPromoBackgroundColor,
+                R.drawable.progress_bar_background, progressBarBackgroundColor,
+                R.drawable.progress_bar_foreground, progressBarColor, searchPromoViewId,
+                R.drawable.contextual_search_promo_ripple, searchBarBannerTextViewId, mDpToPx,
+                panel.getFullscreenWidth() * mDpToPx, panel.getTabHeight() * mDpToPx,
+                panel.getBasePageBrightness(), panel.getBasePageY() * mDpToPx, panelWebContents,
+                searchPromoVisible, searchPromoHeightPx, searchPromoOpacity,
+                searchPromoBackgroundColor,
                 // Related Searches
                 relatedSearchesInContentViewId, relatedSearchesInContentVisible,
                 relatedSearchesInContentHeightPx, relatedSearchesInBarViewId,
@@ -245,12 +250,12 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 int searchCaptionResourceId, int searchBarShadowResourceId,
                 int searchProviderIconResourceId, int quickActionIconResourceId,
                 int dragHandlebarResourceId, int openTabIconResourceId, int closeIconResourceId,
-                int progressBarBackgroundResourceId, int progressBarResourceId,
-                int searchPromoResourceId, int barBannerRippleResourceId,
-                int barBannerTextResourceId, float dpToPx, float layoutWidth, float layoutHeight,
-                float basePageBrightness, float basePageYOffset, WebContents webContents,
-                boolean searchPromoVisible, float searchPromoHeight, float searchPromoOpacity,
-                int searchPromoBackgroundColor,
+                int progressBarBackgroundResourceId, int progressBarBackgroundColor,
+                int progressBarResourceId, int progressBarColor, int searchPromoResourceId,
+                int barBannerRippleResourceId, int barBannerTextResourceId, float dpToPx,
+                float layoutWidth, float layoutHeight, float basePageBrightness,
+                float basePageYOffset, WebContents webContents, boolean searchPromoVisible,
+                float searchPromoHeight, float searchPromoOpacity, int searchPromoBackgroundColor,
                 // Related Searches
                 int relatedSearchesInContentResourceId, boolean relatedSearchesInContentVisible,
                 float relatedSearchesInContentHeight, int relatedSearchesInBarResourceId,

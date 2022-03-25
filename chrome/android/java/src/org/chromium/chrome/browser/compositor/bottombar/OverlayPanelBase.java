@@ -113,6 +113,12 @@ abstract class OverlayPanelBase {
     /** The tint used for drag handlebar. */
     private final @ColorInt int mDragHandlebarColor;
 
+    /** The tint used for the progress bar background. */
+    private final @ColorInt int mProgressBarBackgroundColor;
+
+    /** The tint used for the progress bar. */
+    private final @ColorInt int mProgressBarColor;
+
     /**
      * The Y coordinate to apply to the Base Page in order to keep the selection
      * in view when the Overlay Panel is in its EXPANDED state.
@@ -152,7 +158,9 @@ abstract class OverlayPanelBase {
         final Resources resources = mContext.getResources();
         mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
         mIconColor = SemanticColorUtils.getDefaultIconColor(context);
-        mDragHandlebarColor = context.getColor(R.color.drag_handlebar_color);
+        mDragHandlebarColor = SemanticColorUtils.getDragHandlebarColor(context);
+        mProgressBarBackgroundColor = SemanticColorUtils.getDefaultControlColorActive(context);
+        mProgressBarColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mButtonPaddingDps =
                 (int) (mPxToDp * resources.getDimension(R.dimen.overlay_panel_button_padding));
     }
@@ -584,6 +592,20 @@ abstract class OverlayPanelBase {
      */
     protected void setProgressBarCompletion(float completion) {
         mProgressBarCompletion = completion;
+    }
+
+    /**
+     * Returns the progress bar background color.
+     */
+    public @ColorInt int getProgressBarBackgroundColor() {
+        return mProgressBarBackgroundColor;
+    }
+
+    /**
+     * Returns the progress bar color.
+     */
+    public @ColorInt int getProgressBarColor() {
+        return mProgressBarColor;
     }
 
     // ============================================================================================

@@ -135,6 +135,11 @@ public class SemanticColorUtils {
         return getDefaultBgColorElev2(context);
     }
 
+    /** Returns the semantic color value that corresponds to drag_handlebar_color. */
+    public static @ColorInt int getDragHandlebarColor(Context context) {
+        return getDividerLineBgColor(context);
+    }
+
     /** Returns the surface color value of the conceptual dialog_bg_color. */
     public static @ColorInt int getDialogBgColor(Context context) {
         return resolveSurfaceColorElev(

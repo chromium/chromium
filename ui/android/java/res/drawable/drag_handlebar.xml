@@ -11,5 +11,5 @@
         android:width="40dp"/>
     <corners
         android:radius="2dp" />
-    <solid android:color="@color/drag_handlebar_color" />
+    <solid android:color="@color/drag_handlebar_color_baseline" />
 </shape>

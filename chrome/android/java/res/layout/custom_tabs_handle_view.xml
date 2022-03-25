@@ -9,6 +9,6 @@
     android:layout_height="@dimen/custom_tabs_top_corner_round_radius"
     android:importantForAccessibility="no"
     android:src="@drawable/drag_handlebar"
-    android:tint="@color/drag_handlebar_color"
+    android:tint="@macro/drag_handlebar_color"
     android:scaleType="center"
     android:background="@drawable/custom_tabs_handle_view_shape" />

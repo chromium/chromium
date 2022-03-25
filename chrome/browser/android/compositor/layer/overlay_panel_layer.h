@@ -60,7 +60,9 @@ class OverlayPanelLayer : public Layer {
                      float in_bar_related_searches_height);
 
   void SetProgressBar(int progress_bar_background_resource_id,
+                      int progress_bar_background_tint,
                       int progress_bar_resource_id,
+                      int progress_bar_tint,
                       bool progress_bar_visible,
                       float progress_bar_position_y,
                       float progress_bar_height,

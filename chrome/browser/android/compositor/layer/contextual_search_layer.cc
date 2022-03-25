@@ -45,7 +45,9 @@ void ContextualSearchLayer::SetProperties(
     int open_tab_icon_resource_id,
     int close_icon_resource_id,
     int progress_bar_background_resource_id,
+    int progress_bar_background_tint,
     int progress_bar_resource_id,
+    int progress_bar_tint,
     int search_promo_resource_id,
     int bar_banner_ripple_resource_id,
     int bar_banner_text_resource_id,
@@ -344,9 +346,10 @@ void ContextualSearchLayer::SetProperties(
   // Progress Bar
   // ---------------------------------------------------------------------------
   OverlayPanelLayer::SetProgressBar(
-      progress_bar_background_resource_id, progress_bar_resource_id,
-      progress_bar_visible, search_bar_bottom, progress_bar_height,
-      progress_bar_opacity, progress_bar_completion, search_panel_width);
+      progress_bar_background_resource_id, progress_bar_background_tint,
+      progress_bar_resource_id, progress_bar_tint, progress_bar_visible,
+      search_bar_bottom, progress_bar_height, progress_bar_opacity,
+      progress_bar_completion, search_panel_width);
 
   // ---------------------------------------------------------------------------
   // Touch Highlight Layer

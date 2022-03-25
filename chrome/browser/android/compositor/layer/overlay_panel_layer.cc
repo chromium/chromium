@@ -358,7 +358,9 @@ void OverlayPanelLayer::SetProperties(
 }
 
 void OverlayPanelLayer::SetProgressBar(int progress_bar_background_resource_id,
+                                       int progress_bar_background_tint,
                                        int progress_bar_resource_id,
+                                       int progress_bar_tint,
                                        bool progress_bar_visible,
                                        float progress_bar_position_y,
                                        float progress_bar_height,
@@ -370,12 +372,13 @@ void OverlayPanelLayer::SetProgressBar(int progress_bar_background_resource_id,
 
   if (should_render_progress_bar) {
     ui::NinePatchResource* progress_bar_background_resource =
-        ui::NinePatchResource::From(resource_manager_->GetResource(
-            ui::ANDROID_RESOURCE_TYPE_STATIC,
-            progress_bar_background_resource_id));
-    ui::NinePatchResource* progress_bar_resource =
-        ui::NinePatchResource::From(resource_manager_->GetResource(
-            ui::ANDROID_RESOURCE_TYPE_STATIC, progress_bar_resource_id));
+        ui::NinePatchResource::From(
+            resource_manager_->GetStaticResourceWithTint(
+                progress_bar_background_resource_id,
+                progress_bar_background_tint));
+    ui::NinePatchResource* progress_bar_resource = ui::NinePatchResource::From(
+        resource_manager_->GetStaticResourceWithTint(progress_bar_resource_id,
+                                                     progress_bar_tint));
 
     DCHECK(progress_bar_background_resource);
     DCHECK(progress_bar_resource);

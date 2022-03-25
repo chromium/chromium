@@ -29,6 +29,7 @@
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
     <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>
+    <macro name="drag_handlebar_color" tools:ignore="UnusedResources">@macro/divider_line_bg_color</macro>
 
     <macro name="chip_bg_color">@macro/default_bg_color</macro>
     <macro name="chip_bg_selected_color">?attr/colorSecondaryContainer</macro>
@@ -67,6 +68,7 @@
 
     <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
     <macro name="divider_line_bg_color">@color/divider_line_bg_color_baseline</macro>
+    <macro name="drag_handlebar_color">@macro/divider_line_bg_color</macro>
 
     <macro name="chip_bg_color">@color/default_bg_color_baseline</macro>
     <macro name="chip_bg_selected_color">@color/chip_bg_selected_color_baseline</macro>
