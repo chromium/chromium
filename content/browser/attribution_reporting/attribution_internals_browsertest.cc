@@ -288,26 +288,26 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let obs = new MutationObserver(() => {
       if (table.children.length === 8 &&
           table.children[0].children[0].innerText === $1 &&
-          table.children[0].children[6].innerText === "Navigation" &&
-          table.children[1].children[6].innerText === "Event" &&
-          table.children[0].children[7].innerText === "0" &&
-          table.children[1].children[7].innerText === $2 &&
-          table.children[0].children[8].innerText === "{}" &&
-          table.children[1].children[8].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[7].innerText === "Navigation" &&
+          table.children[1].children[7].innerText === "Event" &&
+          table.children[0].children[8].innerText === "0" &&
+          table.children[1].children[8].innerText === $2 &&
           table.children[0].children[9].innerText === "{}" &&
-          table.children[1].children[9].innerText === '{\n "a": {\n  "highBits": "0",\n  "lowBits": "1"\n }\n}' &&
-          table.children[0].children[10].innerText === "19" &&
-          table.children[1].children[10].innerText === "" &&
-          table.children[0].children[11].innerText === "" &&
-          table.children[1].children[11].innerText === "13, 17" &&
-          table.children[0].children[12].innerText === "Unattributable: noised" &&
-          table.children[1].children[12].innerText === "Attributable" &&
-          table.children[2].children[12].innerText === "Attributable: reached event-level attribution limit" &&
-          table.children[3].children[12].innerText === "Unattributable: replaced by newer source" &&
-          table.children[4].children[12].innerText === "Rejected: internal error" &&
-          table.children[5].children[12].innerText === "Rejected: insufficient source capacity" &&
-          table.children[6].children[12].innerText === "Rejected: insufficient unique destination capacity" &&
-          table.children[7].children[12].innerText === "Rejected: excessive reporting origins") {
+          table.children[1].children[9].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[10].innerText === "{}" &&
+          table.children[1].children[10].innerText === '{\n "a": {\n  "highBits": "0",\n  "lowBits": "1"\n }\n}' &&
+          table.children[0].children[11].innerText === "19" &&
+          table.children[1].children[11].innerText === "" &&
+          table.children[0].children[12].innerText === "" &&
+          table.children[1].children[12].innerText === "13, 17" &&
+          table.children[0].children[1].innerText === "Unattributable: noised" &&
+          table.children[1].children[1].innerText === "Attributable" &&
+          table.children[2].children[1].innerText === "Attributable: reached event-level attribution limit" &&
+          table.children[3].children[1].innerText === "Unattributable: replaced by newer source" &&
+          table.children[4].children[1].innerText === "Rejected: internal error" &&
+          table.children[5].children[1].innerText === "Rejected: insufficient source capacity" &&
+          table.children[6].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[7].children[1].innerText === "Rejected: excessive reporting origins") {
         document.title = $3;
       }
     });
@@ -527,27 +527,27 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 12 &&
-            table.children[0].children[2].innerText === "https://conversion.test" &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3].innerText === "https://conversion.test" &&
+            table.children[0].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[0].children[6].innerText === "13" &&
-            table.children[0].children[7].innerText === "yes" &&
-            table.children[0].children[8].innerText === "Pending" &&
-            table.children[1].children[6].innerText === "11" &&
-            table.children[1].children[8].innerText === "Dropped due to low priority" &&
-            table.children[2].children[6].innerText === "12" &&
-            table.children[2].children[8].innerText === "Dropped for noise" &&
-            table.children[3].children[6].innerText === "0" &&
-            table.children[3].children[7].innerText === "no" &&
-            table.children[3].children[8].innerText === "Sent: HTTP 200" &&
-            table.children[4].children[8].innerText === "Prohibited by browser policy" &&
-            table.children[5].children[8].innerText === "Network error" &&
-            table.children[6].children[8].innerText === "Dropped due to excessive attributions" &&
-            table.children[7].children[8].innerText === "Dropped due to excessive reporting origins" &&
-            table.children[8].children[8].innerText === "Deduplicated" &&
-            table.children[9].children[8].innerText === "No report capacity for destination site" &&
-            table.children[10].children[8].innerText === "Internal error" &&
-            table.children[11].children[3].innerText ===
+            table.children[0].children[7].innerText === "13" &&
+            table.children[0].children[8].innerText === "yes" &&
+            table.children[0].children[2].innerText === "Pending" &&
+            table.children[1].children[7].innerText === "11" &&
+            table.children[1].children[2].innerText === "Dropped due to low priority" &&
+            table.children[2].children[7].innerText === "12" &&
+            table.children[2].children[2].innerText === "Dropped for noise" &&
+            table.children[3].children[7].innerText === "0" &&
+            table.children[3].children[8].innerText === "no" &&
+            table.children[3].children[2].innerText === "Sent: HTTP 200" &&
+            table.children[4].children[2].innerText === "Prohibited by browser policy" &&
+            table.children[5].children[2].innerText === "Network error" &&
+            table.children[6].children[2].innerText === "Dropped due to excessive attributions" &&
+            table.children[7].children[2].innerText === "Dropped due to excessive reporting origins" &&
+            table.children[8].children[2].innerText === "Deduplicated" &&
+            table.children[9].children[2].innerText === "No report capacity for destination site" &&
+            table.children[10].children[2].innerText === "Internal error" &&
+            table.children[11].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
@@ -565,27 +565,27 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 12 &&
-            table.children[11].children[2].innerText === "https://conversion.test" &&
-            table.children[11].children[3].innerText ===
+            table.children[11].children[3].innerText === "https://conversion.test" &&
+            table.children[11].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[11].children[6].innerText === "13" &&
-            table.children[11].children[7].innerText === "yes" &&
-            table.children[11].children[8].innerText === "Pending" &&
-            table.children[10].children[6].innerText === "12" &&
-            table.children[10].children[8].innerText === "Dropped for noise" &&
-            table.children[9].children[6].innerText === "11" &&
-            table.children[9].children[8].innerText === "Dropped due to low priority" &&
-            table.children[8].children[6].innerText === "0" &&
-            table.children[8].children[7].innerText === "no" &&
-            table.children[8].children[8].innerText === "Sent: HTTP 200" &&
-            table.children[7].children[8].innerText === "Prohibited by browser policy" &&
-            table.children[6].children[8].innerText === "Network error" &&
-            table.children[5].children[8].innerText === "Dropped due to excessive attributions" &&
-            table.children[4].children[8].innerText === "Dropped due to excessive reporting origins" &&
-            table.children[3].children[8].innerText === "Deduplicated" &&
-            table.children[2].children[8].innerText === "No report capacity for destination site" &&
-            table.children[1].children[8].innerText === "Internal error" &&
-            table.children[0].children[3].innerText ===
+            table.children[11].children[7].innerText === "13" &&
+            table.children[11].children[8].innerText === "yes" &&
+            table.children[11].children[2].innerText === "Pending" &&
+            table.children[10].children[7].innerText === "12" &&
+            table.children[10].children[2].innerText === "Dropped for noise" &&
+            table.children[9].children[7].innerText === "11" &&
+            table.children[9].children[2].innerText === "Dropped due to low priority" &&
+            table.children[8].children[7].innerText === "0" &&
+            table.children[8].children[8].innerText === "no" &&
+            table.children[8].children[2].innerText === "Sent: HTTP 200" &&
+            table.children[7].children[2].innerText === "Prohibited by browser policy" &&
+            table.children[6].children[2].innerText === "Network error" &&
+            table.children[5].children[2].innerText === "Dropped due to excessive attributions" &&
+            table.children[4].children[2].innerText === "Dropped due to excessive reporting origins" &&
+            table.children[3].children[2].innerText === "Deduplicated" &&
+            table.children[2].children[2].innerText === "No report capacity for destination site" &&
+            table.children[1].children[2].innerText === "Internal error" &&
+            table.children[0].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
     // Sort by priority ascending.
     EXPECT_TRUE(ExecJsInWebUI(
-        "document.querySelectorAll('#report-table-wrapper th')[6].click();"));
+        "document.querySelectorAll('#report-table-wrapper th')[7].click();"));
     EXPECT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
   }
 
@@ -605,27 +605,27 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 12 &&
-            table.children[0].children[2].innerText === "https://conversion.test" &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3].innerText === "https://conversion.test" &&
+            table.children[0].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[0].children[6].innerText === "13" &&
-            table.children[0].children[7].innerText === "yes" &&
-            table.children[0].children[8].innerText === "Pending" &&
-            table.children[1].children[6].innerText === "12" &&
-            table.children[1].children[8].innerText === "Dropped for noise" &&
-            table.children[2].children[6].innerText === "11" &&
-            table.children[2].children[8].innerText === "Dropped due to low priority" &&
-            table.children[3].children[6].innerText === "0" &&
-            table.children[3].children[7].innerText === "no" &&
-            table.children[3].children[8].innerText === "Sent: HTTP 200" &&
-            table.children[4].children[8].innerText === "Prohibited by browser policy" &&
-            table.children[5].children[8].innerText === "Network error" &&
-            table.children[6].children[8].innerText === "Dropped due to excessive attributions" &&
-            table.children[7].children[8].innerText === "Dropped due to excessive reporting origins" &&
-            table.children[8].children[8].innerText === "Deduplicated" &&
-            table.children[9].children[8].innerText === "No report capacity for destination site" &&
-            table.children[10].children[8].innerText === "Internal error" &&
-            table.children[11].children[3].innerText ===
+            table.children[0].children[7].innerText === "13" &&
+            table.children[0].children[8].innerText === "yes" &&
+            table.children[0].children[2].innerText === "Pending" &&
+            table.children[1].children[7].innerText === "12" &&
+            table.children[1].children[2].innerText === "Dropped for noise" &&
+            table.children[2].children[7].innerText === "11" &&
+            table.children[2].children[2].innerText === "Dropped due to low priority" &&
+            table.children[3].children[7].innerText === "0" &&
+            table.children[3].children[8].innerText === "no" &&
+            table.children[3].children[2].innerText === "Sent: HTTP 200" &&
+            table.children[4].children[2].innerText === "Prohibited by browser policy" &&
+            table.children[5].children[2].innerText === "Network error" &&
+            table.children[6].children[2].innerText === "Dropped due to excessive attributions" &&
+            table.children[7].children[2].innerText === "Dropped due to excessive reporting origins" &&
+            table.children[8].children[2].innerText === "Deduplicated" &&
+            table.children[9].children[2].innerText === "No report capacity for destination site" &&
+            table.children[10].children[2].innerText === "Internal error" &&
+            table.children[11].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
@@ -636,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
     // Sort by priority descending.
     EXPECT_TRUE(ExecJsInWebUI(
-        "document.querySelectorAll('#report-table-wrapper th')[6].click();"));
+        "document.querySelectorAll('#report-table-wrapper th')[7].click();"));
 
     EXPECT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
   }
@@ -675,8 +675,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
-          table.children[0].children[6].innerText === "7" &&
-          table.children[1].children[8].innerText === "Sent: HTTP 200") {
+          table.children[0].children[7].innerText === "7" &&
+          table.children[1].children[2].innerText === "Sent: HTTP 200") {
         document.title = $1;
       }
     });
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
-          table.children[0].children[6].innerText === "7") {
+          table.children[0].children[7].innerText === "7") {
         document.title = $1;
       }
     });
@@ -981,21 +981,21 @@ IN_PROC_BROWSER_TEST_F(
       let table = document.querySelector("#aggregatable-report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 11 &&
-            table.children[0].children[2].innerText === "https://conversion.test" &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3].innerText === "https://conversion.test" &&
+            table.children[0].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
-            table.children[0].children[7].innerText === "Pending" &&
-            table.children[0].children[6].innerText === '[\n {\n  "key": {\n   "highBits": "0",\n   "lowBits": "1"\n  },\n  "value": 2\n }\n]' &&
-            table.children[1].children[7].innerText === "Dropped due to insufficient aggregatable budget" &&
-            table.children[2].children[7].innerText === "No report capacity for destination site" &&
-            table.children[3].children[7].innerText === "Sent: HTTP 200" &&
-            table.children[4].children[7].innerText === "Prohibited by browser policy" &&
-            table.children[5].children[7].innerText === "Dropped due to assembly failure" &&
-            table.children[6].children[7].innerText === "Network error" &&
-            table.children[7].children[7].innerText === "Dropped due to excessive attributions" &&
-            table.children[8].children[7].innerText === "Dropped due to excessive reporting origins" &&
-            table.children[9].children[7].innerText === "Internal error" &&
-            table.children[10].children[3].innerText ===
+            table.children[0].children[2].innerText === "Pending" &&
+            table.children[0].children[7].innerText === '[\n {\n  "key": {\n   "highBits": "0",\n   "lowBits": "1"\n  },\n  "value": 2\n }\n]' &&
+            table.children[1].children[2].innerText === "Dropped due to insufficient aggregatable budget" &&
+            table.children[2].children[2].innerText === "No report capacity for destination site" &&
+            table.children[3].children[2].innerText === "Sent: HTTP 200" &&
+            table.children[4].children[2].innerText === "Prohibited by browser policy" &&
+            table.children[5].children[2].innerText === "Dropped due to assembly failure" &&
+            table.children[6].children[2].innerText === "Network error" &&
+            table.children[7].children[2].innerText === "Dropped due to excessive attributions" &&
+            table.children[8].children[2].innerText === "Dropped due to excessive reporting origins" &&
+            table.children[9].children[2].innerText === "Internal error" &&
+            table.children[10].children[4].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution") {
           document.title = $1;
         }
