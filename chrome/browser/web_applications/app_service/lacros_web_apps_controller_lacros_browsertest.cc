@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -21,40 +22,37 @@
 
 namespace web_app {
 
-using LacrosWebAppsControllerBrowserTest = web_app::WebAppControllerBrowserTest;
+class LacrosWebAppsControllerBrowserTest : public WebAppControllerBrowserTest {
+ public:
+  LacrosWebAppsControllerBrowserTest() = default;
+  ~LacrosWebAppsControllerBrowserTest() override = default;
 
-// TODO(crbug.com/1309148): Disabled for flakiness.
-// Test that the default context menu for a web app has the correct items.
-IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
-                       DISABLED_DefaultContextMenu) {
-  // If ash is does not contain the relevant test controller functionality, then
-  // there's nothing to do for this test.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kDoesItemExistInShelfMinVersion)) {
-    LOG(WARNING) << "Unsupported ash version.";
-    return;
+ protected:
+  // If ash is does not contain the relevant test controller functionality,
+  // then there's nothing to do for this test.
+  bool IsServiceAvailable() {
+    DCHECK(IsWebAppsCrosapiEnabled());
+    auto* const service = chromeos::LacrosService::Get();
+    return service->GetInterfaceVersion(
+               crosapi::mojom::TestController::Uuid_) >=
+           static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                                kDoesItemExistInShelfMinVersion);
   }
+};
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  EXPECT_TRUE(IsWebAppsCrosapiEnabled());
-  LacrosWebAppsController lacros_web_apps_controller(profile());
-  lacros_web_apps_controller.Init();
+// Test that the default context menu for a web app has the correct items.
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP() << "Unsupported ash version.";
 
   const AppId app_id =
-      InstallPWA(embedded_test_server()->GetURL("/web_apps/basic.html"));
+      InstallPWA(https_server()->GetURL("/web_apps/basic.html"));
+  AppRegistrationWaiter(profile(), app_id).Await();
 
   // No item should exist in the shelf before the web app is launched.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 
-  crosapi::mojom::LaunchParamsPtr launch_params =
-      crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
-  static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
-      .Launch(std::move(launch_params), base::DoNothing());
+  LaunchWebAppBrowser(app_id);
 
   // Wait for item to exist in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
