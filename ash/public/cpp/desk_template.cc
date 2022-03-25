@@ -35,9 +35,6 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case AppType::LACROS:
       return false;
     case AppType::ARC_APP:
-      if (!features::AreDesksTemplatesEnabled())
-        return false;
-      break;
     case AppType::BROWSER:
     case AppType::CHROME_APP:
     case AppType::SYSTEM_APP:

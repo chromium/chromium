@@ -86,12 +86,18 @@ class DesksTemplatesTest : public OverviewTestBase {
   // for testing the names and times of the UI directly.
   void AddEntry(const base::GUID& uuid,
                 const std::string& name,
+                base::Time created_time) {
+    AddEntry(uuid, name, created_time, DeskTemplateSource::kUser,
+             std::make_unique<app_restore::RestoreData>());
+  }
+
+  void AddEntry(const base::GUID& uuid,
+                const std::string& name,
                 base::Time created_time,
-                std::unique_ptr<app_restore::RestoreData> restore_data =
-                    std::make_unique<app_restore::RestoreData>()) {
+                DeskTemplateSource source,
+                std::unique_ptr<app_restore::RestoreData> restore_data) {
     auto desk_template = std::make_unique<DeskTemplate>(
-        uuid.AsLowercaseString(), DeskTemplateSource::kUser, name,
-        created_time);
+        uuid.AsLowercaseString(), source, name, created_time);
     desk_template->set_desk_restore_data(std::move(restore_data));
 
     AddEntry(std::move(desk_template));
@@ -1021,6 +1027,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplateNudgesNewDeskName) {
 TEST_F(DesksTemplatesTest, IconsOrder) {
   // Create a `DeskTemplate` using which has 5 apps and each app has 1 window.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateSource::kUser,
            CreateRestoreData(std::vector<int>(5, 1)));
 
   OpenOverviewAndShowTemplatesGrid();
@@ -1086,7 +1093,7 @@ TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           std::move(restore_data));
+           DeskTemplateSource::kUser, std::move(restore_data));
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1116,7 +1123,7 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
   std::vector<int> window_info(
       kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1153,7 +1160,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   std::vector<int> window_info(
       kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 2);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1204,18 +1211,18 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
 }
 
 // Tests that apps with multiple window are counted correctly.
-//   _______________________________________________________________________________
-//   |  _________  _________   _________________   _________________   _________
-//   | |  |       |  |       |   |       |       |   |       |       |   | |   |
-//   |  |   I   |  |   I   |   |   I      + 1  |   |   I   |  + 1  |   |  + 3  |
-//   | |  |_______|  |_______|   |_______|_______|   |_______|_______| |_______|
-//   |
-//   |_____________________________________________________________________________|
+//  _________________________________________________________________________
+//  |  ________   ________   ________________   ________________   ________ |
+//  | |       |  |       |  |       |       |  |       |       |  |       | |
+//  | |   I   |  |   I   |  |   I      + 1  |  |   I   |  + 1  |  |  + 3  | |
+//  | |_______|  |_______|  |_______|_______|  |_______|_______|  |_______| |
+//  |_______________________________________________________________________|
 //
 TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   // Create a `DeskTemplate` that contains some apps with multiple windows and
   // more than kMaxIcons windows. The grid should appear like the above diagram.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateSource::kUser,
            CreateRestoreData(std::vector<int>{1, 1, 2, 2, 3}));
 
   // Enter overview and show the Desks Templates Grid.
@@ -1262,7 +1269,7 @@ TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
 TEST_F(DesksTemplatesTest, IconViewMoreThan99Windows) {
   // Create a `DeskTemplate` using which has 1 app with 101 windows.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(std::vector<int>{101}));
+           DeskTemplateSource::kUser, CreateRestoreData(std::vector<int>{101}));
 
   // Enter overview and show the Desks Templates Grid.
   OpenOverviewAndShowTemplatesGrid();
@@ -1294,7 +1301,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   // `DesksTemplatesIconContainer::kMaxIcons` apps and each app has 1 window.
   std::vector<int> window_info(DesksTemplatesIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1318,7 +1325,7 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableLessThan5Icons) {
   // of those app ids to be unavailable.
   std::vector<int> window_info(4, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   // `CreateRestoreData` creates the windows with app ids of "0", "1", "2", etc.
   // Set 2 of those app ids to be unavailable.
@@ -1351,7 +1358,7 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableMoreThan5Icons) {
   // of those app ids to be unavailable.
   std::vector<int> window_info(8, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   // `CreateRestoreData` creates the windows with app ids of "0", "1", "2", etc.
   // Set 2 of those app ids to be unavailable.
@@ -1383,7 +1390,7 @@ TEST_F(DesksTemplatesTest, OverflowUnavailableAllUnavailableIcons) {
   // Create a `DeskTemplate` which has 10 apps and each app has 1 window.
   std::vector<int> window_info(10, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
-           CreateRestoreData(window_info));
+           DeskTemplateSource::kUser, CreateRestoreData(window_info));
 
   // Set all 10 app ids to be unavailable.
   auto* delegate = static_cast<TestDesksTemplatesDelegate*>(
@@ -3242,6 +3249,34 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonVisibleAfterSwipeToClose) {
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_FALSE(item2->target_bounds().Intersects(
       gfx::RectF(save_desk_as_template_widget->GetWindowBoundsInScreen())));
+}
+
+TEST_F(DesksTemplatesTest, AdminTemplate) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateSource::kPolicy,
+           std::make_unique<app_restore::RestoreData>());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Tests that the name is read only and not focusable.
+  DesksTemplatesItemView* item_view =
+      GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
+  DesksTemplatesNameView* name_view = item_view->name_view();
+  EXPECT_TRUE(name_view->GetReadOnly());
+  EXPECT_FALSE(name_view->IsFocusable());
+
+  // Tests that there is an admin message in the time view and that the delete
+  // button is not created.
+  DesksTemplatesItemViewTestApi test_api(item_view);
+  EXPECT_EQ(u"Shared by your administrator", test_api.time_view()->GetText());
+  EXPECT_FALSE(test_api.delete_button());
+
+  // Tests that the name view cannot be tabbed into for admin templates, as they
+  // aren't editable anyhow.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(item_view, GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_NE(name_view, GetHighlightedView());
 }
 
 }  // namespace ash

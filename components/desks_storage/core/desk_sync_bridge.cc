@@ -215,7 +215,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   if (app_id.empty())
     return nullptr;
 
-  std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
+  auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
   if (app.has_display_id())
@@ -558,7 +558,7 @@ void FillArcApp(ArcApp* out_app,
 
 // Fills an app with container and open disposition.  This is only done in the
 // specific cases of Chrome Apps and PWAs.
-void FillAppWithLaunchContianerAndOpenDisposition(
+void FillAppWithLaunchContainerAndOpenDisposition(
     const app_restore::AppRestoreData* app_restore_data,
     WorkspaceDeskSpecifics_App* out_app) {
   // If present, fills the proto's `container` field with the information stored
@@ -602,7 +602,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
           pwa_window->set_title(
               base::UTF16ToUTF8(app_restore_data->title.value()));
         }
-        FillAppWithLaunchContianerAndOpenDisposition(app_restore_data, out_app);
+        FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
       }
       break;
     }
@@ -621,7 +621,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
         chrome_app_window->set_title(
             base::UTF16ToUTF8(app_restore_data->title.value()));
       }
-      FillAppWithLaunchContianerAndOpenDisposition(app_restore_data, out_app);
+      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
       break;
     }
     case apps::AppType::kArc: {
@@ -695,8 +695,7 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
 // Convert a desk template to |app_restore::RestoreData|.
 std::unique_ptr<app_restore::RestoreData> ConvertToRestoreData(
     const sync_pb::WorkspaceDeskSpecifics& entry_proto) {
-  std::unique_ptr<app_restore::RestoreData> restore_data =
-      std::make_unique<app_restore::RestoreData>();
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
 
   for (auto app_proto : entry_proto.desk().apps()) {
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
@@ -776,7 +775,7 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
       pb_entry.created_time_windows_epoch_micros());
 
   // Protobuf parsing enforces UTF-8 encoding for all strings.
-  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
+  auto desk_template = std::make_unique<DeskTemplate>(
       uuid, ash::DeskTemplateSource::kUser, pb_entry.name(), created_time);
 
   if (pb_entry.has_updated_time_windows_epoch_micros()) {

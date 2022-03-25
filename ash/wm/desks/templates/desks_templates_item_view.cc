@@ -155,7 +155,13 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                               .SetController(this)
                               .SetText(template_name)
                               .SetAccessibleName(template_name)
-                              .SetReadOnly(!desk_template_->IsModifiable()),
+                              .SetReadOnly(!desk_template_->IsModifiable())
+                              // Use the focus behavior specified by the
+                              // subclass of `DesksTemplatesNameView` unless the
+                              // template is not modifiable.
+                              .SetFocusBehavior(desk_template_->IsModifiable()
+                                                    ? GetFocusBehavior()
+                                                    : FocusBehavior::NEVER),
                           views::Builder<views::ImageView>()
                               .SetPreferredSize(
                                   gfx::Size(kManagedStatusIndicatorSize,
@@ -204,15 +210,19 @@ DesksTemplatesItemView::DesksTemplatesItemView(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON),
       PillButton::Type::kIconless, /*icon=*/nullptr));
 
-  delete_button_ = hover_container_->AddChildView(std::make_unique<CloseButton>(
-      base::BindRepeating(&DesksTemplatesItemView::OnDeleteButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      CloseButton::Type::kMedium));
-  delete_button_->SetVectorIcon(kDeleteIcon);
-  delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
-  delete_button_->SetBackgroundColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  // Users cannot delete admin templates.
+  if (!is_admin_managed) {
+    delete_button_ =
+        hover_container_->AddChildView(std::make_unique<CloseButton>(
+            base::BindRepeating(&DesksTemplatesItemView::OnDeleteButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr()),
+            CloseButton::Type::kMedium));
+    delete_button_->SetVectorIcon(kDeleteIcon);
+    delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
+    delete_button_->SetBackgroundColor(color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  }
 
   name_view_observation_.Observe(name_view_);
 
@@ -316,12 +326,14 @@ void DesksTemplatesItemView::Layout() {
   if (previous_name_view_width != name_view_->width())
     OnTemplateNameChanged(desk_template_->template_name());
 
-  const gfx::Size delete_button_size = delete_button_->GetPreferredSize();
-  DCHECK_EQ(delete_button_size.width(), delete_button_size.height());
-  delete_button_->SetBoundsRect(
-      gfx::Rect(width() - delete_button_size.width() - kDeleteButtonMargin,
-                kDeleteButtonMargin, delete_button_size.width(),
-                delete_button_size.height()));
+  if (delete_button_) {
+    const gfx::Size delete_button_size = delete_button_->GetPreferredSize();
+    DCHECK_EQ(delete_button_size.width(), delete_button_size.height());
+    delete_button_->SetBoundsRect(
+        gfx::Rect(width() - delete_button_size.width() - kDeleteButtonMargin,
+                  kDeleteButtonMargin, delete_button_size.width(),
+                  delete_button_size.height()));
+  }
 
   const gfx::Size launch_button_preferred_size =
       launch_button_->CalculatePreferredSize();

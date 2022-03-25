@@ -284,7 +284,7 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
 
   // Show plus icon if drag a tab from a multi-tab window.
   widget->SetContentsView(std::make_unique<DropTargetView>(
-      dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey)));
+      dragged_window->GetProperty(kTabDraggingSourceWindowKey)));
   aura::Window* drop_target_window = widget->GetNativeWindow();
   drop_target_window->parent()->StackChildAtBottom(drop_target_window);
   widget->Show();
@@ -293,7 +293,7 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
 
 // Creates `save_desk_as_template_widget_`. It contains a button that saves the
 // active desk as a template.
-std::unique_ptr<views::Widget> SaveDeskAsTemplateWidget(
+std::unique_ptr<views::Widget> CreateSaveDeskAsTemplateWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -1898,7 +1898,8 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   }
 
   if (!save_desk_as_template_widget_) {
-    save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
+    save_desk_as_template_widget_ =
+        CreateSaveDeskAsTemplateWidget(root_window_);
     save_desk_as_template_widget_->SetContentsView(
         std::make_unique<SaveDeskTemplateButton>(base::BindRepeating(
             &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
@@ -2456,7 +2457,7 @@ void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
            ->disable_app_id_check_for_desk_templates() ||
        !full_restore::GetAppId(window).empty());
   int addend = increment ? 1 : -1;
-  if (!ash::DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
+  if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
     num_unsupported_windows_ += addend;
   else if (Shell::Get()->desks_templates_delegate()->IsIncognitoWindow(window))
     num_incognito_windows_ += addend;

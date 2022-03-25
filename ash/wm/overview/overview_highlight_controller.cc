@@ -225,7 +225,11 @@ OverviewHighlightController::GetTraversableViews() const {
       for (DesksTemplatesItemView* template_item :
            templates_grid_view->grid_items()) {
         traversable_views.push_back(template_item);
-        traversable_views.push_back(template_item->name_view());
+
+        // Admin templates names cannot be edited or focused.
+        DesksTemplatesNameView* name_view = template_item->name_view();
+        if (name_view->IsFocusable())
+          traversable_views.push_back(template_item->name_view());
       }
     } else {
       for (auto& item : grid->window_list())

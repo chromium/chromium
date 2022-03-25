@@ -171,6 +171,10 @@ void DesksTextfield::UpdateFocusRingState() {
 }
 
 SkColor DesksTextfield::GetBackgroundColor() const {
+  // Admin desk templates may be read only.
+  if (GetReadOnly())
+    return SK_ColorTRANSPARENT;
+
   return HasFocus() || IsMouseHovered()
              ? AshColorProvider::Get()->GetControlsLayerColor(
                    AshColorProvider::ControlsLayerType::
