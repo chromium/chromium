@@ -214,6 +214,39 @@ suite('<emoji-picker>', () => {
         assert(!recentlyUsed);
       });
 
+  test('recently used should be empty after clearing', async () => {
+    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+        // first - insert an emoji to populate recently used
+        new Promise((resolve) => resolve({incognito: false}));
+    // yield to allow emoji-group and emoji buttons to render.
+    const emojiButton = (await waitForCondition(
+                             () => findInEmojiPicker(
+                                 '[data-group="0"] > emoji-group',
+                                 'emoji-button:nth-child(2)')))
+                            .shadowRoot.querySelector('button');
+    emojiButton.click();
+
+    // wait until emoji exists in recently used section.
+    const recentlyUsed =
+        (await waitForCondition(
+             () => findInEmojiPicker(
+                 '[data-group=history] > emoji-group', 'emoji-button')))
+            .shadowRoot.querySelector('button');
+
+    // click show clear button
+    findInEmojiPicker('.group', '#show-clear').click();
+    await waitForCondition(() => findInEmojiPicker('.group', '#clear-recents'));
+
+    // click clear button
+    findInEmojiPicker('.group', '#clear-recents').click();
+
+    // Expect no more history.
+    await waitForCondition(
+        () => findInEmojiPicker('[data-group=history] > emoji-group')
+                  .style.display === 'none',
+        'history failed to disappear');
+  });
+
 
   suite('<emoji-variants>', () => {
     /** @type {!EmojiButton} */
