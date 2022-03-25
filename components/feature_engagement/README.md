@@ -35,9 +35,9 @@ before. However, that leads to a few issues that this component tries to solve:
         might not want to show a different one.
     *   Whether we have shown a particular In-Product Help or not might be a
         precondition for whether we should show different one.
-*   Users should be able to use try out a feature on their own for some time
-    before they see help.
-    *   We should show In-Product Help only if they don't seem use it, but we
+*   Users should be able to try out a feature on their own for some time before
+    they see help.
+    *   We should show In-Product Help only if they don't seem to use it, but we
         believe it would be helpful to them.
 *   Share the same statistics framework across all of Chrome.
     *   Sharing a framework within Chrome makes it easier to track statistics
@@ -82,7 +82,7 @@ Lastly, some preconditions might require something to never have happened. The
 first time a user has an IPH available, that will typically be true, since the
 event just started being tracked so no interactions have been recorded yet. E.g.
 if a precondition is "the user has never opened the menu", and this has not been
-tracked before, the number of times that we have so far have recorded that the
+tracked before, the number of times that we have so far recorded that the
 user has opened the menu is 0, even if that is a common action for the user.
 Therefore, the framework supports requiring the IPH to have been available for a
 certain amount of days before being applicable. With the opening of menu
@@ -107,7 +107,7 @@ detail below.
     by notifying about events, and checking whether In-Product Help should be
     displayed.
 *   [Configure UMA](#Required-UMA-Changes).
-*   [Add a local field trial testing configuration](#Adding-a-local-field-trial-testing-configuration).
+*   [Add a field trial configuration](#field-trial-configuration).
 
 ### Declaring your feature
 
@@ -590,8 +590,8 @@ to trigger as long as no other IPH has been shown.
   "availability": ">=0",
   "session_rate": "<1",
   "event_used": "name:shopping_list_track_price_from_menu;comparator:==0;window:360;storage:360",
-  "event_trigger": "shopping_list_menu_item_iph_triggered;comparator:==0;window:7;storage:7",
-  "event_trigger_1": "shopping_list_menu_item_iph_triggered;comparator:<3;window:36;storage:360"
+  "event_trigger": "name:shopping_list_menu_item_iph_triggered;comparator:==0;window:7;storage:7",
+  "event_trigger_1": "name:shopping_list_menu_item_iph_triggered;comparator:<3;window:360;storage:360"
 }
 ```
 
@@ -757,7 +757,7 @@ Format: `[all|none]`
 *   `all` means this feature blocks every other feature regarding their
     `IsBlocked` calculations. This is the default.
 *   `none` means that this feature does not block any other features regarding
-    the `IsBlocked` calculation. 
+    the `IsBlocked` calculation.
 
 **Examples**
 
