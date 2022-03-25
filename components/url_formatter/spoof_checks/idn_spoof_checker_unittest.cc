@@ -1328,73 +1328,63 @@ TEST(IDNSpoofCheckerNoFixtureTest, Skeletons) {
 TEST(IDNSpoofCheckerNoFixtureTest, MultipleSkeletons) {
   IDNSpoofChecker checker;
   // apple with U+04CF (ӏ)
-  const GURL url1("http://appӏe.com");
-  const url_formatter::IDNConversionResult result1 =
-      UnsafeIDNToUnicodeWithDetails(url1.host());
-  Skeletons skeletons1 = checker.GetSkeletons(result1.result);
-  EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons1);
-
-  const GURL url2("http://œxamþle.com");
-  const url_formatter::IDNConversionResult result2 =
-      UnsafeIDNToUnicodeWithDetails(url2.host());
-  Skeletons skeletons2 = checker.GetSkeletons(result2.result);
-  // This skeleton set doesn't include strings with "œ" because it gets
-  // converted to "oe" by ICU during skeleton extraction.
-  EXPECT_EQ(Skeletons({"oexarnþle.corn", "oexarnple.corn", "oexarnble.corn",
-                       "cexarnþle.corn", "cexarnple.corn", "cexarnble.corn"}),
-            skeletons2);
+  const GURL url("http://appӏe.com");
+  const url_formatter::IDNConversionResult result =
+      UnsafeIDNToUnicodeWithDetails(url.host());
+  Skeletons skeletons = checker.GetSkeletons(result.result);
+  EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons);
 }
 
 TEST(IDNSpoofCheckerNoFixtureTest, AlternativeSkeletons) {
   struct TestCase {
-    // String whose alternative strings will be generated
-    std::u16string input;
-    // Maximum number of alternative strings to generate.
-    size_t max_alternatives;
-    // Expected string set.
-    base::flat_set<std::u16string> expected_strings;
-  } kTestCases[] = {
-      {u"", 0, {}},
-      {u"", 1, {}},
-      {u"", 2, {}},
-      {u"", 100, {}},
+    // Skeleton whose alternative skeletons will be generated
+    std::string skeleton;
+    // Maximum number of skeletons to generate.
+    size_t max_skeletons;
+    // Expected skeleton set.
+    Skeletons expected_skeletons;
+  } kTestCases[] = {{"", 0, {}},
+                    {"", 1, {}},
+                    {"", 2, {}},
+                    {"", 100, {}},
 
-      {u"a", 0, {}},
-      {u"a", 1, {u"a"}},
-      {u"a", 2, {u"a"}},
-      {u"a", 100, {u"a"}},
+                    {"a", 0, {}},
+                    {"a", 1, {"a"}},
+                    {"a", 2, {"a"}},
+                    {"a", 100, {"a"}},
 
-      {u"ab", 0, {}},
-      {u"ab", 1, {u"ab"}},
-      {u"ab", 2, {u"ab"}},
-      {u"ab", 100, {u"ab"}},
+                    {"ab", 0, {}},
+                    {"ab", 1, {"ab"}},
+                    {"ab", 2, {"ab"}},
+                    {"ab", 100, {"ab"}},
 
-      {u"œ", 0, {}},
-      {u"œ", 1, {u"œ"}},
-      {u"œ", 2, {u"œ", u"ce"}},
-      {u"œ", 100, {u"œ", u"ce", u"oe"}},
+                    {"œ", 0, {}},
+                    {"œ", 1, {"œ"}},
+                    {"œ", 2, {"œ", "ce"}},
+                    {"œ", 100, {"œ", "ce", "oe"}},
 
-      {u"œxample", 0, {}},
-      {u"œxample", 1, {u"œxample"}},
-      {u"œxample", 2, {u"œxample", u"cexample"}},
-      {u"œxample", 100, {u"œxample", u"cexample", u"oexample"}},
+                    {"œxample", 0, {}},
+                    {"œxample", 1, {"œxample"}},
+                    {"œxample", 2, {"œxample", "cexample"}},
+                    {"œxample", 100, {"œxample", "cexample", "oexample"}},
 
-      {u"œxamþle", 0, {}},
-      {u"œxamþle", 1, {u"œxamþle"}},
-      {u"œxamþle", 2, {u"œxamþle", u"œxamble"}},
-      {u"œxamþle",
-       100,
-       {u"œxamþle", u"œxample", u"œxamble", u"oexamþle", u"oexample",
-        u"oexamble", u"cexamþle", u"cexample", u"cexamble"}}};
+                    {"œxamþle", 0, {}},
+                    {"œxamþle", 1, {"œxamþle"}},
+                    {"œxamþle", 2, {"œxamþle", "œxamble"}},
+                    {"œxamþle",
+                     100,
+                     {"œxamþle", "œxample", "œxamble", "oexamþle", "oexample",
+                      "oexamble", "cexamþle", "cexample", "cexamble"}}};
+  // IDNSpoofChecker checker;
   SkeletonMap skeleton_map;
   skeleton_map[u'œ'] = {"ce", "oe"};
   skeleton_map[u'þ'] = {"b", "p"};
 
   for (const TestCase& test_case : kTestCases) {
-    const auto strings = SkeletonGenerator::GenerateSupplementalHostnames(
-        test_case.input, test_case.max_alternatives, skeleton_map);
-    EXPECT_LE(strings.size(), test_case.max_alternatives);
-    EXPECT_EQ(strings, test_case.expected_strings);
+    Skeletons skeletons = SkeletonGenerator::GenerateSupplementalSkeletons(
+        test_case.skeleton, test_case.max_skeletons, skeleton_map);
+    EXPECT_LE(skeletons.size(), test_case.max_skeletons);
+    EXPECT_EQ(skeletons, test_case.expected_skeletons);
   }
 }
 
