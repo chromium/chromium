@@ -337,17 +337,23 @@ void SiteIsolationPolicy::IsolateNewOAuthURL(
 
 // static
 bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
-  // We only create pdf compositor client and use pdf compositor service when
-  // one of the site isolation modes that forces OOPIFs is on. This includes
-  // full site isolation on desktop, password-triggered site isolation on
-  // Android for high-memory devices, and/or isolated origins specified via
-  // command line, enterprise policy, or field trials.
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1022917): Always enable on Android, at which point, this
+  // method should go away.
   //
-  // TODO(weili, thestig): Eventually, we should remove this check and use pdf
-  // compositor service by default for printing.
+  // Only use the PDF compositor when one of the site isolation modes that
+  // forces OOPIFs is on. This includes:
+  // - Full site isolation, which may be forced on.
+  // - Password-triggered site isolation for high-memory devices
+  // - Isolated origins specified via command line, enterprise policy, or field
+  //   trials.
   return content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
          IsIsolationForPasswordSitesEnabled() ||
          content::SiteIsolationPolicy::AreIsolatedOriginsEnabled();
+#else
+  // Always use the PDF compositor on non-mobile platforms.
+  return true;
+#endif
 }
 
 }  // namespace site_isolation

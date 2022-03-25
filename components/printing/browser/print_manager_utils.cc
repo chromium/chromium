@@ -30,12 +30,8 @@ bool IsOopifEnabled() {
 
 void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
                                    const std::string& user_agent) {
-  // TODO(weili): We only create pdf compositor client and use pdf compositor
-  // service when site-per-process or isolate-origins flag/feature is enabled,
-  // or top-document-isolation feature is enabled. This may not cover all cases
-  // where OOPIF is used such as isolate-extensions, but should be good for
-  // feature testing purpose. Eventually, we will remove this check and use pdf
-  // compositor service by default for printing.
+  // TODO(crbug.com/1022917): Once ShouldPdfCompositorBeEnabledForOopifs()
+  // always returns true, just remove the check altogether.
   if (site_isolation::SiteIsolationPolicy::
           ShouldPdfCompositorBeEnabledForOopifs()) {
     PrintCompositeClient::CreateForWebContents(web_contents);
