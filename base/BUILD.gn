@@ -1334,8 +1334,6 @@ mixed_component("base") {
       "debug/proc_maps_linux.cc",
       "debug/proc_maps_linux.h",
       "files/dir_reader_linux.h",
-      "files/file_path_watcher_linux.cc",
-      "files/file_path_watcher_linux.h",
       "files/file_util_linux.cc",
       "files/scoped_file_linux.cc",
       "process/internal_linux.cc",
@@ -1346,6 +1344,13 @@ mixed_component("base") {
       "process/process_linux.cc",
       "process/process_metrics_linux.cc",
       "threading/platform_thread_linux.cc",
+    ]
+  }
+
+  if (is_linux || is_chromeos || is_android || is_fuchsia) {
+    sources += [
+      "files/file_path_watcher_inotify.cc",
+      "files/file_path_watcher_inotify.h",
     ]
   }
 
@@ -1683,8 +1688,6 @@ mixed_component("base") {
       "debug/elf_reader.h",
       "debug/proc_maps_linux.cc",
       "debug/proc_maps_linux.h",
-      "files/file_path_watcher_linux.cc",
-      "files/file_path_watcher_linux.h",
       "power_monitor/power_monitor_device_source_android.cc",
       "process/internal_linux.cc",
       "process/internal_linux.h",
@@ -1758,7 +1761,6 @@ mixed_component("base") {
       "files/file_descriptor_watcher_posix.cc",
       "files/file_descriptor_watcher_posix.h",
       "files/file_enumerator_posix.cc",
-      "files/file_path_watcher_fuchsia.cc",
       "files/file_posix.cc",
       "files/file_util_fuchsia.cc",
       "files/file_util_posix.cc",
@@ -3695,9 +3697,6 @@ test("base_unittests") {
       "posix/file_descriptor_shuffle_unittest.cc",
       "task/thread_pool/task_tracker_posix_unittest.cc",
     ]
-
-    # TODO(crbug.com/851641): FilePatchWatcherImpl is not implemented.
-    sources -= [ "files/file_path_watcher_unittest.cc" ]
 
     deps += [
       ":test_interface_impl",

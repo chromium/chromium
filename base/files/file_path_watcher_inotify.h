@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_FILES_FILE_PATH_WATCHER_LINUX_H_
-#define BASE_FILES_FILE_PATH_WATCHER_LINUX_H_
+#ifndef BASE_FILES_FILE_PATH_WATCHER_INOTIFY_H_
+#define BASE_FILES_FILE_PATH_WATCHER_INOTIFY_H_
 
 #include <stddef.h>
 
@@ -20,4 +20,4 @@ class BASE_EXPORT ScopedMaxNumberOfInotifyWatchesOverrideForTest {
 
 }  // namespace base
 
-#endif  // BASE_FILES_FILE_PATH_WATCHER_LINUX_H_
+#endif  // BASE_FILES_FILE_PATH_WATCHER_INOTIFY_H_

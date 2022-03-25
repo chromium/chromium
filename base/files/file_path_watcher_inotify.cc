@@ -27,7 +27,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher_linux.h"
+#include "base/files/file_path_watcher_inotify.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -48,6 +48,8 @@ namespace base {
 
 namespace {
 
+#if !BUILDFLAG(IS_FUCHSIA)
+
 // The /proc path to max_user_watches.
 constexpr char kInotifyMaxUserWatchesPath[] =
     "/proc/sys/fs/inotify/max_user_watches";
@@ -61,6 +63,8 @@ constexpr size_t kExpectedFilePathWatchers = 16u;
 // /proc/sys/fs/inotify/max_user_watches fails.
 constexpr size_t kDefaultInotifyMaxUserWatches = 8192u;
 
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 class FilePathWatcherImpl;
 class InotifyReader;
 
@@ -70,6 +74,10 @@ size_t g_override_max_inotify_watches = 0u;
 // Get the maximum number of inotify watches can be used by a FilePathWatcher
 // instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
 size_t GetMaxNumberOfInotifyWatches() {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia has no limit on the number of watches.
+  return std::numeric_limits<int>::max();
+#else
   static const size_t max = []() {
     size_t max_number_of_inotify_watches = 0u;
 
@@ -82,6 +90,7 @@ size_t GetMaxNumberOfInotifyWatches() {
     return max_number_of_inotify_watches / kExpectedFilePathWatchers;
   }();
   return g_override_max_inotify_watches ? g_override_max_inotify_watches : max;
+#endif  // if BUILDFLAG(IS_FUCHSIA)
 }
 
 class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
@@ -208,8 +217,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   //   - Only if the target being watched is a symbolic link.
   struct WatchEntry {
     explicit WatchEntry(const FilePath::StringType& dirname)
-        : watch(InotifyReader::kInvalidWatch),
-          subdir(dirname) {}
+        : watch(InotifyReader::kInvalidWatch), subdir(dirname) {}
 
     InotifyReader::Watch watch;
     FilePath::StringType subdir;
@@ -334,8 +342,8 @@ bool InotifyReader::StartThread() {
   return PlatformThread::CreateNonJoinable(0, &thread_delegate_);
 }
 
-InotifyReader::Watch InotifyReader::AddWatch(
-    const FilePath& path, FilePathWatcherImpl* watcher) {
+InotifyReader::Watch InotifyReader::AddWatch(const FilePath& path,
+                                             FilePathWatcherImpl* watcher) {
   if (!valid_)
     return kInvalidWatch;
 
@@ -347,8 +355,7 @@ InotifyReader::Watch InotifyReader::AddWatch(
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::WILL_BLOCK);
   Watch watch = inotify_add_watch(inotify_fd_, path.value().c_str(),
                                   IN_ATTRIB | IN_CREATE | IN_DELETE |
-                                  IN_CLOSE_WRITE | IN_MOVE |
-                                  IN_ONLYDIR);
+                                      IN_CLOSE_WRITE | IN_MOVE | IN_ONLYDIR);
 
   if (watch == kInvalidWatch)
     return kInvalidWatch;
@@ -440,10 +447,9 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
       continue;
 
     // Check whether a path component of |target_| changed.
-    bool change_on_target_path =
-        child.empty() ||
-        (child == watch_entry.linkname) ||
-        (child == watch_entry.subdir);
+    bool change_on_target_path = child.empty() ||
+                                 (child == watch_entry.linkname) ||
+                                 (child == watch_entry.subdir);
 
     // Check if the change references |target_| or a direct child of |target_|.
     bool target_changed;
@@ -452,8 +458,8 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
       // |target_| = "/path/to/foo", this is for "foo". Here, check either:
       // - the target has no symlink: it is the target and it changed.
       // - the target has a symlink, and it matches |child|.
-      target_changed = (watch_entry.linkname.empty() ||
-                        child == watch_entry.linkname);
+      target_changed =
+          (watch_entry.linkname.empty() || child == watch_entry.linkname);
     } else {
       // The fired watch is for a WatchEntry with a subdir. Thus for a given
       // |target_| = "/path/to/foo", this is for {"/", "/path", "/path/to"}.
@@ -492,8 +498,7 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
     //    disappears in this case.
     //  - One of the parent directories appears. The event corresponding to
     //    the target appearing might have been missed in this case, so recheck.
-    if (target_changed ||
-        (change_on_target_path && deleted) ||
+    if (target_changed || (change_on_target_path && deleted) ||
         (change_on_target_path && created && PathExists(target_))) {
       if (!did_update) {
         if (!UpdateRecursiveWatches(fired_watch, is_dir)) {
@@ -700,11 +705,9 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
   // rather than followed. Following symlinks can easily lead to the undesirable
   // situation where the entire file system is being watched.
   FileEnumerator enumerator(
-      path,
-      true /* recursive enumeration */,
+      path, true /* recursive enumeration */,
       FileEnumerator::DIRECTORIES | FileEnumerator::SHOW_SYM_LINKS);
-  for (FilePath current = enumerator.Next();
-       !current.empty();
+  for (FilePath current = enumerator.Next(); !current.empty();
        current = enumerator.Next()) {
     DCHECK(enumerator.GetInfo().IsDirectory());
 
@@ -762,6 +765,10 @@ void FilePathWatcherImpl::RemoveRecursiveWatches() {
 
 bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
                                                    WatchEntry* watch_entry) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia does not support symbolic links.
+  return false;
+#else   // BUILDFLAG(IS_FUCHSIA)
   DCHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
   FilePath link;
   if (!ReadSymbolicLink(path, &link))
@@ -782,12 +789,13 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
     // TODO(craig) Symlinks only work if the parent directory for the target
     // exist. Ideally we should make sure we've watched all the components of
     // the symlink path for changes. See crbug.com/91561 for details.
-    DPLOG(WARNING) << "Watch failed for "  << link.DirName().value();
+    DPLOG(WARNING) << "Watch failed for " << link.DirName().value();
     return true;
   }
   watch_entry->watch = watch;
   watch_entry->linkname = link.BaseName().value();
   return true;
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 bool FilePathWatcherImpl::HasValidWatchVector() const {
