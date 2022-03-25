@@ -7789,6 +7789,25 @@
             ]
         }
     ],
+    "WebRTC-Audio-AgcMinMicLevelExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled-20_20220325",
+                    "enable_features": [
+                        "WebRTC-Audio-AgcMinMicLevelExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-AnalogAgcClippingControl": [
         {
             "platforms": [
