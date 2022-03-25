@@ -137,6 +137,36 @@ class CodeColumn extends ValueColumn {
   }
 }
 
+const debugPathPattern =
+    /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
+
+/**
+ * @extends {ValueColumn<Report, string>}
+ */
+class ReportUrlColumn extends ValueColumn {
+  constructor() {
+    super('Report URL', (e) => e.reportUrl);
+  }
+
+  /** @override */
+  render(td, row) {
+    if (!row.isDebug) {
+      td.innerText = row.reportUrl;
+      return;
+    }
+
+    const [pre, post] = row.reportUrl.split(debugPathPattern, 2);
+    td.appendChild(new Text(pre));
+
+    const span = td.ownerDocument.createElement('span');
+    span.classList.add('debug-url');
+    span.innerText = 'debug';
+    td.appendChild(span);
+
+    td.appendChild(new Text(post));
+  }
+}
+
 /**
  * @template T
  * @abstract
@@ -724,7 +754,7 @@ class EventLevelReportTableModel extends ReportTableModel {
       new CodeColumn('Report Body', (e) => e.reportBody),
       new ValueColumn('Status', (e) => e.status),
       new ValueColumn('Destination', (e) => e.attributionDestination),
-      new ValueColumn('Report URL', (e) => e.reportUrl),
+      new ReportUrlColumn(),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
       new ValueColumn('Report Priority', (e) => e.reportPriority),
@@ -750,7 +780,7 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
       new CodeColumn('Report Body', (e) => e.reportBody),
       new ValueColumn('Status', (e) => e.status),
       new ValueColumn('Destination', (e) => e.attributionDestination),
-      new ValueColumn('Report URL', (e) => e.reportUrl),
+      new ReportUrlColumn(),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
       new CodeColumn('Histograms', (e) => e.contributions),
