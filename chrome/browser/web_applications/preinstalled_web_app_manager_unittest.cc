@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -535,5 +537,20 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class DisabledPreinstalledWebAppManagerTest
+    : public PreinstalledWebAppManagerTest {
+ public:
+  DisabledPreinstalledWebAppManagerTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisablePreinstalledApps);
+  }
+};
+
+TEST_F(DisabledPreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
+  EXPECT_EQ(LoadApps(kGoodJsonTestDir).size(), 0u);
+}
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

@@ -42,14 +42,17 @@ std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
 
 }  // namespace
 
+bool PreinstalledWebAppsDisabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kDisablePreinstalledApps);
+}
+
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisablePreinstalledApps)) {
+  if (PreinstalledWebAppsDisabled())
     return {};
-  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like
@@ -121,49 +124,49 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     migrations.push_back(std::move(migration));
   }
 
-  if (g_preinstalled_app_data_for_testing)
-    return migrations;
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  // Manually hard coded entries from
-  // https://chrome-internal.googlesource.com/chromeos/overlays/chromeos-overlay/+/main/chromeos-base/chromeos-default-apps/files/web_apps
-  // for any json configs that include a uninstall_and_replace field.
-  // This is a temporary measure while the default web app duplication
-  // issue is cleaned up.
-  // TODO(crbug.com/1290716): Clean up once no longer needed.
-  if (IsPreinstalledAppInstallFeatureEnabled(
-          kMigrateDefaultChromeAppToWebAppsGSuite.name, profile)) {
-    PreinstalledWebAppMigration keep_migration;
-    keep_migration.install_url =
-        GURL("https://keep.google.com/installwebapp?usp=chrome_default");
-    keep_migration.expected_web_app_id = kGoogleKeepAppId;
-    keep_migration.old_chrome_app_id = extension_misc::kGoogleKeepAppId;
-    migrations.push_back(std::move(keep_migration));
-  }
+  if (!g_preinstalled_app_data_for_testing && !PreinstalledWebAppsDisabled()) {
+    // Manually hard coded entries from
+    // https://chrome-internal.googlesource.com/chromeos/overlays/chromeos-overlay/+/main/chromeos-base/chromeos-default-apps/files/web_apps
+    // for any json configs that include a uninstall_and_replace field.
+    // This is a temporary measure while the default web app duplication
+    // issue is cleaned up.
+    // TODO(crbug.com/1290716): Clean up once no longer needed.
+    if (IsPreinstalledAppInstallFeatureEnabled(
+            kMigrateDefaultChromeAppToWebAppsGSuite.name, profile)) {
+      PreinstalledWebAppMigration keep_migration;
+      keep_migration.install_url =
+          GURL("https://keep.google.com/installwebapp?usp=chrome_default");
+      keep_migration.expected_web_app_id = kGoogleKeepAppId;
+      keep_migration.old_chrome_app_id = extension_misc::kGoogleKeepAppId;
+      migrations.push_back(std::move(keep_migration));
+    }
 
-  if (IsPreinstalledAppInstallFeatureEnabled(
-          kMigrateDefaultChromeAppToWebAppsNonGSuite.name, profile)) {
-    PreinstalledWebAppMigration books_migration;
-    books_migration.install_url =
-        GURL("https://play.google.com/books/installwebapp?usp=chromedefault");
-    books_migration.expected_web_app_id = kPlayBooksAppId;
-    books_migration.old_chrome_app_id = extension_misc::kGooglePlayBooksAppId;
-    migrations.push_back(std::move(books_migration));
+    if (IsPreinstalledAppInstallFeatureEnabled(
+            kMigrateDefaultChromeAppToWebAppsNonGSuite.name, profile)) {
+      PreinstalledWebAppMigration books_migration;
+      books_migration.install_url =
+          GURL("https://play.google.com/books/installwebapp?usp=chromedefault");
+      books_migration.expected_web_app_id = kPlayBooksAppId;
+      books_migration.old_chrome_app_id = extension_misc::kGooglePlayBooksAppId;
+      migrations.push_back(std::move(books_migration));
 
-    PreinstalledWebAppMigration maps_migration;
-    maps_migration.install_url =
-        GURL("https://www.google.com/maps/preview/pwa/ttinstall.html");
-    maps_migration.expected_web_app_id = kGoogleMapsAppId;
-    maps_migration.old_chrome_app_id = extension_misc::kGoogleMapsAppId;
-    migrations.push_back(std::move(maps_migration));
+      PreinstalledWebAppMigration maps_migration;
+      maps_migration.install_url =
+          GURL("https://www.google.com/maps/preview/pwa/ttinstall.html");
+      maps_migration.expected_web_app_id = kGoogleMapsAppId;
+      maps_migration.old_chrome_app_id = extension_misc::kGoogleMapsAppId;
+      migrations.push_back(std::move(maps_migration));
 
-    PreinstalledWebAppMigration movies_migration;
-    movies_migration.install_url = GURL(
-        "https://play.google.com/store/movies/"
-        "installwebapp?usp=chrome_default");
-    movies_migration.expected_web_app_id = kGoogleMoviesAppId;
-    movies_migration.old_chrome_app_id = extension_misc::kGooglePlayMoviesAppId;
-    migrations.push_back(std::move(movies_migration));
+      PreinstalledWebAppMigration movies_migration;
+      movies_migration.install_url = GURL(
+          "https://play.google.com/store/movies/"
+          "installwebapp?usp=chrome_default");
+      movies_migration.expected_web_app_id = kGoogleMoviesAppId;
+      movies_migration.old_chrome_app_id =
+          extension_misc::kGooglePlayMoviesAppId;
+      migrations.push_back(std::move(movies_migration));
+    }
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   return migrations;

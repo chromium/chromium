@@ -15,6 +15,8 @@ class Profile;
 
 namespace web_app {
 
+bool PreinstalledWebAppsDisabled();
+
 // Returns the list of web apps that should be pre-installed on new profiles.
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
 

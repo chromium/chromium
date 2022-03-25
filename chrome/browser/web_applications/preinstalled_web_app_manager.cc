@@ -562,6 +562,11 @@ void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     return;
   }
 
+  if (PreinstalledWebAppsDisabled()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   base::FilePath config_dir = GetConfigDir();
   if (config_dir.empty()) {
     std::move(callback).Run({});
