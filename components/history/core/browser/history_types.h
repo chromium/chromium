@@ -234,8 +234,10 @@ struct QueryOptions {
   QueryOptions& operator=(QueryOptions&&) noexcept;
   ~QueryOptions();
 
-  // The time range to search for matches in. The beginning is inclusive and
-  // the ending is exclusive. Either one (or both) may be null.
+  // The time range to search for matches in. When `visit_order` is
+  // `RECENT_FIRST`, the beginning is inclusive and the ending is exclusive.
+  // When `VisitOrder` is `OLDEST_FIRST`, vice versa. Either one (or both) may
+  // be null.
   //
   // This will match only the one recent visit of a URL. For text search
   // queries, if the URL was visited in the given time period, but has also
@@ -280,6 +282,15 @@ struct QueryOptions {
   // Whether the history query should only search through hostnames.
   // When this is true, the matching_algorithm field is ignored.
   bool host_only = false;
+
+  enum VisitOrder {
+    RECENT_FIRST,
+    OLDEST_FIRST,
+  };
+
+  // Whether to prioritize most recent or oldest visits when `max_count` is
+  // reached. Will affect visit order as well.
+  VisitOrder visit_order = RECENT_FIRST;
 
   // Helpers to get the effective parameters values, since a value of 0 means
   // "unspecified".

@@ -356,12 +356,19 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
                                            VisitVector* visits) {
   visits->clear();
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT" HISTORY_VISIT_ROW_FIELDS
-      "FROM visits "
-      "WHERE url=? AND visit_time >= ? AND visit_time < ? "
-      "ORDER BY visit_time DESC"));
+  sql::Statement statement;
+  if (options.visit_order == QueryOptions::RECENT_FIRST) {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE url=? AND visit_time>=? AND visit_time<? "
+                       "ORDER BY visit_time DESC"));
+  } else {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE url=? AND visit_time>? AND visit_time<=? "
+                       "ORDER BY visit_time ASC"));
+  }
+
   statement.BindInt64(0, url_id);
   statement.BindInt64(1, options.EffectiveBeginTime());
   statement.BindInt64(2, options.EffectiveEndTime());
@@ -454,12 +461,19 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
   visits->clear();
   // The visit_time values can be duplicated in a redirect chain, so we sort
   // by id too, to ensure a consistent ordering just in case.
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT" HISTORY_VISIT_ROW_FIELDS
-      "FROM visits "
-      "WHERE visit_time >= ? AND visit_time < ? "
-      "ORDER BY visit_time DESC, id DESC"));
+
+  sql::Statement statement;
+  if (options.visit_order == QueryOptions::RECENT_FIRST) {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time>=? AND visit_time<? "
+                       "ORDER BY visit_time DESC, id DESC"));
+  } else {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time>? AND visit_time<=? "
+                       "ORDER BY visit_time ASC, id DESC"));
+  }
 
   statement.BindInt64(0, options.EffectiveBeginTime());
   statement.BindInt64(1, options.EffectiveEndTime());

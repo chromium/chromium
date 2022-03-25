@@ -327,7 +327,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   ASSERT_EQ(static_cast<size_t>(1), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
 
-  options = QueryOptions();  // Reset to options to default.
+  options = QueryOptions();  // Reset options to default.
 
   // Query for a max count and make sure we get only that number.
   options.max_count = 1;
@@ -343,6 +343,13 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(static_cast<size_t>(1), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+
+  // Query oldest visits in a time range and make sure beginning is exclusive
+  // and ending is inclusive.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(static_cast<size_t>(1), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
 }
 
 TEST_F(VisitDatabaseTest, GetAllURLIDsForTransition) {
@@ -424,6 +431,40 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
   EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[0]));
+
+  // Now try with a `max_count` limit to get the newest 2 visits only.
+  options.max_count = 2;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+
+  // Now try getting the oldest 2 visits and make sure they're ordered oldest
+  // first.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+
+  // Query a time range and make sure beginning is inclusive and ending is
+  // exclusive.
+  options.begin_time = test_visit_rows[0].visit_time;
+  options.end_time = test_visit_rows[5].visit_time;
+  options.visit_order = QueryOptions::RECENT_FIRST;
+  options.max_count = 0;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[0]));
+
+  // Query oldest visits in a time range and make sure beginning is exclusive
+  // and ending is inclusive.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
 }
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
