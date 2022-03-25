@@ -14,6 +14,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -47,34 +48,31 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context)
           ->GetInstalledExtension(app_id_);
-  SetUseDefaultFillLayout(true);
-  auto* info_label = AddChildView(std::make_unique<views::StyledLabel>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  auto* info_label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT,
+                                 base::UTF8ToUTF16(extension->name()))));
+  info_label->SetMultiLine(true);
+  info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  std::vector<size_t> offsets;
-  std::u16string link_text =
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE);
-  std::u16string info_text =
-      l10n_util::GetStringUTF16(IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT);
-  std::u16string label_text = l10n_util::FormatString(
-      info_text, {base::UTF8ToUTF16(extension->name()), link_text}, &offsets);
-
-  const size_t offset = offsets.back();
-
-  auto link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          [](content::WebContents* web_contents, const ui::Event& event) {
-            web_contents->OpenURL(content::OpenURLParams(
-                GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
-                content::Referrer(),
-                ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
-          },
-          web_contents_));
-  link_style.disable_line_wrapping = true;
-  info_label->SetText(label_text);
-  info_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
-                            link_style);
+  auto* learn_more = AddChildView(std::make_unique<views::Link>(
+      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE)));
+  learn_more->SetCallback(base::BindRepeating(
+      [](content::WebContents* web_contents, const ui::Event& event) {
+        web_contents->OpenURL(content::OpenURLParams(
+            GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
+            content::Referrer(),
+            ui::DispositionFromEventFlags(
+                event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+            ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+      },
+      web_contents_));
+  learn_more->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
+  learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
 BEGIN_METADATA(ForceInstalledDeprecatedAppsDialogView, views::View)

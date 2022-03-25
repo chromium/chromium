@@ -5118,7 +5118,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- End Extension Settings Overridden Dialog strings. -->
       <!-- Force Installed Deprecated Apps Deletion Dialog strings. -->
       <message name="IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT" desc="Content of the force installed deprecated app dialog">
-        Your administrator installed "<ph name="EXTENSION_NAME">$1<ex>Google Dos</ex></ph>" but this Chrome App is no longer supported. Contact your administrator to remove it. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+        Your administrator installed "<ph name="EXTENSION_NAME">$1<ex>Google Dos</ex></ph>" but this Chrome App is no longer supported. Contact your administrator to remove it.
+      </message>
+      <message name="IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL" desc="Accessibility label text for IDS_DEPRECATED_APPS_LEARN_MORE link">
+        Learn more about unsupported Chrome Apps
       </message>
       <!-- End Force Installed Deprecated Apps Deletion Dialog strings. -->
       <!-- Deprecated Apps Deletion Dialog strings. -->
