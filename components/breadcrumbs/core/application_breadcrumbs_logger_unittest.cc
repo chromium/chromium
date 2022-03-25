@@ -36,9 +36,13 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
         std::make_unique<ApplicationBreadcrumbsLogger>(temp_dir_.GetPath());
   }
 
+  // This must be created before `task_environment_`, to ensure that any tasks
+  // that depend on the directory existing (e.g., those posted by `logger_`)
+  // have finished.
+  base::ScopedTempDir temp_dir_;
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
-  base::ScopedTempDir temp_dir_;
 };
 
 // Tests that a recorded UserAction is logged by the
@@ -79,7 +83,7 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 
 // Tests that memory pressure events are logged by ApplicationBreadcrumbsLogger.
 // Test is flaky (https://crbug.com/1305253)
-TEST_F(ApplicationBreadcrumbsLoggerTest, DISABLED_MemoryPressure) {
+TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
 
   base::MemoryPressureListener::SimulatePressureNotification(
