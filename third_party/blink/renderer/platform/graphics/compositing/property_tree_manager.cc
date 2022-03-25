@@ -420,7 +420,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   cc::TransformNode& compositor_node = *transform_tree_.Node(id);
   UpdateCcTransformLocalMatrix(compositor_node, transform_node);
 
-  compositor_node.is_fixed_position =
+  compositor_node.is_fixed_to_viewport =
       transform_node.RequiresCompositingForFixedToViewport();
   compositor_node.transform_changed = transform_node.NodeChangeAffectsRaster();
   compositor_node.flattens_inherited_transform =

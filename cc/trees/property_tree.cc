@@ -457,7 +457,7 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
 }
 
 bool TransformTree::ShouldUndoOverscroll(const TransformNode* node) const {
-  return fixed_elements_dont_overscroll_ && node && node->is_fixed_position;
+  return fixed_elements_dont_overscroll_ && node && node->is_fixed_to_viewport;
 }
 
 void TransformTree::UpdateFixedNodeTransformAndClip(

@@ -226,7 +226,7 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   transform_tree.set_fixed_elements_dont_overscroll(true);
 
   TransformNode fixed_node;
-  fixed_node.is_fixed_position = true;
+  fixed_node.is_fixed_to_viewport = true;
   fixed_node.id = transform_tree.Insert(fixed_node, 2);
 
   EXPECT_TRUE(transform_tree.ShouldUndoOverscroll(&fixed_node));
