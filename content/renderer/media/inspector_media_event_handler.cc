@@ -13,6 +13,62 @@ namespace content {
 
 namespace {
 
+absl::optional<blink::InspectorPlayerError> ErrorFromParams(
+    const base::Value& param) {
+  absl::optional<int> code = param.FindIntKey(media::StatusConstants::kCodeKey);
+  const std::string* group =
+      param.FindStringKey(media::StatusConstants::kGroupKey);
+  const std::string* message =
+      param.FindStringKey(media::StatusConstants::kMsgKey);
+
+  // message might be empty or not present, but group and code are required.
+  CHECK(code.has_value() && group);
+
+  blink::InspectorPlayerErrors caused_by;
+  if (const auto* c = param.FindDictKey(media::StatusConstants::kCauseKey)) {
+    auto parsed_cause = ErrorFromParams(*c);
+    if (parsed_cause.has_value())
+      caused_by.push_back(*parsed_cause);
+  }
+
+  blink::WebVector<blink::InspectorPlayerError::SourceLocation> stack_vec;
+  if (const auto* vec = param.FindDictKey(media::StatusConstants::kStackKey)) {
+    for (const auto& loc : vec->GetListDeprecated()) {
+      const std::string* file =
+          loc.FindStringKey(media::StatusConstants::kFileKey);
+      absl::optional<int> line =
+          loc.FindIntKey(media::StatusConstants::kLineKey);
+      if (!file || !line.has_value())
+        continue;
+      blink::InspectorPlayerError::SourceLocation entry = {
+          blink::WebString::FromUTF8(*file), *line};
+      stack_vec.push_back(std::move(entry));
+    }
+  }
+
+  blink::WebVector<blink::InspectorPlayerError::Data> data_vec;
+  if (auto* data = param.FindDictKey(media::StatusConstants::kDataKey)) {
+    for (const auto pair : data->DictItems()) {
+      std::string json;
+      base::JSONWriter::Write(pair.second, &json);
+      blink::InspectorPlayerError::Data entry = {
+          blink::WebString::FromUTF8(pair.first),
+          blink::WebString::FromUTF8(json)};
+      data_vec.push_back(std::move(entry));
+    }
+  }
+
+  blink::InspectorPlayerError result = {
+      blink::WebString::FromUTF8(*group),
+      *code,
+      blink::WebString::FromUTF8(message ? *message : ""),
+      std::move(stack_vec),
+      std::move(caused_by),
+      std::move(data_vec)};
+
+  return std::move(result);
+}
+
 blink::WebString ToString(const base::Value& value) {
   if (value.is_string()) {
     return blink::WebString::FromUTF8(value.GetString());
@@ -83,26 +139,10 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
         break;
       }
       case media::MediaLogRecord::Type::kMediaStatus: {
-        const std::string* group =
-            event.params.FindStringKey(media::StatusConstants::kGroupKey);
-        auto code = event.params.FindIntKey(media::StatusConstants::kCodeKey)
-                        .value_or(0);
-        DCHECK_NE(code, 0);
-        DCHECK_NE(group, nullptr);
-        if (group && *group == media::PipelineStatus::Traits::Group()) {
-          blink::InspectorPlayerError error = {
-              blink::InspectorPlayerError::Type::kPipelineError,
-              blink::WebString::FromUTF8(media::PipelineStatusToString(
-                  static_cast<media::PipelineStatusCodes>(code)))};
-          errors.emplace_back(std::move(error));
-        } else {
-          std::stringstream formatted;
-          formatted << *group << ":" << code;
-          blink::InspectorPlayerError error = {
-              blink::InspectorPlayerError::Type::kPipelineError,
-              blink::WebString::FromUTF8(formatted.str())};
-          errors.emplace_back(std::move(error));
-        }
+        absl::optional<blink::InspectorPlayerError> error =
+            ErrorFromParams(event.params);
+        if (error.has_value())
+          errors.emplace_back(std::move(*error));
       }
     }
   }

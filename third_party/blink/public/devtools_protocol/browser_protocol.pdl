@@ -10116,19 +10116,27 @@ experimental domain Media
       Timestamp timestamp
       string value
 
+  # Represents logged source line numbers reported in an error.
+  # NOTE: file and line are from chromium c++ implementation code, not js.
+  type PlayerErrorSourceLocation extends object
+    properties
+      string file
+      integer line
+
   # Corresponds to kMediaError
   type PlayerError extends object
     properties
-      enum type
-        # Compatability until we switch to media_error
-        pipeline_error
-        media_error
-      # When this switches to using media::Status instead of PipelineStatus
-      # we can remove "errorCode" and replace it with the fields from
-      # a Status instance. This also seems like a duplicate of the error
-      # level enum - there is a todo bug to have that level removed and
-      # use this instead. (crbug.com/1068454)
-      string errorCode
+      string errorType
+      # Code is the numeric enum entry for a specific set of error codes, such
+      # as PipelineStatusCodes in media/base/pipeline_status.h
+      integer code
+      # A trace of where this error was caused / where it passed through.
+      array of PlayerErrorSourceLocation stack
+      # Errors potentially have a root cause error, ie, a DecoderError might be
+      # caused by an WindowsError
+      array of PlayerError cause
+      # Extra data attached to an error, such as an HRESULT, Video Codec, etc.
+      object data
 
   # This can be called multiple times, and can be used to set / override /
   # remove player properties. A null propValue indicates removal.

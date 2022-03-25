@@ -33,9 +33,20 @@ struct InspectorPlayerEvent {
 using InspectorPlayerEvents = WebVector<InspectorPlayerEvent>;
 
 struct InspectorPlayerError {
-  enum class Type { kPipelineError, kMediaStatus };
-  Type type;
-  WebString errorCode;
+  struct Data {
+    WebString name;
+    WebString value;
+  };
+  struct SourceLocation {
+    WebString filename;
+    int line_number;
+  };
+  WebString group;
+  int code;
+  WebString message;
+  WebVector<SourceLocation> stack;
+  WebVector<InspectorPlayerError> caused_by;
+  WebVector<Data> data;
 };
 using InspectorPlayerErrors = WebVector<InspectorPlayerError>;
 

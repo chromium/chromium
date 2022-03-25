@@ -150,7 +150,7 @@ bool operator!=(const blink::InspectorPlayerMessage& lhs,
 
 bool operator==(const blink::InspectorPlayerError& lhs,
                 const blink::InspectorPlayerError& rhs) {
-  return lhs.errorCode == rhs.errorCode;
+  return lhs.group == rhs.group && lhs.code == rhs.code;
 }
 
 bool operator!=(const blink::InspectorPlayerError& lhs,
@@ -309,12 +309,8 @@ TEST_F(InspectorMediaEventHandlerTest, PassesErrorEvents) {
       CreateError(media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED)};
 
   blink::InspectorPlayerErrors expected_errors;
-  blink::InspectorPlayerError first = {
-      blink::InspectorPlayerError::Type::kPipelineError,
-      blink::WebString::FromUTF8("PIPELINE_ERROR_NETWORK")};
-  blink::InspectorPlayerError second = {
-      blink::InspectorPlayerError::Type::kPipelineError,
-      blink::WebString::FromUTF8("PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED")};
+  blink::InspectorPlayerError first = {"PipelineStatus", 2, "", {}, {}, {}};
+  blink::InspectorPlayerError second = {"PipelineStatus", 21, "", {}, {}, {}};
   expected_errors.emplace_back(first);
   expected_errors.emplace_back(second);
 
