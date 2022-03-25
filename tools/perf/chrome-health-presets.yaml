@@ -39,6 +39,10 @@ presets:
           - motionmark_ramp_design
           - motionmark_ramp_design
           - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
           - motionmark_ramp_images
           - motionmark_ramp_images
           - motionmark_ramp_images
@@ -76,6 +80,10 @@ presets:
           - motionmark_ramp_design
           - motionmark_ramp_design
           - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
           - motionmark_ramp_images
           - motionmark_ramp_images
           - motionmark_ramp_images
@@ -132,6 +140,10 @@ presets:
           - motionmark_ramp_design
           - motionmark_ramp_design
           - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
           - motionmark_ramp_images
           - motionmark_ramp_images
           - motionmark_ramp_images
@@ -169,6 +181,10 @@ presets:
           - motionmark_ramp_design
           - motionmark_ramp_design
           - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
+          - motionmark_ramp_focus
           - motionmark_ramp_images
           - motionmark_ramp_images
           - motionmark_ramp_images
