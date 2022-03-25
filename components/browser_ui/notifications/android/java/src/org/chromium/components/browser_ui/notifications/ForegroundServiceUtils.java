@@ -7,22 +7,16 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Process;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.compat.ApiHelperForS;
-import org.chromium.ui.permissions.PermissionConstants;
-import org.chromium.ui.permissions.PermissionPrefs;
 
 /**
  * Utility functions that call into Android foreground service related API, and provides
@@ -97,27 +91,5 @@ public class ForegroundServiceUtils {
         } catch (NullPointerException e) {
             Log.e(TAG, "Failed to stop foreground service, ", e);
         }
-    }
-
-    /**
-     * Utility method to check if any foreground service can be started. Starting from android T,
-     * foreground services are not allowed to start if user hasn't been asked for notification
-     * permissions. Media is excluded from this restriction.
-     * @return
-     */
-    public static boolean canStartForegroundServiceExcludingMedia() {
-        if (!BuildInfo.isAtLeastT()) return true;
-        return hasEverRequestedNotificationPermission();
-    }
-
-    private static boolean hasEverRequestedNotificationPermission() {
-        boolean hasPermission =
-                ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                        PermissionConstants.NOTIFICATION_PERMISSION, Process.myPid(),
-                        Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-        if (hasPermission) return true;
-
-        return PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp() != 0;
     }
 }
