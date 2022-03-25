@@ -140,6 +140,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
       override;
 
+  void ListVms(const vm_tools::concierge::ListVmsRequest& request,
+               DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
+                   callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -195,6 +199,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   int reclaim_vm_memory_call_count() const {
     return reclaim_vm_memory_call_count_;
   }
+  int list_vms_call_count() const { return list_vms_call_count_; }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -306,6 +311,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
           reclaim_vm_memory_response) {
     reclaim_vm_memory_response_ = reclaim_vm_memory_response;
   }
+  void set_list_vms_response(
+      absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
+    list_vms_response_ = list_vms_response;
+  }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
@@ -369,6 +378,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   int resize_disk_image_call_count_ = 0;
   int set_vm_id_call_count_ = 0;
   int reclaim_vm_memory_call_count_ = 0;
+  int list_vms_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
@@ -410,6 +420,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   absl::optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
   absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
+  absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;

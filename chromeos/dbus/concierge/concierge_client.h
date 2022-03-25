@@ -283,6 +283,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
           callback) = 0;
 
+  // Lists running VMs.
+  // |callback| is called after the method call finishes.
+  virtual void ListVms(
+      const vm_tools::concierge::ListVmsRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ListVmsResponse> callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 

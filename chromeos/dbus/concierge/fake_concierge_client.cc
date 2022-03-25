@@ -380,6 +380,14 @@ void FakeConciergeClient::ReclaimVmMemory(
       base::BindOnce(std::move(callback), reclaim_vm_memory_response_));
 }
 
+void FakeConciergeClient::ListVms(
+    const vm_tools::concierge::ListVmsRequest& request,
+    DBusMethodCallback<vm_tools::concierge::ListVmsResponse> callback) {
+  list_vms_call_count_++;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), list_vms_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.
