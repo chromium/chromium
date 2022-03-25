@@ -1440,4 +1440,12 @@ public class AutocompleteEditTextTest {
         assertTrue(mInputConnection.commitText("avascript:alert(\"Test\")", 1));
         assertEquals("javascript:alert(\"Test\")", mAutocomplete.getText().toString());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
+    public void testJavascriptSchemeShouldNotBeRemovedWhenPatialPaste_LastInputIsOneLetter() {
+        assertTrue(mInputConnection.commitText("javascript", 1));
+        assertTrue(mInputConnection.commitText(":", 1));
+        assertEquals("javascript:", mAutocomplete.getText().toString());
+    }
 }
