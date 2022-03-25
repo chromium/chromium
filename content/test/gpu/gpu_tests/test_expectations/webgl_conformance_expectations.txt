@@ -715,6 +715,7 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_c
 
 # All platforms, Vulkan backend
 crbug.com/1309304 [ angle-swiftshader passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
+crbug.com/1309304 [ angle-swiftshader passthrough ] conformance/rendering/out-of-bounds-index-buffers.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
