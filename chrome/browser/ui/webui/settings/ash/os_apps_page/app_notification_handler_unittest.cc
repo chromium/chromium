@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,37 +121,42 @@ class AppNotificationHandlerTest : public testing::Test {
     handler_->SetQuietMode(quiet_mode_enabled);
   }
 
-  void CreateAndStoreFakeApp(
-      std::string fake_id,
-      apps::mojom::AppType app_type,
-      apps::mojom::PermissionType permission_type,
-      bool permission_value = true) {
-    std::vector<apps::mojom::PermissionPtr> fake_permissions;
-    apps::mojom::PermissionPtr fake_permission = apps::mojom::Permission::New();
-    fake_permission->permission_type = permission_type;
-    fake_permission->value = apps::mojom::PermissionValue::New();
-    fake_permission->value->set_bool_value(permission_value);
-    fake_permission->is_managed = false;
+  void CreateAndStoreFakeApp(std::string fake_id,
+                             apps::AppType app_type,
+                             apps::PermissionType permission_type,
+                             bool permission_value = true) {
+    apps::PermissionValuePtr fake_permission_value =
+        std::make_unique<apps::PermissionValue>(permission_value);
+    apps::PermissionPtr fake_permission = std::make_unique<apps::Permission>(
+        permission_type, std::move(fake_permission_value),
+        /*is_managed=*/false);
+    std::vector<apps::PermissionPtr> fake_permissions;
+    fake_permissions.push_back(std::move(fake_permission));
 
-    fake_permissions.push_back(fake_permission.Clone());
-
-    std::vector<apps::mojom::AppPtr> fake_apps;
-    apps::mojom::AppPtr fake_app = apps::mojom::App::New();
-    fake_app->app_type = app_type;
-    fake_app->app_id = fake_id;
-    fake_app->show_in_management = apps::mojom::OptionalBool::kTrue;
-    fake_app->readiness = apps::mojom::Readiness::kReady;
+    std::vector<apps::AppPtr> fake_apps;
+    apps::AppPtr fake_app = std::make_unique<apps::App>(app_type, fake_id);
+    fake_app->show_in_management = true;
+    fake_app->readiness = apps::Readiness::kReady;
     fake_app->permissions = std::move(fake_permissions);
 
-    fake_apps.push_back(fake_app.Clone());
+    fake_apps.push_back(std::move(fake_app));
 
     UpdateAppRegistryCache(fake_apps, app_type);
   }
 
-  void UpdateAppRegistryCache(std::vector<apps::mojom::AppPtr>& fake_apps,
-                              apps::mojom::AppType app_type) {
-    app_service_proxy_->AppRegistryCache().OnApps(std::move(fake_apps),
-                                                  app_type, false);
+  void UpdateAppRegistryCache(std::vector<apps::AppPtr>& fake_apps,
+                              apps::AppType app_type) {
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      app_service_proxy_->AppRegistryCache().OnApps(std::move(fake_apps),
+                                                    app_type, false);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_apps;
+      mojom_apps.push_back(apps::ConvertAppToMojomApp(fake_apps[0]));
+      app_service_proxy_->AppRegistryCache().OnApps(
+          std::move(mojom_apps), apps::mojom::AppType::kUnknown,
+          /*should_notify_initialized=*/false);
+    }
   }
 
   bool CheckIfFakeAppInList(std::string fake_id) {
@@ -201,8 +207,8 @@ TEST_F(AppNotificationHandlerTest, TestSetQuietMode) {
 // Tests notifying observers with only kArc and kWeb apps that have the
 // NOTIFICATIONS permission.
 TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
-  CreateAndStoreFakeApp("arcAppWithNotifications", apps::mojom::AppType::kArc,
-                        apps::mojom::PermissionType::kNotifications,
+  CreateAndStoreFakeApp("arcAppWithNotifications", apps::AppType::kArc,
+                        apps::PermissionType::kNotifications,
                         /*permission_value=*/true);
 
   base::RunLoop().RunUntilIdle();
@@ -212,8 +218,8 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
                   ->recently_updated_app()
                   ->notification_permission->value->bool_value.value());
 
-  CreateAndStoreFakeApp("webAppWithNotifications", apps::mojom::AppType::kWeb,
-                        apps::mojom::PermissionType::kNotifications,
+  CreateAndStoreFakeApp("webAppWithNotifications", apps::AppType::kWeb,
+                        apps::PermissionType::kNotifications,
                         /*permission_value=*/true);
 
   base::RunLoop().RunUntilIdle();
@@ -223,27 +229,26 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
                   ->recently_updated_app()
                   ->notification_permission->value->bool_value.value());
 
-  CreateAndStoreFakeApp("arcAppWithCamera", apps::mojom::AppType::kArc,
-                        apps::mojom::PermissionType::kCamera);
+  CreateAndStoreFakeApp("arcAppWithCamera", apps::AppType::kArc,
+                        apps::PermissionType::kCamera);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
 
-  CreateAndStoreFakeApp("webAppWithGeolocation", apps::mojom::AppType::kWeb,
-                        apps::mojom::PermissionType::kLocation);
+  CreateAndStoreFakeApp("webAppWithGeolocation", apps::AppType::kWeb,
+                        apps::PermissionType::kLocation);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
 
-  CreateAndStoreFakeApp("pluginVmAppWithPrinting",
-                        apps::mojom::AppType::kPluginVm,
-                        apps::mojom::PermissionType::kPrinting);
+  CreateAndStoreFakeApp("pluginVmAppWithPrinting", apps::AppType::kPluginVm,
+                        apps::PermissionType::kPrinting);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
 
-  CreateAndStoreFakeApp("arcAppWithNotifications", apps::mojom::AppType::kArc,
-                        apps::mojom::PermissionType::kNotifications,
+  CreateAndStoreFakeApp("arcAppWithNotifications", apps::AppType::kArc,
+                        apps::PermissionType::kNotifications,
                         /*permission_value=*/false);
 
   base::RunLoop().RunUntilIdle();
@@ -253,8 +258,8 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
                    ->recently_updated_app()
                    ->notification_permission->value->bool_value.value());
 
-  CreateAndStoreFakeApp("webAppWithNotifications", apps::mojom::AppType::kWeb,
-                        apps::mojom::PermissionType::kNotifications,
+  CreateAndStoreFakeApp("webAppWithNotifications", apps::AppType::kWeb,
+                        apps::PermissionType::kNotifications,
                         /*permission_value=*/false);
 
   base::RunLoop().RunUntilIdle();
