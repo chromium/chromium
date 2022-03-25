@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -56,8 +57,14 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest, SingleTab) {
       0);
 }
 
+// TODO(crbug.com/1310328): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MultiTabForeground DISABLED_MultiTabForeground
+#else
+#define MAYBE_MultiTabForeground MultiTabForeground
+#endif
 IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
-                       MultiTabForeground) {
+                       MAYBE_MultiTabForeground) {
   base::HistogramTester histogram_tester;
 
   NavigateToURLWithoutWaiting(embedded_test_server()->GetURL("/hung"));
