@@ -247,6 +247,10 @@ TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   auto key3 = CookiePartitionKey::FromNetworkIsolationKey(
       NetworkIsolationKey(top_level_site, frame_site, &nonce1));
   EXPECT_EQ(key1, key3);
+
+  auto unnonced_key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site));
+  EXPECT_NE(key1, unnonced_key);
 }
 
 }  // namespace net

@@ -2140,11 +2140,19 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
   const absl::optional<std::set<net::SchemefulSite>> kPartyContextEmpty =
       std::set<net::SchemefulSite>();
-  const net::IsolationInfo kIsolationInfo = net::IsolationInfo::Create(
+  const net::IsolationInfo kNoncedIsolationInfo = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, kTopFrameOrigin,
       kTopFrameOrigin, kSiteForCookies, kPartyContextEmpty, &kNonce);
 
-  service_->OverrideIsolationInfoForTesting(kIsolationInfo);
+  const absl::optional<net::CookiePartitionKey> kNoncedPartitionKey =
+      net::CookiePartitionKey::FromNetworkIsolationKey(
+          net::NetworkIsolationKey(net::SchemefulSite(kTopFrameURL),
+                                   net::SchemefulSite(kTopFrameURL), &kNonce));
+
+  const net::IsolationInfo kUnnoncedIsolationInfo =
+      net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  service_->OverrideIsolationInfoForTesting(kNoncedIsolationInfo);
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
       *net::CanonicalCookie::Create(
           kCookieURL, "__Host-foo=bar; Secure; SameSite=None; Path=/;",
@@ -2161,12 +2169,107 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
       /*partitioned_cookies_runtime_feature_enabled=*/true);
   ASSERT_EQ(1u, cookies.size());
   EXPECT_TRUE(cookies[0].IsPartitioned());
-  EXPECT_EQ(
-      cookies[0].PartitionKey().value(),
-      net::CookiePartitionKey::FromNetworkIsolationKey(
-          net::NetworkIsolationKey(net::SchemefulSite(kTopFrameURL),
-                                   net::SchemefulSite(kTopFrameURL), &kNonce)));
+  EXPECT_EQ(cookies[0].PartitionKey().value(), kNoncedPartitionKey);
   EXPECT_EQ("__Host-foo", cookies[0].Name());
+
+  {  // Test that an unnonced partition cannot see the cookies or observe
+     // changes to them.
+    service_->OverrideIsolationInfoForTesting(kUnnoncedIsolationInfo);
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    net::CookieList cookies = sync_service_->GetAllForUrl(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options),
+        /*partitioned_cookies_runtime_feature_enabled=*/true);
+    ASSERT_EQ(0u, cookies.size());
+
+    auto listener = CreateCookieChangeListener(kCookieURL, kSiteForCookies,
+                                               kTopFrameOrigin);
+
+    service_->OverrideIsolationInfoForTesting(kNoncedIsolationInfo);
+    auto second_listener = CreateCookieChangeListener(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin);
+
+    // Update partitioned cookie Max-Age: None -> 7200.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-foo=bar; Secure; SameSite=None; Path=/; Max-Age=7200",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            kNoncedPartitionKey),
+        "https", false /* can_modify_httponly */));
+
+    second_listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
+  }
+
+  {  // Test that the nonced partition cannot observe changes to the unnonced
+     // partition and unpartitioned cookies.
+    // Set an unpartitioned cookie.
+    service_->OverrideIsolationInfoForTesting(kUnnoncedIsolationInfo);
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-unpartitioned=123; Secure; SameSite=None; Path=/;",
+            base::Time::Now(), absl::nullopt /* server_time */, absl::nullopt),
+        "https", false /* can_modify_httponly */));
+    // Set a partitioned cookie in the unnonced partition.
+    EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-bar=baz; Secure; SameSite=None; Path=/; Partitioned;",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            net::CookiePartitionKey::FromScript()),
+        kCookieURL, kSiteForCookies, kTopFrameOrigin));
+
+    service_->OverrideIsolationInfoForTesting(kNoncedIsolationInfo);
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    // Should only be able to see the nonced partitioned cookie only.
+    net::CookieList cookies = sync_service_->GetAllForUrl(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options),
+        /*partitioned_cookies_runtime_feature_enabled=*/true);
+    ASSERT_EQ(1u, cookies.size());
+    ASSERT_EQ("__Host-foo", cookies[0].Name());
+
+    // Create a listener in the nonced partition.
+    auto listener = CreateCookieChangeListener(kCookieURL, kSiteForCookies,
+                                               kTopFrameOrigin);
+
+    // Create a second listener in an unnonced partition.
+    service_->OverrideIsolationInfoForTesting(kUnnoncedIsolationInfo);
+    auto second_listener = CreateCookieChangeListener(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin);
+
+    // Update unpartitioned cookie Max-Age: None -> 7200.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-unpartitioned=123; Secure; SameSite=None; Path=/; "
+            "Max-Age=7200",
+            base::Time::Now(), absl::nullopt /* server_time */, absl::nullopt),
+        "https", false /* can_modify_httponly */));
+    // Test that the nonced partition cannot observe the change.
+    second_listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
+
+    // Update unnonced partitioned cookie Max-Age: None -> 7200.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-bar=baz; Secure; SameSite=None; Path=/; Partitioned; "
+            "Max-Age=7200",
+            base::Time::Now(), absl::nullopt /* server_time */, absl::nullopt),
+        "https", false /* can_modify_httponly */));
+    // Test that the nonced partition cannot observe the change.
+    second_listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
+  }
 }
 
 TEST_P(PartitionedCookiesRestrictedCookieManagerTest, RuntimeEnabledFeature) {

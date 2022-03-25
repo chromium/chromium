@@ -86,6 +86,11 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
     }
   }
 
+  if (!change.cookie.IsPartitioned() &&
+      net::CookiePartitionKey::HasNonce(cookie_partition_key_)) {
+    return;
+  }
+
   if (change.cookie.IsPartitioned() &&
       change.cookie.PartitionKey() != cookie_partition_key_) {
     return;
