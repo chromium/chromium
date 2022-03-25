@@ -2118,18 +2118,10 @@ float ComputedStyle::ComputedLineHeight() const {
   if (lh.IsNegative() && GetFont().PrimaryFont())
     return GetFont().PrimaryFont()->GetFontMetrics().LineSpacing();
 
-  if (RuntimeEnabledFeatures::FractionalLineHeightEnabled()) {
-    if (lh.IsPercentOrCalc()) {
-      return MinimumValueForLength(lh, LayoutUnit(ComputedFontSize()));
-    }
+  if (lh.IsPercentOrCalc())
+    return MinimumValueForLength(lh, LayoutUnit(ComputedFontSize()));
 
-    return lh.Value();
-  } else {
-    if (lh.IsPercentOrCalc())
-      return MinimumValueForLength(lh, LayoutUnit(ComputedFontSize())).ToInt();
-
-    return static_cast<int>(std::min(lh.Value(), LayoutUnit::Max().ToFloat()));
-  }
+  return lh.Value();
 }
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
@@ -2140,20 +2132,10 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
   if (lh.IsNegative() && font.PrimaryFont())
     return font.PrimaryFont()->GetFontMetrics().FixedLineSpacing();
 
-  if (RuntimeEnabledFeatures::FractionalLineHeightEnabled()) {
-    if (lh.IsPercentOrCalc()) {
-      return MinimumValueForLength(lh, ComputedFontSizeAsFixed(font));
-    }
+  if (lh.IsPercentOrCalc())
+    return MinimumValueForLength(lh, ComputedFontSizeAsFixed(font));
 
-    return LayoutUnit::FromFloatFloor(lh.Value());
-  } else {
-    if (lh.IsPercentOrCalc()) {
-      return LayoutUnit(
-          MinimumValueForLength(lh, ComputedFontSizeAsFixed(font)).ToInt());
-    }
-
-    return LayoutUnit(floorf(lh.Value()));
-  }
+  return LayoutUnit::FromFloatFloor(lh.Value());
 }
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {

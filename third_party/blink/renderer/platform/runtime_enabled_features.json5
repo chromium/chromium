@@ -1202,10 +1202,6 @@
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },
     {
-      name: "FractionalLineHeight",
-      status: "stable",
-    },
-    {
       name: "FractionalScrollOffsets",
       status: "experimental",
     },
