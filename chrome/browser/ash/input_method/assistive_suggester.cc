@@ -1,7 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 
 #include "ash/constants/ash_features.h"
@@ -430,7 +429,8 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
 bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
-  if (context_id_ == -1)
+  RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos);
+  if (!IsAssistiveFeatureEnabled() || context_id_ == -1)
     return false;
 
   if (IsMultiWordSuggestEnabled()) {

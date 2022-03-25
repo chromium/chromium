@@ -58,12 +58,6 @@ class AssistiveSuggester : public SuggestionsSource {
   // Called when a text field loses focus, and suggester stops working.
   void OnBlur();
 
-  // Checks the text before cursor, emits metric if any assistive prefix is
-  // matched.
-  void RecordAssistiveMatchMetrics(const std::u16string& text,
-                                   int cursor_pos,
-                                   int anchor_pos);
-
   // Called when a surrounding text is changed.
   // Returns true if it changes the surrounding text, e.g. a suggestion is
   // generated or dismissed.
@@ -105,6 +99,12 @@ class AssistiveSuggester : public SuggestionsSource {
   bool IsMultiWordSuggestEnabled();
 
   bool IsExpandedMultiWordSuggestEnabled();
+
+  // Checks the text before cursor, emits metric if any assistive prefix is
+  // matched.
+  void RecordAssistiveMatchMetrics(const std::u16string& text,
+                                   int cursor_pos,
+                                   int anchor_pos);
 
   void RecordAssistiveMatchMetricsForAction(AssistiveType action);
 

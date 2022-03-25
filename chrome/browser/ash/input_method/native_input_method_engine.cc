@@ -956,12 +956,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
                                            .anchor_pos = anchor_pos,
                                            .offset_pos = offset_pos};
 
-  assistive_suggester_->RecordAssistiveMatchMetrics(text, cursor_pos,
-                                                    anchor_pos);
-  if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    assistive_suggester_->OnSurroundingTextChanged(text, cursor_pos,
-                                                   anchor_pos);
-  }
+  assistive_suggester_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);

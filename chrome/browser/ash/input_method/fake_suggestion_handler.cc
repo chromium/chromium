@@ -67,7 +67,19 @@ bool FakeSuggestionHandler::SetAssistiveWindowProperties(
     int context_id,
     const AssistiveWindowProperties& assistive_window,
     std::string* error) {
-  return false;
+  if (assistive_window.candidates.empty()) {
+    return true;
+  }
+
+  if (assistive_window.visible) {
+    showing_suggestion_ = true;
+    // TODO(b/225988020): Expand this class to allow for multiple suggestion
+    // candidates. Currently only saves the first one.
+    suggestion_text_ = assistive_window.candidates.front();
+  } else {
+    showing_suggestion_ = false;
+  }
+  return true;
 }
 
 void FakeSuggestionHandler::Announce(const std::u16string& message) {

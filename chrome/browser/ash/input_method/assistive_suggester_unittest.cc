@@ -30,7 +30,6 @@ using ime::TextSuggestion;
 using ime::TextSuggestionMode;
 using ime::TextSuggestionType;
 
-const char kEmojiData[] = "happy,😀;😃;😄";
 const char kUsEnglishEngineId[] = "xkb:us::eng";
 const char kSpainSpanishEngineId[] = "xkb:es::spa";
 
@@ -454,6 +453,39 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
 
+TEST_F(AssistiveSuggesterMultiWordTest, OnSuggestionExistShowSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"hello there");
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest, OnDisabledFlagShouldNotShowSuggestion) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAssistMultiWord});
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
 TEST_F(AssistiveSuggesterMultiWordTest,
        MatchMetricRecordedWhenOneOrMoreSuggestions) {
   std::vector<TextSuggestion> suggestions = {
@@ -672,6 +704,7 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
   }
 
   void SetUp() override {
+    const char kEmojiData[] = "arrow,←;↑;→";
     suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         suggestion_handler_.get(), profile_.get(),
@@ -704,11 +737,25 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
       chrome_keyboard_controller_client_;
 };
 
+TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenEmojiDisabled) {
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
+                                   false);
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6));
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
 TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
-  EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
+  EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6));
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←");
 }
 
 }  // namespace input_method
