@@ -7168,8 +7168,8 @@ const FeatureEntry kFeatureEntries[] = {
      // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
      // multiple related features when they are available.
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                 "PrivacySandboxAdsAPIsOverride"
-                                 "Fledge,BrowsingTopics,ConversionMeasurement"
+                                 "PrivacySandboxAdsAPIsOverride,"
+                                 "Fledge,BrowsingTopics,ConversionMeasurement,"
                                  "OverridePrivacySandboxSettingsLocalTesting")},
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
