@@ -232181,8 +232181,12 @@
       "997c5a2b72bafcad3421ccb48e48e323de6ef6f0",
       []
      ],
-     "idb-partitioned-iframe.tentative.html": [
+     "idb-partitioned-basic-iframe.tentative.html": [
       "ed6bbf272f0af4609e77afa7679ec5f0d677e100",
+      []
+     ],
+     "idb-partitioned-persistence-iframe.tentative.html": [
+      "ad6869f945a44a5f9d13a3ba0bee2cba7c3d0cf1",
       []
      ],
      "idbfactory-origin-isolation-iframe.html": [
@@ -288566,7 +288570,7 @@
       []
      ],
      "font-test-utils.js": [
-      "84dade8d4b7baa0c07be2aca1cd7c1af6b9bac79",
+      "1a5f3859e7d0b7ab31bc81621840c79478f27abe",
       []
      ]
     }
@@ -294019,6 +294023,10 @@
       "8df98474b589d070992677cb0134bd47bd0509c4",
       []
      ],
+     "require-corp-revalidated-images.https-expected.txt": [
+      "4c2cceb4fa6ae2dca4db5db31ef072d4321bd901",
+      []
+     ],
      "require-corp-sw-from-require-corp.https.html.headers": [
       "8df98474b589d070992677cb0134bd47bd0509c4",
       []
@@ -294049,7 +294057,7 @@
        []
       ],
       "corp-image.py": [
-       "29689c45d6ad6f6cc5f020790dfb0f5455ffaca7",
+       "e507846181d980fe045028b0aacd9e31600b3b89",
        []
       ],
       "cross-origin-isolated-frame.html": [
@@ -294081,7 +294089,7 @@
        []
       ],
       "load-corp-images.html": [
-       "1251b8c470763d4410349892e09325025627a184",
+       "288610046e61c6bb09a2eb25e01013081c0e5ea0",
        []
       ],
       "load-corp-images.html.headers": [
@@ -331147,7 +331155,7 @@
       ]
      ],
      "url-format.any.js": [
-      "33732fa61fc3ddd0f52b23fe83ea824cc6abae06",
+      "69c51113e6b99b0a1575b9373aa2a2482779638d",
       [
        "FileAPI/url/url-format.any.html",
        {
@@ -331659,7 +331667,14 @@
      ]
     ],
     "idb-partitioned-basic.tentative.sub.html": [
-     "326d1f4d3d5d38057c5a903526dca843eaf8ac9b",
+     "16bdacf6c6d9713c2765ee25b637deff869ede5f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "idb-partitioned-persistence.tentative.sub.html": [
+     "54f76f517d172ef1f739ff9dc5d78d3a1fc03b21",
      [
       null,
       {}
@@ -387967,7 +387982,7 @@
       ]
      ],
      "Screen-pixelDepth-Screen-colorDepth001.html": [
-      "2a8d5b5b4928a5782a61174834bb547f094f2553",
+      "f394560ff1332b778258eeeb9c4bdc231dfbae57",
       [
        null,
        {}
@@ -388058,7 +388073,7 @@
       ]
      ],
      "cssom-view-window-screen-interface.html": [
-      "29802ac7129a95c8d20091b279d3a32bbf58943e",
+      "f4d33130027e2a3b63290ec1f0a678c2e8e4c2da",
       [
        null,
        {}
@@ -423695,7 +423710,7 @@
      ]
     ],
     "font_access_permission.tentative.https.window.js": [
-     "6826f102743f013a0d6a156fe715c52ebf453825",
+     "db395c242602652b94d6bed250c2ad280ccbf210",
      [
       "font-access/font_access_permission.tentative.https.window.html",
       {
@@ -449619,7 +449634,7 @@
       ]
      ],
      "require-corp-cached-images.https.html": [
-      "f5eaddbdd15a8a4fae4d17195eb6d40fc1b7eacd",
+      "269698bc1ab208226edaa4276a3e0d6ffbd66dd2",
       [
        null,
        {}
@@ -449627,6 +449642,13 @@
      ],
      "require-corp-load-from-cache-storage.https.html": [
       "489230a776d0d5b81f30789a4263837a6798f964",
+      [
+       null,
+       {}
+      ]
+     ],
+     "require-corp-revalidated-images.https.html": [
+      "420190aad359e3127b1cc0f394832842511c99ae",
       [
        null,
        {}
