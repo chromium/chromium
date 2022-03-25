@@ -100,6 +100,15 @@ void LogVirtualCardEnrollmentLinkClickedMetric(
       true);
 }
 
+void LogVirtualCardEnrollmentStrikeDatabaseEvent(
+    VirtualCardEnrollmentSource source,
+    VirtualCardEnrollmentStrikeDatabaseEvent strike_event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollmentStrikeDatabase." +
+          VirtualCardEnrollmentSourceToMetricSuffix(source),
+      strike_event);
+}
+
 void LogVirtualCardEnrollBubbleLatencySinceUpstream(
     const base::TimeDelta& latency) {
   base::UmaHistogramTimes(
@@ -124,6 +133,19 @@ std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
   }
 }
 
+const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
+    VirtualCardEnrollmentLinkType link_type) {
+  switch (link_type) {
+    case VirtualCardEnrollmentLinkType::
+        VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK:
+      return "GoogleLegalMessageLink";
+    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK:
+      return "IssuerLegalMessageLink";
+    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK:
+      return "LearnMoreLink";
+  }
+}
+
 const std::string VirtualCardEnrollmentSourceToMetricSuffix(
     VirtualCardEnrollmentSource source) {
   switch (source) {
@@ -135,19 +157,6 @@ const std::string VirtualCardEnrollmentSourceToMetricSuffix(
       return "SettingsPage";
     case VirtualCardEnrollmentSource::kNone:
       return "Unknown";
-  }
-}
-
-const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
-    VirtualCardEnrollmentLinkType link_type) {
-  switch (link_type) {
-    case VirtualCardEnrollmentLinkType::
-        VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK:
-      return "GoogleLegalMessageLink";
-    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK:
-      return "IssuerLegalMessageLink";
-    case VirtualCardEnrollmentLinkType::VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK:
-      return "LearnMoreLink";
   }
 }
 
