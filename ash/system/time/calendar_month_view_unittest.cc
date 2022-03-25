@@ -79,7 +79,7 @@ class CalendarMonthViewTest : public AshTestBase {
   }
 
   void UploadEvents() {
-    Shell::Get()->system_tray_model()->calendar_model()->InsertEvents(
+    Shell::Get()->system_tray_model()->calendar_model()->InsertEventsForTesting(
         CreateMockEventList().get());
   }
 

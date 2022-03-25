@@ -461,10 +461,6 @@ CalendarView::~CalendarView() {
   }
 }
 
-void CalendarView::Init() {
-  calendar_view_controller_->FetchEvents();
-}
-
 void CalendarView::CreateExtraTitleRowButtons() {
   DCHECK(!reset_to_today_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);

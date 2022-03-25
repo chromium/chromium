@@ -66,7 +66,7 @@ class CalendarViewEventListViewTest : public AshTestBase {
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
     controller_->UpdateMonth(date);
-    Shell::Get()->system_tray_model()->calendar_model()->InsertEvents(
+    Shell::Get()->system_tray_model()->calendar_model()->InsertEventsForTesting(
         CreateMockEventList().get());
     controller_->selected_date_ = date;
     event_list_view_ =

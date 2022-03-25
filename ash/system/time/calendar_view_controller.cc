@@ -26,9 +26,12 @@ CalendarViewController::CalendarViewController()
       calendar_open_time_(base::TimeTicks::Now()),
       month_dwell_time_(base::TimeTicks::Now()) {
   MaybeUpdateTimeDifference(currently_shown_date_);
+  InitialFetchEvents();
 }
 
 CalendarViewController::~CalendarViewController() {
+  Shell::Get()->system_tray_model()->calendar_model()->ClearAllPrunableEvents();
+
   calendar_metrics::RecordMonthDwellTime(base::TimeTicks::Now() -
                                          month_dwell_time_);
 
@@ -173,6 +176,15 @@ int CalendarViewController::GetTodayRowTopHeight() const {
 
 int CalendarViewController::GetTodayRowBottomHeight() const {
   return today_row_ * row_height_;
+}
+
+void CalendarViewController::InitialFetchEvents() {
+  std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
+      base::Time::Now() + base::Minutes(time_difference_minutes_),
+      CalendarModel::kNumSurroundingMonthsCached);
+  Shell::Get()->system_tray_model()->calendar_model()->AddNonPrunableMonths(
+      months);
+  Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(months);
 }
 
 void CalendarViewController::FetchEvents() {

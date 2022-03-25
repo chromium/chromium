@@ -56,7 +56,7 @@ namespace ash {
 
 CalendarModel::CalendarModel() : session_observer_(this) {}
 
-CalendarModel::~CalendarModel() {}
+CalendarModel::~CalendarModel() = default;
 
 void CalendarModel::OnSessionStateChanged(session_manager::SessionState state) {
   ClearAllCachedEvents();
@@ -76,17 +76,8 @@ void CalendarModel::RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
 }
 
-bool CalendarModel::IsMonthAlreadyFetched(base::Time start_of_month) const {
-  for (auto& month : prunable_months_mru_) {
-    if (month == start_of_month)
-      return true;
-  }
-
-  return false;
-}
-
 void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
-  // Early returns if it's not a valid user/user-session.
+  // Early return if it's not a valid user/user-session.
   if (!calendar_utils::IsActiveUser())
     return;
 
@@ -96,9 +87,9 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
   if (!client)
     return;
 
-  // No need to fetch.
-  if (IsMonthAlreadyFetched(start_of_month)) {
-    base::UmaHistogramCounts100("Ash.Calendar.FetchEvents.PreFetched", 1);
+  // Bail out early if this is a prunable month that's already been fetched.
+  if (non_prunable_months_.find(start_of_month) == non_prunable_months_.end() &&
+      months_fetched_.find(start_of_month) != months_fetched_.end()) {
     return;
   }
 
@@ -120,37 +111,65 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
           /*tick_clock=*/nullptr));
 }
 
-void CalendarModel::MarkMonthAsFetched(base::Time start_of_month) {
-  QueuePrunableMonth(start_of_month);
-}
+void CalendarModel::PromoteMonth(base::Time start_of_month) {
+  // If this month is non-prunable, nothing to do.
+  if (non_prunable_months_.find(start_of_month) != non_prunable_months_.end())
+    return;
 
-void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
   // If start_of_month is already most-recently-used, nothing to do.
-  if (!prunable_months_mru_.empty() &&
-      prunable_months_mru_.front() == start_of_month)
+  if (!mru_months_.empty() && mru_months_.front() == start_of_month)
     return;
 
   // Remove start_of_month from the queue if it's present.
-  for (auto it = prunable_months_mru_.begin(); it != prunable_months_mru_.end();
-       ++it)
+  for (auto it = mru_months_.begin(); it != mru_months_.end(); ++it)
     if (*it == start_of_month) {
-      prunable_months_mru_.erase(it);
+      mru_months_.erase(it);
       break;
     }
 
   // start_of_month is now the most-recently-used.
-  prunable_months_mru_.push_front(start_of_month);
+  mru_months_.push_front(start_of_month);
+}
+
+void CalendarModel::AddNonPrunableMonth(const base::Time& month) {
+  non_prunable_months_.emplace(month);
+}
+
+void CalendarModel::AddNonPrunableMonths(const std::set<base::Time>& months) {
+  for (auto& month : months)
+    AddNonPrunableMonth(month);
 }
 
 void CalendarModel::ClearAllCachedEvents() {
   // Destroy all outstanding fetch requests.
   pending_fetches_.clear();
 
+  // Destroy the set of months we've fetched.
+  months_fetched_.clear();
+
+  // Destroy all prunable months.
+  non_prunable_months_.clear();
+
   // Destroy the list used to decide who gets pruned.
-  prunable_months_mru_.clear();
+  mru_months_.clear();
 
   // Destroy the events themselves.
   event_months_.clear();
+}
+
+void CalendarModel::ClearAllPrunableEvents() {
+  // Destroy all outstanding fetch requests.
+  pending_fetches_.clear();
+
+  // Clear out all cached events that start in a prunable month, and any record
+  // of having fetched it.
+  for (auto& month : mru_months_) {
+    event_months_.erase(month);
+    months_fetched_.erase(month);
+  }
+
+  // Clear out the list of prunable months.
+  mru_months_.clear();
 }
 
 void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
@@ -185,7 +204,7 @@ int CalendarModel::EventsNumberOfDay(base::Time day,
                                      SingleDayEventList* events) {
   int event_number = EventsNumberOfDayInternal(day, events);
   if (event_number != 0) {
-    QueuePrunableMonth(calendar_utils::GetStartOfMonthUTC(day));
+    PromoteMonth(calendar_utils::GetStartOfMonthUTC(day));
   }
   return event_number;
 }
@@ -207,6 +226,9 @@ void CalendarModel::OnEventsFetched(
   // Keep us within storage limits.
   PruneEventCache();
 
+  // Clear out this month's events, we're about replace them.
+  event_months_.erase(start_of_month);
+
   // Store the incoming events.
   InsertEvents(events);
 
@@ -214,8 +236,11 @@ void CalendarModel::OnEventsFetched(
   for (auto& observer : observers_)
     observer.OnEventsFetched(events);
 
+  // Month is now the most-recently-used.
+  PromoteMonth(start_of_month);
+
   // Month has officially been fetched.
-  MarkMonthAsFetched(start_of_month);
+  months_fetched_.emplace(start_of_month);
 
   // Request is no longer outstanding, so it can be destroyed.
   pending_fetches_.erase(start_of_month);
@@ -295,6 +320,24 @@ void CalendarModel::InsertEvents(
     InsertEvent(event.get());
 }
 
+void CalendarModel::InsertEventsForTesting(
+    const google_apis::calendar::EventList* events) {
+  if (!events)
+    return;
+
+  // Make sure the cache is empty.
+  event_months_.clear();
+
+  // Insert, and collect the set of months inserted.
+  std::set<base::Time> months_inserted;
+  for (const auto& event : events->items()) {
+    base::Time month =
+        calendar_utils::GetStartOfMonthUTC(event->start_time().date_time());
+    months_inserted.emplace(month);
+    InsertEvent(event.get());
+  }
+}
+
 SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   SingleDayEventList event_list;
 
@@ -342,6 +385,7 @@ void CalendarModel::RedistributeEvents(int time_difference_minutes) {
     }
   }
 
+  // Clear out the entire event store, freshly insert the redistrubted events.
   event_months_.clear();
   for (const google_apis::calendar::CalendarEvent& event :
        to_be_redistributed_events) {
@@ -351,11 +395,13 @@ void CalendarModel::RedistributeEvents(int time_difference_minutes) {
 
 void CalendarModel::PruneEventCache() {
   while (event_months_.size() >= kMaxNumberOfMonthsCached &&
-         !prunable_months_mru_.empty()) {
-    base::Time lru_month = prunable_months_mru_.back();
+         !mru_months_.empty()) {
+    base::Time lru_month = mru_months_.back();
     LOG(WARNING) << __FUNCTION__ << " pruning lru_month " << lru_month;
+    pending_fetches_.erase(lru_month);
     event_months_.erase(lru_month);
-    prunable_months_mru_.pop_back();
+    months_fetched_.erase(lru_month);
+    mru_months_.pop_back();
   }
 }
 
