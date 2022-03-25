@@ -613,6 +613,7 @@ TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
   };
   std::vector<Test> tests{
       {"https://prefix.a.com/a", "https://prefix.a.com/a", kPrefix, 22},
+      {"https://prefix.a.com/a", "https://prefix.a.com/a?x=y", kPrefix, 22},
       {"https://prefix.a.com/a", "https://prefix.a.com/a/b", kPrefix, 22},
       {"https://prefix.a.com/a", "", kPrefix, 0},
       {"https://prefix.a.com/a/b", "https://prefix.a.com/a", kPrefix, 0},

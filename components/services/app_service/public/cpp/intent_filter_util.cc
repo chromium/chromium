@@ -433,7 +433,8 @@ size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
   if (path_length == 0) {
     return 0;
   }
-  return url.spec().size() - url.path().size() + path_length;
+  return url.scheme_piece().size() + /*length("://")*/ 3 +
+         url.host_piece().size() + path_length;
 }
 
 }  // namespace apps_util
