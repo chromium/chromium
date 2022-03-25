@@ -15,7 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -193,4 +193,4 @@ base::TimeDelta SyncSchedulerImpl::GetPeriod() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

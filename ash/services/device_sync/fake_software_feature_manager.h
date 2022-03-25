@@ -15,7 +15,7 @@
 #include "ash/services/device_sync/software_feature_manager.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -151,11 +151,6 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::FakeSoftwareFeatureManager;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_SOFTWARE_FEATURE_MANAGER_H_

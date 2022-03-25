@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -99,11 +99,6 @@ class SyncScheduler {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::SyncScheduler;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_SYNC_SCHEDULER_H_

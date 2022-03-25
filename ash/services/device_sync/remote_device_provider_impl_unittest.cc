@@ -28,7 +28,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -723,4 +723,4 @@ TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestMultipleSyncs_V1andV2) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

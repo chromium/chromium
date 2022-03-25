@@ -9,7 +9,7 @@
 #include "ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "ash/services/device_sync/synced_bluetooth_address_tracker_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -55,12 +55,6 @@ class FakeSyncedBluetoothAddressTrackerFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::FakeSyncedBluetoothAddressTracker;
-using ::chromeos::device_sync::FakeSyncedBluetoothAddressTrackerFactory;
-}  // namespace ash::device_sync
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_SYNCED_BLUETOOTH_ADDRESS_TRACKER_H_

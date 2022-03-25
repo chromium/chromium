@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -29,4 +29,4 @@ void LogAsyncExecutionTimeMetric(const std::string& metric_name,
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

@@ -10,12 +10,9 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 FakeDeviceSync::FakeDeviceSync() : DeviceSyncBase() {}
 
@@ -136,4 +133,4 @@ void FakeDeviceSync::GetDevicesActivityStatus(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

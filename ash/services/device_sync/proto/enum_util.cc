@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/proto/enum_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -224,4 +224,4 @@ std::string SoftwareFeatureEnumToStringAllCaps(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

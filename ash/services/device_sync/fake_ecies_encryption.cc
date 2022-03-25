@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -50,4 +50,4 @@ std::string DecryptFakeEncryptedString(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

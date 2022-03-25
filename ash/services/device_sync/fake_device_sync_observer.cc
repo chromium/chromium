@@ -4,12 +4,9 @@
 
 #include "ash/services/device_sync/fake_device_sync_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 FakeDeviceSyncObserver::FakeDeviceSyncObserver() = default;
 
@@ -32,4 +29,4 @@ void FakeDeviceSyncObserver::OnNewDevicesSynced() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

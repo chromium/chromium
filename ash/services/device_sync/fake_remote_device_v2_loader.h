@@ -15,7 +15,7 @@
 #include "ash/services/device_sync/remote_device_v2_loader_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -91,6 +91,6 @@ class FakeRemoteDeviceV2LoaderFactory
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_REMOTE_DEVICE_V2_LOADER_H_

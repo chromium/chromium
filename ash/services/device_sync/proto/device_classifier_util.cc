@@ -12,7 +12,7 @@
 #include "base/version.h"
 #include "components/version_info/version_info.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -48,4 +48,4 @@ const cryptauth::DeviceClassifier& GetDeviceClassifier() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

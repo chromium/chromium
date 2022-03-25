@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -152,4 +152,4 @@ void RemoteDeviceLoader::OnPSKDerived(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

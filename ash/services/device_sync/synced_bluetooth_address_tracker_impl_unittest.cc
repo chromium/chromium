@@ -19,7 +19,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -193,4 +193,4 @@ TEST_F(DeviceSyncSyncedBluetoothAddressTrackerImplTest, AdapterPresent) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

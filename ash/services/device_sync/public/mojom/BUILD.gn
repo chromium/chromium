@@ -24,7 +24,7 @@ mojom("mojom") {
         },
         {
           mojom = "ash.device_sync.mojom.FeatureStatusChange"
-          cpp = "chromeos::device_sync::FeatureStatusChange"
+          cpp = "ash::device_sync::FeatureStatusChange"
         },
         {
           mojom = "ash.device_sync.mojom.CryptAuthService"

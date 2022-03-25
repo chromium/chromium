@@ -18,7 +18,7 @@
 using testing::_;
 using testing::Invoke;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -576,4 +576,4 @@ TEST_F(DeviceSyncSoftwareFeatureManagerImplTest, TestEasyUnlockSpecialCase) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

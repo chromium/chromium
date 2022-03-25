@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/mock_sync_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -14,4 +14,4 @@ MockSyncScheduler::~MockSyncScheduler() {}
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

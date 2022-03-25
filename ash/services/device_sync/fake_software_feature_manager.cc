@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -107,4 +107,4 @@ void FakeSoftwareFeatureManager::FindEligibleDevices(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

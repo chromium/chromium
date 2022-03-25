@@ -79,8 +79,10 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature);
 // source migration is finished.
 namespace ash {
 namespace multidevice {
+using ::chromeos::multidevice::FromCryptAuthFeature;
 using ::chromeos::multidevice::SoftwareFeature;
-}
+using ::chromeos::multidevice::ToCryptAuthFeature;
+}  // namespace multidevice
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SOFTWARE_FEATURE_H_

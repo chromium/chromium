@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -229,4 +229,4 @@ TEST_F(DeviceSyncRemoteDeviceV2LoaderImplTest, Success) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

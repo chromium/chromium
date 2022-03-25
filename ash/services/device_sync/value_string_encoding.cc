@@ -7,7 +7,7 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -57,4 +57,4 @@ base::Value EncodeProtoMessageAsValueString(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

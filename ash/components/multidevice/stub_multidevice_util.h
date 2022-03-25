@@ -31,8 +31,10 @@ bool ShouldUseMultideviceStubs();
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace ash {
 namespace multidevice {
+using ::chromeos::multidevice::CreateStubClientComputer;
+using ::chromeos::multidevice::CreateStubHostPhone;
 using ::chromeos::multidevice::ShouldUseMultideviceStubs;
-}
+}  // namespace multidevice
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_STUB_MULTIDEVICE_UTIL_H_

@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/switches.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -28,4 +28,4 @@ const char kCryptAuthV2DeviceSyncHTTPHost[] =
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

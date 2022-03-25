@@ -9,7 +9,7 @@
 
 #include "ash/services/device_sync/device_sync_base.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -43,25 +43,22 @@ class FakeDeviceSync : public DeviceSyncBase {
       const absl::optional<std::vector<multidevice::RemoteDevice>>&
           remote_devices);
   void InvokePendingSetSoftwareFeatureStateCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingSetFeatureStatusCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingFindEligibleDevicesCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code,
-      ash::device_sync::mojom::FindEligibleDevicesResponsePtr
-          find_eligible_devices_response_ptr);
+      mojom::NetworkRequestResult result_code,
+      mojom::FindEligibleDevicesResponsePtr find_eligible_devices_response_ptr);
   void InvokePendingNotifyDevicesCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code);
+      mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
-      ash::device_sync::mojom::NetworkRequestResult result_code,
-      absl::optional<
-          std::vector<ash::device_sync::mojom::DeviceActivityStatusPtr>>
+      mojom::NetworkRequestResult result_code,
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           get_devices_activity_status_response);
-  void InvokePendingGetDebugInfoCallback(
-      ash::device_sync::mojom::DebugInfoPtr debug_info_ptr);
+  void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
  protected:
-  // ash::device_sync::mojom::DeviceSync:
+  // device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;
@@ -105,11 +102,6 @@ class FakeDeviceSync : public DeviceSyncBase {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::FakeDeviceSync;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_DEVICE_SYNC_H_

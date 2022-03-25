@@ -11,7 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -65,11 +65,6 @@ absl::optional<T> DecodeProtoMessageFromValueString(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-namespace util = ::chromeos::device_sync::util;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_VALUE_STRING_ENCODING_H_

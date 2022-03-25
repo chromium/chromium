@@ -155,7 +155,7 @@ class FakeDeviceSyncImplFactory
       ash::device_sync::ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<base::OneShotTimer> timer) override {
-    return std::make_unique<chromeos::device_sync::FakeDeviceSync>();
+    return std::make_unique<ash::device_sync::FakeDeviceSync>();
   }
 };
 

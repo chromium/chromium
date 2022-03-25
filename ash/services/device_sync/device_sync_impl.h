@@ -16,14 +16,8 @@
 #include "ash/services/device_sync/network_request_error.h"
 #include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/client_app_metadata_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/device_sync/remote_device_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/software_feature_manager.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +44,7 @@ namespace ash {
 
 namespace device_sync {
 
+class ClientAppMetadataProvider;
 class CryptAuthClientFactory;
 class CryptAuthDeviceManager;
 class CryptAuthDeviceNotifier;
@@ -58,6 +53,8 @@ class CryptAuthFeatureStatusSetter;
 class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
+class GcmDeviceInfoProvider;
+class SoftwareFeatureManager;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:

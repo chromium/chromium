@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -255,4 +255,4 @@ void SoftwareFeatureManagerImpl::OnErrorResponse(NetworkRequestError error) {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

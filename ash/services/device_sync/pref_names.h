@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_DEVICE_SYNC_PREF_NAMES_H_
 #define ASH_SERVICES_DEVICE_SYNC_PREF_NAMES_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -47,11 +47,6 @@ extern const char kCryptAuthSchedulerLastSuccessfulDeviceSyncTime[];
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-namespace prefs = ::chromeos::device_sync::prefs;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PREF_NAMES_H_

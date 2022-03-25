@@ -23,8 +23,6 @@
 #include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -44,6 +42,7 @@ namespace device_sync {
 class CryptAuthClient;
 class CryptAuthClientFactory;
 class CryptAuthKeyRegistry;
+class SyncedBluetoothAddressTracker;
 
 // An implementation of CryptAuthDeviceSyncer, using instances of
 // CryptAuthClient to make the API calls to CryptAuth. This implementation

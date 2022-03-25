@@ -17,7 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -169,4 +169,4 @@ std::string SyncedBluetoothAddressTrackerImpl::GetAddress() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

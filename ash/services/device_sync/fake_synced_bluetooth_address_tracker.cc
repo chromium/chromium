@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_synced_bluetooth_address_tracker.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -41,4 +41,4 @@ FakeSyncedBluetoothAddressTrackerFactory::CreateInstance(
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

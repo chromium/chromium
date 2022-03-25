@@ -10,10 +10,6 @@
 #include <vector>
 
 #include "ash/components/multidevice/software_feature.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/cryptauth_client.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/device_sync/cryptauth_feature_status_setter.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/network_request_error.h"
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
@@ -23,9 +19,13 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
+
+class CryptAuthClient;
+class CryptAuthClientFactory;
+class CryptAuthFeatureStatusSetter;
 
 // Concrete SoftwareFeatureManager implementation. To query and/or set
 // MultiDevice hosts, this class makes network requests to the CryptAuth
@@ -161,11 +161,6 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::SoftwareFeatureManagerImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_SOFTWARE_FEATURE_MANAGER_IMPL_H_

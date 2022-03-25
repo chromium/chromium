@@ -18,14 +18,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::device_sync::mojom;
 
 // Helper function for SetSoftwareFeatureState and SetFeatureStatus, sets the
 // |software_feature| to the correct |enabled| value for the |device| and
@@ -198,7 +195,7 @@ class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
   StubDeviceSyncImplFactory() = default;
   ~StubDeviceSyncImplFactory() override = default;
 
-  // ash::device_sync::DeviceSyncImpl::Factory:
+  // device_sync::DeviceSyncImpl::Factory:
   std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
       gcm::GCMDriver* gcm_driver,
@@ -220,4 +217,4 @@ void SetStubDeviceSyncFactory() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

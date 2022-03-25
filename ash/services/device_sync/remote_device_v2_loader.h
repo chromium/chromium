@@ -11,7 +11,7 @@
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -39,6 +39,6 @@ class RemoteDeviceV2Loader {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_REMOTE_DEVICE_V2_LOADER_H_

@@ -13,9 +13,9 @@ namespace mojo {
 
 template <>
 struct TypeConverter<ash::device_sync::mojom::NetworkRequestResult,
-                     chromeos::device_sync::NetworkRequestError> {
+                     ash::device_sync::NetworkRequestError> {
   static ash::device_sync::mojom::NetworkRequestResult Convert(
-      chromeos::device_sync::NetworkRequestError type);
+      ash::device_sync::NetworkRequestError type);
 };
 
 }  // namespace mojo

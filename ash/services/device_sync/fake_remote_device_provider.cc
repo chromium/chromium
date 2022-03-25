@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_remote_device_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -23,4 +23,4 @@ FakeRemoteDeviceProvider::GetSyncedDevices() const {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

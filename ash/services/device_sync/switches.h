@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_DEVICE_SYNC_SWITCHES_H_
 #define ASH_SERVICES_DEVICE_SYNC_SWITCHES_H_
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -21,13 +21,6 @@ extern const char kCryptAuthV2DeviceSyncHTTPHost[];
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync::switches {
-using ::chromeos::device_sync::switches::kCryptAuthHTTPHost;
-using ::chromeos::device_sync::switches::kCryptAuthV2DeviceSyncHTTPHost;
-using ::chromeos::device_sync::switches::kCryptAuthV2EnrollmentHTTPHost;
-}  // namespace ash::device_sync::switches
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_SWITCHES_H_

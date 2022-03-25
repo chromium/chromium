@@ -25,12 +25,12 @@ class EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
 
 template <>
 class EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
-                 chromeos::device_sync::FeatureStatusChange> {
+                 ash::device_sync::FeatureStatusChange> {
  public:
   static ash::device_sync::mojom::FeatureStatusChange ToMojom(
-      chromeos::device_sync::FeatureStatusChange input);
+      ash::device_sync::FeatureStatusChange input);
   static bool FromMojom(ash::device_sync::mojom::FeatureStatusChange input,
-                        chromeos::device_sync::FeatureStatusChange* out);
+                        ash::device_sync::FeatureStatusChange* out);
 };
 
 template <>

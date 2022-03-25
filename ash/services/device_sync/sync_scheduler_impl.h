@@ -10,7 +10,7 @@
 #include "ash/services/device_sync/sync_scheduler.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -103,11 +103,6 @@ class SyncSchedulerImpl : public SyncScheduler {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::device_sync::SyncSchedulerImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_SYNC_SCHEDULER_IMPL_H_

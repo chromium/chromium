@@ -9,7 +9,7 @@
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -58,14 +58,6 @@ std::string DeviceTypeEnumToString(cryptauth::DeviceType device_type);
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::DeviceTypeEnumToString;
-using ::chromeos::device_sync::DeviceTypeStringToEnum;
-using ::chromeos::device_sync::SoftwareFeatureEnumToString;
-using ::chromeos::device_sync::SoftwareFeatureStringToEnum;
-}  // namespace ash::device_sync
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_

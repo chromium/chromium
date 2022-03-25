@@ -187,18 +187,18 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
 };
 
 class FakeRemoteDeviceProviderFactory
-    : public chromeos::device_sync::RemoteDeviceProviderImpl::Factory {
+    : public device_sync::RemoteDeviceProviderImpl::Factory {
  public:
   FakeRemoteDeviceProviderFactory() = default;
   ~FakeRemoteDeviceProviderFactory() override = default;
 
-  // chromeos::device_sync::RemoteDeviceProviderImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::RemoteDeviceProvider> CreateInstance(
+  // device_sync::RemoteDeviceProviderImpl::Factory:
+  std::unique_ptr<device_sync::RemoteDeviceProvider> CreateInstance(
       device_sync::CryptAuthDeviceManager* device_manager,
       device_sync::CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
       const std::string& user_private_key) override {
-    return std::make_unique<chromeos::device_sync::FakeRemoteDeviceProvider>();
+    return std::make_unique<device_sync::FakeRemoteDeviceProvider>();
   }
 };
 
@@ -357,8 +357,8 @@ class TetherServiceTest : public testing::Test {
 
     fake_remote_device_provider_factory_ =
         base::WrapUnique(new FakeRemoteDeviceProviderFactory());
-    chromeos::device_sync::RemoteDeviceProviderImpl::Factory::
-        SetFactoryForTesting(fake_remote_device_provider_factory_.get());
+    device_sync::RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(
+        fake_remote_device_provider_factory_.get());
 
     fake_tether_host_fetcher_factory_ =
         base::WrapUnique(new FakeTetherHostFetcherFactory(test_devices_));

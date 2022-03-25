@@ -9,24 +9,24 @@ namespace mojo {
 // static
 ash::device_sync::mojom::NetworkRequestResult
 TypeConverter<ash::device_sync::mojom::NetworkRequestResult,
-              chromeos::device_sync::NetworkRequestError>::
-    Convert(chromeos::device_sync::NetworkRequestError type) {
+              ash::device_sync::NetworkRequestError>::
+    Convert(ash::device_sync::NetworkRequestError type) {
   switch (type) {
-    case chromeos::device_sync::NetworkRequestError::kOffline:
+    case ash::device_sync::NetworkRequestError::kOffline:
       return ash::device_sync::mojom::NetworkRequestResult::kOffline;
-    case chromeos::device_sync::NetworkRequestError::kEndpointNotFound:
+    case ash::device_sync::NetworkRequestError::kEndpointNotFound:
       return ash::device_sync::mojom::NetworkRequestResult::kEndpointNotFound;
-    case chromeos::device_sync::NetworkRequestError::kAuthenticationError:
+    case ash::device_sync::NetworkRequestError::kAuthenticationError:
       return ash::device_sync::mojom::NetworkRequestResult::
           kAuthenticationError;
-    case chromeos::device_sync::NetworkRequestError::kBadRequest:
+    case ash::device_sync::NetworkRequestError::kBadRequest:
       return ash::device_sync::mojom::NetworkRequestResult::kBadRequest;
-    case chromeos::device_sync::NetworkRequestError::kResponseMalformed:
+    case ash::device_sync::NetworkRequestError::kResponseMalformed:
       return ash::device_sync::mojom::NetworkRequestResult::kResponseMalformed;
-    case chromeos::device_sync::NetworkRequestError::kInternalServerError:
+    case ash::device_sync::NetworkRequestError::kInternalServerError:
       return ash::device_sync::mojom::NetworkRequestResult::
           kInternalServerError;
-    case chromeos::device_sync::NetworkRequestError::kUnknown:
+    case ash::device_sync::NetworkRequestError::kUnknown:
       return ash::device_sync::mojom::NetworkRequestResult::kUnknown;
   }
 }

@@ -30,21 +30,21 @@ TEST(DeviceSyncMojomTraitsTest, ConnectivityStatus) {
 }
 
 TEST(DeviceSyncMojomTraitsTest, FeatureStatusChange) {
-  static constexpr chromeos::device_sync::FeatureStatusChange
+  static constexpr ash::device_sync::FeatureStatusChange
       kTestFeatureStatusChanges[] = {
-          chromeos::device_sync::FeatureStatusChange::kEnableExclusively,
-          chromeos::device_sync::FeatureStatusChange::kEnableNonExclusively,
-          chromeos::device_sync::FeatureStatusChange::kDisable};
+          ash::device_sync::FeatureStatusChange::kEnableExclusively,
+          ash::device_sync::FeatureStatusChange::kEnableNonExclusively,
+          ash::device_sync::FeatureStatusChange::kDisable};
 
   for (auto status_in : kTestFeatureStatusChanges) {
-    chromeos::device_sync::FeatureStatusChange status_out;
+    ash::device_sync::FeatureStatusChange status_out;
 
     ash::device_sync::mojom::FeatureStatusChange serialized_status =
         mojo::EnumTraits<
             ash::device_sync::mojom::FeatureStatusChange,
-            chromeos::device_sync::FeatureStatusChange>::ToMojom(status_in);
+            ash::device_sync::FeatureStatusChange>::ToMojom(status_in);
     ASSERT_TRUE((mojo::EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
-                                  chromeos::device_sync::FeatureStatusChange>::
+                                  ash::device_sync::FeatureStatusChange>::
                      FromMojom(serialized_status, &status_out)));
     EXPECT_EQ(status_in, status_out);
   }

@@ -48,32 +48,32 @@ bool EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
 
 ash::device_sync::mojom::FeatureStatusChange
 EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
-           chromeos::device_sync::FeatureStatusChange>::
-    ToMojom(chromeos::device_sync::FeatureStatusChange input) {
+           ash::device_sync::FeatureStatusChange>::
+    ToMojom(ash::device_sync::FeatureStatusChange input) {
   switch (input) {
-    case chromeos::device_sync::FeatureStatusChange::kEnableExclusively:
+    case ash::device_sync::FeatureStatusChange::kEnableExclusively:
       return ash::device_sync::mojom::FeatureStatusChange::kEnableExclusively;
-    case chromeos::device_sync::FeatureStatusChange::kEnableNonExclusively:
+    case ash::device_sync::FeatureStatusChange::kEnableNonExclusively:
       return ash::device_sync::mojom::FeatureStatusChange::
           kEnableNonExclusively;
-    case chromeos::device_sync::FeatureStatusChange::kDisable:
+    case ash::device_sync::FeatureStatusChange::kDisable:
       return ash::device_sync::mojom::FeatureStatusChange::kDisable;
   }
 }
 
 bool EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
-                chromeos::device_sync::FeatureStatusChange>::
+                ash::device_sync::FeatureStatusChange>::
     FromMojom(ash::device_sync::mojom::FeatureStatusChange input,
-              chromeos::device_sync::FeatureStatusChange* out) {
+              ash::device_sync::FeatureStatusChange* out) {
   switch (input) {
     case ash::device_sync::mojom::FeatureStatusChange::kEnableExclusively:
-      *out = chromeos::device_sync::FeatureStatusChange::kEnableExclusively;
+      *out = ash::device_sync::FeatureStatusChange::kEnableExclusively;
       return true;
     case ash::device_sync::mojom::FeatureStatusChange::kEnableNonExclusively:
-      *out = chromeos::device_sync::FeatureStatusChange::kEnableNonExclusively;
+      *out = ash::device_sync::FeatureStatusChange::kEnableNonExclusively;
       return true;
     case ash::device_sync::mojom::FeatureStatusChange::kDisable:
-      *out = chromeos::device_sync::FeatureStatusChange::kDisable;
+      *out = ash::device_sync::FeatureStatusChange::kDisable;
       return true;
   }
 

@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/remote_device_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -27,4 +27,4 @@ void RemoteDeviceProvider::NotifyObserversDeviceListChanged() {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

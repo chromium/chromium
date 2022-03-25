@@ -70,7 +70,9 @@ std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed);
 namespace ash {
 namespace multidevice {
 using ::chromeos::multidevice::BeaconSeed;
+using ::chromeos::multidevice::FromCryptAuthSeed;
 using ::chromeos::multidevice::FromCryptAuthSeedList;
+using ::chromeos::multidevice::FromCryptAuthV2SeedRepeatedPtrField;
 using ::chromeos::multidevice::ToCryptAuthSeed;
 using ::chromeos::multidevice::ToCryptAuthSeedList;
 }  // namespace multidevice

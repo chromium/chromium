@@ -12,7 +12,7 @@
 #include "ash/services/device_sync/network_request_error.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -63,11 +63,6 @@ class SoftwareFeatureManager {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::SoftwareFeatureManager;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_SOFTWARE_FEATURE_MANAGER_H_

@@ -9,13 +9,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
 // Fake DeviceSyncObserver implementation for tests.
-class FakeDeviceSyncObserver
-    : public ash::device_sync::mojom::DeviceSyncObserver {
+class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
  public:
   FakeDeviceSyncObserver();
 
@@ -24,13 +23,12 @@ class FakeDeviceSyncObserver
 
   ~FakeDeviceSyncObserver() override;
 
-  mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver>
-  GenerateRemote();
+  mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
 
   size_t num_enrollment_events() { return num_enrollment_events_; }
   size_t num_sync_events() { return num_sync_events_; }
 
-  // ash::device_sync::mojom::DeviceSyncObserver:
+  // device_sync::mojom::DeviceSyncObserver:
   void OnEnrollmentFinished() override;
   void OnNewDevicesSynced() override;
 
@@ -38,16 +36,11 @@ class FakeDeviceSyncObserver
   size_t num_enrollment_events_ = 0u;
   size_t num_sync_events_ = 0u;
 
-  mojo::ReceiverSet<ash::device_sync::mojom::DeviceSyncObserver> receivers_;
+  mojo::ReceiverSet<mojom::DeviceSyncObserver> receivers_;
 };
 
 }  // namespace device_sync
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::device_sync {
-using ::chromeos::device_sync::FakeDeviceSyncObserver;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_FAKE_DEVICE_SYNC_OBSERVER_H_

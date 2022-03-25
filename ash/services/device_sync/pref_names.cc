@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 
@@ -124,4 +124,4 @@ const char kCryptAuthSchedulerLastSuccessfulDeviceSyncTime[] =
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash

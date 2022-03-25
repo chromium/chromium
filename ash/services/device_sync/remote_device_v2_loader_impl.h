@@ -9,17 +9,15 @@
 #include <string>
 
 #include "ash/components/multidevice/remote_device.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "ash/services/device_sync/remote_device_v2_loader.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
+namespace ash {
 
 namespace device_sync {
 
@@ -81,6 +79,6 @@ class RemoteDeviceV2LoaderImpl : public RemoteDeviceV2Loader {
 
 }  // namespace device_sync
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_DEVICE_SYNC_REMOTE_DEVICE_V2_LOADER_IMPL_H_
