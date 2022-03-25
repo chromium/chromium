@@ -68,6 +68,7 @@ extern const base::Feature kScrollableTabStripButtons;
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanel;
 extern const base::Feature kSidePanelDragAndDrop;
+extern const base::Feature kSidePanelImprovedClobbering;
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 extern const base::Feature kSideSearch;

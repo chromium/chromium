@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
@@ -135,6 +136,7 @@ void SidePanelToolbarButton::HideSidePanel() {
         side_panel_webview_.get());
     side_panel_webview_ = nullptr;
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+    browser_view->RightAlignedSidePanelWasClosed();
   }
 }
 

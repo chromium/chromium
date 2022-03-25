@@ -124,6 +124,12 @@ const base::Feature kClobberAllSideSearchSidePanels{
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Adds improved support for handling multiple contextual and global RHS browser
+// side panels. Designed specifically to handle the interim state before the v2
+// side panel project launches.
+const base::Feature kSidePanelImprovedClobbering{
+    "SidePanelImprovedClobbering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

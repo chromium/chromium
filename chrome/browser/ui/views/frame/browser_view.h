@@ -732,6 +732,11 @@ class BrowserView : public BrowserWindow,
   // kClobberAllSideSearchSidePanels is enabled.
   void MaybeClobberAllSideSearchSidePanels();
 
+  // Called by right aligned side panels when they are explicitly closed by
+  // users. This is used to implement improved clobbering logic for the right
+  // aligned side panels.
+  void RightAlignedSidePanelWasClosed();
+
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
@@ -747,6 +752,7 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
   class SidePanelButtonHighlighter;
+  class SidePanelVisibilityController;
 
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
@@ -1011,6 +1017,14 @@ class BrowserView : public BrowserWindow,
   // inside ToolbarView. Must outlive the button whose highlight it's managing
   // as well as the side panels it's observing.
   std::unique_ptr<SidePanelButtonHighlighter> side_panel_button_highlighter_;
+
+  // TODO(tluk): Move this functionality into SidePanelCoordinator when the side
+  // panel v2 project rolls out.
+  // This controller manages the visibility of the read later, side search and
+  // lens side panels. It ensures only one panel is visible at a given time and
+  // the contextual panel interacts as expected with the global panels.
+  std::unique_ptr<SidePanelVisibilityController>
+      side_panel_visibility_controller_;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // A controller that handles content hosted in the Lens side panel.

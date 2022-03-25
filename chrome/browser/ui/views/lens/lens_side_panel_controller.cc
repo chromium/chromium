@@ -105,6 +105,7 @@ void LensSidePanelController::Close() {
         GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_API,
         std::string());
     side_panel_->SetVisible(false);
+    browser_view_->RightAlignedSidePanelWasClosed();
     base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
   }
   if (browser_view_->toolbar()->side_panel_button()) {

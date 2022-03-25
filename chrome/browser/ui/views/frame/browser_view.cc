@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -689,6 +690,110 @@ class BrowserView::SidePanelButtonHighlighter : public views::ViewObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// BrowserView::SidePanelVisibilityController:
+//
+// Coordinating class that manages side panel visibility such that there is a
+// single RHS side panel open at a given time. It enforces the following policy:
+//   - Only one RHS panel is visible at a time.
+//   - When the contextual panel is shown, the state of the global panels is
+//     captured and global panels are hidden.
+//   - When the contextual panel is hidden, the state of the global panels is
+//     restored.
+//
+// TODO(tluk): This is intended to manage the visibility of the read later
+// (global), google lens (global) and side search (contextual) panels for the
+// interim period before side panel v2 rolls out.
+class BrowserView::SidePanelVisibilityController : public views::ViewObserver {
+ public:
+  // Structures that hold the global panel views and their captured visibility
+  // state.
+  struct PanelStateEntry {
+    const raw_ptr<views::View> panel_view;
+    absl::optional<bool> captured_visibility_state;
+  };
+  using Panels = std::vector<PanelStateEntry>;
+
+  SidePanelVisibilityController(views::View* side_search_panel,
+                                views::View* lens_panel,
+                                views::View* rhs_panel)
+      : side_search_panel_(side_search_panel) {
+    if (lens_panel)
+      global_panels_.push_back({lens_panel, absl::nullopt});
+    if (rhs_panel)
+      global_panels_.push_back({rhs_panel, absl::nullopt});
+
+    // Observing the side search panel is only necessary when enabling the
+    // improved clobbering functionality.
+    if (side_search_panel_ &&
+        base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering)) {
+      side_search_panel_observation_.Observe(side_search_panel_);
+    }
+  }
+  ~SidePanelVisibilityController() override = default;
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               View* starting_from) override {
+    DCHECK_EQ(side_search_panel_, observed_view);
+    if (side_search_panel_->GetVisible()) {
+      CaptureGlobalPanelVisibilityStateAndHide();
+    } else {
+      RestoreGlobalPanelVisibilityState();
+    }
+  }
+
+  // Called when the contextual panel is shown. Captures the current visibility
+  // state of the global panel before hiding the panel. The captured state of
+  // the global panels remains valid while the contextual panel is open.
+  void CaptureGlobalPanelVisibilityStateAndHide() {
+    for (PanelStateEntry& entry : global_panels_) {
+      auto panel_view = entry.panel_view;
+      entry.captured_visibility_state = panel_view->GetVisible();
+      panel_view->SetVisible(false);
+    }
+  }
+
+  // Called when the contextual panel is hidden. Restores the visibility state
+  // of the global panels.
+  void RestoreGlobalPanelVisibilityState() {
+    for (PanelStateEntry& entry : global_panels_) {
+      if (entry.captured_visibility_state.has_value()) {
+        entry.panel_view->SetVisible(entry.captured_visibility_state.value());
+
+        // After restoring global panel state reset the stored visibility bits.
+        // These will not remain valid while the contextual panel is closed.
+        entry.captured_visibility_state.reset();
+      }
+    }
+  }
+
+  // Returns true if one of its managed panels is currently visible in the
+  // browser window.
+  bool IsManagedSidePanelVisible() const {
+    if (side_search_panel_ && side_search_panel_->GetVisible())
+      return true;
+    return base::ranges::any_of(global_panels_,
+                                [](const PanelStateEntry& entry) {
+                                  return entry.panel_view->GetVisible();
+                                });
+  }
+
+ private:
+  // We observe the side search panel when improved clobbering is enabled to
+  // implement the correct view visibility transitions.
+  const raw_ptr<views::View> side_search_panel_;
+
+  // The set of global panels that this maintains visibility for.
+  Panels global_panels_;
+
+  // Keep track of the side search panel's visibility so that we can hide /
+  // restore global panels as the side search panel is shown / hidden
+  // respectively.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      side_search_panel_observation_{this};
+};
+
+///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
@@ -874,10 +979,11 @@ BrowserView::~BrowserView() {
   if (tabstrip_)
     tabstrip_->parent()->RemoveChildViewT(tabstrip_.get());
 
-  // This highlighter refers to side-panel objects (children of this) and to
-  // children inside ToolbarView and of this, remove this observer before those
-  // children are removed.
+  // This highlighter and visibility controller refer to side-panel objects
+  // (children of this) and to children inside ToolbarView and of this, remove
+  // this observer before those children are removed.
   side_panel_button_highlighter_.reset();
+  side_panel_visibility_controller_.reset();
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -3201,33 +3307,30 @@ void BrowserView::CloseTabSearchBubble() {
 
 bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
                                                  bool exclude_side_search) {
-  // Hide Chrome side panel (Reading List/Bookmarks) if enabled and showing.
-  if (toolbar()->side_panel_button() &&
-      right_aligned_side_panel()->GetVisible()) {
-    toolbar()->side_panel_button()->HideSidePanel();
-    return true;
+  // Check if any side panels are open before closing side panels.
+  if (!side_panel_visibility_controller_ ||
+      !side_panel_visibility_controller_->IsManagedSidePanelVisible()) {
+    return false;
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Hide the Lens side panel if it's showing instead.
-  if (!exclude_lens && lens_side_panel_controller_ &&
-      lens_side_panel_controller_->IsShowing()) {
-    lens_side_panel_controller_->Close();
-    return true;
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Ensure all side panels are closed. Close contextual panels first.
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   // Hide side search panel if it's right aligned.
-  if (!exclude_side_search &&
-      base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
-      side_search_side_panel_ && side_search_side_panel_->GetVisible()) {
+  if (!exclude_side_search && side_search_controller_ &&
+      base::FeatureList::IsEnabled(features::kSideSearchDSESupport)) {
     side_search_controller_->CloseSidePanel();
-    return true;
   }
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
-  return false;
+  toolbar()->side_panel_button()->HideSidePanel();
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!exclude_lens && lens_side_panel_controller_)
+    lens_side_panel_controller_->Close();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  return true;
 }
 
 void BrowserView::MaybeClobberAllSideSearchSidePanels() {
@@ -3242,6 +3345,16 @@ void BrowserView::MaybeClobberAllSideSearchSidePanels() {
     side_search_controller_->ClobberAllInCurrentBrowser();
   }
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+}
+
+void BrowserView::RightAlignedSidePanelWasClosed() {
+  // For the improved side panel clobbering experience we must close all side
+  // panels for the window when the user explicitly closes a participating side
+  // panel.
+  if (base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering)) {
+    CloseOpenRightAlignedSidePanel();
+    MaybeClobberAllSideSearchSidePanels();
+  }
 }
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
@@ -3491,6 +3604,11 @@ void BrowserView::AddedToWidget() {
     side_panel_button_highlighter_ =
         std::make_unique<SidePanelButtonHighlighter>(
             toolbar_->side_panel_button(), panels);
+
+    side_panel_visibility_controller_ =
+        std::make_unique<SidePanelVisibilityController>(
+            side_search_side_panel_, lens_side_panel_,
+            right_aligned_side_panel_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
