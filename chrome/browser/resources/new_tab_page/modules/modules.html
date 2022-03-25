@@ -5,6 +5,14 @@
     --ntp-module-container-padding-top: 16px;
   }
 
+  @media (min-width: 672px) {
+    #firstRunExperience {
+      background-image: url(./modules/chromefetti.svg);
+      background-position: top center;
+      background-repeat: no-repeat;
+    }
+  }
+
   :host([show-modules-fre_]) #freAndModulesContainer {
     background-color: var(--ntp-background-override-color);
     border: 1px solid var(--ntp-border-color);
@@ -13,9 +21,6 @@
   }
 
   #firstRunExperience {
-    background-image: url(./modules/chromefetti.svg);
-    background-position: top center;
-    background-repeat: no-repeat;
     box-sizing: border-box;
     padding-bottom: 24px;
     padding-top: 32px;
@@ -51,6 +56,7 @@
   #customizeChromeLink {
     color: var(--cr-link-color);
     cursor: pointer;
+    font-weight: 700;
   }
 
   .action-button {
@@ -103,9 +109,9 @@
 <div id="freAndModulesContainer">
   <template is="dom-if" if="[[showModulesFre_]]">
     <div id="firstRunExperience">
-      <div id="firstRunExperienceTitle">
+      <header id="firstRunExperienceTitle">
         $i18n{modulesFirstRunExperienceTitle}
-      </div>
+      </header>
       <div id="newTag">$i18n{modulesNewTagLabel}</div>
       <div class="first-run-experience-body">
         $i18n{modulesFirstRunExperienceBodyLine1}
