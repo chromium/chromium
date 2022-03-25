@@ -9,6 +9,7 @@ import {fakeHelpContentProviderTestSuite} from './fake_help_content_provider_tes
 import {helpContentTestSuite} from './help_content_test.js';
 import {fakeMojoProviderTestSuite} from './mojo_interface_provider_test.js';
 import {searchPageTestSuite} from './search_page_test.js';
+import {shareDataPageTestSuite} from './share_data_page_test.js';
 
 window.test_suites_list = [];
 
@@ -22,3 +23,4 @@ runSuite('fakeHelpContentProviderTest', fakeHelpContentProviderTestSuite);
 runSuite('fakeMojoProviderTest', fakeMojoProviderTestSuite);
 runSuite('helpContentTest', helpContentTestSuite);
 runSuite('searchPageTest', searchPageTestSuite);
+runSuite('shareDataPageTest', shareDataPageTestSuite);

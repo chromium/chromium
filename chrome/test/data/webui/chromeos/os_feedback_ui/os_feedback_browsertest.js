@@ -45,6 +45,7 @@ const debug_suites_list = [
   'fakeMojoProviderTest',
   'helpContentTest',
   'searchPageTest',
+  'shareDataPageTest',
 ];
 
 TEST_F('OSFeedbackBrowserTest', 'All', function() {
