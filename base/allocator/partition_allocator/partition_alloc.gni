@@ -1,0 +1,14 @@
+# Copyright (c) 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  make_partition_alloc_standalone = false
+}
+
+# TODO(): move partition allocator's own args defined by
+# //base/allocator/allocator.gni here. e.g. put_ref_count_in_previous_slot
+# (this changes partition alloc's behavior.)
+# On the otherhand, partition_aloc_as_malloc is related to allocator_shim.
+# Caller sides should init PA-E. e.g. PartitionAllocMallocInitOnce()
+

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
@@ -36,12 +37,13 @@ if (is_fuchsia) {
   }
 }
 
-# TODO(crbug.com/1151236): Add component("base") for partition_alloc
-# base, and make partition_alloc standalone library depend on it.
+if (make_partition_alloc_standalone) {
+  partition_alloc_target_type = "component"
+} else {
+  partition_alloc_target_type = "source_set"
+}
 
-# TODO(crbug.com/1151236): Add component("partition_alloc") to build
-# partition_alloc as a standalone_library.
-source_set("partition_alloc") {
+target(partition_alloc_target_type, "partition_alloc") {
   sources = [
     "address_pool_manager.cc",
     "address_pool_manager.h",
@@ -201,6 +203,17 @@ source_set("partition_alloc") {
     frameworks += [ "Security.framework" ]
   }
 }
+
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,
 # move test code here. i.e. test("partition_alloc_tests") { ... } and
 # test("partition_alloc_perftests").
+
+# TODO(crbug.com/1151236): Generate partition_alloc_buildflags. The following
+# flags will be defined by the buildflags:
+#    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
+#    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+#    "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
+#    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+#    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
+#    "RECORD_ALLOC_INFO=$_record_alloc_info",
+
