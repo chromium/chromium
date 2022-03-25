@@ -441,8 +441,11 @@ void AuthenticationService::SignInInternal(ChromeIdentity* identity) {
     // Initial sign-in to Chrome does not automatically turn on Sync features.
     // The Sync service will be enabled in a separate request to
     // |GrantSyncConsent|.
-    identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        account_id, signin::ConsentLevel::kSignin);
+    signin::PrimaryAccountMutator::PrimaryAccountError error =
+        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            account_id, signin::ConsentLevel::kSignin);
+    CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+             error);
   }
 
   // The primary account should now be set to the expected account_id.
