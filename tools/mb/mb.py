@@ -755,8 +755,9 @@ class MetaBuildWrapper(object):
       if ret != 0:
         return ret
       collect_json = json.loads(self.ReadFile(collect_output))
-      # The exit_code field is not included if the task was successful.
-      ret = collect_json.get(task_id, {}).get('results', {}).get('exit_code', 0)
+      # The exit_code field might not be included if the task was successful.
+      ret = int(
+          collect_json.get(task_id, {}).get('results', {}).get('exit_code', 0))
     finally:
       if json_dir:
         self.RemoveDirectory(json_dir)
