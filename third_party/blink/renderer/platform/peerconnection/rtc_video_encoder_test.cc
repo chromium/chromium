@@ -606,13 +606,41 @@ TEST_F(RTCVideoEncoderTest, InitializeWithTooHighBitrateFails) {
 
 // http://crbug.com/1226875
 TEST_F(RTCVideoEncoderTest, EncodeSpatialLayer) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
   webrtc::VideoCodec sl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
                                                  /*num_spatial_layers=*/3);
-  CreateEncoder(sl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&sl_codec, kVideoEncoderSettings));
+
+  class CodecSpecificVerifier : public webrtc::EncodedImageCallback {
+   public:
+    explicit CodecSpecificVerifier(const webrtc::VideoCodec& codec)
+        : codec_(codec) {}
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      if (encoded_image._frameType == webrtc::VideoFrameType::kVideoFrameKey) {
+        EXPECT_TRUE(codec_specific_info->codecSpecific.VP9.ss_data_available);
+        const size_t num_spatial_layers = codec_.VP9().numberOfSpatialLayers;
+        const auto& vp9_specific = codec_specific_info->codecSpecific.VP9;
+        EXPECT_EQ(vp9_specific.num_spatial_layers, num_spatial_layers);
+        for (size_t i = 0; i < num_spatial_layers; ++i) {
+          EXPECT_EQ(vp9_specific.width[i], codec_.spatialLayers[i].width);
+          EXPECT_EQ(vp9_specific.height[i], codec_.spatialLayers[i].height);
+        }
+      }
+      return Result(Result::OK);
+    }
+
+   private:
+    const webrtc::VideoCodec& codec_;
+  };
+  CodecSpecificVerifier sl_verifier(sl_codec);
+  rtc_encoder_->RegisterEncodeCompleteCallback(&sl_verifier);
+
   size_t kNumEncodeFrames = 5u;
-  EXPECT_CALL(*mock_vea_, Encode(_, _))
+  EXPECT_CALL(*mock_vea_, Encode)
       .Times(kNumEncodeFrames)
       .WillRepeatedly(Invoke(
           this, &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata));

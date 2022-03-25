@@ -1085,10 +1085,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
           vp9.spatial_layer_resolution_present = true;
           vp9.gof.num_frames_in_gof = 0;
           for (size_t i = 0; i < vp9.num_spatial_layers; ++i) {
-            vp9.width[i] =
-                current_spatial_layer_resolutions_[spatial_index].width();
-            vp9.height[i] =
-                current_spatial_layer_resolutions_[spatial_index].height();
+            vp9.width[i] = current_spatial_layer_resolutions_[i].width();
+            vp9.height[i] = current_spatial_layer_resolutions_[i].height();
           }
         }
         vp9.flexible_mode = true;
