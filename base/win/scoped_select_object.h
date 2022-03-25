@@ -19,7 +19,8 @@ class ScopedSelectObject {
       : hdc_(hdc), oldobj_(SelectObject(hdc, object)) {
     DCHECK(hdc_);
     DCHECK(object);
-    DCHECK(oldobj_ != NULL && oldobj_ != HGDI_ERROR);
+    DCHECK(oldobj_);
+    DCHECK(oldobj_ != HGDI_ERROR);
   }
 
   ScopedSelectObject(const ScopedSelectObject&) = delete;
@@ -27,13 +28,13 @@ class ScopedSelectObject {
 
   ~ScopedSelectObject() {
     HGDIOBJ object = SelectObject(hdc_, oldobj_);
-    DCHECK((GetObjectType(oldobj_) != OBJ_REGION && object != NULL) ||
+    DCHECK((GetObjectType(oldobj_) != OBJ_REGION && object) ||
            (GetObjectType(oldobj_) == OBJ_REGION && object != HGDI_ERROR));
   }
 
  private:
-  HDC hdc_;
-  HGDIOBJ oldobj_;
+  const HDC hdc_;
+  const HGDIOBJ oldobj_;
 };
 
 }  // namespace win
