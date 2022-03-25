@@ -11,7 +11,6 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
@@ -109,13 +108,12 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
                                   ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
-        color_provider->GetColor(kColorMediaRouterIconWarning)));
+        color_provider->GetColor(ui::kColorAlertMediumSeverity)));
     error_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterErrorIcon,
-        color_provider->GetColor(kColorMediaRouterIconError)));
+        color_provider->GetColor(ui::kColorAlertHighSeverity)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterActiveIcon,
-        color_provider->GetColor(kColorMediaRouterIconActive)));
+        vector_icons::kMediaRouterActiveIcon, gfx::kGoogleBlue500));
   }
 
   void TearDown() override {

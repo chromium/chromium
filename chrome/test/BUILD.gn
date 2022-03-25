@@ -611,7 +611,6 @@ static_library("test_support") {
       "views/chrome_views_test_base.cc",
       "views/chrome_views_test_base.h",
     ]
-    deps += [ "//chrome/browser/ui/color:mixers" ]
   }
 
   if (enable_extensions) {

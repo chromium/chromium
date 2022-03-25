@@ -46,8 +46,6 @@
   /* Window caption colors. */ \
   E(kColorCaptionButtonBackground, \
     ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND) \
-  /* Captured tab colors. */ \
-  E_CPONLY(kColorCapturedTabContentsBorder) \
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
@@ -61,13 +59,9 @@
     ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
   E(kColorDownloadShelfForeground, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_FOREGROUND) \
-  E_CPONLY(kColorDownloadStartedAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
-  /* Extension colors. */ \
-  E_CPONLY(kColorExtensionIconBadgeBackgroundDefault) \
-  E_CPONLY(kColorExtensionIconBadgeForegroundDefault) \
   /* Eyedropper colors. */ \
   E_CPONLY(kColorEyedropperBoundary) \
   E_CPONLY(kColorEyedropperCentralPixelInnerRing) \
@@ -112,10 +106,6 @@
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   E(kColorLocationBarBorderOpaque, \
     ThemeProperties::COLOR_LOCATION_BAR_BORDER_OPAQUE) \
-  /* Media router colors. */ \
-  E_CPONLY(kColorMediaRouterIconActive) \
-  E_CPONLY(kColorMediaRouterIconError) \
-  E_CPONLY(kColorMediaRouterIconWarning) \
   /* New Tab Page colors. */ \
   E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
@@ -219,9 +209,6 @@
   /* QR code colors. */ \
   E_CPONLY(kColorQrCodeBackground) \
   E_CPONLY(kColorQrCodeBorder) \
-  /* Quick Answers colors. */ \
-  E_CPONLY(kColorQuickAnswersReportQueryButtonBackground) \
-  E_CPONLY(kColorQuickAnswersReportQueryButtonForeground) \
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
@@ -361,8 +348,6 @@
     ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE) \
   E(kColorTabStrokeFrameInactive, \
     ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE) \
-  E_CPONLY(kColorTabstripLoadingProgressBackground) \
-  E_CPONLY(kColorTabstripLoadingProgressForeground) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \
@@ -391,8 +376,6 @@
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE) \
   E(kColorToolbarTopSeparatorFrameInactive, \
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE) \
-  /* WebAuthn colors. */ \
-  E_CPONLY(kColorWebAuthnPinTextfieldBottomBorder) \
   /* Web contents colors. */ \
   E_CPONLY(kColorWebContentsBackground) \
   E_CPONLY(kColorWebContentsBackgroundLetterboxing) \

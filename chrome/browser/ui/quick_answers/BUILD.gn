@@ -40,7 +40,6 @@ source_set("quick_answers") {
     deps += [
       "//ash",
       "//chrome/browser/chromeos",
-      "//chrome/browser/ui/color:color_headers",
     ]
   }
 }
