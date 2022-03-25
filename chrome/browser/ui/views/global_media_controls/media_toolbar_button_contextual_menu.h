@@ -11,10 +11,9 @@
 
 class Browser;
 
-// The contextual menu of the media toolbar button has only one item, which is
-// to open the Cast feedback page. So this class should be instantiated when:
-//  (1) It is a Chrome branded build.
-//  (2) GlobalMediaControlsCastStartStop is enabled.
+// The contextual menu of the media toolbar button has two items, both of which
+// are related to Cast. So this class should be instantiated only when
+// GlobalMediaControlsCastStartStop is enabled.
 class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
  public:
   static std::unique_ptr<MediaToolbarButtonContextualMenu> Create(
@@ -32,13 +31,16 @@ class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
   friend class MediaToolbarButtonContextualMenuTest;
 
   // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  void ToggleShowOtherSessions();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Opens the Cast feedback page.
   void ReportIssue();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   const raw_ptr<Browser> browser_;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTEXTUAL_MENU_H_

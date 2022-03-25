@@ -10,6 +10,7 @@ namespace prefs {
 
 extern const char kMediaRouterMediaRemotingEnabled[];
 extern const char kMediaRouterTabMirroringSources[];
+extern const char kMediaRouterShowCastSessionsStartedByOtherDevices[];
 
 }  // namespace prefs
 }  // namespace media_router

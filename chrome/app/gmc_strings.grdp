@@ -41,7 +41,9 @@
    Control the media you're casting
   </message>
   <message name="IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE" desc="Title of the toolbar button's context menu item, which, on click, opens a page to report an issue with Cast.">
-    Report an issue with Google Cast
+   Report an issue with Google Cast
   </message>
-
+  <message name="IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS" desc="Title of a menu item which, on click, toggles (shows or hides) Cast sessions started by other devices on the same network.">
+   Show other Cast sessions
+  </message>
 </grit-part>

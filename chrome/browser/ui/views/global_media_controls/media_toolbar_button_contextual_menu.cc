@@ -13,33 +13,32 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 std::unique_ptr<MediaToolbarButtonContextualMenu>
 MediaToolbarButtonContextualMenu::Create(Browser* browser) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (media_router::GlobalMediaControlsCastStartStopEnabled(
           browser->profile())) {
     return std::make_unique<MediaToolbarButtonContextualMenu>(browser);
   }
-#endif
   return nullptr;
 }
 
 MediaToolbarButtonContextualMenu::MediaToolbarButtonContextualMenu(
     Browser* browser)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    : browser_(browser)
-#endif
-{
-}
+    : browser_(browser) {}
 
 MediaToolbarButtonContextualMenu::~MediaToolbarButtonContextualMenu() = default;
 
 std::unique_ptr<ui::SimpleMenuModel>
 MediaToolbarButtonContextualMenu::CreateMenuModel() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model->AddCheckItemWithStringId(
+      IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS,
+      IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!browser_->profile()->IsOffTheRecord() &&
       browser_->profile()->GetPrefs()->GetBoolean(
           prefs::kUserFeedbackAllowed)) {
@@ -47,15 +46,29 @@ MediaToolbarButtonContextualMenu::CreateMenuModel() {
         IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE,
         IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE);
   }
-  return menu_model;
-#else
-  return nullptr;
 #endif
+  return menu_model;
+}
+
+bool MediaToolbarButtonContextualMenu::IsCommandIdChecked(
+    int command_id) const {
+  PrefService* pref_service = browser_->profile()->GetPrefs();
+  switch (command_id) {
+    case IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS:
+      return pref_service->GetBoolean(
+          media_router::prefs::
+              kMediaRouterShowCastSessionsStartedByOtherDevices);
+    default:
+      return false;
+  }
 }
 
 void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
                                                       int event_flags) {
   switch (command_id) {
+    case IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS:
+      ToggleShowOtherSessions();
+      break;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE:
       ReportIssue();
@@ -64,6 +77,15 @@ void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
     default:
       NOTREACHED();
   }
+}
+
+void MediaToolbarButtonContextualMenu::ToggleShowOtherSessions() {
+  PrefService* pref_service = browser_->profile()->GetPrefs();
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      !pref_service->GetBoolean(
+          media_router::prefs::
+              kMediaRouterShowCastSessionsStartedByOtherDevices));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -26,7 +26,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
-#include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/variations/variations.mojom.h"
@@ -349,13 +348,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kCommerceMerchantViewerMessagesShownTime,
                                std::string());
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
-  registry->RegisterListPref(
-      media_router::prefs::kMediaRouterTabMirroringSources);
 #endif
 
   registry->RegisterDictionaryPref(prefs::kWebShareVisitedTargets);

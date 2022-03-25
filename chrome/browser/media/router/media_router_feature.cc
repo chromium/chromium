@@ -101,7 +101,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // TODO(imcheng): Migrate existing Media Router prefs to here.
+  // TODO(crbug.com/1308056): Migrate existing Media Router prefs to here.
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
 }
