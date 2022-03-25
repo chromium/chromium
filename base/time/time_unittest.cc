@@ -186,7 +186,7 @@ class TimeTest : public testing::Test {
 // Test conversion to/from TimeDeltas elapsed since the Windows epoch.
 // Conversions should be idempotent and non-lossy.
 TEST_F(TimeTest, DeltaSinceWindowsEpoch) {
-  const TimeDelta delta = Microseconds(123);
+  constexpr TimeDelta delta = Microseconds(123);
   EXPECT_EQ(delta,
             Time::FromDeltaSinceWindowsEpoch(delta).ToDeltaSinceWindowsEpoch());
 
@@ -201,6 +201,14 @@ TEST_F(TimeTest, DeltaSinceWindowsEpoch) {
   const Time should_be_null =
       Time::FromDeltaSinceWindowsEpoch(Time().ToDeltaSinceWindowsEpoch());
   EXPECT_TRUE(should_be_null.is_null());
+
+  {
+    constexpr Time constexpr_time =
+        Time::FromDeltaSinceWindowsEpoch(Microseconds(123));
+    constexpr TimeDelta constexpr_delta =
+        constexpr_time.ToDeltaSinceWindowsEpoch();
+    static_assert(constexpr_delta == delta, "");
+  }
 }
 
 // Test conversion to/from time_t.
