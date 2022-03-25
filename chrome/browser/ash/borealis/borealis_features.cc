@@ -224,7 +224,8 @@ AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
   std::string board = GetBoardName();
   TokenAuthority auth = GetAuthorityForToken(board, hash_of_current_token);
   if (auth == TokenAuthority::kRejected) {
-    LOG(WARNING) << "Incorrect token for board=" << board;
+    LOG(WARNING) << "Incorrect token hash '" << hash_of_current_token
+                 << "' for board=" << board;
     return AllowStatus::kIncorrectToken;
   } else if (auth == TokenAuthority::kAllowedOverridesHardwareChecks) {
     return AllowStatus::kAllowed;
