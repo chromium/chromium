@@ -84,11 +84,38 @@ class RequestIdMatcher : public RequestValidityMatcherInterface {
 // Base class of all matchers that verify one aspect of a record.
 class RecordMatcher : public RequestValidityMatcherInterface {
  public:
+  enum class Mode : char {
+    // The default. Match the content of each record in a full request payload
+    // in "encryptedRecord". The argument is a dict that represents a full
+    // request payload. This is typically switched on if the test case is
+    // verifying a full request payload.
+    FullRequest = 'f',
+    // Directly match the content of a single record assuming no
+    // "encryptedRecord" key wrapping it. The argument is a dict that contains
+    // the record. This is typically switched on if the test case is verifying a
+    // single record.
+    RecordOnly = 'r'
+  };
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* listener) const final;
   // Match and explain the given record.
   virtual bool MatchAndExplainRecord(const base::Value::Dict& arg,
                                      MatchResultListener* listener) const = 0;
+  // Change mode. See the doc of |Mode| above.
+  RecordMatcher& SetMode(Mode mode);
+
+  // A helper function that calls |SetMode| above and casts the type back to the
+  // derived class.
+  template <class DerivedRecordMatcher>
+  static DerivedRecordMatcher& SetMode(DerivedRecordMatcher&& record_matcher,
+                                       Mode mode) {
+    static_assert(std::is_base_of<RecordMatcher, DerivedRecordMatcher>::value,
+                  "record_matcher must be of type RecordMatcher.");
+    return static_cast<DerivedRecordMatcher&>(record_matcher.SetMode(mode));
+  }
+
+ private:
+  Mode mode_ = Mode::FullRequest;
 };
 
 // Verify the encryptedWrappedRecord field of each record.
@@ -113,6 +140,16 @@ class NoEncryptedWrappedRecordRecordMatcher : public RecordMatcher {
 
 // Verify the sequenceInformation field of each record.
 class SequenceInformationRecordMatcher : public RecordMatcher {
+ public:
+  bool MatchAndExplainRecord(const base::Value::Dict& arg,
+                             MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
+// Verify the compressionInformation field of each record.
+class CompressionInformationMatcher : public RecordMatcher {
  public:
   bool MatchAndExplainRecord(const base::Value::Dict& arg,
                              MatchResultListener* listener) const override;
@@ -184,6 +221,18 @@ class RequestValidityMatcherBuilder {
   }
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying a single record.
+  static RequestValidityMatcherBuilder<T> CreateRecord() {
+    return std::move(RequestValidityMatcherBuilder<T>::CreateEmpty()
+                         .AppendMatcher(RecordMatcher::SetMode(
+                             EncryptedWrappedRecordRecordMatcher(),
+                             RecordMatcher::Mode::RecordOnly))
+                         .AppendMatcher(RecordMatcher::SetMode(
+                             SequenceInformationRecordMatcher(),
+                             RecordMatcher::Mode::RecordOnly)));
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a gap upload request.
   static RequestValidityMatcherBuilder<T> CreateGapUpload() {
     // A gap upload is a data upload with no encryptedWrappedRecord.
@@ -196,8 +245,7 @@ class RequestValidityMatcherBuilder {
   // Builds and returns the |Matcher<T>| object.
   [[nodiscard]] Matcher<T> Build() const { return AllOfArray(matchers_); }
 
-  // Append a matcher. This object will take over the ownership of matcher and
-  // matcher must be allocated on heap (e.g., by using the "new" operator).
+  // Append a matcher.
   template <class RequestValidityMatcher>
   RequestValidityMatcherBuilder<T>& AppendMatcher(
       const RequestValidityMatcher& matcher) {
@@ -289,6 +337,12 @@ Matcher<T> IsEncryptionKeyRequestUploadRequestValid(bool need_key = true) {
 template <class T = base::Value::Dict>
 Matcher<T> IsGapUploadRequestValid() {
   return RequestValidityMatcherBuilder<T>::CreateGapUpload().Build();
+}
+
+// Match a single record within a payload that is valid.
+template <class T = base::Value::Dict>
+Matcher<T> IsRecordValid() {
+  return RequestValidityMatcherBuilder<T>::CreateRecord().Build();
 }
 
 // Match a request that contains the given record |matched_record_json|. The
