@@ -197,6 +197,43 @@ class DuplicateColorsTest(unittest.TestCase):
     self.assertEqual(0, len(errors))
 
 
+class NonDynamicColorsTest(unittest.TestCase):
+  class MockColorStateListSet:
+    def get(self):
+      return {'color_state_list'}
+
+  def testFailure(self):
+    lines = [
+        'app:tint="@color/tint_color" />',
+        'android:background="@color/bg_color"',
+        '<color name="fake_semantic_color">@color/palettele_color</color>',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [MockFile('chrome/java/res_test/colors.xml', lines)]
+    errors = checkxmlstyle._CheckNonDynamicColorReference(
+        mock_input_api,
+        MockOutputApi(),
+        lazy_color_state_list_set=self.MockColorStateListSet())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(len(lines), len(errors[0].items))
+
+  def testSuccess(self):
+    lines = [
+        'app:tint="@color/color_state_list" />',
+        'android:background="@color/color_state_list"',
+        '<color name="fake_semantic_color">@color/color_state_list</color>',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('chrome/java/res_test/colors.xml', lines),
+    ]
+    errors = checkxmlstyle._CheckNonDynamicColorReference(
+        mock_input_api,
+        MockOutputApi(),
+        lazy_color_state_list_set=self.MockColorStateListSet())
+    self.assertEqual(0, len(errors))
+
+
 class XmlNamespacePrefixesTest(unittest.TestCase):
 
   def testFailure(self):

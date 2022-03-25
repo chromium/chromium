@@ -39,6 +39,30 @@ def IncludedFiles(input_api, allow_list=helpers.INCLUDED_PATHS):
   return input_api.AffectedFiles(include_deletes=False, file_filter=files)
 
 
+"""
+This class has two jobs. It allows us to delay searching directories for color
+state list files unless we actually find a color reference to check against. And
+additionally it's a convenient mock point for tests to specify files in a
+slightly more robust way than relying on real color state list file names.
+"""
+
+
+class LazyColorStateListSet:
+  _color_set_or_none = None
+
+  def get(self):
+    if self._color_set_or_none != None:
+      return self._color_set_or_none
+
+    self._color_set_or_none = set()
+    for color_dir in helpers.COLOR_STATE_LIST_DIRS:
+      for color_file in os.listdir(color_dir):
+        if '.' in color_file:
+          print(color_file)
+          self._color_set_or_none.add(color_file[:color_file.index('.')])
+    return self._color_set_or_none
+
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   result = []
@@ -47,6 +71,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckDuplicateColors(input_api, output_api))
   result.extend(_CheckSemanticColorsReferences(input_api, output_api))
   result.extend(_CheckColorPaletteReferences(input_api, output_api))
+  result.extend(_CheckNonDynamicColorReference(input_api, output_api))
   result.extend(_CheckXmlNamespacePrefixes(input_api, output_api))
   result.extend(_CheckTextAppearance(input_api, output_api))
   result.extend(_CheckLineSpacingAttribute(input_api, output_api))
@@ -149,7 +174,6 @@ def _CheckColorReferences(input_api, output_api):
   ''', warnings)
     ]
   return result
-
 
 def _CheckDuplicateColors(input_api, output_api):
   """
@@ -272,6 +296,43 @@ def _CheckSemanticColorsReferences(input_api, output_api):
     See https://crbug.com/775198 for more information.
   ''', errors)
     ]
+  return []
+
+
+def _CheckNonDynamicColorReference(
+    input_api, output_api, lazy_color_state_list_set=LazyColorStateListSet()):
+  """
+  Checks for @color references that will not work with dynamic colors.
+  """
+
+  warnings = []
+  for f in IncludedFiles(input_api,
+                         allow_list=helpers.DYNAMIC_COLOR_INCLUDED_PATHS):
+    for line_number, line in f.ChangedContents():
+      r = helpers.COLOR_REFERENCE_PATTERN.search(line)
+      if not r:
+        continue
+
+      color_name = r.group(1)
+      if color_name not in lazy_color_state_list_set.get():
+        issue = '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip())
+        warnings.append(issue)
+
+  if warnings:
+    # TODO(https://crbug.com/1224883): Replace bug with a upstream doc link.
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+Dynamic Color Reference Check warning:
+  Your new code is using @color references. These will not correctly support
+  dynamic colors. Instead you should use a @macro that routes into an ?attr.
+  Note using color references is currently okay for incognito code, as it should
+  not be dynamically colored.
+
+  See https://crbug.com/1302056 for more information.
+          ''', warnings)
+    ]
+
   return []
 
 
