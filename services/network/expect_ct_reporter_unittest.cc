@@ -421,6 +421,40 @@ class ExpectCTReporterTest : public ::testing::Test {
  protected:
   net::EmbeddedTestServer& test_server() { return report_server_; }
 
+  // Tests that reports are sent when the CORS preflight request returns the
+  // header field |preflight_header_name| with value given by
+  // |preflight_header_good_value|.
+  void TestForReportPreflightSuccess(
+      ExpectCTReporter* reporter,
+      TestCertificateReportSender* sender,
+      const net::SSLInfo& ssl_info,
+      const std::string& preflight_header_name,
+      const std::string& preflight_header_good_value) {
+    const std::string report_path = "/report";
+    std::map<std::string, std::string> cors_headers = kGoodCorsHeaders;
+    if (preflight_header_good_value.empty()) {
+      cors_headers.erase(preflight_header_name);
+    } else {
+      cors_headers[preflight_header_name] = preflight_header_good_value;
+    }
+    base::RunLoop cors_run_loop;
+    test_server().RegisterRequestHandler(
+        base::BindRepeating(&HandleReportPreflightForPath, report_path,
+                            cors_headers, cors_run_loop.QuitClosure()));
+    ASSERT_TRUE(test_server().Start());
+    const GURL report_uri = test_server().GetURL(report_path);
+    reporter->OnExpectCTFailed(
+        net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
+        ssl_info.cert.get(), ssl_info.unverified_cert.get(),
+        ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
+    // A CORS preflight request should be sent before the actual report.
+    cors_run_loop.Run();
+    sender->WaitForReport(report_uri);
+
+    EXPECT_EQ(report_uri, sender->latest_report_uri());
+    EXPECT_FALSE(sender->latest_serialized_report().empty());
+  }
+
   // Tests that reports are not sent when the CORS preflight request returns the
   // header field |preflight_header_name| with value given by
   // |preflight_header_bad_value|, and that reports are successfully sent when
@@ -791,15 +825,6 @@ TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
 
 // Test that report preflight responses can contain whitespace.
 TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
-  const std::string report_path = "/report";
-  std::map<std::string, std::string> cors_headers = kGoodCorsHeaders;
-  cors_headers["Access-Control-Allow-Methods"] = "GET, POST";
-  base::RunLoop cors_run_loop;
-  test_server().RegisterRequestHandler(
-      base::BindRepeating(&HandleReportPreflightForPath, report_path,
-                          cors_headers, cors_run_loop.QuitClosure()));
-  ASSERT_TRUE(test_server().Start());
-
   TestCertificateReportSender* sender = new TestCertificateReportSender();
   auto context_builder = net::CreateTestURLRequestContextBuilder();
   auto context = context_builder->Build();
@@ -815,18 +840,53 @@ TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
   ssl_info.unverified_cert = net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "localhost_cert.pem");
 
-  const GURL report_uri = test_server().GetURL(report_path);
-  reporter.OnExpectCTFailed(
-      net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
-      ssl_info.cert.get(), ssl_info.unverified_cert.get(),
-      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
+  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightSuccess(
+      &reporter, sender, ssl_info, "Access-Control-Allow-Methods",
+      "GET, POST"));
+}
 
-  // A CORS preflight request should be sent before the actual report.
-  cors_run_loop.Run();
-  sender->WaitForReport(report_uri);
+// Test that report preflight responses can contain
+// "Access-Control-Allow-Methods: *"
+TEST_F(ExpectCTReporterTest, PreflightMethodsContainsWildcard) {
+  TestCertificateReportSender* sender = new TestCertificateReportSender();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
+                            base::NullCallback());
+  reporter.report_sender_.reset(sender);
+  EXPECT_TRUE(sender->latest_report_uri().is_empty());
+  EXPECT_TRUE(sender->latest_serialized_report().empty());
 
-  EXPECT_EQ(report_uri, sender->latest_report_uri());
-  EXPECT_FALSE(sender->latest_serialized_report().empty());
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl_info.unverified_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "localhost_cert.pem");
+
+  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightSuccess(
+      &reporter, sender, ssl_info, "Access-Control-Allow-Methods", "*"));
+}
+
+// Test that report preflight responses can contain
+// "Access-Control-Allow-Headers: *"
+TEST_F(ExpectCTReporterTest, PreflightHeadersContainsWildcard) {
+  TestCertificateReportSender* sender = new TestCertificateReportSender();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
+                            base::NullCallback());
+  reporter.report_sender_.reset(sender);
+  EXPECT_TRUE(sender->latest_report_uri().is_empty());
+  EXPECT_TRUE(sender->latest_serialized_report().empty());
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl_info.unverified_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "localhost_cert.pem");
+
+  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightSuccess(
+      &reporter, sender, ssl_info, "Access-Control-Allow-Headers", "*"));
 }
 
 // Test that no report is sent when the CORS preflight returns an invalid
@@ -855,7 +915,29 @@ TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseOrigin) {
       "Access-Control-Allow-Origin", "https://another-origin.test", "null"));
 }
 
-// Test that no report is sent when the CORS preflight returns an invalid
+// Test that report is sent when the CORS preflight does not include an
+// Access-Control-Allow-Methods header.
+TEST_F(ExpectCTReporterTest, CorsPreflightWithNoAllowMethods) {
+  TestCertificateReportSender* sender = new TestCertificateReportSender();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
+                            base::NullCallback());
+  reporter.report_sender_.reset(sender);
+  EXPECT_TRUE(sender->latest_report_uri().is_empty());
+  EXPECT_TRUE(sender->latest_serialized_report().empty());
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl_info.unverified_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "localhost_cert.pem");
+
+  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightSuccess(
+      &reporter, sender, ssl_info, "Access-Control-Allow-Methods", ""));
+}
+
+// Test that report is sent when the CORS preflight returns an invalid
 // Access-Control-Allow-Methods.
 TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseMethods) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
@@ -873,12 +955,9 @@ TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseMethods) {
   ssl_info.unverified_cert = net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "localhost_cert.pem");
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kExpectCTReporting);
-  EXPECT_TRUE(sender->latest_serialized_report().empty());
-  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightFailure(
-      &reporter, sender, net::HostPortPair("example.test", 443), ssl_info,
-      "Access-Control-Allow-Methods", "GET,HEAD,POSSSST", "POST"));
+  ASSERT_NO_FATAL_FAILURE(TestForReportPreflightSuccess(
+      &reporter, sender, ssl_info, "Access-Control-Allow-Methods",
+      "GET,HEAD,POSSSST"));
 }
 
 // Test that no report is sent when the CORS preflight returns an invalid

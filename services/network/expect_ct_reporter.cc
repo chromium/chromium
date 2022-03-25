@@ -207,9 +207,10 @@ void ExpectCTReporter::OnResponseStarted(net::URLRequest* request,
   // Check that the preflight succeeded: it must have an HTTP OK status code,
   // with the following headers:
   // - Access-Control-Allow-Origin: * or null
-  // - Access-Control-Allow-Methods: POST
-  // - Access-Control-Allow-Headers: Content-Type
-
+  // - Access-Control-Allow-Headers: * or Content-Type
+  // Note that * is allowed here as the credentials mode is never 'include'.
+  // Access-Control-Allow-Methods is not checked, as the preflight is always
+  // for a POST method, which is safelisted.
   if (response_code == -1 || response_code < 200 || response_code > 299) {
     OnReportFailure(preflight->report_uri, net_error, response_code);
     inflight_preflights_.erase(request);
@@ -218,9 +219,8 @@ void ExpectCTReporter::OnResponseStarted(net::URLRequest* request,
   }
 
   if (!HasHeaderValues(request, "Access-Control-Allow-Origin", {"*", "null"}) ||
-      !HasHeaderValues(request, "Access-Control-Allow-Methods", {"post"}) ||
       !HasHeaderValues(request, "Access-Control-Allow-Headers",
-                       {"content-type"})) {
+                       {"*", "content-type"})) {
     OnReportFailure(preflight->report_uri, net_error, response_code);
     inflight_preflights_.erase(request);
     // Do not use |preflight| after this point, since it has been erased above.

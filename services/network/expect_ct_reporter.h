@@ -89,7 +89,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
                            PreflightUsesNetworkIsolationKey);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest, PreflightContainsWhitespace);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           PreflightMethodsContainsWildcard);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           PreflightHeadersContainsWildcard);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
                            BadCorsPreflightResponseOrigin);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           CorsPreflightWithNoAllowMethods);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
                            BadCorsPreflightResponseMethods);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
