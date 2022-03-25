@@ -34,7 +34,7 @@ class ScopedDevZero::Server {
  public:
   // Creates the pseudo-dir representing /dev as `directory_request` and serves
   // up a "zero" file within it. `on_initialized` is run with the status.
-  Server(fidl::InterfaceRequest<::fuchsia::io::Directory> directory_request,
+  Server(fidl::InterfaceRequest<fuchsia::io::Directory> directory_request,
          OnceCallback<void(zx_status_t status)> on_initialized);
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
@@ -118,7 +118,7 @@ bool ScopedDevZero::Initialize() {
   RunLoop run_loop;
   server_ = SequenceBound<Server>(
       io_thread_.task_runner(),
-      fidl::InterfaceRequest<::fuchsia::io::Directory>(std::move(request)),
+      fidl::InterfaceRequest<fuchsia::io::Directory>(std::move(request)),
       base::BindOnce(
           [](base::OnceClosure quit_loop, zx_status_t& status,
              zx_status_t init_status) {

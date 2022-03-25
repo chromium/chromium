@@ -328,7 +328,7 @@ int main(int argc, char** argv) {
     frame->CreateView(std::move(view_tokens.view_token));
     auto presenter = base::ComponentContextForProcess()
                          ->svc()
-                         ->Connect<::fuchsia::ui::policy::Presenter>();
+                         ->Connect<fuchsia::ui::policy::Presenter>();
     presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
                                     nullptr);
   }

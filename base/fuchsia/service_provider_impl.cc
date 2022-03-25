@@ -13,21 +13,21 @@ namespace base {
 std::unique_ptr<ServiceProviderImpl>
 ServiceProviderImpl::CreateForOutgoingDirectory(
     sys::OutgoingDirectory* outgoing_directory) {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory;
+  fidl::InterfaceHandle<fuchsia::io::Directory> service_directory;
   outgoing_directory->GetOrCreateDirectory("svc")->Serve(
-      ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+      fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
       service_directory.NewRequest().TakeChannel());
   return std::make_unique<ServiceProviderImpl>(std::move(service_directory));
 }
 
 ServiceProviderImpl::ServiceProviderImpl(
-    fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory)
+    fidl::InterfaceHandle<fuchsia::io::Directory> service_directory)
     : directory_(std::move(service_directory)) {}
 
 ServiceProviderImpl::~ServiceProviderImpl() = default;
 
 void ServiceProviderImpl::AddBinding(
-    fidl::InterfaceRequest<::fuchsia::sys::ServiceProvider> request) {
+    fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> request) {
   bindings_.AddBinding(this, std::move(request));
 }
 

@@ -16,7 +16,7 @@
 
 namespace base {
 
-StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
+StartupContext::StartupContext(fuchsia::sys::StartupInfo startup_info) {
   std::unique_ptr<sys::ServiceDirectory> incoming_services;
 
   // Component manager generates |flat_namespace|, so things are horribly broken
@@ -69,9 +69,9 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
     }
 
     // Publish those services to the caller as |incoming_services|.
-    fidl::InterfaceHandle<::fuchsia::io::Directory> incoming_directory;
+    fidl::InterfaceHandle<fuchsia::io::Directory> incoming_directory;
     additional_services_directory_->GetOrCreateDirectory("svc")->Serve(
-        ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
         incoming_directory.NewRequest().TakeChannel());
     incoming_services =
         std::make_unique<sys::ServiceDirectory>(std::move(incoming_directory));
@@ -82,7 +82,7 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
 
     // Create a dummy ServiceDirectory with a channel that's not
     // connected on the other end.
-    fidl::InterfaceHandle<::fuchsia::io::Directory> dummy_directory;
+    fidl::InterfaceHandle<fuchsia::io::Directory> dummy_directory;
     std::ignore = dummy_directory.NewRequest();
     incoming_services =
         std::make_unique<sys::ServiceDirectory>(std::move(dummy_directory));

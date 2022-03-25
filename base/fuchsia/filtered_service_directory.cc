@@ -15,8 +15,7 @@ namespace base {
 
 FilteredServiceDirectory::FilteredServiceDirectory(
     sys::ServiceDirectory* directory)
-    : directory_(std::move(directory)) {
-}
+    : directory_(std::move(directory)) {}
 
 FilteredServiceDirectory::~FilteredServiceDirectory() {}
 
@@ -33,11 +32,11 @@ zx_status_t FilteredServiceDirectory::AddService(
 }
 
 zx_status_t FilteredServiceDirectory::ConnectClient(
-    fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request) {
+    fidl::InterfaceRequest<fuchsia::io::Directory> dir_request) {
   // sys::OutgoingDirectory puts public services under ./svc . Connect to that
   // directory and return client handle for the connection,
   return outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-      ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+      fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
       dir_request.TakeChannel());
 }
 

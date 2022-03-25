@@ -73,7 +73,7 @@ class KeepAliveComponentState : public AccumulatorComponentState {
 class AgentImplTest : public ::testing::Test {
  public:
   AgentImplTest() {
-    fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
+    fidl::InterfaceHandle<fuchsia::io::Directory> directory;
     services_.GetOrCreateDirectory("svc")->Serve(
         fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
         directory.NewRequest().TakeChannel());
