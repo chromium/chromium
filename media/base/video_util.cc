@@ -879,7 +879,7 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
 
   if (dst_frame.format() == PIXEL_FORMAT_I420 &&
       src_frame.format() == PIXEL_FORMAT_NV12) {
-    if (src_frame.visible_rect() == dst_frame.visible_rect()) {
+    if (src_frame.visible_rect().size() == dst_frame.visible_rect().size()) {
       // Both frames have the same size, only NV12-to-I420 conversion is
       // required.
       int error = libyuv::NV12ToI420(
@@ -940,7 +940,7 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
 
   if (dst_frame.format() == PIXEL_FORMAT_NV12 &&
       src_frame.format() == PIXEL_FORMAT_I420) {
-    if (src_frame.visible_rect() == dst_frame.visible_rect()) {
+    if (src_frame.visible_rect().size() == dst_frame.visible_rect().size()) {
       // Both frames have the same size, only I420-to-NV12 conversion is
       // required.
       int error = libyuv::I420ToNV12(

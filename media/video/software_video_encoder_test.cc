@@ -79,10 +79,9 @@ class SoftwareVideoEncoderTest
       gfx::Size size,
       VideoDecoder::OutputCB output_cb,
       std::vector<uint8_t> extra_data = std::vector<uint8_t>()) {
-    gfx::Rect visible_rect(size.width(), size.height());
     VideoDecoderConfig config(
         codec_, profile_, VideoDecoderConfig::AlphaMode::kIsOpaque,
-        VideoColorSpace::JPEG(), VideoTransformation(), size, visible_rect,
+        VideoColorSpace::JPEG(), VideoTransformation(), size, gfx::Rect(size),
         size, extra_data, EncryptionScheme::kUnencrypted);
 
     if (codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kVP8) {
@@ -652,7 +651,8 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
     auto original_frame = frames_to_encode[i];
     auto decoded_frame = decoded_frames[i];
     EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
-    EXPECT_EQ(decoded_frame->visible_rect(), original_frame->visible_rect());
+    EXPECT_EQ(decoded_frame->visible_rect().size(),
+              original_frame->visible_rect().size());
     if (decoded_frame->format() != original_frame->format()) {
       // The frame was converted from RGB to YUV, we can't easily compare to
       // the original frame, so we're going to compare with a new white frame.
