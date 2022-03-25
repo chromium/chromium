@@ -25,7 +25,9 @@ struct PreviewIds {
 // Parameters required to do print preview.
 [EnableIf=enable_print_preview]
 struct RequestPrintPreviewParams {
+  [EnableIf=is_chromeos_ash]
   bool is_from_arc = false;
+
   bool is_modifiable = false;
   bool webnode_only = false;
   bool has_selection = false;

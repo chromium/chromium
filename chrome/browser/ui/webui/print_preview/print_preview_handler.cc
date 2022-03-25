@@ -973,8 +973,12 @@ void PrintPreviewHandler::SendInitialSettings(
                                 print_preview_ui()->initiator_title());
   initial_settings.SetBoolKey(kSettingPreviewModifiable,
                               print_preview_ui()->source_is_modifiable());
-  initial_settings.SetBoolKey(kSettingPreviewIsFromArc,
-                              print_preview_ui()->source_is_arc());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool source_is_arc = print_preview_ui()->source_is_arc();
+#else
+  bool source_is_arc = false;
+#endif
+  initial_settings.SetBoolKey(kSettingPreviewIsFromArc, source_is_arc);
   initial_settings.SetStringKey(kSettingPrinterName, default_printer);
   initial_settings.SetBoolKey(kDocumentHasSelection,
                               print_preview_ui()->source_has_selection());

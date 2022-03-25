@@ -1362,10 +1362,12 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_renderer) {
     print_renderer_.Bind(std::move(print_renderer));
     print_preview_context_.SetIsForArc(true);
   }
+#endif
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
@@ -1389,10 +1391,12 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
 
   print_preview_context_.OnPrintPreview();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_preview_context_.IsForArc()) {
     base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
                                   PREVIEW_EVENT_REQUESTED, PREVIEW_EVENT_MAX);
   }
+#endif
 
   if (!print_preview_context_.source_frame()) {
     DidFinishPrinting(FAIL_PREVIEW);
@@ -1410,10 +1414,12 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Save the job settings if a PrintRenderer will be used to create the preview
   // document.
   if (print_renderer_)
     print_renderer_job_settings_ = std::move(settings);
+#endif
 
   // Set the options from document if we are previewing a pdf and send a
   // message to browser.
@@ -1599,8 +1605,12 @@ void PrintRenderFrameHelper::OnFramePreparedForPreviewDocument() {
   }
 
   CreatePreviewDocumentResult result = CreatePreviewDocument();
-  if (result != CREATE_IN_PROGRESS)
-    DidFinishPrinting(result == CREATE_SUCCESS ? OK : FAIL_PREVIEW);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (result == CREATE_IN_PROGRESS)
+    return;
+#endif
+
+  DidFinishPrinting(result == CREATE_SUCCESS ? OK : FAIL_PREVIEW);
 }
 
 PrintRenderFrameHelper::CreatePreviewDocumentResult
@@ -1608,18 +1618,23 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   if (!print_pages_params_ || CheckForCancel() || !preview_ui_)
     return CREATE_FAIL;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_preview_context_.IsForArc()) {
     base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
                                   PREVIEW_EVENT_CREATE_DOCUMENT,
                                   PREVIEW_EVENT_MAX);
   }
+#endif
 
   const mojom::PrintParams& print_params = *print_pages_params_->params;
   const std::vector<uint32_t>& pages = print_pages_params_->pages;
 
   bool require_document_metafile =
-      print_renderer_ ||
       print_params.printed_doc_type != mojom::SkiaDocumentType::kMSKP;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  require_document_metafile = require_document_metafile || print_renderer_;
+#endif
+
   if (!print_preview_context_.CreatePreviewDocument(
           std::move(prep_frame_view_), pages, print_params.printed_doc_type,
           print_params.document_cookie, require_document_metafile)) {
@@ -1660,6 +1675,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   if (CheckForCancel())
     return CREATE_FAIL;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If a PrintRenderer has been provided, use it to create the preview
   // document.
   if (print_renderer_) {
@@ -1671,6 +1687,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
                        print_params.document_cookie, begin_time));
     return CREATE_IN_PROGRESS;
   }
+#endif
 
   if (print_pages_params_->params->printed_doc_type ==
       mojom::SkiaDocumentType::kMSKP) {
@@ -2535,7 +2552,9 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_from_arc = print_preview_context_.IsForArc();
+#endif
   const bool is_modifiable = print_preview_context_.IsModifiable();
   const bool has_selection = print_preview_context_.HasSelection();
 
@@ -2547,7 +2566,9 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     snapshotter_ = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
 
   auto params = mojom::RequestPrintPreviewParams::New();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   params->is_from_arc = is_from_arc;
+#endif
   params->is_modifiable = is_modifiable;
   params->has_selection = has_selection;
   switch (type) {
@@ -2626,10 +2647,12 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_preview_context_.IsForArc()) {
     base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
                                   PREVIEW_EVENT_INITIATED, PREVIEW_EVENT_MAX);
   }
+#endif
   GetPrintManagerHost()->RequestPrintPreview(std::move(params));
 }
 
@@ -2853,9 +2876,12 @@ void PrintRenderFrameHelper::PrintPreviewContext::Failed(bool report_error) {
   state_ = INITIALIZED;
   if (report_error) {
     DCHECK_NE(PREVIEW_ERROR_NONE, error_);
-    base::UmaHistogramEnumeration(is_for_arc_ ? "Arc.PrintPreview.RendererError"
-                                              : "PrintPreview.RendererError",
-                                  error_, PREVIEW_ERROR_LAST_ENUM);
+    const char* name = "PrintPreview.RendererError";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (is_for_arc_)
+      name = "Arc.PrintPreview.RendererError";
+#endif
+    base::UmaHistogramEnumeration(name, error_, PREVIEW_ERROR_LAST_ENUM);
   }
   ClearContext();
 }
@@ -2871,10 +2897,12 @@ bool PrintRenderFrameHelper::PrintPreviewContext::IsRendering() const {
   return state_ == RENDERING || state_ == DONE;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrintRenderFrameHelper::PrintPreviewContext::IsForArc() const {
   DCHECK_NE(state_, UNINITIALIZED);
   return is_for_arc_;
 }
+#endif
 
 bool PrintRenderFrameHelper::PrintPreviewContext::IsPlugin() const {
   DCHECK(state_ != UNINITIALIZED);
@@ -2901,9 +2929,11 @@ bool PrintRenderFrameHelper::PrintPreviewContext::IsFinalPageRendered() const {
   return static_cast<size_t>(current_page_index_) == pages_to_render_.size();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintRenderFrameHelper::PrintPreviewContext::SetIsForArc(bool is_for_arc) {
   is_for_arc_ = is_for_arc;
 }
+#endif
 
 void PrintRenderFrameHelper::PrintPreviewContext::set_error(
     enum PrintPreviewErrorBuckets error) {
