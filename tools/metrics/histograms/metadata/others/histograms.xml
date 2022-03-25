@@ -5877,7 +5877,7 @@ chromium-metrics-reviews@google.com.
   <summary>The time it takes to open a hyphenation dictionary.</summary>
 </histogram>
 
-<histogram name="Hyphenation.Open.File" units="ms" expires_after="2022-04-24">
+<histogram name="Hyphenation.Open.File" units="ms" expires_after="2022-06-26">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time it takes to open a hyphenation dictionary file.</summary>
