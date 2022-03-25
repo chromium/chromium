@@ -46,4 +46,7 @@ specific_include_rules = {
   "signin_intercept_first_run_experience_dialog_browsertest.cc": [
     "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
   ],
+  "user_note_ui_coordinator.h": [
+    "+components/user_notes/interfaces/user_notes_ui.h"
+  ],
 }
