@@ -39,8 +39,13 @@ ElementPositionGetter::~ElementPositionGetter() = default;
 void ElementPositionGetter::Start(content::RenderFrameHost* frame_host,
                                   std::string element_object_id,
                                   Callback callback) {
-  object_id_ = element_object_id;
   callback_ = std::move(callback);
+  if (!frame_host) {
+    OnError(ClientStatus(FRAME_HOST_NOT_FOUND));
+    return;
+  }
+
+  object_id_ = element_object_id;
   remaining_rounds_ = max_rounds_;
   // TODO(crbug/806868): Consider using autofill_assistant::RetryTimer
 
