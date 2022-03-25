@@ -520,6 +520,30 @@
       '--client-outdir',
       '.',
       '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M98/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=98',
+    ],
+    'identifier': 'with_impl_from_98',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M98',
+          'revision': 'version:98.0.4758.109',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
       '../../weblayer_instrumentation_test_M97/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
@@ -536,7 +560,7 @@
       ],
     },
   },
-  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
     'args': [
       '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
@@ -556,30 +580,6 @@
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M96',
           'revision': 'version:96.0.4664.141',
-        }
-      ],
-    },
-  },
-  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
-    'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
-      '--test-runner-outdir',
-      '.',
-      '--client-outdir',
-      '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M95/out/Release',
-      '--test-expectations',
-      '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=95',
-    ],
-    'identifier': 'with_impl_from_95',
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M95',
-          'revision': 'version:95.0.4638.78',
         }
       ],
     },
@@ -664,6 +664,30 @@
       '--client-outdir',
       '.',
       '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M98/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=98',
+    ],
+    'identifier': 'with_impl_from_98',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M98',
+          'revision': 'version:98.0.4758.109',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
       '../../weblayer_instrumentation_test_M97/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
@@ -680,7 +704,7 @@
       ],
     },
   },
-  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
     'args': [
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
@@ -700,30 +724,6 @@
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M96',
           'revision': 'version:96.0.4664.141',
-        }
-      ],
-    },
-  },
-  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
-    'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
-      '--test-runner-outdir',
-      '.',
-      '--client-outdir',
-      '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M95/out/Release',
-      '--test-expectations',
-      '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=95',
-    ],
-    'identifier': 'with_impl_from_95',
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M95',
-          'revision': 'version:95.0.4638.78',
         }
       ],
     },
@@ -806,6 +806,30 @@
       '--test-runner-outdir',
       '.',
       '--client-outdir',
+      '../../weblayer_instrumentation_test_M98/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=98',
+    ],
+    'identifier': 'with_client_from_98',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M98',
+          'revision': 'version:98.0.4758.109',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
       '../../weblayer_instrumentation_test_M97/out/Release',
       '--implementation-outdir',
       '.',
@@ -824,7 +848,7 @@
       ],
     },
   },
-  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE': {
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
     'args': [
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
@@ -844,30 +868,6 @@
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M96',
           'revision': 'version:96.0.4664.141',
-        }
-      ],
-    },
-  },
-  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FIVE_MILESTONE': {
-    'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
-      '--test-runner-outdir',
-      '.',
-      '--client-outdir',
-      '../../weblayer_instrumentation_test_M95/out/Release',
-      '--implementation-outdir',
-      '.',
-      '--test-expectations',
-      '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--client-version=95',
-    ],
-    'identifier': 'with_client_from_95',
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M95',
-          'revision': 'version:95.0.4638.78',
         }
       ],
     },
