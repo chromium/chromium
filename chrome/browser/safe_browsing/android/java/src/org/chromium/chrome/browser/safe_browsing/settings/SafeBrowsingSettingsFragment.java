@@ -214,16 +214,29 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         // The metricsSuffix string shouldn't be changed. When adding a new access point, please
         // also update the "SafeBrowsing.Settings.AccessPoint" histogram suffix in the
         // histograms.xml file.
-        if (mAccessPoint == SettingsAccessPoint.PARENT_SETTINGS) {
-            metricsSuffix = "ParentSettings";
-        } else if (mAccessPoint == SettingsAccessPoint.SAFETY_CHECK) {
-            metricsSuffix = "SafetyCheck";
-        } else if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
-            metricsSuffix = "SurfaceExplorerPromoSlinger";
-        } else if (mAccessPoint == SettingsAccessPoint.SECURITY_INTERSTITIAL) {
-            metricsSuffix = "SecurityInterstitial";
-        } else {
-            metricsSuffix = "Default";
+        switch (mAccessPoint) {
+            case SettingsAccessPoint.DEFAULT:
+                metricsSuffix = "Default";
+                break;
+            case SettingsAccessPoint.PARENT_SETTINGS:
+                metricsSuffix = "ParentSettings";
+                break;
+            case SettingsAccessPoint.SAFETY_CHECK:
+                metricsSuffix = "SafetyCheck";
+                break;
+            case SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER:
+                metricsSuffix = "SurfaceExplorerPromoSlinger";
+                break;
+            case SettingsAccessPoint.SECURITY_INTERSTITIAL:
+                metricsSuffix = "SecurityInterstitial";
+                break;
+            case SettingsAccessPoint.TAILORED_SECURITY:
+                metricsSuffix = "TailoredSecurity";
+                break;
+            default:
+                assert false : "Should not be reached.";
+                metricsSuffix = "";
+                break;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "SafeBrowsing.Settings.UserAction." + metricsSuffix, userAction,
