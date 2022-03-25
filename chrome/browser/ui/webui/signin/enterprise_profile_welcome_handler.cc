@@ -94,7 +94,7 @@ EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
     EnterpriseProfileWelcomeUI::ScreenType type,
     const AccountInfo& account_info,
     absl::optional<SkColor> profile_color,
-    base::OnceCallback<void(bool)> proceed_callback)
+    signin::SigninChoiceCallback proceed_callback)
     : browser_(browser),
       type_(type),
       email_(base::UTF8ToUTF16(account_info.email)),
@@ -199,13 +199,13 @@ void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
 void EnterpriseProfileWelcomeHandler::HandleProceed(
     const base::ListValue* args) {
   if (proceed_callback_)
-    std::move(proceed_callback_).Run(true);
+    std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
 }
 
 void EnterpriseProfileWelcomeHandler::HandleCancel(
     const base::ListValue* args) {
   if (proceed_callback_)
-    std::move(proceed_callback_).Run(false);
+    std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
 }
 
 void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
@@ -306,7 +306,7 @@ EnterpriseProfileWelcomeHandler::GetTypeForTesting() {
 }
 
 void EnterpriseProfileWelcomeHandler::CallProceedCallbackForTesting(
-    bool proceed) {
+    signin::SigninChoice choice) {
   if (proceed_callback_)
-    std::move(proceed_callback_).Run(proceed);
+    std::move(proceed_callback_).Run(choice);
 }

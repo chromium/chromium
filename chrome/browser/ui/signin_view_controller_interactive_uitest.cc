@@ -205,13 +205,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content::TestNavigationObserver content_observer(
       GURL("chrome://enterprise-profile-welcome/"));
   content_observer.StartWatchingNewWebContents();
-  bool result;
+  signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, SK_ColorWHITE,
       base::BindOnce(
-          [](Browser* browser, bool* result, bool create) {
+          [](Browser* browser, signin::SigninChoice* result,
+             signin::SigninChoice choice) {
             browser->signin_view_controller()->CloseModalSignin();
-            *result = create;
+            *result = choice;
           },
           browser(), &result));
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
@@ -227,6 +228,6 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                                               /*command=*/false));
 
   dialog_destroyed_watcher.Wait();
-  EXPECT_TRUE(result);
+  EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }

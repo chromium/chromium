@@ -67,7 +67,7 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   // Shows the enterprise welcome screen.
   void ShowEnterpriseWelcome(EnterpriseProfileWelcomeUI::ScreenType type);
   void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
-                                 bool proceed);
+                                 signin::SigninChoice choice);
 
   // Reports metric with the outcome of the turn-sync-on flow.
   void LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome outcome);

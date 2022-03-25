@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -76,7 +77,7 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       const AccountInfo& account_info,
       SkColor profile_color,
-      base::OnceCallback<void(bool)> callback);
+      signin::SigninChoiceCallback callback);
 #endif
 
   // views::DialogDelegateView:

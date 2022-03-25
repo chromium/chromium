@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
@@ -1270,7 +1271,7 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
 
   void ExpectEnterpriseScreenTypeAndProceed(
       EnterpriseProfileWelcomeUI::ScreenType expected_type,
-      bool proceed) {
+      signin::SigninChoice choice) {
     EnterpriseProfileWelcomeHandler* handler =
         web_contents()
             ->GetWebUI()
@@ -1280,7 +1281,7 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
     EXPECT_EQ(handler->GetTypeForTesting(), expected_type);
 
     // Simulate clicking on the next button.
-    handler->CallProceedCallbackForTesting(proceed);
+    handler->CallProceedCallbackForTesting(choice);
   }
 };
 
@@ -1299,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
-      /*proceed=*/true);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "No, thanks".
@@ -1356,7 +1357,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kConsumerAccountSyncDisabled,
-      /*proceed=*/true);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   WaitForLoadStop(GURL("chrome://newtab/"),
@@ -1400,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
-      /*proceed=*/true);
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "Configure sync".
@@ -1454,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
-      /*proceed=*/false);
+      /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the profile creation flow was opened directly, the window is closed now.
   WaitForPickerClosed();

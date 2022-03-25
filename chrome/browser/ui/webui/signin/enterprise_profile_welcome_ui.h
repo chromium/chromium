@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -41,7 +42,7 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
                   ScreenType type,
                   const AccountInfo& account_info,
                   absl::optional<SkColor> profile_color,
-                  base::OnceCallback<void(bool)> proceed_callback);
+                  signin::SigninChoiceCallback proceed_callback);
 
   // Allows tests to trigger page events.
   EnterpriseProfileWelcomeHandler* GetHandlerForTesting();

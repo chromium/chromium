@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog_impl.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -257,17 +258,13 @@ void SigninViewController::ShowModalSyncConfirmationDialog() {
 void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     const AccountInfo& account_info,
     SkColor profile_color,
-    base::OnceCallback<void(bool)> callback) {
+    signin::SigninChoiceCallback callback) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
-          browser_, account_info, profile_color,
-          base::BindOnce(
-              [](Browser* browser, base::OnceCallback<void(bool)> callback,
-                 bool result) { std::move(callback).Run(result); },
-              base::Unretained(browser_), std::move(callback))),
+          browser_, account_info, profile_color, std::move(callback)),
       GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGNIN_ENTERPRISE_INTERCEPTION);

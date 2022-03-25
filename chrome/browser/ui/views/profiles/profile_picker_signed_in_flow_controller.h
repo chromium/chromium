@@ -61,7 +61,7 @@ class ProfilePickerSignedInFlowController
   // screen.
   void SwitchToEnterpriseProfileWelcome(
       EnterpriseProfileWelcomeUI::ScreenType type,
-      base::OnceCallback<void(bool)> proceed_callback);
+      signin::SigninChoiceCallback proceed_callback);
 
   // When the sign-in flow cannot be completed because another profile at
   // `profile_path` is already syncing with a chosen account, shows the profile
@@ -94,7 +94,7 @@ class ProfilePickerSignedInFlowController
   void SwitchToSyncConfirmationFinished();
   void SwitchToEnterpriseProfileWelcomeFinished(
       EnterpriseProfileWelcomeUI::ScreenType type,
-      base::OnceCallback<void(bool)> proceed_callback);
+      signin::SigninChoiceCallback proceed_callback);
 
   // Returns whether the flow is initialized (i.e. whether `Init()` has been
   // called).

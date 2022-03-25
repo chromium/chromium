@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -55,7 +56,7 @@ void EnterpriseProfileWelcomeUI::Initialize(
     EnterpriseProfileWelcomeUI::ScreenType type,
     const AccountInfo& account_info,
     absl::optional<SkColor> profile_color,
-    base::OnceCallback<void(bool)> proceed_callback) {
+    signin::SigninChoiceCallback proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
       browser, type, account_info, profile_color, std::move(proceed_callback));
   handler_ = handler.get();

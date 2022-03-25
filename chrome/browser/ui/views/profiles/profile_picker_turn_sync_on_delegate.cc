@@ -224,8 +224,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseWelcome(
 
 void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
-    bool proceed) {
-  if (!proceed) {
+    signin::SigninChoice choice) {
+  if (choice == signin::SIGNIN_CHOICE_CANCEL) {
     LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::
                    kAbortedOnEnterpriseWelcome);
     // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
@@ -236,6 +236,8 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     ProfilePicker::CancelSignedInFlow();
     return;
   }
+
+  DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   switch (type) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:

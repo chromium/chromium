@@ -85,13 +85,15 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
       account_info, GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
-             bool prompt_for_new_profile, bool create_profile) {
+             bool prompt_for_new_profile, signin::SigninChoice choice) {
             browser->signin_view_controller()->CloseModalSignin();
-            std::move(callback).Run(
-                create_profile ? prompt_for_new_profile
-                                     ? signin::SIGNIN_CHOICE_NEW_PROFILE
-                                     : signin::SIGNIN_CHOICE_CONTINUE
-                               : signin::SIGNIN_CHOICE_CANCEL);
+            signin::SigninChoice result = signin::SIGNIN_CHOICE_CANCEL;
+            if (choice != signin::SIGNIN_CHOICE_CANCEL) {
+              result = prompt_for_new_profile
+                           ? signin::SIGNIN_CHOICE_NEW_PROFILE
+                           : signin::SIGNIN_CHOICE_CONTINUE;
+            }
+            std::move(callback).Run(result);
           },
           std::move(callback), browser.get(), prompt_for_new_profile));
 }
