@@ -88,6 +88,8 @@ namespace {
 
 const double kLearningBadWindowThresholdDefault = 2;
 const double kLearningNnrThresholdDefault = 3;
+const bool kWebrtcDecodeSmoothIfPowerEfficientDefault = true;
+const bool kWebrtcEncodeSmoothIfPowerEfficientDefault = true;
 
 constexpr const char* kApplicationMimeTypePrefix = "application/";
 constexpr const char* kAudioMimeTypePrefix = "audio/";
@@ -121,6 +123,22 @@ double GetLearningNnrThreshold() {
       media::kMediaLearningSmoothnessExperiment,
       MediaCapabilities::kLearningNnrThresholdParamName,
       kLearningNnrThresholdDefault);
+}
+
+// static
+bool WebrtcDecodeForceSmoothIfPowerEfficient() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      media::kWebrtcMediaCapabilitiesParameters,
+      MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName,
+      kWebrtcDecodeSmoothIfPowerEfficientDefault);
+}
+
+// static
+bool WebrtcEncodeForceSmoothIfPowerEfficient() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      media::kWebrtcMediaCapabilitiesParameters,
+      MediaCapabilities::kWebrtcEncodeSmoothIfPowerEfficientParamName,
+      kWebrtcEncodeSmoothIfPowerEfficientDefault);
 }
 
 // static
@@ -732,6 +750,12 @@ const char MediaCapabilities::kLearningBadWindowThresholdParamName[] =
 const char MediaCapabilities::kLearningNnrThresholdParamName[] =
     "nnr_threshold";
 
+const char MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName[] =
+    "webrtc_decode_smooth_if_power_efficient";
+
+const char MediaCapabilities::kWebrtcEncodeSmoothIfPowerEfficientParamName[] =
+    "webrtc_encode_smooth_if_power_efficient";
+
 // static
 const char MediaCapabilities::kSupplementName[] = "MediaCapabilities";
 
@@ -818,7 +842,9 @@ ScriptPromise MediaCapabilities::decodingInfo(
     // undefined. See comment above Promise() in script_promise_resolver.h
     ScriptPromise promise = resolver->Promise();
 
-    if (auto* handler = WebrtcDecodingInfoHandler::Instance()) {
+    if (auto* handler = webrtc_decoding_info_handler_for_test_
+                            ? webrtc_decoding_info_handler_for_test_
+                            : WebrtcDecodingInfoHandler::Instance()) {
       const int callback_id = CreateCallbackId();
       pending_cb_map_.insert(
           callback_id,
@@ -1009,7 +1035,9 @@ ScriptPromise MediaCapabilities::encodingInfo(
     UseCounter::Count(ExecutionContext::From(script_state),
                       WebFeature::kMediaCapabilitiesEncodingInfoWebrtc);
 
-    if (auto* handler = WebrtcEncodingInfoHandler::Instance()) {
+    if (auto* handler = webrtc_encoding_info_handler_for_test_
+                            ? webrtc_encoding_info_handler_for_test_
+                            : WebrtcEncodingInfoHandler::Instance()) {
       const int callback_id = CreateCallbackId();
       pending_cb_map_.insert(
           callback_id,
@@ -1645,9 +1673,15 @@ void MediaCapabilities::OnWebrtcSupportInfo(
   // Special treatment if the config is not supported, or if only audio was
   // specified which is indicated by the fact that `video_pixels` equals 0,
   // or if we fail to access the WebrtcPerfHistoryService.
+  // If enabled through default setting or field trial, we also set
+  // smooth=true if the configuration is power efficient.
   if (!is_supported || features->video_pixels == 0 ||
       !EnsureWebrtcPerfHistoryService(
-          pending_cb->resolver->GetExecutionContext())) {
+          pending_cb->resolver->GetExecutionContext()) ||
+      (is_power_efficient && features->is_decode_stats &&
+       WebrtcDecodeForceSmoothIfPowerEfficient()) ||
+      (is_power_efficient && !features->is_decode_stats &&
+       WebrtcEncodeForceSmoothIfPowerEfficient())) {
     MediaCapabilitiesDecodingInfo* info =
         MediaCapabilitiesDecodingInfo::Create();
     info->setSupported(is_supported);

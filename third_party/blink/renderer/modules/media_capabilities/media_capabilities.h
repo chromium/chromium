@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 
+#include "base/gtest_prod_util.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
@@ -18,6 +19,8 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -41,6 +44,8 @@ class MODULES_EXPORT MediaCapabilities final
  public:
   static const char kLearningBadWindowThresholdParamName[];
   static const char kLearningNnrThresholdParamName[];
+  static const char kWebrtcDecodeSmoothIfPowerEfficientParamName[];
+  static const char kWebrtcEncodeSmoothIfPowerEfficientParamName[];
 
   static const char kSupplementName[];
 
@@ -80,6 +85,15 @@ class MODULES_EXPORT MediaCapabilities final
     base::TimeTicks request_time;
     absl::optional<IdentifiableToken> input_token;
   };
+
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcDecodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcDecodeOverridePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcEncodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcEncodeOverridePowerEfficientIsSmooth);
 
   // Lazily binds remote LearningTaskControllers for ML smoothness predictions
   // and returns whether binding succeeds. Returns true if it was already bound.
@@ -162,6 +176,16 @@ class MODULES_EXPORT MediaCapabilities final
   // mapping in |pending_cb_map_|.
   int CreateCallbackId();
 
+  void set_webrtc_decoding_info_handler_for_test(
+      WebrtcDecodingInfoHandler* handler) {
+    webrtc_decoding_info_handler_for_test_ = handler;
+  }
+
+  void set_webrtc_encoding_info_handler_for_test(
+      WebrtcEncodingInfoHandler* handler) {
+    webrtc_encoding_info_handler_for_test_ = handler;
+  }
+
   HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory>
       decode_history_service_;
 
@@ -186,6 +210,12 @@ class MODULES_EXPORT MediaCapabilities final
 
   // Maps a callback ID to state for pending callbacks.
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
+
+  // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
+  WebrtcDecodingInfoHandler* webrtc_decoding_info_handler_for_test_ = nullptr;
+
+  // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
+  WebrtcEncodingInfoHandler* webrtc_encoding_info_handler_for_test_ = nullptr;
 };
 
 }  // namespace blink
