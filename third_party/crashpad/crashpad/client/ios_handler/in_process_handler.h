@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/synchronization/lock.h"
 #include "client/ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h"
 #include "handler/crash_report_upload_thread.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
@@ -202,6 +203,9 @@ class InProcessHandler {
     IOSIntermediateDumpWriter* writer_;
   };
 
+  //! \brief Manage the prune and upload thread when the active state changes.
+  void UpdatePruneAndUploadThreads(bool active);
+
   //! \brief Writes a minidump to the Crashpad database from the
   //!     \a process_snapshot, and triggers the upload_thread_ if started.
   void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
@@ -230,7 +234,9 @@ class InProcessHandler {
   // in DumpExceptionFromMachException after aquiring the cached_writer_.
   void (*mach_exception_callback_for_testing_)() = nullptr;
 
-  bool upload_thread_started_ = false;
+  // Used to synchronize access to UpdatePruneAndUploadThreads().
+  base::Lock prune_and_upload_lock_;
+  std::atomic_bool upload_thread_enabled_ = false;
   std::map<std::string, std::string> annotations_;
   base::FilePath base_dir_;
   std::string cached_writer_path_;

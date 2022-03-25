@@ -108,6 +108,9 @@ class CrashReportUploadThread : public WorkerThread::Delegate,
   //! It is expected to only be called from the same thread that called Start().
   void Stop() override;
 
+  //! \return `true` if the thread is running, `false` if it is not.
+  bool is_running() const { return thread_.is_running(); }
+
  private:
   //! \brief The result code from UploadReport().
   enum class UploadResult {

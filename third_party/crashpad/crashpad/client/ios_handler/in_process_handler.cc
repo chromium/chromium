@@ -62,10 +62,7 @@ namespace internal {
 InProcessHandler::InProcessHandler() = default;
 
 InProcessHandler::~InProcessHandler() {
-  if (upload_thread_started_ && upload_thread_) {
-    upload_thread_->Stop();
-  }
-  prune_thread_->Stop();
+  UpdatePruneAndUploadThreads(false);
 }
 
 bool InProcessHandler::Initialize(
@@ -103,13 +100,20 @@ bool InProcessHandler::Initialize(
   if (!CreateDirectory(base_dir_))
     return false;
 
+  bool is_app_extension = system_data_.IsExtension();
   prune_thread_.reset(new PruneIntermediateDumpsAndCrashReportsThread(
       database_.get(),
       PruneCondition::GetDefault(),
       base_dir_,
       bundle_identifier_and_seperator_,
-      system_data_.IsExtension()));
-  prune_thread_->Start();
+      is_app_extension));
+  if (is_app_extension || system_data_.IsApplicationActive())
+    prune_thread_->Start();
+
+  if (!is_app_extension) {
+    system_data_.SetActiveApplicationCallback(
+        [this](bool active) { UpdatePruneAndUploadThreads(active); });
+  }
 
   base::FilePath cached_writer_path = NewLockedFilePath();
   cached_writer_ = CreateWriterWithPath(cached_writer_path);
@@ -284,9 +288,29 @@ void InProcessHandler::ProcessIntermediateDump(
 }
 
 void InProcessHandler::StartProcessingPendingReports() {
-  if (!upload_thread_started_ && upload_thread_) {
-    upload_thread_->Start();
-    upload_thread_started_ = true;
+  if (!upload_thread_)
+    return;
+
+  upload_thread_enabled_ = true;
+  UpdatePruneAndUploadThreads(true);
+}
+
+void InProcessHandler::UpdatePruneAndUploadThreads(bool active) {
+  base::AutoLock lock_owner(prune_and_upload_lock_);
+  // TODO(crbug.com/crashpad/400): Consider moving prune and upload thread to
+  // BackgroundTasks and/or NSURLSession. This might allow uploads to continue
+  // in the background.
+  if (active) {
+    if (!prune_thread_->is_running())
+      prune_thread_->Start();
+    if (upload_thread_enabled_ && !upload_thread_->is_running()) {
+      upload_thread_->Start();
+    }
+  } else {
+    if (prune_thread_->is_running())
+      prune_thread_->Stop();
+    if (upload_thread_enabled_ && upload_thread_->is_running())
+      upload_thread_->Stop();
   }
 }
 

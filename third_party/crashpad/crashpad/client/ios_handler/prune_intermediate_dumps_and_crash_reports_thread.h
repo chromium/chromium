@@ -84,6 +84,9 @@ class PruneIntermediateDumpsAndCrashReportsThread
   //! It is expected to only be called from the same thread that called Start().
   void Stop() override;
 
+  //! \return `true` if the thread is running, `false` if it is not.
+  bool is_running() const { return thread_.is_running(); }
+
  private:
   // WorkerThread::Delegate:
   void DoWork(const WorkerThread* thread) override;
@@ -94,6 +97,7 @@ class PruneIntermediateDumpsAndCrashReportsThread
   std::string bundle_identifier_and_seperator_;
   bool clean_old_intermediate_dumps_;
   double initial_work_delay_;
+  time_t last_start_time_;
   CrashReportDatabase* database_;  // weak
 };
 

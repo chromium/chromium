@@ -28,6 +28,9 @@ namespace {
 // The file extension used to indicate a file is locked.
 constexpr char kLockedExtension[] = ".locked";
 
+// Prune onces a day.
+constexpr time_t prune_interval = 60 * 60 * 24;
+
 // If the client finds a locked file matching it's own bundle id, unlock it
 // after 24 hours.
 constexpr time_t matching_bundle_locked_ttl = 60 * 60 * 24;
@@ -96,11 +99,12 @@ PruneIntermediateDumpsAndCrashReportsThread::
         base::FilePath pending_path,
         std::string bundle_identifier_and_seperator,
         bool is_extension)
-    : thread_(60 * 60 * 24, this),
+    : thread_(prune_interval, this),
       condition_(std::move(condition)),
       pending_path_(pending_path),
       bundle_identifier_and_seperator_(bundle_identifier_and_seperator),
       initial_work_delay_(is_extension ? extension_delay : app_delay),
+      last_start_time_(0),
       database_(database) {}
 
 PruneIntermediateDumpsAndCrashReportsThread::
@@ -116,9 +120,25 @@ void PruneIntermediateDumpsAndCrashReportsThread::Stop() {
 
 void PruneIntermediateDumpsAndCrashReportsThread::DoWork(
     const WorkerThread* thread) {
+  // This thread may be stopped and started a number of times throughout the
+  // lifetime of the process to prevent 0xdead10cc kills (see
+  // crbug.com/crashpad/400), but it should only run once per prune_interval
+  // after initial_work_delay_.
+  time_t now = time(nullptr);
+  if (now - last_start_time_ < prune_interval)
+    return;
+  last_start_time_ = now;
+
   internal::ScopedBackgroundTask scoper("PruneThread");
   database_->CleanDatabase(60 * 60 * 24 * 3);
+
+  // Here and below, respect Stop() being called after each task.
+  if (!thread_.is_running())
+    return;
   PruneCrashReportDatabase(database_, condition_.get());
+
+  if (!thread_.is_running())
+    return;
   if (!clean_old_intermediate_dumps_) {
     clean_old_intermediate_dumps_ = true;
     UnlockOldIntermediateDumps(pending_path_, bundle_identifier_and_seperator_);
