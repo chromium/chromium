@@ -115,17 +115,17 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
   // experience when the user comes back from incognito.
   WebNavigationBrowserAgent::FromBrowser(browser_)->GoBack();
 
+  GURL url_to_open;
   if (url.is_valid()) {
-    OpenNewTabCommand* command = [[OpenNewTabCommand alloc]
-         initWithURL:url
-            referrer:web::Referrer()  // Strip referrer when switching modes.
-         inIncognito:YES
-        inBackground:NO
-            appendTo:kLastTab];
-    [handler_ openURLInNewTab:command];
-  } else {
-    [handler_ openURLInNewTab:[OpenNewTabCommand command]];
+    url_to_open = url;
   }
+  OpenNewTabCommand* command = [[OpenNewTabCommand alloc]
+       initWithURL:url_to_open
+          referrer:web::Referrer()  // Strip referrer when switching modes.
+       inIncognito:YES
+      inBackground:NO
+          appendTo:kLastTab];
+  [handler_ openURLInNewTab:command];
 }
 
 void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {
