@@ -1726,6 +1726,12 @@
     // As above. Do not change this flag to stable, as it exists solely to
     // generate code used by the origin trials sample API implementation.
     {
+      name: "OriginTrialsSampleAPIExpiryGracePeriod",
+      origin_trial_feature_name: "FrobulateExpiryGracePeriod",
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    {
       name: "OriginTrialsSampleAPIImplied",
       origin_trial_feature_name: "FrobulateImplied",
       implied_by: ["OriginTrialsSampleAPI", "OriginTrialsSampleAPIInvalidOS"],

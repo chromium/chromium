@@ -69,3 +69,7 @@ file://ash/login/LOGIN_LOCK_OWNERS
 # that can make infra changes.
 file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
 file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
+
+# Origin Trials owners are responsible for determining trials that need to be
+# completed manually.
+file://third_party/blink/common/origin_trials/OT_OWNERS

@@ -52,6 +52,10 @@ BLINK_COMMON_EXPORT bool FeatureEnabledForOS(OriginTrialFeature feature);
 BLINK_COMMON_EXPORT bool FeatureEnabledForNavigation(
     OriginTrialFeature feature);
 
+// Returns true if |feature| has an expiry grace period.
+BLINK_COMMON_EXPORT bool FeatureHasExpiryGracePeriod(
+    OriginTrialFeature feature);
+
 }  // namespace origin_trials
 
 }  // namespace blink

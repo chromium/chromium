@@ -26,6 +26,9 @@ namespace blink {
 class OriginTrialPolicy;
 class TrialTokenResult;
 
+// The expiry grace period for origin trials that must be manually completed.
+constexpr base::TimeDelta kExpiryGracePeriod = base::Days(30);
+
 // TrialTokenValidator checks that a page's OriginTrial token enables a certain
 // feature.
 //

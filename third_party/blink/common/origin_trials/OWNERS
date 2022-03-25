@@ -8,5 +8,7 @@ chasej@chromium.org
 iclelland@chromium.org
 mek@chromium.org
 
+per-file manual_completion_origin_trial_features.cc=set noparent
+per-file manual_completion_origin_trial_features.cc=file://third_party/blink/common/origin_trials/OT_OWNERS
 per-file navigation_origin_trial_features.cc=set noparent
 per-file navigation_origin_trial_features.cc=file://third_party/blink/SECURITY_OWNERS

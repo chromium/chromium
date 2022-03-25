@@ -12,6 +12,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 
@@ -28,6 +29,30 @@ static base::RepeatingCallback<OriginTrialPolicy*()>& PolicyGetter() {
 bool IsDeprecationTrialPossible() {
   OriginTrialPolicy* policy = PolicyGetter().Run();
   return policy && policy->IsOriginTrialsSupported();
+}
+
+// Validates the provided trial_token. If provided, the third_party_origins is
+// only used for validating third-party tokens.
+OriginTrialTokenStatus IsTokenValid(
+    const TrialToken& trial_token,
+    const url::Origin& origin,
+    base::span<const url::Origin> third_party_origins,
+    base::Time current_time) {
+  OriginTrialTokenStatus status;
+  if (trial_token.is_third_party()) {
+    if (!third_party_origins.empty()) {
+      for (const auto& third_party_origin : third_party_origins) {
+        status = trial_token.IsValid(third_party_origin, current_time);
+        if (status == OriginTrialTokenStatus::kSuccess)
+          break;
+      }
+    } else {
+      status = OriginTrialTokenStatus::kWrongOrigin;
+    }
+  } else {
+    status = trial_token.IsValid(origin, current_time);
+  }
+  return status;
 }
 
 }  // namespace
@@ -80,20 +105,27 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
   if (status != OriginTrialTokenStatus::kSuccess)
     return TrialTokenResult(status);
 
-  // If the third_party flag is set on the token, we match it against third
-  // party origin if it exists. Otherwise match against document origin.
-  if (trial_token->is_third_party()) {
-    if (!third_party_origins.empty()) {
-      for (const auto& third_party_origin : third_party_origins) {
-        status = trial_token->IsValid(third_party_origin, current_time);
-        if (status == OriginTrialTokenStatus::kSuccess)
-          break;
+  status =
+      IsTokenValid(*trial_token, origin, third_party_origins, current_time);
+
+  if (status == OriginTrialTokenStatus::kExpired) {
+    if (origin_trials::IsTrialValid(trial_token->feature_name())) {
+      base::Time validated_time = current_time;
+      // Manual completion trials have an expiry grace period. For these trials
+      // the token expiry time is valid if:
+      // token.expiry_time + kExpiryGracePeriod > current_time
+      for (OriginTrialFeature feature :
+           origin_trials::FeaturesForTrial(trial_token->feature_name())) {
+        if (origin_trials::FeatureHasExpiryGracePeriod(feature)) {
+          validated_time = current_time - kExpiryGracePeriod;
+          status = IsTokenValid(*trial_token, origin, third_party_origins,
+                                validated_time);
+          if (status == OriginTrialTokenStatus::kSuccess) {
+            break;
+          }
+        }
       }
-    } else {
-      status = OriginTrialTokenStatus::kWrongOrigin;
     }
-  } else {
-    status = trial_token->IsValid(origin, current_time);
   }
 
   if (status != OriginTrialTokenStatus::kSuccess)

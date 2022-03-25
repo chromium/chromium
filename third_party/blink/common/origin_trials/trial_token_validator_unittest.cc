@@ -170,6 +170,49 @@ const char kUsageSubsetToken[] =
     "MiLCAidXNhZ2UiOiAic3Vic2V0IiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlVGhpcmRQYXJ0eSIs"
     "ICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
 
+// Well-formed token for a feature with an expiry grace period.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com FrobulateExpiryGracePeriod
+//  --expire-timestamp=2000000000
+const char kExpiryGracePeriodToken[] =
+    "A2AVLsM2Set66KCwTfxH1ni9v8Jcs685qHKDLGam1LmpvnJE9GhYQwbLid3Xlqs/"
+    "2Em2HBp8CMZlj11Qk6R06QUAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlLm"
+    "NvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVFeHBpcnlHcmFjZVBlcmlvZCIsICJleHBp"
+    "cnkiOiAyMDAwMDAwMDAwfQ==";
+
+// Well-formed token for match against third party origins and a feature with an
+// expiry grace period.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com FrobulateExpiryGracePeriod
+//  --is-third-party --expire-timestamp=2000000000
+const char kExpiryGracePeriodThirdPartyToken[] =
+    "A3wCXDPU5jfARV5KUetX5PI46W41gAbndIZKA7mKrTy6WyXoGFavV+"
+    "vBZejzC2D3Ffti4thz0AOMP+K/"
+    "oWxUvA8AAACAeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlLmNvbTo0NDMiLCAiZm"
+    "VhdHVyZSI6ICJGcm9idWxhdGVFeHBpcnlHcmFjZVBlcmlvZCIsICJleHBpcnkiOiAyMDAwMDAw"
+    "MDAwLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZX0=";
+
+// Well-formed token, with an unknown feature name.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com Grokalyze
+//  --expire-timestamp=2000000000
+const char kUnknownFeatureToken[] =
+    "AxjosEuqWyp9mrBFMOHJtO84YyY4QYuJ6TUNBMVzKMUWPE+B7Nwg2kgZKGO+"
+    "85m0bG0vWEs4m53TWtO1LNf0RgsAAABZeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcG"
+    "xlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJHcm9rYWx5emUiLCAiZXhwaXJ5IjogMjAwMDAwMDAw"
+    "MH0=";
+
+// Well-formed token for match against third party origins, with an unknown
+// feature name. Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com Grokalyze
+//  --is-third-party --expire-timestamp=2000000000
+const char kUnknownFeatureThirdPartyToken[] =
+    "A7BJkSTbLJ8/EM61BwStBGK3+hAnss/"
+    "fmvpkRmuGuBssyEKczr0iqmj4J3hvRM+"
+    "WzjotyzFopeNLSNU6FGlFZwMAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlL"
+    "mNvbTo0NDMiLCAiZmVhdHVyZSI6ICJHcm9rYWx5emUiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCw"
+    "gImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
 // This timestamp is set to a time after the expiry timestamp of kExpiredToken,
 // but before the expiry timestamp of kValidToken.
 double kNowTimestamp = 1500000000;
@@ -531,6 +574,71 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestMultipleHeaderValues) {
   EXPECT_FALSE(validator_.RequestEnablesFeature(
       GURL(kInappropriateOrigin), response_headers_.get(),
       kAppropriateFeatureName, Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateValidExpiryGraceToken) {
+  // This token is valid one day before the end of the expiry grace period,
+  // even though it is past the token's expiry time.
+  auto current_time =
+      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
+  TrialTokenResult result = validator_.ValidateToken(
+      kExpiryGracePeriodToken, appropriate_origin_, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateExpiredExpiryGraceToken) {
+  // This token is expired at the end of the expiry grace period.
+  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
+  TrialTokenResult result = validator_.ValidateToken(
+      kExpiryGracePeriodToken, appropriate_origin_, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateValidExpiryGraceThirdPartyToken) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  // This token is valid one day before the end of the expiry grace period,
+  // even though it is past the token's expiry time.
+  auto current_time =
+      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
+  TrialTokenResult result = validator_.ValidateToken(
+      kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
+      third_party_origins, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateExpiredExpiryGraceThirdPartyToken) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  // This token is expired at the end of the expiry grace period.
+  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
+  TrialTokenResult result = validator_.ValidateToken(
+      kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
+      third_party_origins, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateUnknownFeatureToken) {
+  TrialTokenResult result = validator_.ValidateToken(
+      kUnknownFeatureToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateUnknownFeatureThirdPartyToken) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  TrialTokenResult result =
+      validator_.ValidateToken(kUnknownFeatureThirdPartyToken,
+                               appropriate_origin_, third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
 }
 
 }  // namespace blink::trial_token_validator_unittest
