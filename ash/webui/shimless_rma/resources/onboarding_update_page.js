@@ -77,12 +77,6 @@ export class OnboardingUpdatePageElement extends
         value: '',
       },
 
-      /** @protected */
-      updateProgressMessage_: {
-        type: String,
-        value: '',
-      },
-
       /**
        * TODO(joonbug): populate this and make private.
        */
@@ -179,7 +173,6 @@ export class OnboardingUpdatePageElement extends
     this.updateInProgress_ = true;
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
-        this.updateProgressMessage_ = this.i18n('osUpdateFailedToStartText');
         this.updateInProgress_ = false;
       }
     });
@@ -200,15 +193,13 @@ export class OnboardingUpdatePageElement extends
     if (!this.updateInProgress_) {
       return;
     }
+
     if (operation === OsUpdateOperation.kIdle ||
         operation === OsUpdateOperation.kReportingErrorEvent ||
         operation === OsUpdateOperation.kNeedPermissionToUpdate ||
         operation === OsUpdateOperation.kDisabled) {
       this.updateInProgress_ = false;
     }
-    this.updateProgressMessage_ = this.i18n(
-        'onboardingUpdateProgress', this.i18n(operationNameKeys[operation]),
-        Math.round(progress * 100));
   }
 
   /**

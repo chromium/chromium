@@ -2,38 +2,45 @@
   #performUpdateButton {
     border-color: var(--google-blue-600);
   }
-</style>
 
+  #updateStatusDiv {
+    align-items: center;
+    display: flex;
+  }
+</style>
 <base-page>
   <div slot="left-pane">
     <h1>[[i18n('osUpdateTitleText')]]</h1>
-    <div hidden$="[[isCompliant_]]" class="instructions">
-      <div inner-h-t-m-l="[[verificationFailedMessage_]]"></div>
-      <div>[[i18n('osUpdateUnqualifiedComponentsBottomText')]]</div>
+    <div id="updateInstructionsDiv" hidden$="[[updateInProgress_]]">
+      <div hidden$="[[isCompliant_]]" class="instructions">
+        <div inner-h-t-m-l="[[verificationFailedMessage_]]"></div>
+        <div>[[i18n('osUpdateUnqualifiedComponentsBottomText')]]</div>
+      </div>
+      <div hidden$="[[!isCompliant_]]" class="instructions">
+        [[i18n('osUpdateOutOfDateDescriptionText')]]
+      </div>
+      <div id="versionInfo">
+        <iron-icon id="updateIcon" class="small-icon" icon="shimless-icon:info">
+        </iron-icon>
+        <span class="instructions">[[currentVersionText_]]</span>
+      </div>
+      <p id="networkUnavailable" hidden$="[[networkAvailable]]">
+        [[i18n('onboardingUpdateConnectToInternet')]]
+      </p>
+      <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
+          on-click="onUpdateButtonClicked_">
+          [[updateVersionButtonLabel_]]
+        <iron-icon id="restartIcon" icon="shimless-icon:update"
+            class="small-icon">
+        </iron-icon>
+      </cr-button>
     </div>
-    <div hidden$="[[!isCompliant_]]" class="instructions">
-      [[i18n('osUpdateOutOfDateDescriptionText')]]
-    </div>
-    <div id="versionInfo">
-      <iron-icon id="updateIcon" class="small-icon" icon="shimless-icon:info">
-      </iron-icon>
-      <span class="instructions">[[currentVersionText_]]</span>
-    </div>
-    <div id="progressMessage">
-      <paper-spinner-lite hidden$="[[!updateInProgress_]]" active>
+    <div id="updateStatusDiv" class="instructions"
+        hidden$="[[!updateInProgress_]]">
+       <paper-spinner-lite class="small-spinner" active>
       </paper-spinner-lite>
-      <div class="instructions">[[updateProgressMessage_]]</div>
+      <span>[[i18n('updatingOsVersionText')]]</span>
     </div>
-    <p id="networkUnavailable" hidden$="[[networkAvailable]]">
-      [[i18n('onboardingUpdateConnectToInternet')]]
-    </p>
-    <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
-        on-click="onUpdateButtonClicked_">
-        [[updateVersionButtonLabel_]]
-      <iron-icon id="restartIcon" icon="shimless-icon:update"
-          class="small-icon">
-      </iron-icon>
-    </cr-button>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">
