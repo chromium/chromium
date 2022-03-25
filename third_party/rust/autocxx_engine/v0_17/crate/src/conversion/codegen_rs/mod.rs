@@ -31,7 +31,7 @@ use crate::{
             non_pod_struct::{make_non_pod, new_non_pod_struct},
             unqualify::{unqualify_params, unqualify_ret_type},
         },
-        doc_attr::get_doc_attr,
+        doc_attr::get_doc_attrs,
     },
     types::{make_ident, Namespace, QualifiedName},
 };
@@ -58,7 +58,7 @@ use super::{
     },
 };
 use super::{convert_error::ErrorContext, ConvertError};
-use quote::{quote, ToTokens};
+use quote::quote;
 
 /// An entry which needs to go into an `impl` block for a given type.
 struct ImplBlockDetails {
@@ -503,7 +503,7 @@ impl<'a> RsCodeGenerator<'a> {
             Api::Struct {
                 details, analysis, ..
             } => {
-                let doc_attr = get_doc_attr(&details.item.attrs);
+                let doc_attrs = get_doc_attrs(&details.item.attrs);
                 let layout = details.layout.clone();
                 self.generate_type(
                     &name,
@@ -511,20 +511,20 @@ impl<'a> RsCodeGenerator<'a> {
                     analysis.pod.kind,
                     analysis.constructors.move_constructor,
                     analysis.constructors.destructor,
-                    || Some((Item::Struct(details.item), doc_attr)),
+                    || Some((Item::Struct(details.item), doc_attrs)),
                     associated_methods,
                     layout,
                 )
             }
             Api::Enum { item, .. } => {
-                let doc_attr = get_doc_attr(&item.attrs);
+                let doc_attrs = get_doc_attrs(&item.attrs);
                 self.generate_type(
                     &name,
                     id,
                     TypeKind::Pod,
                     true,
                     true,
-                    || Some((Item::Enum(item), doc_attr)),
+                    || Some((Item::Enum(item), doc_attrs)),
                     associated_methods,
                     None,
                 )
@@ -619,7 +619,7 @@ impl<'a> RsCodeGenerator<'a> {
             },
         ];
         let mut extern_c_mod_items = vec![
-            self.generate_cxxbridge_type(&full_cpp, false, None),
+            self.generate_cxxbridge_type(&full_cpp, false, Vec::new()),
             parse_quote! {
                 fn #relinquish_ownership_call(self: &#cpp_id);
             },
@@ -803,10 +803,10 @@ impl<'a> RsCodeGenerator<'a> {
         layout: Option<Layout>,
     ) -> RsCodegenResult
     where
-        F: FnOnce() -> Option<(Item, Option<Attribute>)>,
+        F: FnOnce() -> Option<(Item, Vec<Attribute>)>,
     {
         let mut bindgen_mod_items = Vec::new();
-        let mut materializations = vec![Use::UsedFromCxxBridge];
+        let mut materializations = vec![Use::UsedFromBindgen];
         Self::add_superclass_stuff_to_type(
             name,
             &mut bindgen_mod_items,
@@ -814,6 +814,10 @@ impl<'a> RsCodeGenerator<'a> {
             associated_methods.get(name),
         );
         let orig_item = item_creator();
+        let doc_attrs = orig_item
+            .as_ref()
+            .map(|maybe_item| maybe_item.1.clone())
+            .unwrap_or_default();
         // We have a choice here to either:
         // a) tell cxx to generate an opaque type using 'type A;'
         // b) generate a concrete type definition, e.g. by using bindgen's
@@ -842,10 +846,11 @@ impl<'a> RsCodeGenerator<'a> {
                     }
                 }
                 bindgen_mod_items.push(item);
+
                 RsCodegenResult {
                     global_items: self.generate_extern_type_impl(type_kind, name),
                     bridge_items: create_impl_items(&id, movable, destroyable, self.config),
-                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, true, None)],
+                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, true, doc_attrs)],
                     bindgen_mod_items,
                     materializations,
                     ..Default::default()
@@ -856,9 +861,8 @@ impl<'a> RsCodeGenerator<'a> {
                 // We MUST do this because otherwise cxx assumes this can be
                 // instantiated using UniquePtr etc.
                 bindgen_mod_items.push(Item::Use(parse_quote! { pub use cxxbridge::#id; }));
-                let doc_attr = orig_item.and_then(|maybe_item| maybe_item.1);
                 RsCodegenResult {
-                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, false, doc_attr)],
+                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, false, doc_attrs)],
                     bindgen_mod_items,
                     materializations,
                     ..Default::default()
@@ -1026,7 +1030,7 @@ impl<'a> RsCodeGenerator<'a> {
         &self,
         name: &QualifiedName,
         references_bindgen: bool,
-        doc_attr: Option<Attribute>,
+        doc_attrs: Vec<Attribute>,
     ) -> ForeignItem {
         let ns = name.get_namespace();
         let id = name.get_final_ident();
@@ -1057,9 +1061,9 @@ impl<'a> RsCodeGenerator<'a> {
             });
         }
 
-        if let Some(doc_attr) = doc_attr {
-            doc_attr.to_tokens(&mut for_extern_c_ts);
-        }
+        for_extern_c_ts.extend(quote! {
+            #(#doc_attrs)*
+        });
 
         if references_bindgen {
             for_extern_c_ts.extend(quote! {

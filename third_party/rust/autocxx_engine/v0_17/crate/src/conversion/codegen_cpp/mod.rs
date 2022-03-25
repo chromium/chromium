@@ -17,7 +17,10 @@ use crate::{
 };
 use autocxx_parser::IncludeCppConfig;
 use itertools::Itertools;
-use std::collections::{HashMap, HashSet};
+use std::{
+    borrow::Cow,
+    collections::{HashMap, HashSet},
+};
 use type_to_cpp::{original_name_map_from_apis, type_to_cpp, CppNameMap};
 
 use self::type_to_cpp::{
@@ -167,10 +170,20 @@ impl<'a> CppCodeGenerator<'a> {
                     }
                     self.generate_cpp_function(cpp_wrapper)?
                 }
-                Api::ConcreteType { rs_definition, .. } => self.generate_typedef(
-                    api.name(),
-                    type_to_cpp(rs_definition, &self.original_name_map)?,
-                ),
+                Api::ConcreteType {
+                    rs_definition,
+                    cpp_definition,
+                    ..
+                } => {
+                    let effective_cpp_definition = match rs_definition {
+                        Some(rs_definition) => {
+                            Cow::Owned(type_to_cpp(rs_definition, &self.original_name_map)?)
+                        }
+                        None => Cow::Borrowed(cpp_definition),
+                    };
+
+                    self.generate_typedef(api.name(), &effective_cpp_definition)
+                }
                 Api::CType { typename, .. } => self.generate_ctype_typedef(typename),
                 Api::Subclass { .. } => deferred_apis.push(api),
                 Api::RustSubclassFn {
@@ -582,10 +595,10 @@ impl<'a> CppCodeGenerator<'a> {
 
     fn generate_ctype_typedef(&mut self, tn: &QualifiedName) {
         let cpp_name = tn.to_cpp_name();
-        self.generate_typedef(tn, cpp_name)
+        self.generate_typedef(tn, &cpp_name)
     }
 
-    fn generate_typedef(&mut self, tn: &QualifiedName, definition: String) {
+    fn generate_typedef(&mut self, tn: &QualifiedName, definition: &str) {
         let our_name = tn.get_final_item();
         self.additional_functions.push(AdditionalFunction {
             type_definition: Some(format!("typedef {} {};", definition, our_name)),

@@ -15,7 +15,7 @@ readme = "README.md"
 repository = "https://github.com/adetaylor/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.59.13"
+version = "0.59.14"
 edition = "2018"
 build = "build.rs"
 

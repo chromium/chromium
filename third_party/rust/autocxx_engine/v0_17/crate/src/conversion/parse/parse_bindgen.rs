@@ -106,6 +106,19 @@ impl<'a> ParseBindgen<'a> {
                 path: path.clone(),
             }
         }));
+        self.apis.extend(
+            self.config
+                .concretes
+                .iter()
+                .map(|(cpp_definition, rust_id)| {
+                    let name = ApiName::new_in_root_namespace(rust_id.clone());
+                    Api::ConcreteType {
+                        name,
+                        cpp_definition: cpp_definition.clone(),
+                        rs_definition: None,
+                    }
+                }),
+        );
     }
 
     fn find_items_in_root(items: Vec<Item>) -> Result<Vec<Item>, ConvertError> {

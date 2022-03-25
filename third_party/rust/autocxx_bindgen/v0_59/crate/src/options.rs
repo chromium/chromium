@@ -535,6 +535,15 @@ where
             Arg::with_name("explicit-padding")
                 .long("explicit-padding")
                 .help("Always output explicit padding fields."),
+            Arg::with_name("use-specific-virtual-function-receiver")
+                .long("use-specific-virtual-function-receiver")
+                .help("Always be specific about the 'receiver' of a virtual function."),
+            Arg::with_name("represent-cxx-operators")
+                .long("represent-cxx-operators")
+                .help("Output C++ overloaded operators"),
+            Arg::with_name("cpp-semantic-attributes")
+                .long("cpp-semantic-attributes")
+                .help("Output additional attributes denoting the intended semantics of each C++ function and type. Useful for downstream code generators."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -993,6 +1002,14 @@ where
 
     if matches.is_present("explicit-padding") {
         builder = builder.explicit_padding(true);
+    }
+
+    if matches.is_present("use-specific-virtual-function-receiver") {
+        builder = builder.use_specific_virtual_function_receiver(true);
+    }
+
+    if matches.is_present("represent-cxx-operators") {
+        builder = builder.represent_cxx_operators(true);
     }
 
     if matches.is_present("cpp-semantic-attributes") {

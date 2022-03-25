@@ -55,7 +55,7 @@ pub(super) fn create_subclass_fn_wrapper(
         synthesized_this_type: self_ty.clone(),
         self_ty,
         ident: super_fn_name.get_final_ident(),
-        doc_attr: fun.doc_attr.clone(),
+        doc_attrs: fun.doc_attrs.clone(),
         inputs: fun.inputs.clone(),
         output: fun.output.clone(),
         vis: fun.vis.clone(),
@@ -221,7 +221,7 @@ pub(super) fn create_subclass_constructor(
         .collect();
     let maybe_wrap = Box::new(FuncToConvert {
         ident: subclass_constructor_name.clone(),
-        doc_attr: fun.doc_attr.clone(),
+        doc_attrs: fun.doc_attrs.clone(),
         inputs,
         output: fun.output.clone(),
         vis: fun.vis.clone(),

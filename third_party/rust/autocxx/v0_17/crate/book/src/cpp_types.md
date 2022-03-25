@@ -108,6 +108,53 @@ but not really enough to do anything else with these types yet[^templated].
 To make them more useful, you might have to add extra C++ functions to extract
 data or otherwise deal with them.
 
+Usually, such concrete types are synthesized automatically because they're
+parameters or return values from functions. Very rarely, you may
+want to synthesize them yourself - you can do this using the
+[`concrete!`](https://docs.rs/autocxx/latest/autocxx/macro.concrete.html)
+directive. As noted, though, these types are currently opaque and fairly
+useless without passing them back and forth to C++, so this is not a commonly
+used facility. It does, however, allow you to give a more descriptive name
+to the type in Rust:
+
+```rust,ignore,autocxx,hidecpp
+autocxx_integration_tests::doctest(
+"",
+"#include <string>
+struct Tapioca {
+  std::string yuck;
+};
+template<typename Floaters>
+struct Tea {
+  Tea() : floaters(nullptr) {}
+  Floaters* floaters;
+};
+inline Tea<Tapioca> prepare() {
+  Tea<Tapioca> mixture;
+  // prepare...
+  return mixture;
+}
+inline void drink(const Tea<Tapioca>&) {}
+",
+{
+use autocxx::prelude::*;
+
+include_cpp! {
+    #include "input.h"
+    safety!(unsafe_ffi)
+    generate!("prepare")
+    generate!("drink")
+    concrete!("Tea<Tapioca>", Boba)
+}
+
+fn main() {
+    let nicer_than_it_sounds: cxx::UniquePtr<ffi::Boba> = ffi::prepare();
+    ffi::drink(&nicer_than_it_sounds);
+}
+}
+)
+```
+
 ## Implicit member functions
 
 Most of the API of a C++ type is contained within the type, so `autocxx` can

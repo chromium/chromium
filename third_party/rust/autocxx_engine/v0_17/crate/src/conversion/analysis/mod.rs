@@ -13,6 +13,7 @@ pub(crate) mod constructor_deps;
 pub(crate) mod ctypes;
 pub(crate) mod deps;
 mod depth_first;
+mod doc_label;
 pub(crate) mod fun;
 pub(crate) mod gc;
 mod name_check;

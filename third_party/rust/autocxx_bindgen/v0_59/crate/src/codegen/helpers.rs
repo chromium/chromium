@@ -157,8 +157,8 @@ pub trait CppSemanticAttributeCreator {
         }
     }
 
-    fn unused_template_param_in_arg_or_return(&mut self) {
-        self.add_ident("unused_template_param_in_arg_or_return")
+    fn incomprehensible_param_in_arg_or_return(&mut self) {
+        self.add_ident("incomprehensible_param_in_arg_or_return")
     }
 
     fn discards_template_param(&mut self) {

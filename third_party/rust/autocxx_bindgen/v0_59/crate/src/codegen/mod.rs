@@ -898,6 +898,7 @@ impl CodeGenerator for Type {
                         semantic_annotations.discards_template_param();
                     }
                     RustTyAnnotation::None |
+                    RustTyAnnotation::Opaque |
                     RustTyAnnotation::Reference |
                     RustTyAnnotation::RValueReference => {}
                     RustTyAnnotation::HasUnusedTemplateArgs => {
@@ -3537,7 +3538,7 @@ where
 
     fn to_rust_ty_or_opaque(&self, ctx: &BindgenContext, extra: &E) -> RustTy {
         self.try_to_rust_ty(ctx, extra)
-            .unwrap_or_else(|_| self.to_opaque(ctx, extra).into())
+            .unwrap_or_else(|_| RustTy::new_opaque(self.to_opaque(ctx, extra)))
     }
 }
 
@@ -3612,6 +3613,7 @@ enum RustTyAnnotation {
     Reference,
     RValueReference,
     HasUnusedTemplateArgs,
+    Opaque,
 }
 
 struct RustTy {
@@ -3633,14 +3635,19 @@ impl RustTy {
         }
     }
 
+    fn new_opaque(ts: proc_macro2::TokenStream) -> Self {
+        Self {
+            ts,
+            annotation: RustTyAnnotation::Opaque,
+        }
+    }
+
     fn new_reference(
         ts: proc_macro2::TokenStream,
         inner: RustTyAnnotation,
     ) -> Self {
         let annotation = match inner {
-            RustTyAnnotation::HasUnusedTemplateArgs => {
-                RustTyAnnotation::HasUnusedTemplateArgs
-            }
+            RustTyAnnotation::HasUnusedTemplateArgs | RustTyAnnotation::Opaque => inner,
             _ => RustTyAnnotation::Reference,
         };
         Self { ts, annotation }
@@ -3651,9 +3658,7 @@ impl RustTy {
         inner: RustTyAnnotation,
     ) -> Self {
         let annotation = match inner {
-            RustTyAnnotation::HasUnusedTemplateArgs => {
-                RustTyAnnotation::HasUnusedTemplateArgs
-            }
+            RustTyAnnotation::HasUnusedTemplateArgs | RustTyAnnotation::Opaque => inner,
             _ => RustTyAnnotation::RValueReference,
         };
         Self { ts, annotation }
@@ -4886,8 +4891,8 @@ pub mod utils {
                 super::RustTyAnnotation::RValueReference => {
                     semantic_annotation.ret_type_rvalue_reference()
                 }
-                super::RustTyAnnotation::HasUnusedTemplateArgs => {
-                    semantic_annotation.unused_template_param_in_arg_or_return()
+                super::RustTyAnnotation::HasUnusedTemplateArgs | super::RustTyAnnotation::Opaque => {
+                    semantic_annotation.incomprehensible_param_in_arg_or_return()
                 }
             };
             (
@@ -4970,8 +4975,8 @@ pub mod utils {
                     RustTyAnnotation::RValueReference => {
                         semantic_annotation.arg_type_rvalue_reference(&arg_name)
                     }
-                    RustTyAnnotation::HasUnusedTemplateArgs => {
-                        semantic_annotation.unused_template_param_in_arg_or_return()
+                    RustTyAnnotation::HasUnusedTemplateArgs | RustTyAnnotation::Opaque => {
+                        semantic_annotation.incomprehensible_param_in_arg_or_return()
                     }
                 };
 

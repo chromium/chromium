@@ -72,7 +72,7 @@ fn create_alloc_and_free(ty_name: QualifiedName) -> impl Iterator<Item = Api<Pod
                 name: api_name,
                 fun: Box::new(FuncToConvert {
                     ident,
-                    doc_attr: None,
+                    doc_attrs: Vec::new(),
                     inputs,
                     output,
                     vis: parse_quote! { pub },

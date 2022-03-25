@@ -6,7 +6,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::{borrow::Cow, collections::HashSet};
+use std::{
+    borrow::Cow,
+    collections::{HashMap, HashSet},
+};
 
 use proc_macro2::Span;
 use quote::ToTokens;
@@ -163,6 +166,7 @@ pub struct IncludeCppConfig {
     pub rust_types: Vec<RustPath>,
     pub subclasses: Vec<Subclass>,
     pub extern_rust_funs: Vec<RustFun>,
+    pub concretes: HashMap<String, Ident>,
 }
 
 impl Parse for IncludeCppConfig {
@@ -185,6 +189,7 @@ impl Parse for IncludeCppConfig {
         let mut mod_name = None;
         let mut subclasses = Vec::new();
         let mut extern_rust_funs = Vec::new();
+        let mut concretes = HashMap::new();
 
         while !input.is_empty() {
             let has_hexathorpe = input.parse::<Option<syn::token::Pound>>()?.is_some();
@@ -229,6 +234,13 @@ impl Parse for IncludeCppConfig {
                     syn::parenthesized!(args in input);
                     let generate: syn::LitStr = args.parse()?;
                     blocklist.push(generate.value());
+                } else if ident == "concrete" {
+                    let args;
+                    syn::parenthesized!(args in input);
+                    let definition: syn::LitStr = args.parse()?;
+                    args.parse::<syn::token::Comma>()?;
+                    let rust_id: syn::Ident = args.parse()?;
+                    concretes.insert(definition.value(), rust_id);
                 } else if ident == "block_constructors" {
                     let args;
                     syn::parenthesized!(args in input);
@@ -303,6 +315,7 @@ impl Parse for IncludeCppConfig {
             mod_name,
             subclasses,
             extern_rust_funs,
+            concretes,
         })
     }
 }
@@ -413,6 +426,7 @@ impl IncludeCppConfig {
             || self.is_subclass_holder(cpp_name)
             || self.is_subclass_cpp(cpp_name)
             || self.is_rust_fun(cpp_name)
+            || self.is_concrete_type(cpp_name)
             || match &self.allowlist {
                 Allowlist::Unspecified(_) => panic!("Eek no allowlist yet"),
                 Allowlist::All => true,
@@ -433,6 +447,10 @@ impl IncludeCppConfig {
 
     pub fn get_blocklist(&self) -> impl Iterator<Item = &String> {
         self.blocklist.iter()
+    }
+
+    fn is_concrete_type(&self, cpp_name: &str) -> bool {
+        self.concretes.values().any(|val| *val == cpp_name)
     }
 
     /// In case there are multiple sets of ffi mods in a single binary,

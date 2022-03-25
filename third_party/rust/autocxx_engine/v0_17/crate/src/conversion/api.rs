@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
 use crate::types::{make_ident, Namespace, QualifiedName};
 use autocxx_parser::RustPath;
@@ -202,6 +202,22 @@ pub(crate) enum SpecialMemberKind {
     AssignmentOperator,
 }
 
+impl Display for SpecialMemberKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                SpecialMemberKind::DefaultConstructor => "default constructor",
+                SpecialMemberKind::CopyConstructor => "copy constructor",
+                SpecialMemberKind::MoveConstructor => "move constructor",
+                SpecialMemberKind::Destructor => "destructor",
+                SpecialMemberKind::AssignmentOperator => "assignment operator",
+            }
+        )
+    }
+}
+
 #[derive(Clone)]
 pub(crate) enum Provenance {
     Bindgen,
@@ -224,7 +240,7 @@ pub(crate) enum Provenance {
 pub(crate) struct FuncToConvert {
     pub(crate) provenance: Provenance,
     pub(crate) ident: Ident,
-    pub(crate) doc_attr: Option<Attribute>,
+    pub(crate) doc_attrs: Vec<Attribute>,
     pub(crate) inputs: Punctuated<FnArg, Comma>,
     pub(crate) output: ReturnType,
     pub(crate) vis: Visibility,
@@ -420,7 +436,7 @@ pub(crate) enum Api<T: AnalysisPhase> {
     /// concretize some templated C++ type.
     ConcreteType {
         name: ApiName,
-        rs_definition: Box<Type>,
+        rs_definition: Option<Box<Type>>,
         cpp_definition: String,
     },
     /// A simple note that we want to make a constructor for

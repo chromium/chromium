@@ -445,8 +445,8 @@ impl<'a> TypeConverter<'a> {
                 };
                 let api = UnanalyzedApi::ConcreteType {
                     name: ApiName::new_in_root_namespace(make_ident(&synthetic_ident)),
-                    rs_definition: Box::new(rs_definition.clone()),
                     cpp_definition: cpp_definition.clone(),
+                    rs_definition: Some(Box::new(rs_definition.clone())),
                 };
                 self.concrete_templates
                     .insert(cpp_definition, api.name().clone());

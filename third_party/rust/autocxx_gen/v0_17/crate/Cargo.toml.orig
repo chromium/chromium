@@ -8,7 +8,7 @@
 
 [package]
 name = "autocxx-gen"
-version = "0.17.2"
+version = "0.17.4"
 authors = ["Adrian Taylor <adetaylor@chromium.org>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -22,7 +22,7 @@ runtime = [ "autocxx-engine/runtime" ]
 static = [ "autocxx-engine/static" ]
 
 [dependencies]
-autocxx-engine = { version="=0.17.2", path="../../engine" }
+autocxx-engine = { version="=0.17.4", path="../../engine" }
 clap = "~2.33"
 quote = "1.0.7"
 proc-macro2 = "1.0"

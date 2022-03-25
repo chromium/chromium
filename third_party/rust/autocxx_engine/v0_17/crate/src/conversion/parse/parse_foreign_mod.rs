@@ -8,7 +8,7 @@
 
 use crate::conversion::api::{ApiName, NullPhase, Provenance};
 use crate::conversion::apivec::ApiVec;
-use crate::conversion::doc_attr::get_doc_attr;
+use crate::conversion::doc_attr::get_doc_attrs;
 use crate::conversion::error_reporter::report_any_error;
 use crate::conversion::{
     api::{FuncToConvert, UnanalyzedApi},
@@ -68,12 +68,12 @@ impl ParseForeignMod {
         match i {
             ForeignItem::Fn(item) => {
                 let annotations = BindgenSemanticAttributes::new(&item.attrs);
-                let doc_attr = get_doc_attr(&item.attrs);
+                let doc_attrs = get_doc_attrs(&item.attrs);
                 self.funcs_to_convert.push(FuncToConvert {
                     provenance: Provenance::Bindgen,
                     self_ty: None,
                     ident: item.sig.ident,
-                    doc_attr,
+                    doc_attrs,
                     inputs: item.sig.inputs,
                     output: item.sig.output,
                     vis: item.vis,
@@ -81,7 +81,7 @@ impl ParseForeignMod {
                     cpp_vis: annotations.get_cpp_visibility(),
                     special_member: annotations.special_member_kind(),
                     unused_template_param: annotations
-                        .has_attr("unused_template_param_in_arg_or_return"),
+                        .has_attr("incomprehensible_param_in_arg_or_return"),
                     references: annotations.get_reference_parameters_and_return(),
                     original_name: annotations.get_original_name(),
                     synthesized_this_type: None,

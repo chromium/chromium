@@ -29,7 +29,7 @@ use syn::{
 /// and the standalone macro discoverer
 pub mod directives {
     pub static EXTERN_RUST_TYPE: &str = "extern_rust_type";
-    pub static EXTERN_RUST_FUN: &str = "extern_rust_fun";
+    pub static EXTERN_RUST_FUN: &str = "extern_rust_function";
     pub static SUBCLASS: &str = "subclass";
 }
 

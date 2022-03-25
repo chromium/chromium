@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::collections::{hash_map, HashMap};
+use std::collections::{hash_map, HashMap, HashSet};
 
 use syn::Type;
 
@@ -15,6 +15,8 @@ use crate::{
         analysis::{depth_first::depth_first, pod::PodAnalysis, type_converter::TypeKind},
         api::{Api, ApiName, CppVisibility, FuncToConvert, SpecialMemberKind},
         apivec::ApiVec,
+        convert_error::ConvertErrorWithContext,
+        ConvertError,
     },
     known_types::{known_types, KnownTypeConstructorDetails},
     types::QualifiedName,
@@ -173,7 +175,7 @@ enum ExplicitFound {
 pub(super) fn find_constructors_present(
     apis: &ApiVec<FnPrePhase1>,
 ) -> HashMap<QualifiedName, ItemsFound> {
-    let explicits = find_explicit_items(apis);
+    let (explicits, unknown_types) = find_explicit_items(apis);
 
     // These contain all the classes we've seen so far with the relevant properties on their
     // constructors of each kind. We iterate via [`depth_first`], so analyzing later classes
@@ -248,6 +250,7 @@ pub(super) fn find_constructors_present(
             // unique_ptrs etc.
             let items_found = if bases_items_found.len() != bases.len()
                 || fields_items_found.len() != field_info.len()
+                || unknown_types.contains(&name.name)
             {
                 let is_explicit = |kind: ExplicitKind| -> SpecialMemberFound {
                     // TODO: For https://github.com/google/autocxx/issues/815, map
@@ -532,7 +535,9 @@ pub(super) fn find_constructors_present(
     all_items_found
 }
 
-fn find_explicit_items(apis: &ApiVec<FnPrePhase1>) -> HashMap<ExplicitType, ExplicitFound> {
+fn find_explicit_items(
+    apis: &ApiVec<FnPrePhase1>,
+) -> (HashMap<ExplicitType, ExplicitFound>, HashSet<QualifiedName>) {
     let mut result = HashMap::new();
     let mut merge_fun = |ty: QualifiedName, kind: ExplicitKind, fun: &FuncToConvert| match result
         .entry(ExplicitType { ty, kind })
@@ -548,6 +553,7 @@ fn find_explicit_items(apis: &ApiVec<FnPrePhase1>) -> HashMap<ExplicitType, Expl
             entry.insert(ExplicitFound::Multiple);
         }
     };
+    let mut unknown_types = HashSet::new();
     for api in apis.iter() {
         match api {
             Api::Function {
@@ -555,6 +561,8 @@ fn find_explicit_items(apis: &ApiVec<FnPrePhase1>) -> HashMap<ExplicitType, Expl
                     FnAnalysis {
                         kind: FnKind::Method { impl_for, .. },
                         param_details,
+                        ignore_reason:
+                            Ok(()) | Err(ConvertErrorWithContext(ConvertError::AssignmentOperator, _)),
                         ..
                     },
                 fun,
@@ -587,6 +595,21 @@ fn find_explicit_items(apis: &ApiVec<FnPrePhase1>) -> HashMap<ExplicitType, Expl
                     },
                     fun,
                 )
+            }
+            Api::Function {
+                analysis:
+                    FnAnalysis {
+                        kind: FnKind::Method { impl_for, .. },
+                        ..
+                    },
+                fun,
+                ..
+            } if matches!(
+                fun.special_member,
+                Some(SpecialMemberKind::AssignmentOperator)
+            ) =>
+            {
+                unknown_types.insert(impl_for.clone());
             }
             Api::Function {
                 analysis:
@@ -635,7 +658,7 @@ fn find_explicit_items(apis: &ApiVec<FnPrePhase1>) -> HashMap<ExplicitType, Expl
             _ => (),
         }
     }
-    result
+    (result, unknown_types)
 }
 
 /// Returns the information for a given known type.

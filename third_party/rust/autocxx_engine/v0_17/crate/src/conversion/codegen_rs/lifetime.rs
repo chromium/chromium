@@ -164,14 +164,19 @@ fn add_lifetime_to_reference(tyr: &mut syn::TypeReference) {
     tyr.lifetime = Some(parse_quote! { 'a })
 }
 
-pub(crate) fn add_lifetime_to_all_params(params: &mut Punctuated<FnArg, Comma>) {
+pub(crate) fn add_lifetime_to_all_reference_params(params: &mut Punctuated<FnArg, Comma>) {
     for mut param in params.iter_mut() {
         match &mut param {
             FnArg::Typed(PatType { ty, .. }) => match ty.as_mut() {
                 Type::Path(TypePath {
                     path: Path { segments, .. },
                     ..
-                }) => add_lifetime_to_pinned_reference(segments).unwrap(),
+                }) => {
+                    // This function will check whether this path is a pinned reference and if
+                    // so, add a lifetime to it. Otherwise, it will return an error - which
+                    // we ignore.
+                    add_lifetime_to_pinned_reference(segments).unwrap_or_default()
+                }
                 Type::Reference(tyr) => add_lifetime_to_reference(tyr),
                 _ => {}
             },

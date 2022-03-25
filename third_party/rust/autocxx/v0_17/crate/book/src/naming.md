@@ -66,7 +66,7 @@ include_cpp! {
 }
 
 fn main() {
-    let turducken = ffi::Turkey_Duck_Hen::make_unique();
+    let _turducken = ffi::Turkey_Duck_Hen::make_unique();
 }
 }
 )
