@@ -1378,10 +1378,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
-  sm_.ExpectSpeech(
+  // TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS.
+  // Expect the content to be spoken once it has been improved.
+  /*sm_.ExpectSpeech(
       "Turn off screen? This improves privacy by turning off your screen so it "
       "isn’t visible to others. You can always turn the screen back on by "
-      "pressing Search plus Brightness up. Cancel Continue");
+      "pressing Search plus Brightness up. Cancel Continue");*/
   sm_.ExpectSpeech("Continue");
   sm_.ExpectSpeech("default");
   sm_.ExpectSpeech("Button");
@@ -1560,9 +1562,6 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
 
   // If ChromeVox is started in OOBE, the tutorial is automatically opened.
   sm_.ExpectSpeech("Welcome to ChromeVox!");
-  sm_.ExpectSpeechPattern(
-      "Welcome to the ChromeVox tutorial*When you're ready, use the spacebar "
-      "to move to the next lesson.");
 
   // The tutorial can be exited by pressing Escape.
   sm_.Call([]() {

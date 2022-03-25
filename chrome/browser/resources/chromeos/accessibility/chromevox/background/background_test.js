@@ -3140,12 +3140,13 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', function() {
   });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
+// TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS
+TEST_F('ChromeVoxBackgroundTest', 'AlertDialogAutoSummaryTextContent', function() {
   this.resetContextualOutput();
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
-    <div role="dialog" aria-label="Setup">
+    <div role="alertdialog" aria-label="Setup">
       <h1>Welcome</h1>
       <p>This is some introductory text<p>
       <button>Exit</button>
@@ -3155,7 +3156,7 @@ TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
   `;
   this.runWithLoadedTree(site, function(root) {
     mockFeedback.call(doCmd('nextObject'))
-        .expectSpeech('Setup', 'Dialog')
+        .expectSpeech('Setup')
         .expectSpeech(`Welcome This is some introductory text Exit Let's go`)
         .expectSpeech('Welcome', 'Heading 1')
         .call(doCmd('nextObject'))
@@ -3169,7 +3170,7 @@ TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
 
         .call(doCmd('previousObject'))
         .expectSpeech(`Let's go`, 'Button')
-        .expectSpeech('Setup', 'Dialog')
+        .expectSpeech('Setup')
         .expectSpeech(`Welcome This is some introductory text Exit Let's go`)
 
         .replay();

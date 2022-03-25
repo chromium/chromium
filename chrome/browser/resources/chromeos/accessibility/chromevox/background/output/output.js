@@ -2746,7 +2746,7 @@ Output.RULES = {
           $state $restriction $description`,
     },
     date: {enter: `$nameFromNode $role $state $restriction $description`},
-    dialog: {enter: `$nameFromNode $role $description $textContent`},
+    dialog: {enter: `$nameFromNode $role $description`},
     genericContainer: {
       enter: `$nameFromNode $description $state`,
       speak: `$nameOrTextContent $description $state`
