@@ -5632,6 +5632,29 @@
             ]
         }
     ],
+    "PreconnectPriorities": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "StandaloneHighestPriorityQ",
+                    "enable_features": [
+                        "GivePreconnectTasksHighestPriority"
+                    ],
+                    "disable_features": [
+                        "TreatPreconnectAsDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
@@ -6915,26 +6938,6 @@
                     "name": "Enabled_20220119",
                     "enable_features": [
                         "ThreadingOptimizationsOnIO"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TreatPreconnectAsDefault": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TreatPreconnectAsDefault"
                     ]
                 }
             ]
