@@ -17,6 +17,8 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,9 +171,9 @@ class MediaClientAppUsingCameraTest : public testing::Test {
   }
 
  protected:
-  static apps::mojom::AppPtr MakeApp(const char* app_id, const char* name) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_id = app_id;
+  static apps::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
     app->name = name;
     app->short_name = name;
     return app;
@@ -191,11 +193,20 @@ class MediaClientAppUsingCameraTest : public testing::Test {
   void LaunchApp(const char* id,
                  const char* name,
                  apps::mojom::OptionalBool use_camera) {
-    std::vector<apps::mojom::AppPtr> registry_deltas;
+    std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
-    registry_cache_.OnApps(std::move(registry_deltas),
-                           apps::mojom::AppType::kUnknown,
-                           /* should_notify_initialized = */ false);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      registry_cache_.OnApps(std::move(registry_deltas),
+                             apps::AppType::kUnknown,
+                             /* should_notify_initialized = */ false);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(registry_deltas[0]));
+      registry_cache_.OnApps(std::move(mojom_deltas),
+                             apps::mojom::AppType::kUnknown,
+                             /* should_notify_initialized = */ false);
+    }
 
     std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(MakeCapabilityAccess(id, use_camera));
