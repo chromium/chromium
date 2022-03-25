@@ -16,9 +16,5 @@ std::string FindFullName(absl::string_view trial_name) {
       base::StringPiece(trial_name.data(), trial_name.length()));
 }
 
-std::string FindFullName(const std::string& trial_name) {
-  return base::FieldTrialList::FindFullName(trial_name);
-}
-
 }  // namespace field_trial
 }  // namespace webrtc
