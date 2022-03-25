@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeHelpContentList} from 'chrome://os-feedback/fake_data.js';
-import {HelpContentList, HelpContentType} from 'chrome://os-feedback/feedback_types.js';
+import {fakeHelpContentList, fakePopularHelpContentList} from 'chrome://os-feedback/fake_data.js';
+import {HelpContentList, HelpContentType, SearchResult} from 'chrome://os-feedback/feedback_types.js';
 import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -22,15 +22,26 @@ export function helpContentTestSuite() {
     helpContentElement = null;
   });
 
-  /** @param {!HelpContentList} contentList */
-  function initializeHelpContentElement(contentList) {
+  /**
+   * @param {!HelpContentList} contentList
+   * @param {boolean} isQueryEmpty
+   * @param {boolean} isPopularContent
+   *
+   */
+  function initializeHelpContentElement(
+      contentList, isQueryEmpty, isPopularContent) {
     assertFalse(!!helpContentElement);
     helpContentElement =
         /** @type {!HelpContentElement} */ (
             document.createElement('help-content'));
     assertTrue(!!helpContentElement);
 
-    helpContentElement.helpContentList = contentList;
+    helpContentElement.searchResult = {
+      contentList: contentList,
+      isQueryEmpty: isQueryEmpty,
+      isPopularContent: isPopularContent
+    };
+
     document.body.appendChild(helpContentElement);
 
     return flushTasks();
@@ -62,14 +73,55 @@ export function helpContentTestSuite() {
     }
   }
 
-  /** Test that expected html elements are in the element. */
-  test('HelpContentLoaded', async () => {
-    await initializeHelpContentElement(fakeHelpContentList);
+  // Verify that all popular help content are displayed.
+  function verifyPopularHelpContent() {
+    assertEquals(2, getElement('dom-repeat').items.length);
+    const helpLinks =
+        helpContentElement.shadowRoot.querySelectorAll('.help-item a');
+    assertEquals(2, helpLinks.length);
+
+    // Verify the help links are displayed in order with correct title, url and
+    // icon.
+    assertEquals('fake article', helpLinks[0].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=article', helpLinks[0].href);
+    verifyIconName(helpLinks[0], fakePopularHelpContentList[0].contentType);
+
+    assertEquals('fake forum', helpLinks[1].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=forum', helpLinks[1].href);
+    verifyIconName(helpLinks[1], fakePopularHelpContentList[1].contentType);
+  }
+
+  /**
+   * Test that expected HTML elements are in the element when query is empty.
+   */
+  test('ColdStart', async () => {
+    await initializeHelpContentElement(
+        fakePopularHelpContentList, /* isQueryEmpty= */ true,
+        /* isPopularContent= */ true);
 
     // Verify the title is in the helpContentElement.
     const title = getElement('#helpContentLabel');
     assertTrue(!!title);
-    assertEquals('Suggested help content:', title.textContent);
+    assertEquals('Popular help content', title.textContent);
+
+    verifyPopularHelpContent();
+  });
+
+  /**
+   * Test that expected HTML elements are in the element when the query is not
+   * empty and there are matches.
+   */
+  test('SuggestedHelpContentLoaded', async () => {
+    await initializeHelpContentElement(
+        fakeHelpContentList, /* isQueryEmpty =*/ false,
+        /* isPopularContent =*/ false);
+
+    // Verify the title is in the helpContentElement.
+    const title = getElement('#helpContentLabel');
+    assertTrue(!!title);
+    assertEquals('Suggested help content', title.textContent);
 
     // Verify the help content is populated with correct number of items.
     assertEquals(5, getElement('dom-repeat').items.length);
@@ -77,8 +129,8 @@ export function helpContentTestSuite() {
         helpContentElement.shadowRoot.querySelectorAll('.help-item a');
     assertEquals(5, helpLinks.length);
 
-    // Verify the help links are displayed in order with correct title and
-    // url.
+    // Verify the help links are displayed in order with correct title, url and
+    // icon.
     assertEquals('Fix connection problems', helpLinks[0].innerText);
     assertEquals(
         'https://support.google.com/chromebook/?q=6318213', helpLinks[0].href);
@@ -110,5 +162,24 @@ export function helpContentTestSuite() {
     assertEquals(
         'https://support.google.com/chromebook/?q=22864239', helpLinks[4].href);
     verifyIconName(helpLinks[4], fakeHelpContentList[4].contentType);
+  });
+
+
+  /**
+   * Test that expected HTML elements are in the element when query is not empty
+   * and there are no matches.
+   */
+  test('NoMatches', async () => {
+    await initializeHelpContentElement(
+        fakePopularHelpContentList, /* isQueryEmpty= */ false,
+        /* isPopularContent= */ true);
+
+    // Verify the title is in the helpContentElement.
+    const title = getElement('#helpContentLabel');
+    assertTrue(!!title);
+    assertEquals(
+        'No matched results, see popular help content', title.textContent);
+
+    verifyPopularHelpContent();
   });
 }

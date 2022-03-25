@@ -142,7 +142,9 @@ export function searchPageTestSuite() {
     });
 
     const data = {
-      response: fakeSearchResponse,
+      contentList: fakeSearchResponse.results,
+      isQueryEmpty: true,
+      isPopularContent: true
     };
     iframe.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
 

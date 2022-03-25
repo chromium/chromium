@@ -11,6 +11,20 @@ import {HelpContentList, HelpContentType, SearchRequest, SearchResponse} from '.
  */
 
 /** @type {!HelpContentList} */
+export const fakePopularHelpContentList = [
+  {
+    title: stringToMojoString16('fake article'),
+    url: {url: 'https://support.google.com/chromebook/?q=article'},
+    contentType: HelpContentType.kArticle
+  },
+  {
+    title: stringToMojoString16('fake forum'),
+    url: {url: 'https://support.google.com/chromebook/?q=forum'},
+    contentType: HelpContentType.kForum
+  }
+];
+
+/** @type {!HelpContentList} */
 export const fakeHelpContentList = [
   {
     title: stringToMojoString16('Fix connection problems'),

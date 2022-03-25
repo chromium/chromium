@@ -22,14 +22,14 @@ function initialize() {
       console.error('Unknown origin: ' + event.origin);
       return;
     }
-    // After receiving help content sent from parent page, display them.
-    helpContent.helpContentList = event.data.response.results;
+    // After receiving search result sent from parent page, display them.
+    helpContent.searchResult = event.data;
 
     // Post a message to parent to make testing easier.
     window.parent.postMessage(
         {
           id: 'help-content-received-for-testing',
-          count: event.data.response.results.length,
+          count: event.data.contentList.length,
         },
         OS_FEEDBACK_TRUSTED_ORIGIN);
   });

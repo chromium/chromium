@@ -6,7 +6,7 @@ import './help_resources_icons.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HelpContent, HelpContentList, HelpContentType} from './feedback_types.js';
+import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';
 
 /**
  * @const {string}
@@ -32,13 +32,37 @@ export class HelpContentElement extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      /**
-       * An implicit array of help contents to be displayed.
-       * @type {!HelpContentList}
-       */
-      helpContentList: {type: HelpContentList, value: () => []}
+    return {searchResult: {type: SearchResult}};
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * @type {!SearchResult}
+     */
+    this.searchResult = {
+      contentList: [],
+      isQueryEmpty: true,
+      isPopularContent: true
     };
+  }
+
+  /**
+   * Compute the label to use.
+   * @param {!SearchResult} searchResult
+   * @returns {string}
+   * @protected
+   */
+  getLabel_(searchResult) {
+    // TODO(xiangdongkong): Use localized strings.
+    if (!searchResult.isPopularContent) {
+      return 'Suggested help content';
+    }
+    if (searchResult.isQueryEmpty) {
+      return 'Popular help content';
+    }
+    return 'No matched results, see popular help content';
   }
 
   /**

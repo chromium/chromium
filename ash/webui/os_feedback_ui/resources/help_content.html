@@ -13,9 +13,8 @@
   }
 </style>
 <div id="helpContentContainer">
-  <!--TODO(xiangdongkong): use localized strings -->
-  <p id="helpContentLabel">Suggested help content:</p>
-  <dom-repeat items="[[helpContentList]]">
+  <p id="helpContentLabel">[[getLabel_(searchResult)]]</p>
+  <dom-repeat items="[[searchResult.contentList]]">
     <template>
       <div class="help-item">
         <a href="[[getUrl_(item)]]" target="_blank">
