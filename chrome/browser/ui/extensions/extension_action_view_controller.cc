@@ -37,8 +37,10 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/native_theme/native_theme.h"
 
 using extensions::ActionInfo;
 using extensions::CommandService;
@@ -462,8 +464,16 @@ ExtensionActionViewController::GetIconImageSource(
     content::WebContents* web_contents,
     const gfx::Size& size) {
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-  std::unique_ptr<IconWithBadgeImageSource> image_source(
-      new IconWithBadgeImageSource(size));
+  // `web_contents` may be null during tab closure or in tests.  Fall back on a
+  // generic color provider.
+  const auto* const color_provider =
+      web_contents
+          ? &web_contents->GetColorProvider()
+          : ui::ColorProviderManager::Get().GetColorProviderFor(
+                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                    nullptr));
+  auto image_source =
+      std::make_unique<IconWithBadgeImageSource>(size, color_provider);
 
   image_source->SetIcon(icon_factory_.GetIcon(tab_id));
 

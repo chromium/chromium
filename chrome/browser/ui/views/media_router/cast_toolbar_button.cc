@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/grit/generated_resources.h"
@@ -166,18 +167,19 @@ void CastToolbarButton::UpdateIcon() {
   const gfx::VectorIcon* new_icon = nullptr;
   SkColor icon_color;
 
+  const auto* const color_provider = GetColorProvider();
   if (severity == Severity::NOTIFICATION && !has_local_route_) {
     new_icon = &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
   } else if (severity == Severity::FATAL) {
     new_icon = &vector_icons::kMediaRouterErrorIcon;
-    icon_color = GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
+    icon_color = color_provider->GetColor(kColorMediaRouterIconError);
   } else if (severity == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningIcon;
-    icon_color = GetColorProvider()->GetColor(ui::kColorAlertMediumSeverity);
+    icon_color = color_provider->GetColor(kColorMediaRouterIconWarning);
   } else {
     new_icon = &vector_icons::kMediaRouterActiveIcon;
-    icon_color = gfx::kGoogleBlue500;
+    icon_color = color_provider->GetColor(kColorMediaRouterIconActive);
   }
 
   // This function is called when system theme changes. If an idle icon is

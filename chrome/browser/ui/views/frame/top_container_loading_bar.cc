@@ -6,8 +6,10 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -70,11 +72,16 @@ void LoadingBarView::SetLoadingProgress(double loading_progress) {
 
 void LoadingBarView::OnPaint(gfx::Canvas* canvas) {
   if (is_shown_when_not_animating_ || animation_.is_animating()) {
-    canvas->FillRect(GetLocalBounds(), gfx::kGoogleBlue100);
+    const auto* const color_provider = GetColorProvider();
+    canvas->FillRect(
+        GetLocalBounds(),
+        color_provider->GetColor(kColorTabstripLoadingProgressBackground));
     gfx::Rect progress_bounds(GetLocalBounds());
     progress_bounds.set_width(gfx::Tween::IntValueBetween(
         GetDisplayedLoadingProgress(), 0, progress_bounds.width()));
-    canvas->FillRect(progress_bounds, gfx::kGoogleBlue500);
+    canvas->FillRect(
+        progress_bounds,
+        color_provider->GetColor(kColorTabstripLoadingProgressForeground));
   }
 }
 

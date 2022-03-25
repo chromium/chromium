@@ -20,9 +20,7 @@ class ChromeViewsTestBase : public views::ViewsTestBase {
 
   // views::ViewsTestBase:
   void SetUp() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDown() override;
-#endif
   std::unique_ptr<views::Widget> AllocateTestWidget() override;
 };
 

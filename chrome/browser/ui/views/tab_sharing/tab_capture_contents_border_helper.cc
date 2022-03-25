@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/gfx/color_palette.h"
 
@@ -18,17 +19,28 @@
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr int kContentsBorderThickness = 5;
-constexpr float kContentsBorderOpacity = 0.50;
-constexpr SkColor kContentsBorderColor = gfx::kGoogleBlue500;
-#endif
-
 constexpr int kMinContentsBorderWidth = 20;
 constexpr int kMinContentsBorderHeight = 20;
 
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+class BorderView : public views::View {
+ public:
+  BorderView() = default;
+  BorderView(const BorderView&) = delete;
+  BorderView& operator=(const BorderView&) = delete;
+  ~BorderView() override = default;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    constexpr int kContentsBorderThickness = 5;
+    SetBorder(views::CreateSolidBorder(
+        kContentsBorderThickness,
+        GetColorProvider()->GetColor(kColorCapturedTabContentsBorder)));
+  }
+};
+
 void InitContentsBorderWidget(content::WebContents* web_contents) {
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser) {
@@ -60,12 +72,9 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
 #endif  // BUILDFLAG(IS_WIN)
 
   widget->Init(std::move(params));
-  auto border_view = std::make_unique<views::View>();
-  border_view->SetBorder(
-      views::CreateSolidBorder(kContentsBorderThickness, kContentsBorderColor));
-  widget->SetContentsView(std::move(border_view));
+  widget->SetContentsView(std::make_unique<BorderView>());
   widget->SetVisibilityChangedAnimationsEnabled(false);
-  widget->SetOpacity(kContentsBorderOpacity);
+  widget->SetOpacity(0.50f);
 
   // TODO(crbug.com/1276822): Associate each captured tab with its own widget.
   // Otherwise, if tab A captures B, and tab C captures D, and all are in

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,15 +48,20 @@ void ChromeViewsTestBase::SetUp() {
   // base.
   test_views_delegate()->set_layout_provider(
       ChromeLayoutProvider::CreateLayoutProvider());
+
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(AddChromeColorMixers));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeViewsTestBase::TearDown() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   views::ViewsTestHelperAura::SetAuraTestHelperFactory(nullptr);
+#endif
+
+  ui::ColorProviderManager::ResetForTesting();
 
   views::ViewsTestBase::TearDown();
 }
-#endif
 
 std::unique_ptr<views::Widget> ChromeViewsTestBase::AllocateTestWidget() {
   return std::make_unique<ChromeTestWidget>();

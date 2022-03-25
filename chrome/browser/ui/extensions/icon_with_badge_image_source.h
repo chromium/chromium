@@ -17,6 +17,10 @@ class RenderText;
 class Size;
 }
 
+namespace ui {
+class ColorProvider;
+}
+
 // CanvasImageSource for creating extension icon with a badge.
 class IconWithBadgeImageSource : public gfx::CanvasImageSource {
  public:
@@ -36,7 +40,8 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
     SkColor background_color;
   };
 
-  explicit IconWithBadgeImageSource(const gfx::Size& size);
+  IconWithBadgeImageSource(const gfx::Size& size,
+                           const ui::ColorProvider* color_provider);
 
   IconWithBadgeImageSource(const IconWithBadgeImageSource&) = delete;
   IconWithBadgeImageSource& operator=(const IconWithBadgeImageSource&) = delete;
@@ -75,6 +80,8 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
   // the area where the icon exists (ignoring all the paddings).
   // https://crbug.com/831946.
   gfx::Rect GetIconAreaRect() const;
+
+  const ui::ColorProvider* const color_provider_;
 
   // The base icon to draw.
   gfx::Image icon_;
