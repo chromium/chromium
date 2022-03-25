@@ -20,6 +20,8 @@ namespace {
 // sources of created VPNs.
 const char kVpnConfigurationSourceBucketArc[] =
     "Network.Ash.VPN.ARC.ConfigurationSource";
+const char kVpnConfigurationSourceBucketIKEv2[] =
+    "Network.Ash.VPN.IKEv2.ConfigurationSource";
 const char kVpnConfigurationSourceBucketL2tpIpsec[] =
     "Network.Ash.VPN.L2TPIPsec.ConfigurationSource";
 const char kVpnConfigurationSourceBucketOpenVpn[] =
@@ -28,10 +30,14 @@ const char kVpnConfigurationSourceBucketThirdParty[] =
     "Network.Ash.VPN.ThirdParty.ConfigurationSource";
 const char kVpnConfigurationSourceBucketWireGuard[] =
     "Network.Ash.VPN.WireGuard.ConfigurationSource";
+const char kVpnConfigurationSourceBucketUnknown[] =
+    "Network.Ash.VPN.Unknown.ConfigurationSource";
 
 const char* GetBucketForVpnProviderType(const std::string& vpn_provider_type) {
   if (vpn_provider_type == shill::kProviderArcVpn) {
     return kVpnConfigurationSourceBucketArc;
+  } else if (vpn_provider_type == shill::kProviderIKEv2) {
+    return kVpnConfigurationSourceBucketIKEv2;
   } else if (vpn_provider_type == shill::kProviderL2tpIpsec) {
     return kVpnConfigurationSourceBucketL2tpIpsec;
   } else if (vpn_provider_type == shill::kProviderOpenVpn) {
@@ -41,7 +47,8 @@ const char* GetBucketForVpnProviderType(const std::string& vpn_provider_type) {
   } else if (vpn_provider_type == shill::kProviderWireGuard) {
     return kVpnConfigurationSourceBucketWireGuard;
   }
-  return nullptr;
+  NOTREACHED();
+  return kVpnConfigurationSourceBucketUnknown;
 }
 
 }  // namespace
@@ -71,10 +78,7 @@ void VpnNetworkMetricsHelper::OnConfigurationCreated(
   const char* vpn_provider_type_bucket =
       GetBucketForVpnProviderType(network_state->GetVpnProviderType());
 
-  if (!vpn_provider_type_bucket) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK(vpn_provider_type_bucket);
 
   base::UmaHistogramEnumeration(
       vpn_provider_type_bucket,

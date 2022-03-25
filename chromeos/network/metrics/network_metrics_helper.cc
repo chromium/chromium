@@ -41,6 +41,7 @@ const char kTether[] = "Tether";
 const char kVPN[] = "VPN";
 const char kVPNBuiltIn[] = "VPN.TypeBuiltIn";
 const char kVPNThirdParty[] = "VPN.TypeThirdParty";
+const char kVPNUnknown[] = "VPN.TypeUnknown";
 
 const char kWifi[] = "WiFi";
 const char kWifiOpen[] = "WiFi.SecurityOpen";
@@ -123,12 +124,14 @@ const std::vector<std::string> GetVpnNetworkTypeHistograms(
   if (vpn_provider_type == shill::kProviderThirdPartyVpn ||
       vpn_provider_type == shill::kProviderArcVpn) {
     vpn_histograms.emplace_back(kVPNThirdParty);
-  } else if (vpn_provider_type == shill::kProviderL2tpIpsec ||
+  } else if (vpn_provider_type == shill::kProviderIKEv2 ||
+             vpn_provider_type == shill::kProviderL2tpIpsec ||
              vpn_provider_type == shill::kProviderOpenVpn ||
              vpn_provider_type == shill::kProviderWireGuard) {
     vpn_histograms.emplace_back(kVPNBuiltIn);
   } else {
     NOTREACHED();
+    vpn_histograms.emplace_back(kVPNUnknown);
   }
   return vpn_histograms;
 }

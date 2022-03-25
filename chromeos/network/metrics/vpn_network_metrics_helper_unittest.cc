@@ -19,6 +19,7 @@
 #include "chromeos/network/network_ui_data.h"
 #include "chromeos/network/shill_property_util.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -28,6 +29,8 @@ namespace {
 
 const char kVpnHistogramConfigurationSourceArc[] =
     "Network.Ash.VPN.ARC.ConfigurationSource";
+const char kVpnHistogramConfigurationSourceIKEv2[] =
+    "Network.Ash.VPN.IKEv2.ConfigurationSource";
 const char kVpnHistogramConfigurationSourceL2tpIpsec[] =
     "Network.Ash.VPN.L2TPIPsec.ConfigurationSource";
 const char kVpnHistogramConfigurationSourceOpenVpn[] =
@@ -36,9 +39,43 @@ const char kVpnHistogramConfigurationSourceThirdParty[] =
     "Network.Ash.VPN.ThirdParty.ConfigurationSource";
 const char kVpnHistogramConfigurationSourceWireGuard[] =
     "Network.Ash.VPN.WireGuard.ConfigurationSource";
+const char kVpnHistogramConfigurationSourceUnknown[] =
+    "Network.Ash.VPN.Unknown.ConfigurationSource";
+
+const char kTestUnknownVpn[] = "test_unknown_vpn";
 
 void ErrorCallback(const std::string& error_name) {
   ADD_FAILURE() << "Unexpected error: " << error_name;
+}
+
+// Helper function to create a VPN network using NetworkConfigurationHandler.
+void CreateTestShillConfiguration(const std::string& vpn_provider_type,
+                                  bool is_managed) {
+  base::Value properties(base::Value::Type::DICTIONARY);
+
+  properties.SetKey(shill::kGuidProperty, base::Value("vpn_guid"));
+  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeVPN));
+  properties.SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
+  properties.SetKey(shill::kProviderHostProperty, base::Value("vpn_host"));
+  properties.SetKey(shill::kProviderTypeProperty,
+                    base::Value(vpn_provider_type));
+  properties.SetKey(shill::kProfileProperty,
+                    base::Value(NetworkProfileHandler::GetSharedProfilePath()));
+
+  if (is_managed) {
+    properties.SetKey(shill::kONCSourceProperty,
+                      base::Value(shill::kONCSourceDevicePolicy));
+    std::unique_ptr<NetworkUIData> ui_data = NetworkUIData::CreateFromONC(
+        ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+    properties.SetKey(shill::kUIDataProperty,
+                      base::Value(ui_data->GetAsJson()));
+  }
+
+  NetworkHandler::Get()
+      ->network_configuration_handler()
+      ->CreateShillConfiguration(properties, base::DoNothing(),
+                                 base::BindOnce(&ErrorCallback));
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace
@@ -68,37 +105,6 @@ class VpnNetworkMetricsHelperTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  // Helper function to create a VPN network using NetworkConfigurationHandler.
-  void CreateTestShillConfiguration(const char* vpn_provider_type,
-                                    bool is_managed) {
-    base::Value properties(base::Value::Type::DICTIONARY);
-
-    properties.SetKey(shill::kGuidProperty, base::Value("vpn_guid"));
-    properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeVPN));
-    properties.SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
-    properties.SetKey(shill::kProviderHostProperty, base::Value("vpn_host"));
-    properties.SetKey(shill::kProviderTypeProperty,
-                      base::Value(vpn_provider_type));
-    properties.SetKey(
-        shill::kProfileProperty,
-        base::Value(NetworkProfileHandler::GetSharedProfilePath()));
-
-    if (is_managed) {
-      properties.SetKey(shill::kONCSourceProperty,
-                        base::Value(shill::kONCSourceDevicePolicy));
-      std::unique_ptr<NetworkUIData> ui_data = NetworkUIData::CreateFromONC(
-          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-      properties.SetKey(shill::kUIDataProperty,
-                        base::Value(ui_data->GetAsJson()));
-    }
-
-    NetworkHandler::Get()
-        ->network_configuration_handler()
-        ->CreateShillConfiguration(properties, base::DoNothing(),
-                                   base::BindOnce(&ErrorCallback));
-    base::RunLoop().RunUntilIdle();
-  }
-
   void ExpectConfigurationSourceCounts(const char* histogram,
                                        size_t manual_count,
                                        size_t policy_count) {
@@ -122,8 +128,9 @@ class VpnNetworkMetricsHelperTest : public testing::Test {
 };
 
 TEST_F(VpnNetworkMetricsHelperTest, LogVpnVPNConfigurationSource) {
-  const std::vector<std::pair<const char*, const char*>>
+  const std::vector<std::pair<const std::string, const char*>>
       kProvidersAndHistograms{{
+          {shill::kProviderIKEv2, kVpnHistogramConfigurationSourceIKEv2},
           {shill::kProviderL2tpIpsec,
            kVpnHistogramConfigurationSourceL2tpIpsec},
           {shill::kProviderArcVpn, kVpnHistogramConfigurationSourceArc},
@@ -132,11 +139,35 @@ TEST_F(VpnNetworkMetricsHelperTest, LogVpnVPNConfigurationSource) {
            kVpnHistogramConfigurationSourceThirdParty},
           {shill::kProviderWireGuard,
            kVpnHistogramConfigurationSourceWireGuard},
+          {kTestUnknownVpn, kVpnHistogramConfigurationSourceUnknown},
       }};
 
   for (const auto& it : kProvidersAndHistograms) {
-    ExpectConfigurationSourceCounts(it.first, /*manual_count=*/0,
+    ExpectConfigurationSourceCounts(it.first.c_str(), /*manual_count=*/0,
                                     /*policy_count=*/0);
+
+// Emitting a metric for an unknown VPN provider will always cause a NOTREACHED
+// to be hit. This can cause a CHECK to fail, depending on the build flags. We
+// catch any failing CHECK below by asserting that we will crash when emitting.
+#if !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+    if (it.first == kTestUnknownVpn) {
+      ASSERT_DEATH(
+          {
+            CreateTestShillConfiguration(kTestUnknownVpn, /*is_managed=*/false);
+          },
+          "");
+      ClearServices();
+      ASSERT_DEATH(
+          {
+            CreateTestShillConfiguration(kTestUnknownVpn, /*is_managed=*/true);
+          },
+          "");
+      ClearServices();
+      ExpectConfigurationSourceCounts(it.second, /*manual_count=*/0,
+                                      /*policy_count=*/0);
+      continue;
+    }
+#endif  // !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 
     CreateTestShillConfiguration(it.first, /*is_managed=*/false);
     ExpectConfigurationSourceCounts(it.second, /*manual_count=*/1,
