@@ -25,6 +25,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -197,6 +198,9 @@ class BinaryUploadService : public KeyedService {
     // optimizations such as omitting FCM code paths for auth requests.
     virtual bool IsAuthRequest() const;
 
+    const std::string& access_token() const;
+    void set_access_token(const std::string& access_token);
+
    private:
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
@@ -209,6 +213,9 @@ class BinaryUploadService : public KeyedService {
 
     // Indicates if the request was triggered by a profile-level policy or not.
     bool per_profile_request_ = false;
+
+    // Access token to be attached in the request headers.
+    std::string access_token_;
   };
 
   // Upload the given file contents for deep scanning if the browser is
@@ -262,6 +269,8 @@ class BinaryUploadService : public KeyedService {
   virtual void UploadForDeepScanning(std::unique_ptr<Request> request);
 
   void OnGetInstanceID(Request* request, const std::string& token);
+
+  void OnGetAccessToken(Request* request, const std::string& access_token);
 
   void OnGetRequestData(Request* request, Result result, Request::Data data);
 
@@ -350,6 +359,9 @@ class BinaryUploadService : public KeyedService {
   // Ensures we validate the browser is registered with the backend every 24
   // hours.
   base::RepeatingTimer timer_;
+
+  // Used to obtain an access token to attach to requests.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
   base::WeakPtrFactory<BinaryUploadService> weakptr_factory_;
 };

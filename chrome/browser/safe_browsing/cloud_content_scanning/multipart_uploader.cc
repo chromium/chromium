@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -162,7 +163,13 @@ void MultipartUploadRequest::SendRequest() {
   resource_request->url = base_url_;
   resource_request->method = "POST";
   resource_request->headers.SetHeader("X-Goog-Upload-Protocol", "multipart");
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  if (access_token_.empty()) {
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  } else {
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_);
+  }
 
   switch (data_source_) {
     case STRING:
@@ -176,7 +183,7 @@ void MultipartUploadRequest::SendRequest() {
       break;
     default:
       NOTREACHED();
-  };
+  }
 }
 
 void MultipartUploadRequest::SendStringRequest(
@@ -372,6 +379,10 @@ MultipartUploadRequest::CreatePageRequest(
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
                                      std::move(page_region), traffic_annotation,
                                      std::move(callback));
+}
+
+void MultipartUploadRequest::set_access_token(const std::string& access_token) {
+  access_token_ = access_token;
 }
 
 }  // namespace safe_browsing

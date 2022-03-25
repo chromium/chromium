@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/strings.h"
 #include "components/prefs/pref_service.h"
@@ -353,6 +355,27 @@ void BinaryUploadService::OnGetInstanceID(Request* request,
       base::Minutes(6), 50);
 
   request->set_fcm_token(instance_id);
+
+  if (base::FeatureList::IsEnabled(kConnectorsScanningAccessToken) &&
+      chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+    if (!token_fetcher_) {
+      token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+          IdentityManagerFactory::GetForProfile(profile_));
+    }
+    token_fetcher_->Start(base::BindOnce(&BinaryUploadService::OnGetAccessToken,
+                                         weakptr_factory_.GetWeakPtr(),
+                                         request));
+    return;
+  }
+
+  request->GetRequestData(base::BindOnce(&BinaryUploadService::OnGetRequestData,
+                                         weakptr_factory_.GetWeakPtr(),
+                                         request));
+}
+
+void BinaryUploadService::OnGetAccessToken(Request* request,
+                                           const std::string& access_token) {
+  request->set_access_token(access_token);
   request->GetRequestData(base::BindOnce(&BinaryUploadService::OnGetRequestData,
                                          weakptr_factory_.GetWeakPtr(),
                                          request));
@@ -409,6 +432,7 @@ void BinaryUploadService::OnGetRequestData(Request* request,
                   enterprise_connectors::ContentAnalysisResponse());
     return;
   }
+  upload_request->set_access_token(request->access_token());
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->tab_url(), request->per_profile_request(),
@@ -767,6 +791,15 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
 
 bool BinaryUploadService::Request::IsAuthRequest() const {
   return false;
+}
+
+const std::string& BinaryUploadService::Request::access_token() const {
+  return access_token_;
+}
+
+void BinaryUploadService::Request::set_access_token(
+    const std::string& access_token) {
+  access_token_ = access_token;
 }
 
 bool BinaryUploadService::IsActive(Request* request) {

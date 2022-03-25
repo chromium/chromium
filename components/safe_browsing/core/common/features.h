@@ -58,6 +58,10 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Controls whether an access token is attached to scanning requests triggered
+// by enterprise Connectors.
+extern const base::Feature kConnectorsScanningAccessToken;
+
 // Controls the non-blocking scanning UI for Connectors scanning requests. If
 // this is enabled, the downloaded file(s) will be renamed immediately and the
 // scanning will take place without UI when the policy is set to "non-blocking"

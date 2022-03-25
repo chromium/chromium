@@ -112,6 +112,8 @@ class MultipartUploadRequest {
     return data_pipe_getter_.get();
   }
 
+  void set_access_token(const std::string& access_token);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, GeneratesCorrectBody);
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, RetriesCorrectly);
@@ -188,6 +190,8 @@ class MultipartUploadRequest {
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   base::Time start_time_;
+
+  std::string access_token_;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
 };
