@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+#include <vector>
+
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +37,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -43,12 +47,14 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace net {
 namespace {
 
+using net::test::IsError;
 using net::test::IsOk;
 
 const char kDohHostname[] = "doh-server.example";
@@ -77,23 +83,20 @@ class TestHostResolverProc : public HostResolverProc {
   uint32_t insecure_queries_served_;
 };
 
-class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
+// A test fixture that creates a DoH server with a `URLRequestContext`
+// configured to use it.
+class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
  public:
-  HttpWithDnsOverHttpsTest()
-      : host_resolver_proc_(new TestHostResolverProc()),
-        test_server_(EmbeddedTestServer::Type::TYPE_HTTPS),
-        test_https_requests_served_(0) {
-    EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {kHostname};
-    test_server_.SetSSLConfig(cert_config);
-    test_server_.RegisterRequestHandler(
-        base::BindRepeating(&HttpWithDnsOverHttpsTest::HandleDefaultRequest,
-                            base::Unretained(this)));
+  DnsOverHttpsIntegrationTest()
+      : host_resolver_proc_(base::MakeRefCounted<TestHostResolverProc>()) {
     doh_server_.SetHostname(kDohHostname);
-    doh_server_.AddAddressRecord(kHostname, IPAddress(127, 0, 0, 1));
     EXPECT_TRUE(doh_server_.Start());
-    EXPECT_TRUE(test_server_.Start());
+    ResetContext();
+  }
 
+  URLRequestContext* context() { return request_context_.get(); }
+
+  void ResetContext() {
     // TODO(crbug.com/1252155): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
@@ -123,7 +126,37 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
     request_context_ = context_builder->Build();
   }
 
-  URLRequestContext* context() { return request_context_.get(); }
+  void AddHostWithEch(const url::SchemeHostPort host,
+                      const IPAddress& address,
+                      base::span<const uint8_t> ech_config_list) {
+    doh_server_.AddAddressRecord(host.host(), address);
+    doh_server_.AddRecord(BuildTestHttpsServiceRecord(
+        dns_util::GetNameForHttpsQuery(host),
+        /*priority=*/1, /*service_name=*/host.host(),
+        {BuildTestHttpsServiceEchConfigParam(ech_config_list)}));
+  }
+
+ protected:
+  TestDohServer doh_server_;
+  scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
+  std::unique_ptr<URLRequestContext> request_context_;
+};
+
+// A convenience wrapper over `DnsOverHttpsIntegrationTest` that also starts an
+// HTTPS server.
+class HttpsWithDnsOverHttpsTest : public DnsOverHttpsIntegrationTest {
+ public:
+  HttpsWithDnsOverHttpsTest() {
+    EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {kHostname};
+    https_server_.SetSSLConfig(cert_config);
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&HttpsWithDnsOverHttpsTest::HandleDefaultRequest,
+                            base::Unretained(this)));
+    EXPECT_TRUE(https_server_.Start());
+
+    doh_server_.AddAddressRecord(kHostname, IPAddress(127, 0, 0, 1));
+  }
 
   std::unique_ptr<test_server::HttpResponse> HandleDefaultRequest(
       const test_server::HttpRequest& request) {
@@ -136,11 +169,8 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
   }
 
  protected:
-  scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
-  std::unique_ptr<URLRequestContext> request_context_;
-  TestDohServer doh_server_;
-  EmbeddedTestServer test_server_;
-  uint32_t test_https_requests_served_;
+  EmbeddedTestServer https_server_{EmbeddedTestServer::Type::TYPE_HTTPS};
+  uint32_t test_https_requests_served_ = 0;
 };
 
 class TestHttpDelegate : public HttpStreamRequest::Delegate {
@@ -191,11 +221,12 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
 // This test sets up a request which will reenter the connection pools by
 // triggering a DNS over HTTPS request. It also sets up an idle socket
 // which was a precondition for the crash we saw in  https://crbug.com/830917.
-TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
+TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   // Create and start http server.
   EmbeddedTestServer http_server(EmbeddedTestServer::Type::TYPE_HTTP);
-  http_server.RegisterRequestHandler(base::BindRepeating(
-      &HttpWithDnsOverHttpsTest::HandleDefaultRequest, base::Unretained(this)));
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&HttpsWithDnsOverHttpsTest::HandleDefaultRequest,
+                          base::Unretained(this)));
   EXPECT_TRUE(http_server.Start());
 
   // Set up an idle socket.
@@ -234,12 +265,12 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
 
   // Make a request that will trigger a DoH query as well.
   TestDelegate d;
-  GURL main_url = test_server_.GetURL(kHostname, "/test");
+  GURL main_url = https_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
   base::RunLoop().Run();
-  EXPECT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(http_server.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
 
@@ -257,18 +288,18 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
   EXPECT_EQ(d.data_received(), kTestBody);
 }
 
-TEST_F(HttpWithDnsOverHttpsTest, EndToEndFail) {
+TEST_F(HttpsWithDnsOverHttpsTest, EndToEndFail) {
   // Fail all DoH requests.
   doh_server_.SetFailRequests(true);
 
   // Make a request that will trigger a DoH query.
   TestDelegate d;
-  GURL main_url = test_server_.GetURL(kHostname, "/test");
+  GURL main_url = https_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
   base::RunLoop().Run();
-  EXPECT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
 
   // No HTTPS connection to the test server will be attempted due to the
@@ -284,20 +315,23 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEndFail) {
 }
 
 // An end-to-end test of the HTTPS upgrade behavior.
-TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
+TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
 
-  GURL https_url = test_server_.GetURL(kHostname, "/test");
+  GURL https_url = https_server_.GetURL(kHostname, "/test");
   EXPECT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
   GURL http_url = https_url.ReplaceComponents(replacements);
 
+  // `service_name` is `kHostname` rather than "." because "." specifies the
+  // query name. For non-defaults ports, the query name uses port prefix naming
+  // and does not match the A/AAAA records.
   doh_server_.AddRecord(BuildTestHttpsServiceRecord(
       dns_util::GetNameForHttpsQuery(url::SchemeHostPort(https_url)),
-      /*priority=*/1, /*service_name=*/".", /*params=*/{}));
+      /*priority=*/1, /*service_name=*/kHostname, /*params=*/{}));
 
   // Fetch the http URL.
   TestDelegate d;
@@ -319,17 +353,17 @@ TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
 // An end-to-end test for requesting a domain with a basic HTTPS record. Expect
 // this to exercise connection logic for extra HostResolver results with
 // metadata.
-TEST_F(HttpWithDnsOverHttpsTest, HttpsMetadata) {
+TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
 
-  GURL main_url = test_server_.GetURL(kHostname, "/test");
+  GURL main_url = https_server_.GetURL(kHostname, "/test");
   EXPECT_TRUE(main_url.SchemeIs(url::kHttpsScheme));
 
   doh_server_.AddRecord(BuildTestHttpsServiceRecord(
       dns_util::GetNameForHttpsQuery(url::SchemeHostPort(main_url)),
-      /*priority=*/1, /*service_name=*/".", /*params=*/{}));
+      /*priority=*/1, /*service_name=*/kHostname, /*params=*/{}));
 
   // Fetch the http URL.
   TestDelegate d;
@@ -346,6 +380,288 @@ TEST_F(HttpWithDnsOverHttpsTest, HttpsMetadata) {
   EXPECT_TRUE(d.response_completed());
   EXPECT_EQ(d.request_status(), 0);
   EXPECT_EQ(d.data_received(), kTestBody);
+}
+
+TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
+  // Configure a test server that speaks ECH.
+  static constexpr char kRealName[] = "secret.example";
+  static constexpr char kPublicName[] = "public.example";
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealName};
+
+  SSLServerConfig ssl_server_config;
+  std::vector<uint8_t> ech_config_list;
+  ssl_server_config.ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ssl_server_config.ech_keys);
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+  GURL url = test_server.GetURL(kRealName, "/defaultresponse");
+  AddHostWithEch(url::SchemeHostPort(url), addr.front().address(),
+                 ech_config_list);
+
+  for (bool ech_enabled : {true, false}) {
+    SCOPED_TRACE(ech_enabled);
+    base::test::ScopedFeatureList features;
+    if (ech_enabled) {
+      features.InitWithFeatures(
+          /*enabled_features=*/{features::kUseDnsHttpsSvcb,
+                                features::kEncryptedClientHello},
+          /*disabled_features=*/{});
+    } else {
+      features.InitWithFeatures(
+          /*enabled_features=*/{features::kUseDnsHttpsSvcb},
+          /*disabled_features=*/{features::kEncryptedClientHello});
+    }
+
+    // Create a new `URLRequestContext`, to ensure there are no cached sockets,
+    // etc., from the previous loop iteration.
+    ResetContext();
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
+  }
+}
+
+// Test that, if the DNS returns a stale ECHConfigList (or other key mismatch),
+// the client can recover and connect to the server, provided the server can
+// handshake as the public name.
+TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kEncryptedClientHello,
+                            features::kUseDnsHttpsSvcb},
+      /*disabled_features=*/{});
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list, ech_config_list_stale,
+      ech_config_list_wrong_public_name;
+  bssl::UniquePtr<SSL_ECH_KEYS> ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ech_keys);
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure an ECH-supporting server that can speak for all names except
+  // `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  SSLServerConfig ssl_server_config;
+  ssl_server_config.ech_keys = std::move(ech_keys);
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+  GURL url_stale = test_server.GetURL(kRealNameStale, "/defaultresponse");
+  GURL url_wrong_public_name =
+      test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse");
+  AddHostWithEch(url::SchemeHostPort(url_stale), addr.front().address(),
+                 ech_config_list_stale);
+  AddHostWithEch(url::SchemeHostPort(url_wrong_public_name),
+                 addr.front().address(), ech_config_list_wrong_public_name);
+
+  // Connecting to `url_stale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and provide new
+  // keys for the client to use.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_TRUE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `url_wrong_public_name` should fail. The server can neither
+  // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r =
+        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
+                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+  }
+}
+
+TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kEncryptedClientHello,
+                            features::kUseDnsHttpsSvcb},
+      /*disabled_features=*/{});
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list_stale, ech_config_list_wrong_public_name;
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure a server, without ECH, that can speak for all names except
+  // `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+  GURL url_stale = test_server.GetURL(kRealNameStale, "/defaultresponse");
+  GURL url_wrong_public_name =
+      test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse");
+  AddHostWithEch(url::SchemeHostPort(url_stale), addr.front().address(),
+                 ech_config_list_stale);
+  AddHostWithEch(url::SchemeHostPort(url_wrong_public_name),
+                 addr.front().address(), ech_config_list_wrong_public_name);
+
+  // Connecting to `url_stale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and trigger an
+  // authenticated fallback.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_FALSE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `url_wrong_public_name` should fail. The server can neither
+  // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r =
+        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
+                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+  }
+}
+
+TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kEncryptedClientHello,
+                            features::kUseDnsHttpsSvcb},
+      /*disabled_features=*/{});
+
+  static constexpr char kRealNameStale[] = "secret1.example";
+  static constexpr char kRealNameWrongPublicName[] = "secret2.example";
+  static constexpr char kPublicName[] = "public.example";
+  static constexpr char kWrongPublicName[] = "wrong-public.example";
+
+  std::vector<uint8_t> ech_config_list_stale, ech_config_list_wrong_public_name;
+  ASSERT_TRUE(MakeTestEchKeys(kPublicName, /*max_name_len=*/128,
+                              &ech_config_list_stale));
+  ASSERT_TRUE(MakeTestEchKeys(kWrongPublicName, /*max_name_len=*/128,
+                              &ech_config_list_wrong_public_name));
+
+  // Configure a server, without ECH or TLS 1.3, that can speak for all names
+  // except `kWrongPublicName`.
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealNameStale, kRealNameWrongPublicName,
+                                  kPublicName};
+  SSLServerConfig ssl_server_config;
+  ssl_server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+  GURL url_stale = test_server.GetURL(kRealNameStale, "/defaultresponse");
+  GURL url_wrong_public_name =
+      test_server.GetURL(kRealNameWrongPublicName, "/defaultresponse");
+  AddHostWithEch(url::SchemeHostPort(url_stale), addr.front().address(),
+                 ech_config_list_stale);
+  AddHostWithEch(url::SchemeHostPort(url_wrong_public_name),
+                 addr.front().address(), ech_config_list_wrong_public_name);
+
+  // Connecting to `url_stale` should succeed. Although the server will not
+  // decrypt the ClientHello, it can handshake as `kPublicName` and trigger an
+  // authenticated fallback.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_FALSE(r->ssl_info().encrypted_client_hello);
+  }
+
+  // Connecting to `url_wrong_public_name` should fail. The server can neither
+  // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r =
+        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
+                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_THAT(d.request_status(),
+                IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+  }
 }
 
 }  // namespace
