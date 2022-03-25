@@ -9070,7 +9070,7 @@
     },
     {
       'name': 'ChromeOsMultiProfileUserBehavior',
-      'owners': ['xiyuan@chromium.org', 'sinhak@chromium.org', 'tellier@google.com', 'rsorokin@chromium.org', 'cros-oac@google.com'],
+      'owners': ['xiyuan@chromium.org', 'sinhak@chromium.org', 'rsorokin@chromium.org', 'cros-oac@google.com'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -27083,7 +27083,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'LoginDisplayPasswordButtonEnabled',
-      'owners': ['tellier@google.com', 'rsorokin@chromium.org', 'cros-oac@google.com'],
+      'owners': ['rsorokin@chromium.org', 'cros-oac@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:86-'],
