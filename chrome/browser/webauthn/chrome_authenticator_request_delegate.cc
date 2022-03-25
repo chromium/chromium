@@ -610,7 +610,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     // displayed is up to the UI.
     qr_generator_key.emplace();
     crypto::RandBytes(*qr_generator_key);
-    qr_string = device::cablev2::qr::Encode(*qr_generator_key);
+    qr_string = device::cablev2::qr::Encode(*qr_generator_key, request_type);
 
     auto linking_handler = std::make_unique<CableLinkingEventHandler>(
         Profile::FromBrowserContext(GetBrowserContext()));

@@ -79,7 +79,7 @@ TEST(CableV2Encoding, EIDEncrypt) {
 TEST(CableV2Encoding, QRs) {
   std::array<uint8_t, kQRKeySize> qr_key;
   crypto::RandBytes(qr_key);
-  std::string url = qr::Encode(qr_key);
+  std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
   const absl::optional<qr::Components> decoded = qr::Parse(url);
   ASSERT_TRUE(decoded.has_value()) << url;
   static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
@@ -94,9 +94,21 @@ TEST(CableV2Encoding, QRs) {
   // Chromium always sets this flag.
   EXPECT_TRUE(decoded->supports_linking);
 
+  EXPECT_EQ(decoded->request_type, FidoRequestType::kMakeCredential);
+
   url[0] ^= 4;
   EXPECT_FALSE(qr::Parse(url));
   EXPECT_FALSE(qr::Parse("nonsense"));
+}
+
+TEST(CableV2Encoding, RequestTypeToString) {
+  for (const auto type :
+       {FidoRequestType::kMakeCredential, FidoRequestType::kGetAssertion}) {
+    EXPECT_EQ(type, RequestTypeFromString(RequestTypeToString(type)));
+  }
+
+  EXPECT_EQ(FidoRequestType::kGetAssertion, RequestTypeFromString("nonsense"));
+  EXPECT_EQ(FidoRequestType::kGetAssertion, RequestTypeFromString(""));
 }
 
 TEST(CableV2Encoding, PaddedCBOR) {

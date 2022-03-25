@@ -424,10 +424,19 @@ absl::optional<Components> Parse(const std::string& qr_url) {
     ret.supports_linking = it->second.GetBool();
   }
 
+  it = qr_contents_map.find(cbor::Value(5));
+  if (it != qr_contents_map.end()) {
+    if (!it->second.is_string()) {
+      return absl::nullopt;
+    }
+    ret.request_type = RequestTypeFromString(it->second.GetString());
+  }
+
   return ret;
 }
 
-std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
+std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
+                   FidoRequestType request_type) {
   cbor::Value::MapValue qr_contents;
   qr_contents.emplace(
       0, SeedToCompressedPublicKey(
@@ -442,6 +451,8 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 
   qr_contents.emplace(4, true);  // client supports storing linking information.
+
+  qr_contents.emplace(5, RequestTypeToString(request_type));
 
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
@@ -587,6 +598,24 @@ void Derive(uint8_t* out,
 }
 
 }  // namespace internal
+
+const char* RequestTypeToString(FidoRequestType request_type) {
+  switch (request_type) {
+    case FidoRequestType::kMakeCredential:
+      return "mc";
+    case FidoRequestType::kGetAssertion:
+      return "ga";
+      // If adding a value here, also update `RequestTypeFromString`.
+  }
+}
+
+FidoRequestType RequestTypeFromString(const std::string& s) {
+  if (s == "mc") {
+    return FidoRequestType::kMakeCredential;
+  }
+  // kGetAssertion is the default if the value is unknown too.
+  return FidoRequestType::kGetAssertion;
+}
 
 bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
   std::array<uint8_t, 32> seed;

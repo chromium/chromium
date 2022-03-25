@@ -151,16 +151,7 @@ FidoTunnelDevice::FidoTunnelDevice(
   cbor::Value::MapValue client_payload;
   client_payload.emplace(1, pairing->id);
   client_payload.emplace(2, base::span<const uint8_t>(client_nonce));
-  const char* request_type_str;
-  switch (request_type) {
-    case FidoRequestType::kMakeCredential:
-      request_type_str = "mc";
-      break;
-    case FidoRequestType::kGetAssertion:
-      request_type_str = "ga";
-      break;
-  }
-  client_payload.emplace(3, request_type_str);
+  client_payload.emplace(3, RequestTypeToString(request_type));
   const absl::optional<std::vector<uint8_t>> client_payload_bytes =
       cbor::Writer::Write(cbor::Value(std::move(client_payload)));
   CHECK(client_payload_bytes.has_value());
