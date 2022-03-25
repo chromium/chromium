@@ -9,10 +9,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/bind_post_task.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -22,13 +21,56 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
-using ::media_router::CreateAccessCodeMediaSink;
 using media_router::mojom::RouteRequestResultCode;
 // TODO(b/213324920): Remove WebUI from the media_router namespace after
 // expiration module has been completed.
 namespace media_router {
 
 namespace {
+
+const char* AddSinkResultCodeToStringHelper(AddSinkResultCode value) {
+  switch (value) {
+    case AddSinkResultCode::UNKNOWN_ERROR:
+      return "UNKNOWN_ERROR";
+    case AddSinkResultCode::OK:
+      return "OK";
+    case AddSinkResultCode::AUTH_ERROR:
+      return "AUTH_ERROR";
+    case AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR:
+      return "HTTP_RESPONSE_CODE_ERROR";
+    case AddSinkResultCode::RESPONSE_MALFORMED:
+      return "RESPONSE_MALFORMED";
+    case AddSinkResultCode::EMPTY_RESPONSE:
+      return "EMPTY_RESPONSE";
+    case AddSinkResultCode::INVALID_ACCESS_CODE:
+      return "INVALID_ACCESS_CODE";
+    case AddSinkResultCode::ACCESS_CODE_NOT_FOUND:
+      return "ACCESS_CODE_NOT_FOUND";
+    case AddSinkResultCode::TOO_MANY_REQUESTS:
+      return "TOO_MANY_REQUESTS";
+    case AddSinkResultCode::SERVICE_NOT_PRESENT:
+      return "SERVICE_NOT_PRESENT";
+    case AddSinkResultCode::SERVER_ERROR:
+      return "SERVER_ERROR";
+    case AddSinkResultCode::SINK_CREATION_ERROR:
+      return "SINK_CREATION_ERROR";
+    case AddSinkResultCode::CHANNEL_OPEN_ERROR:
+      return "CHANNEL_OPEN_ERROR";
+    case AddSinkResultCode::PROFILE_SYNC_ERROR:
+      return "PROFILE_SYNC_ERROR";
+    default:
+      return nullptr;
+  }
+}
+
+std::string AddSinkResultCodeToString(AddSinkResultCode value) {
+  const char* str = AddSinkResultCodeToStringHelper(value);
+  if (!str) {
+    return base::StringPrintf("Unknown AddSinkResultCode value: %i",
+                              static_cast<int32_t>(value));
+  }
+  return str;
+}
 
 constexpr char kLoggerComponent[] = "AccessCodeCastHandler";
 
@@ -134,12 +176,9 @@ void AccessCodeCastHandler::AddSink(
       std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
   DCHECK(media_router_) << "Must have media router!";
 
-  discovery_server_interface_ =
-      std::make_unique<AccessCodeCastDiscoveryInterface>(
-          profile_, access_code, media_router_->GetLogger());
-  discovery_server_interface_->ValidateDiscoveryAccessCode(
-      base::BindOnce(&AccessCodeCastHandler::OnAccessCodeValidated,
-                     weak_ptr_factory_.GetWeakPtr()));
+  access_code_sink_service_->DiscoverSink(
+      access_code, base::BindOnce(&AccessCodeCastHandler::OnSinkAddedResult,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
@@ -197,7 +236,9 @@ void AccessCodeCastHandler::InitMirroringSources() {
 // Discovery is not complete until the sink is in QRM. This is because any
 // attempt to create route parameters before the sink is in QRM will fail.
 void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
-  DCHECK(add_sink_callback_) << "Dialog already notified!";
+  // Dialog  has already notified (with most likely an error).
+  if (!add_sink_callback_)
+    return;
   DCHECK(sink_id_) << "Must have a sink id to complete!";
 
   // Verify that the sink is in QRM.
@@ -214,64 +255,24 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
 }
 
-void AccessCodeCastHandler::OnAccessCodeValidated(
-    absl::optional<DiscoveryDevice> discovery_device,
-    AddSinkResultCode result_code) {
-  if (result_code != AddSinkResultCode::OK) {
-    std::move(add_sink_callback_).Run(result_code);
-    return;
-  }
-  if (!discovery_device.has_value()) {
-    std::move(add_sink_callback_).Run(AddSinkResultCode::EMPTY_RESPONSE);
-    return;
-  }
-  std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
-      creation_result = CreateAccessCodeMediaSink(discovery_device.value());
-
-  if (!creation_result.first.has_value() ||
-      creation_result.second != CreateCastMediaSinkResult::kOk) {
-    media_router_->GetLogger()->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "An error occured while constructing the sink.", "", "", "");
-    std::move(add_sink_callback_).Run(AddSinkResultCode::SINK_CREATION_ERROR);
-    return;
-  }
-  sink_id_ = creation_result.first.value().id();
-
-  // Task runner for the current thread.
-  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
-
-  // The OnChannelOpenedResult() callback needs to be be bound with
-  // BindPostTask() to ensure that the callback is invoked on this specific task
-  // runner.
-  auto channel_cb =
-      base::BindOnce(&AccessCodeCastHandler::OnChannelOpenedResult,
-                     weak_ptr_factory_.GetWeakPtr());
-  auto returned_channel_cb =
-      base::BindPostTask(current_task_runner, std::move(channel_cb));
-
-  access_code_sink_service_->AddSinkToMediaRouter(
-      creation_result.first.value(), std::move(returned_channel_cb));
-}
-
-void AccessCodeCastHandler::OnChannelOpenedResult(bool channel_opened) {
+void AccessCodeCastHandler::OnSinkAddedResult(
+    access_code_cast::mojom::AddSinkResultCode add_sink_result,
+    absl::optional<MediaSink::Id> sink_id) {
+  DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
-  if (add_sink_callback_) {
-    if (channel_opened) {
-      DCHECK(sink_id_) << "Must have sink_id_ when adding a sink!";
-      media_router_->GetLogger()->LogInfo(
-          mojom::LogCategory::kDiscovery, kLoggerComponent,
-          "The channel successfully opened.", sink_id_.value(), "", "");
-      CheckForDiscoveryCompletion();
-    } else {
-      media_router_->GetLogger()->LogError(
-          mojom::LogCategory::kDiscovery, kLoggerComponent,
-          "The channel failed to open.", sink_id_.value(), "", "");
-      std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
-    }
+  if (add_sink_result != AddSinkResultCode::OK && add_sink_callback_) {
+    auto error_message =
+        std::string("The device could not be added because of enum error : ") +
+        AddSinkResultCodeToString(add_sink_result);
+    media_router_->GetLogger()->LogError(
+        mojom::LogCategory::kUi, kLoggerComponent, error_message, "", "", "");
+    std::move(add_sink_callback_).Run(add_sink_result);
   }
+  if (sink_id) {
+    sink_id_ = sink_id;
+  }
+  CheckForDiscoveryCompletion();
 }
 
 void AccessCodeCastHandler::SetSinkCallbackForTesting(

@@ -195,6 +195,7 @@ if (!is_android) {
     testonly = true
     deps = [
       "discovery",
+      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/cast_channel:cast_channel",
       "//components/cast_channel:test_support",
@@ -206,6 +207,8 @@ if (!is_android) {
     ]
     public_deps = [ ":router" ]
     sources = [
+      "discovery/access_code/access_code_test_util.cc",
+      "discovery/access_code/access_code_test_util.h",
       "discovery/mdns/cast_media_sink_service_test_helpers.cc",
       "discovery/mdns/cast_media_sink_service_test_helpers.h",
       "providers/test/test_media_route_provider.cc",
@@ -304,6 +307,7 @@ source_set("unittests") {
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",

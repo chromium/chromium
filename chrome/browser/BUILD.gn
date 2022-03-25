@@ -4420,8 +4420,7 @@ static_library("browser") {
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/first_party_sets",
-      "//chrome/browser/media/router/discovery:discovery",
-      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service_factory",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
       "//chrome/browser/policy:path_parser",
@@ -4484,8 +4483,8 @@ static_library("browser") {
       "//extensions/buildflags",
     ]
     allow_circular_includes_from += [
-      # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
-      "//chrome/browser/media/router/discovery:discovery",
+      # TODO(b/220386256): Remove circular dependency from the browser.
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",

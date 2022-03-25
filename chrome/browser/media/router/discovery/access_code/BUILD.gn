@@ -26,8 +26,14 @@ static_library("access_code_cast_feature") {
 if (!is_android) {
   static_library("access_code_sink_service") {
     sources = [
+      "access_code_cast_discovery_interface.cc",
+      "access_code_cast_discovery_interface.h",
       "access_code_cast_sink_service.cc",
       "access_code_cast_sink_service.h",
+      "access_code_cast_sink_service_factory.cc",
+      "access_code_cast_sink_service_factory.h",
+      "access_code_media_sink_util.cc",
+      "access_code_media_sink_util.h",
     ]
     public_deps = [
       "//base",
@@ -41,25 +47,18 @@ if (!is_android) {
       ":access_code_cast_feature",
       "//chrome/browser/media/router:router",
       "//chrome/browser/media/router/discovery:discovery",
-    ]
-  }
-
-  static_library("access_code_sink_service_factory") {
-    sources = [
-      "access_code_cast_sink_service_factory.cc",
-      "access_code_cast_sink_service_factory.h",
-    ]
-    public_deps = [
-      "//base",
+      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin:identity_manager_provider",
+      "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
+      "//chrome/common:channel_info",
+      "//components/cast_channel:cast_channel",
       "//components/keyed_service/content:content",
-      "//components/media_router/browser",
-      "//components/media_router/common",
-    ]
-    deps = [
-      ":access_code_cast_feature",
-      ":access_code_sink_service",
-      "//chrome/browser/media/router:router",
+      "//components/leveldb_proto:leveldb_proto",
+      "//components/signin/public/base:base",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/user_manager:user_manager",
+      "//components/version_info:channel",
     ]
   }
 }

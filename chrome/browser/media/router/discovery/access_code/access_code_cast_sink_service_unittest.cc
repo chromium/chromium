@@ -17,6 +17,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
@@ -41,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Return;
 
 namespace media_router {
@@ -57,6 +59,9 @@ MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink) {
 
 using SinkSource = CastDeviceCountMetrics::SinkSource;
 using MockBoolCallback = base::MockCallback<base::OnceCallback<void(bool)>>;
+using MockAddSinkResultCallback = base::MockCallback<
+    media_router::AccessCodeCastSinkService::AddSinkResultCallback>;
+using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 
 class AccessCodeCastSinkServiceTest : public testing::Test {
  public:
@@ -202,13 +207,13 @@ TEST_F(AccessCodeCastSinkServiceTest,
 TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
   // Ensure that the call to OpenChannel is NOT made since the cast sink already
   // exists in the media router.
-  MockBoolCallback mock_callback;
+  MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
       .Times(0);
-  EXPECT_CALL(mock_callback, Run(true));
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq(cast_sink1.id())));
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), true);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -233,8 +238,8 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
               OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
       .Times(0);
 
-  MockBoolCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(true));
+  MockAddSinkResultCallback mock_callback;
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, _));
 
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), true);
@@ -252,15 +257,98 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
 TEST_F(AccessCodeCastSinkServiceTest, AddNewSinkToMediaRouter) {
   // Make sure that the sink is added to the media router if it does not already
   // exist.
-  MockBoolCallback mock_callback;
+  MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _));
-  EXPECT_CALL(mock_callback, Run(true)).Times(0);
+  EXPECT_CALL(mock_callback, Run(_, _)).Times(0);
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), false);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, DiscoveryDeviceMissingWithOk) {
+  // Test to ensure that the add_sink_callback returns an EMPTY_RESPONSE if the
+  // the device is missing.
+  MockAddSinkResultCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(AddSinkResultCode::EMPTY_RESPONSE, Eq(absl::nullopt)));
+  access_code_cast_sink_service_->OnAccessCodeValidated(
+      mock_callback.Get(), absl::nullopt, AddSinkResultCode::OK);
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, ValidDiscoveryDeviceAndCode) {
+  // If discovery device is present, formatted correctly, and code is OK, no
+  // callback should be run during OnAccessCodeValidated. Instead when the
+  // channel opens successfully the callback should run with OK.
+  MockAddSinkResultCallback mock_callback;
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  DiscoveryDevice discovery_device_proto =
+      media_router::BuildDiscoveryDeviceProto();
+  discovery_device_proto.set_id("id1");
+
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, _));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(_));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              OpenChannel(_, _, SinkSource::kAccessCode, _, _));
+  access_code_cast_sink_service_->OnAccessCodeValidated(
+      mock_callback.Get(), discovery_device_proto, AddSinkResultCode::OK);
+
+  // Assume sink is not present in the Media Router so a call to OpenChannel is
+  // made.
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      cast_sink1, mock_callback.Get(), false);
+
+  // Channel successfully opens.
+  access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
+                                                        "123456", true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, InvalidDiscoveryDevice) {
+  // If discovery device is present, but formatted incorrectly, and code is OK,
+  // then callback should be SINK_CREATION_ERROR.
+  MockAddSinkResultCallback mock_callback;
+
+  // Create discovery_device with an invalid port
+  DiscoveryDevice discovery_device_proto =
+      media_router::BuildDiscoveryDeviceProto("foo_display_name", "1234",
+                                              "```````23489:1238:1239");
+
+  EXPECT_CALL(mock_callback,
+              Run(AddSinkResultCode::SINK_CREATION_ERROR, Eq(absl::nullopt)));
+  access_code_cast_sink_service_->OnAccessCodeValidated(
+      mock_callback.Get(), discovery_device_proto, AddSinkResultCode::OK);
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, NonOKResultCode) {
+  // Check to see that any result code that isn't OK will return that error.
+  MockAddSinkResultCallback mock_callback;
+
+  EXPECT_CALL(mock_callback,
+              Run(AddSinkResultCode::AUTH_ERROR, Eq(absl::nullopt)));
+  access_code_cast_sink_service_->OnAccessCodeValidated(
+      mock_callback.Get(), absl::nullopt, AddSinkResultCode::AUTH_ERROR);
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedSuccess) {
+  // Validate callback calls for OnChannelOpened for success.
+  MockAddSinkResultCallback mock_callback;
+
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("123456")));
+  access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
+                                                        "123456", true);
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedFailure) {
+  // Validate callback calls for OnChannelOpened for failure.
+  MockAddSinkResultCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, Eq(absl::nullopt)));
+  access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
+                                                        "123456", false);
 }
 
 }  // namespace media_router

@@ -161,6 +161,7 @@ AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
       logger_(logger),
       endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
   DCHECK(profile_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
@@ -307,6 +308,8 @@ void AccessCodeCastDiscoveryInterface::SetNetworkInfoField(
 std::unique_ptr<EndpointFetcher>
 AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   std::vector<std::string> discovery_scopes;
   discovery_scopes.push_back(kDiscoveryOAuth2Scope);
 
@@ -320,6 +323,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(
     DiscoveryDeviceCallback callback) {
   DCHECK(!callback_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   callback_ = std::move(callback);
 
   auto* const fetcher_ptr = endpoint_fetcher_.get();

@@ -116,7 +116,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                            cast_channel::CastSocketOpenParams open_params);
 
   // Check to see if the given cast sink exists the sinks_.
-  bool HasSink(const MediaSink::Id& sink_id);
+  virtual bool HasSink(const MediaSink::Id& sink_id);
 
   // Closes the Cast Channel to the sink, and removes the sink from the sink
   // service.

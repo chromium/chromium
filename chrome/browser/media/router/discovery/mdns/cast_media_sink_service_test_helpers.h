@@ -61,6 +61,7 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
                ChannelOpenedCallback callback,
                cast_channel::CastSocketOpenParams open_params),
               (override));
+  MOCK_METHOD(bool, HasSink, (const MediaSink::Id& sink_id), (override));
 
   OnSinksDiscoveredCallback sinks_discovered_cb() {
     return sinks_discovered_cb_;
