@@ -112,7 +112,6 @@ extern const base::Feature kIPHFeedCardMenuFeature;
 extern const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature;
 extern const base::Feature kIPHHomePageButtonFeature;
 extern const base::Feature kIPHHomepageTileFeature;
-extern const base::Feature kIPHHomepagePromoCardFeature;
 extern const base::Feature kIPHIdentityDiscFeature;
 extern const base::Feature kIPHInstanceSwitcherFeature;
 extern const base::Feature kIPHKeyboardAccessoryAddressFillingFeature;

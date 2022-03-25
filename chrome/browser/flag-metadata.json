@@ -3545,11 +3545,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "homepage-promo-card",
-    "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha" ],
     "expiry_milestone": 95

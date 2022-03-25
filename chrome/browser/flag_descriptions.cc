@@ -3209,12 +3209,6 @@ const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
 const char kGridTabSwitcherForTabletsDescription[] =
     "Enable grid tab switcher for tablets, replacing the tab strip.";
 
-const char kHomepagePromoCardName[] =
-    "Enable homepage promo card on the New Tab Page";
-const char kHomepagePromoCardDescription[] =
-    "Enable homepage promo card that will be shown to users with partner "
-    "configured homepage.";
-
 const char kInstanceSwitcherName[] = "Enable instance switcher";
 const char kInstanceSwitcherDescription[] =
     "Enable instance switcher dialog UI that helps users manage multiple "

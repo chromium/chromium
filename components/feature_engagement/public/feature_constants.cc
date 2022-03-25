@@ -179,8 +179,6 @@ const base::Feature kIPHFeedCardMenuFeature{"IPH_FeedCardMenu",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature{
     "IPH_GenericAlwaysTriggerHelpUiFeature", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kIPHHomepagePromoCardFeature{
-    "IPH_HomepagePromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHIdentityDiscFeature{"IPH_IdentityDisc",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHInstanceSwitcherFeature{

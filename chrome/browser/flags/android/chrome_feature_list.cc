@@ -131,7 +131,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kEnableAutomaticSnooze,
-    &feature_engagement::kIPHHomepagePromoCardFeature,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,
     &feature_engagement::kIPHSnooze,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
@@ -234,7 +233,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGoogleLensSdkIntent,
     &kGridTabSwitcherForTablets,
     &kHandleMediaIntents,
-    &kHomepagePromoCard,
     &kImmersiveUiMode,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
@@ -640,9 +638,6 @@ const base::Feature kGridTabSwitcherForTablets{
 
 const base::Feature kHandleMediaIntents{"HandleMediaIntents",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kHomepagePromoCard{"HomepagePromoCard",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kImmersiveUiMode{"ImmersiveUiMode",
                                      base::FEATURE_DISABLED_BY_DEFAULT};

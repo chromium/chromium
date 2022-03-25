@@ -2196,23 +2196,6 @@ Unknown properties are collapsed to zero. -->
   <int value="257" label="GATT_FAILURE"/>
 </enum>
 
-<enum name="AndroidHomepagePromoAction">
-  <int value="0" label="Promo created">
-    The Android Homepage promo was created on the new tab page.
-  </int>
-  <int value="1" label="Promo shown">The Android homepage promo was shown.</int>
-  <int value="2" label="Promo dismissed">
-    User dismissed the homepage promo.
-  </int>
-  <int value="3" label="Promo accepted">
-    User changed their homepage by accepting the promo.
-  </int>
-  <int value="4" label="Promo change undo">
-    User changed their homepage by accepting the promo, but then undid the
-    change through snackbar.
-  </int>
-</enum>
-
 <enum name="AndroidIntentNonSafelistedHeaderNameHashes">
   <int value="4229679564" label="user-agent"/>
 </enum>

@@ -186,10 +186,6 @@ public final class EventConstants {
     /** 'Manage windows' menu for multi-instance support feature was tapped. */
     public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
 
-    /** HomepagePromo has been accepted. */
-    public static final String NTP_SHOWN = "ntp_shown";
-    public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
-
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
 
     public static final String FOREGROUND_SESSION_DESTROYED = "foreground_session_destroyed";

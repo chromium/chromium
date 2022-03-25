@@ -485,8 +485,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
-
-        TrackerFactory.getTrackerForProfile(profile).notifyEvent(EventConstants.NTP_SHOWN);
     }
 
     /**

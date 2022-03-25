@@ -2122,28 +2122,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kHomepagePromoCardLarge[] = {
-    {"promo-card-variation", "Large"}};
-const FeatureEntry::FeatureParam kHomepagePromoCardCompact[] = {
-    {"promo-card-variation", "Compact"}};
-const FeatureEntry::FeatureParam kHomepagePromoCardSlim[] = {
-    {"promo-card-variation", "Slim"}};
-const FeatureEntry::FeatureParam kHomepagePromoCardSuppressing[] = {
-    {"promo-card-variation", "Compact"},
-    {"suppressing_sign_in_promo", "true"}};
-
-const FeatureEntry::FeatureVariation kHomepagePromoCardVariations[] = {
-    {"Large", kHomepagePromoCardLarge, std::size(kHomepagePromoCardLarge),
-     nullptr},
-    {"Compact", kHomepagePromoCardCompact, std::size(kHomepagePromoCardCompact),
-     nullptr},
-    {"Slim", kHomepagePromoCardSlim, std::size(kHomepagePromoCardSlim),
-     nullptr},
-    {"Compact_SuppressingSignInPromo", kHomepagePromoCardSuppressing,
-     std::size(kHomepagePromoCardSuppressing), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
 
@@ -6575,14 +6553,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrostiniDiskResizingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniDiskResizing)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"homepage-promo-card", flag_descriptions::kHomepagePromoCardName,
-     flag_descriptions::kHomepagePromoCardDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kHomepagePromoCard,
-                                    kHomepagePromoCardVariations,
-                                    "HomepagePromoAndroid")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"sync-settings-categorization",

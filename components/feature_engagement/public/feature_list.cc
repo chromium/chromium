@@ -61,7 +61,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHFeatureNotificationGuideVoiceSearchUsedFeature,
     &kIPHFeedCardMenuFeature,
     &kIPHGenericAlwaysTriggerHelpUiFeature,
-    &kIPHHomepagePromoCardFeature,
     &kIPHIdentityDiscFeature,
     &kIPHInstanceSwitcherFeature,
     &kIPHKeyboardAccessoryAddressFillingFeature,
