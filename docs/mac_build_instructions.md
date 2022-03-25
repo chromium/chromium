@@ -276,7 +276,7 @@ can be quite variable.  Increasing the system's vnode cache appears to help. By
 default, this command:
 
 ```shell
-$ sysctl -a | egrep kern\..*vnodes
+$ sysctl -a | egrep 'kern\..*vnodes'
 ```
 
 Outputs `kern.maxvnodes: 263168` (263168 is 257 * 1024).  To increase this
@@ -287,11 +287,26 @@ $ sudo sysctl kern.maxvnodes=$((512*1024))
 ```
 
 Higher values may be appropriate if you routinely move between different
-Chromium checkouts.  This setting will reset on reboot, the startup setting can
-be set in `/etc/sysctl.conf`:
+Chromium checkouts.  This setting will reset on reboot.  To apply it at startup:
 
 ```shell
-$ echo kern.maxvnodes=$((512*1024)) | sudo tee -a /etc/sysctl.conf
+$ sudo tee /Library/LaunchDaemons/kern.maxvnodes.plist > /dev/null <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+      <string>kern.maxvnodes</string>
+    <key>ProgramArguments</key>
+      <array>
+        <string>sysctl</string>
+        <string>kern.maxvnodes=524288</string>
+      </array>
+    <key>RunAtLoad</key>
+      <true/>
+  </dict>
+</plist>
+EOF
 ```
 
 Or edit the file directly.
