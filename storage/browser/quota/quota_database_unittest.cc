@@ -176,6 +176,20 @@ TEST_P(QuotaDatabaseTest, EnsureOpened) {
   }
 }
 
+TEST_P(QuotaDatabaseTest, RazeAndReopenWithNoDb) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  // RazeAndReopen() with no db tries to create the db one last time.
+  EXPECT_FALSE(EnsureOpened(&db, EnsureOpenedMode::kFailIfNotFound));
+  EXPECT_EQ(db.RazeAndReopen(), QuotaError::kNone);
+
+  if (GetParam()) {
+    // Path should not exist for incognito mode.
+    ASSERT_FALSE(base::PathExists(DbPath()));
+  } else {
+    ASSERT_TRUE(base::PathExists(DbPath()));
+  }
+}
+
 TEST_P(QuotaDatabaseTest, HostQuota) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));
