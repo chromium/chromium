@@ -7,14 +7,13 @@
  *
  */
 import {GestureCommandData} from '../background/gesture_command_data.js';
+import {CommandStore} from '../common/command_store.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 /**
  * Class to manage the keyboard explorer.
  */
 export class LearnMode {
-  constructor() {}
-
   /**
    * Initialize keyboard explorer.
    */

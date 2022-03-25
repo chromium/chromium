@@ -13,7 +13,6 @@ goog.require('AbstractTts');
 goog.require('BrailleKeyCommand');
 goog.require('ChromeVox');
 goog.require('ChromeVoxState');
-goog.require('CommandStore');
 goog.require('KeyMap');
 goog.require('KeySequence');
 goog.require('KeyUtil');

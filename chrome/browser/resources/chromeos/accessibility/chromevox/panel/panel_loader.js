@@ -11,7 +11,6 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('BrailleCommandData');
 goog.require('ChromeVoxState');
-goog.require('CommandStore');
 goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('KeyCode');

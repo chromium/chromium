@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {CommandStore} from '../common/command_store.js';
 import {TypingEcho} from '../common/editable_text_base.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 

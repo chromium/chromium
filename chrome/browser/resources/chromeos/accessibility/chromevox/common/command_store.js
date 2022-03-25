@@ -30,8 +30,7 @@
  * categories.
  */
 
-
-goog.provide('CommandStore');
+export const CommandStore = {};
 
 /**
  * Returns all of the categories in the store as an array.
