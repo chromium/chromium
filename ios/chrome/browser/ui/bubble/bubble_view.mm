@@ -187,7 +187,8 @@ UIButton* BubbleCloseButton() {
 }
 
 // Returns a snooze button for BubbleView.
-UIButton* BubbleSnoozeButton() {
+UIButton* BubbleSnoozeButton(
+    UIControlContentHorizontalAlignment buttonAlignment) {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   [button setTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_SNOOZE)
           forState:UIControlStateNormal];
@@ -197,19 +198,20 @@ UIButton* BubbleSnoozeButton() {
       setFont:[UIFont boldSystemFontOfSize:kSnoozeButtonFontSize]];
   [button.titleLabel setNumberOfLines:0];
   [button.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
+  [button setContentHorizontalAlignment:buttonAlignment];
   [button setAccessibilityIdentifier:kBubbleViewSnoozeButtonIdentifier];
   [button setTranslatesAutoresizingMaskIntoConstraints:NO];
   return button;
 }
 
 // Returns a label to be used for a BubbleView that displays white text.
-UILabel* BubbleLabelWithText(NSString* text) {
+UILabel* BubbleLabelWithText(NSString* text, NSTextAlignment textAlignment) {
   DCHECK(text.length);
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
   [label setText:text];
   [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
   [label setTextColor:[UIColor colorNamed:kSolidButtonTextColor]];
-  [label setTextAlignment:NSTextAlignmentCenter];
+  [label setTextAlignment:textAlignment];
   [label setNumberOfLines:0];
   [label setLineBreakMode:NSLineBreakByWordWrapping];
   [label setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -217,9 +219,10 @@ UILabel* BubbleLabelWithText(NSString* text) {
 }
 
 // Returns a label to be used for the BubbleView's title.
-UILabel* BubbleTitleLabelWithText(NSString* text) {
+UILabel* BubbleTitleLabelWithText(NSString* text,
+                                  NSTextAlignment textAlignment) {
   DCHECK(text.length);
-  UILabel* label = BubbleLabelWithText(text);
+  UILabel* label = BubbleLabelWithText(text, textAlignment);
   [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
   [label setAccessibilityIdentifier:kBubbleViewTitleLabelIdentifier];
   return label;
@@ -280,6 +283,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                        title:(NSString*)titleString
                        image:(UIImage*)image
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+               textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
@@ -290,7 +294,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     _background = BubbleBackgroundView();
     [self addSubview:_background];
     // Add label view.
-    _label = BubbleLabelWithText(text);
+    _label = BubbleLabelWithText(text, textAlignment);
     [self setAccessibilityLabel:_label.text];
     [self addSubview:_label];
     // Add arrow view.
@@ -299,7 +303,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     [self addSubview:_arrow];
     // Add title label if present.
     if (titleString && titleString.length > 0) {
-      _titleLabel = BubbleTitleLabelWithText(titleString);
+      _titleLabel = BubbleTitleLabelWithText(titleString, textAlignment);
       [_label
           setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
       [self addSubview:_titleLabel];
@@ -321,7 +325,11 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     // Add snooze button if present.
     _showsSnoozeButton = shouldShowSnoozeButton;
     if (_showsSnoozeButton) {
-      _snoozeButton = BubbleSnoozeButton();
+      UIControlContentHorizontalAlignment buttonAlignment =
+          textAlignment == NSTextAlignmentCenter
+              ? UIControlContentHorizontalAlignmentCenter
+              : UIControlContentHorizontalAlignmentLeading;
+      _snoozeButton = BubbleSnoozeButton(buttonAlignment);
       [_snoozeButton addTarget:self
                         action:@selector(snoozeButtonWasTapped:)
               forControlEvents:UIControlEventTouchUpInside];
@@ -343,26 +351,11 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                       title:nil
                       image:nil
           showsSnoozeButton:NO
+              textAlignment:NSTextAlignmentCenter
                    delegate:nil];
 }
 
 #pragma mark - Public
-
-- (NSTextAlignment)textAlignment {
-  return self.label.textAlignment;
-}
-
-- (void)setTextAlignment:(NSTextAlignment)textAlignment {
-  [self.label setTextAlignment:textAlignment];
-  [self.titleLabel setTextAlignment:textAlignment];
-  if (self.showsSnoozeButton) {
-    UIControlContentHorizontalAlignment buttonAlignment =
-        textAlignment == NSTextAlignmentCenter
-            ? UIControlContentHorizontalAlignmentCenter
-            : UIControlContentHorizontalAlignmentLeading;
-    [self.snoozeButton setContentHorizontalAlignment:buttonAlignment];
-  }
-}
 
 - (void)setAlignmentOffset:(CGFloat)alignmentOffset {
   _alignmentOffset = alignmentOffset;

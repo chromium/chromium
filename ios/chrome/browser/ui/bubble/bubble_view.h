@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 
 // Initialize with the given text, direction that the bubble should point,
 // alignment of the bubble and optionals close button, title, image, snooze
-// button and delegate.
+// button, text alignment (for title, text and snooze button) and delegate.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
@@ -61,11 +61,13 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
                        title:(NSString*)titleString
                        image:(UIImage*)image
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+               textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 // Initialize with the given text, direction that the bubble should point, and
-// alignment of the bubble. Optional arguments are set to nil.
+// alignment of the bubble. Optional arguments are set to nil. Text alignment is
+// NSTextAlignmentCenter.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment;
@@ -75,9 +77,6 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Text alignment used in this View. Default is NSTextAlignmentCenter.
-@property(nonatomic) NSTextAlignment textAlignment;
 
 // Distance between the arrow's centerX and the (leading or trailing) edge of
 // the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,

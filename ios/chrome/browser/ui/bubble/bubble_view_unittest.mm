@@ -52,8 +52,8 @@ class BubbleViewTest : public PlatformTest {
         alignment_(BubbleAlignmentCenter),
         alignmentOffset_(35.0f),
         shortText_(@"I"),
-        longText_(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit.") {
-  }
+        longText_(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+        textAlignment_(NSTextAlignmentNatural) {}
 
  protected:
   // The maximum size of the bubble.
@@ -71,6 +71,8 @@ class BubbleViewTest : public PlatformTest {
   // Text that is longer than the maximum line width. It should wrap onto
   // multiple lines.
   NSString* longText_;
+  // Text alignment for bubble's title, text and snooze button.
+  NSTextAlignment textAlignment_;
 
   UIView* GetViewOfClassWithIdentifier(Class uiClass,
                                        NSString* accessibilityIdentifier,
@@ -155,6 +157,7 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
                                                   title:nil
                                                   image:nil
                                       showsSnoozeButton:NO
+                                          textAlignment:textAlignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
@@ -172,6 +175,7 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
                                                   title:nil
                                                   image:nil
                                       showsSnoozeButton:NO
+                                          textAlignment:textAlignment_
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
@@ -202,6 +206,7 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
                                                   title:shortText_
                                                   image:nil
                                       showsSnoozeButton:NO
+                                          textAlignment:textAlignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
@@ -219,9 +224,9 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
                                                   title:shortText_
                                                   image:nil
                                       showsSnoozeButton:NO
+                                          textAlignment:NSTextAlignmentNatural
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
-  [bubble setTextAlignment:NSTextAlignmentNatural];
   [superview addSubview:bubble];
   UILabel* titleLabel = GetTitleLabel(bubble);
   ASSERT_TRUE(titleLabel);
@@ -249,6 +254,7 @@ TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
                                                   title:nil
                                                   image:testImage
                                       showsSnoozeButton:NO
+                                          textAlignment:textAlignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
@@ -266,6 +272,7 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
                                                   title:nil
                                                   image:nil
                                       showsSnoozeButton:NO
+                                          textAlignment:textAlignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
@@ -283,6 +290,7 @@ TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
                                                   title:nil
                                                   image:nil
                                       showsSnoozeButton:YES
+                                          textAlignment:textAlignment_
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
