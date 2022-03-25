@@ -137,12 +137,6 @@ class DragTestView : public views::View {
 
   void OnDragExited() override { num_drag_exits_++; }
 
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
-    DragOperation output_drag_op = DragOperation::kNone;
-    PerformDrop(event, output_drag_op);
-    return output_drag_op;
-  }
-
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
     return base::BindOnce(&DragTestView::PerformDrop, base::Unretained(this));
   }
@@ -310,15 +304,6 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
                 State::kDragUpdateInvoked == state_);
     state_ = State::kDragExitInvoked;
   }
-  DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override {
-    DragOperation output_drag_op = DragOperation::kNone;
-    PerformDrop(std::move(data), output_drag_op);
-
-    return output_drag_op;
-  }
-
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
     return base::BindOnce(&EventTargetTestDelegate::PerformDrop,
                           base::Unretained(this));

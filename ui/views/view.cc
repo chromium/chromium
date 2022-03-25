@@ -1825,10 +1825,6 @@ int View::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 void View::OnDragExited() {}
 
-ui::mojom::DragOperation View::OnPerformDrop(const ui::DropTargetEvent& event) {
-  return ui::mojom::DragOperation::kNone;
-}
-
 void View::OnDragDone() {}
 
 View::DropCallback View::GetDropCallback(const ui::DropTargetEvent& event) {

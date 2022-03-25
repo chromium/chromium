@@ -420,13 +420,6 @@ class DropTargetView : public views::WidgetDelegateView {
     return ui::DragDropTypes::DRAG_COPY;
   }
 
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override {
-    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    PerformDrop(event, output_drag_op);
-    return output_drag_op;
-  }
-
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
     return base::BindOnce(&DropTargetView::PerformDrop, base::Unretained(this));
   }

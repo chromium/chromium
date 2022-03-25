@@ -145,10 +145,6 @@ class DragDropView : public View {
     return ui::DragDropTypes::DRAG_COPY;
   }
 
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return DragOperation::kMove;
-  }
-
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
     return base::BindOnce([](const ui::DropTargetEvent& event,
@@ -323,12 +319,6 @@ class DragDropCloseView : public DragDropView {
   DragDropCloseView(const DragDropCloseView&) = delete;
   DragDropCloseView& operator=(const DragDropCloseView&) = delete;
 
-  // View:
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
-    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    PerformDrop(event, output_drag_op);
-    return output_drag_op;
-  }
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
     // base::Unretained is safe here because in the tests the view isn't deleted
@@ -345,7 +335,7 @@ class DragDropCloseView : public DragDropView {
   }
 };
 
-// Tests that closing Widget on OnPerformDrop does not crash.
+// Tests that closing Widget on drop does not crash.
 TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   OSExchangeData data;
   const std::u16string& text = u"text";
@@ -360,7 +350,7 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   EXPECT_EQ(DragUpdate(nil), NSDragOperationCopy);
   EXPECT_EQ(Drop(), NSDragOperationMove);
 
-  // OnPerformDrop() will have deleted the widget.
+  // Drop callback will have deleted the widget.
   widget_ = nullptr;
 }
 

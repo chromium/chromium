@@ -1328,7 +1328,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // OnDragEntered is sent to the view when the mouse first enters the view,
   // as the mouse moves around within the view OnDragUpdated is invoked.
   // If the user releases the mouse over the view and OnDragUpdated returns a
-  // valid drop, then OnPerformDrop is invoked. If the mouse moves outside the
+  // valid drop, then GetDropCallback is invoked. If the mouse moves outside the
   // view or over another view that wants the drag, OnDragExited is invoked.
   //
   // Similar to mouse events, the deepest view under the mouse is first checked
@@ -1354,7 +1354,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // OnDragEntered is invoked when the mouse enters this view during a drag and
   // drop session and CanDrop returns true. This is immediately
   // followed by an invocation of OnDragUpdated, and eventually one of
-  // OnDragExited or OnPerformDrop.
+  // OnDragExited or GetDropCallback.
   virtual void OnDragEntered(const ui::DropTargetEvent& event);
 
   // Invoked during a drag and drop session while the mouse is over the view.
@@ -1366,13 +1366,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Invoked during a drag and drop session when the mouse exits the views, or
   // when the drag session was canceled and the mouse was over the view.
   virtual void OnDragExited();
-
-  // Invoked during a drag and drop session when OnDragUpdated returns a valid
-  // operation and the user release the mouse.
-  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
-  // instead.
-  virtual ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event);
 
   // Invoked from DoDrag after the drag completes. This implementation does
   // nothing, and is intended for subclasses to do cleanup.

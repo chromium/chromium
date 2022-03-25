@@ -83,7 +83,6 @@ class TestTargetView : public views::View {
   bool CanDrop(const OSExchangeData& data) override;
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override;
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
 
@@ -134,13 +133,6 @@ void TestTargetView::OnDragEntered(const ui::DropTargetEvent& event) {
 
 int TestTargetView::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_MOVE;
-}
-
-DragOperation TestTargetView::OnPerformDrop(const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
 }
 
 views::View::DropCallback TestTargetView::GetDropCallback(

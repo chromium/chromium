@@ -60,8 +60,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
   // views::AccessiblePaneView:
   void ChildPreferredSizeChanged(views::View* child) override;

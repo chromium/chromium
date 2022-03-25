@@ -34,6 +34,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -223,10 +224,10 @@ void TabStripRegionView::OnDragExited() {
   tab_strip_->OnDragExited();
 }
 
-ui::mojom::DragOperation TabStripRegionView::OnPerformDrop(
+views::View::DropCallback TabStripRegionView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
-  return tab_strip_->OnPerformDrop(event);
+  return tab_strip_->GetDropCallback(event);
 }
 
 void TabStripRegionView::ChildPreferredSizeChanged(views::View* child) {
