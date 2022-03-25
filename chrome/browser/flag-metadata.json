@@ -1249,7 +1249,6 @@
   {
     "name": "disable-office-editing-component-app",
     "owners": [
-      "chrome-apps-platform-rationalization@google.com",
       "quickoffice-chrome-eng@google.com"
     ],
     "expiry_milestone": 110
