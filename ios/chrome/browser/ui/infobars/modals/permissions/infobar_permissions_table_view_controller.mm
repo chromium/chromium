@@ -134,6 +134,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypePermissionsDescription:
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }
   return cell;
