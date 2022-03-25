@@ -81,7 +81,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/url_util.h"
@@ -1477,10 +1476,9 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     early_hints.was_resource_hints_received =
         early_hints_manager_->WasResourceHintsReceived();
 
-    // Make Early Hints manager outlive this loader only when the final response
-    // succeeds. Dropping the manager cancels inflight preloads.
-    if (response_head && response_head->headers &&
-        network::cors::IsOkStatus(response_head->headers->response_code())) {
+    // Make Early Hints manager outlive this loader only when the response
+    // headers are available. Dropping the manager cancels inflight preloads.
+    if (response_head && response_head->headers) {
       early_hints.manager = std::move(early_hints_manager_);
     }
   }

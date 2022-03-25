@@ -45,18 +45,37 @@ function getPreloadsFromSearchParams() {
 }
 
 /**
+ * Fetches a script or an image.
+ *
+ * @param {string} element - "script" or "img".
+ * @param {string} url - URL of the resource.
+ */
+async function fetchResource(element, url) {
+    return new Promise((resolve, reject) => {
+        const el = document.createElement(element);
+        el.src = url;
+        el.onload = resolve;
+        el.onerror = _ => reject(new Error("Failed to fetch resource: " + url));
+        document.body.appendChild(el);
+    });
+}
+
+/**
  * Fetches a script.
  *
  * @param {string} url
  */
 async function fetchScript(url) {
-    return new Promise((resolve, reject) => {
-        const el = document.createElement("script");
-        el.src = url;
-        el.onload = resolve;
-        el.onerror = _ => reject(new Error("Failed to fetch script"));
-        document.body.appendChild(el);
-    });
+    return fetchResource("script", url);
+}
+
+/**
+ * Fetches an image.
+ *
+ * @param {string} url
+ */
+ async function fetchImage(url) {
+    return fetchResource("img", url);
 }
 
 /**
