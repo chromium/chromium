@@ -38,6 +38,7 @@ namespace {
 
 // Keys used in the meta table.
 const char kBuiltinKeywordVersion[] = "Builtin Keyword Version";
+const char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
 const std::string ColumnsForVersion(int version, bool concatenated) {
   std::vector<base::StringPiece> columns;
@@ -315,6 +316,16 @@ bool KeywordTable::SetBuiltinKeywordVersion(int version) {
 int KeywordTable::GetBuiltinKeywordVersion() {
   int version = 0;
   return meta_table_->GetValue(kBuiltinKeywordVersion, &version) ? version : 0;
+}
+
+bool KeywordTable::SetStarterPackKeywordVersion(int version) {
+  return meta_table_->SetValue(kStarterPackKeywordVersion, version);
+}
+
+int KeywordTable::GetStarterPackKeywordVersion() {
+  int version = 0;
+  return meta_table_->GetValue(kStarterPackKeywordVersion, &version) ? version
+                                                                     : 0;
 }
 
 // static

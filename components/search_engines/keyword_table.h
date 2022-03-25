@@ -75,6 +75,7 @@ class Statement;
 //
 // Default Search Provider ID        The id of the default search provider.
 // Builtin Keyword Version           The version of builtin keywords data.
+// Starter Pack Keyword Version      The version of starter pack data.
 //
 class KeywordTable : public WebDatabaseTable {
  public:
@@ -125,6 +126,10 @@ class KeywordTable : public WebDatabaseTable {
   // Version of the built-in keywords.
   bool SetBuiltinKeywordVersion(int version);
   int GetBuiltinKeywordVersion();
+
+  // Version of built-in starter pack keywords (@bookmarks, @settings, etc.).
+  bool SetStarterPackKeywordVersion(int version);
+  int GetStarterPackKeywordVersion();
 
   // Returns a comma-separated list of the keyword columns for the current
   // version of the table.

@@ -48,6 +48,14 @@ WebDatabase::State SetBuiltinKeywordVersionImpl(int version, WebDatabase* db) {
              : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
+WebDatabase::State SetStarterPackKeywordVersionImpl(int version,
+                                                    WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->SetStarterPackKeywordVersion(
+             version)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
+}
+
 }  // namespace
 
 WDKeywordsResult::WDKeywordsResult() = default;
@@ -133,6 +141,11 @@ void KeywordWebDataService::SetDefaultSearchProviderID(TemplateURLID id) {
 void KeywordWebDataService::SetBuiltinKeywordVersion(int version) {
   wdbs_->ScheduleDBTask(FROM_HERE,
                         base::BindOnce(&SetBuiltinKeywordVersionImpl, version));
+}
+
+void KeywordWebDataService::SetStarterPackKeywordVersion(int version) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&SetStarterPackKeywordVersionImpl, version));
 }
 
 void KeywordWebDataService::ShutdownOnUISequence() {

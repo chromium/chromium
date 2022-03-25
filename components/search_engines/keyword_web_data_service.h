@@ -92,6 +92,9 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Sets the version of the builtin keywords.
   void SetBuiltinKeywordVersion(int version);
 
+  // Sets the version of the starter pack keywords.
+  void SetStarterPackKeywordVersion(int version);
+
   // WebDataServiceBase:
   void ShutdownOnUISequence() override;
 
