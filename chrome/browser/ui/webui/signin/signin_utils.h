@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/values.h"
 
 class Browser;
@@ -18,6 +19,20 @@ class WebUI;
 }
 
 namespace signin {
+
+// User choice when signing in.
+// Used for UMA histograms, Hence, constants should never be deleted or
+// reordered, and  new constants should only be appended at the end.
+// Keep this in sync with SigninChoice in histograms.xml.
+enum SigninChoice {
+  SIGNIN_CHOICE_CANCEL = 0,       // Signin is cancelled.
+  SIGNIN_CHOICE_CONTINUE = 1,     // Signin continues in the current profile.
+  SIGNIN_CHOICE_NEW_PROFILE = 2,  // Signin continues in a new profile.
+  // SIGNIN_CHOICE_SIZE should always be last.
+  SIGNIN_CHOICE_SIZE,
+};
+
+using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
 
 // Gets a webview within an auth page that has the specified parent frame name
 // (i.e. <webview name="foobar"></webview>).
