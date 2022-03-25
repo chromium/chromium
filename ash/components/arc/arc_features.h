@@ -31,7 +31,6 @@ extern const base::FeatureParam<int> kGuestZramSize;
 extern const base::Feature kLogdConfig;
 extern const base::FeatureParam<int> kLogdConfigSize;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
-extern const base::Feature kMouseWheelSmoothScroll;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kOutOfProcessVideoDecoding;

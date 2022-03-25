@@ -93,10 +93,6 @@ const base::FeatureParam<int> kLogdConfigSize{&kLogdConfig, "size", 0};
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
     "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls ARC mouse wheel smooth scroll compatibility feature.
-const base::Feature kMouseWheelSmoothScroll{"ArcMouseWheelSmoothScroll",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls experimental 64-bit native bridge support for ARC on boards that
 // have 64-bit native bridge support available but not yet enabled.
 const base::Feature kNativeBridge64BitSupportExperimentFeature{

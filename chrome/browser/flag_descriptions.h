@@ -2377,9 +2377,6 @@ extern const char kArcFilePickerExperimentDescription[];
 extern const char kArcKeyboardShortcutHelperIntegrationName[];
 extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 
-extern const char kArcMouseWheelSmoothScrollName[];
-extern const char kArcMouseWheelSmoothScrollDescription[];
-
 extern const char kArcNativeBridgeToggleName[];
 extern const char kArcNativeBridgeToggleDescription[];
 

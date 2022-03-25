@@ -87,8 +87,7 @@ class TouchModeMouseRewriterTest : public views::ViewsTestBase {
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    feature_list_.InitWithFeatures(
-        {arc::kRightClickLongPress, arc::kMouseWheelSmoothScroll}, {});
+    feature_list_.InitWithFeatures({arc::kRightClickLongPress}, {});
   }
 
   base::test::ScopedFeatureList feature_list_;

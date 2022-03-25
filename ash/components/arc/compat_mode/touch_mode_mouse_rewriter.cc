@@ -101,9 +101,6 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
 
   const bool in_resize_locked = IsInResizeLockedWindow(target);
   if (event.IsMouseWheelEvent()) {
-    if (!base::FeatureList::IsEnabled(arc::kMouseWheelSmoothScroll))
-      return SendEvent(continuation, &event);
-
     if (!in_resize_locked)
       return SendEvent(continuation, &event);
 
