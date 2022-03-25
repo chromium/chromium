@@ -10,6 +10,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/native_cursor.h"
 
 OverlayWindowImageButton::OverlayWindowImageButton(PressedCallback callback)
@@ -18,6 +19,7 @@ OverlayWindowImageButton::OverlayWindowImageButton(PressedCallback callback)
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
   views::ConfigureVectorImageButton(this);
+  views::InstallCircleHighlightPathGenerator(this);
 
   SetInstallFocusRingOnFocus(true);
 }

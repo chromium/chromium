@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,10 +38,11 @@ void ToggleMicrophoneButton::UpdateImageAndTooltipText() {
       is_muted_ ? vector_icons::kMicOffIcon : vector_icons::kMicIcon;
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_MICROPHONE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_MICROPHONE_TEXT;
+  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
 
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(icon, kColorPipWindowForeground, width()));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, kColorPipWindowForeground,
+                                               icon_size));
   SetTooltipText(l10n_util::GetStringUTF16(text));
 }
 

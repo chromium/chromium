@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,10 +28,11 @@ void HangUpButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 void HangUpButton::UpdateImage() {
+  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     vector_icons::kCallEndIcon,
-                    kColorPipWindowHangUpButtonForeground, width()));
+                    kColorPipWindowHangUpButtonForeground, icon_size));
 }
 
 BEGIN_METADATA(HangUpButton, OverlayWindowImageButton)

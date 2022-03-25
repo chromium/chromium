@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,12 +25,13 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
 }
 
 void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
+  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
   play_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPlayArrowIcon, kColorPipWindowForeground, size().width());
+      vector_icons::kPlayArrowIcon, kColorPipWindowForeground, icon_size);
   pause_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPauseIcon, kColorPipWindowForeground, size().width());
+      vector_icons::kPauseIcon, kColorPipWindowForeground, icon_size);
   replay_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kReplayIcon, kColorPipWindowForeground, size().width());
+      vector_icons::kReplayIcon, kColorPipWindowForeground, icon_size);
 
   UpdateImageAndTooltipText();
 }

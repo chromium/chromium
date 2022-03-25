@@ -15,18 +15,19 @@
 
 namespace {
 
-constexpr int kCloseButtonMargin = 8;
-constexpr int kCloseButtonSize = 16;
+constexpr int kCloseButtonMargin = 4;
+constexpr int kCloseButtonSize = 24;
+constexpr int kCloseButtonIconSize = 16;
 
 }  // namespace
 
 CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          views::kIcCloseIcon, kColorPipWindowForeground, kCloseButtonSize));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(views::kIcCloseIcon,
+                                               kColorPipWindowForeground,
+                                               kCloseButtonIconSize));
 
   // Accessibility.
   const std::u16string close_button_label(

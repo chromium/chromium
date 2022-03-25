@@ -80,19 +80,19 @@ constexpr double kResizeHandleOpacity = 0.38;
 #endif
 
 // Size of a primary control.
-constexpr gfx::Size kPrimaryControlSize(36, 36);
+constexpr gfx::Size kPrimaryControlSize(52, 52);
 
 // Margin from the bottom of the window for primary controls.
-constexpr int kPrimaryControlBottomMargin = 8;
+constexpr int kPrimaryControlBottomMargin = 0;
 
 // Size of a secondary control.
-constexpr gfx::Size kSecondaryControlSize(20, 20);
+constexpr gfx::Size kSecondaryControlSize(36, 36);
 
 // Margin from the bottom of the window for secondary controls.
-constexpr int kSecondaryControlBottomMargin = 16;
+constexpr int kSecondaryControlBottomMargin = 8;
 
 // Margin between controls.
-constexpr int kControlMargin = 32;
+constexpr int kControlMargin = 16;
 
 template <typename T>
 T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
