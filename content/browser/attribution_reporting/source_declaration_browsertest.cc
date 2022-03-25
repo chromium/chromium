@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -27,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -433,19 +435,22 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
       https_server()->GetURL("c.test", "/register_source_headers.html");
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
   createAttributionSrcAnchor({url: 'page_with_conversion_redirect.html',
-                                      attributionsrc: $1,
-                                      left: 100,
-                                      top: 100});)",
+                              attributionsrc: $1,
+                              id: 'link2'});)",
                                                register_url)));
+
+  // Allow the anchor to be rendered before trying to click on it.
+  base::PlatformThread::Sleep(base::Milliseconds(50));
 
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
           web_contents()->GetMainFrame(),
           ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
-  content::SimulateMouseClickAt(web_contents(), 0,
-                                blink::WebMouseEvent::Button::kRight,
-                                gfx::Point(100, 100));
+  content::SimulateMouseClickAt(
+      web_contents(), 0, blink::WebMouseEvent::Button::kRight,
+      gfx::ToFlooredPoint(
+          GetCenterCoordinatesOfElementWithId(web_contents(), "link2")));
 
   context_menu_interceptor->Wait();
   blink::UntrustworthyContextMenuParams params =
