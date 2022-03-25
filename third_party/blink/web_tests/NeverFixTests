@@ -1771,7 +1771,6 @@ crbug.com/567837 fast/hidpi/static/* [ Skip ]
 [ Linux ] virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
 [ Win ] virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
 virtual/scalefactor200/fast/hidpi/static/* [ Pass ]
-virtual/scalefactor200withzoom/fast/hidpi/static/* [ Pass ]
 
 # Memory measurement tests are run as virtual tests.
 external/wpt/measure-memory/* [ Skip ]

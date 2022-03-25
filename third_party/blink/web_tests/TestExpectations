@@ -2105,13 +2105,9 @@ crbug.com/432129 html/marquee/marquee-scroll.html [ Failure Pass ]
 crbug.com/326139 crbug.com/390125 media/video-frame-accurate-seek.html [ Failure Pass ]
 crbug.com/421283 html/marquee/marquee-scrollamount.html [ Failure Pass ]
 
-# TODO(oshima): Mac is currently not supported.
-crbug.com/567837 [ Mac ] virtual/scalefactor200withzoom/fast/hidpi/static/* [ Skip ]
-
 # TODO(oshima): Move the event scaling code to eventSender and remove this.
 crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/gesture-scroll-amount.html [ Failure Timeout ]
 crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
-crbug.com/567837 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/mousewheel-scroll-amount.html [ Failure Timeout ]
 crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/mousewheel-scroll-amount.html [ Failure Timeout ]
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/gesture-scroll-amount.html [ Failure Timeout ]
@@ -2804,9 +2800,6 @@ crbug.com/1298321 fast/forms/calendar-picker/calendar-picker-appearance-zoom200.
 crbug.com/1298321 fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Failure Pass Timeout ]
 crbug.com/1298321 fast/forms/select-popup/popup-menu-appearance-zoom.html [ Failure Pass Timeout ]
 crbug.com/1298321 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom200.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/calendar-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/calendar-picker-appearance.html [ Failure Pass Timeout ]
 crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/popup-menu-appearance.html [ Failure Pass Timeout ]
