@@ -109,6 +109,15 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
       strike_event);
 }
 
+void LogVirtualCardEnrollBubbleCardArtAvailable(
+    bool card_art_available,
+    VirtualCardEnrollmentSource source) {
+  base::UmaHistogramBoolean(
+      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+          VirtualCardEnrollmentSourceToMetricSuffix(source),
+      card_art_available);
+}
+
 void LogVirtualCardEnrollBubbleLatencySinceUpstream(
     const base::TimeDelta& latency) {
   base::UmaHistogramTimes(

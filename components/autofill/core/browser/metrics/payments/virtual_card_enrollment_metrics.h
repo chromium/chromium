@@ -120,6 +120,13 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
     VirtualCardEnrollmentSource source,
     VirtualCardEnrollmentStrikeDatabaseEvent strike_event);
 
+// Virtual card enrollment bubble card art available metric. Logs whether the
+// card art was used in the enroll bubble depending on if it was passed to the
+// enrollment controller.
+void LogVirtualCardEnrollBubbleCardArtAvailable(
+    bool card_art_available,
+    VirtualCardEnrollmentSource source);
+
 // Latency Since Upstream metrics. Used to determine the time that it takes for
 // the server calls that need to be made between Save Card Bubble accept and
 // when the Virtual Card Enroll Bubble is shown.
