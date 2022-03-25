@@ -1661,6 +1661,9 @@
       'filepath': '^remoting/' \
                   '|^testing/chromoting'
     },
+    'rgb_kbd': {
+      'filepath': 'ash/rgb_keyboard/'
+    },
     'rlz_id': {
       'filepath' :'rlz/lib/machine_id.cc|'\
                   'rlz/lib/machine_id.h|'\
@@ -2738,6 +2741,9 @@
     'relaunch_notification': ['grt+watch@chromium.org'],
     'remoteplayback': ['mfoltz+watch@chromium.org'],
     'remoting': ['chromoting-reviews@chromium.org'],
+    'rgb_kbd': ['michaelcheco+watch-rgb-kbd@google.com',
+                'jimmyxgong+watch-rgb-kbd@chromium.org',
+                'zentaro+watch-rgb-kbd@chromium.org'],
     'rlz_id': ['gab+watch@chromium.org',
                'robertshield+watch@chromium.org'],
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],
