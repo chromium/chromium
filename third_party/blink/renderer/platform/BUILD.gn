@@ -751,6 +751,7 @@ component("platform") {
     "graphics/apply_viewport_changes.h",
     "graphics/begin_frame_provider.cc",
     "graphics/begin_frame_provider.h",
+    "graphics/begin_frame_provider_params.h",
     "graphics/bitmap_image.cc",
     "graphics/bitmap_image.h",
     "graphics/bitmap_image_metrics.cc",
