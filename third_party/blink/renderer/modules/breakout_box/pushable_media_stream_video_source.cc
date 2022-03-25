@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
+#include "base/task/bind_post_task.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -40,6 +41,16 @@ void PushableMediaStreamVideoSource::Broker::OnClientStopped() {
 bool PushableMediaStreamVideoSource::Broker::IsRunning() {
   WTF::MutexLocker locker(mutex_);
   return !frame_callback_.is_null();
+}
+
+bool PushableMediaStreamVideoSource::Broker::CanDiscardAlpha() {
+  WTF::MutexLocker locker(mutex_);
+  return can_discard_alpha_;
+}
+
+bool PushableMediaStreamVideoSource::Broker::RequireMappedFrame() {
+  WTF::MutexLocker locker(mutex_);
+  return feedback_.require_mapped_frame;
 }
 
 void PushableMediaStreamVideoSource::Broker::PushFrame(
@@ -118,6 +129,18 @@ void PushableMediaStreamVideoSource::Broker::StopSourceOnMain() {
   source_->StopSource();
 }
 
+void PushableMediaStreamVideoSource::Broker::SetCanDiscardAlpha(
+    bool can_discard_alpha) {
+  WTF::MutexLocker locker(mutex_);
+  can_discard_alpha_ = can_discard_alpha;
+}
+
+void PushableMediaStreamVideoSource::Broker::ProcessFeedback(
+    const media::VideoCaptureFeedback& feedback) {
+  WTF::MutexLocker locker(mutex_);
+  feedback_ = feedback;
+}
+
 PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : MediaStreamVideoSource(std::move(main_task_runner)),
@@ -150,6 +173,25 @@ void PushableMediaStreamVideoSource::StopSourceImpl() {
 base::WeakPtr<MediaStreamVideoSource>
 PushableMediaStreamVideoSource::GetWeakPtr() const {
   return weak_factory_.GetWeakPtr();
+}
+
+void PushableMediaStreamVideoSource::SetCanDiscardAlpha(
+    bool can_discard_alpha) {
+  broker_->SetCanDiscardAlpha(can_discard_alpha);
+}
+
+media::VideoCaptureFeedbackCB
+PushableMediaStreamVideoSource::GetFeedbackCallback() const {
+  return base::BindPostTask(
+      GetTaskRunner(),
+      WTF::BindRepeating(
+          &PushableMediaStreamVideoSource::ProcessFeedbackInternal,
+          weak_factory_.GetWeakPtr()));
+}
+
+void PushableMediaStreamVideoSource::ProcessFeedbackInternal(
+    const media::VideoCaptureFeedback& feedback) {
+  broker_->ProcessFeedback(feedback);
 }
 
 }  // namespace blink
