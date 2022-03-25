@@ -4243,6 +4243,11 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kCaptureSelfieCamName[] = "Enable selfie camera in screen capture";
+const char kCaptureSelfieCamDescription[] =
+    "Enables the ability to record the selected camera feed along with screen "
+    "recordings for personalized demos and more.";
+
 const char kDefaultLinkCapturingInBrowserName[] =
     "Default link capturing in the browser";
 const char kDefaultLinkCapturingInBrowserDescription[] =

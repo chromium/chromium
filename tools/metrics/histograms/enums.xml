@@ -53261,6 +53261,7 @@ from previous Chrome versions.
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
   <int value="-1101036307" label="SetTimeoutWithoutClamp:enabled"/>
   <int value="-1099618411" label="UpdatedCellularActivationUi:enabled"/>
+  <int value="-1099496822" label="CaptureModeSelfieCamera:enabled"/>
   <int value="-1099142083" label="V8Ignition:disabled"/>
   <int value="-1099135056" label="AsyncDns:enabled"/>
   <int value="-1097977406"
@@ -53876,6 +53877,7 @@ from previous Chrome versions.
   <int value="-681434111" label="WebFeed:disabled"/>
   <int value="-680787130" label="ExperimentalVRFeatures:disabled"/>
   <int value="-680589442" label="MacRTL:disabled"/>
+  <int value="-679585025" label="CaptureModeSelfieCamera:disabled"/>
   <int value="-679500267" label="UseXpsForPrinting:disabled"/>
   <int value="-678184617" label="TranslateSubFrames:disabled"/>
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>

@@ -2437,6 +2437,9 @@ extern const char kBluetoothUseFlossDescription[];
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 
+extern const char kCaptureSelfieCamName[];
+extern const char kCaptureSelfieCamDescription[];
+
 extern const char kDefaultLinkCapturingInBrowserName[];
 extern const char kDefaultLinkCapturingInBrowserDescription[];
 
