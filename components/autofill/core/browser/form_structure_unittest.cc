@@ -39,6 +39,7 @@ using base::ASCIIToUTF16;
 using ::testing::ElementsAre;
 using ::testing::Not;
 using ::testing::Truly;
+using ::testing::UnorderedElementsAre;
 using version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
@@ -101,6 +102,11 @@ auto SerializesSameAs(const T& expected) {
 template <typename... Matchers>
 auto ElementsSerializeSameAs(Matchers... element_matchers) {
   return ElementsAre(SerializesSameAs(element_matchers)...);
+}
+
+template <typename... Matchers>
+auto UnorderedElementsSerializeSameAs(Matchers... element_matchers) {
+  return UnorderedElementsAre(SerializesSameAs(element_matchers)...);
 }
 
 }  // namespace
@@ -2565,9 +2571,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -2630,6 +2633,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2685,7 +2690,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
                                                   std::string(), true, true),
               ElementsSerializeSameAs(upload));
 
-  // Set the "autofillused" attribute to true.
   upload.set_autofill_used(true);
   EXPECT_THAT(form_structure->EncodeUploadRequest(available_field_types, true,
                                                   std::string(), true, true),
@@ -2713,6 +2717,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2747,9 +2753,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
-
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   FormFieldData field;
   field.form_control_type = "text";
@@ -2813,6 +2816,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2873,9 +2878,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
-
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   FormFieldData field;
   field.form_control_type = "text";
@@ -2940,6 +2942,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2999,9 +3003,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   FormData form;
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
-
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   FormFieldData field;
   field.form_control_type = "text";
@@ -3064,6 +3065,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   form_structure->set_password_length_vote(10u);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3114,9 +3117,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
                                                   std::string(), true, true),
               ElementsSerializeSameAs(upload));
 
-  // Set the "autofillused" attribute to true.
   upload.set_autofill_used(true);
-
   EXPECT_THAT(form_structure->EncodeUploadRequest(available_field_types, true,
                                                   std::string(), true, true),
               ElementsSerializeSameAs(upload));
@@ -3144,6 +3145,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   ASSERT_EQ(form_structure->field_count(),
             possible_field_types_validities.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    form_structure->field(i)->host_form_signature =
+        form_structure->form_signature();
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
     form_structure->field(i)->set_possible_types_validities(
         possible_field_types_validities[i]);
@@ -3208,9 +3211,6 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.label = u"First Name";
   field.name = u"firstname";
@@ -3255,6 +3255,8 @@ TEST_F(FormStructureTestImpl,
                                              {ACCOUNT_CREATION_PASSWORD});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3337,9 +3339,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithAutocomplete) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3369,6 +3368,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithAutocomplete) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3418,9 +3419,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3464,6 +3462,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3518,9 +3518,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3550,6 +3547,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3600,9 +3599,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3625,6 +3621,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3696,6 +3694,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithCssClassesAndIds) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   std::unique_ptr<FormStructure> form_structure(new FormStructure(form));
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3756,8 +3756,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithFormName) {
 
   // Setting the form name which we expect to see in the upload.
   form.name = u"myform";
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   FormFieldData field;
   field.form_control_type = "text";
@@ -3778,6 +3776,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithFormName) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
   form_structure->set_submission_source(SubmissionSource::FRAME_DETACHED);
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
@@ -3829,9 +3829,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestPartialMetadata) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3861,6 +3858,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestPartialMetadata) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3912,9 +3911,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
-  form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
   FormFieldData field;
   field.form_control_type = "text";
 
@@ -3953,6 +3949,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
+  for (auto& field : *form_structure)
+    field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3994,6 +3992,148 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
               ElementsSerializeSameAs(upload));
 }
 
+// Tests that when the form is the result of flattening multiple forms into one,
+// EncodeUploadRequest() returns multiple uploads: one for the entire form and
+// one for each of the original forms.
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
+  std::unique_ptr<FormStructure> form_structure;
+  std::vector<ServerFieldTypeSet> possible_field_types;
+  std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
+  FormData form;
+  form.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  form.url = GURL("http://www.foo.com/");
+  form.is_form_tag = true;
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = u"Cardholder name";
+  field.name = u"cc-name";
+  test::InitializePossibleTypesAndValidities(possible_field_types,
+                                             possible_field_types_validities,
+                                             {CREDIT_CARD_NAME_FULL});
+  field.host_frame = form.host_frame;
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(123);
+  form.fields.push_back(field);
+
+  field.label = u"Credit card number";
+  field.name = u"cc-number";
+  test::InitializePossibleTypesAndValidities(possible_field_types,
+                                             possible_field_types_validities,
+                                             {CREDIT_CARD_NUMBER});
+  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(456);
+  form.fields.push_back(field);
+
+  field.label = u"Expiration date";
+  field.name = u"cc-exp";
+  test::InitializePossibleTypesAndValidities(
+      possible_field_types, possible_field_types_validities,
+      {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR});
+  field.host_frame = form.host_frame;
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(123);
+  form.fields.push_back(field);
+
+  field.label = u"CVC";
+  field.name = u"cc-cvc";
+  test::InitializePossibleTypesAndValidities(possible_field_types,
+                                             possible_field_types_validities,
+                                             {CREDIT_CARD_VERIFICATION_CODE});
+  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(456);
+  form.fields.push_back(field);
+
+  ASSERT_EQ(form.global_id(), form.fields[0].renderer_form_id());
+  ASSERT_NE(form.global_id(), form.fields[1].renderer_form_id());
+  ASSERT_EQ(form.global_id(), form.fields[2].renderer_form_id());
+  ASSERT_NE(form.global_id(), form.fields[3].renderer_form_id());
+
+  form_structure = std::make_unique<FormStructure>(form);
+
+  ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
+  ASSERT_EQ(form_structure->field_count(),
+            possible_field_types_validities.size());
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    form_structure->field(i)->set_possible_types(possible_field_types[i]);
+    form_structure->field(i)->set_possible_types_validities(
+        possible_field_types_validities[i]);
+  }
+
+  ServerFieldTypeSet available_field_types;
+  available_field_types.insert(CREDIT_CARD_NAME_FULL);
+  available_field_types.insert(CREDIT_CARD_NUMBER);
+  available_field_types.insert(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  available_field_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+
+  // Prepare the expected proto string.
+  const AutofillUploadContents upload_main = [&] {
+    AutofillUploadContents upload;
+    upload.set_submission(true);
+    upload.set_submission_event(
+        AutofillUploadContents_SubmissionIndicatorEvent_NONE);
+    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_form_signature(form_structure->form_signature().value());
+    upload.set_autofill_used(false);
+    upload.set_data_present("0000000000001850");
+    upload.set_passwords_revealed(false);
+    upload.set_action_signature(15724779818122431245U);
+    upload.set_has_form_tag(true);
+    test::FillUploadField(upload.add_field(), 3340391946, "cc-name", "text",
+                          nullptr, 51);
+    test::FillUploadField(upload.add_field(), 1415886167, "cc-number", "text",
+                          nullptr, 52);
+    test::FillUploadField(upload.add_field(), 3155194603, "cc-exp", "text",
+                          nullptr, 57);
+    test::FillUploadField(upload.add_field(), 917221285, "cc-cvc", "text",
+                          nullptr, 59);
+    return upload;
+  }();
+
+  const AutofillUploadContents upload_name_exp = [&] {
+    AutofillUploadContents upload;
+    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_form_signature(form.fields[0].host_form_signature.value());
+    upload.set_autofill_used(false);
+    upload.set_data_present("0000000000001850");
+    test::FillUploadField(upload.add_field(), 3340391946, "cc-name", "text",
+                          nullptr, 51);
+    test::FillUploadField(upload.add_field(), 3155194603, "cc-exp", "text",
+                          nullptr, 57);
+    return upload;
+  }();
+
+  const AutofillUploadContents upload_number = [&] {
+    AutofillUploadContents upload;
+    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_form_signature(form.fields[1].host_form_signature.value());
+    upload.set_autofill_used(false);
+    upload.set_data_present("0000000000001850");
+    test::FillUploadField(upload.add_field(), 1415886167, "cc-number", "text",
+                          nullptr, 52);
+    return upload;
+  }();
+
+  const AutofillUploadContents upload_cvc = [&] {
+    AutofillUploadContents upload;
+    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_form_signature(form.fields[3].host_form_signature.value());
+    upload.set_autofill_used(false);
+    upload.set_data_present("0000000000001850");
+    test::FillUploadField(upload.add_field(), 917221285, "cc-cvc", "text",
+                          nullptr, 59);
+    return upload;
+  }();
+
+  EXPECT_THAT(form_structure->EncodeUploadRequest(available_field_types, false,
+                                                  std::string(), true, true),
+              UnorderedElementsSerializeSameAs(upload_main, upload_name_exp,
+                                               upload_number, upload_cvc));
+}
+
 // Check that we compute the "datapresent" string correctly for the given
 // |available_types|.
 TEST_F(FormStructureTestImpl, CheckDataPresence) {
@@ -4024,6 +4164,8 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
 
   FormStructure form_structure(form);
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
 
   std::vector<ServerFieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
@@ -4250,7 +4392,6 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
   available_field_types.insert(COMPANY_NAME);
 
   // Check that multiple types for the field are processed correctly.
-  std::unique_ptr<FormStructure> form_structure;
   std::vector<ServerFieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
@@ -4293,9 +4434,11 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
                                              possible_field_types_validities,
                                              {ADDRESS_HOME_LINE1});
 
-  form_structure = std::make_unique<FormStructure>(form);
+  auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    form_structure->field(i)->host_form_signature =
+        form_structure->form_signature();
     form_structure->field(i)->set_possible_types(possible_field_types[i]);
     form_structure->field(i)->set_possible_types_validities(
         possible_field_types_validities[i]);
@@ -4402,6 +4545,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_PasswordsRevealed) {
 
   FormStructure form_structure(form);
   form_structure.set_passwords_were_revealed(true);
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
+
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(
           {{}} /* available_field_types */, false /* form_was_autofilled */,
@@ -4426,6 +4572,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
     form.is_form_tag = is_form_tag;
 
     FormStructure form_structure(form);
+    for (auto& field : form_structure)
+      field->host_form_signature = form_structure.form_signature();
     form_structure.set_passwords_were_revealed(true);
     std::vector<AutofillUploadContents> uploads =
         form_structure.EncodeUploadRequest(
@@ -4482,6 +4630,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
   FormStructure form_structure(form);
   form_structure.set_randomized_encoder(
       std::make_unique<RandomizedEncoder>(encoder));
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
 
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(
@@ -4916,6 +5066,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
@@ -4951,6 +5103,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   FormStructure form_structure(form);
   form_structure.field(0)->set_single_username_vote_type(
       AutofillUploadContents::Field::STRONG);
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
 
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(
@@ -4972,6 +5126,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
+  for (auto& field : form_structure)
+    field->host_form_signature = form_structure.form_signature();
 
   AutofillUploadContents::SingleUsernameData single_username_data;
   single_username_data.set_username_form_signature(12345);
@@ -7830,6 +7986,8 @@ TEST_F(FormStructureTestImpl, CreateForPasswordManagerUpload) {
       FormStructure::CreateForPasswordManagerUpload(
           FormSignature(1234),
           {FieldSignature(1), FieldSignature(10), FieldSignature(100)});
+  for (auto& field : *form)
+    field->host_form_signature = form->form_signature();
   EXPECT_EQ(FormSignature(1234u), form->form_signature());
   ASSERT_EQ(3u, form->field_count());
   ASSERT_EQ(FieldSignature(100u), form->field(2)->GetFieldSignature());

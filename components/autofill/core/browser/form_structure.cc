@@ -744,6 +744,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     bool observed_submission,
     bool is_raw_metadata_uploading_enabled) const {
   DCHECK(AllTypesCaptured(*this, available_field_types));
+  std::string data_present = EncodeFieldTypes(available_field_types);
 
   AutofillUploadContents upload;
   upload.set_submission(observed_submission);
@@ -751,7 +752,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
       version_info::GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form_signature().value());
   upload.set_autofill_used(form_was_autofilled);
-  upload.set_data_present(EncodeFieldTypes(available_field_types));
+  upload.set_data_present(data_present);
   upload.set_passwords_revealed(passwords_were_revealed_);
   upload.set_has_form_tag(is_form_tag_);
   if (!current_page_language_->empty() && randomized_encoder_ != nullptr) {
@@ -800,8 +801,33 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
                                    upload.mutable_randomized_form_metadata());
   }
 
-  EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, &upload);
-  return {std::move(upload)};
+  EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, absl::nullopt,
+                            &upload);
+
+  std::vector<AutofillUploadContents> uploads = {std::move(upload)};
+
+  // Build AutofillUploadContents for the renderer forms that have been
+  // flattened into `this` (see the function's documentation for details).
+  std::vector<std::pair<FormGlobalId, FormSignature>> subforms;
+  for (const auto& field : *this) {
+    if (field->host_form_signature != form_signature()) {
+      subforms.emplace_back(field->renderer_form_id(),
+                            field->host_form_signature);
+    }
+  }
+  for (const auto& [subform_id, subform_signature] :
+       base::flat_map<FormGlobalId, FormSignature>(std::move(subforms))) {
+    uploads.emplace_back();
+    uploads.back().set_client_version(
+        version_info::GetProductNameAndVersionForUserAgent());
+    uploads.back().set_form_signature(subform_signature.value());
+    uploads.back().set_autofill_used(form_was_autofilled);
+    uploads.back().set_data_present(data_present);
+    EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, subform_id,
+                              &uploads.back());
+  }
+
+  return uploads;
 }
 
 // static
@@ -927,8 +953,8 @@ void FormStructure::ProcessQueryResponse(
           field->host_form_signature != form->form_signature()) {
         // Retrieves the alternative prediction even if it is not used so that
         // the alternative predictions are popped.
-        auto alternative_field = GetPrediction(field->host_form_signature,
-                                               field->GetFieldSignature());
+        absl::optional<FieldSuggestion> alternative_field = GetPrediction(
+            field->host_form_signature, field->GetFieldSignature());
         if (alternative_field &&
             (!current_field ||
              base::ranges::all_of(current_field->predictions(),
@@ -1039,9 +1065,7 @@ std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
 std::unique_ptr<FormStructure> FormStructure::CreateForPasswordManagerUpload(
     FormSignature form_signature,
     const std::vector<FieldSignature>& field_signatures) {
-  std::unique_ptr<FormStructure> form;
-  form.reset(new FormStructure(form_signature, field_signatures));
-  return form;
+  return base::WrapUnique(new FormStructure(form_signature, field_signatures));
 }
 
 std::string FormStructure::FormSignatureAsStr() const {
@@ -2201,12 +2225,20 @@ void FormStructure::EncodeFormForQuery(
   }
 }
 
+// static
 void FormStructure::EncodeFormFieldsForUpload(
     bool is_raw_metadata_uploading_enabled,
+    absl::optional<FormGlobalId> filter_renderer_form_id,
     AutofillUploadContents* upload) const {
   DCHECK(!IsMalformed());
 
   for (const auto& field : fields_) {
+    // Only take those fields that originate from the given renderer form.
+    if (filter_renderer_form_id &&
+        *filter_renderer_form_id != field->renderer_form_id()) {
+      continue;
+    }
+
     // Don't upload checkable fields.
     if (IsCheckable(field->check_status))
       continue;
