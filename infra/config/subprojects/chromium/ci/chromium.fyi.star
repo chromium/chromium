@@ -1329,27 +1329,6 @@ fyi_ios_builder(
         category = "iOS",
         short_name = "asan",
     ),
-    properties = {
-        "$build/archive": {
-            "archive_datas": [
-                {
-                    "archive_type": "ARCHIVE_TYPE_ZIP",
-                    "files": [
-                        "libclang_rt.asan_iossim_dynamic.dylib",
-                    ],
-                    "dirs": [
-                        "ios_cwt_chromedriver_tests_module.xctest",
-                        "ios_cwt_chromedriver_tests_module-Runner.app",
-                        "ios_cwt_chromedriver_tests.app",
-                        "ios",
-                        "testing",
-                    ],
-                    "gcs_bucket": "chromium-browser-asan",
-                    "gcs_path": "ios-release/asan-ios-release-{%timestamp%}.zip",
-                },
-            ],
-        },
-    },
 )
 
 fyi_ios_builder(
