@@ -153,7 +153,8 @@ class NET_EXPORT URLRequestContextBuilder {
   static void SetHttpNetworkSessionComponents(
       const URLRequestContext* request_context,
       HttpNetworkSessionContext* session_context,
-      bool suppress_setting_socket_performance_watcher_factory = false);
+      bool suppress_setting_socket_performance_watcher_factory = false,
+      ClientSocketFactory* client_socket_factory = nullptr);
 
   // These functions are mutually exclusive.  The ProxyConfigService, if
   // set, will be used to construct a ConfiguredProxyResolutionService.

@@ -10352,7 +10352,7 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
   }
 }
 
-// Test that sessions aren't resumed across HttpNetworkSessions.
+// Test that sessions aren't resumed across URLRequestContexts.
 TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   // Start a server.
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -10360,10 +10360,27 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   ASSERT_TRUE(test_server.Start());
   const auto url = test_server.GetURL("/");
 
+  // Connect to the server once. This will add an entry to the session cache.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r->ssl_info().handshake_type);
+  }
+
+  // Clear the socket pools and connect again. This should resume the previous
+  // session.
   default_context()
       .http_transaction_factory()
       ->GetSession()
-      ->ClearSSLSessionCache();
+      ->CloseAllConnections(ERR_FAILED, /*net_log_reason_utf8=*/"");
 
   {
     TestDelegate d;
@@ -10376,35 +10393,16 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r->ssl_info().handshake_type);
   }
 
-  // Now create a new HttpNetworkSession.
-  HttpNetworkSessionContext session_context;
-  session_context.host_resolver = default_context().host_resolver();
-  session_context.cert_verifier = default_context().cert_verifier();
-  session_context.transport_security_state =
-      default_context().transport_security_state();
-  session_context.ct_policy_enforcer = default_context().ct_policy_enforcer();
-  session_context.proxy_resolution_service =
-      default_context().proxy_resolution_service();
-  session_context.ssl_config_service = default_context().ssl_config_service();
-  session_context.http_auth_handler_factory =
-      default_context().http_auth_handler_factory();
-  session_context.http_server_properties =
-      default_context().http_server_properties();
-  session_context.quic_context = default_context().quic_context();
-
-  HttpNetworkSession network_session(HttpNetworkSessionParams(),
-                                     session_context);
-  std::unique_ptr<HttpCache> cache(
-      new HttpCache(&network_session, HttpCache::DefaultBackend::InMemory(0),
-                    false /* is_main_cache */));
-
-  default_context().set_http_transaction_factory(cache.get());
+  // Now fetch on a new URLRequestContext. This should not resume the session.
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto other_context = context_builder->Build();
 
   {
     TestDelegate d;
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+    std::unique_ptr<URLRequest> r(other_context->CreateRequest(
         url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();

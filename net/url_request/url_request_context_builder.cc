@@ -135,7 +135,11 @@ URLRequestContextBuilder::~URLRequestContextBuilder() = default;
 void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
     const URLRequestContext* request_context,
     HttpNetworkSessionContext* session_context,
-    bool suppress_setting_socket_performance_watcher_factory) {
+    bool suppress_setting_socket_performance_watcher_factory,
+    ClientSocketFactory* client_socket_factory) {
+  session_context->client_socket_factory =
+      client_socket_factory ? client_socket_factory
+                            : ClientSocketFactory::GetDefaultFactory();
   session_context->host_resolver = request_context->host_resolver();
   session_context->cert_verifier = request_context->cert_verifier();
   session_context->transport_security_state =
@@ -553,12 +557,12 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   HttpNetworkSessionContext network_session_context;
-  SetHttpNetworkSessionComponents(
-      context.get(), &network_session_context,
-      suppress_setting_socket_performance_watcher_factory_for_testing_);
   // Unlike the other fields of HttpNetworkSession::Context,
   // |client_socket_factory| is not mirrored in URLRequestContext.
-  network_session_context.client_socket_factory = client_socket_factory_;
+  SetHttpNetworkSessionComponents(
+      context.get(), &network_session_context,
+      suppress_setting_socket_performance_watcher_factory_for_testing_,
+      client_socket_factory_);
 
   storage->set_http_network_session(std::make_unique<HttpNetworkSession>(
       http_network_session_params_, network_session_context));

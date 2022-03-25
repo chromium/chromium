@@ -31,6 +31,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
@@ -101,6 +102,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
 
     session_params_.enable_quic = true;
 
+    session_context_.client_socket_factory =
+        ClientSocketFactory::GetDefaultFactory();
     session_context_.quic_context = &quic_context_;
     session_context_.host_resolver = &host_resolver_;
     session_context_.cert_verifier = &cert_verifier_;

@@ -120,7 +120,6 @@ class URLRequestQuicPerfTest : public ::testing::Test {
                                               kOriginHost, tcp_server_->port());
     EXPECT_TRUE(host_resolver->AddRuleFromString(map_rule));
 
-    net::HttpNetworkSessionContext network_session_context;
     HttpNetworkSessionParams params;
     params.enable_quic = true;
     params.enable_user_alternate_protocol_ports = true;
