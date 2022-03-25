@@ -93,9 +93,11 @@ suite('PrivacySandboxDialogConsent', function() {
     // a separator in the bottom (represented by 'can-scroll' class).
     // The collapse section is closed.
     const collapseElement = page.shadowRoot!.querySelector('iron-collapse');
-    const contentArea = page.shadowRoot!.querySelector('#contentArea');
+    const contentArea: HTMLElement|null =
+        page.shadowRoot!.querySelector('#contentArea');
+    let hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
     assertFalse(collapseElement!.opened);
-    assertFalse(contentArea!.classList.contains('can-scroll'));
+    assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
 
     // After clicking on the collapse section, the content area expands and
     // becomes scrollable with a separator in the bottom. The collapse section
@@ -117,10 +119,11 @@ suite('PrivacySandboxDialogConsent', function() {
     testClickButton('#expandSection cr-expand-button');
     const [closedAction] =
         await browserProxy.whenCalled('dialogActionOccurred');
+    hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
     assertEquals(
         closedAction, PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
-    assertFalse(contentArea!.classList.contains('can-scroll'));
+    assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
   });
 });
 
