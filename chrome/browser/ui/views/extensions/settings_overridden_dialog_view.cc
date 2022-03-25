@@ -13,6 +13,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
@@ -28,8 +29,7 @@ SettingsOverriddenDialogView::SettingsOverriddenDialogView(
                  l10n_util::GetStringUTF16(
                      IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT));
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  ChromeLayoutProvider* const layout_provider = ChromeLayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
+  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
 
   using DialogResult = SettingsOverriddenDialogController::DialogResult;
@@ -51,20 +51,9 @@ SettingsOverriddenDialogView::SettingsOverriddenDialogView(
 
   SettingsOverriddenDialogController::ShowParams show_params =
       controller_->GetShowParams();
-
   SetTitle(show_params.dialog_title);
-
-  if (show_params.icon) {
+  if (show_params.icon)
     SetShowIcon(true);
-    // Note: Any icons added *should* fully specify their own color, so this
-    // will be a no-op. But, the call requires a color, and this enables testing
-    // with other icons and a reasonable fallback.
-    constexpr SkColor kPlaceholderColor = gfx::kGoogleGrey500;
-    SetIcon(gfx::CreateVectorIcon(*show_params.icon,
-                                  layout_provider->GetDistanceMetric(
-                                      DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-                                  kPlaceholderColor));
-  }
 
   auto message_label = std::make_unique<views::Label>(
       show_params.message, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -82,6 +71,19 @@ SettingsOverriddenDialogView::~SettingsOverriddenDialogView() {
     controller_->HandleDialogResult(
         SettingsOverriddenDialogController::DialogResult::
             kDialogClosedWithoutUserAction);
+  }
+}
+
+void SettingsOverriddenDialogView::OnThemeChanged() {
+  views::DialogDelegateView::OnThemeChanged();
+
+  const gfx::VectorIcon* icon = controller_->GetShowParams().icon;
+  if (icon) {
+    SetIcon(
+        gfx::CreateVectorIcon(*icon,
+                              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
+                              GetColorProvider()->GetColor(ui::kColorIcon)));
   }
 }
 

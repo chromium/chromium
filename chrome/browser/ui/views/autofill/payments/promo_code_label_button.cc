@@ -30,31 +30,35 @@ void PromoCodeLabelButton::OnThemeChanged() {
 
   const auto* const color_provider = GetColorProvider();
   SetTextColor(views::Button::STATE_NORMAL,
-               color_provider->GetColor(kColorPromoCodeForeground));
-  SetTextColor(views::Button::STATE_HOVERED,
-               color_provider->GetColor(kColorPromoCodeForegroundHovered));
-  SetTextColor(views::Button::STATE_PRESSED,
-               color_provider->GetColor(kColorPromoCodeForegroundPressed));
+               color_provider->GetColor(kColorPaymentsPromoCodeForeground));
+  SetTextColor(
+      views::Button::STATE_HOVERED,
+      color_provider->GetColor(kColorPaymentsPromoCodeForegroundHovered));
+  SetTextColor(
+      views::Button::STATE_PRESSED,
+      color_provider->GetColor(kColorPaymentsPromoCodeForegroundPressed));
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
-                                               kColorPromoCodeForeground,
-                                               kContentCopyIconSizePx));
-  SetImageModel(views::Button::STATE_HOVERED,
-                ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
-                                               kColorPromoCodeForegroundHovered,
-                                               kContentCopyIconSizePx));
-  SetImageModel(views::Button::STATE_PRESSED,
-                ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
-                                               kColorPromoCodeForegroundPressed,
-                                               kContentCopyIconSizePx));
+                ui::ImageModel::FromVectorIcon(
+                    vector_icons::kContentCopyIcon,
+                    kColorPaymentsPromoCodeForeground, kContentCopyIconSizePx));
+  SetImageModel(
+      views::Button::STATE_HOVERED,
+      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
+                                     kColorPaymentsPromoCodeForegroundHovered,
+                                     kContentCopyIconSizePx));
+  SetImageModel(
+      views::Button::STATE_PRESSED,
+      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
+                                     kColorPaymentsPromoCodeForegroundPressed,
+                                     kContentCopyIconSizePx));
   SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(kColorPromoCodeBackground),
+      color_provider->GetColor(kColorPaymentsPromoCodeBackground),
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(
-      color_provider->GetColor(kColorPromoCodeInkDrop));
+      color_provider->GetColor(kColorPaymentsPromoCodeInkDrop));
   SetHasInkDropActionOnClick(true);
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);

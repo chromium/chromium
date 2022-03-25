@@ -71,7 +71,7 @@ class IconView : public views::ImageView {
         image = gfx::ImageSkiaOperations::CreateTiledImage(
             gfx::CreateVectorIcon(
                 kGooglePayLogoIcon,
-                GetColorProvider()->GetColor(kColorGooglePayLogo)),
+                GetColorProvider()->GetColor(kColorPaymentsGooglePayLogo)),
             /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
         break;
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_factory.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -100,11 +101,13 @@ class TipTextContainer : public views::View {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(container_insets), container_child_space));
+    SetBackground(views::CreateThemedSolidBackground(
+        this, kColorPaymentsFeedbackTipBackground));
 
     constexpr int kTipImageSize = 16;
     auto* lightbulb_outline_image = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLightbulbOutlineIcon, ui::kColorAlertMediumSeverity,
+            vector_icons::kLightbulbOutlineIcon, kColorPaymentsFeedbackTipIcon,
             kTipImageSize)));
     lightbulb_outline_image->SetVerticalAlignment(
         views::ImageView::Alignment::kLeading);
@@ -123,28 +126,14 @@ class TipTextContainer : public views::View {
   // views::Label:
   void OnThemeChanged() override {
     View::OnThemeChanged();
-    const bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
 
-    // TODO(tluk): We should not be using hard coded color constants and
-    // switching colors based on the dark mode flag. We should instead
-    // systematize these into color ids and simply call GetColor() for these
-    // ids.
-    SetBackground(views::CreateSolidBackground(
-        should_use_dark_colors ? gfx::kGoogleGrey800 : gfx::kGoogleGrey050));
-
-    // Do not add the border if it is not using dark colors.
     constexpr int kTipValuePromptBorderThickness = 1;
-    SetBorder(should_use_dark_colors
-                  ? views::NullBorder()
-                  : views::CreateSolidBorder(kTipValuePromptBorderThickness,
-                                             gfx::kGoogleGrey100));
-
-    // If it is in dark mode, set the font color to GG200 since it is on a
-    // lighter shade of grey background.
+    const auto* const color_provider = GetColorProvider();
+    SetBorder(views::CreateSolidBorder(
+        kTipValuePromptBorderThickness,
+        color_provider->GetColor(kColorPaymentsFeedbackTipBorder)));
     tip_->SetEnabledColor(
-        should_use_dark_colors
-            ? gfx::kGoogleGrey200
-            : GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
+        color_provider->GetColor(kColorPaymentsFeedbackTipForeground));
   }
 
  private:

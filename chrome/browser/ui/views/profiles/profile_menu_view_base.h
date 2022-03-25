@@ -152,7 +152,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                          base::RepeatingClosure action);
 
   gfx::ImageSkia ColoredImageForMenu(const gfx::VectorIcon& icon,
-                                     SkColor color) const;
+                                     ui::ColorId color) const;
   // Should be called inside each button/link action.
   void RecordClick(ActionableItem item);
 

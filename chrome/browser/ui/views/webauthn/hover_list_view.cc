@@ -144,15 +144,6 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
       std::move(secondary_view), is_two_line_item, item_type);
 }
 
-views::Separator* AddSeparatorAsChild(views::View* view) {
-  auto separator = std::make_unique<views::Separator>();
-  // TODO(tluk): kGoogleGrey300 is the default light mode separator color so
-  // setting the color below should be unnecessary. Remove the hardcoded color
-  // and this helper as it should not be needed.
-  separator->SetColor(gfx::kGoogleGrey300);
-  return view->AddChildView(std::move(separator));
-}
-
 }  // namespace
 
 // HoverListView ---------------------------------------------------------
@@ -168,7 +159,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
       0 /* betweeen_child_spacing */));
 
   item_container_ = item_container.get();
-  AddSeparatorAsChild(item_container_);
+  item_container_->AddChildView(std::make_unique<views::Separator>());
 
   for (const auto item_tag : model_->GetThrobberTags()) {
     auto button = CreateHoverButtonForListItem(
@@ -179,7 +170,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
         true, ItemType::kThrobber);
     throbber_views_.push_back(button.get());
     item_container_->AddChildView(button.release());
-    AddSeparatorAsChild(item_container_);
+    item_container_->AddChildView(std::make_unique<views::Separator>());
   }
 
   for (const auto item_tag : model_->GetButtonTags()) {
@@ -218,7 +209,8 @@ void HoverListView::AppendListItemView(const gfx::VectorIcon* icon,
 
   auto* list_item_view_ptr = hover_button.release();
   item_container_->AddChildView(list_item_view_ptr);
-  auto* separator = AddSeparatorAsChild(item_container_);
+  auto* separator =
+      item_container_->AddChildView(std::make_unique<views::Separator>());
   tags_to_list_item_views_.emplace(
       item_tag, ListItemViews{list_item_view_ptr, separator});
 }
@@ -229,7 +221,8 @@ void HoverListView::CreateAndAppendPlaceholderItem() {
       std::u16string(), views::Button::PressedCallback(),
       /*is_two_line_item=*/false, ItemType::kPlaceholder);
   item_container_->AddChildView(placeholder_item.get());
-  auto* separator = AddSeparatorAsChild(item_container_);
+  auto* separator =
+      item_container_->AddChildView(std::make_unique<views::Separator>());
   placeholder_list_item_view_.emplace(
       ListItemViews{placeholder_item.release(), separator});
 }

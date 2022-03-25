@@ -101,6 +101,13 @@ constexpr SkColor kGreen[kNumGoogleColors] = {
     gfx::kGoogleGreen900,
 };
 
+constexpr SkColor kCyan[kNumGoogleColors] = {
+    gfx::kGoogleCyan050, gfx::kGoogleCyan100, gfx::kGoogleCyan200,
+    gfx::kGoogleCyan300, gfx::kGoogleCyan400, gfx::kGoogleCyan500,
+    gfx::kGoogleCyan600, gfx::kGoogleCyan700, gfx::kGoogleCyan800,
+    gfx::kGoogleCyan900,
+};
+
 constexpr SkColor kBlue[kNumGoogleColors] = {
     gfx::kGoogleBlue050, gfx::kGoogleBlue100, gfx::kGoogleBlue200,
     gfx::kGoogleBlue300, gfx::kGoogleBlue400, gfx::kGoogleBlue500,
@@ -113,6 +120,13 @@ constexpr SkColor kPurple[kNumGoogleColors] = {
     gfx::kGooglePurple300, gfx::kGooglePurple400, gfx::kGooglePurple500,
     gfx::kGooglePurple600, gfx::kGooglePurple700, gfx::kGooglePurple800,
     gfx::kGooglePurple900,
+};
+
+constexpr SkColor kMagenta[kNumGoogleColors] = {
+    gfx::kGoogleMagenta050, gfx::kGoogleMagenta100, gfx::kGoogleMagenta200,
+    gfx::kGoogleMagenta300, gfx::kGoogleMagenta400, gfx::kGoogleMagenta500,
+    gfx::kGoogleMagenta600, gfx::kGoogleMagenta700, gfx::kGoogleMagenta800,
+    gfx::kGoogleMagenta900,
 };
 
 constexpr SkColor kPink[kNumGoogleColors] = {
@@ -200,30 +214,32 @@ SkColor PickGoogleColor(SkColor color,
   // Map hue to angles for readability.
   const float color_angle = hsl.h * 360;
 
-  // Hues in comments below are accent colors from MacOS 11.3.1 light mode as
-  // point of reference.
-  // TODO(pbos): Complement this with more Google colors and verify the hue
-  // ranges, this currently knows about enough colors to pick a corresponding
-  // color correctly from MacOS accent colors.
-  // RED: 357.654
-  if (color_angle < 20)
+  // Hues in comments below are of the corresponding kGoogleXXX500 color.
+  // RED: 4
+  if (color_angle < 15)
     return pick_color(kRed);
-  // ORANGE: 28.0687
-  if (color_angle < 40)
+  // ORANGE: 26
+  if (color_angle < 35)
     return pick_color(kOrange);
-  // YELLOW: 44.4156
-  if (color_angle < 70)
+  // YELLOW: 44
+  if (color_angle < 90)
     return pick_color(kYellow);
-  // GREEN: 105.484
-  if (color_angle < 160)
+  // GREEN: 136
+  if (color_angle < 163)
     return pick_color(kGreen);
-  // BLUE: 214.672
-  if (color_angle < 250)
+  // CYAN: 189
+  if (color_angle < 203)
+    return pick_color(kCyan);
+  // BLUE: 217
+  if (color_angle < 245)
     return pick_color(kBlue);
-  // PURPLE: 299.362
-  if (color_angle < 310)
+  // PURPLE: 272
+  if (color_angle < 284)
     return pick_color(kPurple);
-  // PINK: 331.685
+  // MAGENTA: 295
+  if (color_angle < 311)
+    return pick_color(kMagenta);
+  // PINK: 326
   if (color_angle < 345)
     return pick_color(kPink);
 

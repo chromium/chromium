@@ -119,7 +119,9 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   SetCategory(Category::kPlayStore);
   SetDisplayType(ash::SearchResultDisplayType::kTile);
   // TODO: The badge icon should be updated to pass through a vector icon and
-  // color id rather than hardcoding the colors here.
+  // color id rather than hardcoding the colors here.  This will require
+  // tweaking sizes/paddings so we can set use_badge_icon_background to true and
+  // remove the superimposition onto a circle here.
   SetBadgeIcon(ui::ImageModel::FromImageSkia(CreateBadgeIcon(
       is_instant_app() ? ash::kBadgeInstantIcon : ash::kBadgePlayIcon,
       ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),

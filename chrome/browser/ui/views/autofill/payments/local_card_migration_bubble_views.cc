@@ -108,8 +108,9 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
   // kGooglePayLogoIcon is square, and CreateTiledImage() will clip it whereas
   // setting the icon size would rescale it incorrectly.
   gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
-      gfx::CreateVectorIcon(kGooglePayLogoIcon,
-                            GetColorProvider()->GetColor(kColorGooglePayLogo)),
+      gfx::CreateVectorIcon(
+          kGooglePayLogoIcon,
+          GetColorProvider()->GetColor(kColorPaymentsGooglePayLogo)),
       /*x=*/0, /*y=*/0, kMigrationBubbleGooglePayLogoWidth,
       kMigrationBubbleGooglePayLogoHeight);
 #else

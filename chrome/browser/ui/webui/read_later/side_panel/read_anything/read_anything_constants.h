@@ -5,16 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONSTANTS_H_
 #define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONSTANTS_H_
 
-#include "ui/gfx/color_palette.h"
-#include "ui/views/layout/flex_layout.h"
-
 // Various constants used throughout the Read Anything feature.
 namespace {
 
 // Visual constants for Read Anything feature.
 // TODO(1226555): Replace these with final values provided by UI.
-const SkColor kReadAnythingBackgroundColor = SK_ColorWHITE;
-const SkColor kReadAnythingSeperatorColor = gfx::kGoogleGrey700;
 const int kInternalInsets = 6;
 const int kFontSize = 16;
 const int kIconSize = 16;

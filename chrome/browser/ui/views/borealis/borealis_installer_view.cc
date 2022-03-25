@@ -157,7 +157,6 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   installation_progress_message_label_ =
       new views::Label(std::u16string(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
                        views::style::STYLE_SECONDARY);
-  installation_progress_message_label_->SetEnabledColor(gfx::kGoogleGrey700);
   installation_progress_message_label_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(kInstallationProgressMessageHeight, 0, 0, 0));

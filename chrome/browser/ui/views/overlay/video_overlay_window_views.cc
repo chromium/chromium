@@ -71,9 +71,6 @@
 
 namespace {
 
-// The opacity of the controls scrim.
-constexpr double kControlsScrimOpacity = 0.76;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The opacity of the resize handle control.
 constexpr double kResizeHandleOpacity = 0.38;
@@ -117,6 +114,28 @@ class WindowBackgroundView : public views::View {
 };
 
 BEGIN_METADATA(WindowBackgroundView, views::View)
+END_METADATA
+
+class ControlsBackgroundView : public views::View {
+ public:
+  METADATA_HEADER(ControlsBackgroundView);
+
+  ControlsBackgroundView() = default;
+  ControlsBackgroundView(const ControlsBackgroundView&) = delete;
+  ControlsBackgroundView& operator=(const ControlsBackgroundView&) = delete;
+  ~ControlsBackgroundView() override = default;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    const SkColor color =
+        GetColorProvider()->GetColor(kColorPipWindowControlsBackground);
+    layer()->SetColor(SkColorSetA(color, SK_AlphaOPAQUE));
+    layer()->SetOpacity(static_cast<float>(SkColorGetA(color)) /
+                        SK_AlphaOPAQUE);
+  }
+};
+
+BEGIN_METADATA(ControlsBackgroundView, views::View)
 END_METADATA
 
 }  // namespace
@@ -222,7 +241,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   // entirely window when platform has fractional scale applied.
   auto window_background_view = std::make_unique<WindowBackgroundView>();
   auto video_view = std::make_unique<views::View>();
-  auto controls_scrim_view = std::make_unique<views::View>();
+  auto controls_scrim_view = std::make_unique<ControlsBackgroundView>();
   auto controls_container_view = std::make_unique<views::View>();
   auto close_controls_view =
       std::make_unique<CloseImageButton>(base::BindRepeating(
@@ -322,8 +341,6 @@ void VideoOverlayWindowViews::SetUpViews() {
   // views::View that holds the scrim, which appears with the controls. -------
   controls_scrim_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   controls_scrim_view->layer()->SetName("ControlsScrimView");
-  controls_scrim_view->layer()->SetColor(gfx::kGoogleGrey900);
-  controls_scrim_view->layer()->SetOpacity(kControlsScrimOpacity);
 
   // views::View that is a parent of all the controls. Makes hiding and showing
   // all the controls at once easier.

@@ -204,20 +204,21 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
 
 void IconWithBadgeImageSource::PaintBlockedActionDecoration(
     gfx::Canvas* canvas) {
+  // TODO(elainechien): This looks like it's trying to match the GM2 elevation
+  // +2 spec.  Move to ShadowValue::MakeShadowValues() and systematize.
+
   // To match the CSS notion of blur (spread outside the bounding box) to the
   // Skia notion of blur (spread outside and inside the bounding box), we have
   // to double the CSS-based blur values.
   constexpr int kBlurCorrection = 2;
 
-  constexpr int kKeyShadowOpacity = 0x4D;  // 30%
   const gfx::ShadowValue key_shadow(
       gfx::Vector2d(0, 1), kBlurCorrection * 2 /*blur*/,
-      SkColorSetA(gfx::kGoogleGrey800, kKeyShadowOpacity));
+      color_provider_->GetColor(kColorExtensionIconDecorationKeyShadow));
 
-  constexpr int kAmbientShadowOpacity = 0x26;  // 15%
   const gfx::ShadowValue ambient_shadow(
       gfx::Vector2d(0, 2), kBlurCorrection * 6 /*blur*/,
-      SkColorSetA(gfx::kGoogleGrey800, kAmbientShadowOpacity));
+      color_provider_->GetColor(kColorExtensionIconDecorationAmbientShadow));
 
   const float blocked_action_badge_radius = GetBlockedActionBadgeRadius();
 

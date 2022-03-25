@@ -22,11 +22,11 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
@@ -60,7 +60,7 @@
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -264,22 +264,10 @@ void SearchTabHelper::NavigationEntryCommitted(
 
 void SearchTabHelper::NtpThemeChanged(NtpTheme theme) {
   // Populate theme colors for this tab.
-  const auto* browser_window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
-  const auto* theme_provider =
-      browser_window ? browser_window->GetThemeProvider() : nullptr;
-  if (theme_provider) {
-    theme.background_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-    theme.text_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT);
-    theme.text_color_light =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT_LIGHT);
-  } else {
-    theme.background_color = SK_ColorWHITE;
-    theme.text_color = SK_ColorBLACK;
-    theme.text_color_light = gfx::kGoogleGrey700;
-  }
+  const auto& color_provider = web_contents()->GetColorProvider();
+  theme.background_color = color_provider.GetColor(kColorNewTabPageBackground);
+  theme.text_color = color_provider.GetColor(kColorNewTabPageText);
+  theme.text_color_light = color_provider.GetColor(kColorNewTabPageTextLight);
 
   ipc_router_.SendNtpTheme(theme);
 }

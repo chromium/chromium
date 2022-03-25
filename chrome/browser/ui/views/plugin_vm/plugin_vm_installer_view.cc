@@ -31,6 +31,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
@@ -182,7 +183,6 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
 
   download_progress_message_label_ =
       new views::Label(std::u16string(), {kDownloadProgressMessageFont});
-  download_progress_message_label_->SetEnabledColor(gfx::kGoogleGrey700);
   download_progress_message_label_->SetProperty(
       views::kMarginsKey, gfx::Insets(kDownloadProgressMessageHeight -
                                           kDownloadProgressMessageFontSize,
@@ -519,6 +519,12 @@ std::u16string PluginVmInstallerView::GetCurrentDialogButtonLabel(
 void PluginVmInstallerView::AddedToWidget() {
   // At this point GetWidget() is guaranteed to return non-null.
   OnStateUpdated();
+}
+
+void PluginVmInstallerView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  download_progress_message_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(ui::kColorSecondaryForeground));
 }
 
 void PluginVmInstallerView::OnStateUpdated() {

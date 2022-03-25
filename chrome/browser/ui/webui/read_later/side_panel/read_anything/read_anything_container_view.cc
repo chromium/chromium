@@ -25,7 +25,8 @@ ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
       .SetInteriorMargin(gfx::Insets(kInternalInsets));
 
   SetLayoutManager(std::move(layout));
-  SetBackground(views::CreateSolidBackground(kReadAnythingBackgroundColor));
+  SetBackground(
+      views::CreateThemedSolidBackground(this, ui::kColorPrimaryBackground));
 
   // Create the toolbar for the side panel.
   auto toolbar = std::make_unique<ReadAnythingToolbarView>();
@@ -37,7 +38,6 @@ ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
 
   // Create a separator.
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(kReadAnythingSeperatorColor);
   separator->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,

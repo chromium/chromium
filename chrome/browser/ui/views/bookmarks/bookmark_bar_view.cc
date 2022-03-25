@@ -1917,18 +1917,12 @@ void BookmarkBarView::ConfigureButton(const SavedTabGroup& saved_group,
   if (tp) {
     tab_groups::TabGroupColorId tab_group_color_id = saved_group.color;
 
-    // In most cases our text color will match the hover border color.
-    // However, for yellow, orange, and custom colors/themes this may not be
-    // true with respect to contrast and visibility, so a default grey color may
-    // be more appropriate.
     SkColor background_color =
         tp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id));
     text_color = tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id));
-    bool meets_contrast_req =
-        color_utils::GetContrastRatio(background_color, text_color) >=
-        color_utils::kMinimumVisibleContrastRatio;
-    if (!meets_contrast_req)
-      text_color = gfx::kGoogleGrey800;
+    text_color = color_utils::PickGoogleColor(
+        text_color, background_color,
+        color_utils::kMinimumReadableContrastRatio);
 
     // Set empty border using the default horizontal padding (but leaving
     // vertical empty). This provides enough space to render some

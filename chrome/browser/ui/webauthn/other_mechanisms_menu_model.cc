@@ -6,8 +6,7 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/color/color_id.h"
 
 OtherMechanismsMenuModel::OtherMechanismsMenuModel(
     AuthenticatorRequestDialogModel* dialog_model)
@@ -25,10 +24,8 @@ OtherMechanismsMenuModel::OtherMechanismsMenuModel(
 
     const auto& m = mechanisms[i];
     AddItemWithIcon(static_cast<int>(i), m.short_name,
-                    // TODO (kylixrd): Review the use of the hard-coded color
-                    // for possible change to using a ColorProvider color id.
-                    ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-                        *m.icon, kTransportIconSize, gfx::kGoogleGrey700)));
+                    ui::ImageModel::FromVectorIcon(
+                        *m.icon, ui::kColorMenuIcon, kTransportIconSize));
   }
 }
 

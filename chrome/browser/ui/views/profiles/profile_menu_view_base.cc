@@ -903,8 +903,9 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
     const gfx::VectorIcon& icon,
-    SkColor color) const {
-  return gfx::CreateVectorIcon(icon, kMaxImageSize, color);
+    ui::ColorId color) const {
+  return gfx::CreateVectorIcon(icon, kMaxImageSize,
+                               GetColorProvider()->GetColor(color));
 }
 
 void ProfileMenuViewBase::RecordClick(ActionableItem item) {

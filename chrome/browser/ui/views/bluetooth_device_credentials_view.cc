@@ -17,9 +17,8 @@
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -111,9 +110,8 @@ void BluetoothDeviceCredentialsView::InitControls(
 
   constexpr int kIconSize = 48;  // width and height.
   auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kBluetoothIcon, kIconSize,
-      color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700)));
+  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBluetoothIcon, ui::kColorIcon, kIconSize));
   icon_view_ = AddChildView(std::move(icon_view));
 
   auto contents_wrapper = std::make_unique<views::View>();

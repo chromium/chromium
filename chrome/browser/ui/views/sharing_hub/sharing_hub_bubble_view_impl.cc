@@ -33,15 +33,6 @@ constexpr int kMaximumButtons = 10;
 // with arrow keys possible.
 constexpr int kActionButtonGroup = 0;
 
-views::Separator* GetSeparator() {
-  auto* separator = new views::Separator();
-  separator->SetColor(gfx::kGoogleGrey300);
-  const int kIndent = 16;
-  const int kPadding = 8;
-  constexpr auto kSeperatorBorder = gfx::Insets(kPadding, kIndent, 0, kIndent);
-  separator->SetBorder(views::CreateEmptyBorder(kSeperatorBorder));
-  return separator;
-}
 }  // namespace
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
@@ -149,12 +140,16 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
     view->SetGroup(kActionButtonGroup);
   }
 
-  action_list_view->AddChildView(GetSeparator());
+  auto* separator =
+      action_list_view->AddChildView(std::make_unique<views::Separator>());
+  constexpr int kIndent = 16;
+  constexpr int kPadding = 8;
+  separator->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kPadding, kIndent, 0, kIndent)));
 
-  const int kLabelLineHeight = 22;
-  const int kLabelLinePaddingTop = 8;
-  const int kLabelLinePaddingBottom = 4;
-  const int kIndent = 16;
+  constexpr int kLabelLineHeight = 22;
+  constexpr int kLabelLinePaddingTop = 8;
+  constexpr int kLabelLinePaddingBottom = 4;
 
   auto* share_link_label =
       new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL));

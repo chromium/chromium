@@ -242,6 +242,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {ui::kColorAccent};
   mixer[kColorExtensionIconBadgeForegroundDefault] =
       ui::GetColorWithMaxContrast(kColorExtensionIconBadgeBackgroundDefault);
+  mixer[kColorExtensionIconDecorationAmbientShadow] =
+      ui::SetAlpha(ui::kColorShadowBase, 0x26);
+  mixer[kColorExtensionIconDecorationKeyShadow] =
+      ui::SetAlpha(ui::kColorShadowBase, 0x4D);
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
   mixer[kColorEyedropperCentralPixelInnerRing] = {SK_ColorBLACK};
   mixer[kColorEyedropperCentralPixelOuterRing] = {SK_ColorWHITE};
@@ -265,10 +269,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast({ui::kColorFrameActive});
   mixer[kColorFrameCaptionInactive] =
       ui::GetColorWithMaxContrast({ui::kColorFrameInactive});
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  mixer[kColorGooglePayLogo] = {dark_mode ? SK_ColorWHITE
-                                          : gfx::kGoogleGrey700};
-#endif
   mixer[kColorInfoBarBackground] = {kColorToolbar};
   mixer[kColorInfoBarContentAreaSeparator] =
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
@@ -316,26 +316,39 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorButtonForeground};
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
-  mixer[kColorPaymentRequestRowBackgroundHighlighted] = {
+  mixer[kColorPaymentsFeedbackTipBackground] = {
+      ui::kColorSubtleEmphasisBackground};
+  mixer[kColorPaymentsFeedbackTipBorder] = {ui::kColorBubbleFooterBorder};
+  mixer[kColorPaymentsFeedbackTipForeground] = {
+      ui::kColorLabelForegroundSecondary};
+  mixer[kColorPaymentsFeedbackTipIcon] = {ui::kColorAlertMediumSeverity};
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  mixer[kColorPaymentsGooglePayLogo] = {dark_mode ? SK_ColorWHITE
+                                                  : gfx::kGoogleGrey700};
+#endif
+  mixer[kColorPaymentsPromoCodeBackground] = {
+      dark_mode ? SkColorSetA(gfx::kGoogleGreen300, 0x1F)
+                : gfx::kGoogleGreen050};
+  mixer[kColorPaymentsPromoCodeForeground] = {dark_mode ? gfx::kGoogleGreen300
+                                                        : gfx::kGoogleGreen800};
+  mixer[kColorPaymentsPromoCodeForegroundHovered] = {
+      dark_mode ? gfx::kGoogleGreen200 : gfx::kGoogleGreen900};
+  mixer[kColorPaymentsPromoCodeForegroundPressed] = {
+      kColorPaymentsPromoCodeForegroundHovered};
+  mixer[kColorPaymentsPromoCodeInkDrop] = {dark_mode ? gfx::kGoogleGreen300
+                                                     : gfx::kGoogleGreen600};
+  mixer[kColorPaymentsRequestRowBackgroundHighlighted] = {
       SkColorSetA(SK_ColorBLACK, 0x0D)};
   mixer[kColorPipWindowBackToTabButtonBackground] = {
       SkColorSetA(SK_ColorBLACK, 0x60)};
   mixer[kColorPipWindowBackground] = {SK_ColorBLACK};
+  mixer[kColorPipWindowControlsBackground] = {
+      SkColorSetA(gfx::kGoogleGrey900, 0xC1)};
   mixer[kColorPipWindowForeground] =
       ui::GetColorWithMaxContrast(kColorPipWindowBackground);
   mixer[kColorPipWindowHangUpButtonForeground] = {gfx::kGoogleRed300};
   mixer[kColorPipWindowSkipAdButtonBackground] = {gfx::kGoogleGrey700};
   mixer[kColorPipWindowSkipAdButtonBorder] = {kColorPipWindowForeground};
-  mixer[kColorPromoCodeBackground] = {
-      dark_mode ? SkColorSetA(gfx::kGoogleGreen300, 0x1F)
-                : gfx::kGoogleGreen050};
-  mixer[kColorPromoCodeForeground] = {dark_mode ? gfx::kGoogleGreen300
-                                                : gfx::kGoogleGreen800};
-  mixer[kColorPromoCodeForegroundHovered] = {dark_mode ? gfx::kGoogleGreen200
-                                                       : gfx::kGoogleGreen900};
-  mixer[kColorPromoCodeForegroundPressed] = {kColorPromoCodeForegroundHovered};
-  mixer[kColorPromoCodeInkDrop] = {dark_mode ? gfx::kGoogleGreen300
-                                             : gfx::kGoogleGreen600};
   mixer[kColorQrCodeBackground] = {SK_ColorWHITE};
   mixer[kColorQrCodeBorder] = {ui::kColorMidground};
   mixer[kColorQuickAnswersReportQueryButtonBackground] =
@@ -519,6 +532,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabstripLoadingProgressBackground] =
       ui::AlphaBlend(ui::kColorAccent, kColorToolbar, 0x32);
   mixer[kColorTabstripLoadingProgressForeground] = {ui::kColorAccent};
+  mixer[kColorTabstripScrollContainerShadow] =
+      ui::SetAlpha(ui::kColorShadowBase, 0x4D);
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);

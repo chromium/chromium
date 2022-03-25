@@ -68,6 +68,8 @@
   /* Extension colors. */ \
   E_CPONLY(kColorExtensionIconBadgeBackgroundDefault) \
   E_CPONLY(kColorExtensionIconBadgeForegroundDefault) \
+  E_CPONLY(kColorExtensionIconDecorationAmbientShadow) \
+  E_CPONLY(kColorExtensionIconDecorationKeyShadow) \
   /* Eyedropper colors. */ \
   E_CPONLY(kColorEyedropperBoundary) \
   E_CPONLY(kColorEyedropperCentralPixelInnerRing) \
@@ -101,8 +103,6 @@
   /* Frame caption colors. */ \
   E(kColorFrameCaptionActive, ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE) \
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
-  /* Google branding colors. */ \
-  E_CPONLY(kColorGooglePayLogo) \
   /* InfoBar colors. */ \
   E(kColorInfoBarBackground, ThemeProperties::COLOR_INFOBAR) \
   E(kColorInfoBarContentAreaSeparator, \
@@ -190,20 +190,25 @@
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
   /* Payments colors. */ \
-  E_CPONLY(kColorPaymentRequestRowBackgroundHighlighted) \
+  E_CPONLY(kColorPaymentsFeedbackTipBackground) \
+  E_CPONLY(kColorPaymentsFeedbackTipBorder) \
+  E_CPONLY(kColorPaymentsFeedbackTipForeground) \
+  E_CPONLY(kColorPaymentsFeedbackTipIcon) \
+  E_CPONLY(kColorPaymentsGooglePayLogo) \
+  E_CPONLY(kColorPaymentsPromoCodeBackground) \
+  E_CPONLY(kColorPaymentsPromoCodeForeground) \
+  E_CPONLY(kColorPaymentsPromoCodeForegroundHovered) \
+  E_CPONLY(kColorPaymentsPromoCodeForegroundPressed) \
+  E_CPONLY(kColorPaymentsPromoCodeInkDrop) \
+  E_CPONLY(kColorPaymentsRequestRowBackgroundHighlighted) \
   /* Picture-in-Picture window colors. */ \
   E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
   E_CPONLY(kColorPipWindowBackground) \
+  E_CPONLY(kColorPipWindowControlsBackground) \
   E_CPONLY(kColorPipWindowForeground) \
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
-  /* Payments promo code colors. */ \
-  E_CPONLY(kColorPromoCodeBackground) \
-  E_CPONLY(kColorPromoCodeForeground) \
-  E_CPONLY(kColorPromoCodeForegroundHovered) \
-  E_CPONLY(kColorPromoCodeForegroundPressed) \
-  E_CPONLY(kColorPromoCodeInkDrop) \
   /* PWA colors. */ \
   E_CPONLY(kColorPwaBackground) \
   E_CPONLY(kColorPwaMenuButtonIcon) \
@@ -363,6 +368,7 @@
     ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE) \
   E_CPONLY(kColorTabstripLoadingProgressBackground) \
   E_CPONLY(kColorTabstripLoadingProgressForeground) \
+  E_CPONLY(kColorTabstripScrollContainerShadow) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \

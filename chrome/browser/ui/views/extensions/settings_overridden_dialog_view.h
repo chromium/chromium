@@ -25,6 +25,8 @@ class SettingsOverriddenDialogView : public views::DialogDelegateView {
       delete;
   ~SettingsOverriddenDialogView() override;
 
+  void OnThemeChanged() override;
+
   // Displays the dialog with the given |parent|.
   void Show(gfx::NativeWindow parent);
 
