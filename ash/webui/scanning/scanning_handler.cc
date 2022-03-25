@@ -39,7 +39,10 @@ ScanningHandler::ScanningHandler(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
-ScanningHandler::~ScanningHandler() = default;
+ScanningHandler::~ScanningHandler() {
+  if (select_file_dialog_)
+    select_file_dialog_->ListenerDestroyed();
+}
 
 void ScanningHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
@@ -90,17 +93,17 @@ void ScanningHandler::RegisterMessages() {
 void ScanningHandler::FileSelected(const base::FilePath& path,
                                    int index,
                                    void* params) {
-  if (!IsJavascriptAllowed())
-    return;
+  DCHECK(IsJavascriptAllowed());
 
+  select_file_dialog_ = nullptr;
   ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
                             CreateSelectedPathValue(path));
 }
 
 void ScanningHandler::FileSelectionCanceled(void* params) {
-  if (!IsJavascriptAllowed())
-    return;
+  DCHECK(IsJavascriptAllowed());
 
+  select_file_dialog_ = nullptr;
   ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
                             CreateSelectedPathValue(base::FilePath()));
 }
@@ -147,6 +150,13 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
 }
 
 void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   CHECK_EQ(1U, args->GetListDeprecated().size());
   scan_location_callback_id_ = args->GetListDeprecated()[0].GetString();
 

@@ -69,8 +69,12 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
       return;
     }
 
-    listener_->FileSelected(selected_path_, 0 /* index */,
-                            nullptr /* params */);
+    // Put the selected path on the stack so that it stays valid for the
+    // duration of Listener::FileSelected() despite deleting the
+    // SelectFileDialog immediately. This is in line with the default behavior
+    // of SelectFileDialog.
+    base::FilePath selected_path = std::move(selected_path_);
+    listener_->FileSelected(selected_path, 0 /* index */, nullptr /* params */);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
