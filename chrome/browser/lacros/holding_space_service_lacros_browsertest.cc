@@ -133,7 +133,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verifies that print-to-PDF adds an associated item to holding space.
 IN_PROC_BROWSER_TEST_P(HoldingSpaceServicePrintToPdfIntegrationBrowserTest,
-                       AddPrintedPdfItem) {
+                       DISABLED_AddPrintedPdfItem) {
   // If holding space service interface is not available on this version of
   // ash-chrome, this test suite will no-op.
   if (!IsServiceAvailable())
