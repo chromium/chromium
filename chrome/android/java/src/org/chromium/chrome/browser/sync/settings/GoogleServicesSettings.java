@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
@@ -64,6 +65,8 @@ public class GoogleServicesSettings
     public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
     @VisibleForTesting
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
+    @VisibleForTesting
+    public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
 
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final PrivacyPreferencesManagerImpl mPrivacyPrefManager =
@@ -75,6 +78,7 @@ public class GoogleServicesSettings
     private ChromeSwitchPreference mSearchSuggestions;
     private ChromeSwitchPreference mUsageAndCrashReporting;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
+    private ChromeSwitchPreference mPriceTrackingAnnotations;
     private @Nullable ChromeSwitchPreference mAutofillAssistant;
     private @Nullable Preference mContextualSearch;
 
@@ -137,6 +141,17 @@ public class GoogleServicesSettings
             removePreference(getPreferenceScreen(), mContextualSearch);
             mContextualSearch = null;
         }
+
+        mPriceTrackingAnnotations =
+                (ChromeSwitchPreference) findPreference(PREF_PRICE_TRACKING_ANNOTATIONS);
+        if (!PriceTrackingUtilities.allowUsersToDisablePriceAnnotations()) {
+            removePreference(getPreferenceScreen(), mPriceTrackingAnnotations);
+            mPriceTrackingAnnotations = null;
+        } else {
+            mPriceTrackingAnnotations.setOnPreferenceChangeListener(this);
+            mPriceTrackingAnnotations.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
+
         updatePreferences();
     }
 
@@ -208,6 +223,8 @@ public class GoogleServicesSettings
                     Profile.getLastUsedRegularProfile(), (boolean) newValue);
         } else if (PREF_AUTOFILL_ASSISTANT.equals(key)) {
             setAutofillAssistantSwitchValue((boolean) newValue);
+        } else if (PREF_PRICE_TRACKING_ANNOTATIONS.equals(key)) {
+            PriceTrackingUtilities.setTrackPricesOnTabsEnabled((boolean) newValue);
         }
         return true;
     }
@@ -233,6 +250,10 @@ public class GoogleServicesSettings
                     !ContextualSearchManager.isContextualSearchDisabled();
             mContextualSearch.setSummary(
                     isContextualSearchEnabled ? R.string.text_on : R.string.text_off);
+        }
+        if (mPriceTrackingAnnotations != null) {
+            mPriceTrackingAnnotations.setChecked(
+                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
         }
     }
 
