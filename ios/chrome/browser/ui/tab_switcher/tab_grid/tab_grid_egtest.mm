@@ -10,6 +10,7 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/http_server/data_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "net/base/mac/url_conversions.h"
@@ -52,6 +54,9 @@ using chrome_test_util::TabGridSelectTabsMenuButton;
 using chrome_test_util::RegularTabGrid;
 
 namespace {
+const char kSearchEngineURL[] = "http://searchengine/?q={searchTerms}";
+const char kSearchEngineHost[] = "searchengine";
+
 char kURL1[] = "http://firstURL";
 char kURL2[] = "http://secondURL";
 char kURL3[] = "http://thirdURL";
@@ -249,6 +254,36 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 }
 
+#pragma mark - TestResponseProvider
+
+// A ResponseProvider that provides html responses of the requested URL for
+// requests to |kSearchEngineHost|.
+class EchoURLDefaultSearchEngineResponseProvider
+    : public web::DataResponseProvider {
+ public:
+  bool CanHandleRequest(const Request& request) override;
+  void GetResponseHeadersAndBody(
+      const Request& request,
+      scoped_refptr<net::HttpResponseHeaders>* headers,
+      std::string* response_body) override;
+};
+
+bool EchoURLDefaultSearchEngineResponseProvider::CanHandleRequest(
+    const Request& request) {
+  DLOG(WARNING) << request.url.path();
+  return request.url.spec().find(kSearchEngineHost) != std::string::npos;
+}
+
+void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
+    const Request& request,
+    scoped_refptr<net::HttpResponseHeaders>* headers,
+    std::string* response_body) {
+  const GURL& url = request.url;
+  *headers = web::ResponseProvider::GetDefaultResponseHeaders();
+  *response_body =
+      base::StringPrintf("<html><body>%s</body></html>", url.spec().c_str());
+}
+
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -287,6 +322,7 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       @selector(testSearchSuggestedActionsPageSwitch),
       @selector(testHistorySuggestedActionInRegularTabsSearch),
       @selector(testHistorySuggestedActionInRecentTabsSearch),
+      @selector(testSearchOnWebSuggestedActionInRegularTabsSearch),
       @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
       @selector(testSearchResultCloseTab),
       @selector(testSearchResultCloseTabInIncognito),
@@ -319,6 +355,12 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
 }
 
 - (void)tearDown {
+  // Ensure that the default search engine is reset.
+  if ([self isRunningTest:@selector
+            (testSearchOnWebSuggestedActionInRegularTabsSearch)]) {
+    [SettingsAppInterface resetSearchEngine];
+  }
+
   // Ensure that pref set in testTabGridItemContextMenuAddToBookmarkGreyed is
   // reset even if the test failed.
   if ([self isRunningTest:@selector
@@ -328,6 +370,7 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
          forUserPref:base::SysUTF8ToNSString(
                          bookmarks::prefs::kEditBookmarksEnabled)];
   }
+
   [super tearDown];
 }
 
@@ -2143,6 +2186,47 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(
                                           base::SysUTF8ToNSString(kTitle2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping the search on web action in the regular tabs search mode
+// opens a new tab on the default search engine with the search term from tab
+// search. Additionally, checks that tab search mode is exited when the user
+// returns to the tab grid.
+- (void)testSearchOnWebSuggestedActionInRegularTabsSearch {
+  // Configure a testing search engine to prevent real external url requests.
+  web::test::AddResponseProvider(
+      std::make_unique<EchoURLDefaultSearchEngineResponseProvider>());
+  GURL searchEngineURL = web::test::HttpServer::MakeUrl(kSearchEngineURL);
+  NSString* searchEngineURLString =
+      base::SysUTF8ToNSString(searchEngineURL.spec());
+  [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
+
+  // Enter tab grid search mode & perform a search.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  const std::string searchQuery("queryfromtabsearch");
+  NSString* query = [NSString stringWithFormat:@"%s\n", searchQuery.c_str()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  // Scroll to search on web.
+  [[self scrollDownViewMatcher:RegularTabGrid()
+               toSelectMatcher:SearchOnWebSuggestedAction()]
+      performAction:grey_tap()];
+
+  // Ensure that the tab grid was exited.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Ensure the loaded page is a default search engine page for |searchQuery|.
+  [ChromeEarlGrey waitForWebStateContainingText:kSearchEngineHost];
+  [ChromeEarlGrey waitForWebStateContainingText:searchQuery];
+
+  // Re-enter the tab grid and ensure search mode was exited.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -99,6 +99,20 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   return viewController.presentedViewController.keyCommands != nil;
 }
 
++ (void)overrideSearchEngineURL:(NSString*)searchEngineURL {
+  TemplateURLData templateURLData;
+  templateURLData.SetURL(base::SysNSStringToUTF8(searchEngineURL));
+
+  auto defaultSearchProvider = std::make_unique<TemplateURL>(templateURLData);
+  TemplateURL* defaultSearchProviderPtr = defaultSearchProvider.get();
+
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  service->Add(std::move(defaultSearchProvider));
+  service->SetUserSelectedDefaultSearchProvider(defaultSearchProviderPtr);
+}
+
 + (void)resetSearchEngine {
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(

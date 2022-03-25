@@ -41,6 +41,9 @@
 // Returns YES if keyboard commands were seen.
 + (BOOL)settingsRegisteredKeyboardCommands;
 
+// Override the default search engine with the given search engine URL.
++ (void)overrideSearchEngineURL:(NSString*)searchEngineURL;
+
 // Resets the default search engine to Google.
 + (void)resetSearchEngine;
 
