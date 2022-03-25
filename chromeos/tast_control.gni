@@ -172,6 +172,7 @@ tast_disabled_tests_from_chrome_all = [
   "arc.SettingsBridge.vm",
   "arc.StartStop.vm",
   "arc.TextToSpeech.vm",
+  "arc.VMPstoreDump",
 
   # Flaky on chromeos-eve-chrome. b/226284050.
   "crostini.UninstallInvalidApp.bullseye_stable",
