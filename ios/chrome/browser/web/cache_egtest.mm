@@ -118,7 +118,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   // running. This is done because it is inefficient to use
   // ensureAppLaunchedWithConfiguration for each test.
   if ([self isRunningTest:@selector
-            (testCachingBehaviorOnSelectOmniboxSuggestion)]) {
+            (DISABLED_testCachingBehaviorOnSelectOmniboxSuggestion)]) {
     // Explicitly disable feature OnDeviceHeadProviderNonIncognito, whose delay
     // (i.e. http://shortn/_o7kPJvU8ac) will otherwise cause flakiness for this
     // test in build iphone-device (crbug.com/1153136).
@@ -161,13 +161,9 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
 // Tests that cache is not used when selecting omnibox suggested website, even
 // though cache for that website exists.
-- (void)testCachingBehaviorOnSelectOmniboxSuggestion {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
+//
+// TODO(crbug.com/753098): Re-enable this test once grey_typeText works.
+- (void)DISABLED_testCachingBehaviorOnSelectOmniboxSuggestion {
   web::test::SetUpHttpServer(std::make_unique<CacheTestResponseProvider>());
 
   // Clear the history to ensure expected omnibox autocomplete results.
