@@ -49,8 +49,14 @@ class RoundedCornerBubbleDialogDelegateView
       frame->SetCornerRadius(corner_radius_);
   }
 
+  base::WeakPtr<RoundedCornerBubbleDialogDelegateView> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   const int corner_radius_;
+  base::WeakPtrFactory<RoundedCornerBubbleDialogDelegateView> weak_factory_{
+      this};
 };
 
 }  // namespace
@@ -230,6 +236,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
   auto delegate_view =
       std::make_unique<RoundedCornerBubbleDialogDelegateView>(kCornerRadius);
+  bubble_view_ = delegate_view->GetWeakPtr();
 
   // Setup delegate.
   delegate_view->SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
@@ -299,6 +306,10 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
   constexpr auto kAutoCloseDelay = base::Seconds(2);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, auto_close_closure_.callback(), kAutoCloseDelay);
+}
+
+bool ResizeToggleMenu::IsBubbleShown() const {
+  return bubble_view_ && bubble_view_->GetWidget();
 }
 
 void ResizeToggleMenu::CloseBubble() {

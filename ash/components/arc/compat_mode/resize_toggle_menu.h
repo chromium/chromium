@@ -79,6 +79,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  bool IsBubbleShown() const;
+
  private:
   friend class ResizeToggleMenuTest;
 
@@ -87,6 +89,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
   void ApplyResizeCompatMode(ResizeCompatMode mode);
 
   gfx::Rect GetAnchorRect() const;
+
+  base::WeakPtr<views::BubbleDialogDelegateView> bubble_view_;
 
   std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
       views::Widget* parent,
@@ -106,8 +110,9 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   base::CancelableOnceClosure auto_close_closure_;
 
-  // Store only for testing.
   views::Widget* bubble_widget_{nullptr};
+
+  // Store only for testing.
   MenuButtonView* phone_button_{nullptr};
   MenuButtonView* tablet_button_{nullptr};
   MenuButtonView* resizable_button_{nullptr};

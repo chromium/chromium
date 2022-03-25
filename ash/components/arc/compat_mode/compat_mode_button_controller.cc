@@ -168,6 +168,8 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
   if (!compat_mode_button || !compat_mode_button->GetEnabled())
     return;
+  if (resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown())
+    return;
   resize_toggle_menu_.reset();
   resize_toggle_menu_ =
       std::make_unique<ResizeToggleMenu>(frame_view->frame(), pref_delegate);

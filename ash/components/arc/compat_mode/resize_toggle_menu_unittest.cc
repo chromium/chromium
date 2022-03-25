@@ -61,7 +61,10 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
     SyncResizeLockPropertyWithMojoState(widget());
   }
 
+  void CloseBubble() { resize_toggle_menu_->CloseBubble(); }
+
   views::Widget* widget() { return widget_.get(); }
+  ResizeToggleMenu* resize_toggle_menu() { return resize_toggle_menu_.get(); }
 
  private:
   views::Button* GetButtonByCommandId(ResizeCompatMode command_id) {
@@ -263,6 +266,15 @@ TEST_F(ResizeToggleMenuTest, TestMaximizedOrFullscreen) {
   ReshowMenu();
   EXPECT_FALSE(IsMenuRunning());
   widget()->SetFullscreen(false);
+}
+
+// Test that IsBubbleOpen returns the correct state of the bubble
+TEST_F(ResizeToggleMenuTest, TestIsBubbleShown) {
+  EXPECT_TRUE(IsMenuRunning());
+  EXPECT_TRUE(resize_toggle_menu()->IsBubbleShown());
+  CloseBubble();
+  RunPendingMessages();
+  EXPECT_FALSE(resize_toggle_menu()->IsBubbleShown());
 }
 
 }  // namespace arc
