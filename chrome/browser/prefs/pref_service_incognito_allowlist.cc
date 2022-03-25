@@ -67,6 +67,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityDictationLocale,
     ash::prefs::kDockedMagnifierEnabled,
     ash::prefs::kDockedMagnifierScale,
+    ash::prefs::kDockedMagnifierScreenHeightDivisor,
     ash::prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
     ash::prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
     ash::prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,

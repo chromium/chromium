@@ -188,6 +188,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityVirtualKeyboardEnabled,
     prefs::kDockedMagnifierEnabled,
     prefs::kDockedMagnifierScale,
+    prefs::kDockedMagnifierScreenHeightDivisor,
     prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
     prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,

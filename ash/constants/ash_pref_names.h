@@ -166,6 +166,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDesksActiveDesk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDockedMagnifierEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDockedMagnifierScale[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDockedMagnifierScreenHeightDivisor[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDockedMagnifierAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHighContrastAcceleratorDialogHasBeenAccepted[];

@@ -64,10 +64,12 @@ class ASH_EXPORT DockedMagnifierController
   // Get the Docked Magnifier settings for the current active user prefs.
   bool GetEnabled() const;
   float GetScale() const;
+  float GetScreenHeightDivisor() const;
 
   // Set the Docked Magnifier settings in the current active user prefs.
   void SetEnabled(bool enabled);
   void SetScale(float scale);
+  void SetScreenHeightDivisor(float screen_height_divisor);
 
   // Maps the current scale value to an index in the range between the minimum
   // and maximum scale values, and steps up or down the scale depending on the
@@ -176,11 +178,6 @@ class ASH_EXPORT DockedMagnifierController
   // later compute how far offset the new separator position should be based on
   // location user initially clicked separator.
   int resize_offset_ = 0;
-
-  // The value by which the screen height is divided to calculate the height of
-  // the magnifier viewport.
-  float screen_height_divisor_ =
-      DockedMagnifierController::kDefaultScreenHeightDivisor;
 
   // The current root window of the source display from which we are reflecting
   // and magnifying into the viewport. It is set to |nullptr| when the magnifier

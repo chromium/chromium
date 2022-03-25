@@ -337,6 +337,11 @@ const char kDockedMagnifierEnabled[] = "ash.docked_magnifier.enabled";
 // A double pref storing the scale value of the Docked Magnifier feature by
 // which the screen is magnified.
 const char kDockedMagnifierScale[] = "ash.docked_magnifier.scale";
+// A double pref storing the screen height divisor value of the Docked Magnifier
+// feature defining what proportion of the screen the docked magnifier viewport
+// occupies.
+const char kDockedMagnifierScreenHeightDivisor[] =
+    "ash.docked_magnifier.screen_height_divisor";
 
 // A boolean pref which indicates whether the docked magnifier confirmation
 // dialog has ever been shown.
