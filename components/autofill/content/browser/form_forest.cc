@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -618,8 +619,8 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
             return true;
         }
       };
-      // Fields in frames whose permissions policy allows shared-autofill may
-      // be filled if the |triggered_origin| is the main origin.
+      // Fields whose document enables the policy-controlled feature
+      // shared-autofill may be safe to fill.
       auto HasSharedAutofillPermission = [&mutable_this](
                                              LocalFrameToken frame_token) {
         FrameData* frame = mutable_this.GetFrameData(frame_token);
@@ -632,12 +633,17 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       auto it = field_type_map.find(field.global_id());
       ServerFieldType field_type =
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
-      return field.origin == triggered_origin ||
-             (field.origin == main_origin &&
-              HasSharedAutofillPermission(renderer_form->host_frame) &&
-              !IsSensitiveFieldType(field_type)) ||
-             (triggered_origin == main_origin &&
-              HasSharedAutofillPermission(renderer_form->host_frame));
+      if (features::kAutofillSharedAutofillRelaxedParam.Get()) {
+        return field.origin == triggered_origin ||
+               HasSharedAutofillPermission(renderer_form->host_frame);
+      } else {
+        return field.origin == triggered_origin ||
+               (field.origin == main_origin &&
+                HasSharedAutofillPermission(renderer_form->host_frame) &&
+                !IsSensitiveFieldType(field_type)) ||
+               (triggered_origin == main_origin &&
+                HasSharedAutofillPermission(renderer_form->host_frame));
+      }
     };
 
     renderer_form->fields.push_back(browser_field);

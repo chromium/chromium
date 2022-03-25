@@ -12,10 +12,12 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/content/browser/form_forest_test_api.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -312,6 +314,13 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   // FormForest::GetBrowserFormOfRendererForm() for details).
   enum class Policy { kDefault, kSharedAutofill, kNoSharedAutofill };
 
+  explicit FormForestTest(bool relax_shared_autofill = false) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillSharedAutofill,
+        {{features::kAutofillSharedAutofillRelaxedParam.name,
+          relax_shared_autofill ? "true" : "false"}});
+  }
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     CHECK(kOpaqueOrigin.opaque());
@@ -400,6 +409,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
     return it->second.get();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::map<content::RenderFrameHost*,
            std::unique_ptr<MockContentAutofillDriver>>
       autofill_drivers_;
@@ -436,6 +446,10 @@ class FormForestTestWithMockedTree : public FormForestTest {
     size_t begin = 0;
     size_t count = base::dynamic_extent;
   };
+
+  explicit FormForestTestWithMockedTree(bool relax_shared_autofill = false)
+      : FormForestTest(
+            /*relax_shared_autofill=*/relax_shared_autofill) {}
 
   void TearDown() override {
     mocked_forms_.Reset();
@@ -1399,6 +1413,11 @@ INSTANTIATE_TEST_SUITE_P(FormForestTest,
 // Tests of FormForest::GetRendererFormsOfBrowserForm().
 
 class FormForestTestUnflatten : public FormForestTestWithMockedTree {
+ public:
+  explicit FormForestTestUnflatten(bool relax_shared_autofill = false)
+      : FormForestTestWithMockedTree(
+            /*relax_shared_autofill=*/relax_shared_autofill) {}
+
  protected:
   // The subject of this test fixture.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
@@ -1570,9 +1589,17 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicyWithoutSharedAutofill) {
 }
 
 // Fixture for the shared-autofill policy tests.
+// The parameter controls the value of relax_shared_autofill.
 class FormForestTestUnflattenSharedAutofillPolicy
-    : public FormForestTestUnflatten {
+    : public FormForestTestUnflatten,
+      public ::testing::WithParamInterface<bool> {
  public:
+  FormForestTestUnflattenSharedAutofillPolicy()
+      : FormForestTestUnflatten(
+            /*relax_shared_autofill=*/relax_shared_autofill()) {}
+
+  bool relax_shared_autofill() const { return GetParam(); }
+
   void SetUp() override {
     FormForestTestUnflatten::SetUp();
     MockFormForest(
@@ -1589,7 +1616,7 @@ class FormForestTestUnflattenSharedAutofillPolicy
 };
 
 // Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
+TEST_P(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
   std::vector<FormData> expectation = {
       WithValues(GetMockedForm("main"), Profile(0)),
@@ -1600,12 +1627,18 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
 }
 
 // Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
+TEST_P(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
-  std::vector<FormData> expectation = {
-      WithoutValues(GetMockedForm("main")),
-      WithValues(GetMockedForm("disallowed"), Profile(1)),
-      WithoutValues(GetMockedForm("allowed"))};
+  std::vector<FormData> expectation;
+  if (!relax_shared_autofill()) {
+    expectation = {WithoutValues(GetMockedForm("main")),
+                   WithValues(GetMockedForm("disallowed"), Profile(1)),
+                   WithoutValues(GetMockedForm("allowed"))};
+  } else {
+    expectation = {WithValues(GetMockedForm("main"), Profile(0)),
+                   WithValues(GetMockedForm("disallowed"), Profile(1)),
+                   WithValues(GetMockedForm("allowed"), Profile(2))};
+  }
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kOtherUrl), {}),
               UnorderedArrayEquals(expectation));
 }
@@ -1679,6 +1712,10 @@ TEST_P(ForEachInSetDifferenceTest, Test) {
   EXPECT_THAT(diff, ElementsAreArray(GetParam().diff));
   EXPECT_EQ(num_equals_calls_, GetParam().expected_comparisons);
 }
+
+INSTANTIATE_TEST_SUITE_P(FormForestTest,
+                         FormForestTestUnflattenSharedAutofillPolicy,
+                         testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     FormForestTest,

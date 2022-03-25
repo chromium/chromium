@@ -415,9 +415,13 @@ const base::Feature kAutofillServerCommunication{
 
 // Controls whether Autofill may fill across origins as part of the
 // AutofillAcrossIframes experiment.
-// TODO(crbug.com/1220038): Clean up when launched.
+// TODO(crbug.com/1304721): Clean up when launched.
 const base::Feature kAutofillSharedAutofill{"AutofillSharedAutofill",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+// Relaxes the conditions under which a field is safe to fill.
+// See FormForest::GetRendererFormsOfBrowserForm() for details.
+const base::FeatureParam<bool> kAutofillSharedAutofillRelaxedParam{
+    &kAutofillSharedAutofill, "relax_shared_autofill", false};
 
 // Controls attaching the autofill type predictions to their respective
 // element in the DOM.
