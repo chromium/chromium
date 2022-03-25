@@ -615,6 +615,8 @@ TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
       {"https://prefix.a.com/a", "https://prefix.a.com/a", kPrefix, 22},
       {"https://prefix.a.com/a", "https://prefix.a.com/a?x=y", kPrefix, 22},
       {"https://prefix.a.com/a", "https://prefix.a.com/a/b", kPrefix, 22},
+      {"https://prefix.a.com/", "https://prefix.a.com/", kPrefix, 21},
+      {"https://prefix.a.com", "https://prefix.a.com", kPrefix, 21},
       {"https://prefix.a.com/a", "", kPrefix, 0},
       {"https://prefix.a.com/a/b", "https://prefix.a.com/a", kPrefix, 0},
       {"https://prefix.a.com/a", "https://prefix.a.com/", kPrefix, 0},
@@ -622,6 +624,8 @@ TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
       {"https://prefix.a.com/a", "http://prefix.a.com/a", kPrefix, 0},
 
       {"https://exact.a.com/a", "https://exact.a.com/a", kLiteral, 21},
+      {"https://exact.a.com/", "https://exact.a.com/", kLiteral, 20},
+      {"https://exact.a.com", "https://exact.a.com", kLiteral, 20},
       {"https://exact.a.com/a", "https://exact.a.com/a/b", kLiteral, 0},
       {"https://exact.a.com/a/b", "https://exact.a.com/a", kLiteral, 0},
       {"https://exact.a.com/a", "https://exact.a.org/a", kLiteral, 0},
