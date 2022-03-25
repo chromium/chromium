@@ -1108,7 +1108,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  SourceBuilder builder;
+  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
   StorableSource source = builder.Build();
 
@@ -1125,17 +1125,32 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
     // Each stored report should notify sources changed one time.
     for (size_t i = 1; i <= 3; i++) {
       EXPECT_CALL(observer, OnSourcesChanged);
-      EXPECT_CALL(observer, OnReportsChanged);
+      EXPECT_CALL(observer,
+                  OnReportsChanged(AttributionReport::ReportType::kEventLevel));
+      EXPECT_CALL(observer,
+                  OnReportsChanged(
+                      AttributionReport::ReportType::kAggregatableAttribution));
     }
     EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(observer, OnReportsChanged).Times(3);
+    EXPECT_CALL(observer,
+                OnReportsChanged(AttributionReport::ReportType::kEventLevel))
+        .Times(3);
+    EXPECT_CALL(observer,
+                OnReportsChanged(
+                    AttributionReport::ReportType::kAggregatableAttribution))
+        .Times(3);
     EXPECT_CALL(checkpoint, Call(3));
 
     EXPECT_CALL(observer, OnSourcesChanged);
-    EXPECT_CALL(observer, OnReportsChanged);
+    EXPECT_CALL(observer,
+                OnReportsChanged(AttributionReport::ReportType::kEventLevel));
+    EXPECT_CALL(observer,
+                OnReportsChanged(
+                    AttributionReport::ReportType::kAggregatableAttribution))
+        .Times(0);
   }
 
   attribution_manager_->HandleSource(source);
@@ -1144,24 +1159,32 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
   // Store the maximum number of reports for the source.
   for (size_t i = 1; i <= 3; i++) {
-    attribution_manager_->HandleTrigger(DefaultTrigger());
-    EXPECT_THAT(StoredReports(), SizeIs(i));
+    attribution_manager_->HandleTrigger(
+        DefaultAggregatableTriggerBuilder().Build());
+    // i event-level reports and i aggregatable reports.
+    EXPECT_THAT(StoredReports(), SizeIs(i * 2));
   }
 
   checkpoint.Call(2);
 
   // Simulate the reports being sent and removed from storage.
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(3));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
-                                        SendResult::Status::kSent,
-                                        SendResult::Status::kSent});
+  EXPECT_THAT(aggregation_service_->calls(), SizeIs(3));
+  for (size_t i = 0; i < 3; i++) {
+    aggregation_service_->RunCallback(i, CreateExampleAggregatableReport(),
+                                      AggregationService::AssemblyStatus::kOk);
+  }
+  EXPECT_THAT(report_sender_->calls(), SizeIs(6));
+  report_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kSent, SendResult::Status::kSent,
+       SendResult::Status::kSent, SendResult::Status::kSent,
+       SendResult::Status::kSent, SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
   checkpoint.Call(3);
 
-  // The next report should cause the source to be deactivated; the report
-  // itself shouldn't be stored as we've already reached the maximum number of
-  // conversions per source.
+  // The next event-level report should cause the source to reach the
+  // event-level attribution limit; the report itself shouldn't be stored as
+  // we've already reached the maximum number of event-level reports per source.
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
@@ -1760,16 +1783,27 @@ TEST_F(AttributionManagerImplTest,
 
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
-  attribution_manager_->AddAggregatableAttributionForTesting(
-      ReportBuilder(
-          AttributionInfoBuilder(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-              .SetTime(base::Time::Now())
-              .Build())
+  const auto aggregatable_attribution =
+      ReportBuilder(AttributionInfoBuilder(SourceBuilder()
+                                               .SetSourceId(StoredSource::Id(1))
+                                               .SetDefaultFilterData()
+                                               .BuildStored())
+                        .SetTime(base::Time::Now())
+                        .Build())
           .SetReportTime(base::Time::Now() + base::Hours(1))
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-          .BuildAggregatableAttribution());
+          .BuildAggregatableAttribution();
+  attribution_manager_->AddAggregatableAttributionForTesting(
+      aggregatable_attribution);
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnReportSent(aggregatable_attribution,
+                                     /*is_debug_report=*/false, _));
 
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(base::Hours(1) - base::Microseconds(1));
