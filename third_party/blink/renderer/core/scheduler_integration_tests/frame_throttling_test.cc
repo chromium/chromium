@@ -401,7 +401,7 @@ TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
   EXPECT_EQ(1u, throttled_count);
 }
 
-TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreThrottled) {
+TEST_P(FrameThrottlingTest, HiddenCrossOriginDisplayNoneFramesAreThrottled) {
   // Create a document with doubly nested iframes.
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
@@ -409,7 +409,8 @@ TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreThrottled) {
   LoadURL("https://example.com/");
   main_resource.Complete("<iframe id=frame src=iframe.html></iframe>");
   frame_resource.Complete(
-      "<iframe id=innerFrame width=0 height=0 sandbox></iframe>");
+      "<iframe id=innerFrame style='display: none; width: 0; height: 0' "
+      "sandbox></iframe>");
 
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));

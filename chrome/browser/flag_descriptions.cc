@@ -2546,9 +2546,12 @@ const char kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[] =
 const char
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription[] =
         "When enabled, all cross-origin iframes with zero visibility (either "
-        "display:none or zero area) will be throttled, regardless of whether "
-        "they are same-process or cross-process. When disabled, only cross-"
-        "process iframes will be throttled.";
+        "display:none or zero viewport intersection with non-zero area) will be"
+        " throttled, regardless of whether they are same-process or "
+        "cross-process. When disabled, throttling for cross-process iframes is "
+        "the same, but for same-process iframes throttling only occurs when "
+        "the frame has zero viewport intersection, a non-zero area, and is "
+        "not display:none.";
 
 const char kTouchDragDropName[] = "Touch initiated drag and drop";
 const char kTouchDragDropDescription[] =
