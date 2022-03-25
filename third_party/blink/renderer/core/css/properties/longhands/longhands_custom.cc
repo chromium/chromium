@@ -4919,6 +4919,13 @@ const CSSValue* ObjectFit::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetObjectFit());
 }
 
+const CSSValue* ObjectOverflow::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.GetObjectOverflow());
+}
+
 const CSSValue* ObjectPosition::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
