@@ -29,7 +29,14 @@ enum class HermesResponseStatus {
   kErrorWrongState = 11,
   kErrorInvalidResponse = 12,
   kErrorNoResponse = 13,
-  kMaxValue = kErrorNoResponse
+  kErrorMalformedResponse = 14,
+  kErrorInternalLpaFailure = 15,
+  kErrorBadRequest = 16,
+  kErrorBadNotification = 17,
+  kErrorPendingProfile = 18,
+  kErrorSendApduFailure = 19,
+  kErrorSendHttpsFailure = 20,
+  kMaxValue = kErrorSendHttpsFailure
 };
 
 // Callback that receives only a HermesResponseStatus.

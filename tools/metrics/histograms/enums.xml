@@ -44112,6 +44112,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Error: Wrong state"/>
   <int value="12" label="Error: Invalid response"/>
   <int value="13" label="Error: No response"/>
+  <int value="14" label="Error: Malformed response"/>
+  <int value="15" label="Error: Internal LPA failure"/>
+  <int value="16" label="Error: Bad request"/>
+  <int value="17" label="Error: Bad notification"/>
+  <int value="18" label="Error: Pending profile"/>
+  <int value="19" label="Error: Send APDU failure"/>
+  <int value="20" label="Error: Send HTTPS failure"/>
 </enum>
 
 <enum name="HIDContinueScenarioType">
