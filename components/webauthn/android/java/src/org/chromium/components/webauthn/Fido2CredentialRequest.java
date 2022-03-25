@@ -169,6 +169,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
+        if (options.allowCredentials == null || options.allowCredentials.length == 0) {
+            // No UVM support for discoverable credentials.
+            options.userVerificationMethods = false;
+        }
+
         if (options.appid != null) {
             mAppIdExtensionUsed = true;
         }
