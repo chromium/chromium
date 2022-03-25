@@ -283,7 +283,7 @@ aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
   DCHECK(window_being_recorded_);
   return window_being_recorded_->IsRootWindow()
              ? window_being_recorded_->GetChildById(
-                   kShellWindowId_OverlayContainer)
+                   kShellWindowId_MenuContainer)
              : window_being_recorded_;
 }
 

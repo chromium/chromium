@@ -22,6 +22,7 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -112,16 +113,6 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
   return iter == list.end() ? nullptr : &(*iter);
 }
 
-// Stacking the camera preview window on top of all children of its parent so
-// that it can show up in the recording above everything else.
-void StackingPreviewAtTop(views::Widget* preview_widget) {
-  DCHECK(preview_widget);
-  auto* preview_window = preview_widget->GetNativeWindow();
-  auto* parent = preview_window->parent();
-  DCHECK(parent);
-  parent->StackChildAtTop(preview_window);
-}
-
 std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
     const gfx::Rect& bounds) {
   auto camera_preview_widget = std::make_unique<views::Widget>();
@@ -134,7 +125,6 @@ std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
   params.child = true;
   params.name = "CameraPreviewWidget";
   camera_preview_widget->Init(std::move(params));
-  StackingPreviewAtTop(camera_preview_widget.get());
   return camera_preview_widget;
 }
 
@@ -272,10 +262,10 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
   auto* parent = controller->GetCameraPreviewParentWindow();
   DCHECK(parent);
   auto* native_window = camera_preview_widget_->GetNativeWindow();
-  if (parent != native_window->parent()) {
+
+  if (parent != native_window->parent())
     views::Widget::ReparentNativeView(native_window, parent);
-    StackingPreviewAtTop(camera_preview_widget_.get());
-  }
+
   MaybeUpdatePreviewWidgetBounds();
 }
 
@@ -301,6 +291,10 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
   }
 
   const gfx::Rect target_bounds = GetPreviewWidgetBounds();
+  const bool did_bounds_change =
+      target_bounds != GetCurrentBoundsMatchingConfineBoundsCoordinates();
+  if (!did_bounds_change)
+    return;
 
   if (animate) {
     ui::Layer* layer = camera_preview_widget_->GetLayer();
@@ -313,13 +307,21 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
   } else {
     camera_preview_widget_->SetBounds(target_bounds);
   }
+
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive())
+    controller->capture_mode_session()->OnCameraPreviewBoundsChanged();
 }
 
 void CaptureModeCameraController::StartDraggingPreview(
     const gfx::PointF& screen_location) {
+  is_drag_in_progress_ = true;
   previous_location_in_screen_ = screen_location;
 
-  is_drag_in_progress_ = true;
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive())
+    controller->capture_mode_session()->OnCameraPreviewDragStarted();
+
   // Use cursor compositing instead of the platform cursor when dragging to
   // ensure the cursor is aligned with the camera preview.
   Shell::Get()->UpdateCursorCompositingEnabled();
@@ -364,9 +366,9 @@ void CaptureModeCameraController::EndDraggingPreview(
   // Disable cursor compositing at the end of the drag.
   Shell::Get()->UpdateCursorCompositingEnabled();
 
-  // Make sure cursor is updated correctly after camera preview is snapped.
-  if (CaptureModeController::Get()->IsActive()) {
-    CaptureModeController::Get()->capture_mode_session()->UpdateCursor(
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive()) {
+    controller->capture_mode_session()->OnCameraPreviewDragEnded(
         gfx::ToRoundedPoint(screen_location), is_touch);
   }
 }
