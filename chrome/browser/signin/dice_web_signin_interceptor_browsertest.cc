@@ -650,22 +650,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   DiceWebSigninInterceptorFactory::GetForProfile(profile())
       ->SetAccountLevelSigninRestrictionFetchResultForTesting("");
 
-  // Instantly return from Gaia calls, to avoid timing out when injecting the
-  // account in the new profile.
-  network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
-  loader_factory->SetInterceptor(base::BindLambdaForTesting(
-      [loader_factory](const network::ResourceRequest& request) {
-        std::string path = request.url.path();
-        if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
-          loader_factory->AddResponse(request.url.spec(), std::string());
-          return;
-        }
-        if (path == "/oauth/multilogin") {
-          loader_factory->AddResponse(request.url.spec(),
-                                      kMultiloginSuccessResponse);
-          return;
-        }
-      }));
+  SetupGaiaResponses();
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -750,22 +735,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
       ->SetAccountLevelSigninRestrictionFetchResultForTesting(
           "primary_account");
 
-  // Instantly return from Gaia calls, to avoid timing out when injecting the
-  // account in the new profile.
-  network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
-  loader_factory->SetInterceptor(base::BindLambdaForTesting(
-      [loader_factory](const network::ResourceRequest& request) {
-        std::string path = request.url.path();
-        if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
-          loader_factory->AddResponse(request.url.spec(), std::string());
-          return;
-        }
-        if (path == "/oauth/multilogin") {
-          loader_factory->AddResponse(request.url.spec(),
-                                      kMultiloginSuccessResponse);
-          return;
-        }
-      }));
+  SetupGaiaResponses();
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");

@@ -372,6 +372,19 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& account_info,
       const std::string& signin_restriction);
 
+  // Returns true if enterprise separation is required.
+  // Returns false is enterprise separation is not required.
+  // Returns no value if info is required to determine if enterprise separation
+  // is required. If `managed_account_profile_level_signin_restriction` is
+  // `absl::nullopt` then the user cloud policy value of
+  // ManagedAccountsSigninRestriction has not yet been fetched. If it is an
+  // empty string, then the value has been fetched but no policy was set.
+  absl::optional<bool> EnterpriseSeparationMaybeRequired(
+      const std::string& email,
+      bool is_new_account_interception,
+      absl::optional<std::string>
+          managed_account_profile_level_signin_restriction) const;
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<Delegate> delegate_;
