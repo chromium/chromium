@@ -241,10 +241,7 @@ class LinuxPort(base.Port):
         flags = ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96']
         # Raise the Xvfb connection limit if the default limit (256 connections)
         # is in danger of being exceeded by 4 connections per test.
-        # This is conditional since the linux-trusty-rel build bot uses a very
-        # old version of Xvfb which does not recognise the flag.
-        if self.default_child_processes() > 60:
-            flags += ['-maxclients', '512']
+        flags += ['-maxclients', '512']
         return flags
 
     def _find_display(self):
