@@ -196,11 +196,13 @@ public class ExternalNavigationHandler {
      * Result types for checking if we should override URL loading.
      * NOTE: this enum is used in UMA, do not reorder values. Changes should be append only.
      * Values should be numerated from 0 and can't have gaps.
+     * NOTE: NUM_ENTRIES must be added inside the IntDef{} to work around crbug.com/1300585. It
+     * should be removed from the IntDef{} if an alternate solution for that bug is found.
      */
     @IntDef({OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
             OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB,
             OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
-            OverrideUrlLoadingResultType.NO_OVERRIDE})
+            OverrideUrlLoadingResultType.NO_OVERRIDE, OverrideUrlLoadingResultType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface OverrideUrlLoadingResultType {
         /* We should override the URL loading and launch an intent. */
