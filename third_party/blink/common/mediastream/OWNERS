@@ -2,6 +2,7 @@ guidou@chromium.org
 hbos@chromium.org
 eladalon@chromium.org
 toprice@chromium.org
+olka@chromium.org # audio
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
