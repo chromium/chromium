@@ -81,9 +81,9 @@ public class AdPersonalizationFragment
         List<Topic> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
 
         int description = PrivacySandboxBridge.isPrivacySandboxEnabled()
-                ? (!currentTopics.isEmpty()
-                                ? R.string.privacy_sandbox_ad_personalization_description_trials_on
-                                : R.string.privacy_sandbox_ad_personalization_description_no_items)
+                ? (currentTopics.isEmpty() && blockedTopics.isEmpty()
+                                ? R.string.privacy_sandbox_ad_personalization_description_no_items
+                                : R.string.privacy_sandbox_ad_personalization_description_trials_on)
                 : R.string.privacy_sandbox_ad_personalization_description_trials_off;
         mDescriptionPreference.setSummary(description);
 
