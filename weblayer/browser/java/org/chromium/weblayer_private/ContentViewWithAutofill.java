@@ -18,7 +18,7 @@ import org.chromium.ui.base.EventOffsetHandler;
 /**
  * API level 26 implementation that includes autofill.
  */
-public class ContentViewWithAutofill extends ContentView.ContentViewApi23 {
+public class ContentViewWithAutofill extends ContentView {
     public static ContentView createContentView(
             Context context, EventOffsetHandler eventOffsetHandler) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
