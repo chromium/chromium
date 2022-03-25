@@ -81,7 +81,10 @@ bool BluetoothFeaturePodController::DoesFirstConnectedDeviceHaveBatteryInfo()
     const {
   return first_connected_device_.has_value() &&
          first_connected_device_.value().battery_info &&
-         first_connected_device_.value().battery_info->default_properties;
+         (first_connected_device_.value().battery_info->default_properties ||
+          first_connected_device_.value().battery_info->left_bud_info ||
+          first_connected_device_.value().battery_info->right_bud_info ||
+          first_connected_device_.value().battery_info->case_info);
 }
 
 const gfx::VectorIcon& BluetoothFeaturePodController::ComputeButtonIcon()
@@ -103,6 +106,31 @@ std::u16string BluetoothFeaturePodController::ComputeButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH);
 }
 
+int BluetoothFeaturePodController::
+    GetFirstConnectedDeviceBatteryLevelForDisplay() const {
+  // If there are any multiple battery details, we should prioritize showing
+  // them over the default battery in order to match the Quick Settings
+  // Bluetooth sub-page battery details shown. Android only shows the left bud
+  // if there are multiple batteries, so we match that here, and if it doesn't
+  // exist, we prioritize the right bud battery, then the case battery, if they
+  // exist over the default battery in order to match any detailed battery
+  // shown on the sub-page.
+  if (first_connected_device_.value().battery_info->left_bud_info)
+    return first_connected_device_.value()
+        .battery_info->left_bud_info->battery_percentage;
+
+  if (first_connected_device_.value().battery_info->right_bud_info)
+    return first_connected_device_.value()
+        .battery_info->right_bud_info->battery_percentage;
+
+  if (first_connected_device_.value().battery_info->case_info)
+    return first_connected_device_.value()
+        .battery_info->case_info->battery_percentage;
+
+  return first_connected_device_.value()
+      .battery_info->default_properties->battery_percentage;
+}
+
 std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
   if (!button_->IsToggled())
     return l10n_util::GetStringUTF16(
@@ -117,8 +145,7 @@ std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
           base::NumberToString16(
-              first_connected_device_.value()
-                  .battery_info->default_properties->battery_percentage));
+              GetFirstConnectedDeviceBatteryLevelForDisplay()));
     }
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL);
@@ -140,8 +167,7 @@ std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP,
           first_connected_device_.value().device_name,
           base::NumberToString16(
-              first_connected_device_.value()
-                  .battery_info->default_properties->battery_percentage));
+              GetFirstConnectedDeviceBatteryLevelForDisplay()));
     }
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP,

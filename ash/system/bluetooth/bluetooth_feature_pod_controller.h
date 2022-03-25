@@ -53,6 +53,7 @@ class ASH_EXPORT BluetoothFeaturePodController
   };
 
   bool DoesFirstConnectedDeviceHaveBatteryInfo() const;
+  int GetFirstConnectedDeviceBatteryLevelForDisplay() const;
 
   const gfx::VectorIcon& ComputeButtonIcon() const;
   std::u16string ComputeButtonLabel() const;

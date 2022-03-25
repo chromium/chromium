@@ -46,6 +46,9 @@ namespace ash {
 const char* kDeviceNickname = "fancy squares";
 const char* kDevicePublicName = "Rubik's Cube";
 constexpr uint8_t kBatteryPercentage = 27;
+constexpr uint8_t kLeftBudBatteryPercentage = 23;
+constexpr uint8_t kRightBudBatteryPercentage = 11;
+constexpr uint8_t kCaseBatteryPercentage = 77;
 
 // How many devices to "pair" for tests that require multiple connected devices.
 constexpr int kMultipleDeviceCount = 3;
@@ -77,6 +80,31 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
     battery_info->default_properties = BatteryProperties::New();
     battery_info->default_properties->battery_percentage = kBatteryPercentage;
+    return battery_info;
+  }
+
+  DeviceBatteryInfoPtr CreateMultipleBatteryInfo(
+      absl::optional<int> left_bud_battery,
+      absl::optional<int> case_battery,
+      absl::optional<int> right_bud_battery) {
+    DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
+
+    if (left_bud_battery) {
+      battery_info->left_bud_info = BatteryProperties::New();
+      battery_info->left_bud_info->battery_percentage =
+          left_bud_battery.value();
+    }
+
+    if (case_battery) {
+      battery_info->case_info = BatteryProperties::New();
+      battery_info->case_info->battery_percentage = case_battery.value();
+    }
+
+    if (right_bud_battery) {
+      battery_info->right_bud_info = BatteryProperties::New();
+      battery_info->right_bud_info->battery_percentage =
+          right_bud_battery.value();
+    }
     return battery_info;
   }
 
@@ -296,6 +324,48 @@ TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
                 base::NumberToString16(kBatteryPercentage)),
+            label_button->GetSubLabelText());
+}
+
+TEST_F(BluetoothFeaturePodControllerTest,
+       HasCorrectMetadataWithOneDevice_MultipleBatteries) {
+  SetSystemState(BluetoothSystemState::kEnabled);
+
+  const std::u16string public_name = base::ASCIIToUTF16(kDevicePublicName);
+  auto paired_device = PairedBluetoothDeviceProperties::New();
+  paired_device->device_properties = BluetoothDeviceProperties::New();
+  paired_device->device_properties->public_name = public_name;
+  paired_device->device_properties->connection_state =
+      DeviceConnectionState::kConnected;
+  paired_device->device_properties->battery_info =
+      CreateMultipleBatteryInfo(/*left_bud_battery=*/kLeftBudBatteryPercentage,
+                                /*case_battery=*/kCaseBatteryPercentage,
+                                /*right_battery=*/kRightBudBatteryPercentage);
+  SetConnectedDevice(paired_device);
+
+  const ash::FeaturePodLabelButton* label_button = feature_pod_label_button();
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
+                base::NumberToString16(kLeftBudBatteryPercentage)),
+            label_button->GetSubLabelText());
+
+  paired_device->device_properties->battery_info =
+      CreateMultipleBatteryInfo(/*left_bud_battery=*/absl::nullopt,
+                                /*case_battery=*/kCaseBatteryPercentage,
+                                /*right_battery=*/kRightBudBatteryPercentage);
+  SetConnectedDevice(paired_device);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
+                base::NumberToString16(kRightBudBatteryPercentage)),
+            label_button->GetSubLabelText());
+
+  paired_device->device_properties->battery_info = CreateMultipleBatteryInfo(
+      /*left_bud_battery=*/absl::nullopt,
+      /*case_battery=*/kCaseBatteryPercentage, /*right_battery=*/absl::nullopt);
+  SetConnectedDevice(paired_device);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
+                base::NumberToString16(kCaseBatteryPercentage)),
             label_button->GetSubLabelText());
 }
 
