@@ -616,21 +616,6 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
         unmask_auth_flow_type_);
   }
 
-  // Local boolean denotes whether to show the dialog that offers opting-in to
-  // FIDO authentication after the CVC check. Note that this and
-  // |should_respond_immediately| are NOT mutually exclusive. If both are true,
-  // it represents the Desktop opt-in flow (fill the form first, and prompt the
-  // opt-in dialog).
-  bool should_offer_fido_auth = false;
-  // For iOS, FIDO auth is not supported yet. For Android, users have already
-  // been offered opt-in at this point.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  should_offer_fido_auth = unmask_details_.offer_fido_opt_in &&
-                           !response.card_authorization_token.empty() &&
-                           !GetOrCreateFIDOAuthenticator()
-                                ->GetOrCreateFidoAuthenticationStrikeDatabase()
-                                ->IsMaxStrikesLimitReached();
-#endif
   bool should_register_card_with_fido = ShouldRegisterCardWithFido(response);
   if (ShouldRespondImmediately(response)) {
     // If ShouldRespondImmediately() returns true,
@@ -665,7 +650,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
                                               request_options->Clone());
 #endif
   }
-  if (should_offer_fido_auth) {
+  if (ShouldOfferFidoOptInDialog(response)) {
     // CreditCardFIDOAuthenticator will handle enrollment completely.
     ShowWebauthnOfferDialog(response.card_authorization_token);
   }
@@ -673,9 +658,9 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   HandleFidoOptInStatusChange();
   // TODO(crbug.com/1249665): Add Reset() to this function after cleaning up the
   // FIDO opt-in status change. This should not have any negative impact now
-  // except for readability and cleanness. |should_offer_fido_auth| and
-  // |opt_in_intention_| are to some extent duplicate. We should be able to
-  // remove the two variables and use a function.
+  // except for readability and cleanness. The result of
+  // ShouldOfferFidoOptInDialog() and |opt_in_intention_| are to some extent
+  // duplicate. We should be able to combine them into one function.
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -893,6 +878,36 @@ bool CreditCardAccessManager::ShouldRegisterCardWithFido(
 
   // No conditions to offer FIDO registration are met, so we return false.
   return false;
+}
+
+bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
+    const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // We should not offer FIDO opt-in dialog on mobile.
+  return false;
+#else
+  // If this card is not eligible for offering FIDO opt-in, we should not offer
+  // the FIDO opt-in dialog.
+  if (!unmask_details_.offer_fido_opt_in)
+    return false;
+
+  // A card authorization token is required for FIDO opt-in, so if we did not
+  // receive one from the server we should not offer the FIDO opt-in dialog.
+  if (response.card_authorization_token.empty())
+    return false;
+
+  // If the strike limit was reached for the FIDO opt-in dialog, we should not
+  // offer it.
+  if (GetOrCreateFIDOAuthenticator()
+          ->GetOrCreateFidoAuthenticationStrikeDatabase()
+          ->IsMaxStrikesLimitReached()) {
+    return false;
+  }
+
+  // None of the cases where we should not offer the FIDO opt-in dialog were
+  // true, so we should offer it.
+  return true;
+#endif
 }
 
 void CreditCardAccessManager::ShowWebauthnOfferDialog(

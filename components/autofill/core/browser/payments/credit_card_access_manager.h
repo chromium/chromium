@@ -323,6 +323,13 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   bool ShouldRegisterCardWithFido(
       const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
 
+  // Returns true if the we can offer FIDO opt-in for the user. In the
+  // downstream flow, after we offer FIDO opt-in, if the user accepts we might
+  // also offer FIDO authentication for the downstreamed card so that the FIDO
+  // registration flow is complete.
+  bool ShouldOfferFidoOptInDialog(
+      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
+
   // TODO(crbug.com/991037): Move this function under the build flags after the
   // refactoring is done. Offer the option to use WebAuthn for authenticating
   // future card unmasking.
