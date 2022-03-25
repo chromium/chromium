@@ -2460,10 +2460,7 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
     // Require foreground if the controllee is in different process and is
     // foreground.
     if (controllee_process_id != worker_process_id &&
-        (!base::FeatureList::IsEnabled(
-             features::
-                 kChangeServiceWorkerPriorityForClientForegroundStateChange) ||
-         !render_host->IsProcessBackgrounded())) {
+        !render_host->IsProcessBackgrounded()) {
       return true;
     }
   }

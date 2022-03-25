@@ -6245,25 +6245,6 @@
             ]
         }
     ],
-    "ServiceWorkerClientForegroundPriority": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerClientForegroundPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerStorageControl": [
         {
             "platforms": [

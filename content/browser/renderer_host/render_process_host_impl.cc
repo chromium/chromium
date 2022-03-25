@@ -4913,10 +4913,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   // Update the priority of the process running the controller service worker
   // when client's background state changed. We can make the service worker
   // process backgrounded if all of its clients are backgrounded.
-  if (background_state_changed &&
-      base::FeatureList::IsEnabled(
-          features::
-              kChangeServiceWorkerPriorityForClientForegroundStateChange)) {
+  if (background_state_changed) {
     UpdateControllerServiceWorkerProcessPriority();
   }
 }
