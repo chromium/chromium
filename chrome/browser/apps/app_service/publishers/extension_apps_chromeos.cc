@@ -814,6 +814,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
     app->show_in_launcher = false;
     app->show_in_search = false;
     app->show_in_shelf = false;
+    app->handles_intents = false;
   }
   if (disable_for_lacros)
     app->show_in_management = false;
@@ -862,6 +863,7 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->show_in_search = apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    app->handles_intents = apps::mojom::OptionalBool::kFalse;
   }
   if (disable_for_lacros)
     app->show_in_management = apps::mojom::OptionalBool::kFalse;

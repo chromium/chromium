@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -70,7 +71,9 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
   base::DictionaryValue value;
   value.SetStringKey("name", name);
   value.SetStringKey("version", version);
-  value.SetStringPath("app.launch.web_url", url);
+  base::ListValue scripts;
+  scripts.Append("script.js");
+  value.SetPath("app.background.scripts", std::move(scripts));
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
@@ -593,6 +596,29 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
             /*has_badge=*/true, /*paused=*/true, WindowMode::kBrowser);
 }
 
+// Check that when Lacros is primary, the app is disabled by policy and does
+// not handle intents.
+TEST_F(StandaloneBrowserPublisherTest, ExtensionAppsDisabledByPolicy) {
+  // Install a "web store" app.
+  scoped_refptr<extensions::Extension> store =
+      MakeExtensionApp("webstore", "0.0", "http://google.com",
+                       std::string(extensions::kWebStoreAppId));
+  service_->AddExtension(store.get());
+
+  AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(),
+            Readiness::kDisabledByPolicy, InstallReason::kDefault,
+            InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
+            apps::Permissions(),
+            /*is_platform_app=*/true, /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/false, /*show_in_shelf=*/false,
+            /*show_in_search=*/false, /*show_in_management=*/false,
+            /*handles_intents=*/false, /*allow_uninstall=*/true,
+            /*has_badge=*/false, /*paused=*/false);
+}
+
 // This framework conveniently sets up everything but borealis.
 using NonBorealisPublisherTest = StandaloneBrowserPublisherTest;
 
@@ -632,7 +658,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),
-            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*is_platform_app=*/true, /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
@@ -646,7 +672,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser, InstallReason::kDefault,
             InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
-            apps::Permissions(), /*is_platform_app=*/false,
+            apps::Permissions(), /*is_platform_app=*/true,
             /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
@@ -659,7 +685,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),
-            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*is_platform_app=*/true, /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
@@ -672,7 +698,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             kLastLaunchTime, base::Time(), apps::Permissions(),
-            /*is_platform_app=*/false);
+            /*is_platform_app=*/true);
 }
 
 TEST_F(PublisherTest, WebAppsOnApps) {
