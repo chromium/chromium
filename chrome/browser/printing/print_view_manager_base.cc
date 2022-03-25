@@ -55,6 +55,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
+#include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -548,6 +549,8 @@ void PrintViewManagerBase::OnComposePdfDone(
     return;
   }
 
+  DCHECK(region.IsValid());
+  DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
   scoped_refptr<base::RefCountedSharedMemoryMapping> data =
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region);
   if (!data) {

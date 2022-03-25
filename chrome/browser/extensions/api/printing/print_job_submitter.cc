@@ -36,6 +36,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
+#include "printing/printing_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -50,9 +51,6 @@ namespace extensions {
 namespace {
 
 constexpr char kPdfMimeType[] = "application/pdf";
-
-// PDF document format identifier.
-constexpr char kPdfMagicBytes[] = "%PDF";
 
 constexpr char kUnsupportedContentType[] = "Unsupported content type";
 constexpr char kInvalidTicket[] = "Invalid ticket";
@@ -201,8 +199,7 @@ void PrintJobSubmitter::ReadDocumentData() {
 
 void PrintJobSubmitter::OnDocumentDataRead(std::unique_ptr<std::string> data,
                                            int64_t total_blob_length) {
-  if (!data ||
-      !base::StartsWith(*data, kPdfMagicBytes, base::CompareCase::SENSITIVE)) {
+  if (!data || !printing::LooksLikePdf(*data)) {
     FireErrorCallback(kInvalidData);
     return;
   }

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -67,6 +68,11 @@ gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
                                      const gfx::Size& page_size,
                                      const gfx::Rect& page_content_rect);
 #endif
+
+// Helper for tests and DCHECKs to validate that `maybe_pdf_data` suggests a PDF
+// document. This includes checking a minimal size and magic bytes.
+COMPONENT_EXPORT(PRINTING_BASE)
+bool LooksLikePdf(base::span<const char> maybe_pdf_data);
 
 }  // namespace printing
 
