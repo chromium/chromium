@@ -51,6 +51,11 @@ const char kExtensionsOnChromeURLs[] = "extensions-on-chrome-urls";
 // Whether to force developer mode extensions highlighting.
 const char kForceDevModeHighlighting[] = "force-dev-mode-highlighting";
 
+// Whether to disable app content verification when testing changes locally on
+// Chromebox for Meetings hardware.
+const char kDisableAppContentVerification[] =
+    "disable-app-content-verification";
+
 // Comma-separated list of paths to apps to load at startup. The first app in
 // the list will be launched.
 const char kLoadApps[] = "load-apps";

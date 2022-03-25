@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/policy_extension_reinstaller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -38,6 +39,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/switches.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/escape.h"
 
@@ -73,8 +75,14 @@ ChromeContentVerifierDelegate::VerifyInfo::Mode
 ChromeContentVerifierDelegate::GetDefaultMode() {
   if (GetModeForTesting())
     return *GetModeForTesting();
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(PLATFORM_CFM)
+  if (command_line->HasSwitch(
+          extensions::switches::kDisableAppContentVerification)) {
+    return VerifyInfo::Mode::NONE;
+  }
+#endif  // BUILDFLAG(PLATFORM_CFM)
 
   VerifyInfo::Mode experiment_value;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -16,6 +16,7 @@ namespace switches {
 extern const char kAllowHTTPBackgroundPage[];
 extern const char kAllowLegacyExtensionManifests[];
 extern const char kAllowlistedExtensionID[];
+extern const char kDisableAppContentVerification[];
 extern const char kDisableDesktopCaptureAudio[];
 extern const char kDisableExtensionsHttpThrottling[];
 extern const char kEmbeddedExtensionOptions[];
