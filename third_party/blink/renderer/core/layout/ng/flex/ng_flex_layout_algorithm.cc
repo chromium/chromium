@@ -185,46 +185,77 @@ bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) {
 
 }  // namespace
 
-void NGFlexLayoutAlgorithm::HandleOutOfFlowPositioned(NGBlockNode child) {
-  AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
-  AxisEdge cross_axis_edge =
-      CrossAxisStaticPositionEdge(Style(), child.Style());
-
-  AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
-  AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
+void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
+    const HeapVector<Member<LayoutBox>>& oof_children) {
+  // If fragmentation is present we place all the OOF candidates within the
+  // last fragment. The last fragment has the most up-to-date container sizing
+  // info.
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+    if (container_builder_.DidBreakSelf() ||
+        container_builder_.HasChildBreakInside())
+      return;
+    // Recompute the total block size in case |total_intrinsic_block_size_|
+    // changed as a result of fragmentation.
+    total_block_size_ = ComputeBlockSizeForFragment(
+        ConstraintSpace(), Style(), BorderPadding(),
+        total_intrinsic_block_size_, container_builder_.InlineSize());
+  }
 
   using InlineEdge = NGLogicalStaticPosition::InlineEdge;
   using BlockEdge = NGLogicalStaticPosition::BlockEdge;
 
-  InlineEdge inline_edge;
-  BlockEdge block_edge;
-  LogicalOffset offset = BorderScrollbarPadding().StartOffset();
+  NGBoxStrut border_scrollbar_padding = BorderScrollbarPadding();
+  border_scrollbar_padding.block_start =
+      OriginalBorderScrollbarPaddingBlockStart();
 
-  // Determine the static-position based off the axis-edge.
-  if (inline_axis_edge == AxisEdge::kStart) {
-    inline_edge = InlineEdge::kInlineStart;
-  } else if (inline_axis_edge == AxisEdge::kCenter) {
-    inline_edge = InlineEdge::kInlineCenter;
-    offset.inline_offset += ChildAvailableSize().inline_size / 2;
-  } else {
-    inline_edge = InlineEdge::kInlineEnd;
-    offset.inline_offset += ChildAvailableSize().inline_size;
+  const LayoutUnit previous_consumed_block_size =
+      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+  LogicalSize total_fragment_size = {container_builder_.InlineSize(),
+                                     total_block_size_};
+  total_fragment_size =
+      ShrinkLogicalSize(total_fragment_size, border_scrollbar_padding);
+
+  for (LayoutBox* oof_child : oof_children) {
+    NGBlockNode child(oof_child);
+    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
+    AxisEdge cross_axis_edge =
+        CrossAxisStaticPositionEdge(Style(), child.Style());
+
+    AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
+    AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
+
+    InlineEdge inline_edge;
+    BlockEdge block_edge;
+    LogicalOffset offset = border_scrollbar_padding.StartOffset();
+
+    // Determine the static-position based off the axis-edge.
+    if (inline_axis_edge == AxisEdge::kStart) {
+      inline_edge = InlineEdge::kInlineStart;
+    } else if (inline_axis_edge == AxisEdge::kCenter) {
+      inline_edge = InlineEdge::kInlineCenter;
+      offset.inline_offset += total_fragment_size.inline_size / 2;
+    } else {
+      inline_edge = InlineEdge::kInlineEnd;
+      offset.inline_offset += total_fragment_size.inline_size;
+    }
+
+    if (block_axis_edge == AxisEdge::kStart) {
+      block_edge = BlockEdge::kBlockStart;
+    } else if (block_axis_edge == AxisEdge::kCenter) {
+      block_edge = BlockEdge::kBlockCenter;
+      offset.block_offset += total_fragment_size.block_size / 2;
+    } else {
+      block_edge = BlockEdge::kBlockEnd;
+      offset.block_offset += total_fragment_size.block_size;
+    }
+
+    // Make the child offset relative to our fragment.
+    offset.block_offset -= previous_consumed_block_size;
+
+    container_builder_.AddOutOfFlowChildCandidate(
+        child, offset, inline_edge, block_edge,
+        /* needs_block_offset_adjustment */ false);
   }
-
-  // We may not know the final block-size of the fragment yet. This will be
-  // adjusted within the |NGContainerFragmentBuilder| once set.
-  if (block_axis_edge == AxisEdge::kStart) {
-    block_edge = BlockEdge::kBlockStart;
-  } else if (block_axis_edge == AxisEdge::kCenter) {
-    block_edge = BlockEdge::kBlockCenter;
-    offset.block_offset -= BorderScrollbarPadding().BlockSum() / 2;
-  } else {
-    block_edge = BlockEdge::kBlockEnd;
-    offset.block_offset -= BorderScrollbarPadding().BlockSum();
-  }
-
-  container_builder_.AddOutOfFlowChildCandidate(child, offset, inline_edge,
-                                                block_edge);
 }
 
 bool NGFlexLayoutAlgorithm::IsColumnContainerMainSizeDefinite() const {
@@ -460,7 +491,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
 }
 
 void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
-    bool is_computing_intrinsic_size) {
+    bool is_computing_intrinsic_size,
+    HeapVector<Member<LayoutBox>>* oof_children) {
   NGFlexChildIterator iterator(Node());
 
   // This block sets up data collection for
@@ -481,13 +513,11 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
-    if (child.IsOutOfFlowPositioned() && !IsResumingLayout(BreakToken())) {
-      // TODO(almaher): OOF static position and alignment when fragmenting. The
-      // static position may get adjusted once the final container block-size is
-      // known. However, we would want to use the total block-size rather than
-      // the block-size of the first fragment.
-      if (!is_computing_intrinsic_size)
-        HandleOutOfFlowPositioned(child);
+    if (child.IsOutOfFlowPositioned()) {
+      if (!is_computing_intrinsic_size) {
+        DCHECK(oof_children);
+        oof_children->emplace_back(child.GetLayoutBox());
+      }
       continue;
     }
 
@@ -852,6 +882,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 
   Vector<EBreakBetween> row_break_between_outputs;
   HeapVector<NGFlexLine> flex_line_outputs;
+  HeapVector<Member<LayoutBox>> oof_children;
   bool broke_before_row = false;
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
@@ -863,11 +894,12 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     flex_line_outputs = flex_data->flex_lines;
     row_break_between_outputs = flex_data->row_break_between;
     broke_before_row = flex_data->broke_before_row;
+    oof_children = flex_data->oof_children;
 
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
   } else {
-    PlaceFlexItems(&flex_line_outputs);
+    PlaceFlexItems(&flex_line_outputs, &oof_children);
 
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
@@ -947,6 +979,8 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
+  HandleOutOfFlowPositionedItems(oof_children);
+
   // For rows, the break-before of the first row and the break-after of the
   // last row are propagated to the container. For columns, treat the set
   // of columns as a single row and propagate the combined break-before rules
@@ -967,8 +1001,8 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGFlexBreakTokenData>(
             container_builder_.GetBreakTokenData(), flex_line_outputs,
-            row_break_between_outputs, total_intrinsic_block_size_,
-            broke_before_row));
+            row_break_between_outputs, oof_children,
+            total_intrinsic_block_size_, broke_before_row));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -979,8 +1013,10 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 }
 
 void NGFlexLayoutAlgorithm::PlaceFlexItems(
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  ConstructAndAppendFlexItems();
+    HeapVector<NGFlexLine>* flex_line_outputs,
+    HeapVector<Member<LayoutBox>>* oof_children) {
+  ConstructAndAppendFlexItems(/* is_computing_intrinsic_size */ false,
+                              oof_children);
 
   LayoutUnit main_axis_start_offset;
   LayoutUnit main_axis_end_offset;
@@ -1528,6 +1564,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       if (is_horizontal_flow_) {
         // Adjust the offset of the next row by the largest item expansion in
         // the current row.
+        // TODO(almaher): The expansion on the last row will not be reflected
+        // in the intrinsic block size.
         if (flex_line_idx < flex_line_outputs->size() - 1) {
           LayoutUnit& adjustment_for_next_line =
               (*flex_line_outputs)[flex_line_idx + 1].item_offset_adjustment;

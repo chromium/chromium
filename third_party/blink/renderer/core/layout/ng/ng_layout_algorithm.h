@@ -130,6 +130,9 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   const NGBoxStrut& BorderScrollbarPadding() const {
     return container_builder_.BorderScrollbarPadding();
   }
+  LayoutUnit OriginalBorderScrollbarPaddingBlockStart() const {
+    return container_builder_.OriginalBorderScrollbarPaddingBlockStart();
+  }
   const LogicalSize& ChildAvailableSize() const {
     return container_builder_.ChildAvailableSize();
   }

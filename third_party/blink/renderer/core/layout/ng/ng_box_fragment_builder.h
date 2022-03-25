@@ -69,6 +69,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
         initial_fragment_geometry.border + initial_fragment_geometry.padding;
     border_scrollbar_padding_ =
         border_padding_ + initial_fragment_geometry.scrollbar;
+    original_border_scrollbar_padding_block_start_ =
+        border_scrollbar_padding_.block_start;
     if (space_) {
       child_available_size_ = CalculateChildAvailableSize(
           *space_, To<NGBlockNode>(node_), size_, border_scrollbar_padding_);
@@ -166,6 +168,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   const NGBoxStrut& BorderScrollbarPadding() const {
     DCHECK(initial_fragment_geometry_);
     return border_scrollbar_padding_;
+  }
+  LayoutUnit OriginalBorderScrollbarPaddingBlockStart() const {
+    return original_border_scrollbar_padding_block_start_;
   }
   // The child available-size is subtly different from the content-box size of
   // an element. For an anonymous-block the child available-size is equal to
@@ -695,6 +700,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   const NGFragmentGeometry* initial_fragment_geometry_ = nullptr;
   NGBoxStrut border_padding_;
   NGBoxStrut border_scrollbar_padding_;
+  // We clamp the block-start of |border_scrollbar_padding_| after an item
+  // fragments. Store the original block-start, as well, for cases where it is
+  // needed.
+  LayoutUnit original_border_scrollbar_padding_block_start_;
   LogicalSize child_available_size_;
   LayoutUnit intrinsic_block_size_;
   absl::optional<LogicalRect> inflow_bounds_;

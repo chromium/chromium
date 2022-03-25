@@ -33,7 +33,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
   const NGLayoutResult* LayoutInternal();
 
-  void PlaceFlexItems(HeapVector<NGFlexLine>* flex_line_outputs);
+  void PlaceFlexItems(HeapVector<NGFlexLine>* flex_line_outputs,
+                      HeapVector<Member<LayoutBox>>* oof_children);
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
@@ -72,7 +73,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
       absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
-  void ConstructAndAppendFlexItems(bool is_computing_intrinsic_size = false);
+  void ConstructAndAppendFlexItems(
+      bool is_computing_intrinsic_size = false,
+      HeapVector<Member<LayoutBox>>* oof_children = nullptr);
   void ApplyFinalAlignmentAndReversals(
       HeapVector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
@@ -93,7 +96,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool MainAxisIsInlineAxis(const NGBlockNode& child) const;
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
-  void HandleOutOfFlowPositioned(NGBlockNode child);
+  void HandleOutOfFlowPositionedItems(
+      const HeapVector<Member<LayoutBox>>& oof_children);
 
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
 
