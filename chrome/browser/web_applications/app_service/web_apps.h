@@ -94,6 +94,9 @@ class WebApps : public apps::PublisherBase,
                 apps::LoadIconCallback callback) override;
   void LaunchAppWithParams(apps::AppLaunchParams&& params,
                            apps::LaunchCallback callback) override;
+  void LaunchShortcut(const std::string& app_id,
+                      const std::string& shortcut_id,
+                      int64_t display_id) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

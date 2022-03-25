@@ -79,6 +79,10 @@ class AppPublisher {
   virtual void LaunchAppWithParams(AppLaunchParams&& params,
                                    LaunchCallback callback) = 0;
 
+  virtual void LaunchShortcut(const std::string& app_id,
+                              const std::string& shortcut_id,
+                              int64_t display_id) {}
+
  protected:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Publish one `app` to AppServiceProxy. Should be called whenever the app

@@ -101,6 +101,17 @@ void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
       apps::LaunchResultToMojomLaunchResultCallback(std::move(callback)));
 }
 
+void WebAppsCrosapi::LaunchShortcut(const std::string& app_id,
+                                    const std::string& shortcut_id,
+                                    int64_t display_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->ExecuteContextMenuCommand(app_id, shortcut_id,
+                                         base::DoNothing());
+}
+
 void WebAppsCrosapi::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

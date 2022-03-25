@@ -155,6 +155,12 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
   std::move(callback).Run(apps::LaunchResult());
 }
 
+void WebApps::LaunchShortcut(const std::string& app_id,
+                             const std::string& shortcut_id,
+                             int64_t display_id) {
+  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
+}
+
 void WebApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

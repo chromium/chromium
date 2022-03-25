@@ -139,6 +139,15 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void CrostiniApps::LaunchShortcut(const std::string& app_id,
+                                  const std::string& shortcut_id,
+                                  int64_t display_id) {
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
+                                                 display_id);
+  }
+}
+
 void CrostiniApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

@@ -704,6 +704,12 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void ArcApps::LaunchShortcut(const std::string& app_id,
+                             const std::string& shortcut_id,
+                             int64_t display_id) {
+  arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
+}
+
 void ArcApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
