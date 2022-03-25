@@ -333,6 +333,18 @@ CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
   return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
 }
 
+// Checks if `port` is within [0,65535] or url::PORT_UNSPECIFIED. Returns `port`
+// if so and url::PORT_INVALID otherwise.
+int ValidateAndAdjustSourcePort(int port) {
+  if ((port >= 0 && port <= 65535) || port == url::PORT_UNSPECIFIED) {
+    // 0 would be really weird as it has a special meaning, but it's still
+    // technically a valid tcp/ip port so we're going to accept it here.
+    return port;
+  }
+
+  return url::PORT_INVALID;
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -382,9 +394,8 @@ CanonicalCookie::CanonicalCookie(
       priority_(priority),
       same_party_(same_party),
       partition_key_(std::move(partition_key)),
-      source_scheme_(source_scheme) {
-  SetSourcePort(source_port);
-}
+      source_scheme_(source_scheme),
+      source_port_(source_port) {}
 
 CanonicalCookie::~CanonicalCookie() = default;
 
@@ -555,7 +566,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
                                          ? CookieSourceScheme::kSecure
                                          : CookieSourceScheme::kNonSecure;
   // Get the port, this will get a default value if a port isn't provided.
-  int source_port = url.EffectiveIntPort();
+  int source_port = ValidateAndAdjustSourcePort(url.EffectiveIntPort());
 
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       parsed_cookie.Name(), parsed_cookie.Value(), cookie_domain, cookie_path,
@@ -686,7 +697,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   }
 
   // Get the port, this will get a default value if a port isn't provided.
-  int source_port = url.EffectiveIntPort();
+  int source_port = ValidateAndAdjustSourcePort(url.EffectiveIntPort());
 
   std::string cookie_path = CanonicalCookie::CanonPathWithString(url, path);
   // Canonicalize path again to make sure it escapes characters as needed.
@@ -766,10 +777,18 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     absl::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
+  // We check source_port here because it could have concievably been
+  // corrupted and changed to out of range. Eventually this would be caught by
+  // IsCanonical*() but since the source_port is only used by metrics so far
+  // nothing else checks it. So let's normalize it here and then update this
+  // method when origin-bound cookies is implemented.
+  // TODO(crbug.com/1170548)
+  int validated_port = ValidateAndAdjustSourcePort(source_port);
+
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       std::move(name), std::move(value), std::move(domain), std::move(path),
       creation, expiration, last_access, secure, httponly, same_site, priority,
-      same_party, partition_key, source_scheme, source_port));
+      same_party, partition_key, source_scheme, validated_port));
 
   if (cc->IsCanonicalForFromStorage()) {
     // This will help capture the number of times a cookie is canonical but does
@@ -812,13 +831,7 @@ std::string CanonicalCookie::DomainWithoutDot() const {
 }
 
 void CanonicalCookie::SetSourcePort(int port) {
-  if ((port >= 0 && port <= 65535) || port == url::PORT_UNSPECIFIED) {
-    // 0 would be really weird as it has a special meaning, but it's still
-    // technically a valid tcp/ip port so we're going to accept it here.
-    source_port_ = port;
-  } else {
-    source_port_ = url::PORT_INVALID;
-  }
+  source_port_ = ValidateAndAdjustSourcePort(port);
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

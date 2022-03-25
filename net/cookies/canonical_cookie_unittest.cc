@@ -89,9 +89,9 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_TRUE(cookie2->IsPartitioned());
   EXPECT_EQ(cookie2->SourceScheme(), CookieSourceScheme::kNonSecure);
   // Because the port can be set explicitly in the constructor its value can be
-  // independent of the other parameters. In this case, test that an invalid
-  // port value is interpreted as such.
-  EXPECT_EQ(cookie2->SourcePort(), url::PORT_INVALID);
+  // independent of the other parameters. In this case, test that an out of
+  // range port is kept out of range.
+  EXPECT_EQ(cookie2->SourcePort(), 65536);
 
   // Set Secure to true but don't specify source_scheme or port.
   auto cookie3 = CanonicalCookie::CreateUnsafeCookieForTesting(
