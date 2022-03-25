@@ -23,7 +23,6 @@ class WebContents;
 namespace web_app {
 
 class WebAppProvider;
-class WebAppLaunchQueue;
 
 // Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
@@ -44,8 +43,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   bool acting_as_app() const { return acting_as_app_; }
   void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
-
-  WebAppLaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
@@ -102,10 +99,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   base::UnguessableToken audio_focus_group_id_ = base::UnguessableToken::Null();
 
   bool has_loaded_non_about_blank_page_ = false;
-
-  // Use unique_ptr for lazy instantiation as most browser tabs have no need to
-  // incur this memory overhead.
-  std::unique_ptr<WebAppLaunchQueue> launch_queue_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};

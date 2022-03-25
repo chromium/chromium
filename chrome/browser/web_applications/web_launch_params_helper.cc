@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 
 #include <memory>
 #include <utility>
@@ -26,6 +26,8 @@
 #include "url/origin.h"
 
 namespace web_app {
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchParamsHelper);
 
 namespace {
 
@@ -95,105 +97,121 @@ class EntriesBuilder {
 
 }  // namespace
 
-WebAppLaunchQueue::WebAppLaunchQueue(content::WebContents* web_contents,
-                                     const WebAppRegistrar& registrar)
-    : content::WebContentsObserver(web_contents), registrar_(registrar) {}
+WebLaunchParamsHelper::~WebLaunchParamsHelper() = default;
 
-WebAppLaunchQueue::~WebAppLaunchQueue() = default;
+// static
+WebLaunchParamsHelper* WebLaunchParamsHelper::GetForWebContents(
+    content::WebContents* web_contents) {
+  return static_cast<WebLaunchParamsHelper*>(
+      web_contents->GetUserData(UserDataKey()));
+}
 
-void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
-  DCHECK(registrar_.IsUrlInAppScope(launch_params.target_url,
-                                    launch_params.app_id));
-  DCHECK(launch_params.dir.empty() ||
-         registrar_.IsSystemApp(launch_params.app_id));
+// static
+void WebLaunchParamsHelper::EnqueueLaunchParams(
+    content::WebContents* web_contents,
+    const WebAppRegistrar& web_app_registrar,
+    AppId app_id,
+    bool await_navigation,
+    GURL launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths) {
+  auto helper = base::WrapUnique(new WebLaunchParamsHelper(
+      web_contents, web_app_registrar, std::move(app_id), std::move(launch_url),
+      std::move(launch_dir), std::move(launch_paths)));
 
-  // Drop the existing queue state if a new launch navigation was started.
-  if (launch_params.started_new_navigation) {
-    Reset();
-    queue_.push_back(std::move(launch_params));
-    pending_navigation_ = true;
+  auto* helper_ptr = helper.get();
+  web_contents->SetUserData(UserDataKey(), std::move(helper));
+  helper_ptr->Start(await_navigation);
+}
+
+WebLaunchParamsHelper::WebLaunchParamsHelper(
+    content::WebContents* web_contents,
+    const WebAppRegistrar& web_app_registrar,
+    AppId app_id,
+    GURL launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths)
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebLaunchParamsHelper>(*web_contents),
+      web_app_registrar_(web_app_registrar),
+      app_id_(std::move(app_id)),
+      launch_url_(std::move(launch_url)),
+      launch_dir_(std::move(launch_dir)),
+      launch_paths_(std::move(launch_paths)) {
+  DCHECK(web_app_registrar_.IsUrlInAppScope(launch_url_, app_id_));
+  DCHECK(launch_dir_.empty() || web_app_registrar.IsSystemApp(app_id_));
+}
+
+void WebLaunchParamsHelper::Start(bool await_navigation) {
+  // Wait for DidFinishNavigation before enqueuing.
+  if (await_navigation)
     return;
-  }
 
-  if (!queue_.empty())
-    DCHECK_EQ(launch_params.app_id, queue_.front().app_id);
-  queue_.push_back(std::move(launch_params));
-  if (!pending_navigation_)
-    SendQueuedLaunchParams(web_contents()->GetLastCommittedURL());
+  SendLaunchEntries(web_contents()->GetLastCommittedURL());
 }
 
-void WebAppLaunchQueue::Reset() {
-  queue_.clear();
-  pending_navigation_ = false;
-  last_sent_queued_launch_params_.reset();
-}
-
-const AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
-  if (queue_.empty())
-    return nullptr;
-  return &(queue_.front().app_id);
-}
-
-void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
-  // Currently, launch data is only sent the primary main frame.
+void WebLaunchParamsHelper::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  // Currently, launch data is only sent for the main frame.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   if (!handle->IsInPrimaryMainFrame())
     return;
 
-  if (pending_navigation_) {
-    pending_navigation_ = false;
-    // The launch navigation may have redirected out of the app scope.
-    if (!registrar_.IsUrlInAppScope(handle->GetURL(), queue_.front().app_id)) {
-      Reset();
-      return;
-    }
-
-    SendQueuedLaunchParams(handle->GetURL());
+  if (!web_app_registrar_.IsUrlInAppScope(handle->GetURL(), app_id_)) {
+    DestroySelf();
     return;
   }
 
-  // Reloads have the last sent launch params re-sent as they may contain live
-  // file handles that should persist across reloads.
-  if (last_sent_queued_launch_params_ &&
+  // Launch params still haven't been enqueued, or they have been enqueued and
+  // this is a reload.
+  if (!has_sent_launch_entries_ ||
       handle->GetReloadType() != content::ReloadType::NONE) {
-    SendLaunchParams(*last_sent_queued_launch_params_, handle->GetURL());
+    SendLaunchEntries(handle->GetURL());
     return;
   }
 
-  // Leaving the document resets all queue state.
-  if (!handle->IsSameDocument())
-    Reset();
+  // Same document navs (such as `history.pushState`) can be ignored.
+  if (handle->IsSameDocument())
+    return;
+
+  // Any other navigation indicates that launch entries will not be enqueues and
+  // our job is done here.
+  DestroySelf();
 }
 
-void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
-  for (WebAppLaunchParams& launch_params : queue_) {
-    if (&launch_params == &queue_.back())
-      last_sent_queued_launch_params_ = launch_params;
-    SendLaunchParams(std::move(launch_params), current_url);
-  }
-  queue_.clear();
-}
-
-void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
-                                         const GURL& current_url) {
-  DCHECK(registrar_.IsUrlInAppScope(current_url, launch_params.app_id));
+void WebLaunchParamsHelper::SendLaunchEntries(const GURL& url) {
+  DCHECK(web_app_registrar_.IsUrlInAppScope(url, app_id_));
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &launch_service);
   DCHECK(launch_service);
+  has_sent_launch_entries_ = true;
 
-  if (!launch_params.paths.empty() || !launch_params.dir.empty()) {
-    EntriesBuilder entries_builder(web_contents(), launch_params.target_url,
-                                   launch_params.paths.size() + 1);
-    if (!launch_params.dir.empty())
-      entries_builder.AddDirectoryEntry(launch_params.dir);
+  if (!launch_paths_.empty() || !launch_dir_.empty()) {
+    EntriesBuilder entries_builder(web_contents(), launch_url_,
+                                   launch_paths_.size() + 1);
+    if (!launch_dir_.empty())
+      entries_builder.AddDirectoryEntry(launch_dir_);
 
-    for (const auto& path : launch_params.paths)
+    for (const auto& path : launch_paths_)
       entries_builder.AddFileEntry(path);
 
     launch_service->SetLaunchFiles(entries_builder.Build());
   } else {
-    launch_service->EnqueueLaunchParams(launch_params.target_url);
+    launch_service->EnqueueLaunchParams(launch_url_);
   }
+}
+
+void WebLaunchParamsHelper::CloseApp() {
+  web_contents()->Close();
+  // `this` is deleted.
+}
+
+void WebLaunchParamsHelper::DestroySelf() {
+  web_contents()->RemoveUserData(UserDataKey());
+  // `this` is deleted.
 }
 
 }  // namespace web_app

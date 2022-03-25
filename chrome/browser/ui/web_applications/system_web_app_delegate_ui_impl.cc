@@ -13,9 +13,8 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -47,12 +46,12 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   const bool reuse_existing_window =
       browser_type == Browser::TYPE_APP_POPUP || ShouldReuseExistingWindow();
 
-  bool started_new_navigation = false;
+  bool navigating = false;
   if (!browser) {
     browser = CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());
-    started_new_navigation = true;
+    navigating = true;
   } else if (!reuse_existing_window) {
     gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
     initial_bounds.Offset(20, 20);
@@ -60,7 +59,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),
         initial_bounds);
-    started_new_navigation = true;
+    navigating = true;
   }
 
   // Navigate application window to application's |url| if necessary.
@@ -72,7 +71,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
       GetType() == SystemAppType::HELP) {
     web_contents = NavigateWebApplicationWindow(
         browser, params.app_id, url, WindowOpenDisposition::CURRENT_TAB);
-    started_new_navigation = true;
+    navigating = true;
   }
 
   // Send launch files.
@@ -81,15 +80,11 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     base::FilePath launch_dir = GetLaunchDirectory(params);
 
     if (!launch_dir.empty() || !params.launch_files.empty()) {
-      WebAppLaunchParams launch_params;
-      launch_params.started_new_navigation = started_new_navigation;
-      launch_params.app_id = params.app_id;
-      launch_params.target_url = web_contents->GetURL();
-      launch_params.dir = std::move(launch_dir);
-      launch_params.paths = params.launch_files;
-      WebAppTabHelper::FromWebContents(web_contents)
-          ->EnsureLaunchQueue()
-          .Enqueue(std::move(launch_params));
+      WebLaunchParamsHelper::EnqueueLaunchParams(
+          web_contents, provider->registrar(), params.app_id,
+          /*await_navigation=*/navigating,
+          /*launch_url=*/web_contents->GetURL(), launch_dir,
+          params.launch_files);
     }
   }
 
