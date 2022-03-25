@@ -282,5 +282,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.AUTOFILL_SHADOW_DOM,
                     "Enables Autofill associate form elements with form "
                             + "control elements across shadow boundaries."),
+            // Add new commandline switches and features above. The final entry should have a
+            // trailing comma for cleaner diffs.
     };
 }
