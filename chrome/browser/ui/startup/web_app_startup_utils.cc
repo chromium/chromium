@@ -106,6 +106,7 @@ class StartupWebAppCreator
         profile_(profile),
         is_first_run_(is_first_run),
         app_id_(app_id),
+        web_app_launch_manager_(profile),
         profile_keep_alive_(
             profile,
             ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow),
@@ -148,13 +149,12 @@ class StartupWebAppCreator
     absl::optional<GURL> protocol;
     if (!protocol_url_.is_empty())
       protocol = protocol_url_;
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithCallback(
-            app_id_, command_line_, cur_dir_,
-            /*url_handler_launch_url=*/absl::nullopt, protocol, launch_files_,
-            base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
-                           base::WrapRefCounted(this)));
+
+    web_app_launch_manager_.LaunchApplication(
+        app_id_, command_line_, cur_dir_,
+        /*url_handler_launch_url=*/absl::nullopt, protocol, launch_files_,
+        base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
+                       base::WrapRefCounted(this)));
   }
 
   // Determines if the launch is a protocol handler launch. If so, takes
@@ -311,6 +311,8 @@ class StartupWebAppCreator
 
   // The app id for this launch, corresponding to --app-id on the command line.
   const AppId app_id_;
+
+  WebAppLaunchManager web_app_launch_manager_;
 
   // This object keeps the profile and browser process alive while determining
   // whether to launch a window.

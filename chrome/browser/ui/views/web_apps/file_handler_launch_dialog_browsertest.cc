@@ -48,7 +48,8 @@ const char kFileLaunchUrl[] = "https://example.org/file_launch/";
 }  // namespace
 
 // Tests for the `FileHandlerLaunchDialogView` as well as
-// `startup::web_app::MaybeHandleWebAppLaunch()`.
+// `startup::web_app::MaybeHandleWebAppLaunch()`. As Chrome OS uses the app
+// service to launch PWAs, this test suite is not run there.
 class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
