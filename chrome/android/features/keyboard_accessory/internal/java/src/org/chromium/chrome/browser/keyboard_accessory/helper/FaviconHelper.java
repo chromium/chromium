@@ -56,7 +56,7 @@ public class FaviconHelper {
         final Resources resources = mContext.getResources();
         mDesiredSize =
                 resources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext.getResources());
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
 
     public Drawable getDefaultIcon(String origin) {

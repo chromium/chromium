@@ -88,7 +88,7 @@ class NavigationSheetMediator {
         mClickListener = listener;
         mProfile = profile;
         mFaviconHelper = new FaviconHelper();
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mHistoryIcon = TintedDrawable.constructTintedDrawable(
                 context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color_tint_list);

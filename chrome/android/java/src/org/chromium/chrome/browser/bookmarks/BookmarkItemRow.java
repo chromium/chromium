@@ -48,7 +48,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
                     getResources().getDimensionPixelSize(
                             R.dimen.bookmark_refresh_circular_monogram_text_size));
         } else {
-            mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
+            mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
         }
     }
 

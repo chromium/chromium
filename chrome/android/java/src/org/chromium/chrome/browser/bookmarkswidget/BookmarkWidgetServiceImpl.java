@@ -178,8 +178,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
             mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
             mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
-            mIconGenerator =
-                    FaviconUtils.createRoundedRectangleIconGenerator(context.getResources());
+            mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
 
             mRemainingTaskCount = 1;
             mBookmarkModel = new BookmarkModel();

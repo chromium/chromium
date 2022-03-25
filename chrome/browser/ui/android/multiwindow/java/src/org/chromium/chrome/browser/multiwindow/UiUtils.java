@@ -44,7 +44,7 @@ class UiUtils {
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
         mIncognitoFavicon = getTintedIcon(R.drawable.incognito_simple);
         mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
-        mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(res);
+        mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
 
     Drawable getTintedIcon(@DrawableRes int drawableId) {

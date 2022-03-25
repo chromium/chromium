@@ -696,7 +696,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
 
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(activity.getResources());
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(activity);
 
         RecordHistogram.recordEnumeratedHistogram("HistoryPage.OtherDevicesMenu",
                 OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.NUM_ENTRIES);

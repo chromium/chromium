@@ -124,7 +124,7 @@ class TouchToFillViewBinder {
             CredentialProperties.FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
             imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
                     data.mUrl, data.mFallbackColor,
-                    FaviconUtils.createCircularIconGenerator(view.getResources()),
+                    FaviconUtils.createCircularIconGenerator(view.getContext()),
                     view.getResources(), data.mIconSize));
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener(

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.favicon;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,7 +14,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
@@ -24,32 +24,34 @@ import org.chromium.url.GURL;
 public class FaviconUtils {
     /**
      * Creates a {@link RoundedIconGenerator} to generate circular {@link Bitmap}s of favicons.
-     * @param resources The {@link Resources} for accessing color and dimen resources.
+     * @param context The {@link Context} for accessing color and dimen resources.
      * @return A {@link RoundedIconGenerator} that uses the default circle icon style. Intended
      *         for monograms, e.g. a circle with character(s) in the center.
      */
-    public static RoundedIconGenerator createCircularIconGenerator(Resources resources) {
+    public static RoundedIconGenerator createCircularIconGenerator(Context context) {
+        Resources resources = context.getResources();
         int displayedIconSize = resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
         int cornerRadius = displayedIconSize / 2;
         int textSize = resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
         return new RoundedIconGenerator(displayedIconSize, displayedIconSize, cornerRadius,
-                getIconColor(resources), textSize);
+                getIconColor(context), textSize);
     }
 
     /**
      * Creates a {@link RoundedIconGenerator} to generate rounded rectangular {@link Bitmap}s of
      * favicons.
-     * @param resources The {@link Resources} for accessing color and dimen resources.
+     * @param context The {@link Context} for accessing color and dimen resources.
      * @return A {@link RoundedIconGenerator} that uses the default rounded rectangle icon
      *         style. Intended for monograms, e.g. a rounded rectangle with character(s) in the
      *         center.
      */
-    public static RoundedIconGenerator createRoundedRectangleIconGenerator(Resources resources) {
+    public static RoundedIconGenerator createRoundedRectangleIconGenerator(Context context) {
+        Resources resources = context.getResources();
         int displayedIconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         int cornerRadius = resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
         int textSize = resources.getDimensionPixelSize(R.dimen.default_favicon_icon_text_size);
         return new RoundedIconGenerator(displayedIconSize, displayedIconSize, cornerRadius,
-                getIconColor(resources), textSize);
+                getIconColor(context), textSize);
     }
 
     /**
@@ -130,7 +132,7 @@ public class FaviconUtils {
                 resources, Bitmap.createScaledBitmap(icon, iconSize, iconSize, true));
     }
 
-    private static int getIconColor(Resources resources) {
-        return ApiCompatibilityUtils.getColor(resources, R.color.default_favicon_background_color);
+    private static int getIconColor(Context context) {
+        return context.getColor(R.color.default_favicon_background_color);
     }
 }
