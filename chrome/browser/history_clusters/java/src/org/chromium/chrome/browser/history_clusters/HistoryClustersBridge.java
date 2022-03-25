@@ -16,12 +16,16 @@ import java.util.List;
 
 @JNINamespace("history_clusters")
 /** JNI bridge that provides access to HistoryClusters data. */
-public class HistoryClustersBridge {
+class HistoryClustersBridge {
     private long mNativeBridge;
 
     /* Construct a new HistoryClustersBridge. */
-    public HistoryClustersBridge(Profile profile) {
+    HistoryClustersBridge(Profile profile) {
         mNativeBridge = HistoryClustersBridgeJni.get().init(profile);
+    }
+
+    void destroy() {
+        HistoryClustersBridgeJni.get().destroy(mNativeBridge);
     }
 
     /* Start a new query for clusters, fetching the first page of results. */
@@ -60,5 +64,6 @@ public class HistoryClustersBridge {
                 String query, Callback<HistoryClustersResult> callback);
         void loadMoreClusters(long nativeHistoryClustersBridge, HistoryClustersBridge caller,
                 String query, Callback<HistoryClustersResult> callback);
+        void destroy(long nativeHistoryClustersBridge);
     }
 }
