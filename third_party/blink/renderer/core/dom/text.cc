@@ -125,7 +125,7 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   if (GetLayoutObject()) {
     GetLayoutObject()->SetTextWithOffset(DataImpl(), 0, old_str.length());
-    if (data().IsEmpty()) {
+    if (ContainsOnlyWhitespaceOrEmpty()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
       SetForceReattachLayoutTree();
     }
