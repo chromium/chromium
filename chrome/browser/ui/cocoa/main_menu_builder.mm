@@ -465,6 +465,7 @@ base::scoped_nsobject<NSMenuItem> BuildTabMenu(
                   .command_id(IDC_WINDOW_CLOSE_TABS_TO_RIGHT),
               Item(IDS_MOVE_TAB_TO_NEW_WINDOW)
                   .command_id(IDC_MOVE_TAB_TO_NEW_WINDOW),
+              Item(IDS_SEARCH_TABS).command_id(IDC_TAB_SEARCH),
               Item().is_separator(),
           })
           .Build();

@@ -172,7 +172,6 @@ std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
     {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
     {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
     {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
-    {true,  true,  false, false, kVK_ANSI_A,            IDC_TAB_SEARCH},
     {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
   });
   // clang-format on
