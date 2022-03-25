@@ -7911,6 +7911,25 @@
             ]
         }
     ],
+    "WebRTC-TaskQueuePacer": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,holdback_window:5ms,holdback_packets:3,_1"
+                }
+            ]
+        }
+    ],
     "WebRTC-VP8ConferenceTemporalLayers": [
         {
             "platforms": [
