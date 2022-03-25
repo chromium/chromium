@@ -460,7 +460,6 @@ extern const char kDinersCard[];
 extern const char kDiscoverCard[];
 extern const char kEloCard[];
 extern const char kGenericCard[];
-extern const char kGoogleIssuedCard[];
 extern const char kJCBCard[];
 extern const char kMasterCard[];
 extern const char kMirCard[];

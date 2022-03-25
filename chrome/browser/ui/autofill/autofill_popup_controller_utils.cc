@@ -33,7 +33,6 @@ const struct {
     {kTroyCard, IDR_AUTOFILL_CC_TROY},
     {kUnionPay, IDR_AUTOFILL_CC_UNIONPAY},
     {kVisaCard, IDR_AUTOFILL_CC_VISA},
-    {kGoogleIssuedCard, IDR_AUTOFILL_GOOGLE_ISSUED_CARD},
 #if BUILDFLAG(IS_ANDROID)
     {"httpWarning", IDR_ANDROID_AUTOFILL_HTTP_WARNING},
     {"httpsInvalid", IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},

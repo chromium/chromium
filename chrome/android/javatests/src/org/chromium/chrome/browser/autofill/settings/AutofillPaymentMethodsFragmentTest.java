@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -130,51 +129,6 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         String title = cardPreference.getTitle().toString();
         assertThat(title).contains("This is a long nickname");
-        assertThat(title).contains("1111");
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD})
-    public void testGoogleIssuedServerCard_displaysGoogleSpecificTitle() throws Exception {
-        mAutofillTestHelper.addServerCreditCard(
-                SAMPLE_CARD_VISA, /* nickname= */ "", CARD_ISSUER_GOOGLE);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
-        String title = cardPreference.getTitle().toString();
-        assertThat(title).contains("Plex Visa");
-        assertThat(title).contains("1111");
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD})
-    public void testGoogleIssuedServerCard_expOff_cardNotDisplayed() throws Exception {
-        mAutofillTestHelper.addServerCreditCard(
-                SAMPLE_CARD_VISA, /* nickname= */ "", CARD_ISSUER_GOOGLE);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        // Verify that the preferences on the initial screen map to Save and Fill toggle + Add Card
-        // button + Payment Apps.
-        Assert.assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD})
-    public void testGoogleIssuedServerCardWithNickname_displaysNicknameAndLastFourAsTitle()
-            throws Exception {
-        mAutofillTestHelper.addServerCreditCard(
-                SAMPLE_CARD_VISA, "Test nickname", CARD_ISSUER_GOOGLE);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
-        String title = cardPreference.getTitle().toString();
-        assertThat(title).contains("Test nickname");
         assertThat(title).contains("1111");
     }
 

@@ -64,9 +64,6 @@
   <message name="IDS_AUTOFILL_CC_ELO" desc="Elo credit card name.">
     Elo
   </message>
-  <message name="IDS_AUTOFILL_CC_GOOGLE_ISSUED" desc="Prefix for the Google Plex card" formatter_data="android_java">
-    Plex
-  </message>
   <message name="IDS_AUTOFILL_CC_GOOGLE_PAY" desc="Google pay brand name">
     Google Pay
   </message>

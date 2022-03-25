@@ -1103,12 +1103,6 @@ std::vector<CreditCard*> PersonalDataManager::GetServerCreditCards() const {
 
   result.reserve(server_credit_cards_.size());
   for (const auto& card : server_credit_cards_) {
-    // Do not add Google issued credit card if experiment is disabled.
-    if (card.get()->IsGoogleIssuedCard() &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableGoogleIssuedCard)) {
-      continue;
-    }
     result.push_back(card.get());
   }
   return result;
@@ -1122,12 +1116,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
     result.push_back(card.get());
   if (IsAutofillWalletImportEnabled()) {
     for (const auto& card : server_credit_cards_) {
-      // Do not add Google issued credit card if experiment is disabled.
-      if (card.get()->IsGoogleIssuedCard() &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableGoogleIssuedCard)) {
-        continue;
-      }
       result.push_back(card.get());
     }
   }

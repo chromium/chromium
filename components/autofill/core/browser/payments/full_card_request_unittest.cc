@@ -257,57 +257,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanForMaskedServerCardWithoutDcvv) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify getting the full PAN and the CVV for a Google issued card when FIDO is
-// used for authentication.
-TEST_F(FullCardRequestTest, GetFullCardPanAndUseCvcInUnmaskResponse) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  testing::Eq(u"321")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult::kSuccess, "4111",
-                          "321");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify getting the full PAN for a Google issued card when CVV is used for
-// authentication.
-TEST_F(FullCardRequestTest, GetFullCardPanWithoutCvcInUnmaskResponse) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
 // Verify getting the full PAN for a masked server card.
 TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
   EXPECT_CALL(

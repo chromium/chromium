@@ -48,7 +48,6 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxxhdpi/unionpay_card.png",
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
-    "payments/java/res/drawable/google_pay_plex.xml",
     "payments/java/res/drawable/ic_credit_card_black.xml",
     "payments/java/res/drawable/mir_card.xml",
     "payments/java/res/drawable/visa_card.xml",

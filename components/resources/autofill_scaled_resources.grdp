@@ -15,11 +15,9 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK" file="autofill/virtual_card_enroll_dark.png" />
   <if expr="_google_chrome">
     <then>
-      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_ISSUED_CARD" file="google_chrome/autofill/googlepay_plex.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />
     </then>
     <else>
-      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_ISSUED_CARD" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="autofill/cc-generic.png" />
     </else>
   </if>

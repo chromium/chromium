@@ -54,10 +54,6 @@ const base::Feature kAutofillCreditCardAuthentication{
 const base::Feature kAutofillCreditCardUploadFeedback{
     "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether we show a Google-issued card in the suggestions list.
-const base::Feature kAutofillEnableGoogleIssuedCard{
-    "AutofillEnableGoogleIssuedCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, merchant bound virtual cards will be offered when users
 // interact with a payment form.
 const base::Feature kAutofillEnableMerchantBoundVirtualCards{

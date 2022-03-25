@@ -318,12 +318,6 @@ const char kAutofillTypeSpecificPopupWidthDescription[] =
     "Controls if different width limits are used for the popup that provides "
     "Autofill suggestions, depending on the type of data that is filled.";
 
-const char kAutofillEnableGoogleIssuedCardName[] =
-    "Enable Autofill Google-issued card";
-const char kAutofillEnableGoogleIssuedCardDescription[] =
-    "When enabled, Google-issued cards will be available in the autofill "
-    "suggestions.";
-
 const char kAutofillEnableMerchantBoundVirtualCardsName[] =
     "Offer merchant bound virtual cards in Autofill";
 const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =

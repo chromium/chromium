@@ -6841,11 +6841,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExperimentalCookieFeaturesDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableExperimentalCookieFeaturesChoices)},
 
-    {"autofill-enable-google-issued-card",
-     flag_descriptions::kAutofillEnableGoogleIssuedCardName,
-     flag_descriptions::kAutofillEnableGoogleIssuedCardDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableGoogleIssuedCard)},
-
     {"permission-chip", flag_descriptions::kPermissionChipName,
      flag_descriptions::kPermissionChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionChip)},

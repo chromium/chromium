@@ -34,7 +34,6 @@ public class AssistantAutofillCreditCard {
             put("troyCC", R.drawable.troy_card);
             put("unionPayCC", R.drawable.unionpay_card);
             put("visaCC", R.drawable.visa_card);
-            put("googleIssuedCC", R.drawable.google_pay_plex);
             put("googlePay", R.drawable.google_pay);
         }
     };

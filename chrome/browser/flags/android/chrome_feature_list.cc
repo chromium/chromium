@@ -86,7 +86,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillKeyboardAccessory,
     &autofill::features::kAutofillManualFallbackAndroid,
     &autofill::features::kAutofillRefreshStyleAndroid,
-    &autofill::features::kAutofillEnableGoogleIssuedCard,
     &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
     &autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
     &autofill::features::kAutofillEnableSupportForMoreStructureInNames,
