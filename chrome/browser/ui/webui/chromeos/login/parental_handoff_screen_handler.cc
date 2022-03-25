@@ -46,10 +46,10 @@ void ParentalHandoffScreenHandler::DeclareLocalizedValues(
 void ParentalHandoffScreenHandler::Initialize() {}
 
 void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
-  base::DictionaryValue data;
-  data.SetStringKey(kUsername, username);
+  base::Value::Dict data;
+  data.Set(kUsername, username);
 
-  ShowScreenWithData(kScreenId, &data);
+  ShowInWebUI(std::move(data));
 }
 
 void ParentalHandoffScreenHandler::Bind(ParentalHandoffScreen* screen) {

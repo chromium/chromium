@@ -39,7 +39,7 @@ void EnableDebuggingScreenHandler::Show() {
   }
 
   DVLOG(1) << "Showing enable debugging screen.";
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void EnableDebuggingScreenHandler::Hide() {}

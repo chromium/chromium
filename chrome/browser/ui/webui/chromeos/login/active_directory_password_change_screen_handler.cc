@@ -47,10 +47,10 @@ void ActiveDirectoryPasswordChangeScreenHandler::RegisterMessages() {
 void ActiveDirectoryPasswordChangeScreenHandler::Show(
     const std::string& username,
     int error) {
-  base::DictionaryValue data;
-  data.SetStringKey(kUsernameKey, username);
-  data.SetIntKey(kErrorKey, error);
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set(kUsernameKey, username);
+  data.Set(kErrorKey, error);
+  ShowInWebUI(std::move(data));
 }
 
 void ActiveDirectoryPasswordChangeScreenHandler::Bind(

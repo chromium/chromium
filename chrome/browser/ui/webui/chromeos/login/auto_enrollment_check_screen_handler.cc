@@ -31,7 +31,7 @@ void AutoEnrollmentCheckScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void AutoEnrollmentCheckScreenHandler::SetDelegate(Delegate* delegate) {

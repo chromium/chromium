@@ -44,7 +44,7 @@ void KioskAutolaunchScreenHandler::Show() {
     return;
   }
   UpdateKioskApp();
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void KioskAutolaunchScreenHandler::SetDelegate(

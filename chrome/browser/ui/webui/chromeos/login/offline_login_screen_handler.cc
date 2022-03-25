@@ -64,7 +64,7 @@ void OfflineLoginScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(OfflineLoginView::kScreenId);
+  ShowInWebUI();
 }
 
 void OfflineLoginScreenHandler::Hide() {

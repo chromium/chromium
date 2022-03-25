@@ -67,7 +67,7 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
 void UserCreationScreenHandler::Initialize() {}
 
 void UserCreationScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void UserCreationScreenHandler::Bind(UserCreationScreen* screen) {

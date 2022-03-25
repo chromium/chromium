@@ -32,7 +32,7 @@ void ErrorScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  BaseScreenHandler::ShowScreen(kScreenId);
+  ShowInWebUI();
   if (screen_)
     screen_->DoShow();
   showing_ = true;
@@ -56,7 +56,8 @@ void ErrorScreenHandler::Unbind() {
 }
 
 void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {
-  ShowScreen(screen);
+  // TODO(https://crbug.com/1310191): Migrate off ShowScreenDeprecated.
+  ShowScreenDeprecated(screen);
 }
 
 void ErrorScreenHandler::SetErrorStateCode(

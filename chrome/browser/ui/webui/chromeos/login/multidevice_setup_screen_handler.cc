@@ -33,7 +33,7 @@ void MultiDeviceSetupScreenHandler::Bind(MultiDeviceSetupScreen* screen) {
 
 void MultiDeviceSetupScreenHandler::Show() {
   AllowJavascript();
-  ShowScreen(kScreenId);
+  ShowInWebUI();
   FireWebUIListener("multidevice_setup.initializeSetupFlow");
 }
 

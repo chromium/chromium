@@ -134,6 +134,17 @@ void CoreOobeHandler::FocusReturned(bool reverse) {
   CallJS("cr.ui.Oobe.focusReturned", reverse);
 }
 
+void CoreOobeHandler::ShowScreenWithData(
+    const ash::OobeScreenId& screen,
+    absl::optional<base::Value::Dict> data) {
+  base::Value::Dict screen_params;
+  screen_params.Set("id", screen.name);
+  if (data.has_value()) {
+    screen_params.Set("data", std::move(data.value()));
+  }
+  CallJS("cr.ui.Oobe.showScreen", std::move(screen_params));
+}
+
 void CoreOobeHandler::ReloadContent(base::DictionaryValue dictionary) {
   CallJS("cr.ui.Oobe.reloadContent", std::move(dictionary));
 }

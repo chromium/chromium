@@ -38,7 +38,7 @@ void HIDDetectionScreenHandler::Show() {
     return;
   }
 
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void HIDDetectionScreenHandler::Hide() {

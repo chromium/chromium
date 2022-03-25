@@ -99,7 +99,7 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
 void OsInstallScreenHandler::Initialize() {}
 
 void OsInstallScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void OsInstallScreenHandler::Bind(ash::OsInstallScreen* screen) {

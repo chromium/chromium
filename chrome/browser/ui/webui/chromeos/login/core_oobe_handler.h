@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/version_info_updater.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
@@ -32,6 +33,8 @@ class CoreOobeView {
  public:
   virtual ~CoreOobeView() = default;
 
+  virtual void ShowScreenWithData(const ash::OobeScreenId& screen,
+                                  absl::optional<base::Value::Dict> data) = 0;
   virtual void ReloadContent(base::DictionaryValue dictionary) = 0;
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
   virtual void SetShelfHeight(int height) = 0;
@@ -95,6 +98,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
  private:
   // CoreOobeView implementation:
+  void ShowScreenWithData(const ash::OobeScreenId& screen,
+                          absl::optional<base::Value::Dict> data) override;
   void ReloadContent(base::DictionaryValue dictionary) override;
   void SetVirtualKeyboardShown(bool displayed) override;
   void SetShelfHeight(int height) override;

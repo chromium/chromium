@@ -35,7 +35,7 @@ void KioskEnableScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {

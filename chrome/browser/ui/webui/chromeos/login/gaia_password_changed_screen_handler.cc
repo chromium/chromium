@@ -52,10 +52,10 @@ void GaiaPasswordChangedScreenHandler::Initialize() {
 
 void GaiaPasswordChangedScreenHandler::Show(const std::string& email,
                                             bool has_error) {
-  base::DictionaryValue data;
-  data.SetStringPath("email", email);
-  data.SetBoolPath("showError", has_error);
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("email", email);
+  data.Set("showError", has_error);
+  ShowInWebUI(std::move(data));
 }
 
 void GaiaPasswordChangedScreenHandler::Bind(GaiaPasswordChangedScreen* screen) {

@@ -80,12 +80,12 @@ void MarketingOptInScreenHandler::Bind(MarketingOptInScreen* screen) {
 void MarketingOptInScreenHandler::Show(bool opt_in_visible,
                                        bool opt_in_default_state,
                                        bool legal_footer_visible) {
-  base::DictionaryValue data;
-  data.SetBoolKey(kOptInVisibility, opt_in_visible);
-  data.SetBoolKey(kOptInDefaultState, opt_in_default_state);
-  data.SetBoolKey(kLegalFooterVisibility, legal_footer_visible);
+  base::Value::Dict data;
+  data.Set(kOptInVisibility, opt_in_visible);
+  data.Set(kOptInDefaultState, opt_in_default_state);
+  data.Set(kLegalFooterVisibility, legal_footer_visible);
 
-  ShowScreenWithData(kScreenId, &data);
+  ShowInWebUI(std::move(data));
 }
 
 void MarketingOptInScreenHandler::Hide() {

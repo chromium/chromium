@@ -85,16 +85,16 @@ void AppLaunchSplashScreenHandler::Show() {
 
   is_shown_ = true;
 
-  base::DictionaryValue data;
-  data.SetBoolKey("shortcutEnabled",
-                  !KioskAppManager::Get()->GetDisableBailoutShortcut());
+  base::Value::Dict data;
+  data.Set("shortcutEnabled",
+           !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
   base::DictionaryValue app_info;
   PopulateAppInfo(&app_info);
-  data.SetKey("appInfo", std::move(app_info));
+  data.Set("appInfo", std::move(app_info));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-  ShowScreenWithData(kScreenId, &data);
+  ShowInWebUI(std::move(data));
   if (toggle_network_config_on_show_.has_value()) {
     DoToggleNetworkConfig(toggle_network_config_on_show_.value());
     toggle_network_config_on_show_.reset();

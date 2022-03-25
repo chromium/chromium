@@ -95,10 +95,10 @@ void PinSetupScreenHandler::Initialize() {
 
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account) {
-  base::DictionaryValue data;
-  data.SetKey("auth_token", base::Value(token));
-  data.SetBoolKey("is_child_account", is_child_account);
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("auth_token", base::Value(token));
+  data.Set("is_child_account", is_child_account);
+  ShowInWebUI(std::move(data));
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {

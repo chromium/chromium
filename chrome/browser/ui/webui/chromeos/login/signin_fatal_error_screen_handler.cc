@@ -50,11 +50,11 @@ void SignInFatalErrorScreenHandler::Initialize() {}
 
 void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
                                          const base::Value* params) {
-  base::Value screen_data =
-      params ? params->Clone() : base::Value(base::Value::Type::DICTIONARY);
-  screen_data.SetKey("errorState", base::Value(static_cast<int>(error)));
+  base::Value::Dict screen_data =
+      params ? params->GetDict().Clone() : base::Value::Dict();
+  screen_data.Set("errorState", base::Value(static_cast<int>(error)));
 
-  ShowScreenWithData(kScreenId, &base::Value::AsDictionaryValue(screen_data));
+  ShowInWebUI(std::move(screen_data));
 }
 
 void SignInFatalErrorScreenHandler::Bind(SignInFatalErrorScreen* screen) {

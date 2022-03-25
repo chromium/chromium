@@ -112,7 +112,7 @@ void RecommendAppsScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   pref_service_ = profile->GetPrefs();

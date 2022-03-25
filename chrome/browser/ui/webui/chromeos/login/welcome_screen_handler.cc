@@ -89,11 +89,11 @@ void WelcomeScreenHandler::Show() {
     return;
   }
 
-  base::DictionaryValue welcome_screen_params;
-  welcome_screen_params.SetBoolKey(
-      "isDeveloperMode", base::CommandLine::ForCurrentProcess()->HasSwitch(
-                             chromeos::switches::kSystemDevMode));
-  ShowScreenWithData(kScreenId, &welcome_screen_params);
+  base::Value::Dict welcome_screen_params;
+  welcome_screen_params.Set("isDeveloperMode",
+                            base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                chromeos::switches::kSystemDevMode));
+  ShowInWebUI(std::move(welcome_screen_params));
 }
 
 void WelcomeScreenHandler::Hide() {}

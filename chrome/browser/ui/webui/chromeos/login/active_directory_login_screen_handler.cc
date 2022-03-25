@@ -59,18 +59,18 @@ void ActiveDirectoryLoginScreenHandler::Show() {
     return;
   }
 
-  base::DictionaryValue screen_data;
-  screen_data.SetStringKey("realm", g_browser_process->platform_part()
-                                        ->browser_policy_connector_ash()
-                                        ->GetRealm());
+  base::Value::Dict screen_data;
+  screen_data.Set("realm", g_browser_process->platform_part()
+                               ->browser_policy_connector_ash()
+                               ->GetRealm());
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
       !email_domain.empty()) {
-    screen_data.SetStringKey("emailDomain", email_domain);
+    screen_data.Set("emailDomain", email_domain);
   }
 
-  ShowScreenWithData(kScreenId, &screen_data);
+  ShowInWebUI(std::move(screen_data));
 }
 
 void ActiveDirectoryLoginScreenHandler::Bind(

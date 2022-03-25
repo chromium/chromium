@@ -143,26 +143,25 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
 void ConsolidatedConsentScreenHandler::Initialize() {}
 
 void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
-  base::DictionaryValue data;
+  base::Value::Dict data;
   // If ARC is enabled, show the ARC ToS and the related opt-ins.
-  data.SetBoolKey("isArcEnabled", config.is_arc_enabled);
+  data.Set("isArcEnabled", config.is_arc_enabled);
   // In demo mode, don't show any opt-ins related to ARC and allow showing the
   // offline ARC ToS if the online version failed to load.
-  data.SetBoolKey("isDemo", config.is_demo);
+  data.Set("isDemo", config.is_demo);
   // Child accounts have alternative strings for the opt-ins.
-  data.SetBoolKey("isChildAccount", config.is_child_account);
+  data.Set("isChildAccount", config.is_child_account);
   // Managed account will not be shown any terms of service, and the title
   // string will be updated.
-  data.SetBoolKey("isEnterpriseManagedAccount",
-                  config.is_enterprise_managed_account);
+  data.Set("isEnterpriseManagedAccount", config.is_enterprise_managed_account);
   // Country code is needed to load the ARC ToS.
-  data.SetStringKey("countryCode", config.country_code);
+  data.Set("countryCode", config.country_code);
   // URL for EULA, the URL should include the locale.
-  data.SetStringKey("googleEulaUrl", config.google_eula_url);
+  data.Set("googleEulaUrl", config.google_eula_url);
   // URL for Chrome and ChromeOS additional terms of service, the URL should
   // include the locale.
-  data.SetStringKey("crosEulaUrl", config.cros_eula_url);
-  ShowScreenWithData(kScreenId, &data);
+  data.Set("crosEulaUrl", config.cros_eula_url);
+  ShowInWebUI(std::move(data));
 }
 
 void ConsolidatedConsentScreenHandler::Bind(ConsolidatedConsentScreen* screen) {

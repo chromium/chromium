@@ -74,10 +74,10 @@ void TermsOfServiceScreenHandler::Show(const std::string& manager) {
   // Update the UI to show an error message or the Terms of Service.
   UpdateTermsOfServiceInUI();
 
-  base::DictionaryValue data;
-  data.SetStringKey("manager", manager_);
+  base::Value::Dict data;
+  data.Set("manager", manager_);
 
-  ShowScreenWithData(kScreenId, &data);
+  ShowInWebUI(std::move(data));
 }
 
 void TermsOfServiceScreenHandler::Hide() {}

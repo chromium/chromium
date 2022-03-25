@@ -398,7 +398,7 @@ void EnrollmentScreenHandler::ShowEnrollmentWorkingScreen() {
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentTPMCheckingScreen() {
-  ShowScreen(EnrollmentScreenView::kScreenId);
+  ShowInWebUI();
   ShowStep(kEnrollmentStepTPMChecking);
 }
 
@@ -1028,7 +1028,7 @@ void EnrollmentScreenHandler::ShowErrorForDevice(int message_id, bool retry) {
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentDuringTrialNotAllowedError() {
-  ShowScreen(EnrollmentScreenView::kScreenId);
+  ShowInWebUI();
   ShowErrorMessage(
       l10n_util::GetStringFUTF8(
           IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED,
@@ -1060,26 +1060,24 @@ void EnrollmentScreenHandler::DoShowWithPartition(
   if (shutdown_)
     return;
 
-  base::DictionaryValue screen_data;
+  base::Value::Dict screen_data;
 
-  screen_data.SetStringKey("webviewPartitionName", partition_name);
+  screen_data.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  screen_data.SetStringKey("gaiaUrl",
-                           GaiaUrls::GetInstance()->gaia_url().spec());
-  screen_data.SetStringKey("clientId",
-                           GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  screen_data.SetStringKey("enrollment_mode",
-                           EnrollmentModeToUIMode(config_.mode));
-  screen_data.SetBoolKey("is_enrollment_enforced", config_.is_forced());
-  screen_data.SetBoolKey("attestationBased", config_.is_mode_attestation());
-  screen_data.SetStringKey("management_domain", config_.management_domain);
-  screen_data.SetStringKey("flow", GetFlowString(flow_type_));
+  screen_data.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  screen_data.Set("clientId",
+                  GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  screen_data.Set("enrollment_mode", EnrollmentModeToUIMode(config_.mode));
+  screen_data.Set("is_enrollment_enforced", config_.is_forced());
+  screen_data.Set("attestationBased", config_.is_mode_attestation());
+  screen_data.Set("management_domain", config_.management_domain);
+  screen_data.Set("flow", GetFlowString(flow_type_));
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
-    screen_data.SetStringKey("hl", app_locale);
+    screen_data.Set("hl", app_locale);
 
-  ShowScreenWithData(EnrollmentScreenView::kScreenId, &screen_data);
+  ShowInWebUI(std::move(screen_data));
   if (first_show_) {
     first_show_ = false;
     UpdateStateInternal(NetworkError::ERROR_REASON_UPDATE, true);

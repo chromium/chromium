@@ -223,7 +223,7 @@ void AssistantOptInFlowScreenHandler::Show() {
 
   SetupAssistantConnection();
 
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void AssistantOptInFlowScreenHandler::Hide() {}

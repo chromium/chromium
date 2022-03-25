@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -32,6 +34,10 @@ class BaseScreenHandler : public BaseWebUIHandler {
   void RegisterMessages() override;
 
  protected:
+  // Advances to the `oobe_screen_` in the WebUI. Optional `data` will be passed
+  // to the `onBeforeShow` on the javascript side.
+  void ShowInWebUI(absl::optional<base::Value::Dict> data = absl::nullopt);
+
   // Set the method identifier for a userActed callback. The actual callback
   // will be registered in RegisterMessages so this should be called in the
   // constructor. This takes the full method path, ie,
@@ -51,7 +57,7 @@ class BaseScreenHandler : public BaseWebUIHandler {
   std::string user_acted_method_path_;
 
   // OobeScreen that this handler corresponds to.
-  OobeScreenId oobe_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  const OobeScreenId oobe_screen_;
 
   BaseScreen* base_screen_ = nullptr;
 };

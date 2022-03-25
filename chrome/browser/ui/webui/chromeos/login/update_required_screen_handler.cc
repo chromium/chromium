@@ -105,7 +105,7 @@ void UpdateRequiredScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void UpdateRequiredScreenHandler::Hide() {}

@@ -29,7 +29,7 @@ void QuickStartScreenHandler::Show() {
     return;
   }
 
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void QuickStartScreenHandler::Bind(QuickStartScreen* screen) {

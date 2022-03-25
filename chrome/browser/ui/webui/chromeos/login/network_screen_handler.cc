@@ -50,10 +50,10 @@ void NetworkScreenHandler::Show() {
                                   chromeos::network_handler::ErrorCallback());
   }
 
-  base::DictionaryValue data;
-  data.SetBoolKey("isDemoModeSetup",
-                  DemoSetupController::IsOobeDemoSetupFlowInProgress());
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("isDemoModeSetup",
+           DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  ShowInWebUI(std::move(data));
 }
 
 void NetworkScreenHandler::Hide() {}

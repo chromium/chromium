@@ -116,13 +116,12 @@ void ManagementTransitionScreenHandler::Show() {
   ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
   ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
 
-  base::DictionaryValue data;
-  data.SetIntKey("arcTransition",
-                 static_cast<int>(arc::GetManagementTransition(profile)));
-  data.SetStringKey(
-      "managementEntity",
-      chrome::GetAccountManagerIdentity(profile).value_or(std::string()));
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("arcTransition",
+           static_cast<int>(arc::GetManagementTransition(profile)));
+  data.Set("managementEntity",
+           chrome::GetAccountManagerIdentity(profile).value_or(std::string()));
+  ShowInWebUI(std::move(data));
 }
 
 void ManagementTransitionScreenHandler::Hide() {}

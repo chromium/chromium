@@ -63,9 +63,9 @@ void AppDownloadingScreenHandler::Bind(AppDownloadingScreen* screen) {
 }
 
 void AppDownloadingScreenHandler::Show() {
-  base::DictionaryValue data;
-  data.SetKey("numOfApps", base::Value(GetNumberOfUserSelectedApps()));
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("numOfApps", GetNumberOfUserSelectedApps());
+  ShowInWebUI(std::move(data));
 }
 
 void AppDownloadingScreenHandler::Hide() {}

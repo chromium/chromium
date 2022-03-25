@@ -64,7 +64,7 @@ void LacrosDataMigrationScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {

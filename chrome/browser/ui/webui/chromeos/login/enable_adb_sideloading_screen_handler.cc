@@ -34,7 +34,7 @@ void EnableAdbSideloadingScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void EnableAdbSideloadingScreenHandler::Hide() {}

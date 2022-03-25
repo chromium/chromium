@@ -26,7 +26,7 @@ void GestureNavigationScreenHandler::Show() {
     return;
   }
 
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void GestureNavigationScreenHandler::Bind(GestureNavigationScreen* screen) {

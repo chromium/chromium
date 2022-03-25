@@ -341,7 +341,7 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
 
   action_taken_ = false;
 
-  ShowScreen(kScreenId);
+  ShowInWebUI();
   arc_managed_ = arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
   is_child_account_ = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
   CallJS("login.ArcTermsOfServiceScreen.setArcManaged", arc_managed_,
@@ -360,7 +360,7 @@ void ArcTermsOfServiceScreenHandler::DoShowForDemoModeSetup() {
 
   CallJS("login.ArcTermsOfServiceScreen.setupForDemoMode");
   action_taken_ = false;
-  ShowScreen(kScreenId);
+  ShowInWebUI();
   MaybeLoadPlayStoreToS(true);
   StartNetworkAndTimeZoneObserving();
 }

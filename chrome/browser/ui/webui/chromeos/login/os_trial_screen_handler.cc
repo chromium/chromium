@@ -44,7 +44,7 @@ void OsTrialScreenHandler::DeclareLocalizedValues(
 void OsTrialScreenHandler::Initialize() {}
 
 void OsTrialScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void OsTrialScreenHandler::Bind(ash::OsTrialScreen* screen) {

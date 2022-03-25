@@ -138,9 +138,9 @@ void FingerprintSetupScreenHandler::Bind(FingerprintSetupScreen* screen) {
 
 void FingerprintSetupScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
-  base::DictionaryValue data;
-  data.SetBoolKey("isChildAccount", user_manager->IsLoggedInAsChildUser());
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("isChildAccount", user_manager->IsLoggedInAsChildUser());
+  ShowInWebUI(std::move(data));
 }
 
 void FingerprintSetupScreenHandler::Hide() {}

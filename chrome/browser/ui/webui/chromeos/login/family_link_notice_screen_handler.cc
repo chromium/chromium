@@ -44,7 +44,7 @@ void FamilyLinkNoticeScreenHandler::DeclareLocalizedValues(
 void FamilyLinkNoticeScreenHandler::Initialize() {}
 
 void FamilyLinkNoticeScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void FamilyLinkNoticeScreenHandler::Bind(FamilyLinkNoticeScreen* screen) {

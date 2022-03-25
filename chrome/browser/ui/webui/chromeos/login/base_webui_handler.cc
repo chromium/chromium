@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -36,18 +37,10 @@ void BaseWebUIHandler::RegisterMessages() {
 
 void BaseWebUIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {}
 
-void BaseWebUIHandler::ShowScreen(OobeScreenId screen) {
-  ShowScreenWithData(screen, nullptr);
-}
-
-void BaseWebUIHandler::ShowScreenWithData(OobeScreenId screen,
-                                          const base::DictionaryValue* data) {
-  base::DictionaryValue screen_params;
-  screen_params.SetStringKey("id", screen.name);
-  if (data) {
-    screen_params.SetKey("data", data->Clone());
-  }
-  CallJS("cr.ui.Oobe.showScreen", std::move(screen_params));
+void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
+  if (!GetOobeUI())
+    return;
+  GetOobeUI()->GetCoreOobeView()->ShowScreenWithData(screen, absl::nullopt);
 }
 
 OobeUI* BaseWebUIHandler::GetOobeUI() {

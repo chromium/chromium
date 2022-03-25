@@ -27,7 +27,7 @@ DemoPreferencesScreenHandler::~DemoPreferencesScreenHandler() {
 }
 
 void DemoPreferencesScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void DemoPreferencesScreenHandler::Hide() {}

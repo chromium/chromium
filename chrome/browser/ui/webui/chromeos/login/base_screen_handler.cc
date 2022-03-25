@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -12,7 +13,9 @@ namespace chromeos {
 
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen,
                                      JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container), oobe_screen_(oobe_screen) {}
+    : BaseWebUIHandler(js_calls_container), oobe_screen_(oobe_screen) {
+  DCHECK_NE(oobe_screen_.name, OobeScreen::SCREEN_UNKNOWN.name);
+}
 
 BaseScreenHandler::~BaseScreenHandler() = default;
 
@@ -20,6 +23,13 @@ void BaseScreenHandler::SetBaseScreen(BaseScreen* base_screen) {
   if (base_screen_ == base_screen)
     return;
   base_screen_ = base_screen;
+}
+
+void BaseScreenHandler::ShowInWebUI(absl::optional<base::Value::Dict> data) {
+  if (!GetOobeUI())
+    return;
+  GetOobeUI()->GetCoreOobeView()->ShowScreenWithData(oobe_screen_,
+                                                     std::move(data));
 }
 
 void BaseScreenHandler::RegisterMessages() {

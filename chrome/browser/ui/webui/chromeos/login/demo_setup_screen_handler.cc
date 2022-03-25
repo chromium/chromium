@@ -31,7 +31,7 @@ DemoSetupScreenHandler::~DemoSetupScreenHandler() {
 }
 
 void DemoSetupScreenHandler::Show() {
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void DemoSetupScreenHandler::Hide() {}

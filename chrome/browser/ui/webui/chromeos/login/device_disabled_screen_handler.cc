@@ -27,11 +27,11 @@ DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() {
 void DeviceDisabledScreenHandler::Show(const std::string& serial,
                                        const std::string& domain,
                                        const std::string& message) {
-  base::DictionaryValue screen_data;
-  screen_data.SetStringPath("serial", serial);
-  screen_data.SetStringPath("domain", domain);
-  screen_data.SetStringPath("message", message);
-  ShowScreenWithData(kScreenId, &screen_data);
+  base::Value::Dict screen_data;
+  screen_data.Set("serial", serial);
+  screen_data.Set("domain", domain);
+  screen_data.Set("message", message);
+  ShowInWebUI(std::move(screen_data));
 }
 
 void DeviceDisabledScreenHandler::Hide() {
