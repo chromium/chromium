@@ -368,57 +368,6 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test(
-      'Keypress Enter on personalization hub result can open a new window',
-      async () => {
-        // Enable personalization hub feature.
-        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-
-        const result = fakeResult('Wallpaper', 'personalization?settingId=500');
-        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
-
-        settingsSearchHandler.setFakeResults([result]);
-        await simulateSearch('fake query 1');
-        await waitForListUpdate();
-
-        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
-        assertTrue(!!selectedOsRow);
-        assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
-
-        // Keypress with Enter key on any row specifically causes navigation to
-        // selected row's route. This can't happen unless the row is focused.
-        const enterEvent = new KeyboardEvent(
-            'keypress', {cancelable: true, key: 'Enter', keyCode: 13});
-        selectedOsRow.$.searchResultContainer.dispatchEvent(enterEvent);
-
-        assertEquals(1, openWindowProxy.getCallCount('openURL'));
-      });
-
-  test(
-      'Clicking on personalization hub result can open a new window',
-      async () => {
-        // Enable personalization hub feature.
-        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-
-        const result = fakeResult('Wallpaper', 'personalization?settingId=500');
-        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
-
-        settingsSearchHandler.setFakeResults([result]);
-        await simulateSearch('fake query 1');
-        await waitForListUpdate();
-
-        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
-        assertTrue(!!selectedOsRow);
-        assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
-
-        // Clicking on the searchResultContainer of the row opens a new window.
-        selectedOsRow.$.searchResultContainer.click();
-
-        assertEquals(1, openWindowProxy.getCallCount('openURL'));
-      });
-
-  test(
       'Clicking on personalization hub result causes route change' +
           ' if personalization hub feature is disabled',
       async () => {
@@ -435,7 +384,6 @@ suite('OSSettingsSearchBox', () => {
 
         const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
         assertTrue(!!selectedOsRow);
-        assertEquals('cr:arrow-forward', selectedOsRow.getActionTypeIcon_());
 
         // Clicking on the searchResultContainer of the row correctly changes
         // the route and dropdown to close.

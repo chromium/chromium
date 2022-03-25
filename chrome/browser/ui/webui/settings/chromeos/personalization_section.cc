@@ -212,6 +212,12 @@ PersonalizationSection::PersonalizationSection(
   if (features::IsGuestModeActive())
     return;
 
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    // Personalization search is handled by Personalization Hub when feature is
+    // on.
+    return;
+  }
+
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPersonalizationSearchConcepts());
 
