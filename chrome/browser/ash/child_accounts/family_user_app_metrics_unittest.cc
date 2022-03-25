@@ -19,6 +19,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -39,15 +40,13 @@ constexpr char kStartTime[] = "1 Jan 2020 21:15";
 constexpr int kStart = static_cast<int>(apps::AppType::kUnknown);  // 0
 constexpr int kEnd = static_cast<int>(apps::AppType::kSystemWeb);  // max_value
 
-apps::mojom::AppPtr MakeApp(const char* app_id,
-                            const char* name,
-                            base::Time last_launch_time,
-                            apps::mojom::AppType app_type) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
+apps::AppPtr MakeApp(const char* app_id,
+                     const char* name,
+                     base::Time last_launch_time,
+                     apps::AppType app_type) {
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
   app->name = name;
   app->last_launch_time = last_launch_time;
-  app->app_type = app_type;
   return app;
 }
 
@@ -142,57 +141,67 @@ class FamilyUserAppMetricsTest
   }
 
   void InstallApps() {
-    std::vector<apps::mojom::AppPtr> deltas;
+    std::vector<apps::AppPtr> deltas;
     apps::AppRegistryCache& cache =
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->AppRegistryCache();
     deltas.push_back(MakeApp(/*app_id=*/"u", /*app_name=*/"unknown",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kUnknown));
+                             apps::AppType::kUnknown));
     deltas.push_back(
         MakeApp(/*app_id=*/"a", /*app_name=*/"arc",
                 /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
-                apps::mojom::AppType::kArc));
+                apps::AppType::kArc));
     deltas.push_back(MakeApp(/*app_id=*/"bu", /*app_name=*/"builtin",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kBuiltIn));
+                             apps::AppType::kBuiltIn));
     deltas.push_back(MakeApp(/*app_id=*/"c", /*app_name=*/"crostini",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kCrostini));
+                             apps::AppType::kCrostini));
     deltas.push_back(MakeApp(/*app_id=*/"e", /*app_name=*/"extension",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kChromeApp));
+                             apps::AppType::kChromeApp));
     deltas.push_back(MakeApp(/*app_id=*/"w", /*app_name=*/"web",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kWeb));
+                             apps::AppType::kWeb));
     deltas.push_back(MakeApp(
         /*app_id=*/"m", /*app_name=*/"macos",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kMacOs));
+        apps::AppType::kMacOs));
     deltas.push_back(MakeApp(
         /*app_id=*/"p", /*app_name=*/"pluginvm",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kPluginVm));
+        apps::AppType::kPluginVm));
     deltas.push_back(MakeApp(
         /*app_id=*/"l", /*app_name=*/"lacros",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kStandaloneBrowser));
+        apps::AppType::kStandaloneBrowser));
     deltas.push_back(MakeApp(
         /*app_id=*/"lca", /*app_name=*/"lacros chrome app",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kStandaloneBrowserChromeApp));
+        apps::AppType::kStandaloneBrowserChromeApp));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kRemote));
+        apps::AppType::kRemote));
     deltas.push_back(MakeApp(/*app_id=*/"bo", /*app_name=*/"borealis",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kBorealis));
+                             apps::AppType::kBorealis));
     deltas.push_back(MakeApp(/*app_id=*/"s", /*app_name=*/"systemweb",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kSystemWeb));
-    cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
-                 false /* should_notify_initialized */);
+                             apps::AppType::kSystemWeb));
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
+                   false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      for (const auto& delta : deltas) {
+        mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
+      }
+      cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+                   false /* should_notify_initialized */);
+    }
 
     apps::InstanceRegistry& instance_registry =
         apps::AppServiceProxyFactory::GetForProfile(profile())
