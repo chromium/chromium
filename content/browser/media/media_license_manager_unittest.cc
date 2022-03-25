@@ -128,7 +128,7 @@ class MediaLicenseManagerTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<storage::QuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
@@ -274,6 +274,31 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataOpenConnection) {
 
   EXPECT_TRUE(base::PathExists(database_file));
   EXPECT_TRUE(base::PathExists(database_file.DirName()));
+}
+
+TEST_F(MediaLicenseManagerTest, BucketCreationFailed) {
+  const std::string kTestData("Test Data");
+  mojo::Remote<media::mojom::CdmStorage> remote;
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
+  storage::BucketLocator bucket = GetOrCreateBucket(storage_key);
+  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+
+  // Disable the quota database, causing GetOrCreateBucket() to fail.
+  quota_manager_->SetDisableDatabase(/*disable=*/true);
+
+  // Open CDM storage for a storage key.
+  manager_->OpenCdmStorage(binding_context,
+                           remote.BindNewPipeAndPassReceiver());
+  // Opening a CDM file should fail.
+  base::test::TestFuture<media::mojom::CdmStorage::Status,
+                         mojo::PendingAssociatedRemote<media::mojom::CdmFile>>
+      open_future;
+  remote->Open("test_file", open_future.GetCallback());
+
+  auto result = open_future.Take();
+  EXPECT_EQ(std::get<0>(result), media::mojom::CdmStorage::Status::kFailure);
+  EXPECT_FALSE(std::get<1>(result).is_valid());
 }
 
 class MediaLicenseManagerIncognitoTest : public MediaLicenseManagerTest {

@@ -52,6 +52,12 @@ void MediaLicenseStorageHost::Open(const std::string& file_name,
                                    OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (bucket_locator_.id.is_null()) {
+    DVLOG(1) << "Could not retrieve valid bucket.";
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
   if (file_name.empty()) {
     DVLOG(1) << "No file specified.";
     std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());

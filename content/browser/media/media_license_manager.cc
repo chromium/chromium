@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/media/media_license_database.h"
@@ -525,13 +526,6 @@ void MediaLicenseManager::DidGetBucket(
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1231162): Handle failure case.
-  DCHECK(result.ok());
-
-  // All receivers associated with `storage_key` will be bound to the same host.
-  auto storage_host = std::make_unique<MediaLicenseStorageHost>(
-      this, result->ToBucketLocator());
-
   auto it = pending_receivers_.find(storage_key);
   if (it == pending_receivers_.end()) {
     // No receivers to bind.
@@ -546,6 +540,23 @@ void MediaLicenseManager::DidGetBucket(
   auto receivers_list = std::move(it->second);
   pending_receivers_.erase(it);
   DCHECK_GT(receivers_list.size(), 0u);
+
+  storage::BucketLocator bucket_locator;
+  if (result.ok()) {
+    bucket_locator = result->ToBucketLocator();
+  } else {
+    // Use the null locator, but update the `storage_key` field so
+    // `storage_host` can be identified when it is to be removed from `hosts_`.
+    // We could consider falling back to using an in-memory database in this
+    // case, but failing here seems easier to reason about from a website
+    // author's point of view.
+    DCHECK(bucket_locator.id.is_null());
+    bucket_locator.storage_key = storage_key;
+  }
+
+  // All receivers associated with `storage_key` will be bound to the same host.
+  auto storage_host =
+      std::make_unique<MediaLicenseStorageHost>(this, bucket_locator);
 
   for (auto& context_and_receiver : receivers_list) {
     storage_host->BindReceiver(context_and_receiver.first,
