@@ -68,7 +68,6 @@ class WebSocketTransportConnectSubJob
     STATE_NONE,
     STATE_OBTAIN_LOCK,
     STATE_OBTAIN_LOCK_COMPLETE,
-    STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
     STATE_DONE,
   };
@@ -83,7 +82,6 @@ class WebSocketTransportConnectSubJob
   int DoLoop(int result);
   int DoEndpointLock();
   int DoEndpointLockComplete();
-  int DoTransportConnect();
   int DoTransportConnectComplete(int result);
 
   const raw_ptr<WebSocketTransportConnectJob> parent_job_;

@@ -134,16 +134,7 @@ WebSocketTransportConnectSubJob::WebSocketTransportConnectSubJob(
       type_(type),
       websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager) {}
 
-WebSocketTransportConnectSubJob::~WebSocketTransportConnectSubJob() {
-  // We don't worry about cancelling the TCP connect, since ~StreamSocket will
-  // take care of it.
-  if (next()) {
-    DCHECK_EQ(STATE_OBTAIN_LOCK_COMPLETE, next_state_);
-    // The ~Waiter destructor will remove this object from the waiting list.
-  } else if (next_state_ == STATE_TRANSPORT_CONNECT_COMPLETE) {
-    websocket_endpoint_lock_manager_->UnlockEndpoint(CurrentAddress());
-  }
-}
+WebSocketTransportConnectSubJob::~WebSocketTransportConnectSubJob() = default;
 
 // Start connecting.
 int WebSocketTransportConnectSubJob::Start() {
@@ -164,7 +155,6 @@ LoadState WebSocketTransportConnectSubJob::GetLoadState() const {
     case STATE_OBTAIN_LOCK_COMPLETE:
       // TODO(ricea): Add a WebSocket-specific LOAD_STATE ?
       return LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET;
-    case STATE_TRANSPORT_CONNECT:
     case STATE_TRANSPORT_CONNECT_COMPLETE:
     case STATE_DONE:
       return LOAD_STATE_CONNECTING;
@@ -211,10 +201,6 @@ int WebSocketTransportConnectSubJob::DoLoop(int result) {
         DCHECK_EQ(OK, rv);
         rv = DoEndpointLockComplete();
         break;
-      case STATE_TRANSPORT_CONNECT:
-        DCHECK_EQ(OK, rv);
-        rv = DoTransportConnect();
-        break;
       case STATE_TRANSPORT_CONNECT_COMPLETE:
         rv = DoTransportConnectComplete(rv);
         break;
@@ -237,11 +223,6 @@ int WebSocketTransportConnectSubJob::DoEndpointLock() {
 }
 
 int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
-  next_state_ = STATE_TRANSPORT_CONNECT;
-  return OK;
-}
-
-int WebSocketTransportConnectSubJob::DoTransportConnect() {
   // TODO(ricea): Update global g_last_connect_time and report
   // ConnectInterval.
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
@@ -249,9 +230,16 @@ int WebSocketTransportConnectSubJob::DoTransportConnect() {
   // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
   NetworkQualityEstimator* network_quality_estimator = nullptr;
 
-  transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
-      one_address, nullptr, network_quality_estimator, net_log().net_log(),
-      net_log().source());
+  // This class now owns an endpoint lock. Wrap `socket` in a
+  // `WebSocketStreamSocket` to take ownership of the lock and release it when
+  // the socket goes out of scope.
+  std::unique_ptr<StreamSocket> socket =
+      client_socket_factory()->CreateTransportClientSocket(
+          one_address, nullptr, network_quality_estimator, net_log().net_log(),
+          net_log().source());
+  transport_socket_ = std::make_unique<WebSocketStreamSocket>(
+      std::move(socket), websocket_endpoint_lock_manager_, CurrentAddress());
+
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.
   return transport_socket_->Connect(base::BindOnce(
@@ -261,7 +249,8 @@ int WebSocketTransportConnectSubJob::DoTransportConnect() {
 int WebSocketTransportConnectSubJob::DoTransportConnectComplete(int result) {
   next_state_ = STATE_DONE;
   if (result != OK) {
-    websocket_endpoint_lock_manager_->UnlockEndpoint(CurrentAddress());
+    // Drop the socket to release the endpoint lock.
+    transport_socket_.reset();
 
     if (current_address_index_ + 1 < addresses_.size()) {
       // Try falling back to the next address in the list.
@@ -272,12 +261,6 @@ int WebSocketTransportConnectSubJob::DoTransportConnectComplete(int result) {
 
     return result;
   }
-
-  // On success, need to register the socket with the
-  // WebSocketEndpointLockManager.
-  transport_socket_ = std::make_unique<WebSocketStreamSocket>(
-      std::move(transport_socket_), websocket_endpoint_lock_manager_,
-      CurrentAddress());
 
   return result;
 }
