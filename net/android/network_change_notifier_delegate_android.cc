@@ -42,6 +42,22 @@ NetworkChangeNotifier::ConnectionType ConvertConnectionType(
   return static_cast<NetworkChangeNotifier::ConnectionType>(connection_type);
 }
 
+// Converts a Java side connection cost (integer) to
+// the native side NetworkChangeNotifier::ConnectionCost.
+NetworkChangeNotifier::ConnectionCost ConvertConnectionCost(
+    jint connection_cost) {
+  switch (connection_cost) {
+    case NetworkChangeNotifier::CONNECTION_COST_UNKNOWN:
+    case NetworkChangeNotifier::CONNECTION_COST_UNMETERED:
+    case NetworkChangeNotifier::CONNECTION_COST_METERED:
+      break;
+    default:
+      NOTREACHED() << "Unknown connection cost received: " << connection_cost;
+      return NetworkChangeNotifier::CONNECTION_COST_UNKNOWN;
+  }
+  return static_cast<NetworkChangeNotifier::ConnectionCost>(connection_cost);
+}
+
 // Converts a Java side connection type (integer) to
 // the native side NetworkChangeNotifier::ConnectionType.
 NetworkChangeNotifier::ConnectionSubtype ConvertConnectionSubtype(
@@ -86,6 +102,9 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
   SetCurrentConnectionType(
       ConvertConnectionType(Java_NetworkChangeNotifier_getCurrentConnectionType(
           env, java_network_change_notifier_)));
+  SetCurrentConnectionCost(
+      ConvertConnectionCost(Java_NetworkChangeNotifier_getCurrentConnectionCost(
+          env, java_network_change_notifier_)));
   SetCurrentMaxBandwidth(
       NetworkChangeNotifierAndroid::GetMaxBandwidthMbpsForConnectionSubtype(
           GetCurrentConnectionSubtype()));
@@ -118,6 +137,12 @@ NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionType() const {
   base::AutoLock auto_lock(connection_lock_);
   return connection_type_;
+}
+
+NetworkChangeNotifier::ConnectionCost
+NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionCost() {
+  base::AutoLock auto_lock(connection_lock_);
+  return connection_cost_;
 }
 
 NetworkChangeNotifier::ConnectionSubtype
@@ -171,6 +196,19 @@ bool NetworkChangeNotifierDelegateAndroid::IsDefaultNetworkActive() {
       env, java_network_active_notifier_);
 }
 
+void NetworkChangeNotifierDelegateAndroid::NotifyConnectionCostChanged(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint new_connection_cost) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  const ConnectionCost actual_connection_cost =
+      ConvertConnectionCost(new_connection_cost);
+  SetCurrentConnectionCost(actual_connection_cost);
+  base::AutoLock auto_lock(observer_lock_);
+  if (observer_)
+    observer_->OnConnectionCostChanged();
+}
+
 void NetworkChangeNotifierDelegateAndroid::NotifyConnectionTypeChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -212,6 +250,11 @@ jint NetworkChangeNotifierDelegateAndroid::GetConnectionType(JNIEnv*,
                                                              jobject) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return GetCurrentConnectionType();
+}
+
+jint NetworkChangeNotifierDelegateAndroid::GetConnectionCost(JNIEnv*, jobject) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return GetCurrentConnectionCost();
 }
 
 void NetworkChangeNotifierDelegateAndroid::NotifyMaxBandwidthChanged(
@@ -380,6 +423,12 @@ void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionType(
   connection_type_ = new_connection_type;
 }
 
+void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionCost(
+    ConnectionCost new_connection_cost) {
+  base::AutoLock auto_lock(connection_lock_);
+  connection_cost_ = new_connection_cost;
+}
+
 void NetworkChangeNotifierDelegateAndroid::SetCurrentMaxBandwidth(
     double max_bandwidth) {
   base::AutoLock auto_lock(connection_lock_);
@@ -439,6 +488,12 @@ void NetworkChangeNotifierDelegateAndroid::FakeDefaultNetwork(
     ConnectionType type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NetworkChangeNotifier_fakeDefaultNetwork(env, network, type);
+}
+
+void NetworkChangeNotifierDelegateAndroid::FakeConnectionCostChanged(
+    ConnectionCost cost) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NetworkChangeNotifier_fakeConnectionCostChanged(env, cost);
 }
 
 void NetworkChangeNotifierDelegateAndroid::FakeConnectionSubtypeChanged(

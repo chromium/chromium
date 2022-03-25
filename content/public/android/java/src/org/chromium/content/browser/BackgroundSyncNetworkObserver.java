@@ -143,6 +143,9 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     }
 
     @Override
+    public void onConnectionCostChanged(int newConnectionCost) {}
+
+    @Override
     public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
 
     @Override

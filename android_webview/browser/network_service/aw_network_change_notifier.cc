@@ -44,6 +44,8 @@ AwNetworkChangeNotifier::GetCurrentDefaultNetwork() const {
 
 void AwNetworkChangeNotifier::OnConnectionTypeChanged() {}
 
+void AwNetworkChangeNotifier::OnConnectionCostChanged() {}
+
 void AwNetworkChangeNotifier::OnMaxBandwidthChanged(
     double max_bandwidth_mbps,
     ConnectionType type) {

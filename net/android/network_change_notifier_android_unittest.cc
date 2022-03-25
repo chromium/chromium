@@ -35,17 +35,21 @@ enum ChangeType {
 class NetworkChangeNotifierDelegateAndroidObserver
     : public NetworkChangeNotifierDelegateAndroid::Observer {
  public:
+  typedef NetworkChangeNotifier::ConnectionCost ConnectionCost;
   typedef NetworkChangeNotifier::ConnectionType ConnectionType;
   typedef NetworkChangeNotifier::NetworkHandle NetworkHandle;
   typedef NetworkChangeNotifier::NetworkList NetworkList;
 
   NetworkChangeNotifierDelegateAndroidObserver()
       : type_notifications_count_(0),
+        cost_notifications_count_(0),
         max_bandwidth_notifications_count_(0),
         default_network_active_notifications_count_(0) {}
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override { type_notifications_count_++; }
+
+  void OnConnectionCostChanged() override { cost_notifications_count_++; }
 
   void OnMaxBandwidthChanged(
       double max_bandwidth_mbps,
@@ -66,6 +70,7 @@ class NetworkChangeNotifierDelegateAndroidObserver
   }
 
   int type_notifications_count() const { return type_notifications_count_; }
+  int cost_notifications_count() const { return cost_notifications_count_; }
   int bandwidth_notifications_count() const {
     return max_bandwidth_notifications_count_;
   }
@@ -75,6 +80,7 @@ class NetworkChangeNotifierDelegateAndroidObserver
 
  private:
   int type_notifications_count_;
+  int cost_notifications_count_;
   int max_bandwidth_notifications_count_;
   int default_network_active_notifications_count_;
 };
@@ -96,6 +102,21 @@ class NetworkChangeNotifierObserver
 
  private:
   int notifications_count_;
+};
+
+class NetworkChangeNotifierConnectionCostObserver
+    : public NetworkChangeNotifier::ConnectionCostObserver {
+ public:
+  // NetworkChangeNotifier::ConnectionCostObserver:
+  void OnConnectionCostChanged(
+      NetworkChangeNotifier::ConnectionCost cost) override {
+    notifications_count_++;
+  }
+
+  int notifications_count() const { return notifications_count_; }
+
+ private:
+  int notifications_count_ = 0;
 };
 
 class NetworkChangeNotifierMaxBandwidthObserver
@@ -168,6 +189,7 @@ class TestNetworkObserver : public NetworkChangeNotifier::NetworkObserver {
 class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
  protected:
   typedef NetworkChangeNotifier::ConnectionType ConnectionType;
+  typedef NetworkChangeNotifier::ConnectionCost ConnectionCost;
   typedef NetworkChangeNotifier::ConnectionSubtype ConnectionSubtype;
 
   ~BaseNetworkChangeNotifierAndroidTest() override {}
@@ -215,6 +237,11 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
       // See comment above.
       base::RunLoop().RunUntilIdle();
     }
+  }
+
+  void FakeConnectionCostChange(ConnectionCost cost) {
+    delegate_.FakeConnectionCostChanged(cost);
+    base::RunLoop().RunUntilIdle();
   }
 
   void FakeConnectionSubtypeChange(ConnectionSubtype subtype) {
@@ -301,6 +328,8 @@ class NetworkChangeNotifierAndroidTest
         &connection_type_observer_);
     NetworkChangeNotifier::AddConnectionTypeObserver(
         &other_connection_type_observer_);
+    NetworkChangeNotifier::AddConnectionCostObserver(
+        &connection_cost_observer_);
     NetworkChangeNotifier::AddMaxBandwidthObserver(&max_bandwidth_observer_);
   }
 
@@ -309,6 +338,7 @@ class NetworkChangeNotifierAndroidTest
   }
 
   NetworkChangeNotifierObserver connection_type_observer_;
+  NetworkChangeNotifierConnectionCostObserver connection_cost_observer_;
   NetworkChangeNotifierMaxBandwidthObserver max_bandwidth_observer_;
   NetworkChangeNotifierObserver other_connection_type_observer_;
   NetworkChangeNotifier::DisableForTest disable_for_test_;
@@ -366,6 +396,34 @@ TEST_F(NetworkChangeNotifierAndroidTest,
   // Check that *all* the observers are notified.
   EXPECT_EQ(connection_type_observer_.notifications_count(),
             other_connection_type_observer_.notifications_count());
+}
+
+TEST_F(NetworkChangeNotifierAndroidTest, ConnectionCost) {
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_UNMETERED);
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
+            notifier_.GetConnectionCost());
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_METERED);
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
+            notifier_.GetConnectionCost());
+}
+
+TEST_F(NetworkChangeNotifierAndroidTest, ConnectionCostCallbackNotifier) {
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_UNMETERED);
+  EXPECT_EQ(1, connection_cost_observer_.notifications_count());
+
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_METERED);
+  EXPECT_EQ(2, connection_cost_observer_.notifications_count());
+}
+
+TEST_F(NetworkChangeNotifierDelegateAndroidTest,
+       ConnectionCostCallbackNotifier) {
+  EXPECT_EQ(0, delegate_observer_.cost_notifications_count());
+
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_UNMETERED);
+  EXPECT_EQ(1, delegate_observer_.cost_notifications_count());
+
+  FakeConnectionCostChange(ConnectionCost::CONNECTION_COST_METERED);
+  EXPECT_EQ(2, delegate_observer_.cost_notifications_count());
 }
 
 TEST_F(NetworkChangeNotifierAndroidTest, MaxBandwidth) {

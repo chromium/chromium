@@ -63,6 +63,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
 
   // NetworkChangeNotifier:
   ConnectionType GetCurrentConnectionType() const override;
+  ConnectionCost GetCurrentConnectionCost() override;
   // Requires ACCESS_WIFI_STATE permission in order to provide precise WiFi link
   // speed.
   void GetCurrentMaxBandwidthAndConnectionType(
@@ -79,6 +80,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override;
+  void OnConnectionCostChanged() override;
   void OnMaxBandwidthChanged(double max_bandwidth_mbps,
                              ConnectionType type) override;
   void OnNetworkConnected(NetworkHandle network) override;

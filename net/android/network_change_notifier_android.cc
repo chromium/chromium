@@ -124,6 +124,11 @@ NetworkChangeNotifierAndroid::GetCurrentConnectionType() const {
   return delegate_->GetCurrentConnectionType();
 }
 
+NetworkChangeNotifier::ConnectionCost
+NetworkChangeNotifierAndroid::GetCurrentConnectionCost() {
+  return delegate_->GetCurrentConnectionCost();
+}
+
 NetworkChangeNotifier::ConnectionSubtype
 NetworkChangeNotifierAndroid::GetCurrentConnectionSubtype() const {
   return delegate_->GetCurrentConnectionSubtype();
@@ -167,6 +172,10 @@ NetworkChangeNotifierAndroid::GetCurrentDefaultNetwork() const {
 
 void NetworkChangeNotifierAndroid::OnConnectionTypeChanged() {
   BlockingThreadObjects::NotifyNetworkChangeNotifierObservers();
+}
+
+void NetworkChangeNotifierAndroid::OnConnectionCostChanged() {
+  NetworkChangeNotifier::NotifyObserversOfConnectionCostChange();
 }
 
 void NetworkChangeNotifierAndroid::OnMaxBandwidthChanged(

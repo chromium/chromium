@@ -26,6 +26,7 @@ namespace net {
 // unless otherwise stated (e.g. RegisterObserver()/UnregisterObserver()).
 class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
  public:
+  typedef NetworkChangeNotifier::ConnectionCost ConnectionCost;
   typedef NetworkChangeNotifier::ConnectionType ConnectionType;
   typedef NetworkChangeNotifier::ConnectionSubtype ConnectionSubtype;
   typedef NetworkChangeNotifier::NetworkHandle NetworkHandle;
@@ -40,6 +41,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
     // Updates the current connection type.
     virtual void OnConnectionTypeChanged() = 0;
+
+    // Updates the current connection cost.
+    virtual void OnConnectionCostChanged() = 0;
 
     // Updates the current max bandwidth.
     virtual void OnMaxBandwidthChanged(double max_bandwidth_mbps,
@@ -74,6 +78,16 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
       jint new_connection_type,
       jlong default_netid);
   jint GetConnectionType(JNIEnv* env, jobject obj) const;
+
+  // Called from NetworkChangeNotifier.java on the JNI thread whenever
+  // the connection cost changes. This updates the current connection cost seen
+  // by this class and forwards the notification to the observers that
+  // subscribed through RegisterObserver().
+  void NotifyConnectionCostChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint new_connection_cost);
+  jint GetConnectionCost(JNIEnv* env, jobject obj);
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
   // the maximum bandwidth of the connection changes. This updates the current
@@ -132,6 +146,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   // These methods are simply implementations of NetworkChangeNotifier APIs of
   // the same name. They can be called from any thread.
+  ConnectionCost GetCurrentConnectionCost();
   ConnectionType GetCurrentConnectionType() const;
   void GetCurrentMaxBandwidthAndConnectionType(
       double* max_bandwidth_mbps,
@@ -169,6 +184,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void DisableDefaultNetworkActiveNotifications();
 
   // Setters that grab appropriate lock.
+  void SetCurrentConnectionCost(ConnectionCost connection_cost);
   void SetCurrentConnectionType(ConnectionType connection_type);
   void SetCurrentMaxBandwidth(double max_bandwidth);
   void SetCurrentDefaultNetwork(NetworkHandle default_network);
@@ -182,6 +198,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void FakeNetworkDisconnected(NetworkHandle network);
   void FakePurgeActiveNetworkList(NetworkList networks);
   void FakeDefaultNetwork(NetworkHandle network, ConnectionType type);
+  void FakeConnectionCostChanged(ConnectionCost cost);
   void FakeConnectionSubtypeChanged(ConnectionSubtype subtype);
   void FakeDefaultNetworkActive();
 
@@ -202,6 +219,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   mutable base::Lock connection_lock_;  // Protects the state below.
   ConnectionType connection_type_;
+  ConnectionCost connection_cost_;
   double connection_max_bandwidth_;
   NetworkHandle default_network_;
   NetworkMap network_map_;

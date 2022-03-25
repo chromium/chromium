@@ -101,6 +101,8 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
         runOnMainThread(() -> { mObserver.onConnectionTypeChanged(newConnectionType); });
     }
     @Override
+    public void onConnectionCostChanged(int newConnectionCost) {}
+    @Override
     public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
     @Override
     public void onNetworkConnect(long netId, int connectionType) {}

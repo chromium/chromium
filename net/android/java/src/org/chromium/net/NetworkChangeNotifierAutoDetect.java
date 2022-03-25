@@ -63,6 +63,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         private final boolean mConnected;
         private final int mType;
         private final int mSubtype;
+        private final boolean mIsMetered;
         // WIFI SSID of the connection on pre-Marshmallow, NetID starting with Marshmallow. Always
         // non-null (i.e. instead of null it'll be an empty string) to facilitate .equals().
         private final String mNetworkIdentifier;
@@ -71,11 +72,12 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         // Indicates the DNS-over-TLS server in use, if specified.
         private final String mPrivateDnsServerName;
 
-        public NetworkState(boolean connected, int type, int subtype, String networkIdentifier,
-                boolean isPrivateDnsActive, String privateDnsServerName) {
+        public NetworkState(boolean connected, int type, int subtype, boolean isMetered,
+                String networkIdentifier, boolean isPrivateDnsActive, String privateDnsServerName) {
             mConnected = connected;
             mType = type;
             mSubtype = subtype;
+            mIsMetered = isMetered;
             mNetworkIdentifier = networkIdentifier == null ? "" : networkIdentifier;
             mIsPrivateDnsActive = isPrivateDnsActive;
             mPrivateDnsServerName = privateDnsServerName == null ? "" : privateDnsServerName;
@@ -87,6 +89,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
         public int getNetworkType() {
             return mType;
+        }
+
+        public boolean isMetered() {
+            return mIsMetered;
         }
 
         public int getNetworkSubType() {
@@ -107,6 +113,17 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 return ConnectionType.CONNECTION_NONE;
             }
             return convertToConnectionType(getNetworkType(), getNetworkSubType());
+        }
+
+        /**
+         * Returns the connection cost for the given NetworkState.
+         */
+        @ConnectionCost
+        public int getConnectionCost() {
+            if (isMetered()) {
+                return ConnectionCost.METERED;
+            }
+            return ConnectionCost.UNMETERED;
         }
 
         /**
@@ -246,16 +263,21 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             }
             networkInfo = processActiveNetworkInfo(networkInfo);
             if (networkInfo == null) {
-                return new NetworkState(false, -1, -1, null, false, "");
+                return new NetworkState(false, -1, -1, false, null, false, "");
             }
+
             if (network != null) {
+                final NetworkCapabilities capabilities = getNetworkCapabilities(network);
+                boolean isMetered = (capabilities != null
+                        && !capabilities.hasCapability(
+                                NetworkCapabilities.NET_CAPABILITY_NOT_METERED));
                 DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(network);
                 if (dnsStatus == null) {
                     return new NetworkState(true, networkInfo.getType(), networkInfo.getSubtype(),
-                            String.valueOf(networkToNetId(network)), false, "");
+                            isMetered, String.valueOf(networkToNetId(network)), false, "");
                 } else {
                     return new NetworkState(true, networkInfo.getType(), networkInfo.getSubtype(),
-                            String.valueOf(networkToNetId(network)),
+                            isMetered, String.valueOf(networkToNetId(network)),
                             dnsStatus.getPrivateDnsActive(), dnsStatus.getPrivateDnsServerName());
                 }
             }
@@ -265,14 +287,14 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 // Since Android 4.2 the SSID can be retrieved from NetworkInfo.getExtraInfo().
                 if (networkInfo.getExtraInfo() != null && !"".equals(networkInfo.getExtraInfo())) {
                     return new NetworkState(true, networkInfo.getType(), networkInfo.getSubtype(),
-                            networkInfo.getExtraInfo(), false, "");
+                            false, networkInfo.getExtraInfo(), false, "");
                 }
                 // Fetch WiFi SSID directly from WifiManagerDelegate if not in NetworkInfo.
                 return new NetworkState(true, networkInfo.getType(), networkInfo.getSubtype(),
-                        wifiManagerDelegate.getWifiSsid(), false, "");
+                        false, wifiManagerDelegate.getWifiSsid(), false, "");
             }
             return new NetworkState(
-                    true, networkInfo.getType(), networkInfo.getSubtype(), null, false, "");
+                    true, networkInfo.getType(), networkInfo.getSubtype(), false, null, false, "");
         }
 
         /**
@@ -591,7 +613,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             mLinkProperties = null;
             mNetworkCapabilities = null;
             if (mRegistered) {
-                connectionTypeChangedTo(new NetworkState(false, -1, -1, null, false, ""));
+                connectionTypeChangedTo(new NetworkState(false, -1, -1, false, null, false, ""));
             }
         }
 
@@ -648,7 +670,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 NetworkInfo networkInfo = mConnectivityManagerDelegate.getNetworkInfo(network);
                 type = networkInfo != null ? networkInfo.getType() : ConnectivityManager.TYPE_VPN;
             }
-            return new NetworkState(true, type, subtype, String.valueOf(networkToNetId(network)),
+            boolean isMetered = !mNetworkCapabilities.hasCapability(
+                    NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+            return new NetworkState(true, type, subtype, isMetered,
+                    String.valueOf(networkToNetId(network)),
                     ApiHelperForP.isPrivateDnsActive(mLinkProperties),
                     ApiHelperForP.getPrivateDnsServerName(mLinkProperties));
         }
@@ -896,6 +921,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
          * Called when default network changes.
          */
         public void onConnectionTypeChanged(@ConnectionType int newConnectionType);
+        /**
+         * Called when connection cost of default network changes.
+         */
+        public void onConnectionCostChanged(int newConnectionCost);
         /**
          * Called when connection subtype of default network changes.
          */
@@ -1283,6 +1312,9 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         if (networkState.getConnectionType() != mNetworkState.getConnectionType()
                 || networkState.getConnectionSubtype() != mNetworkState.getConnectionSubtype()) {
             mObserver.onConnectionSubtypeChanged(networkState.getConnectionSubtype());
+        }
+        if (networkState.getConnectionCost() != mNetworkState.getConnectionCost()) {
+            mObserver.onConnectionCostChanged(networkState.getConnectionCost());
         }
         mNetworkState = networkState;
     }

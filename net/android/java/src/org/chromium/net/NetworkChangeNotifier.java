@@ -41,6 +41,8 @@ public class NetworkChangeNotifier {
     private NetworkChangeNotifierAutoDetect mAutoDetector;
     // Last value broadcast via ConnectionTypeChange signal.
     private int mCurrentConnectionType = ConnectionType.CONNECTION_UNKNOWN;
+    // Last value broadcast via ConnectionCostChange signal.
+    private int mCurrentConnectionCost = ConnectionCost.UNKNOWN;
 
     @SuppressLint("StaticFieldLeak")
     private static NetworkChangeNotifier sInstance;
@@ -81,6 +83,11 @@ public class NetworkChangeNotifier {
         return mAutoDetector == null
                 ? ConnectionSubtype.SUBTYPE_UNKNOWN
                 : mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
+    }
+
+    @CalledByNative
+    public int getCurrentConnectionCost() {
+        return mCurrentConnectionCost;
     }
 
     /**
@@ -192,6 +199,10 @@ public class NetworkChangeNotifier {
                                 updateCurrentConnectionType(newConnectionType);
                             }
                             @Override
+                            public void onConnectionCostChanged(int newConnectionCost) {
+                                notifyObserversOfConnectionCostChange(newConnectionCost);
+                            }
+                            @Override
                             public void onConnectionSubtypeChanged(int newConnectionSubtype) {
                                 notifyObserversOfConnectionSubtypeChange(newConnectionSubtype);
                             }
@@ -216,6 +227,7 @@ public class NetworkChangeNotifier {
                 final NetworkChangeNotifierAutoDetect.NetworkState networkState =
                         mAutoDetector.getCurrentNetworkState();
                 updateCurrentConnectionType(networkState.getConnectionType());
+                updateCurrentConnectionCost(networkState.getConnectionCost());
                 notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
             }
         } else {
@@ -282,6 +294,14 @@ public class NetworkChangeNotifier {
         getInstance().notifyObserversOfConnectionTypeChange(connectionType, netId);
     }
 
+    // For testing, pretend the connection cost has changed.
+    @CalledByNative
+    @VisibleForTesting
+    public static void fakeConnectionCostChanged(int connectionCost) {
+        setAutoDetectConnectivityState(false);
+        getInstance().notifyObserversOfConnectionCostChange(connectionCost);
+    }
+
     // For testing, pretend the connection subtype has changed.
     @CalledByNative
     public static void fakeConnectionSubtypeChanged(int connectionSubtype) {
@@ -308,6 +328,21 @@ public class NetworkChangeNotifier {
         }
         for (ConnectionTypeObserver observer : mConnectionTypeObservers) {
             observer.onConnectionTypeChanged(newConnectionType);
+        }
+    }
+
+    private void updateCurrentConnectionCost(int newConnectionCost) {
+        mCurrentConnectionCost = newConnectionCost;
+        notifyObserversOfConnectionCostChange(newConnectionCost);
+    }
+
+    /**
+     * Alerts all observers of a connection cost change.
+     */
+    void notifyObserversOfConnectionCostChange(int newConnectionCost) {
+        for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
+            NetworkChangeNotifierJni.get().notifyConnectionCostChanged(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, newConnectionCost);
         }
     }
 
@@ -404,6 +439,10 @@ public class NetworkChangeNotifier {
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
         void notifyConnectionTypeChanged(long nativePtr, NetworkChangeNotifier caller,
                 int newConnectionType, long defaultNetId);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyConnectionCostChanged(
+                long nativePtr, NetworkChangeNotifier caller, int newConnectionCost);
 
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
         void notifyMaxBandwidthChanged(long nativePtr, NetworkChangeNotifier caller, int subType);

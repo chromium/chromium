@@ -189,6 +189,7 @@ public class NetworkChangeNotifierTest {
         private boolean mActiveNetworkExists;
         private int mNetworkType;
         private int mNetworkSubtype;
+        private boolean mIsMetered;
         private boolean mIsPrivateDnsActive;
         private String mPrivateDnsServerName;
         private NetworkCallback mLastRegisteredNetworkCallback;
@@ -196,7 +197,7 @@ public class NetworkChangeNotifierTest {
 
         @Override
         public NetworkState getNetworkState(WifiManagerDelegate wifiManagerDelegate) {
-            return new NetworkState(mActiveNetworkExists, mNetworkType, mNetworkSubtype,
+            return new NetworkState(mActiveNetworkExists, mNetworkType, mNetworkSubtype, mIsMetered,
                     mNetworkType == ConnectivityManager.TYPE_WIFI
                             ? wifiManagerDelegate.getWifiSsid()
                             : null,
@@ -269,6 +270,10 @@ public class NetworkChangeNotifierTest {
 
         public void setNetworkType(int networkType) {
             mNetworkType = networkType;
+        }
+
+        public void setIsMetered(boolean isMetered) {
+            mIsMetered = isMetered;
         }
 
         public void setNetworkSubtype(int networkSubtype) {
@@ -373,6 +378,8 @@ public class NetworkChangeNotifierTest {
 
         @Override
         public void onConnectionTypeChanged(int newConnectionType) {}
+        @Override
+        public void onConnectionCostChanged(int newConnectionCost) {}
         @Override
         public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
 
@@ -485,6 +492,10 @@ public class NetworkChangeNotifierTest {
         return mReceiver.getCurrentNetworkState().getConnectionType();
     }
 
+    private int getCurrentConnectionCost() {
+        return mReceiver.getCurrentNetworkState().getConnectionCost();
+    }
+
     @Before
     public void setUp() throws Throwable {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
@@ -556,6 +567,20 @@ public class NetworkChangeNotifierTest {
 
         triggerApplicationStateChange(policy, ApplicationState.HAS_RUNNING_ACTIVITIES);
         Assert.assertTrue(mReceiver.isReceiverRegisteredForTesting());
+    }
+
+    /**
+     * Tests that getCurrentConnectionCost() returns the correct result.
+     */
+    @Test
+    @UiThreadTest
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testNetworkChangeNotifierConnectionCost() {
+        mConnectivityDelegate.setIsMetered(true);
+        Assert.assertEquals(ConnectionCost.METERED, getCurrentConnectionCost());
+        mConnectivityDelegate.setIsMetered(false);
+        Assert.assertEquals(ConnectionCost.UNMETERED, getCurrentConnectionCost());
     }
 
     /**
