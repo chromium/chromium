@@ -195,6 +195,7 @@ AppContextMenu.prototype = {
         !app.appData.mayChangeLaunchType || !hasLaunchType;
 
     this.options_.disabled = !app.appData.optionsUrl || !app.appData.enabled;
+    this.options_.hidden = app.appData.optionsUrl === undefined;
 
     this.uninstall_.disabled = !app.appData.mayDisable;
 
