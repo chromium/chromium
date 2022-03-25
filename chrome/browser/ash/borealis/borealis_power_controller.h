@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_POWER_CONTROLLER_H_
 
 #include "ash/wm/window_state.h"
-#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
-#include "ui/aura/client/focus_client.h"
 
 namespace borealis {
 
@@ -41,9 +39,6 @@ class BorealisPowerController : public aura::client::FocusChangeObserver {
   }
 
  private:
-  base::ScopedObservation<aura::client::FocusClient,
-                          aura::client::FocusChangeObserver>
-      root_focus_observer_;
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 };

@@ -8,23 +8,24 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "content/public/browser/device_service.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/views/widget/widget.h"
 
 namespace borealis {
 
-BorealisPowerController::BorealisPowerController()
-    : root_focus_observer_(this) {
-  if (!ash::Shell::HasInstance())
-    return;
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
-  root_focus_observer_.Observe(focus_client);
+BorealisPowerController::BorealisPowerController() {
+  if (ash::Shell::HasInstance())
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->AddObserver(this);
 }
 
 BorealisPowerController::~BorealisPowerController() {
   if (wake_lock_) {
     wake_lock_->CancelWakeLock();
   }
+  if (ash::Shell::HasInstance())
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
 }
 
 void BorealisPowerController::OnWindowFocused(aura::Window* gained_focus,
