@@ -174,7 +174,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   if (transform_list.size() < 16)
     return nullptr;
 
-  double transform[16];
+  float transform[16];
   for (int i = 0; i < 16; ++i) {
     // GetDouble can implicitly convert from either double or int; however, it's
     // not clear if "is_double" is sufficient for this check. Given that int is
@@ -187,7 +187,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   }
 
   gfx::Transform layer_transform;
-  layer_transform.matrix().setColMajord(transform);
+  layer_transform.matrix().setColMajor(transform);
   new_layer->SetTransform(layer_transform);
 
   const base::Value* child_list_value = val.FindListKey("Children");

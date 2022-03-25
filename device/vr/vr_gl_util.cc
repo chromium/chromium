@@ -11,7 +11,7 @@ namespace vr {
 // This code is adapted from the GVR Treasure Hunt demo source.
 std::array<float, 16> MatrixToGLArray(const gfx::Transform& transform) {
   std::array<float, 16> result;
-  transform.matrix().asColMajorf(result.data());
+  transform.matrix().getColMajor(result.data());
   return result;
 }
 

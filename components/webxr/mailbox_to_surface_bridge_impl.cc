@@ -491,7 +491,7 @@ void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle,
   gl_->Clear(GL_COLOR_BUFFER_BIT);
 
   float uv_transform_floats[16];
-  uv_transform.matrix().asColMajorf(uv_transform_floats);
+  uv_transform.matrix().getColMajor(uv_transform_floats);
   gl_->UniformMatrix4fv(uniform_uv_transform_handle_, 1, GL_FALSE,
                         &uv_transform_floats[0]);
 

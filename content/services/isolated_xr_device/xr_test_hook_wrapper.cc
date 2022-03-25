@@ -30,7 +30,7 @@ PoseFrameData MojoToDevicePoseFrameData(
   PoseFrameData ret = {};
   ret.is_valid = !!pose->device_to_origin;
   if (ret.is_valid) {
-    pose->device_to_origin->matrix().asColMajorf(ret.device_to_origin);
+    pose->device_to_origin->matrix().getColMajor(ret.device_to_origin);
   }
 
   return ret;

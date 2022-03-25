@@ -332,10 +332,10 @@ bool RRectFFromDict(const base::Value& dict, gfx::RRectF* out) {
 
 base::Value TransformToList(const gfx::Transform& transform) {
   base::Value list(base::Value::Type::LIST);
-  double data[16];
-  transform.matrix().asColMajord(data);
-  for (size_t ii = 0; ii < 16; ++ii)
-    list.Append(data[ii]);
+  float data[16];
+  transform.matrix().getColMajor(data);
+  for (float value : data)
+    list.Append(value);
   return list;
 }
 
@@ -345,13 +345,13 @@ bool TransformFromList(const base::Value& list, gfx::Transform* transform) {
     return false;
   if (list.GetListDeprecated().size() != 16)
     return false;
-  double data[16];
+  float data[16];
   for (size_t ii = 0; ii < 16; ++ii) {
     if (!list.GetListDeprecated()[ii].is_double())
       return false;
     data[ii] = list.GetListDeprecated()[ii].GetDouble();
   }
-  transform->matrix().setColMajord(data);
+  transform->matrix().setColMajor(data);
   return true;
 }
 

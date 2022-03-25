@@ -7,6 +7,12 @@
 #include <type_traits>
 #include <utility>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <QuartzCore/CATransform3D.h>
+#endif
+
 namespace gfx {
 
 // Copying Matrix44 byte-wise is performance-critical to Blink. This class is
@@ -85,36 +91,14 @@ void Matrix44::recomputeTypeMask() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Matrix44::asColMajorf(float dst[]) const {
+void Matrix44::getColMajor(float dst[]) const {
   const SkScalar* src = &fMat[0][0];
   for (int i = 0; i < 16; ++i) {
     dst[i] = src[i];
   }
 }
 
-void Matrix44::as3x4RowMajorf(float dst[]) const {
-  dst[0] = fMat[0][0];
-  dst[1] = fMat[1][0];
-  dst[2] = fMat[2][0];
-  dst[3] = fMat[3][0];
-  dst[4] = fMat[0][1];
-  dst[5] = fMat[1][1];
-  dst[6] = fMat[2][1];
-  dst[7] = fMat[3][1];
-  dst[8] = fMat[0][2];
-  dst[9] = fMat[1][2];
-  dst[10] = fMat[2][2];
-  dst[11] = fMat[3][2];
-}
-
-void Matrix44::asColMajord(double dst[]) const {
-  const SkScalar* src = &fMat[0][0];
-  for (int i = 0; i < 16; ++i) {
-    dst[i] = src[i];
-  }
-}
-
-void Matrix44::asRowMajorf(float dst[]) const {
+void Matrix44::getRowMajor(float dst[]) const {
   const SkScalar* src = &fMat[0][0];
   for (int i = 0; i < 4; ++i) {
     dst[0] = float(src[0]);
@@ -126,19 +110,7 @@ void Matrix44::asRowMajorf(float dst[]) const {
   }
 }
 
-void Matrix44::asRowMajord(double dst[]) const {
-  const SkScalar* src = &fMat[0][0];
-  for (int i = 0; i < 4; ++i) {
-    dst[0] = src[0];
-    dst[4] = src[1];
-    dst[8] = src[2];
-    dst[12] = src[3];
-    src += 4;
-    dst += 1;
-  }
-}
-
-void Matrix44::setColMajorf(const float src[]) {
+void Matrix44::setColMajor(const float src[]) {
   SkScalar* dst = &fMat[0][0];
   for (int i = 0; i < 16; ++i) {
     dst[i] = src[i];
@@ -147,16 +119,7 @@ void Matrix44::setColMajorf(const float src[]) {
   this->recomputeTypeMask();
 }
 
-void Matrix44::setColMajord(const double src[]) {
-  SkScalar* dst = &fMat[0][0];
-  for (int i = 0; i < 16; ++i) {
-    dst[i] = SkScalar(src[i]);
-  }
-
-  this->recomputeTypeMask();
-}
-
-void Matrix44::setRowMajorf(const float src[]) {
+void Matrix44::setRowMajor(const float src[]) {
   SkScalar* dst = &fMat[0][0];
   for (int i = 0; i < 4; ++i) {
     dst[0] = src[0];
@@ -169,25 +132,18 @@ void Matrix44::setRowMajorf(const float src[]) {
   this->recomputeTypeMask();
 }
 
-void Matrix44::setRowMajord(const double src[]) {
-  SkScalar* dst = &fMat[0][0];
-  for (int i = 0; i < 4; ++i) {
-    dst[0] = SkScalar(src[0]);
-    dst[4] = SkScalar(src[1]);
-    dst[8] = SkScalar(src[2]);
-    dst[12] = SkScalar(src[3]);
-    src += 4;
-    dst += 1;
-  }
-  this->recomputeTypeMask();
+#if BUILDFLAG(IS_MAC)
+CATransform3D Matrix44::ToCATransform3D() const {
+  CATransform3D result;
+  const float* src = &fMat[0][0];
+  auto* dst = &result.m11;
+  for (int i = 0; i < 16; ++i)
+    dst[i] = src[i];
+  return result;
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 ///////////////////////////////////////////////////////////////////////////////
-
-const Matrix44& Matrix44::I() {
-  static constexpr Matrix44 gIdentity44(kIdentity_Constructor);
-  return gIdentity44;
-}
 
 void Matrix44::setIdentity() {
   fMat[0][0] = 1;
@@ -274,41 +230,6 @@ void Matrix44::set3x4RowMajorf(const float src[]) {
   fMat[1][3] = 0;
   fMat[2][3] = 0;
   fMat[3][3] = 1;
-  this->recomputeTypeMask();
-}
-
-void Matrix44::set4x4(SkScalar m_00,
-                      SkScalar m_10,
-                      SkScalar m_20,
-                      SkScalar m_30,
-                      SkScalar m_01,
-                      SkScalar m_11,
-                      SkScalar m_21,
-                      SkScalar m_31,
-                      SkScalar m_02,
-                      SkScalar m_12,
-                      SkScalar m_22,
-                      SkScalar m_32,
-                      SkScalar m_03,
-                      SkScalar m_13,
-                      SkScalar m_23,
-                      SkScalar m_33) {
-  fMat[0][0] = m_00;
-  fMat[0][1] = m_10;
-  fMat[0][2] = m_20;
-  fMat[0][3] = m_30;
-  fMat[1][0] = m_01;
-  fMat[1][1] = m_11;
-  fMat[1][2] = m_21;
-  fMat[1][3] = m_31;
-  fMat[2][0] = m_02;
-  fMat[2][1] = m_12;
-  fMat[2][2] = m_22;
-  fMat[2][3] = m_32;
-  fMat[3][0] = m_03;
-  fMat[3][1] = m_13;
-  fMat[3][2] = m_23;
-  fMat[3][3] = m_33;
   this->recomputeTypeMask();
 }
 
@@ -1040,20 +961,6 @@ bool Matrix44::preserves2dAxisAlignment(SkScalar epsilon) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Matrix44::dump() const {
-  static const char* format =
-      "|%g %g %g %g|\n"
-      "|%g %g %g %g|\n"
-      "|%g %g %g %g|\n"
-      "|%g %g %g %g|\n";
-  SkDebugf(format, fMat[0][0], fMat[1][0], fMat[2][0], fMat[3][0], fMat[0][1],
-           fMat[1][1], fMat[2][1], fMat[3][1], fMat[0][2], fMat[1][2],
-           fMat[2][2], fMat[3][2], fMat[0][3], fMat[1][3], fMat[2][3],
-           fMat[3][3]);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 Matrix44::Matrix44(const SkMatrix& src) {
   fMat[0][0] = src[SkMatrix::kMScaleX];
   fMat[1][0] = src[SkMatrix::kMSkewX];
@@ -1095,6 +1002,17 @@ SkMatrix Matrix44::asM33() const {
   dst[SkMatrix::kMPersp2] = fMat[3][3];
 
   return dst;
+}
+
+void Matrix44::FlattenTo2d() {
+  fMat[0][2] = 0;
+  fMat[1][2] = 0;
+  fMat[2][0] = 0;
+  fMat[2][1] = 0;
+  fMat[2][2] = 1;
+  fMat[2][3] = 0;
+  fMat[3][2] = 0;
+  recomputeTypeMask();
 }
 
 }  // namespace gfx

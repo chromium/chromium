@@ -37,7 +37,7 @@ struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
       out->MakeIdentity();
       return true;
     }
-    out->matrix().setColMajorf(matrix.data());
+    out->matrix().setColMajor(matrix.data());
     return true;
   }
 };

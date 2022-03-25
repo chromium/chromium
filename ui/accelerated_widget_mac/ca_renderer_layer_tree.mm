@@ -817,8 +817,8 @@ void CARendererLayerTree::TransformLayer::CommitToCA(CALayer* superlayer,
     post_scale.Scale(scale_factor, scale_factor);
     gfx::Transform conjugated_transform = pre_scale * transform_ * post_scale;
 
-    CATransform3D ca_transform;
-    conjugated_transform.matrix().asColMajord(&ca_transform.m11);
+    CATransform3D ca_transform =
+        conjugated_transform.matrix().ToCATransform3D();
     [ca_layer_ setTransform:ca_transform];
   }
 

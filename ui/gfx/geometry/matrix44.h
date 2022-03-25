@@ -8,8 +8,13 @@
 #include <atomic>
 #include <cstring>
 
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
+
+#if BUILDFLAG(IS_MAC)
+struct CATransform3D;
+#endif
 
 namespace gfx {
 
@@ -59,51 +64,37 @@ struct Vector4 {
 class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
   enum Uninitialized_Constructor { kUninitialized_Constructor };
-  enum Identity_Constructor { kIdentity_Constructor };
-  enum NaN_Constructor { kNaN_Constructor };
 
   explicit Matrix44(Uninitialized_Constructor) {}
 
-  constexpr explicit Matrix44(Identity_Constructor)
-      : fMat{{
-                 1,
-                 0,
-                 0,
-                 0,
-             },
-             {
-                 0,
-                 1,
-                 0,
-                 0,
-             },
-             {
-                 0,
-                 0,
-                 1,
-                 0,
-             },
-             {
-                 0,
-                 0,
-                 0,
-                 1,
-             }},
+  constexpr Matrix44()
+      : fMat{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}},
         fTypeMask(kIdentity_Mask) {}
 
-  explicit Matrix44(NaN_Constructor)
-      : fMat{{SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN},
-             {SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN},
-             {SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN},
-             {SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN}},
-        fTypeMask(kTranslate_Mask | kScale_Mask | kAffine_Mask |
-                  kPerspective_Mask) {}
-
-  constexpr Matrix44() : Matrix44{kIdentity_Constructor} {}
-
-  Matrix44(const Matrix44& src) = default;
-
-  Matrix44& operator=(const Matrix44& src) = default;
+  // The parameters are in row-major order.
+  Matrix44(SkScalar col1row1,
+           SkScalar col2row1,
+           SkScalar col3row1,
+           SkScalar col4row1,
+           SkScalar col1row2,
+           SkScalar col2row2,
+           SkScalar col3row2,
+           SkScalar col4row2,
+           SkScalar col1row3,
+           SkScalar col2row3,
+           SkScalar col3row3,
+           SkScalar col4row3,
+           SkScalar col1row4,
+           SkScalar col2row4,
+           SkScalar col3row4,
+           SkScalar col4row4)
+      // fMat is indexed by [col][row] (i.e. col-major).
+      : fMat{{col1row1, col1row2, col1row3, col1row4},
+             {col2row1, col2row2, col2row3, col2row4},
+             {col3row1, col3row2, col3row3, col3row4},
+             {col4row1, col4row2, col4row3, col4row4}} {
+    recomputeTypeMask();
+  }
 
   Matrix44(const Matrix44& a, const Matrix44& b) { this->setConcat(a, b); }
 
@@ -122,11 +113,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
 
   // Inverse conversion of the above.
   SkMatrix asM33() const;
-
-  /**
-   *  Return a reference to a const identity matrix
-   */
-  static const Matrix44& I();
 
   using TypeMask = uint8_t;
   enum : TypeMask {
@@ -175,7 +161,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   }
 
   void setIdentity();
-  inline void reset() { this->setIdentity(); }
 
   /**
    *  get a value from the matrix. The row,col parameters work as follows:
@@ -211,10 +196,8 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    *  contiguously in memory.  Row major indicates that consecutive elements
    *  of rows will be stored contiguously in memory.
    */
-  void asColMajorf(float[]) const;
-  void asColMajord(double[]) const;
-  void asRowMajorf(float[]) const;
-  void asRowMajord(double[]) const;
+  void getColMajor(float[]) const;
+  void getRowMajor(float[]) const;
 
   /** These methods allow one to efficiently set all matrix entries from an
    *  array. The given array must have room for exactly 16 entries. Whenever
@@ -226,13 +209,12 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    *  indicates that input memory will be treated as if consecutive elements
    *  of rows are stored contiguously in memory.
    */
-  void setColMajorf(const float[]);
-  void setColMajord(const double[]);
-  void setRowMajorf(const float[]);
-  void setRowMajord(const double[]);
+  void setColMajor(const float[]);
+  void setRowMajor(const float[]);
 
-  void setColMajor(const SkScalar data[]) { this->setColMajorf(data); }
-  void setRowMajor(const SkScalar data[]) { this->setRowMajorf(data); }
+#if BUILDFLAG(IS_MAC)
+  CATransform3D ToCATransform3D() const;
+#endif
 
   /* This sets the top-left of the matrix and clears the translation and
    * perspective components (with [3][3] set to 1).  m_ij is interpreted
@@ -247,23 +229,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
               SkScalar m_12,
               SkScalar m_22);
   void set3x3RowMajorf(const float[]);
-
-  void set4x4(SkScalar m_00,
-              SkScalar m_10,
-              SkScalar m_20,
-              SkScalar m_30,
-              SkScalar m_01,
-              SkScalar m_11,
-              SkScalar m_21,
-              SkScalar m_31,
-              SkScalar m_02,
-              SkScalar m_12,
-              SkScalar m_22,
-              SkScalar m_32,
-              SkScalar m_03,
-              SkScalar m_13,
-              SkScalar m_23,
-              SkScalar m_33);
 
   Matrix44& setTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
   Matrix44& preTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
@@ -351,9 +316,9 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    */
   bool preserves2dAxisAlignment(SkScalar epsilon = SK_ScalarNearlyZero) const;
 
-  void dump() const;
-
   double determinant() const;
+
+  void FlattenTo2d();
 
  private:
   /* This is indexed by [col][row]. */
@@ -383,8 +348,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
     SkASSERT(0 == (~kAllPublic_Masks & mask));
     fTypeMask = mask;
   }
-
-  inline const SkScalar* values() const { return &fMat[0][0]; }
 };
 
 }  // namespace gfx

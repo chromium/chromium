@@ -71,7 +71,7 @@ bool Normalize(Matrix44& m) {
 }
 
 Matrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix(Matrix44::kIdentity_Constructor);
+  Matrix44 matrix;
 
   for (int i = 0; i < 4; i++)
     matrix.setRC(3, i, decomp.perspective[i]);
@@ -119,9 +119,9 @@ Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
 }
 
 Matrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix(Matrix44::kIdentity_Constructor);
+  Matrix44 matrix;
 
-  Matrix44 temp(Matrix44::kIdentity_Constructor);
+  Matrix44 temp;
   if (decomp.skew[2]) {
     temp.setRC(1, 2, decomp.skew[2]);
     matrix.preConcat(temp);
@@ -161,7 +161,7 @@ Transform ComposeTransform(const Matrix44& perspective,
                            const Matrix44& rotation,
                            const Matrix44& skew,
                            const Matrix44& scale) {
-  Matrix44 matrix(Matrix44::kIdentity_Constructor);
+  Matrix44 matrix;
 
   matrix.preConcat(perspective);
   matrix.preConcat(translation);

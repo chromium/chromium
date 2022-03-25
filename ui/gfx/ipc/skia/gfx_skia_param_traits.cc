@@ -98,7 +98,7 @@ void ParamTraits<SkBitmap>::Log(const SkBitmap& p, std::string* l) {
 
 void ParamTraits<gfx::Transform>::Write(base::Pickle* m, const param_type& p) {
   SkScalar column_major_data[16];
-  p.matrix().asColMajorf(column_major_data);
+  p.matrix().getColMajor(column_major_data);
   // We do this in a single write for performance reasons.
   m->WriteBytes(&column_major_data, sizeof(SkScalar) * 16);
 }
@@ -113,15 +113,9 @@ bool ParamTraits<gfx::Transform>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Transform>::Log(
-    const param_type& p, std::string* l) {
-#ifdef SK_SCALAR_IS_FLOAT
+void ParamTraits<gfx::Transform>::Log(const param_type& p, std::string* l) {
   float row_major_data[16];
-  p.matrix().asRowMajorf(row_major_data);
-#else
-  double row_major_data[16];
-  p.matrix().asRowMajord(row_major_data);
-#endif
+  p.matrix().getRowMajor(row_major_data);
   l->append("(");
   for (int i = 0; i < 16; ++i) {
     if (i > 0)

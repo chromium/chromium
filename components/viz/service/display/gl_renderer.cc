@@ -3012,7 +3012,7 @@ void GLRenderer::EnqueueTextureQuad(const TextureDrawQuad* quad,
   quad_rect_matrix = current_frame()->projection_matrix * quad_rect_matrix;
 
   Float16 m;
-  quad_rect_matrix.matrix().asColMajorf(m.data);
+  quad_rect_matrix.matrix().getColMajor(m.data);
   draw_cache_.matrix_data.push_back(m);
 
   // Track the region in the current target surface that has been drawn to.
@@ -3254,7 +3254,7 @@ void GLRenderer::CopyDrawnRenderPass(
 }
 
 void GLRenderer::ToGLMatrix(float* gl_matrix, const gfx::Transform& transform) {
-  transform.matrix().asColMajorf(gl_matrix);
+  transform.matrix().getColMajor(gl_matrix);
 }
 
 void GLRenderer::SetShaderQuadF(const gfx::QuadF& quad) {
@@ -3913,7 +3913,7 @@ void GLRenderer::ScheduleCALayers() {
     GLint sorting_context_id =
         ca_layer_overlay.shared_state->sorting_context_id;
     GLfloat transform[16];
-    ca_layer_overlay.shared_state->transform.matrix().asColMajorf(transform);
+    ca_layer_overlay.shared_state->transform.matrix().getColMajor(transform);
     unsigned filter = ca_layer_overlay.filter;
 
     if (ca_layer_overlay.shared_state != shared_state) {
@@ -4271,7 +4271,7 @@ GLRenderer::ScheduleRenderPassDrawQuad(const CALayerOverlay* ca_layer_overlay) {
 
   GLint sorting_context_id = ca_layer_overlay->shared_state->sorting_context_id;
   GLfloat gl_transform[16];
-  ca_layer_overlay->shared_state->transform.matrix().asColMajorf(gl_transform);
+  ca_layer_overlay->shared_state->transform.matrix().getColMajor(gl_transform);
   unsigned filter = ca_layer_overlay->filter;
 
   // The alpha has already been applied when copying the RPDQ to an IOSurface.

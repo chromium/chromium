@@ -30,7 +30,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
  public:
   enum SkipInitialization { kSkipInitialization };
 
-  constexpr Transform() : matrix_(Matrix44::kIdentity_Constructor) {}
+  constexpr Transform() = default;
 
   // Skips initializing this matrix to avoid overhead, when we know it will be
   // initialized before use.

@@ -221,8 +221,8 @@ double ComputeDecompRecompError(const Transform& transform) {
 
   float expected[16];
   float actual[16];
-  transform.matrix().asRowMajorf(expected);
-  composed.matrix().asRowMajorf(actual);
+  transform.matrix().getRowMajor(expected);
+  composed.matrix().getRowMajor(actual);
   double sse = 0;
   for (int i = 0; i < 16; i++) {
     double diff = expected[i] - actual[i];

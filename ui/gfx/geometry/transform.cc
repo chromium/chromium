@@ -37,6 +37,7 @@ inline bool ApproximatelyOne(SkScalar x, SkScalar tolerance) {
 
 }  // namespace
 
+// clang-format off
 Transform::Transform(SkScalar col1row1,
                      SkScalar col2row1,
                      SkScalar col3row1,
@@ -53,11 +54,10 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row4,
                      SkScalar col3row4,
                      SkScalar col4row4)
-    : matrix_(Matrix44::kUninitialized_Constructor) {
-  matrix_.set4x4(col1row1, col1row2, col1row3, col1row4, col2row1, col2row2,
-                 col2row3, col2row4, col3row1, col3row2, col3row3, col3row4,
-                 col4row1, col4row2, col4row3, col4row4);
-}
+    : matrix_(col1row1, col2row1, col3row1, col4row1,
+              col1row2, col2row2, col3row2, col4row2,
+              col1row3, col2row3, col3row3, col4row3,
+              col1row4, col2row4, col3row4, col4row4) {}
 
 Transform::Transform(SkScalar col1row1,
                      SkScalar col2row1,
@@ -65,10 +65,11 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row2,
                      SkScalar x_translation,
                      SkScalar y_translation)
-    : matrix_(Matrix44::kUninitialized_Constructor) {
-  matrix_.set4x4(col1row1, col1row2, 0, 0, col2row1, col2row2, 0, 0, 0, 0, 1, 0,
-                 x_translation, y_translation, 0, 1);
-}
+    : matrix_(col1row1, col2row1, 0, x_translation,
+              col1row2, col2row2, 0, y_translation,
+              0, 0, 1, 0,
+              0, 0, 0, 1) {}
+// clang-format on
 
 // TODO(crbug.com/1167153): This implementation is temporary before we change
 // matrix_ to SkM44 type.
@@ -191,7 +192,7 @@ void Transform::Skew(double angle_x, double angle_y) {
     matrix_.setRC(0, 1, TanDegrees(angle_x));
     matrix_.setRC(1, 0, TanDegrees(angle_y));
   } else {
-    Matrix44 skew(Matrix44::kIdentity_Constructor);
+    Matrix44 skew;
     skew.setRC(0, 1, TanDegrees(angle_x));
     skew.setRC(1, 0, TanDegrees(angle_y));
     matrix_.preConcat(skew);
@@ -204,7 +205,7 @@ void Transform::ApplyPerspectiveDepth(SkScalar depth) {
   if (matrix_.isIdentity()) {
     matrix_.setRC(3, 2, -SK_Scalar1 / depth);
   } else {
-    Matrix44 m(Matrix44::kIdentity_Constructor);
+    Matrix44 m;
     m.setRC(3, 2, -SK_Scalar1 / depth);
     matrix_.preConcat(m);
   }
@@ -399,16 +400,8 @@ void Transform::Transpose() {
 }
 
 void Transform::FlattenTo2d() {
-  float tmp[16];
-  matrix_.asColMajorf(tmp);
-  tmp[2] = 0.0;
-  tmp[6] = 0.0;
-  tmp[8] = 0.0;
-  tmp[9] = 0.0;
-  tmp[10] = 1.0;
-  tmp[11] = 0.0;
-  tmp[14] = 0.0;
-  matrix_.setColMajorf(tmp);
+  matrix_.FlattenTo2d();
+  DCHECK(IsFlat());
 }
 
 bool Transform::IsFlat() const {
