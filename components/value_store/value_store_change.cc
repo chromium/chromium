@@ -16,13 +16,13 @@ base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
   base::Value changes_value(base::Value::Type::DICTIONARY);
   for (auto& change : changes) {
     base::Value change_value(base::Value::Type::DICTIONARY);
-    if (change.old_value()) {
-      change_value.SetKey("oldValue", std::move(*change.old_value_));
+    if (change.old_value) {
+      change_value.SetKey("oldValue", std::move(*change.old_value));
     }
-    if (change.new_value()) {
-      change_value.SetKey("newValue", std::move(*change.new_value_));
+    if (change.new_value) {
+      change_value.SetKey("newValue", std::move(*change.new_value));
     }
-    changes_value.SetKey(change.key(), std::move(change_value));
+    changes_value.SetKey(change.key, std::move(change_value));
   }
   return changes_value;
 }
@@ -30,22 +30,14 @@ base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
 ValueStoreChange::ValueStoreChange(const std::string& key,
                                    absl::optional<base::Value> old_value,
                                    absl::optional<base::Value> new_value)
-    : key_(key),
-      old_value_(std::move(old_value)),
-      new_value_(std::move(new_value)) {}
+    : key(key),
+      old_value(std::move(old_value)),
+      new_value(std::move(new_value)) {}
 
 ValueStoreChange::~ValueStoreChange() = default;
 
 ValueStoreChange::ValueStoreChange(ValueStoreChange&& other) = default;
 ValueStoreChange& ValueStoreChange::operator=(ValueStoreChange&& other) =
     default;
-
-const base::Value* ValueStoreChange::old_value() const {
-  return base::OptionalOrNullptr(old_value_);
-}
-
-const base::Value* ValueStoreChange::new_value() const {
-  return base::OptionalOrNullptr(new_value_);
-}
 
 }  // namespace value_store

@@ -14,12 +14,11 @@
 
 namespace value_store {
 
-class ValueStoreChange;
+struct ValueStoreChange;
 typedef std::vector<ValueStoreChange> ValueStoreChangeList;
 
 // A change to a setting.
-class ValueStoreChange {
- public:
+struct ValueStoreChange {
   // Converts an ValueStoreChangeList into base::Value of the form:
   // { "foo": { "key": "foo", "oldValue": "bar", "newValue": "baz" } }
   static base::Value ToValue(ValueStoreChangeList changes);
@@ -35,21 +34,9 @@ class ValueStoreChange {
 
   ~ValueStoreChange();
 
-  // Gets the key of the setting which changed.
-  const std::string& key() const { return key_; }
-
-  // Gets the value of the setting before the change, or NULL if there was no
-  // old value.
-  const base::Value* old_value() const;
-
-  // Gets the value of the setting after the change, or NULL if there is no new
-  // value.
-  const base::Value* new_value() const;
-
- private:
-  std::string key_;
-  absl::optional<base::Value> old_value_;
-  absl::optional<base::Value> new_value_;
+  std::string key;
+  absl::optional<base::Value> old_value;
+  absl::optional<base::Value> new_value;
 };
 
 }  // namespace value_store

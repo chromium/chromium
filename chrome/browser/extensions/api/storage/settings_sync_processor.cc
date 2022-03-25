@@ -52,28 +52,26 @@ absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
   std::set<std::string> added_keys;
   std::set<std::string> deleted_keys;
 
-  for (auto i = changes.cbegin(); i != changes.cend(); ++i) {
-    const std::string& key = i->key();
-    const base::Value* value = i->new_value();
-    if (value) {
-      if (synced_keys_.count(key)) {
+  for (const auto& i : changes) {
+    if (i.new_value) {
+      if (synced_keys_.count(i.key)) {
         // New value, key is synced; send ACTION_UPDATE.
         sync_changes.push_back(settings_sync_util::CreateUpdate(
-            extension_id_, key, *value, type_));
+            extension_id_, i.key, *i.new_value, type_));
       } else {
         // New value, key is not synced; send ACTION_ADD.
         sync_changes.push_back(settings_sync_util::CreateAdd(
-            extension_id_, key, *value, type_));
-        added_keys.insert(key);
+            extension_id_, i.key, *i.new_value, type_));
+        added_keys.insert(i.key);
       }
     } else {
-      if (synced_keys_.count(key)) {
+      if (synced_keys_.count(i.key)) {
         // Clearing value, key is synced; send ACTION_DELETE.
-        sync_changes.push_back(settings_sync_util::CreateDelete(
-            extension_id_, key, type_));
-        deleted_keys.insert(key);
+        sync_changes.push_back(
+            settings_sync_util::CreateDelete(extension_id_, i.key, type_));
+        deleted_keys.insert(i.key);
       } else {
-        LOG(WARNING) << "Deleted " << key << " but not in synced_keys_";
+        LOG(WARNING) << "Deleted " << i.key << " but not in synced_keys_";
       }
     }
   }
@@ -99,11 +97,11 @@ void SettingsSyncProcessor::NotifyChanges(
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 
-  for (auto i = changes.cbegin(); i != changes.cend(); ++i) {
-    if (i->new_value())
-      synced_keys_.insert(i->key());
+  for (const auto& i : changes) {
+    if (i.new_value)
+      synced_keys_.insert(i.key);
     else
-      synced_keys_.erase(i->key());
+      synced_keys_.erase(i.key);
   }
 }
 
