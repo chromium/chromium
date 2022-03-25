@@ -600,3 +600,46 @@ TEST_F(IntentFilterUtilTest, IntentFiltersConvert) {
     EXPECT_EQ(condition->condition_values[0]->value, "7");
   }
 }
+
+TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
+  const auto kPrefix = apps::PatternMatchType::kPrefix;
+  const auto kLiteral = apps::PatternMatchType::kLiteral;
+  const auto kGlob = apps::PatternMatchType::kGlob;
+  struct Test {
+    std::string filter_url;
+    std::string matched_url;
+    apps::PatternMatchType pattern_match_type;
+    size_t expected;
+  };
+  std::vector<Test> tests{
+      {"https://prefix.a.com/a", "https://prefix.a.com/a", kPrefix, 22},
+      {"https://prefix.a.com/a", "https://prefix.a.com/a/b", kPrefix, 22},
+      {"https://prefix.a.com/a", "", kPrefix, 0},
+      {"https://prefix.a.com/a/b", "https://prefix.a.com/a", kPrefix, 0},
+      {"https://prefix.a.com/a", "https://prefix.a.com/", kPrefix, 0},
+      {"https://prefix.a.com/a", "https://prefix.a.org/a", kPrefix, 0},
+      {"https://prefix.a.com/a", "http://prefix.a.com/a", kPrefix, 0},
+
+      {"https://exact.a.com/a", "https://exact.a.com/a", kLiteral, 21},
+      {"https://exact.a.com/a", "https://exact.a.com/a/b", kLiteral, 0},
+      {"https://exact.a.com/a/b", "https://exact.a.com/a", kLiteral, 0},
+      {"https://exact.a.com/a", "https://exact.a.org/a", kLiteral, 0},
+      {"https://exact.a.com/a", "http://exact.a.com/a", kLiteral, 0},
+
+      // Glob is not supported.
+      {"https://glob.a.com/a/.*", "https://glob.a.com/a", kGlob, 0},
+      {"https://glob.a.com/a/.*", "https://glob.a.com/a/b", kGlob, 0},
+      {"https://glob.a.com/a/.*/b", "https://glob.a.com/a/b", kGlob, 0},
+  };
+  for (size_t i = 0; i < tests.size(); ++i) {
+    const auto& test = tests[i];
+    GURL filter_url(test.filter_url);
+    GURL matched_url(test.matched_url);
+    auto filter = MakeFilter(filter_url.scheme(), filter_url.host(),
+                             filter_url.path(), test.pattern_match_type);
+    EXPECT_EQ(apps_util::IntentFilterUrlMatchLength(filter, matched_url),
+              test.expected)
+        << "Test #" << i << " url=" << test.matched_url
+        << " filter=" << test.filter_url;
+  }
+}

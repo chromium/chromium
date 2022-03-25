@@ -87,6 +87,14 @@ bool IsSupportedLinkForApp(const std::string& app_id,
 bool IsSupportedLinkForApp(const std::string& app_id,
                            const apps::mojom::IntentFilterPtr& intent_filter);
 
+// If |intent_filter| matches a URL by prefix, return the length of the longest
+// match. For example, if the filter matches "https://example.org/app/*", the
+// longest match for the URL "https://example.org/app/foo/bar" is the length of
+// "https://example.org/app/" (24). If |intent_filter| does not match |url|, or
+// if the filter does not match a prefix (e.g. glob), 0 is returned.
+size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
+                                  const GURL& url);
+
 }  // namespace apps_util
 
 namespace apps {

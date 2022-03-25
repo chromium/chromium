@@ -405,6 +405,37 @@ bool IsSupportedLinkForApp(const std::string& app_id,
   return false;
 }
 
+size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
+                                  const GURL& url) {
+  apps::Intent intent(url);
+  if (!intent.MatchFilter(intent_filter)) {
+    return 0;
+  }
+  // If the filter matches, all URL components match, so a kPattern condition
+  // matches and we add up the length of the filter's URL components (scheme,
+  // host, path).
+  size_t path_length = 0;
+  for (const apps::ConditionPtr& condition : intent_filter->conditions) {
+    if (condition->condition_type == apps::ConditionType::kPattern) {
+      for (const apps::ConditionValuePtr& value : condition->condition_values) {
+        switch (value->match_type) {
+          case apps::PatternMatchType::kLiteral:
+          case apps::PatternMatchType::kPrefix:
+            path_length = std::max(path_length, value->value.size());
+            break;
+          default:
+            // the rest are ignored.
+            break;
+        }
+      }
+    }
+  }
+  if (path_length == 0) {
+    return 0;
+  }
+  return url.spec().size() - url.path().size() + path_length;
+}
+
 }  // namespace apps_util
 
 namespace apps {
