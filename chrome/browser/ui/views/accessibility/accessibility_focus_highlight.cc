@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -60,9 +61,6 @@ constexpr auto kFadeOutTime = base::Milliseconds(600);
 }  // namespace
 
 // static
-SkColor AccessibilityFocusHighlight::default_color_;
-
-// static
 base::TimeDelta AccessibilityFocusHighlight::fade_in_time_;
 
 // static
@@ -101,7 +99,6 @@ AccessibilityFocusHighlight::AccessibilityFocusHighlight(
     fade_in_time_ = kFadeInTime;
     persist_time_ = kHighlightPersistTime;
     fade_out_time_ = kFadeOutTime;
-    default_color_ = SkColorSetRGB(0x10, 0x10, 0x10);  // #101010
   }
 }
 
@@ -131,17 +128,17 @@ ui::Layer* AccessibilityFocusHighlight::GetLayerForTesting() {
 }
 
 SkColor AccessibilityFocusHighlight::GetHighlightColor() {
+  const ui::ColorProvider* color_provider = browser_view_->GetColorProvider();
 #if !BUILDFLAG(IS_MAC)
   // Match behaviour with renderer_preferences_util::UpdateFromSystemSettings
   // setting prefs->focus_ring_color
-  return default_color_;
+  return color_provider->GetColor(kColorFocusHighlightDefault);
 #else
-  const ui::ColorProvider* color_provider = browser_view_->GetColorProvider();
   SkColor theme_color =
       color_provider->GetColor(ui::kColorFocusableBorderFocused);
 
   if (theme_color == SK_ColorTRANSPARENT || use_default_color_for_testing_)
-    return default_color_;
+    return color_provider->GetColor(kColorFocusHighlightDefault);
 
   return theme_color;
 #endif

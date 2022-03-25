@@ -96,6 +96,8 @@
     ThemeProperties::COLOR_FLYING_INDICATOR_BACKGROUND) \
   E(kColorFlyingIndicatorForeground, \
     ThemeProperties::COLOR_FLYING_INDICATOR_FOREGROUND) \
+  /* Default accessibility focus highlight. */ \
+  E_CPONLY(kColorFocusHighlightDefault) \
   /* Frame caption colors. */ \
   E(kColorFrameCaptionActive, ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE) \
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
