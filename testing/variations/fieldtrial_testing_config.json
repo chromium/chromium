@@ -4400,7 +4400,7 @@
                 {
                     "name": "EnabledWithEnhancedWindowOcclusionDetection",
                     "params": {
-                        "myparam": "EnhancedWindowOcclusionDetection"
+                        "EnhancedWindowOcclusionDetection": "true"
                     },
                     "enable_features": [
                         "MacWebContentsOcclusion"
@@ -4409,7 +4409,7 @@
                 {
                     "name": "EnabledWithDisplaySleepAndAppHideDetection",
                     "params": {
-                        "myparam": "DisplaySleepAndAppHideDetection"
+                        "DisplaySleepAndAppHideDetection": "true"
                     },
                     "enable_features": [
                         "MacWebContentsOcclusion"

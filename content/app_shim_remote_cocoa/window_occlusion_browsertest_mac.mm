@@ -460,9 +460,9 @@ class WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature
 };
 
 // Test that enhanced occlusion detection doesn't work if the feature's not
-// enabled.
+// enabled. Disabled to prevent failures in fieldtrial testing.
 IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
-                       ManualOcclusionDetectionDisabled) {
+                       DISABLED_ManualOcclusionDetectionDisabled) {
   InitWindowA();
 
   // Create a second window and place it exactly over window_a. The window
@@ -473,9 +473,9 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
 }
 
 // Test that display sleep and app hide detection don't work if the feature's
-// not enabled.
+// not enabled. Disabled to prevent failures in fieldtrial testing.
 IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
-                       OcclusionDetectionOnDisplaySleepDisabled) {
+                       DISABLED_OcclusionDetectionOnDisplaySleepDisabled) {
   InitWindowA();
 
   EXPECT_EQ(WindowAWebContentsVisibility(),
