@@ -207,12 +207,6 @@ class NET_EXPORT ParsedCookie {
   // |index| refers to a position in |pairs_|.
   void ClearAttributePair(size_t index);
 
-  // Records metrics on cookie name+value and attribute value lengths.
-  // This is being recorded to evaluate whether to change length limits for
-  // cookies, such that limits are applied to name+value, and individual
-  // attribute lengths, rather than to the whole set-cookie line.
-  void RecordCookieAttributeValueLengthHistograms() const;
-
   PairList pairs_;
   // These will default to 0, but that should never be valid since the
   // 0th index is the user supplied cookie name/value, not an attribute.
