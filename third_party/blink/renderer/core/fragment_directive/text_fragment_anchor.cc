@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 
+#include "base/trace_event/typed_macros.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
@@ -44,11 +45,17 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
   // conditions. See the TODO in the relevant spec section:
   // https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
 
-  if (!frame.Loader().GetDocumentLoader()->ConsumeTextFragmentToken())
+  if (!frame.Loader().GetDocumentLoader()->ConsumeTextFragmentToken()) {
+    TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
+                        "No Token");
     return false;
+  }
 
-  if (frame.GetDocument()->contentType() != "text/html")
+  if (frame.GetDocument()->contentType() != "text/html") {
+    TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
+                        "Invalid ContentType");
     return false;
+  }
 
   // For cross origin initiated navigations, we only allow text
   // fragments if the frame is not script accessible by another frame, i.e. no
@@ -56,10 +63,20 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
   if (!frame.Loader()
            .GetDocumentLoader()
            ->LastNavigationHadTrustedInitiator()) {
-    if (frame.Tree().Parent() || frame.GetPage()->RelatedPages().size())
+    if (frame.Tree().Parent()) {
+      TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
+                          "Cross-Origin Subframe");
       return false;
+    }
+
+    if (frame.GetPage()->RelatedPages().size()) {
+      TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
+                          "Non-Empty Browsing Context Group");
+      return false;
+    }
   }
 
+  TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result", "Pass");
   return true;
 }
 
@@ -137,6 +154,9 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
     return nullptr;
   }
 
+  TRACE_EVENT("blink", "TextFragmentAnchor::TryCreate", "url", url,
+              "should_scroll", should_scroll);
+
   if (!CheckSecurityRestrictions(frame)) {
     return nullptr;
   } else if (!should_scroll) {
@@ -166,6 +186,7 @@ TextFragmentAnchor::TextFragmentAnchor(
     : SelectorFragmentAnchor(frame, should_scroll),
       metrics_(MakeGarbageCollected<TextFragmentAnchorMetrics>(
           frame_->GetDocument())) {
+  TRACE_EVENT("blink", "TextFragmentAnchor::TextFragmentAnchor");
   DCHECK(!text_directives.IsEmpty());
   DCHECK(frame_->View());
 
