@@ -452,10 +452,6 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrameFrameWithoutKey) {
 // Tests that the WebFrame can execute arbitrary JavaScript
 // if and only if it is a main frame.
 TEST_F(WebFrameImplTest, ExecuteJavaScript) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   FakeWebState fake_web_state;
   GURL security_origin;
 
@@ -480,10 +476,6 @@ TEST_F(WebFrameImplTest, ExecuteJavaScript) {
 // Tests that the WebFrame can execute arbitrary JavaScript given
 // a callback if and only if it is a main frame.
 TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   FakeWebState fake_web_state;
   GURL security_origin;
 

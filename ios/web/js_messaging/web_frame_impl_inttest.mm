@@ -276,9 +276,8 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   ASSERT_TRUE(main_frame_impl);
 
   NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
-  __block bool called = false;
-
   JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
+  __block bool called = false;
 
   std::vector<base::Value> function_params;
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
@@ -301,7 +300,6 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
 // world.
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));
-
   WKWebView* web_view =
       [web::test::GetWebController(web_state()) ensureWebViewCreated];
   test::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
@@ -315,11 +313,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   ASSERT_TRUE(main_frame_impl);
 
   NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
-  __block bool called = false;
-
   JavaScriptContentWorld world(GetBrowserState(),
                                WKContentWorld.defaultClientWorld);
-
+  __block bool called = false;
   std::vector<base::Value> function_params;
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
       "fakeFunction", function_params, &world,

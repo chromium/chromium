@@ -159,14 +159,10 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   int message_id = next_message_id_;
   next_message_id_++;
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    if (content_world && content_world->GetWKContentWorld()) {
-      return ExecuteJavaScriptFunction(content_world, name, parameters,
-                                       message_id, reply_with_result);
-    }
+  if (content_world && content_world->GetWKContentWorld()) {
+    return ExecuteJavaScriptFunction(content_world, name, parameters,
+                                     message_id, reply_with_result);
   }
-#endif  // defined(__IPHONE14_0)
 
   if (!CanCallJavaScriptFunction()) {
     return false;
@@ -277,7 +273,6 @@ bool WebFrameImpl::ExecuteJavaScript(
 bool WebFrameImpl::ExecuteJavaScript(
     const std::string& script,
     ExecuteJavaScriptCallbackWithError callback) {
-  DCHECK(base::ios::IsRunningOnIOS14OrLater());
   DCHECK(frame_info_);
 
   if (!IsMainFrame()) {
@@ -296,13 +291,9 @@ bool WebFrameImpl::ExecuteJavaScript(
     }
   };
 
-  if (@available(iOS 14.0, *)) {
-    web::ExecuteJavaScript(frame_info_.webView, WKContentWorld.pageWorld,
-                           frame_info_, ns_script, completion_handler);
-    return true;
-  }
-
-  return false;
+  web::ExecuteJavaScript(frame_info_.webView, WKContentWorld.pageWorld,
+                         frame_info_, ns_script, completion_handler);
+  return true;
 }
 
 WebFrame::ExecuteJavaScriptCallbackWithError
@@ -334,7 +325,6 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
     int message_id,
     bool reply_with_result) {
   DCHECK(content_world);
-  DCHECK(base::ios::IsRunningOnIOS14OrLater());
   DCHECK(frame_info_);
 
   NSString* script = CreateFunctionCallWithParamaters(name, parameters);
@@ -357,18 +347,12 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
     };
   }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14.0, *)) {
-    WKContentWorld* world = content_world->GetWKContentWorld();
-    DCHECK(world);
+  WKContentWorld* world = content_world->GetWKContentWorld();
+  DCHECK(world);
 
-    web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
-                           completion_handler);
-    return true;
-  }
-#endif  // defined(__IPHONE14_0)
-
-  return false;
+  web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
+                         completion_handler);
+  return true;
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
