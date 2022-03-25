@@ -1808,14 +1808,9 @@ void NavigationRequest::BeginNavigation() {
     }
   }
 
-  bool need_url_mapping = NeedFencedFrameURLMapping();
-  frame_tree_node_->SetFencedFrameModeIfNeeded(
-      need_url_mapping ? FrameTreeNode::FencedFrameMode::kOpaque
-                       : FrameTreeNode::FencedFrameMode::kDefault);
-
   // If this is a fenced frame with a urn:uuid, then convert it to a url before
   // starting the navigation; otherwise, proceed directly with the navigation.
-  if (need_url_mapping) {
+  if (NeedFencedFrameURLMapping()) {
     FencedFrameURLMapping& fenced_frame_urls_map = GetFencedFrameURLMap();
 
     // If the mapping finishes synchronously, OnFencedFrameURLMappingComplete
@@ -5058,8 +5053,8 @@ net::Error NavigationRequest::CheckCSPDirectives(
 
   // [frame-src] or [fenced-frame-src]
   if (parent_policies) {
-    bool is_opaque_fenced_frame = frame_tree_node_->fenced_frame_mode() ==
-                                  FrameTreeNode::FencedFrameMode::kOpaque;
+    bool is_opaque_fenced_frame = frame_tree_node_->GetFencedFrameMode() ==
+                                  blink::mojom::FencedFrameMode::kOpaqueAds;
     if (!IsAllowedByCSPDirective(
             parent_policies->content_security_policies, &parent_context,
             frame_tree_node_->IsFencedFrameRoot()

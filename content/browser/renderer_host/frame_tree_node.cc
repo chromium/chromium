@@ -48,6 +48,23 @@ typedef std::unordered_map<int, FrameTreeNode*> FrameTreeNodeIdMap;
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
 
+FencedFrame* FindFencedFrame(const FrameTreeNode* frame_tree_node) {
+  // TODO(crbug.com/1123606): Consider having a pointer to `FencedFrame` in
+  // `FrameTreeNode` or having a map between them.
+
+  // Try and find the `FencedFrame` that `frame_tree_node` represents.
+  DCHECK(frame_tree_node->parent());
+  std::vector<FencedFrame*> fenced_frames =
+      frame_tree_node->parent()->GetFencedFrames();
+  for (FencedFrame* fenced_frame : fenced_frames) {
+    if (frame_tree_node->frame_tree_node_id() ==
+        fenced_frame->GetOuterDelegateFrameTreeNodeId()) {
+      return fenced_frame;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // This observer watches the opener of its owner FrameTreeNode and clears the
@@ -151,18 +168,7 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   }
 
   if (is_outer_dummy_node) {
-    DCHECK(parent());
-    // Try and find the `FencedFrame` that `this` represents.
-    std::vector<FencedFrame*> fenced_frames = parent()->GetFencedFrames();
-    FencedFrame* doomed_fenced_frame = nullptr;
-    for (FencedFrame* fenced_frame : fenced_frames) {
-      if (frame_tree_node_id() ==
-          fenced_frame->GetOuterDelegateFrameTreeNodeId()) {
-        doomed_fenced_frame = fenced_frame;
-        break;
-      }
-    }
-
+    FencedFrame* doomed_fenced_frame = FindFencedFrame(this);
     // `doomed_fenced_frame` might not actually exist, because some outer dummy
     // `FrameTreeNode`s might correspond to `Portal`s, which do not have their
     // lifetime managed in the same way as `FencedFrames`.
@@ -843,16 +849,21 @@ void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
   fenced_frame_nonce_ = nonce;
 }
 
-void FrameTreeNode::SetFencedFrameModeIfNeeded(
-    FencedFrameMode fenced_frame_mode) {
+absl::optional<blink::mojom::FencedFrameMode>
+FrameTreeNode::GetFencedFrameMode() {
   if (!IsFencedFrameRoot())
-    return;
+    return absl::nullopt;
 
-  // TODO(crbug.com/1123606): The 'mode' attribute cannot be changed once
-  // applied to a fenced frame. This will be enforced before this point so add
-  // a DCHECK here.
+  if (blink::features::IsFencedFramesShadowDOMBased())
+    return pending_frame_policy_.fenced_frame_mode;
 
-  fenced_frame_mode_ = fenced_frame_mode;
+  FrameTreeNode* outer_delegate = render_manager()->GetOuterDelegateNode();
+  DCHECK(outer_delegate);
+
+  FencedFrame* fenced_frame = FindFencedFrame(outer_delegate);
+  DCHECK(fenced_frame);
+
+  return fenced_frame->mode();
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {

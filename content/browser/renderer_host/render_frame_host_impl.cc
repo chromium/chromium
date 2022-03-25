@@ -7203,6 +7203,7 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
 void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
+    blink::mojom::FencedFrameMode mode,
     CreateFencedFrameCallback callback) {
   if (!blink::features::IsFencedFramesEnabled() ||
       !blink::features::IsFencedFramesMPArchBased()) {
@@ -7225,7 +7226,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
     return;
   }
   fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef()));
+      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   fenced_frame->Bind(std::move(pending_receiver));
 

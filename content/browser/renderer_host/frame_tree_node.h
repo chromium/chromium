@@ -67,15 +67,6 @@ class CONTENT_EXPORT FrameTreeNode {
     virtual ~Observer() = default;
   };
 
-  // Indicates whether the fenced frame url is opaque or not.
-  //
-  // TODO(https://crbug.com/1123606): Revisit where to define the mode when the
-  // 'mode' attribute is introduced.
-  enum class FencedFrameMode {
-    kOpaque,
-    kDefault,
-  };
-
   static const int kFrameTreeNodeInvalidId;
 
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
@@ -496,16 +487,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // by FrameTree::Init() or FrameTree::AddFrame().
   void SetFencedFrameNonceIfNeeded();
 
-  // Returns the fenced frame mode if `IsFencedFrameRoot()` returns true for
-  // `this`. Returns nullopt otherwise. See comments on `fenced_frame_mode_` for
-  // more details.
-  absl::optional<FencedFrameMode> fenced_frame_mode() {
-    return fenced_frame_mode_;
-  }
-
-  // If applicable, set the fenced frame mode if it's not been set yet. Invoked
-  // by `NavigationRequest::BeginNavigation()`.
-  void SetFencedFrameModeIfNeeded(FencedFrameMode fenced_frame_mode);
+  // Returns the mode attribute set on the fenced frame if this is a fenced
+  // frame root, otherwise returns `absl::nullopt`.
+  absl::optional<blink::mojom::FencedFrameMode> GetFencedFrameMode();
 
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
   // Do not use directly.
@@ -727,17 +711,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // parts of the key will change and so, even with the same nonce, another
   // partition will be used.
   absl::optional<base::UnguessableToken> fenced_frame_nonce_;
-
-  // Fenced Frames:
-  // Indicates whether the fenced frame is navigated to a urn:uuid or not. Not
-  // set if this frame is not fenced frame or it is a fenced frame but before
-  // `NavigationRequest::BeginNavigation()` is called which implicitly sets the
-  // mode. The mode will stay the same across navigations to avoid privacy leak.
-  // Since each mode might have different access constraints, privacy leak might
-  // occur if the mode is mutable as a fenced frame can pass the information it
-  // learned in one mode to the other mode if mode was changed across
-  // navigations.
-  absl::optional<FencedFrameMode> fenced_frame_mode_;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

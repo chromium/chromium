@@ -253,9 +253,10 @@ void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
   GetPage().UpdateManifestUrl(manifest_url);
 }
 
-TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame() {
+TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
+    blink::mojom::FencedFrameMode mode) {
   fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef()));
+      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   return static_cast<TestRenderFrameHost*>(
       fenced_frames_.back().get()->GetInnerRoot());
 }

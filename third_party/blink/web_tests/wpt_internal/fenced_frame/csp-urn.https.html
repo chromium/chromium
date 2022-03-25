@@ -20,7 +20,7 @@ allowedCSPs.forEach((csp) => {
     setupCSP(csp);
 
     const key = token();
-    attachFencedFrame(await generateURN("resources/embeddee.html", [key]));
+    attachFencedFrame(await generateURN("resources/embeddee.html", [key]), "opaque-ads");
 
     const result = await nextValueFromServer(key);
     assert_equals(result, "PASS",
@@ -40,7 +40,7 @@ blockedCSPs.forEach((csp) => {
       writeValueToServer(key, e.violatedDirective + ";" + e.blockedURI);
     });
 
-    attachFencedFrame(await generateURN("resources/embeddee.html", [key]));
+    attachFencedFrame(await generateURN("resources/embeddee.html", [key]), "opaque-ads");
 
     const result = await nextValueFromServer(key);
     assert_equals(result, "fenced-frame-src;",

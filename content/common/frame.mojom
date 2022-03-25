@@ -675,7 +675,8 @@ interface FrameHost {
   //                          the "inner" fenced frame FrameTree
   [Sync] CreateFencedFrame(
       pending_associated_receiver<blink.mojom.FencedFrameOwnerHost>
-        fenced_frame)
+        fenced_frame,
+      blink.mojom.FencedFrameMode mode)
       => (int32 proxy_routing_id,
           blink.mojom.FrameReplicationState initial_replication_state,
           blink.mojom.RemoteFrameToken frame_token,

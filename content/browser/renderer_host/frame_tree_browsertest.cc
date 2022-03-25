@@ -2216,6 +2216,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
 
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
+                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
 
     EXPECT_EQ(1U, root->child_count());
@@ -2241,11 +2242,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     if (!test_case.expect_allowed)
       EXPECT_EQ("fenced-frame-src;", EvalJs(root, "violation"));
 
-    absl::optional<FrameTreeNode::FencedFrameMode> fenced_frame_mode =
-        fenced_frame_root_node->fenced_frame_mode();
+    absl::optional<blink::mojom::FencedFrameMode> fenced_frame_mode =
+        fenced_frame_root_node->GetFencedFrameMode();
     EXPECT_TRUE(fenced_frame_mode.has_value());
     EXPECT_EQ(fenced_frame_mode.value(),
-              FrameTreeNode::FencedFrameMode::kOpaque);
+              blink::mojom::FencedFrameMode::kOpaqueAds);
   }
 }
 

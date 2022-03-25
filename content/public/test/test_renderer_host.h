@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(USE_AURA)
@@ -137,7 +138,9 @@ class RenderFrameHostTester {
   virtual void SimulateManifestURLUpdate(const GURL& manifest_url) = 0;
 
   // Creates and appends a fenced frame.
-  virtual RenderFrameHost* AppendFencedFrame() = 0;
+  virtual RenderFrameHost* AppendFencedFrame(
+      blink::mojom::FencedFrameMode mode =
+          blink::mojom::FencedFrameMode::kDefault) = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.

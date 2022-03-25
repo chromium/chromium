@@ -34,7 +34,8 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
 }  // namespace
 
 FencedFrame::FencedFrame(
-    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host)
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    blink::mojom::FencedFrameMode mode)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
@@ -50,7 +51,8 @@ FencedFrame::FencedFrame(
                                       /*render_widget_delegate=*/web_contents_,
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
-                                      FrameTree::Type::kFencedFrame)) {
+                                      FrameTree::Type::kFencedFrame)),
+      mode_(mode) {
   scoped_refptr<SiteInstance> site_instance =
       SiteInstance::Create(web_contents_->GetBrowserContext());
   // Note that even though this is happening in response to an event in the

@@ -103,7 +103,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
   void SimulateManifestURLUpdate(const GURL& manifest_url) override;
-  TestRenderFrameHost* AppendFencedFrame() override;
+  TestRenderFrameHost* AppendFencedFrame(
+      blink::mojom::FencedFrameMode mode =
+          blink::mojom::FencedFrameMode::kDefault) override;
 
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,
