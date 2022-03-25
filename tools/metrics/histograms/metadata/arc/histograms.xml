@@ -969,9 +969,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ImageCopyPasteCompatOperationType"
-    enum="ArcImageCopyPasteCompatOperationType" expires_after="2022-04-01">
-  <owner>tetsui@chromium.org</owner>
+    enum="ArcImageCopyPasteCompatOperationType" expires_after="2022-10-01">
   <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     The operation type (copy-paste or drag-drop) and the source of the image
     (from browser or Files app), counted when image copy-paste app compat is
