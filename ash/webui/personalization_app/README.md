@@ -6,20 +6,20 @@
 - Follow https://chromium.googlesource.com/chromium/src/+/HEAD/docs/vscode.md
 - Config `tsconfig.json`:
   - Create or update `${PATH_TO_CHROMIUM}/src/ash/webui/personalization_app/resources/tsconfig.json`
+    - Remember to replace `out/${YOUR_BUILD}` with your out directory.
   ```
   {
     "__comment__": [
         "This file is used by local typescript language server. It is manually",
         "maintained to be close to the corresponding ts_library() target in BUILD.gn. ",
-        "Be sure to replace locally 'out/Debug' with your out dir if it",
-        "is different. Or change your out dir to 'out/Debug'."
+        "Be sure to replace locally 'out/${YOUR_BUILD}' with your out dir"
     ],
     "extends": "./tsconfig_base.json",
     "compilerOptions": {
         "composite": true,
         "rootDirs": [
             ".",
-            "../../../../out/Debug/gen/ash/webui/personalization_app/resources/preprocessed"
+            "../../../../out/${YOUR_BUILD}/gen/ash/webui/personalization_app/resources/preprocessed"
         ],
         "moduleResolution": "node",
         "noEmit": true,
@@ -28,10 +28,10 @@
                 "./*"
             ],
             "chrome://resources/*": [
-                "../../../../out/Debug/gen/ui/webui/resources/preprocessed/*"
+                "../../../../out/${YOUR_BUILD}/gen/ui/webui/resources/preprocessed/*"
             ],
             "//resources/*": [
-                "../../../../out/Debug/gen/ui/webui/resources/preprocessed/*"
+                "../../../../out/${YOUR_BUILD}/gen/ui/webui/resources/preprocessed/*"
             ],
             "chrome://resources/polymer/v3_0/*": [
                 "../../../../third_party/polymer/v3_0/components-chromium/*"
@@ -70,14 +70,14 @@
     "compilerOptions": {
         "rootDirs": [
             ".",
-            "../../../../../../out/Debug/gen/chrome/test/data/webui/chromeos/personalization_app"
+            "../../../../../../out/${YOUR_BUILD}/gen/chrome/test/data/webui/chromeos/personalization_app"
         ],
         "paths": {
             "chrome://resources/*": [
-                "../../../../../../out/Debug/gen/ui/webui/resources/preprocessed/*"
+                "../../../../../../out/${YOUR_BUILD}/gen/ui/webui/resources/preprocessed/*"
             ],
             "//resources/*": [
-                "../../../../../../out/Debug/gen/ui/webui/resources/preprocessed/*"
+                "../../../../../../out/${YOUR_BUILD}/gen/ui/webui/resources/preprocessed/*"
             ],
             "chrome://resources/polymer/v3_0/*": [
                 "../../../../../../third_party/polymer/v3_0/components-chromium/*"
@@ -95,10 +95,10 @@
                 "../../../../../../tools/typescript/definitions/*"
             ],
             "chrome://personalization/*": [
-                "../../../../../../out/Debug/gen/ash/webui/personalization_app/resources/tsc/*"
+                "../../../../../../out/${YOUR_BUILD}/gen/ash/webui/personalization_app/resources/tsc/*"
             ],
             "chrome://webui-test/*": [
-                "../../../../../../out/Debug/gen/chrome/test/data/webui/tsc/*"
+                "../../../../../../out/${YOUR_BUILD}/gen/chrome/test/data/webui/tsc/*"
             ]
         }
     },
