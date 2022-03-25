@@ -28,7 +28,6 @@ message ClientInfo {
   repeated DisplayInfo display_info = 6;
   optional string client_instance_id = 7;
   optional string advertising_id = 8;
-  optional string device_country = 9;
   optional Device device = 10;
   optional ChromeClientInfo chrome_client_info = 338478298;
 }

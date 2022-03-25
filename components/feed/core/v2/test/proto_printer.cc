@@ -146,7 +146,6 @@ class TextProtoPrinter {
     PRINT_FIELD(display_info);
     PRINT_FIELD(client_instance_id);
     PRINT_FIELD(advertising_id);
-    PRINT_FIELD(device_country);
     EndMessage();
     return *this;
   }

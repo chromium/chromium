@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 /**
@@ -137,4 +141,20 @@ public interface FeedActionsHandler {
      * @param key Key to identify the type of the notice.
      */
     default void reportNoticeDismissed(String key) {}
+
+    /** Types of feeds that can be invalidated. */
+    @IntDef({FeedIdentifier.ALL_FEEDS, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface FeedIdentifier {
+        int ALL_FEEDS = 0;
+        int MAIN_FEED = 1;
+        int FOLLOWING_FEED = 2;
+    }
+
+    /**
+     * Requests that the cache of one or all feeds should be invalidated so that that their contents
+     * are re-fetched the next time the feed is shown.
+     * @param toInvalidate Identifies which feed or feeds should have their caches invalidated.
+     */
+    default void invalidateContentCacheFor(@FeedIdentifier int toInvalidate) {}
 }

@@ -8,6 +8,7 @@ package feedwire;
 
 import "components/feed/core/proto/v2/wire/capability.proto";
 import "components/feed/core/proto/v2/wire/client_info.proto";
+import "components/feed/core/proto/v2/wire/client_user_profiles.proto";
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
 import "components/feed/core/proto/v2/wire/diagnostic_info.proto";
 import "components/feed/core/proto/v2/wire/feed_query.proto";
@@ -20,4 +21,5 @@ message FeedRequest {
   repeated Capability client_capability = 4;
   optional ConsistencyToken consistency_token = 5;
   optional DiagnosticInfo diagnostic_info = 14;
+  optional ClientUserProfiles client_user_profiles = 16;
 }
