@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox options page.
  *
  */
+import {ChromeVoxPrefs} from '../background/prefs.js';
 
 import {TtsBackground} from '../common/tts_background.js';
 

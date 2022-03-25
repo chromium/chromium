@@ -16,6 +16,7 @@ import {CustomAutomationEvent} from './custom_automation_event.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {GestureGranularity} from './gesture_command_data.js';
 import {GestureInterface} from './gesture_interface.js';
+import {ChromeVoxPrefs} from './prefs.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
 
 const ActionType = chrome.automation.ActionType;

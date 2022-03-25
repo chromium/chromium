@@ -20,7 +20,6 @@ goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
-goog.require('ChromeVoxPrefs');
 goog.require('ChromeVoxState');
 goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');

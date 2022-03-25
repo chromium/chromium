@@ -12,6 +12,7 @@ import {TtsBackground} from '../common/tts_background.js';
 
 import {BrailleBackground} from './braille_background.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';
+import {ChromeVoxPrefs} from './prefs.js';
 
 /**
  * This is the legacy ChromeVox background object.
