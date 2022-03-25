@@ -305,7 +305,8 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
       for (const auto& entity :
            visit.content_annotations.model_annotations.entities) {
         auto entity_metadata_it = entity_metadata_map.find(entity.id);
-        if (entity_metadata_it == entity_metadata_map.end()) {
+        if (entity_metadata_it == entity_metadata_map.end() ||
+            entity.weight < GetConfig().entity_relevance_threshold) {
           continue;
         }
 
