@@ -178,7 +178,11 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.metricsBrowserProxy_.recordAction(
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
-    this.setPrefValue('privacy_sandbox.manually_controlled', true);
+    this.setPrefValue(
+        this.privacySandboxSettings3Enabled_ ?
+            'privacy_sandbox.manually_controlled_v2' :
+            'privacy_sandbox.manually_controlled',
+        true);
 
     // As the backend will have cleared any data when the API is disabled, clear
     // the associated model entries.
