@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider_base.h"
 
@@ -71,6 +72,12 @@ class PlatformSensorFusion : public PlatformSensor,
   ~PlatformSensorFusion() override;
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
   void StopSensor() override;
+
+  PlatformSensorFusionAlgorithm* fusion_algorithm() const {
+    return fusion_algorithm_.get();
+  }
+
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorFusionTest, OnSensorReadingChanged);
 
  private:
   SensorReading reading_;
