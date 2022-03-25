@@ -113,9 +113,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
-  void SetCardArtImagesChangedCallback(
-      base::RepeatingCallback<void(const std::vector<std::string>&)>
-          on_card_art_image_change_callback);
 
   // Schedules a task to add credit card to the web database.
   void AddCreditCard(const CreditCard& credit_card);

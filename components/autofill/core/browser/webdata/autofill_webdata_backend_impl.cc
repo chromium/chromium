@@ -75,13 +75,6 @@ void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
   on_autofill_profile_changed_cb_ = std::move(change_cb);
 }
 
-void AutofillWebDataBackendImpl::SetCardArtImagesChangedCallback(
-    base::RepeatingCallback<void(const std::vector<std::string>&)>
-        on_card_art_image_change_callback) {
-  on_card_art_image_change_callback_ =
-      std::move(on_card_art_image_change_callback);
-}
-
 WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   return web_database_backend_->database();
@@ -152,19 +145,6 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
   // UI sequence notification.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_sync_started_callback_, model_type));
-}
-
-void AutofillWebDataBackendImpl::NotifyOfCreditCardArtImagesChanged(
-    const std::vector<std::string>& server_ids) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  if (on_card_art_image_change_callback_.is_null())
-    return;
-
-  // UI sequence notification.
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_card_art_image_change_callback_, server_ids));
 }
 
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {

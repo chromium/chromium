@@ -50,10 +50,6 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               NotifyThatSyncHasStarted,
               (syncer::ModelType model_type),
               (override));
-  MOCK_METHOD(void,
-              NotifyOfCreditCardArtImagesChanged,
-              (const std::vector<std::string>& server_ids),
-              (override));
 };
 
 }  // namespace autofill

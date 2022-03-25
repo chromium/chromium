@@ -138,11 +138,8 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // processor so that it can start tracking changes.
   void LoadMetadata();
 
-  // TODO(crbug/com/1196021): Clean up duplicate functions and use it for
-  // logging only.
-  // Checks whether any virtual card metadata for new_data is new and make
-  // corresponding changes.
-  void ProcessVirtualCardMetadataChanges(
+  // Logs virtual card metadata changes.
+  void LogVirtualCardMetadataChanges(
       const std::vector<std::unique_ptr<CreditCard>>& old_data,
       const std::vector<CreditCard>& new_data);
 

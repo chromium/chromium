@@ -356,9 +356,9 @@ bool AutofillWalletSyncBridge::SetWalletCards(
       ComputeAutofillWalletDiff(existing_cards, wallet_cards);
 
   if (!diff.IsEmpty()) {
-    // Check if there is any update on cards' virtual card metadata. If so, make
-    // changes to the credit card art image table and log it.
-    ProcessVirtualCardMetadataChanges(existing_cards, wallet_cards);
+    // Check if there is any update on cards' virtual card metadata. If so log
+    // it.
+    LogVirtualCardMetadataChanges(existing_cards, wallet_cards);
 
     table->SetServerCardsData(wallet_cards);
 
@@ -541,10 +541,9 @@ void AutofillWalletSyncBridge::LoadMetadata() {
   change_processor()->ModelReadyToSync(std::move(batch));
 }
 
-void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
+void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
     const std::vector<std::unique_ptr<CreditCard>>& old_data,
     const std::vector<CreditCard>& new_data) {
-  std::vector<std::string> updated_server_ids;
   for (const CreditCard& new_card : new_data) {
     // Try to find the old card with same server id.
     auto old_data_iterator =
@@ -555,7 +554,6 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
 
     // No existing card with the same ID found.
     if (old_data_iterator == old_data.end()) {
-      updated_server_ids.push_back(new_card.server_id());
       // log the newly-synced card.
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/false);
       continue;
@@ -566,15 +564,9 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
     if ((*old_data_iterator)->virtual_card_enrollment_state() !=
             new_card.virtual_card_enrollment_state() ||
         (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
-      updated_server_ids.push_back(new_card.server_id());
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
     }
   }
-
-  // After traversing all the new cards, notify the observer the ids of card
-  // whose image should be updated.
-  if (!updated_server_ids.empty() && web_data_backend_)
-    web_data_backend_->NotifyOfCreditCardArtImagesChanged(updated_server_ids);
 }
 
 }  // namespace autofill

@@ -1095,7 +1095,6 @@ TEST_F(AutofillWalletSyncBridgeTest, SetWalletCards_LogVirtualMetadataSynced) {
 
   std::vector<std::string> server_ids = {"card2_server_id", "card3_server_id",
                                          "card4_server_id"};
-  EXPECT_CALL(*backend(), NotifyOfCreditCardArtImagesChanged(server_ids));
 
   // Trigger sync.
   base::HistogramTester histogram_tester;
