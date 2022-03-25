@@ -480,7 +480,8 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 
   base::DictionaryValue results;
-  results.SetIntKey("moduleCount", module_list_->GetListDeprecated().size());
+  results.GetDict().Set("moduleCount",
+                        int(module_list_->GetListDeprecated().size()));
   results.Set("moduleList", std::move(module_list_));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

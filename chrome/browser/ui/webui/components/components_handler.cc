@@ -21,7 +21,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/common/webui_url_constants.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_url_handling.h"
 #endif
@@ -66,8 +65,8 @@ void ComponentsHandler::HandleRequestComponentsData(
   const base::Value& callback_id = args->GetListDeprecated()[0];
 
   base::DictionaryValue result;
-  result.SetKey("components",
-                base::Value::FromUniquePtrValue(LoadComponents()));
+  result.GetDict().Set("components",
+                       base::Value::FromUniquePtrValue(LoadComponents()));
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,7 +74,7 @@ void ComponentsHandler::HandleRequestComponentsData(
 #else
   const bool showSystemFlagsLink = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  result.SetBoolKey("showOsLink", showSystemFlagsLink);
+  result.GetDict().Set("showOsLink", showSystemFlagsLink);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ResolveJavascriptCallback(callback_id, result);
@@ -102,14 +101,15 @@ void ComponentsHandler::HandleCheckUpdate(const base::ListValue* args) {
 
 void ComponentsHandler::OnEvent(Events event, const std::string& id) {
   base::DictionaryValue parameters;
-  parameters.SetStringKey("event", ComponentEventToString(event));
+  parameters.GetDict().Set("event", ComponentEventToString(event));
   if (!id.empty()) {
     if (event == Events::COMPONENT_UPDATED) {
       update_client::CrxUpdateItem item;
       if (component_updater_->GetComponentDetails(id, &item) && item.component)
-        parameters.SetStringKey("version", item.component->version.GetString());
+        parameters.GetDict().Set("version",
+                                 item.component->version.GetString());
     }
-    parameters.SetStringKey("id", id);
+    parameters.GetDict().Set("id", id);
   }
   FireWebUIListener("component-event", parameters);
 }
@@ -202,13 +202,13 @@ std::unique_ptr<base::ListValue> ComponentsHandler::LoadComponents() {
     update_client::CrxUpdateItem item;
     if (component_updater_->GetComponentDetails(component_ids[j], &item)) {
       auto component_entry = std::make_unique<base::DictionaryValue>();
-      component_entry->SetStringKey("id", component_ids[j]);
-      component_entry->SetStringKey("status",
-                                    ServiceStatusToString(item.state));
+      component_entry->GetDict().Set("id", component_ids[j]);
+      component_entry->GetDict().Set("status",
+                                     ServiceStatusToString(item.state));
       if (item.component) {
-        component_entry->SetStringKey("name", item.component->name);
-        component_entry->SetStringKey("version",
-                                      item.component->version.GetString());
+        component_entry->GetDict().Set("name", item.component->name);
+        component_entry->GetDict().Set("version",
+                                       item.component->version.GetString());
       }
       component_list->Append(std::move(component_entry));
     }
