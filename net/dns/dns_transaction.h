@@ -34,7 +34,20 @@ class ResolveContext;
 // Destroying DnsTransaction cancels the underlying network effort.
 class NET_EXPORT_PRIVATE DnsTransaction {
  public:
-  virtual ~DnsTransaction() {}
+  // Called with the response or nullptr if no matching response was received.
+  // Note that the `GetDottedName()` of the response may be different than the
+  // original `hostname` (passed to `DnsTransactionFactory::CreateTransaction()`
+  // as a result of suffix search.
+  //
+  // The `doh_provider_id` contains the provider ID for histograms of the last
+  // DoH server attempted. If the name is unavailable, or this is not a DoH
+  // transaction, `doh_provider_id` is nullopt.
+  using ResponseCallback =
+      base::OnceCallback<void(int neterror,
+                              const DnsResponse* response,
+                              absl::optional<std::string> doh_provider_id)>;
+
+  virtual ~DnsTransaction() = default;
 
   // Returns the original |hostname|.
   virtual const std::string& GetHostname() const = 0;
@@ -43,7 +56,7 @@ class NET_EXPORT_PRIVATE DnsTransaction {
   virtual uint16_t GetType() const = 0;
 
   // Starts the transaction.  Always completes asynchronously.
-  virtual void Start() = 0;
+  virtual void Start(ResponseCallback callback) = 0;
 
   virtual void SetRequestPriority(RequestPriority priority) = 0;
 };
@@ -78,19 +91,6 @@ class DnsProbeRunner {
 // the factory is still alive.
 class NET_EXPORT_PRIVATE DnsTransactionFactory {
  public:
-  // Called with the response or NULL if no matching response was received.
-  // Note that the |GetDottedName()| of the response may be different than the
-  // original |hostname| as a result of suffix search.
-  //
-  // The |doh_provider_id| contains the provider ID for histograms of the last
-  // DoH server attempted. If the name is unavailable, or this is not a DoH
-  // transaction, |doh_provider_id| is nullopt.
-  typedef base::OnceCallback<void(DnsTransaction* transaction,
-                                  int neterror,
-                                  const DnsResponse* response,
-                                  absl::optional<std::string> doh_provider_id)>
-      CallbackType;
-
   DnsTransactionFactory();
   virtual ~DnsTransactionFactory();
 
@@ -99,7 +99,6 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // implies the domain name is fully-qualified and will be exempt from suffix
   // search. |hostname| should not be an IP literal.
   //
-  // The transaction will run |callback| upon asynchronous completion.
   // The |net_log| is used as the parent log.
   //
   // |secure| specifies whether DNS lookups should be performed using DNS-over-
@@ -114,7 +113,6 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   [[nodiscard]] virtual std::unique_ptr<DnsTransaction> CreateTransaction(
       std::string hostname,
       uint16_t qtype,
-      CallbackType callback,
       const NetLogWithSource& net_log,
       bool secure,
       SecureDnsMode secure_dns_mode,

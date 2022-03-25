@@ -1099,7 +1099,6 @@ class DnsTransactionImpl : public DnsTransaction,
   DnsTransactionImpl(DnsSession* session,
                      std::string hostname,
                      uint16_t qtype,
-                     DnsTransactionFactory::CallbackType callback,
                      const NetLogWithSource& net_log,
                      const OptRecordRdata* opt_rdata,
                      bool secure,
@@ -1112,7 +1111,6 @@ class DnsTransactionImpl : public DnsTransaction,
         opt_rdata_(opt_rdata),
         secure_(secure),
         secure_dns_mode_(secure_dns_mode),
-        callback_(std::move(callback)),
         fast_timeout_(fast_timeout),
         net_log_(net_log),
         qnames_initial_size_(0),
@@ -1122,7 +1120,6 @@ class DnsTransactionImpl : public DnsTransaction,
         request_priority_(DEFAULT_PRIORITY) {
     DCHECK(session_.get());
     DCHECK(!hostname_.empty());
-    DCHECK(!callback_.is_null());
     DCHECK(!IsIPLiteral(hostname_));
   }
 
@@ -1147,9 +1144,13 @@ class DnsTransactionImpl : public DnsTransaction,
     return qtype_;
   }
 
-  void Start() override {
-    DCHECK(!callback_.is_null());
+  void Start(ResponseCallback callback) override {
+    DCHECK(!callback.is_null());
+    DCHECK(callback_.is_null());
     DCHECK(attempts_.empty());
+
+    callback_ = std::move(callback);
+
     net_log_.BeginEvent(NetLogEventType::DNS_TRANSACTION,
                         [&] { return NetLogStartParams(hostname_, qtype_); });
     time_from_start_ = std::make_unique<base::ElapsedTimer>();
@@ -1266,7 +1267,7 @@ class DnsTransactionImpl : public DnsTransaction,
           session_->config().doh_config.servers()[server_index]);
     }
 
-    std::move(callback_).Run(this, result.rv, response, doh_provider_id);
+    std::move(callback_).Run(result.rv, response, doh_provider_id);
   }
 
   void RecordAttemptUma(DnsAttemptType attempt_type) {
@@ -1663,7 +1664,7 @@ class DnsTransactionImpl : public DnsTransaction,
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.
-  DnsTransactionFactory::CallbackType callback_;
+  ResponseCallback callback_;
 
   // When true, transaction should time out immediately on expiration of the
   // last attempt fallback period rather than waiting the overall transaction
@@ -1709,16 +1710,14 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
   std::unique_ptr<DnsTransaction> CreateTransaction(
       std::string hostname,
       uint16_t qtype,
-      CallbackType callback,
       const NetLogWithSource& net_log,
       bool secure,
       SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context,
       bool fast_timeout) override {
     return std::make_unique<DnsTransactionImpl>(
-        session_.get(), std::move(hostname), qtype, std::move(callback),
-        net_log, opt_rdata_.get(), secure, secure_dns_mode, resolve_context,
-        fast_timeout);
+        session_.get(), std::move(hostname), qtype, net_log, opt_rdata_.get(),
+        secure, secure_dns_mode, resolve_context, fast_timeout);
   }
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(

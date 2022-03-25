@@ -309,23 +309,6 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
   return dict;
 }
 
-base::Value NetLogDnsTaskCreationParams(
-    bool secure,
-    const base::circular_deque<DnsQueryType>& transactions_needed) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("secure", secure);
-
-  base::Value transactions_needed_value(base::Value::Type::LIST);
-  for (DnsQueryType type : transactions_needed) {
-    base::Value transaction_dict(base::Value::Type::DICTIONARY);
-    transaction_dict.SetIntKey("dns_query_type", static_cast<int>(type));
-    transactions_needed_value.Append(std::move(transaction_dict));
-  }
-  dict.SetKey("transactions_needed", std::move(transactions_needed_value));
-
-  return dict;
-}
-
 // Creates NetLog parameters when the DnsTask failed.
 base::Value NetLogDnsTaskFailedParams(
     int net_error,
@@ -353,37 +336,6 @@ base::Value NetLogDnsTaskExtractionFailureParams(
   dict.SetIntKey("extraction_error", static_cast<int>(extraction_error));
   dict.SetIntKey("dns_query_type", static_cast<int>(dns_query_type));
   dict.SetKey("results", results.NetLogParams());
-  return dict;
-}
-
-base::Value NetLogDnsTaskTimeoutParams(
-    const base::flat_map<std::unique_ptr<DnsTransaction>,
-                         DnsQueryType,
-                         base::UniquePtrComparator>& started_transactions,
-    const base::circular_deque<DnsQueryType>& queued_transactions) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-
-  if (!started_transactions.empty()) {
-    base::Value list(base::Value::Type::LIST);
-    for (const auto& transaction : started_transactions) {
-      base::Value transaction_dict(base::Value::Type::DICTIONARY);
-      transaction_dict.SetIntKey("dns_query_type",
-                                 static_cast<int>(transaction.second));
-      list.Append(std::move(transaction_dict));
-    }
-    dict.SetKey("started_transactions", std::move(list));
-  }
-
-  if (!queued_transactions.empty()) {
-    base::Value list(base::Value::Type::LIST);
-    for (DnsQueryType type : queued_transactions) {
-      base::Value transaction_dict(base::Value::Type::DICTIONARY);
-      transaction_dict.SetIntKey("dns_query_type", static_cast<int>(type));
-      list.Append(std::move(transaction_dict));
-    }
-    dict.SetKey("queued_transactions", std::move(list));
-  }
-
   return dict;
 }
 
@@ -1348,15 +1300,14 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     if (num_needed_transactions_ ==
         static_cast<int>(transactions_needed_.size())) {
-      net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
-        return NetLogDnsTaskCreationParams(secure(), transactions_needed_);
-      });
+      net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
+                          [&] { return NetLogDnsTaskCreationParams(); });
     }
 
-    DnsQueryType type = transactions_needed_.front();
+    TransactionInfo transaction_info = std::move(transactions_needed_.front());
     transactions_needed_.pop_front();
 
-    DCHECK(IsAddressType(type) || secure_ ||
+    DCHECK(IsAddressType(transaction_info.type) || secure_ ||
            client_->CanQueryAdditionalTypesViaInsecureDns());
 
     // Record how long this transaction has been waiting to be created.
@@ -1365,12 +1316,86 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                                  time_queued);
     delegate_->AddTransactionTimeQueued(time_queued);
 
-    std::unique_ptr<DnsTransaction> transaction = CreateTransaction(type);
-    transaction->Start();
-    transactions_started_.emplace(std::move(transaction), type);
+    CreateAndStartTransaction(std::move(transaction_info));
   }
 
  private:
+  enum class TransactionErrorBehavior {
+    // Errors lead to task fallback (immediately unless another pending/started
+    // transaction has the `kFatalOrEmpty` behavior).
+    kFallback,
+
+    // Transaction errors are treated as if a NOERROR response were received,
+    // allowing task success if other transactions complete successfully.
+    kSynthesizeEmpty,
+
+    // Transaction errors are potentially fatal (determined by
+    // `OnTransactionComplete` and often its helper
+    // `IsFatalTransactionFailure()`) for the entire Job and may disallow
+    // fallback. Otherwise, same as `kSynthesizeEmpty`.
+    // TODO(crbug.com/1264933): Implement the fatality behavior.
+    kFatalOrEmpty,
+  };
+
+  struct TransactionInfo {
+    explicit TransactionInfo(DnsQueryType type,
+                             TransactionErrorBehavior error_behavior =
+                                 TransactionErrorBehavior::kFallback)
+        : type(type), error_behavior(error_behavior) {}
+    TransactionInfo(TransactionInfo&&) = default;
+    TransactionInfo& operator=(TransactionInfo&&) = default;
+
+    bool operator<(const TransactionInfo& other) const {
+      return std::tie(type, error_behavior, transaction) <
+             std::tie(other.type, other.error_behavior, other.transaction);
+    }
+
+    DnsQueryType type;
+    TransactionErrorBehavior error_behavior;
+    std::unique_ptr<DnsTransaction> transaction;
+  };
+
+  base::Value NetLogDnsTaskCreationParams() {
+    base::Value::Dict dict;
+    dict.Set("secure", secure());
+
+    base::Value::List transactions_needed_value;
+    for (const TransactionInfo& info : transactions_needed_) {
+      base::Value::Dict transaction_dict;
+      transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+      transactions_needed_value.Append(std::move(transaction_dict));
+    }
+    dict.Set("transactions_needed", std::move(transactions_needed_value));
+
+    return base::Value(std::move(dict));
+  }
+
+  base::Value NetLogDnsTaskTimeoutParams() {
+    base::Value::Dict dict;
+
+    if (!transactions_started_.empty()) {
+      base::Value::List list;
+      for (const TransactionInfo& info : transactions_started_) {
+        base::Value::Dict transaction_dict;
+        transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+        list.Append(std::move(transaction_dict));
+      }
+      dict.Set("started_transactions", std::move(list));
+    }
+
+    if (!transactions_needed_.empty()) {
+      base::Value::List list;
+      for (const TransactionInfo& info : transactions_needed_) {
+        base::Value::Dict transaction_dict;
+        transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+        list.Append(std::move(transaction_dict));
+      }
+      dict.Set("queued_transactions", std::move(list));
+    }
+
+    return base::Value(std::move(dict));
+  }
+
   DnsQueryTypeSet MaybeDisableAdditionalQueries(DnsQueryTypeSet types) {
     DCHECK(!types.Empty());
     DCHECK(!types.Has(DnsQueryType::UNSPECIFIED));
@@ -1411,60 +1436,82 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   void PushTransactionsNeeded(DnsQueryTypeSet query_types) {
     DCHECK(transactions_needed_.empty());
 
+    if (query_types.Has(DnsQueryType::HTTPS) &&
+        features::kUseDnsHttpsSvcbEnforceSecureResponse.Get() && secure_) {
+      query_types.Remove(DnsQueryType::HTTPS);
+      transactions_needed_.emplace_back(
+          DnsQueryType::HTTPS, TransactionErrorBehavior::kFatalOrEmpty);
+    }
+
     // Give some queries a head start by pushing them to the queue first.
     constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::A,
                                                      DnsQueryType::AAAA};
     for (DnsQueryType high_priority_query : kHighPriorityQueries) {
       if (query_types.Has(high_priority_query)) {
         query_types.Remove(high_priority_query);
-        transactions_needed_.push_back(high_priority_query);
+        transactions_needed_.emplace_back(high_priority_query);
       }
     }
-    for (DnsQueryType remaining_query : query_types)
-      transactions_needed_.push_back(remaining_query);
+    for (DnsQueryType remaining_query : query_types) {
+      if (remaining_query == DnsQueryType::HTTPS ||
+          remaining_query == DnsQueryType::HTTPS_EXPERIMENTAL ||
+          remaining_query == DnsQueryType::INTEGRITY) {
+        // Ignore errors for these types. In most cases treating them normally
+        // would only result in fallback to resolution without querying the
+        // type. Instead, synthesize empty results.
+        transactions_needed_.emplace_back(
+            remaining_query, TransactionErrorBehavior::kSynthesizeEmpty);
+      } else {
+        transactions_needed_.emplace_back(remaining_query);
+      }
+    }
     num_needed_transactions_ =
         base::checked_cast<int>(transactions_needed_.size());
   }
 
-  std::unique_ptr<DnsTransaction> CreateTransaction(
-      DnsQueryType dns_query_type) {
-    DCHECK_NE(DnsQueryType::UNSPECIFIED, dns_query_type);
+  void CreateAndStartTransaction(TransactionInfo transaction_info) {
+    DCHECK(!transaction_info.transaction);
+    DCHECK_NE(DnsQueryType::UNSPECIFIED, transaction_info.type);
 
     std::string transaction_hostname(GetHostname(host_));
 
     // For HTTPS, prepend "_<port>._https." for any non-default port.
     uint16_t request_port = 0;
-    if (dns_query_type == DnsQueryType::HTTPS &&
+    if (transaction_info.type == DnsQueryType::HTTPS &&
         absl::holds_alternative<url::SchemeHostPort>(host_)) {
       const auto& scheme_host_port = absl::get<url::SchemeHostPort>(host_);
       transaction_hostname =
           dns_util::GetNameForHttpsQuery(scheme_host_port, &request_port);
     }
 
-    std::unique_ptr<DnsTransaction> trans =
+    transaction_info.transaction =
         client_->GetTransactionFactory()->CreateTransaction(
             std::move(transaction_hostname),
-            DnsQueryTypeToQtype(dns_query_type),
-            base::BindOnce(&DnsTask::OnTransactionComplete,
-                           base::Unretained(this), tick_clock_->NowTicks(),
-                           dns_query_type, request_port),
-            net_log_, secure_, secure_dns_mode_, &*resolve_context_,
+            DnsQueryTypeToQtype(transaction_info.type), net_log_, secure_,
+            secure_dns_mode_, &*resolve_context_,
             fallback_available_ /* fast_timeout */);
-    trans->SetRequestPriority(delegate_->priority());
-    return trans;
+    transaction_info.transaction->SetRequestPriority(delegate_->priority());
+
+    auto transaction_info_it =
+        transactions_started_.insert(std::move(transaction_info)).first;
+
+    // Safe to pass `transaction_info_it` because it is only modified/removed
+    // after async completion of this call or by destruction (which cancels the
+    // transaction and prevents callback because it owns the `DnsTransaction`
+    // object).
+    transaction_info_it->transaction->Start(base::BindOnce(
+        &DnsTask::OnTransactionComplete, base::Unretained(this),
+        tick_clock_->NowTicks(), transaction_info_it, request_port));
   }
 
   void OnTimeout() {
     net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_TIMEOUT,
-                      [&] {
-                        return NetLogDnsTaskTimeoutParams(transactions_started_,
-                                                          transactions_needed_);
-                      });
+                      [&] { return NetLogDnsTaskTimeoutParams(); });
 
-    for (auto& transaction : transactions_started_) {
+    for (const TransactionInfo& transaction : transactions_started_) {
       base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
 
-      switch (transaction.second) {
+      switch (transaction.type) {
         case DnsQueryType::INTEGRITY:
           DCHECK(httpssvc_metrics_);
           // Don't record provider ID for timeouts. It is not precisely known
@@ -1506,27 +1553,25 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     ProcessResultsOnCompletion();
   }
 
-  void OnTransactionComplete(const base::TimeTicks& start_time,
-                             DnsQueryType dns_query_type,
-                             uint16_t request_port,
-                             DnsTransaction* transaction,
-                             int net_error,
-                             const DnsResponse* response,
-                             absl::optional<std::string> doh_provider_id) {
-    DCHECK(transaction);
+  void OnTransactionComplete(
+      const base::TimeTicks& start_time,
+      std::set<TransactionInfo>::iterator transaction_info_it,
+      uint16_t request_port,
+      int net_error,
+      const DnsResponse* response,
+      absl::optional<std::string> doh_provider_id) {
+    DCHECK(transaction_info_it != transactions_started_.end());
+    DCHECK(transactions_started_.find(*transaction_info_it) !=
+           transactions_started_.end());
 
-    // Once control leaves OnTransactionComplete, there's no further
-    // need for the transaction object. On the other hand, since it owns
-    // |*response|, it should stay around while OnTransactionComplete
-    // executes.
-    std::unique_ptr<DnsTransaction> destroy_transaction_on_return;
-    {
-      auto it = transactions_started_.find(transaction);
-      DCHECK(it != transactions_started_.end());
-
-      destroy_transaction_on_return = std::move(it->first);
-      transactions_started_.erase(it);
-    }
+    // Pull the TransactionInfo out of `transactions_started_` now, so it and
+    // its underlying DnsTransaction will be deleted on completion of
+    // OnTransactionComplete. Note: Once control leaves OnTransactionComplete,
+    // there's no further need for the transaction object. On the other hand,
+    // since it owns `*response`, it should stay around while
+    // OnTransactionComplete executes.
+    TransactionInfo transaction_info =
+        std::move(transactions_started_.extract(transaction_info_it).value());
 
     base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
     enum HttpssvcDnsRcode rcode_for_httpssvc = HttpssvcDnsRcode::kNoError;
@@ -1546,32 +1591,34 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // Handle network errors. Note that for NXDOMAIN, DnsTransaction returns
     // ERR_NAME_NOT_RESOLVED, so that is not a network error if received with a
     // valid response.
+    bool fatal_error =
+        IsFatalTransactionFailure(net_error, transaction_info, response);
     absl::optional<DnsResponse> fake_response;
     if (net_error != OK && !(net_error == ERR_NAME_NOT_RESOLVED && response &&
                              response->IsValid())) {
-      if (dns_query_type == DnsQueryType::INTEGRITY ||
-          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL ||
-          (dns_query_type == DnsQueryType::HTTPS &&
-           !IsFatalHttpsTransactionFailure(net_error, response))) {
+      if (transaction_info.error_behavior ==
+              TransactionErrorBehavior::kFallback ||
+          fatal_error) {
+        // Fail task (or maybe Job) completely on network failure.
+        OnFailure(net_error, /*ttl=*/absl::nullopt, transaction_info.type);
+        return;
+      } else {
+        DCHECK((transaction_info.error_behavior ==
+                    TransactionErrorBehavior::kFatalOrEmpty &&
+                !fatal_error) ||
+               transaction_info.error_behavior ==
+                   TransactionErrorBehavior::kSynthesizeEmpty);
         // For non-fatal failures, synthesize an empty response.
         fake_response =
-            CreateFakeEmptyResponse(GetHostname(host_), dns_query_type);
+            CreateFakeEmptyResponse(GetHostname(host_), transaction_info.type);
         response = &fake_response.value();
-      } else {
-        // Fail completely on network failure.
-        OnFailure(net_error, /*ttl=*/absl::nullopt, dns_query_type);
-        return;
       }
-    } else if (dns_query_type == DnsQueryType::HTTPS) {
-      // Just to record metrics about successful HTTPS transactions as a side
-      // effect of the IsFatal...() call.
-      CHECK(!IsFatalHttpsTransactionFailure(net_error, response));
     }
 
     HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
     DnsResponseResultExtractor extractor(response);
     DnsResponseResultExtractor::ExtractionError extraction_error =
-        extractor.ExtractDnsResults(dns_query_type,
+        extractor.ExtractDnsResults(transaction_info.type,
                                     /*original_domain_name=*/GetHostname(host_),
                                     request_port, &results);
     DCHECK_NE(extraction_error,
@@ -1582,23 +1629,27 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE,
           [&] {
             return NetLogDnsTaskExtractionFailureParams(
-                extraction_error, dns_query_type, results);
+                extraction_error, transaction_info.type, results);
           });
-      if (dns_query_type == DnsQueryType::INTEGRITY ||
-          dns_query_type == DnsQueryType::HTTPS ||
-          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
-        // Ignore extraction errors of these types. In most cases treating them
-        // as fatal would only result in fallback to resolution without querying
-        // the type. Instead, synthesize empty results.
-        results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
+      if (transaction_info.error_behavior ==
+              TransactionErrorBehavior::kFatalOrEmpty ||
+          transaction_info.error_behavior ==
+              TransactionErrorBehavior::kSynthesizeEmpty) {
+        // No extraction errors are currently considered fatal, otherwise, there
+        // would need to be a call to some sort of
+        // IsFatalTransactionExtractionError() function.
+        DCHECK(!fatal_error);
+        results = DnsResponseResultExtractor::CreateEmptyResult(
+            transaction_info.type);
       } else {
-        OnFailure(results.error(), results.GetOptionalTtl(), dns_query_type);
+        OnFailure(results.error(), results.GetOptionalTtl(),
+                  transaction_info.type);
         return;
       }
     }
 
     if (httpssvc_metrics_) {
-      if (dns_query_type == DnsQueryType::INTEGRITY) {
+      if (transaction_info.type == DnsQueryType::INTEGRITY) {
         const std::vector<bool>* experimental_results =
             results.https_record_compatibility();
         CHECK(experimental_results);
@@ -1607,8 +1658,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         httpssvc_metrics_->SaveForIntegrity(doh_provider_id, rcode_for_httpssvc,
                                             *experimental_results,
                                             elapsed_time);
-      } else if (dns_query_type == DnsQueryType::HTTPS ||
-                 dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
+      } else if (transaction_info.type == DnsQueryType::HTTPS ||
+                 transaction_info.type == DnsQueryType::HTTPS_EXPERIMENTAL) {
         const std::vector<bool>* record_compatibility =
             results.https_record_compatibility();
         CHECK(record_compatibility);
@@ -1622,10 +1673,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
     // or "ws" request.
-    if (dns_query_type == DnsQueryType::HTTPS &&
+    if (transaction_info.type == DnsQueryType::HTTPS &&
         ShouldTriggerHttpToHttpsUpgrade(results)) {
       OnFailure(ERR_DNS_NAME_HTTPS_ONLY, results.GetOptionalTtl(),
-                dns_query_type);
+                transaction_info.type);
       return;
     }
 
@@ -1636,7 +1687,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       DCHECK_LE(2, num_needed_transactions());
       DCHECK_LT(num_completed_transactions_, num_needed_transactions());
 
-      switch (dns_query_type) {
+      switch (transaction_info.type) {
         case DnsQueryType::A:
           // Canonical names from A results have lower priority than those
           // from AAAA results, so merge to the back.
@@ -1680,8 +1731,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     ProcessResultsOnCompletion();
   }
 
-  bool IsFatalHttpsTransactionFailure(int transaction_error,
-                                      const DnsResponse* response) {
+  bool IsFatalTransactionFailure(int transaction_error,
+                                 const TransactionInfo& transaction_info,
+                                 const DnsResponse* response) {
+    if (transaction_info.type != DnsQueryType::HTTPS) {
+      DCHECK(transaction_info.error_behavior !=
+             TransactionErrorBehavior::kFatalOrEmpty);
+      return false;
+    }
+
     // These values are logged to UMA. Entries should not be renumbered and
     // numeric values should never be reused. Please keep in sync with
     // "DNS.SvcbHttpsTransactionError" in
@@ -1701,14 +1759,20 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       error = HttpsTransactionError::kNoError;
     } else if (!secure_) {
       // HTTPS failures are never fatal via insecure DNS.
+      DCHECK(transaction_info.error_behavior !=
+             TransactionErrorBehavior::kFatalOrEmpty);
       error = HttpsTransactionError::kInsecureError;
     } else if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
                response->rcode() != dns_protocol::kRcodeSERVFAIL) {
       // For server failures, only SERVFAIL is fatal.
       error = HttpsTransactionError::kNonFatalError;
     } else if (features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
+      DCHECK(transaction_info.error_behavior ==
+             TransactionErrorBehavior::kFatalOrEmpty);
       error = HttpsTransactionError::kFatalErrorEnabled;
     } else {
+      DCHECK(transaction_info.error_behavior !=
+             TransactionErrorBehavior::kFatalOrEmpty);
       error = HttpsTransactionError::kFatalErrorDisabled;
     }
 
@@ -1784,7 +1848,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     OnSuccess(std::move(results));
   }
 
-  // TODO(crbug.com/1225776): Disallow fallback after a fatal HTTPS error.  Also
+  // TODO(crbug.com/1264933): Disallow fallback after a fatal HTTPS error.  Also
   // prevent A/AAAA errors from leading to immediate fallback if an HTTPS query
   // is still pending that may lead to a fatal HTTPS error.
   void OnFailure(
@@ -1824,15 +1888,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     // Check running transactions.
     if (base::ranges::find_first_of(transactions_started_, types, /*pred=*/{},
-                                    /*proj1=*/[](const auto& transaction) {
-                                      return transaction.second;
-                                    }) != transactions_started_.end()) {
+                                    /*proj1=*/&TransactionInfo::type) !=
+        transactions_started_.end()) {
       return true;
     }
 
     // Check queued transactions, in case it ever becomes possible to get here
     // without the transactions being started first.
-    return base::ranges::find_first_of(transactions_needed_, types) !=
+    return base::ranges::find_first_of(transactions_needed_, types, /*pred=*/{},
+                                       /*proj1=*/&TransactionInfo::type) !=
            transactions_needed_.end();
   }
 
@@ -1958,11 +2022,11 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   raw_ptr<Delegate> delegate_;
   const NetLogWithSource net_log_;
 
-  base::circular_deque<DnsQueryType> transactions_needed_;
-  base::flat_map<std::unique_ptr<DnsTransaction>,
-                 DnsQueryType,
-                 base::UniquePtrComparator>
-      transactions_started_;
+  base::circular_deque<TransactionInfo> transactions_needed_;
+  // Active transactions have iterators pointing to their entry in this set, so
+  // individual entries should not be modified or removed until completion or
+  // cancellation of the transaction.
+  std::set<TransactionInfo> transactions_started_;
   int num_needed_transactions_;
   int num_completed_transactions_ = 0;
 

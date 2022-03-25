@@ -410,14 +410,10 @@ class MockDnsTransactionFactory::MockTransaction
                   bool force_doh_server_available,
                   SecureDnsMode secure_dns_mode,
                   ResolveContext* resolve_context,
-                  bool fast_timeout,
-                  DnsTransactionFactory::CallbackType callback)
+                  bool fast_timeout)
       : result_(MockDnsClientRule::ResultType::kFail),
         hostname_(std::move(hostname)),
-        qtype_(qtype),
-        callback_(std::move(callback)),
-        started_(false),
-        delayed_(false) {
+        qtype_(qtype) {
     // Do not allow matching any rules if transaction is secure and no DoH
     // servers are available.
     if (!secure || force_doh_server_available ||
@@ -495,8 +491,12 @@ class MockDnsTransactionFactory::MockTransaction
 
   uint16_t GetType() const override { return qtype_; }
 
-  void Start() override {
+  void Start(ResponseCallback callback) override {
+    CHECK(!callback.is_null());
+    CHECK(callback_.is_null());
     EXPECT_FALSE(started_);
+
+    callback_ = std::move(callback);
     started_ = true;
     if (delayed_)
       return;
@@ -543,33 +543,30 @@ class MockDnsTransactionFactory::MockTransaction
       case MockDnsClientRule::ResultType::kFail: {
         int error = result_.net_error.value_or(ERR_NAME_NOT_RESOLVED);
         DCHECK_NE(error, OK);
-        std::move(callback_).Run(this, error,
-                                 base::OptionalOrNullptr(result_.response),
-                                 absl::nullopt);
+        std::move(callback_).Run(
+            error, base::OptionalOrNullptr(result_.response), absl::nullopt);
         break;
       }
       case MockDnsClientRule::ResultType::kEmpty:
       case MockDnsClientRule::ResultType::kOk:
       case MockDnsClientRule::ResultType::kMalformed:
         DCHECK(!result_.net_error.has_value());
-        std::move(callback_).Run(
-            this, OK, base::OptionalOrNullptr(result_.response), absl::nullopt);
+        std::move(callback_).Run(OK, base::OptionalOrNullptr(result_.response),
+                                 absl::nullopt);
         break;
       case MockDnsClientRule::ResultType::kTimeout:
         DCHECK(!result_.net_error.has_value());
-        std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
-                                 absl::nullopt);
+        std::move(callback_).Run(ERR_DNS_TIMED_OUT, nullptr, absl::nullopt);
         break;
       case MockDnsClientRule::ResultType::kSlow:
         if (result_.response) {
           std::move(callback_).Run(
-              this, result_.net_error.value_or(OK),
+              result_.net_error.value_or(OK),
               result_.response ? &result_.response.value() : nullptr,
               absl::nullopt);
         } else {
           DCHECK(!result_.net_error.has_value());
-          std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
-                                   absl::nullopt);
+          std::move(callback_).Run(ERR_DNS_TIMED_OUT, nullptr, absl::nullopt);
         }
         break;
       case MockDnsClientRule::ResultType::kUnexpected:
@@ -584,9 +581,9 @@ class MockDnsTransactionFactory::MockTransaction
   MockDnsClientRule::Result result_;
   const std::string hostname_;
   const uint16_t qtype_;
-  DnsTransactionFactory::CallbackType callback_;
-  bool started_;
-  bool delayed_;
+  ResponseCallback callback_;
+  bool started_ = false;
+  bool delayed_ = false;
 };
 
 class MockDnsTransactionFactory::MockDohProbeRunner : public DnsProbeRunner {
@@ -623,7 +620,6 @@ MockDnsTransactionFactory::~MockDnsTransactionFactory() = default;
 std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
     std::string hostname,
     uint16_t qtype,
-    DnsTransactionFactory::CallbackType callback,
     const NetLogWithSource&,
     bool secure,
     SecureDnsMode secure_dns_mode,
@@ -633,7 +629,7 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
       std::make_unique<MockTransaction>(rules_, std::move(hostname), qtype,
                                         secure, force_doh_server_available_,
                                         secure_dns_mode, resolve_context,
-                                        fast_timeout, std::move(callback));
+                                        fast_timeout);
   if (transaction->delayed())
     delayed_transactions_.push_back(transaction->AsWeakPtr());
   return transaction;

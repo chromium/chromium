@@ -348,7 +348,6 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   std::unique_ptr<DnsTransaction> CreateTransaction(
       std::string hostname,
       uint16_t qtype,
-      DnsTransactionFactory::CallbackType callback,
       const NetLogWithSource&,
       bool secure,
       SecureDnsMode secure_dns_mode,
