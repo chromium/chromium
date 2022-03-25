@@ -119,21 +119,21 @@ public class PopupWindowTest {
         TestAwContentsClient popupContentsClient = popupInfo.popupContentsClient;
         final AwContents popupContents = popupInfo.popupContents;
 
-        class DummyJavaScriptInterface {
+        class TestJavaScriptInterface {
             @JavascriptInterface
             public int test() {
                 return 42;
             }
         }
-        final DummyJavaScriptInterface obj = new DummyJavaScriptInterface();
+        final TestJavaScriptInterface obj = new TestJavaScriptInterface();
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(popupContents, obj, "dummy");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(popupContents, obj, "interface");
 
         mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
 
         AwActivityTestRule.pollInstrumentationThread(() -> {
             String ans = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                    popupContents, popupContentsClient, "dummy.test()");
+                    popupContents, popupContentsClient, "interface.test()");
 
             return ans.equals("42");
         });
