@@ -10685,10 +10685,11 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // Check(s) specific to sub-frame navigation.
   if (navigation_request && !is_main_frame()) {
     if (!CanSubframeCommitOriginAndUrl(navigation_request)) {
-      // TODO(crbug.com/1303184): Prefer to terminate a renderer process if
-      // it makes invalid requests, so switch DumpWithoutCrashing to
-      // ReportBadMessage if this looks stable.
-      base::debug::DumpWithoutCrashing();
+      // Terminate the renderer if allowing this subframe navigation to commit
+      // would change the origin of the main frame.
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFHI_SUBFRAME_NAV_WOULD_CHANGE_MAINFRAME_ORIGIN);
       return false;
     }
   }

@@ -296,6 +296,7 @@ enum BadMessageReason {
   RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME = 269,
   RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME = 270,
   MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE = 271,
+  RFHI_SUBFRAME_NAV_WOULD_CHANGE_MAINFRAME_ORIGIN = 272,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
