@@ -318,7 +318,7 @@
       other {<ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing <ph name="ATTACHMENTS">$2<ex>3 items</ex></ph> with you.}}
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE_WIFI_CREDENTIALS" desc="Text shown as the message of a notfication when a nearby device requests a connection via Nearby Share to send Wi-Fi network credentials.">
-    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing a Wi-Fi network with you.
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing a Wi-Fi network with you
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE" desc="Text shown as the title of a notfication when a nearby device requests a connection via Nearby Share.">
     Receive with Nearby Share?
@@ -359,7 +359,7 @@
       other {Failed to receive <ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when receiving Wi-Fi credentials via Nearby Share failed.">
-    Failed to receive network configuration for '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
+    Couldn't save '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE" desc="Text shown as the title of a notfication when receiving data via Nearby Share.">
     {COUNT, plural,
@@ -367,7 +367,7 @@
       other {Receiving <ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when receiving Wi-Fi credentials via Nearby Share.">
-    Receiving network configuration for '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
+    Receiving Wi-Fi network
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE" desc="Text shown as the title of a notfication when data was sucessfully received via Nearby Share.">
     {COUNT, plural,
@@ -375,7 +375,7 @@
       other {<ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> received from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when Wi-Fi credentials were sucessfully received via Nearby Share.">
-    Received network configuration for '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
+    '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' saved from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE" desc="Text shown as the title of a notfication when sending data via Nearby Share failed.">
     {COUNT, plural,
