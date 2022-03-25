@@ -27,6 +27,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_view_visitor.h"
+#include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/policy_container_utils.h"
@@ -859,6 +860,9 @@ blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {
 }
 
 ContentClient* RenderViewTest::CreateContentClient() {
+  // To maintain old behavior, if TestContentClient is used then use
+  // Content Shell's PAK file.
+  content::ContentTestSuiteBase::InitializeResourceBundle();
   return new TestContentClient;
 }
 

@@ -2911,38 +2911,6 @@ if (enable_nocompile_tests) {
   }
 }
 
-test("content_perftests") {
-  # See comment at the top of //content/BUILD.gn for why this is disabled in
-  # component builds.
-  if (is_component_build) {
-    check_includes = false
-  }
-
-  sources = [ "../test/run_all_perftests.cc" ]
-  deps = [
-    "//base/test:test_support",
-    "//cc",
-    "//content/browser:for_content_tests",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//skia",
-    "//testing/gtest",
-    "//testing/perf",
-    "//ui/events/blink",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-
-    # For TestMojoProxyResolverFactory. Remove once it moves to the network
-    # service.
-    "//services/service_manager/public/cpp",
-  ]
-
-  if (is_android) {
-    deps += [ "//testing/android/native_test:native_test_native_code" ]
-  }
-}
-
 group("fuzzers") {
   deps = [ "//content/test/fuzzer" ]
 }

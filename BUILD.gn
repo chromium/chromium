@@ -178,7 +178,6 @@ group("gn_all") {
       "//components/viz:viz_unittests",
       "//content/shell:content_shell",
       "//content/test:content_browsertests",
-      "//content/test:content_perftests",
       "//content/test:content_unittests",
       "//device:device_unittests",
       "//gpu:gpu_benchmark",

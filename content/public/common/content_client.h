@@ -70,6 +70,7 @@ ContentClient* GetContentClient();
 // returns the old value. In browser tests it seems safest to call these in
 // SetUpOnMainThread() or you may get TSan errors due a race between the
 // browser "process" and the child "process" for the test both accessing it.
+CONTENT_EXPORT ContentClient* GetContentClientForTesting();
 CONTENT_EXPORT ContentBrowserClient* SetBrowserClientForTesting(
     ContentBrowserClient* b);
 CONTENT_EXPORT ContentRendererClient* SetRendererClientForTesting(

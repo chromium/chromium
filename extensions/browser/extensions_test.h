@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +21,6 @@ class PrefService;
 
 namespace content {
 class BrowserContext;
-class ContentUtilityClient;
 class RenderViewHostTestEnabler;
 }
 
@@ -88,8 +86,6 @@ class ExtensionsTest : public testing::Test {
   chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
 #endif
 
-  content::TestContentClientInitializer content_client_initializer_;
-  std::unique_ptr<content::ContentUtilityClient> content_utility_client_;
   std::unique_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<content::BrowserContext> incognito_context_;
   std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;

@@ -13,14 +13,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/utility/chrome_content_utility_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/update_client/update_query_params.h"
@@ -55,15 +53,6 @@ namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
-class ChromeContentBrowserClientWithoutNetworkServiceInitialization
-    : public ChromeContentBrowserClient {
- public:
-  // content::ContentBrowserClient:
-  // Skip some production Network Service code that doesn't work in unit tests.
-  void OnNetworkServiceCreated(
-      network::mojom::NetworkService* network_service) override {}
-};
-
 // Creates a TestingBrowserProcess for each test.
 class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
  public:
@@ -75,15 +64,6 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   ~ChromeUnitTestSuiteInitializer() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    content_client_ = std::make_unique<ChromeContentClient>();
-    content::SetContentClient(content_client_.get());
-
-    browser_content_client_ = std::make_unique<
-        ChromeContentBrowserClientWithoutNetworkServiceInitialization>();
-    content::SetBrowserClientForTesting(browser_content_client_.get());
-    utility_content_client_ = std::make_unique<ChromeContentUtilityClient>();
-    content::SetUtilityClientForTesting(utility_content_client_.get());
-
     TestingBrowserProcess::CreateInstance();
     // Make sure the loaded locale is "en-US".
     if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
@@ -97,11 +77,6 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
-    browser_content_client_.reset();
-    utility_content_client_.reset();
-    content_client_.reset();
-    content::SetContentClient(nullptr);
-
     TestingBrowserProcess::DeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
     base::PowerMonitor::ShutdownForTesting();
@@ -113,12 +88,6 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     crypto::ResetTokenManagerForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-
- private:
-  // Client implementations for the content module.
-  std::unique_ptr<ChromeContentClient> content_client_;
-  std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
-  std::unique_ptr<ChromeContentUtilityClient> utility_content_client_;
 };
 
 }  // namespace

@@ -18,7 +18,6 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/test/test_content_utility_client.h"
 
 namespace {
 
@@ -56,7 +55,6 @@ void ExtensionsTest::SetExtensionsBrowserClient(
 
 void ExtensionsTest::SetUp() {
   content::ForceInProcessNetworkService(true);
-  content_utility_client_ = std::make_unique<TestContentUtilityClient>();
   browser_context_ = std::make_unique<content::TestBrowserContext>();
   incognito_context_ = CreateTestIncognitoContext();
 
@@ -66,7 +64,6 @@ void ExtensionsTest::SetUp() {
   }
   extensions_browser_client_->SetMainContext(browser_context_.get());
 
-  content::SetUtilityClientForTesting(content_utility_client_.get());
   ExtensionsBrowserClient::Set(extensions_browser_client_.get());
   extensions_browser_client_->set_extension_system_factory(
       &extension_system_factory_);

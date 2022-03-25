@@ -50,6 +50,10 @@ ContentClient* GetContentClient() {
   return g_client;
 }
 
+ContentClient* GetContentClientForTesting() {
+  return g_client;
+}
+
 ContentBrowserClient* SetBrowserClientForTesting(ContentBrowserClient* b) {
   return InternalTestInitializer::SetBrowser(b);
 }

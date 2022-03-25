@@ -29,6 +29,9 @@ class ContentTestSuiteBase : public base::TestSuite {
   // Registers renderer/utility/gpu processes to run in-thread.
   static void RegisterInProcessThreads();
 
+  // Initializes ResourceBundle using Content Shell's PAK file.
+  static void InitializeResourceBundle();
+
  protected:
   ContentTestSuiteBase(int argc, char** argv);
 

@@ -5,8 +5,6 @@
 #ifndef CONTENT_TEST_CONTENT_TEST_SUITE_H_
 #define CONTENT_TEST_CONTENT_TEST_SUITE_H_
 
-#include <memory>
-
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -16,8 +14,6 @@
 #endif
 
 namespace content {
-
-class TestContentClientInitializer;
 
 class ContentTestSuite : public ContentTestSuiteBase {
  public:
@@ -30,11 +26,8 @@ class ContentTestSuite : public ContentTestSuiteBase {
 
  protected:
   void Initialize() override;
-  void Shutdown() override;
 
  private:
-  std::unique_ptr<TestContentClientInitializer>
-      test_content_client_initializer_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
 #if BUILDFLAG(IS_WIN)

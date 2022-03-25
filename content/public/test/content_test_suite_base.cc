@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
@@ -19,10 +23,17 @@
 #include "content/renderer/in_process_renderer_thread.h"
 #include "content/utility/in_process_utility_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #include "gin/v8_initializer.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_assets.h"
+#include "base/android/locale_utils.h"
+#include "ui/base/resource/resource_bundle_android.h"
 #endif
 
 namespace content {
@@ -73,9 +84,12 @@ void ContentTestSuiteBase::Initialize() {
 
 void ContentTestSuiteBase::RegisterContentSchemes(
     ContentClient* content_client) {
+  // In death tests UnitTestTestSuite::Run() (which ran before this) will have
+  // already set the clients. So reset them back.
+  auto* old_client = GetContentClientForTesting();
   SetContentClient(content_client);
   content::RegisterContentSchemes();
-  SetContentClient(nullptr);
+  SetContentClient(old_client);
 }
 
 void ContentTestSuiteBase::ReRegisterContentSchemes() {
@@ -88,6 +102,37 @@ void ContentTestSuiteBase::RegisterInProcessThreads() {
   RenderProcessHostImpl::RegisterRendererMainThreadFactory(
       CreateInProcessRendererThread);
   content::RegisterGpuMainThreadFactory(CreateInProcessGpuThread);
+}
+
+void ContentTestSuiteBase::InitializeResourceBundle() {
+  base::FilePath content_shell_pack_path;
+
+#if BUILDFLAG(IS_ANDROID)
+  // on Android all pak files are inside the paks folder.
+  CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA,
+                               &content_shell_pack_path));
+  content_shell_pack_path =
+      content_shell_pack_path.Append(FILE_PATH_LITERAL("paks"));
+#else
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &content_shell_pack_path));
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Add the content_shell main pak file.
+  content_shell_pack_path =
+      content_shell_pack_path.Append(FILE_PATH_LITERAL("content_shell.pak"));
+
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+#if BUILDFLAG(IS_ANDROID)
+    ui::ResourceBundle::InitSharedInstanceWithLocale(
+        base::android::GetDefaultLocaleString(), NULL,
+        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+
+    ui::LoadMainAndroidPackFile("assets/content_shell.pak",
+                                content_shell_pack_path);
+#else
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(content_shell_pack_path);
+#endif
+  }
 }
 
 }  // namespace content

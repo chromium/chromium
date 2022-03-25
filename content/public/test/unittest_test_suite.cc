@@ -14,11 +14,17 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "content/browser/network_service_instance_impl.h"
+#include "content/browser/notification_service_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_host_resolver.h"
+#include "content/public/utility/content_utility_client.h"
 #include "content/test/test_blink_web_unit_test_support.h"
+#include "content/test/test_content_browser_client.h"
+#include "content/test/test_content_client.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
 
@@ -34,20 +40,44 @@ namespace content {
 
 namespace {
 
-// The global NetworkService object could be created in some tests due to
-// various StoragePartition calls. Since it has a mojo pipe that is bound using
-// the current thread, which goes away between tests, we need to destruct it to
-// avoid calls being dropped silently.
-class ResetNetworkServiceBetweenTests : public testing::EmptyTestEventListener {
+class UnitTestEventListener : public testing::EmptyTestEventListener {
  public:
-  ResetNetworkServiceBetweenTests() = default;
+  explicit UnitTestEventListener(UnitTestTestSuite* test_suite)
+      : test_suite_(test_suite) {}
 
-  ResetNetworkServiceBetweenTests(const ResetNetworkServiceBetweenTests&) =
-      delete;
-  ResetNetworkServiceBetweenTests& operator=(
-      const ResetNetworkServiceBetweenTests&) = delete;
+  UnitTestEventListener(const UnitTestEventListener&) = delete;
+  UnitTestEventListener& operator=(const UnitTestEventListener&) = delete;
+
+  void InitializeObjects() {
+    test_network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
+
+    notification_service_ = std::make_unique<NotificationServiceImpl>();
+
+    content_clients_ = test_suite_->create_clients().Run();
+    CHECK(content_clients_->content_client.get());
+    SetContentClient(content_clients_->content_client.get());
+    SetBrowserClientForTesting(content_clients_->content_browser_client.get());
+    SetUtilityClientForTesting(content_clients_->content_utility_client.get());
+  }
+
+  void OnTestStart(const testing::TestInfo& test_info) override {
+    InitializeObjects();
+  }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
+    // Don't call SetUtilityClientForTesting or SetBrowserClientForTesting since
+    // if a test overrode ContentClient it might already be deleted and setting
+    // these pointers on it would result in a UAF.
+    SetContentClient(nullptr);
+    content_clients_.reset();
+
+    SetNetworkConnectionTrackerForTesting(nullptr);
+    test_network_connection_tracker_.reset();
+    notification_service_.reset();
+
     // If the network::NetworkService object was instantiated during a unit test
     // it will be deleted because network_service_instance.cc has it in a
     // SequenceLocalStorageSlot. However we want to synchronously destruct the
@@ -55,12 +85,33 @@ class ResetNetworkServiceBetweenTests : public testing::EmptyTestEventListener {
     // later and have other tests use the InterfacePtr that is invalid.
     ResetNetworkServiceForTesting();
   }
+
+ private:
+  UnitTestTestSuite* test_suite_;
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      test_network_connection_tracker_;
+  std::unique_ptr<NotificationServiceImpl> notification_service_;
+  std::unique_ptr<UnitTestTestSuite::ContentClients> content_clients_;
 };
 
 }  // namespace
 
-UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
-    : test_suite_(test_suite) {
+UnitTestTestSuite::ContentClients::ContentClients() = default;
+UnitTestTestSuite::ContentClients::~ContentClients() = default;
+
+std::unique_ptr<UnitTestTestSuite::ContentClients>
+UnitTestTestSuite::CreateTestContentClients() {
+  auto clients = std::make_unique<UnitTestTestSuite::ContentClients>();
+  clients->content_client = std::make_unique<TestContentClient>();
+  clients->content_browser_client =
+      std::make_unique<TestContentBrowserClient>();
+  return clients;
+}
+
+UnitTestTestSuite::UnitTestTestSuite(
+    base::TestSuite* test_suite,
+    base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients)
+    : test_suite_(test_suite), create_clients_(create_clients) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string enabled =
       command_line->GetSwitchValueASCII(switches::kEnableFeatures);
@@ -72,7 +123,7 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
 
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
-  listeners.Append(new ResetNetworkServiceBetweenTests);
+  listeners.Append(new UnitTestEventListener(this));
   listeners.Append(new CheckForLeakedWebUIControllerFactoryRegistrations);
 
   // The ThreadPool created by the test launcher is never destroyed.
@@ -101,6 +152,13 @@ int UnitTestTestSuite::Run() {
 #if defined(USE_AURA)
   std::unique_ptr<aura::Env> aura_env = aura::Env::CreateInstance();
 #endif
+
+  // TestEventListeners repeater event propagation is disabled in death test
+  // child process so create and set the clients here for it.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "gtest_internal_run_death_test")) {
+    (new UnitTestEventListener(this))->InitializeObjects();
+  }
 
   return test_suite_->Run();
 }

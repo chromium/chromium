@@ -29,7 +29,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/content_test_suite_base.h"
-#include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/unittest_test_suite.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
@@ -107,6 +106,7 @@ class ComponentsTestSuite : public base::TestSuite {
   }
 };
 
+#if BUILDFLAG(IS_IOS)
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
  public:
   ComponentsUnitTestEventListener() = default;
@@ -117,45 +117,33 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
   ~ComponentsUnitTestEventListener() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-#if BUILDFLAG(IS_IOS)
     ios_initializer_.reset(new IosComponentsTestInitializer());
-#else
-    content_initializer_ =
-        std::make_unique<content::TestContentClientInitializer>();
-#endif
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
-#if BUILDFLAG(IS_IOS)
     ios_initializer_.reset();
-#else
-    content_initializer_.reset();
-#endif
   }
 
  private:
-#if BUILDFLAG(IS_IOS)
   std::unique_ptr<IosComponentsTestInitializer> ios_initializer_;
-#else
-  std::unique_ptr<content::TestContentClientInitializer> content_initializer_;
-#endif
 };
+#endif
 
 }  // namespace
 
 base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
 #if !BUILDFLAG(IS_IOS)
   auto test_suite = std::make_unique<content::UnitTestTestSuite>(
-      new ComponentsTestSuite(argc, argv));
+      new ComponentsTestSuite(argc, argv),
+      base::BindRepeating(
+          content::UnitTestTestSuite::CreateTestContentClients));
 #else
   auto test_suite = std::make_unique<ComponentsTestSuite>(argc, argv);
-#endif
 
-  // The listener will set up common test environment for all components unit
-  // tests.
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ComponentsUnitTestEventListener());
+#endif
 
 #if !BUILDFLAG(IS_IOS)
   return base::BindOnce(&content::UnitTestTestSuite::Run,

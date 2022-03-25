@@ -20,7 +20,9 @@ int main(int argc, char** argv) {
 #endif
 
   content::UnitTestTestSuite test_suite(
-      new content::ContentTestSuite(argc, argv));
+      new content::ContentTestSuite(argc, argv),
+      base::BindRepeating(
+          content::UnitTestTestSuite::CreateTestContentClients));
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&content::UnitTestTestSuite::Run,
                                               base::Unretained(&test_suite)));

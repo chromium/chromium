@@ -34,6 +34,8 @@ include_rules = [
   "+services/service_manager",
   "+services/tracing/public/cpp",
   "+testing/android/native_test/native_browser_test_support.h",
+  "+ui/base/resource/resource_bundle.h",
+  "+ui/base/resource/resource_bundle_android.h",
   "+ui/ozone/public",
   "+ui/views",
   "+v8/include/v8.h",

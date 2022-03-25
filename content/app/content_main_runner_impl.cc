@@ -1183,10 +1183,6 @@ std::unique_ptr<ContentMainRunner> ContentMainRunner::Create() {
   return ContentMainRunnerImpl::Create();
 }
 
-ContentClient* GetContentClientForTesting() {
-  return GetContentClient();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 ContentMainDelegate* GetContentMainDelegateForTesting() {
   return GetContentMainDelegate();

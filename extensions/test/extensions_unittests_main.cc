@@ -65,9 +65,7 @@ void ExtensionsTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
-  // Register the chrome-extension:// scheme via this circuitous path. Note
-  // that this does not persistently set up a ContentClient; individual tests
-  // must use content::SetContentClient().
+  // Register the chrome-extension:// scheme via this circuitous path.
   {
     ExtensionsContentClient content_client;
     RegisterContentSchemes(&content_client);
@@ -97,7 +95,10 @@ void ExtensionsTestSuite::Shutdown() {
 }  // namespace
 
 int main(int argc, char** argv) {
-  content::UnitTestTestSuite test_suite(new ExtensionsTestSuite(argc, argv));
+  content::UnitTestTestSuite test_suite(
+      new ExtensionsTestSuite(argc, argv),
+      base::BindRepeating(
+          content::UnitTestTestSuite::CreateTestContentClients));
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&content::UnitTestTestSuite::Run,
                                               base::Unretained(&test_suite)));
