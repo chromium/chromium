@@ -6,10 +6,11 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//components/nacl/features.gni")
+import("//components/nacl/target_cpu.gni")
 import("//ppapi/native_client/nacl_test_data.gni")
 
 group("nacl") {
-  newlib = "//build/toolchain/nacl:clang_newlib_${target_cpu}"
+  newlib = "//build/toolchain/nacl:clang_newlib_${nacl_target_cpu}"
   pnacl = "//build/toolchain/nacl:newlib_pnacl"
   data_deps = [
     ":exit_status_test($newlib)",
@@ -56,7 +57,7 @@ group("nacl") {
     ":sysconf_nprocessors_onln_test($newlib)",
     ":sysconf_nprocessors_onln_test($pnacl)",
   ]
-  if (target_cpu != "arm") {
+  if (nacl_target_cpu != "arm") {
     data_deps += [ ":partly_invalid($newlib)" ]
   }
   if (target_cpu != "mipsel" && !is_mac && !is_win) {
@@ -64,7 +65,7 @@ group("nacl") {
     # The GlibC toolchain is based on gcc, which no longer runs on mac;
     # it still runs on Windows but is flaky due to its use of cygwin, so also
     # disable it there.
-    glibc = "//build/toolchain/nacl:glibc_${target_cpu}"
+    glibc = "//build/toolchain/nacl:glibc_${nacl_target_cpu}"
     data_deps += [
       ":exit_status_test($glibc)",
       ":extension_validation_cache($glibc)",
@@ -82,11 +83,6 @@ group("nacl") {
       ":simple_test($glibc)",
       ":sysconf_nprocessors_onln_test($glibc)",
     ]
-  }
-  # TODO(https://crbug.com/1299021): Implement building these NaCl targets as
-  # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-  if (target_cpu == "arm64") {
-    data_deps = []
   }
 }
 

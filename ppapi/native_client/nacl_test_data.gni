@@ -5,6 +5,7 @@
 import("//build/config/nacl/config.gni")
 import("//build/config/nacl/rules.gni")
 import("//components/nacl/features.gni")
+import("//components/nacl/target_cpu.gni")
 
 assert(enable_nacl)
 
@@ -101,7 +102,7 @@ template("nacl_test_data") {
       extra_pexe_translate_target_name =
           pexe_translate_target_name + extra_tc_cpu
     }
-    pexe_translate_target_name += target_cpu
+    pexe_translate_target_name += nacl_target_cpu
   }
   if (defined(invoker.generate_nmf)) {
     generate_nmf = invoker.generate_nmf
@@ -229,7 +230,7 @@ template("nacl_test_data") {
     }
 
     nacl_test_data_pretranslate_pexe(pexe_translate_target_name) {
-      translate_cpu = target_cpu
+      translate_cpu = nacl_target_cpu
     }
     if (defined(extra_tc_cpu)) {
       nacl_test_data_pretranslate_pexe(extra_pexe_translate_target_name) {

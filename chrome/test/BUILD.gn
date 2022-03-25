@@ -2672,16 +2672,15 @@ if (!is_android) {
           "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         ]
         deps += [ "//chrome/browser/chromeos" ]
-        data_deps += [ "//third_party/liblouis:liblouis_test_data" ]
+        data_deps += [
+          "//ppapi/native_client:irt",
+          "//third_party/liblouis:liblouis_test_data",
+        ]
 
-        # TODO(https://crbug.com/1299021): Implement building these NaCl
-        # targets as ARM32 when Chrome is built for ARM64 (for Linux/Chrome
-        # OS).
+        # TODO(https://crbug.com/1299021): Implement building this NaCl target
+        # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
         if (target_cpu != "arm64") {
-          data_deps += [
-            "//components/nacl/loader:nacl_helper",
-            "//ppapi/native_client:irt",
-          ]
+          data_deps += [ "//components/nacl/loader:nacl_helper" ]
         }
       }
 

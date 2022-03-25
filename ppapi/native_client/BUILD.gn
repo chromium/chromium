@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
+import("//components/nacl/target_cpu.gni")
 
 if (is_nacl) {
   group("ppapi_lib") {
@@ -96,8 +97,8 @@ group("irt") {
   # use nacl_irt as input for actions which require it to be marked
   # as public dependency as well.
   irt_deps = [
-    ":nacl_irt_debug(//build/toolchain/nacl:irt_${target_cpu})",
-    ":nacl_irt_debuglink(//build/toolchain/nacl:irt_${target_cpu})",
+    ":nacl_irt_debug(//build/toolchain/nacl:irt_${nacl_target_cpu})",
+    ":nacl_irt_debuglink(//build/toolchain/nacl:irt_${nacl_target_cpu})",
   ]
   public_deps = irt_deps
   data_deps = irt_deps
@@ -110,11 +111,5 @@ group("irt") {
     ]
     public_deps += irt_x64_deps
     data_deps += irt_x64_deps
-  }
-  # TODO(https://crbug.com/1299021): Implement building these NaCl targets as
-  # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-  if (target_cpu == "arm64") {
-    public_deps = []
-    data_deps = []
   }
 }

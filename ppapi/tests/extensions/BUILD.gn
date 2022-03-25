@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//components/nacl/features.gni")
+import("//components/nacl/target_cpu.gni")
 import("//ppapi/native_client/nacl_test_data.gni")
 
 group("extensions") {
-  newlib = "//build/toolchain/nacl:clang_newlib_${target_cpu}"
+  newlib = "//build/toolchain/nacl:clang_newlib_${nacl_target_cpu}"
   pnacl = "//build/toolchain/nacl:newlib_pnacl"
   data_deps = [
     ":ppapi_tests_extensions_background_keepalive($newlib)",
@@ -19,11 +20,6 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
-  # TODO(https://crbug.com/1299021): Implement building these NaCl targets as
-  # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-  if (target_cpu == "arm64") {
-    data_deps = []
-  }
 }
 
 if (is_nacl) {

@@ -6,6 +6,7 @@ import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/nacl/rules.gni")
 import("//components/nacl/features.gni")
+import("//components/nacl/target_cpu.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//testing/test.gni")
 if (is_mac) {
@@ -385,18 +386,14 @@ if (enable_nacl) {
   group("ppapi_nacl_tests_all") {
     data_deps = [
       ":copy_test_files",
-      ":ppapi_nacl_tests(//build/toolchain/nacl:clang_newlib_${target_cpu})",
+      ":ppapi_nacl_tests(//build/toolchain/nacl:clang_newlib_${nacl_target_cpu})",
       ":ppapi_nacl_tests(//build/toolchain/nacl:newlib_pnacl)",
     ]
 
     if (target_cpu != "mipsel" && !is_mac && !is_win) {
-      data_deps +=
-          [ ":ppapi_nacl_tests(//build/toolchain/nacl:glibc_${target_cpu})" ]
-    }
-    # TODO(https://crbug.com/1299021): Implement building these NaCl targets
-    # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-    if (target_cpu == "arm64") {
-      data_deps = []
+      data_deps += [
+        ":ppapi_nacl_tests(//build/toolchain/nacl:glibc_${nacl_target_cpu})",
+      ]
     }
   }
 }
