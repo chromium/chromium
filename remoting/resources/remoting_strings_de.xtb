@@ -49,7 +49,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="3197730452537982411">Remote Desktop</translation>
 <translation id="324272851072175193">Anleitung per E-Mail senden</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> möchte Änderungen vornehmen.</translation>
-<translation id="3339299787263251426">Sicherer Zugriff auf Ihren Computer über das Internet</translation>
+<translation id="3339299787263251426">Sicherer Zugriff auf deinen Computer über das Internet</translation>
 <translation id="3385242214819933234">Ungültiger Hostinhaber</translation>
 <translation id="3423542133075182604">Remoting-Prozess für Sicherheitsschlüssel</translation>
 <translation id="3581045510967524389">Es konnte keine Verbindung zum Netzwerk hergestellt werden. Überprüfen Sie, ob Ihr Gerät online ist.</translation>
@@ -91,7 +91,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Druck senden</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
-<translation id="4985296110227979402">Richten Sie zuerst Ihren Computer für den Remotezugriff ein</translation>
+<translation id="4985296110227979402">Richte zuerst deinen Computer für den Remotezugriff ein</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wählen Sie einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Möchten Sie die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
@@ -110,7 +110,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="5750083143895808682">Angemeldet als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Erneut verbinden</translation>
 <translation id="5810269635982033450">Bildschirm funktioniert wie ein Touchpad</translation>
-<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hat Zugriff angefordert, um Ihren Bildschirm zu sehen und Ihre Tastatur und Maus zu steuern. Falls Sie mit dieser Anfrage nicht gerechnet haben, drücken Sie auf „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Falls Sie den Zugriff zulassen möchten, wenn Sie bereit sind, wählen Sie „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ aus.</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hat Zugriff angefordert, um deinen Bildschirm zu sehen und deine Tastatur und Maus zu steuern. Falls du mit dieser Anfrage nicht gerechnet hast, drücke auf „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Falls du den Zugriff zulassen möchtest, wenn du bereit bist, wähle „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ aus.</translation>
 <translation id="5823658491130719298">Öffnen Sie Chrome auf dem Computer, für den Sie den Remotezugriff einrichten möchten, und rufen Sie <ph name="INSTALLATION_LINK" /> auf</translation>
 <translation id="5841343754884244200">Anzeigeoptionen</translation>
 <translation id="6033507038939587647">Tastaturoptionen</translation>
@@ -181,7 +181,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8513093439376855948">Nativer Nachrichtenhost zur Verwaltung von Remoting-Host</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="858006550102277544">Kommentar</translation>
-<translation id="8743328882720071828">Möchten Sie zulassen, dass <ph name="CLIENT_USERNAME" /> auf Ihren Computer zugreifen und diesen steuern kann?</translation>
+<translation id="8743328882720071828">Möchtest du zulassen, dass <ph name="CLIENT_USERNAME" /> auf deinen Computer zugreifen und diesen steuern kann?</translation>
 <translation id="8747048596626351634">Die Sitzung ist abgestürzt oder konnte nicht gestartet werden. Wenn die Datei "~/.chrome-remote-desktop-session" auf dem Remote-Computer vorhanden ist, vergewissern Sie sich, dass ein längerer Vordergrundprozess wie eine Desktopumgebung oder ein Fenstermanager auf dem Computer gestartet wird.</translation>
 <translation id="8804164990146287819">Datenschutzerklärung</translation>
 <translation id="8906511416443321782">Mikrofonzugriff ist erforderlich, um Ton aufzunehmen und ihn auf den Chrome Remote Desktop-Client zu streamen.</translation>
