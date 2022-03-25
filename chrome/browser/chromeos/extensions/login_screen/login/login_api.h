@@ -137,6 +137,69 @@ class LoginUnlockManagedGuestSessionFunction
   ResponseAction Run() override;
 };
 
+class LoginLockCurrentSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
+ public:
+  LoginLockCurrentSessionFunction();
+
+  LoginLockCurrentSessionFunction(const LoginLockCurrentSessionFunction&) =
+      delete;
+
+  LoginLockCurrentSessionFunction& operator=(
+      const LoginLockCurrentSessionFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.lockCurrentSession",
+                             LOGIN_LOCKCURRENTSESSION)
+
+ protected:
+  ~LoginLockCurrentSessionFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class LoginUnlockCurrentSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
+ public:
+  LoginUnlockCurrentSessionFunction();
+
+  LoginUnlockCurrentSessionFunction(const LoginUnlockCurrentSessionFunction&) =
+      delete;
+
+  LoginUnlockCurrentSessionFunction& operator=(
+      const LoginUnlockCurrentSessionFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.unlockCurrentSession",
+                             LOGIN_UNLOCKCURRENTSESSION)
+
+ protected:
+  ~LoginUnlockCurrentSessionFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class LoginLaunchSamlUserSessionFunction
+    : public ExtensionFunctionWithOptionalErrorResult {
+ public:
+  LoginLaunchSamlUserSessionFunction();
+
+  LoginLaunchSamlUserSessionFunction(
+      const LoginLaunchSamlUserSessionFunction&) = delete;
+
+  LoginLaunchSamlUserSessionFunction& operator=(
+      const LoginLaunchSamlUserSessionFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.launchSamlUserSession",
+                             LOGIN_LAUNCHSAMLUSERSESSION)
+
+ protected:
+  ~LoginLaunchSamlUserSessionFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class LoginLaunchSharedManagedGuestSessionFunction
     : public ExtensionFunctionWithOptionalErrorResult {
  public:

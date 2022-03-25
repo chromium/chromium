@@ -4,6 +4,20 @@
 
 module crosapi.mojom;
 
+// A container for the SAML properties that are used to launch a SAML user
+// session.
+[Stable]
+struct SamlUserSessionProperties {
+  // User's email address.
+  string email@0;
+  // User's Gaia ID.
+  string gaia_id@1;
+  // User's password.
+  string password@2;
+  // Oauth_code cookie set in the SAML handshake.
+  string oauth_code@3;
+};
+
 // This API allows Lacros to call the chrome.login extension API.
 [Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
@@ -24,13 +38,10 @@ interface Login {
   // once.
   FetchDataForNextLoginAttempt@2() => (string data);
 
-  // Locks a managed guest session if it was launched with a password from
-  // |LaunchManagedGuestSession()|.
+  // Deprecated. Use |LockCurrentSession()| below.
   LockManagedGuestSession@3() => (string? error);
 
-  // Unlocks a managed guest session which was launched by
-  // |LaunchManagedGuestSession()| with a password. The session will unlock if
-  // |password| matches the one provided to |LaunchManagedGuestSession()|.
+  // Deprecated. Use |UnlockCurrentSession()| below.
   UnlockManagedGuestSession@4(string password) => (string? error);
 
   // Starts a ChromeOS Managed Guest Session which will host the shared user
@@ -62,4 +73,23 @@ interface Login {
   // Sets data for the next login attempt. The data can be retrieved by
   // calling |FetchDataForNextLoginAttempt()|.
   SetDataForNextLoginAttempt@9(string data_for_next_login_attempt) => ();
+
+  // Launches a SAML user session with the provided email, gaiaId, password
+  // and oauth_code cookie.
+  [MinVersion=1]
+  LaunchSamlUserSession@10(SamlUserSessionProperties properties) =>
+      (string? error);
+
+  // Locks the current session. The session has to be either a user session or a
+  // Managed Guest Session launched by |LaunchManagedGuestSession()| with a
+  // password.
+  [MinVersion=1]
+  LockCurrentSession@11() => (string? error);
+
+  // Unlocks the current session. The session has to be either a user session or
+  // a Managed Guest Session launched by |LaunchManagedGuestSession()| with a
+  // password. The session will unlock if |password| matches the one provided
+  // to at launch.
+  [MinVersion=1]
+  UnlockCurrentSession@12(string password) => (string? error);
 };

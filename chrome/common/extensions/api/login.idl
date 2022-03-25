@@ -8,6 +8,19 @@
 namespace login {
   callback VoidCallback = void ();
   callback StringCallback = void (DOMString result);
+  dictionary SamlUserSessionProperties {
+    // User's email address.
+    DOMString email;
+
+    // User's Gaia ID.
+    DOMString gaiaId;
+
+    // User's password.
+    DOMString password;
+
+    // Oauth_code cookie set in the SAML handshake.
+    DOMString oauthCode;
+  };
 
   interface Functions {
     // Launches a managed guest session if one is set up via the admin console.
@@ -40,21 +53,43 @@ namespace login {
     [supportsPromises] static void fetchDataForNextLoginAttempt(
         StringCallback callback);
 
-    // Locks the current managed guest session. The session has to have been
-    // launched by $(ref:launchManagedGuestSession) with a password.
-    [supportsPromises] static void lockManagedGuestSession(
+    // Deprecated. Please use $(ref:lockCurrentSession) instead.
+    [supportsPromises, deprecated="Use $(ref:lockCurrentSession) instead."]
+    static void lockManagedGuestSession(optional VoidCallback callback);
+
+    // Locks the current session. The session has to be either a user session or
+    // a Managed Guest Session launched by $(ref:launchManagedGuestSession) with
+    // a password.
+    [supportsPromises] static void lockCurrentSession(
         optional VoidCallback callback);
 
-    // Unlocks a managed guest session which was launched by
-    // $(ref:launchManagedGuestSession) with a password. The session will
-    // unlock if the provided password matches the one provided earlier.
+    // Deprecated. Please use $(ref:unlockCurrentSession) instead.
+    [supportsPromises, deprecated="Use $(ref:unlockCurrentSession) instead."]
+    static void unlockManagedGuestSession(
+        DOMString password,
+        optional VoidCallback callback);
+
+    // Unlocks the current session. The session has to be either a user session
+    // or a Managed Guest Session launched by $(ref:launchManagedGuestSession)
+    // with a password. The session will unlock if the provided password matches
+    // the one used to launch the session.
     // |password|: The password which will be used to unlock the session.
     // |callback|: Note: If the function succeeds, the callback is not
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void unlockManagedGuestSession(
+    [supportsPromises] static void unlockCurrentSession(
         DOMString password,
+        optional VoidCallback callback);
+
+    // Launches a SAML-backed user session.
+    // |properties|: User's email address, gaia ID, password and oauth_code.
+    // |callback|: Note: If the function succeeds, the callback is not
+    // guaranteed to be invoked as the extension will be disabled when the
+    // session starts. Use this callback only to handle the failure case by
+    // checking $(ref:runtime.lastError).
+    [supportsPromises] static void launchSamlUserSession(
+        SamlUserSessionProperties properties,
         optional VoidCallback callback);
 
     // Starts a ChromeOS Managed Guest Session which will host the shared user
@@ -75,7 +110,7 @@ namespace login {
 
     // Enters the shared session with the given password. If the session is
     // locked, it can only be unlocked by calling $(ref:unlockSharedSession)
-    // with the same password. 
+    // with the same password.
     // Fails if calling extension is not the same as the one which called
     // $(ref:launchSharedManagedGuestSession) or there is already a shared
     // session running. Can only be called from the lock screen.

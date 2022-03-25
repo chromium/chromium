@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -56,6 +57,14 @@ namespace {
 
 const char kEmail[] = "email@test";
 const char kGaiaId[] = "gaia@test";
+
+const char kLaunchSamlUserSessionArguments[] =
+    R"([{
+          "email": "email@test",
+          "gaiaId": "gaia@test",
+          "password": "password",
+          "oauthCode": "oauth_code"
+       }])";
 
 class MockExistingUserController : public ash::ExistingUserController {
  public:
@@ -119,6 +128,12 @@ class ScopedTestingProfile {
 ash::UserContext GetPublicUserContext(const std::string& email) {
   return ash::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                           AccountId::FromUserEmail(email));
+}
+
+ash::UserContext GetRegularUserContext(const std::string& email,
+                                       const std::string& gaia_id) {
+  return ash::UserContext(user_manager::USER_TYPE_REGULAR,
+                          AccountId::FromUserEmailGaiaId(email, gaia_id));
 }
 
 }  // namespace
@@ -201,8 +216,8 @@ MATCHER_P(MatchUserContextSecret, expected, "") {
 // Test that calling `login.launchManagedGuestSession()` calls the corresponding
 // method from the `ExistingUserController`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
-  base::TimeTicks now_ = base::TimeTicks::Now();
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
 
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   EXPECT_CALL(*mock_existing_user_controller_,
@@ -214,7 +229,7 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
 
   // Test that calling `login.launchManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.launchManagedGuestSession()` with a password sets
@@ -322,8 +337,8 @@ TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSession) {
-  base::TimeTicks now_ = base::TimeTicks::Now();
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
 
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
@@ -337,11 +352,32 @@ TEST_F(LoginApiUnittest, LockManagedGuestSession) {
 
   // Test that calling `login.lockManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
+}
+
+TEST_F(LoginApiUnittest,
+       LockManagedGuestSessionWithLockCurrentSessionFunction) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
+
+  std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
+
+  auto function = base::MakeRefCounted<LoginLockCurrentSessionFunction>();
+  RunFunction(function.get(), "[]");
+
+  // Test that calling `login.lockCurrentSession()` triggered a user activity in
+  // the `UserActivityDetector`.
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionNoActiveUser) {
-  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
+  ASSERT_EQ(login_api_errors::kNoLockableSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -351,7 +387,7 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
-  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
+  ASSERT_EQ(login_api_errors::kNoLockableSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -361,7 +397,7 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionUserCannotLock) {
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
   fake_chrome_user_manager_->set_current_user_can_lock(false);
 
-  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
+  ASSERT_EQ(login_api_errors::kNoLockableSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -379,8 +415,8 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionSessionNotActive) {
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
-  base::TimeTicks now_ = base::TimeTicks::Now();
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
 
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
@@ -402,12 +438,41 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
 
   // Test that calling `login.unlockManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
+}
+
+TEST_F(LoginApiUnittest,
+       UnlockManagedGuestSessionWithUnlockCurrentSessionFunction) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
+
+  std::unique_ptr<ScopedTestingProfile> scoped_profile =
+      AddPublicAccountUser(kEmail);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_lock_handler_,
+              Authenticate(MatchUserContextSecret("password"), _))
+      .WillOnce([](ash::UserContext user_context,
+                   base::OnceCallback<void(bool auth_success)> callback) {
+        std::move(callback).Run(/*auth_success=*/true);
+      });
+
+  auto function = base::MakeRefCounted<LoginUnlockCurrentSessionFunction>();
+  RunFunction(function.get(), "[\"password\"]");
+
+  // Test that calling `login.unlockCurrentSession()` triggered a user activity
+  // in the `UserActivityDetector`.
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNoActiveUser) {
   ASSERT_EQ(
-      login_api_errors::kNoUnlockableManagedGuestSession,
+      login_api_errors::kNoUnlockableSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
@@ -418,7 +483,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
   ASSERT_EQ(
-      login_api_errors::kNoUnlockableManagedGuestSession,
+      login_api_errors::kNoUnlockableSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
@@ -429,7 +494,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionCannotUnlock) {
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
 
   ASSERT_EQ(
-      login_api_errors::kNoUnlockableManagedGuestSession,
+      login_api_errors::kNoUnlockableSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
@@ -483,6 +548,207 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
       login_api_errors::kAuthenticationFailed,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
+}
+
+class LoginApiUserSessionUnittest : public LoginApiUnittest {
+ public:
+  LoginApiUserSessionUnittest() = default;
+
+  LoginApiUserSessionUnittest(const LoginApiUserSessionUnittest&) = delete;
+
+  LoginApiUserSessionUnittest& operator=(const LoginApiUserSessionUnittest&) =
+      delete;
+
+  ~LoginApiUserSessionUnittest() override = default;
+
+ protected:
+  std::unique_ptr<ScopedTestingProfile> AddRegularUser(
+      const std::string& email) {
+    AccountId account_id = AccountId::FromUserEmailGaiaId(email, kGaiaId);
+    user_manager::User* user =
+        fake_chrome_user_manager_->AddUserWithAffiliation(
+            account_id, /* is_affiliated= */ true);
+    TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+
+    return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
+  }
+};
+
+MATCHER_P(MatchUserContext, expected, "") {
+  return expected.GetGaiaID() == arg.GetGaiaID() &&
+         expected.GetKey()->GetSecret() == arg.GetKey()->GetSecret() &&
+         expected.GetAuthCode() == arg.GetAuthCode();
+}
+
+// Test that calling `login.launchSamlUserSession()` calls the corresponding
+// method from the `LoginDisplayHost` and sets the correct attributes in the
+// `UserContext`
+TEST_F(LoginApiUserSessionUnittest, LaunchSamlUserSession) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
+
+  std::unique_ptr<ScopedTestingProfile> profile = AddRegularUser(kEmail);
+  ash::UserContext user_context = GetRegularUserContext(kEmail, kGaiaId);
+
+  chromeos::Key key("password");
+  key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
+  user_context.SetKey(key);
+  user_context.SetPasswordKey(chromeos::Key("password"));
+  user_context.SetAuthFlow(chromeos::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  user_context.SetIsUsingSamlPrincipalsApi(false);
+  user_context.SetAuthCode("oauth_code");
+
+  EXPECT_CALL(*mock_login_display_host_,
+              CompleteLogin(MatchUserContext(user_context)))
+      .Times(1);
+
+  auto function = base::MakeRefCounted<LoginLaunchSamlUserSessionFunction>();
+  RunFunction(function.get(), kLaunchSamlUserSessionArguments);
+
+  // Test that calling `login.launchSamlUserSession()` triggered a user activity
+  // in the `UserActivityDetector`.
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
+}
+
+// Test that calling `login.launchSamlUserSession()` returns an error when the
+// session state is not `LOGIN_PRIMARY`.
+TEST_F(LoginApiUserSessionUnittest, LaunchSamlUserSessionWrongSessionState) {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  auto function = base::MakeRefCounted<LoginLaunchSamlUserSessionFunction>();
+  ASSERT_EQ(login_api_errors::kAlreadyActiveSession,
+            RunFunctionAndReturnError(function.get(),
+                                      kLaunchSamlUserSessionArguments));
+}
+
+// Test that calling `login.launchSamlUserSession()` returns an error when there
+//  is another signin in progress.
+TEST_F(LoginApiUserSessionUnittest, LaunchSamlUserSessionSigninInProgress) {
+  EXPECT_CALL(*mock_existing_user_controller_, IsSigninInProgress())
+      .WillOnce(Return(true));
+
+  auto function = base::MakeRefCounted<LoginLaunchSamlUserSessionFunction>();
+  ASSERT_EQ(login_api_errors::kAnotherLoginAttemptInProgress,
+            RunFunctionAndReturnError(function.get(),
+                                      kLaunchSamlUserSessionArguments));
+}
+
+// Test that calling `login.lockCurrentSession()` calls the corresponding method
+// from the `LoginApiLockHandler` for regular user.
+TEST_F(LoginApiUserSessionUnittest, LockUserSession) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
+
+  std::unique_ptr<ScopedTestingProfile> profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
+
+  auto function = base::MakeRefCounted<LoginLockCurrentSessionFunction>();
+  RunFunction(function.get(), "[]");
+
+  // Test that calling `login.lockCurrentSession()` triggered a user activity in
+  // the `UserActivityDetector`.
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
+}
+
+// Test that calling `login.lockCurrentSession()` returns an error when the user
+// session is not active for regular user.
+TEST_F(LoginApiUserSessionUnittest, LockUserSessionSessionNotActive) {
+  std::unique_ptr<ScopedTestingProfile> profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  auto function = base::MakeRefCounted<LoginLockCurrentSessionFunction>();
+  ASSERT_EQ(login_api_errors::kSessionIsNotActive,
+            RunFunctionAndReturnError(function.get(), "[]"));
+}
+
+// Test that calling `login.unlockCurrentSession()` calls the corresponding
+// method from the `LoginApiLockHandler` for regular user.
+TEST_F(LoginApiUserSessionUnittest, UnlockUserSession) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
+
+  std::unique_ptr<ScopedTestingProfile> scoped_profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_lock_handler_,
+              Authenticate(MatchUserContextSecret("password"), _))
+      .WillOnce([](ash::UserContext user_context,
+                   base::OnceCallback<void(bool auth_success)> callback) {
+        std::move(callback).Run(/*auth_success=*/true);
+      });
+
+  auto function = base::MakeRefCounted<LoginUnlockCurrentSessionFunction>();
+  RunFunction(function.get(), "[\"password\"]");
+
+  // Test that calling `login.unlockCurrentSession()` triggered a user activity
+  // in the `UserActivityDetector`.
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
+}
+
+// Test that calling `login.unlockCurrentSession()` returns an error when the
+// user session is not locked for regular user.
+TEST_F(LoginApiUserSessionUnittest, UnlockUserSessionSessionNotLocked) {
+  std::unique_ptr<ScopedTestingProfile> scoped_profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+
+  auto function = base::MakeRefCounted<LoginUnlockCurrentSessionFunction>();
+  ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
+            RunFunctionAndReturnError(function.get(), "[\"password\"]"));
+}
+
+// Test that calling `login.unlockCurrentSession()` returns an error when an
+// unlock is already in progress for regular user.
+TEST_F(LoginApiUserSessionUnittest, UnlockUserSessionUnlockInProgress) {
+  std::unique_ptr<ScopedTestingProfile> scoped_profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress()).WillOnce(Return(true));
+
+  auto function = base::MakeRefCounted<LoginUnlockCurrentSessionFunction>();
+  ASSERT_EQ(login_api_errors::kAnotherUnlockAttemptInProgress,
+            RunFunctionAndReturnError(function.get(), "[\"password\"]"));
+}
+
+// Test that calling `login.unlockCurrentSession()` returns false via callback
+// on failed authentication for regular user.
+TEST_F(LoginApiUserSessionUnittest, UnlockUserSessionAuthenticationFailed) {
+  std::unique_ptr<ScopedTestingProfile> scoped_profile = AddRegularUser(kEmail);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
+  fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_lock_handler_,
+              Authenticate(MatchUserContextSecret("password"), _))
+      .WillOnce([](ash::UserContext user_context,
+                   base::OnceCallback<void(bool auth_success)> callback) {
+        std::move(callback).Run(/*auth_success=*/false);
+      });
+
+  auto function = base::MakeRefCounted<LoginUnlockCurrentSessionFunction>();
+  ASSERT_EQ(login_api_errors::kAuthenticationFailed,
+            RunFunctionAndReturnError(function.get(), "[\"password\"]"));
 }
 
 class LoginApiSharedSessionUnittest : public LoginApiUnittest {
@@ -592,8 +858,8 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 // extension ID and session secret in the `UserContext` passed to
 // `ExistingUserController`, and sets user hash and salt.
 TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
-  base::TimeTicks now_ = base::TimeTicks::Now();
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   ash::UserContext user_context;
   EXPECT_CALL(*mock_existing_user_controller_,
@@ -612,7 +878,7 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
   EXPECT_NE("", handler->GetUserSecretSaltForTesting());
 
   // Test that user activity is triggered.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.launchSharedManagedGuestSession()` returns an error
@@ -670,13 +936,13 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSession) {
 
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
 
-  base::TimeTicks now_ = base::TimeTicks::Now();
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
 
   RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
 
   // Test that user activity is triggered.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when the
@@ -751,7 +1017,7 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionCannotUnlock) {
       session_manager::SessionState::LOCKED);
   fake_chrome_user_manager_->set_current_user_can_lock(false);
 
-  ASSERT_EQ(login_api_errors::kNoUnlockableManagedGuestSession,
+  ASSERT_EQ(login_api_errors::kNoUnlockableSession,
             RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
                                       "[\"foo\"]"));
 }
@@ -863,9 +1129,9 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
 
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
 
-  base::TimeTicks now_ = base::TimeTicks::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
 
-  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+  ui::UserActivityDetector::Get()->set_now_for_test(now);
   RunFunction(new LoginEnterSharedSessionFunction(), "[\"bar\"]");
 
   chromeos::SharedSessionHandler* handler =
@@ -874,7 +1140,7 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
   EXPECT_NE("", handler->GetUserSecretSaltForTesting());
 
   // Test that user activity is triggered.
-  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
+  EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.enterSharedSession()` returns an error when the

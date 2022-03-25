@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_LOGIN_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_LOGIN_ASH_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
+#include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -37,6 +41,11 @@ class LoginAsh : public mojom::Login {
   void UnlockManagedGuestSession(
       const std::string& password,
       UnlockManagedGuestSessionCallback callback) override;
+  void LockCurrentSession(LockCurrentSessionCallback callback) override;
+  void UnlockCurrentSession(const std::string& password,
+                            UnlockCurrentSessionCallback callback) override;
+  void LaunchSamlUserSession(mojom::SamlUserSessionPropertiesPtr properties,
+                             LaunchSamlUserSessionCallback callback) override;
   void LaunchSharedManagedGuestSession(
       const std::string& password,
       LaunchSharedManagedGuestSessionCallback callback) override;
@@ -56,6 +65,14 @@ class LoginAsh : public mojom::Login {
   void OnOptionalErrorCallbackComplete(
       base::OnceCallback<void(const absl::optional<std::string>&)> callback,
       absl::optional<std::string> error);
+  absl::optional<std::string> CanLaunchSession();
+  absl::optional<std::string> LockSession(
+      absl::optional<user_manager::UserType> user_type = absl::nullopt);
+  absl::optional<std::string> CanUnlockSession(
+      absl::optional<user_manager::UserType> user_type = absl::nullopt);
+  void UnlockSession(
+      const std::string& password,
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   mojo::ReceiverSet<mojom::Login> receivers_;
   base::WeakPtrFactory<LoginAsh> weak_factory_{this};
