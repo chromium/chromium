@@ -301,7 +301,9 @@ ui::Compositor* TestRenderWidgetHostView::GetCompositor() {
 
 TestRenderWidgetHostViewChildFrame::TestRenderWidgetHostViewChildFrame(
     RenderWidgetHost* rwh)
-    : RenderWidgetHostViewChildFrame(rwh, display::ScreenInfos()) {
+    : RenderWidgetHostViewChildFrame(
+          rwh,
+          display::ScreenInfos(display::ScreenInfo())) {
   Init();
 }
 

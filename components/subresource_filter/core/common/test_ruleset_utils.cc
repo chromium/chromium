@@ -55,6 +55,11 @@ proto::UrlRule CreateSubstringRule(base::StringPiece substring) {
                         /*is_suffix_rule=*/false);
 }
 
+proto::UrlRule CreateAllowlistSubstringRule(base::StringPiece substring) {
+  return CreateRuleImpl(substring, /*is_allowlist_rule=*/true,
+                        /*is_suffix_rule=*/false);
+}
+
 proto::UrlRule CreateSuffixRule(base::StringPiece suffix) {
   return CreateRuleImpl(suffix, /*is_allowlist_rule=*/false,
                         /*is_suffix_rule=*/true);

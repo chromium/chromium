@@ -35,9 +35,9 @@ struct CnameAliasMetricInfo {
   int redundant_count = 0;
 };
 
-// NavigationThrottle responsible for filtering subframe document loads, which
-// are considered subresource loads of their parent frame, hence are subject to
-// subresource filtering using the parent frame's
+// NavigationThrottle responsible for filtering subframe and fenced frame
+// document loads, which are considered subresource loads of their parent frame,
+// hence are subject to subresource filtering using the parent frame's
 // AsyncDocumentSubresourceFilter.
 //
 // The throttle should only be instantiated for navigations occuring in

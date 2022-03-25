@@ -53,6 +53,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -287,9 +288,15 @@ class ContentSubresourceFilterThrottleManagerTest
   void CreateTestNavigation(const GURL& url,
                             content::RenderFrameHost* render_frame_host) {
     DCHECK(render_frame_host);
-    navigation_simulator_ =
-        content::NavigationSimulator::CreateRendererInitiated(
-            url, render_frame_host);
+    if (render_frame_host->IsFencedFrameRoot()) {
+      navigation_simulator_ =
+          content::NavigationSimulator::CreateForFencedFrame(url,
+                                                             render_frame_host);
+    } else {
+      navigation_simulator_ =
+          content::NavigationSimulator::CreateRendererInitiated(
+              url, render_frame_host);
+    }
   }
 
   content::NavigationSimulator* navigation_simulator() {
@@ -304,6 +311,15 @@ class ContentSubresourceFilterThrottleManagerTest
             base::StringPrintf("subframe-%s", url.spec().c_str()));
     CreateTestNavigation(url, subframe);
     return subframe;
+  }
+
+  content::RenderFrameHost* CreateFencedFrameWithTestNavigation(
+      const GURL& url,
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    CreateTestNavigation(url, fenced_frame);
+    return fenced_frame;
   }
 
   void NavigateAndCommitMainFrame(const GURL& url) {
@@ -996,7 +1012,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 #endif
 }
 
-TEST_F(ContentSubresourceFilterThrottleManagerTest,
+TEST_P(ContentSubresourceFilterThrottleManagerTest,
        CreateHelperForWebContents) {
   auto web_contents =
       content::RenderViewHostTestHarness::CreateTestWebContents();
@@ -1038,65 +1054,6 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_EQ(ContentSubresourceFilterWebContentsHelper::FromWebContents(
                 web_contents.get()),
             helper);
-}
-
-TEST_F(ContentSubresourceFilterThrottleManagerTest,
-       SafeBrowsingThrottleCreation) {
-  // If no safe browsing database is present, the throttle should not be
-  // created on a navigation.
-  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
-  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
-
-  CreateSafeBrowsingDatabaseManager();
-
-  // With a safe browsing database present, the throttle should be created on
-  // a main frame navigation.
-  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
-  EXPECT_TRUE(created_safe_browsing_throttle_for_current_navigation());
-
-  // However, it still should not be created on a subframe navigation.
-  CreateSubframeWithTestNavigation(
-      GURL("https://www.example.com/disallowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-
-  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
-}
-
-TEST_F(ContentSubresourceFilterThrottleManagerTest, LogActivation) {
-  // This test assumes that we're not in DryRun mode.
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndDisableFeature(kAdTagging);
-
-  base::HistogramTester tester;
-  const char kActivationStateHistogram[] =
-      "SubresourceFilter.PageLoad.ActivationState";
-  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
-  tester.ExpectBucketCount(kActivationStateHistogram,
-                           static_cast<int>(mojom::ActivationLevel::kDryRun),
-                           1);
-
-  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
-  tester.ExpectBucketCount(kActivationStateHistogram,
-                           static_cast<int>(mojom::ActivationLevel::kDisabled),
-                           1);
-
-  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
-  tester.ExpectBucketCount(kActivationStateHistogram,
-                           static_cast<int>(mojom::ActivationLevel::kEnabled),
-                           1);
-
-  // Navigate a subframe that is not filtered, but should still activate.
-  CreateSubframeWithTestNavigation(GURL("https://allowlist.com"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()));
-  content::RenderFrameHost* subframe1 =
-      navigation_simulator()->GetFinalRenderFrameHost();
-  ExpectActivationSignalForFrame(subframe1, true /* expect_activation */);
-
-  tester.ExpectTotalCount(kActivationStateHistogram, 3);
 }
 
 // Check to make sure we don't send an IPC with the ad tag bit for ad frames
@@ -1577,6 +1534,233 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_EQ(
       ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
       throttle_manager);
+}
+
+class ContentSubresourceFilterThrottleManagerFencedFrameTest
+    : public ContentSubresourceFilterThrottleManagerTest {
+ public:
+  ContentSubresourceFilterThrottleManagerFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~ContentSubresourceFilterThrottleManagerFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContentSubresourceFilterThrottleManagerFencedFrameTest,
+                         ::testing::Values(WILL_START_REQUEST,
+                                           WILL_PROCESS_RESPONSE));
+
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
+       ActivateMainFrameAndFilterFencedFrameNavigation) {
+  // Commit a navigation that triggers page level activation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
+
+  // A disallowed fenced frame navigation should be successfully filtered.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
+  CreateFencedFrameWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateStartAndGetResult(navigation_simulator()));
+#if BUILDFLAG(IS_ANDROID)
+  ::testing::Mock::VerifyAndClearExpectations(&message_dispatcher_bridge_);
+#endif
+}
+
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
+       ActivateMainFrameAndFilterFencedFrameNavigationOnRedirect) {
+  // Commit a navigation that triggers page level activation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
+
+  // A disallowed subframe navigation via redirect should be successfully
+  // filtered.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
+  CreateFencedFrameWithTestNavigation(
+      GURL("https://www.example.com/before-redirect.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://www.example.com/disallowed.html")));
+#if BUILDFLAG(IS_ANDROID)
+  ::testing::Mock::VerifyAndClearExpectations(&message_dispatcher_bridge_);
+#endif
+}
+
+// Ensure activation propagates into great-grandchild fenced frames, including
+// cross process ones.
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
+       ActivationPropagation) {
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
+
+  // Navigate a fenced frame to a URL that is not itself disallowed. Subresource
+  // filtering for this fenced frame document should still be activated.
+  CreateFencedFrameWithTestNavigation(GURL("https://www.a.com/allowed.html"),
+                                      main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* fenced_frame1 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(fenced_frame1, true /* expect_activation */);
+
+  // Navigate a nested fenced frame to a URL that is not itself disallowed.
+  // Subresource filtering for this fenced frame document should still be
+  // activated.
+  CreateFencedFrameWithTestNavigation(GURL("https://www.b.com/allowed.html"),
+                                      fenced_frame1);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* fenced_frame2 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(fenced_frame2, true /* expect_activation */);
+
+  // A final, nested fenced frame navigation is filtered.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
+  CreateFencedFrameWithTestNavigation(GURL("https://www.c.com/disallowed.html"),
+                                      fenced_frame2);
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateStartAndGetResult(navigation_simulator()));
+#if BUILDFLAG(IS_ANDROID)
+  ::testing::Mock::VerifyAndClearExpectations(&message_dispatcher_bridge_);
+#endif
+
+  // A subframe navigation inside the nested fenced frame is filtered.
+  CreateSubframeWithTestNavigation(GURL("https://www.c.com/disallowed.html"),
+                                   fenced_frame2);
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateStartAndGetResult(navigation_simulator()));
+}
+
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
+       SafeBrowsingThrottleCreation) {
+  // If no safe browsing database is present, the throttle should not be
+  // created on a navigation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
+
+  CreateSafeBrowsingDatabaseManager();
+
+  // With a safe browsing database present, the throttle should be created on
+  // a main frame navigation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  EXPECT_TRUE(created_safe_browsing_throttle_for_current_navigation());
+
+  // However, it still should not be created on a subframe navigation.
+  CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+
+  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
+
+  // It should also not be created on a fenced frame navigation.
+  CreateFencedFrameWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+
+  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
+}
+
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest, LogActivation) {
+  // This test assumes that we're not in DryRun mode.
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndDisableFeature(kAdTagging);
+
+  base::HistogramTester tester;
+  const char kActivationStateHistogram[] =
+      "SubresourceFilter.PageLoad.ActivationState";
+  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
+  tester.ExpectBucketCount(kActivationStateHistogram,
+                           static_cast<int>(mojom::ActivationLevel::kDryRun),
+                           1);
+
+  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  tester.ExpectBucketCount(kActivationStateHistogram,
+                           static_cast<int>(mojom::ActivationLevel::kDisabled),
+                           1);
+
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  tester.ExpectBucketCount(kActivationStateHistogram,
+                           static_cast<int>(mojom::ActivationLevel::kEnabled),
+                           1);
+
+  // Navigate a subframe that is not filtered, but should still activate.
+  CreateSubframeWithTestNavigation(GURL("https://allowlist.com"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* subframe1 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(subframe1, true /* expect_activation */);
+
+  // Navigate a fenced frame that is not filtered, but should still activate.
+  CreateFencedFrameWithTestNavigation(GURL("https://allowlist.com"),
+                                      main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* fenced_frame1 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(fenced_frame1, true /* expect_activation */);
+
+  tester.ExpectTotalCount(kActivationStateHistogram, 3);
+}
+
+// Ensure fenced frame navigations do not create a new throttle manager and
+// FromNavigation gets the correct one.
+TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
+       ThrottleManagerLifetime_FencedFrame) {
+  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
+
+  auto* throttle_manager =
+      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage());
+  ASSERT_TRUE(throttle_manager);
+
+  content::RenderFrameHost* fenced_frame_root =
+      CreateFencedFrameWithTestNavigation(
+          GURL("https://www.example.com/not_disallowed.html"), main_rfh());
+  EXPECT_TRUE(fenced_frame_root);
+  navigation_simulator()->Start();
+
+  // Using FromNavigation on a fenced frame navigation should retrieve the
+  // throttle manager from the initial (outer-most) Page.
+  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+                *navigation_simulator()->GetNavigationHandle()),
+            throttle_manager);
+
+  navigation_simulator()->Commit();
+
+  // Committing the fenced frame navigation should not change the Page's
+  // throttle manager.
+  EXPECT_EQ(
+      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
+      throttle_manager);
+
+  // The throttle manager on the fenced frame page should be the outer-most
+  // Page's throttle manager.
+  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromPage(
+                fenced_frame_root->GetPage()),
+            throttle_manager);
 }
 
 class ContentSubresourceFilterThrottleManagerInfoBarUiTest

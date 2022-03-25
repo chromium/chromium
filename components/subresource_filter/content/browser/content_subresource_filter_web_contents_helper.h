@@ -91,10 +91,15 @@ class DebugCrashWebContentsObserver : public content::WebContentsObserver {
 
 // This class manages the lifetime and storage of
 // ContentSubresourceFilterThrottleManager instances. This helper is attached
-// to each WebContents and listens to navigations to ensure each main Page in
-// the WebContents has an associated throttle manager.  It also listens to
-// events occurring in the WebContents and SubresourceFilter and, based on
-// their context, routes the event to the throttle manager of the target page.
+// to each WebContents and listens to navigations to ensure certain Page(s) in
+// the WebContents have an associated throttle manager. A throttle manager is
+// created for outermost pages and for portal pages. Fenced frames are treated
+// as subframes and don't create a throttle manager; they use the throttle
+// manager of their embedding page.
+//
+// This class also listens to events occurring in the WebContents and
+// SubresourceFilter and, based on their context, routes the event to the
+// throttle manager of the target page.
 // TODO(bokan): This seems like a common pattern for a feature to want to
 // observe events and track state on a per-Page basis. The WebContentsHelper
 // pattern or something like it should be wrapped up into a common and reusable
@@ -187,6 +192,18 @@ class ContentSubresourceFilterWebContentsHelper
   // set.
   base::flat_set<ContentSubresourceFilterThrottleManager*> throttle_managers_;
 };
+
+// Returns true if the navigation is happening in the main frame of a page
+// considered a subresource filter root (i.e. one that may create a new
+// ThrottleManager). These navigations are not themselves able to be filtered
+// by the subresource filter.
+bool IsInSubresourceFilterRoot(content::NavigationHandle* navigation_handle);
+
+// Gets the closest ancestor Page which is a subresource filter root, i.e. one
+// for which we have created a throttle manager. Note: This crosses the fenced
+// frame boundary (as they are considered a subresource filter child), but does
+// not cross a portal boundary (which is a subresource filter root).
+content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh);
 
 }  // namespace subresource_filter
 

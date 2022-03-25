@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     EXPECT_CALL(observer, OnPageActivationComputed(_, _)).Times(0);
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
 
-    EXPECT_TRUE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
+    ASSERT_EQ(web_contents()->GetMainFrame(), prerender_rfh);
     EXPECT_TRUE(AdsBlockedInContentSettings(prerender_rfh));
   }
 }

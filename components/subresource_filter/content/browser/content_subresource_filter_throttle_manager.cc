@@ -74,6 +74,8 @@ bool ShouldInheritOpenerActivation(content::NavigationHandle* navigation_handle,
 
 bool ShouldInheritParentActivation(
     content::NavigationHandle* navigation_handle) {
+  // TODO(crbug.com/1263541): Investigate if this should apply to fenced frames
+  // as well, or if we can default them to unactivated initially.
   if (navigation_handle->IsInMainFrame()) {
     return false;
   }
@@ -107,6 +109,8 @@ ContentSubresourceFilterThrottleManager::CreateForNewPage(
     VerifiedRulesetDealer::Handle* dealer_handle,
     ContentSubresourceFilterWebContentsHelper& web_contents_helper,
     content::NavigationHandle& initiating_navigation_handle) {
+  DCHECK(IsInSubresourceFilterRoot(&initiating_navigation_handle));
+
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
     return nullptr;
 
@@ -180,6 +184,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
 
   // Update the ad status of a frame given the new navigation. This may tag or
   // untag a frame as an ad.
+  // TODO(crbug.com/1263541): This should also be done for fenced frames.
   if (!navigation_handle->IsInMainFrame()) {
     blink::FrameAdEvidence& ad_evidence =
         EnsureFrameAdEvidence(navigation_handle);
@@ -293,6 +298,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   // navigations to about:blank commit synchronously. We handle navigations
   // there where possible to ensure that any messages to the renderer contain
   // the right ad status.
+  // TODO(crbug.com/1263541): Investigate how to handle fenced frames here.
   if (is_initial_navigation && !navigation_handle->IsInMainFrame() &&
       !(navigation_handle->HasCommitted() &&
         !navigation_handle->GetURL().IsAboutBlank()) &&
@@ -318,7 +324,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   AsyncDocumentSubresourceFilter* filter = FilterForFinishedNavigation(
       navigation_handle, throttle, frame_host, did_inherit_opener_activation);
 
-  if (navigation_handle->IsInMainFrame()) {
+  if (IsInSubresourceFilterRoot(navigation_handle)) {
     current_committed_load_has_notified_disallowed_load_ = false;
     statistics_.reset();
     if (filter) {
@@ -332,7 +338,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
             kActivationConsoleMessage);
       }
     }
-    RecordUmaHistogramsForMainFrameNavigation(
+    RecordUmaHistogramsForRootNavigation(
         navigation_handle,
         filter ? filter->activation_state().activation_level
                : mojom::ActivationLevel::kDisabled,
@@ -355,6 +361,8 @@ void ContentSubresourceFilterThrottleManager::
   // Navigations with dead RenderFrames are also excluded as any load policy
   // sent to the renderer won't be used.
   // TODO(alexmt): Remove once frequency is determined.
+  // TODO(crbug.com/1263541): Record histograms for fenced frame roots and fix
+  // |is_same_domain_to_main_frame_| below.
   if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
       ShouldInheritActivation(navigation_handle->GetURL()) ||
       !navigation_handle->GetRenderFrameHost()->IsRenderFrameLive()) {
@@ -463,11 +471,11 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
 }
 
 void ContentSubresourceFilterThrottleManager::
-    RecordUmaHistogramsForMainFrameNavigation(
+    RecordUmaHistogramsForRootNavigation(
         content::NavigationHandle* navigation_handle,
         const mojom::ActivationLevel& activation_level,
         bool did_inherit_opener_activation) {
-  DCHECK(navigation_handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(navigation_handle));
 
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.PageLoad.ActivationState",
                             activation_level);
@@ -481,7 +489,7 @@ void ContentSubresourceFilterThrottleManager::
 void ContentSubresourceFilterThrottleManager::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!statistics_ || render_frame_host->GetParent())
+  if (!statistics_ || render_frame_host != &page_->GetMainDocument())
     return;
   statistics_->OnDidFinishLoad();
 }
@@ -498,6 +506,8 @@ void ContentSubresourceFilterThrottleManager::DidBecomePrimaryPage() {
 
 void ContentSubresourceFilterThrottleManager::OnPageCreated(
     content::Page& page) {
+  DCHECK(!page.GetMainDocument().IsFencedFrameRoot());
+  DCHECK(!page_);
   page_ = &page;
   profile_interaction_manager_->DidCreatePage(*page_);
 }
@@ -509,7 +519,7 @@ void ContentSubresourceFilterThrottleManager::OnPageCreated(
 void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     const mojom::ActivationState& activation_state) {
-  DCHECK(navigation_handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(navigation_handle));
   DCHECK(!navigation_handle->HasCommitted());
 
   auto it =
@@ -537,7 +547,10 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
 void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
-  DCHECK(!navigation_handle->IsInMainFrame());
+  DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
+  // TODO(crbug.com/1263541): We should tag fenced frames as ads.
+  if (!navigation_handle->GetParentFrame())
+    return;
 
   int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
   navigation_load_policies_[frame_tree_node_id] = load_policy;
@@ -559,7 +572,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   DCHECK(!navigation_handle->IsSameDocument());
   DCHECK(!ShouldInheritActivation(navigation_handle->GetURL()));
 
-  if (navigation_handle->IsInMainFrame() && database_manager_) {
+  if (IsInSubresourceFilterRoot(navigation_handle) && database_manager_) {
     throttles->push_back(
         std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
             navigation_handle, profile_interaction_manager_.get(),
@@ -628,7 +641,7 @@ std::unique_ptr<SubframeNavigationFilteringThrottle>
 ContentSubresourceFilterThrottleManager::
     MaybeCreateSubframeNavigationFilteringThrottle(
         content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame())
+  if (IsInSubresourceFilterRoot(navigation_handle))
     return nullptr;
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
@@ -641,11 +654,10 @@ std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ContentSubresourceFilterThrottleManager::
     MaybeCreateActivationStateComputingThrottle(
         content::NavigationHandle* navigation_handle) {
-  // Main frames: create unconditionally.
-  if (navigation_handle->IsInMainFrame()) {
-    auto throttle =
-        ActivationStateComputingNavigationThrottle::CreateForMainFrame(
-            navigation_handle);
+  // Subresource filter roots: create unconditionally.
+  if (IsInSubresourceFilterRoot(navigation_handle)) {
+    auto throttle = ActivationStateComputingNavigationThrottle::CreateForRoot(
+        navigation_handle);
     if (base::FeatureList::IsEnabled(kAdTagging)) {
       mojom::ActivationState ad_tagging_state;
       ad_tagging_state.activation_level = mojom::ActivationLevel::kDryRun;
@@ -655,13 +667,14 @@ ContentSubresourceFilterThrottleManager::
     return throttle;
   }
 
-  // Subframes: create only for frames with activated parents.
+  // Subresource filter children: create only for frames with activated
+  // parents.
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
   if (!parent_filter)
     return nullptr;
   DCHECK(ruleset_handle_);
-  return ActivationStateComputingNavigationThrottle::CreateForSubframe(
+  return ActivationStateComputingNavigationThrottle::CreateForChild(
       navigation_handle, ruleset_handle_.get(),
       parent_filter->activation_state());
 }
@@ -669,9 +682,9 @@ ContentSubresourceFilterThrottleManager::
 AsyncDocumentSubresourceFilter*
 ContentSubresourceFilterThrottleManager::GetParentFrameFilter(
     content::NavigationHandle* child_frame_navigation) {
-  DCHECK(!child_frame_navigation->IsInMainFrame());
-  content::RenderFrameHost* parent = child_frame_navigation->GetParentFrame();
-  return GetFrameFilter(parent);
+  DCHECK(!IsInSubresourceFilterRoot(child_frame_navigation));
+  return GetFrameFilter(
+      child_frame_navigation->GetParentFrameOrOuterDocument());
 }
 
 const absl::optional<subresource_filter::mojom::ActivationState>
@@ -698,12 +711,12 @@ ContentSubresourceFilterThrottleManager::GetFrameFilter(
 void ContentSubresourceFilterThrottleManager::MaybeShowNotification(
     content::RenderFrameHost* frame_host) {
   DCHECK(page_);
-  DCHECK_EQ(&frame_host->GetPage(), page_);
+  DCHECK_EQ(&GetSubresourceFilterRootPage(frame_host), page_);
 
   if (current_committed_load_has_notified_disallowed_load_)
     return;
 
-  auto it = frame_host_filter_map_.find(frame_host->GetMainFrame());
+  auto it = frame_host_filter_map_.find(&page_->GetMainDocument());
   if (it == frame_host_filter_map_.end() ||
       it->second->activation_state().activation_level !=
           mojom::ActivationLevel::kEnabled) {
@@ -776,7 +789,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdSubframe(
 void ContentSubresourceFilterThrottleManager::SetIsAdSubframeForTesting(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_subframe) {
-  DCHECK(render_frame_host->GetParent());
+  DCHECK(render_frame_host->GetParentOrOuterDocument());
   if (is_ad_subframe ==
       base::Contains(ad_frames_, render_frame_host->GetFrameTreeNodeId())) {
     return;
@@ -824,14 +837,20 @@ void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
 
 void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
     mojom::AdsViolation violation) {
-  OnAdsViolationTriggered(receiver_.GetCurrentTargetFrame()->GetMainFrame(),
-                          violation);
+  DCHECK(page_);
+  DCHECK_EQ(&GetSubresourceFilterRootPage(receiver_.GetCurrentTargetFrame()),
+            page_);
+  // TODO(bokan) How should we deal with violations coming from a fenced frame?
+  // Should we pass in the fenced frame root instead? crbug.com/1263541.
+  OnAdsViolationTriggered(&page_->GetMainDocument(), violation);
 }
 
 void ContentSubresourceFilterThrottleManager::SubframeWasCreatedByAdScript() {
   OnSubframeWasCreatedByAdScript(receiver_.GetCurrentTargetFrame());
 }
 
+// TODO(crbug.com/1263541): This isn't called from fenced frame roots yet, but
+// we should figure out how to replicate this for them and update code below.
 void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
     content::RenderFrameHost* frame_host) {
   DCHECK(frame_host);
@@ -848,6 +867,8 @@ void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
 blink::FrameAdEvidence&
 ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
     content::NavigationHandle* navigation_handle) {
+  // TODO(crbug.com/1263541): This should eventually be called for fenced frame
+  // roots as well.
   DCHECK(!navigation_handle->IsInMainFrame());
   auto frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
   auto parent_frame_tree_node_id =
@@ -858,6 +879,7 @@ ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
 blink::FrameAdEvidence&
 ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host->GetParent());
   auto frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   auto parent_frame_tree_node_id =
       render_frame_host->GetParent()->GetFrameTreeNodeId();

@@ -23,8 +23,6 @@ namespace subresource_filter {
 // This class provides a static API to log console messages when an ongoing
 // navigation successfully commits.
 // - This class only supports main frame navigations.
-// - This class should be replaced with a class scoped to the NavigationHandle
-//   if it ever starts supporting user data.
 class NavigationConsoleLogger
     : public content::WebContentsObserver,
       public content::NavigationHandleUserData<NavigationConsoleLogger> {

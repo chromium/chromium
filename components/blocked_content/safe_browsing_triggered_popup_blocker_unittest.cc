@@ -21,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
@@ -137,10 +138,17 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
  protected:
   std::unique_ptr<content::NavigationThrottle> CreateThrottle(
       content::NavigationHandle* handle) {
-    return std::make_unique<
-        subresource_filter::SubresourceFilterSafeBrowsingActivationThrottle>(
-        handle, /*delegate=*/nullptr, content::GetIOThreadTaskRunner({}),
-        fake_safe_browsing_database_);
+    // Activation is only computed when navigating a subresource filter root
+    // (see content_subresource_filter_throttle_manager.h for the definition of
+    // a root).
+    if (subresource_filter::IsInSubresourceFilterRoot(handle)) {
+      return std::make_unique<
+          subresource_filter::SubresourceFilterSafeBrowsingActivationThrottle>(
+          handle, /*delegate=*/nullptr, content::GetIOThreadTaskRunner({}),
+          fake_safe_browsing_database_);
+    }
+
+    return nullptr;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

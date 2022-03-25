@@ -223,7 +223,7 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->IsInMainFrame()) {
+    if (IsInSubresourceFilterRoot(navigation_handle)) {
       navigation_handle->RegisterThrottleForTesting(
           std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
               navigation_handle, delegate(), test_io_task_runner_,

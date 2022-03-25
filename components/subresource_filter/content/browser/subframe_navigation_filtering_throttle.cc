@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
@@ -68,7 +69,7 @@ SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
       parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(base::FeatureList::IsEnabled(
           ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)) {
-  DCHECK(!handle->IsInMainFrame());
+  DCHECK(!IsInSubresourceFilterRoot(handle));
   DCHECK(parent_frame_filter_);
 }
 
@@ -170,8 +171,15 @@ void SubframeNavigationFilteringThrottle::HandleDisallowedLoad() {
     std::string console_message = base::StringPrintf(
         kDisallowSubframeConsoleMessageFormat,
         navigation_handle()->GetURL().possibly_invalid_spec().c_str());
-    navigation_handle()->GetWebContents()->GetMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError, console_message);
+    // Use the parent's Page to log a message to the console so that if this
+    // subframe is the root of a nested frame tree (e.g. fenced frame), the log
+    // message won't be associated with a to-be-destroyed Page.
+    navigation_handle()
+        ->GetParentFrameOrOuterDocument()
+        ->GetPage()
+        .GetMainDocument()
+        .AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                             console_message);
   }
 
   parent_frame_filter_->ReportDisallowedLoad();

@@ -5,6 +5,7 @@
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -15,13 +16,10 @@ void NavigationConsoleLogger::LogMessageOnCommit(
     content::NavigationHandle* handle,
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
-  DCHECK(handle->IsInMainFrame());
-  if (handle->GetNavigatingFrameType() ==
-      content::FrameType::kFencedFrameRoot) {
-    // TODO(crbug.com/1263541): Replace it with DCHECK once fenced frames use
-    // the embedder's ContentSubresourceFilterThrottleManager.
-    return;
-  }
+  DCHECK(IsInSubresourceFilterRoot(handle));
+  DCHECK_NE(handle->GetNavigatingFrameType(),
+            content::FrameType::kFencedFrameRoot);
+
   if (handle->HasCommitted() && !handle->IsErrorPage()) {
     handle->GetRenderFrameHost()->AddMessageToConsole(level, message);
   } else {
@@ -33,7 +31,7 @@ void NavigationConsoleLogger::LogMessageOnCommit(
 // static
 NavigationConsoleLogger* NavigationConsoleLogger::CreateIfNeededForNavigation(
     content::NavigationHandle* handle) {
-  DCHECK(handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(handle));
   DCHECK_NE(handle->GetNavigatingFrameType(),
             content::FrameType::kFencedFrameRoot);
   return GetOrCreateForNavigationHandle(*handle);

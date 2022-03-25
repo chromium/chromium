@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -18,20 +19,20 @@ namespace subresource_filter {
 
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
-ActivationStateComputingNavigationThrottle::CreateForMainFrame(
+ActivationStateComputingNavigationThrottle::CreateForRoot(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(navigation_handle));
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
       navigation_handle, absl::optional<mojom::ActivationState>(), nullptr));
 }
 
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
-ActivationStateComputingNavigationThrottle::CreateForSubframe(
+ActivationStateComputingNavigationThrottle::CreateForChild(
     content::NavigationHandle* navigation_handle,
     VerifiedRuleset::Handle* ruleset_handle,
     const mojom::ActivationState& parent_activation_state) {
-  DCHECK(!navigation_handle->IsInMainFrame());
+  DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             parent_activation_state.activation_level);
   DCHECK(ruleset_handle);
@@ -55,7 +56,7 @@ void ActivationStateComputingNavigationThrottle::
     NotifyPageActivationWithRuleset(
         VerifiedRuleset::Handle* ruleset_handle,
         const mojom::ActivationState& page_activation_state) {
-  DCHECK(navigation_handle()->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(navigation_handle()));
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             page_activation_state.activation_level);
   parent_activation_state_ = page_activation_state;
@@ -81,7 +82,7 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // If no parent activation, this is main frame that was never notified of
   // activation.
   if (!parent_activation_state_) {
-    DCHECK(navigation_handle()->IsInMainFrame());
+    DCHECK(IsInSubresourceFilterRoot(navigation_handle()));
     DCHECK(!async_filter_);
     DCHECK(!ruleset_handle_);
     return content::NavigationThrottle::PROCEED;
@@ -92,14 +93,14 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // finish, or start a new check now if there was no previous speculative
   // check.
   if (async_filter_ && async_filter_->has_activation_state()) {
-    if (navigation_handle()->IsInMainFrame())
+    if (IsInSubresourceFilterRoot(navigation_handle()))
       UpdateWithMoreAccurateState();
     return content::NavigationThrottle::PROCEED;
   }
   DCHECK(!deferred_);
   deferred_ = true;
   if (!async_filter_) {
-    DCHECK(navigation_handle()->IsInMainFrame());
+    DCHECK(IsInSubresourceFilterRoot(navigation_handle()));
     CheckActivationState();
   }
   return content::NavigationThrottle::DEFER;
@@ -115,8 +116,9 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
   AsyncDocumentSubresourceFilter::InitializationParams params;
   params.document_url = navigation_handle()->GetURL();
   params.parent_activation_state = parent_activation_state_.value();
-  if (!navigation_handle()->IsInMainFrame()) {
-    content::RenderFrameHost* parent = navigation_handle()->GetParentFrame();
+  if (!IsInSubresourceFilterRoot(navigation_handle())) {
+    content::RenderFrameHost* parent =
+        navigation_handle()->GetParentFrameOrOuterDocument();
     DCHECK(parent);
     params.parent_document_origin = parent->GetLastCommittedOrigin();
   }
@@ -135,7 +137,7 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
 void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(
     mojom::ActivationState state) {
   if (deferred_) {
-    if (navigation_handle()->IsInMainFrame())
+    if (IsInSubresourceFilterRoot(navigation_handle()))
       UpdateWithMoreAccurateState();
     Resume();
   }
@@ -145,7 +147,7 @@ void ActivationStateComputingNavigationThrottle::UpdateWithMoreAccurateState() {
   // This method is only needed for main frame navigations that are notified of
   // page activation more than once. Even for those that are updated once, it
   // should be a no-op.
-  DCHECK(navigation_handle()->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(navigation_handle()));
   DCHECK(parent_activation_state_);
   DCHECK(async_filter_);
   async_filter_->UpdateWithMoreAccurateState(*parent_activation_state_);

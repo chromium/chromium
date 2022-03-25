@@ -19,6 +19,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -188,10 +189,10 @@ class ActivationStateComputingNavigationThrottleTest
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     std::unique_ptr<ActivationStateComputingNavigationThrottle> throttle =
-        navigation_handle->IsInMainFrame()
-            ? ActivationStateComputingNavigationThrottle::CreateForMainFrame(
+        IsInSubresourceFilterRoot(navigation_handle)
+            ? ActivationStateComputingNavigationThrottle::CreateForRoot(
                   navigation_handle)
-            : ActivationStateComputingNavigationThrottle::CreateForSubframe(
+            : ActivationStateComputingNavigationThrottle::CreateForChild(
                   navigation_handle, ruleset_handle_.get(),
                   parent_activation_state_.value());
     if (navigation_handle->IsInMainFrame() && dryrun_speculation_) {

@@ -57,6 +57,9 @@ protocol::Response PageHandler::Enable() {
 
 protocol::Response PageHandler::Disable() {
   enabled_ = false;
+  // TODO(bokan): This is inadvertently called from a FencedFrame as it has a
+  // PageHandler that gets destroyed when the main frame is refreshed.
+  // ToggleAdBlocking should be a no-op for non-primary pages.
   ToggleAdBlocking(false /* enable */);
   SetSPCTransactionMode(protocol::Page::SetSPCTransactionMode::ModeEnum::None);
   // Do not mark the command as handled. Let it fall through instead, so that

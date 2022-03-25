@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -77,8 +78,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
                            base::ThreadTaskRunnerHandle::Get()),
                        base::OnTaskRunnerDeleter(io_task_runner_)),
       delegate_(delegate) {
-  DCHECK(handle->IsInMainFrame());
-
+  DCHECK(IsInSubresourceFilterRoot(handle));
   CheckCurrentUrl();
   DCHECK(!check_results_.empty());
 }

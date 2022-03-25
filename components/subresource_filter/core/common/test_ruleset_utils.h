@@ -20,6 +20,11 @@ namespace testing {
 url_pattern_index::proto::UrlRule CreateSubstringRule(
     base::StringPiece substring);
 
+// Creates an allowlisted URL rule which targets subresources of any type with
+// a URL containing the given `substring`.
+url_pattern_index::proto::UrlRule CreateAllowlistSubstringRule(
+    base::StringPiece substring);
+
 // Creates a blocklisted URL rule which targets subresources of any type such
 // that the resource URL ends with |suffix|.
 url_pattern_index::proto::UrlRule CreateSuffixRule(base::StringPiece suffix);
