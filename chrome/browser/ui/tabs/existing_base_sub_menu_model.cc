@@ -20,12 +20,6 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
       min_command_id_(min_command_id),
       parent_new_command_id_(parent_new_command_id) {}
 
-bool ExistingBaseSubMenuModel::GetAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator) const {
-  return false;
-}
-
 const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
     int index) const {
   if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
@@ -38,14 +32,6 @@ const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
 bool ExistingBaseSubMenuModel::IsCommandIdAlerted(int command_id) const {
   return IsNewCommand(command_id) &&
          parent_delegate()->IsCommandIdAlerted(parent_new_command_id_);
-}
-
-bool ExistingBaseSubMenuModel::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ExistingBaseSubMenuModel::IsCommandIdEnabled(int command_id) const {
-  return true;
 }
 
 constexpr int ExistingBaseSubMenuModel::kMinExistingWindowCommandId;
