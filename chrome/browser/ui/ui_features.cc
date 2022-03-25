@@ -122,7 +122,7 @@ const base::Feature kClobberAllSideSearchSidePanels{
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Adds improved support for handling multiple contextual and global RHS browser
 // side panels. Designed specifically to handle the interim state before the v2
