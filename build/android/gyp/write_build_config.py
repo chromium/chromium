@@ -671,13 +671,18 @@ def DepPathsOfType(wanted_type, config_paths):
 
 
 def GetAllDepsConfigsInOrder(deps_config_paths, filter_func=None):
-  def GetDeps(path):
-    config = GetDepConfig(path)
-    if filter_func and not filter_func(config):
-      return []
-    return config['deps_configs']
+  def apply_filter(paths):
+    if filter_func:
+      return [p for p in paths if filter_func(GetDepConfig(p))]
+    return paths
 
-  return build_utils.GetSortedTransitiveDependencies(deps_config_paths, GetDeps)
+  def discover(path):
+    return apply_filter(GetDepConfig(path)['deps_configs'])
+
+  deps_config_paths = apply_filter(deps_config_paths)
+  deps_config_paths = build_utils.GetSortedTransitiveDependencies(
+      deps_config_paths, discover)
+  return deps_config_paths
 
 
 def GetObjectByPath(obj, key_path):
