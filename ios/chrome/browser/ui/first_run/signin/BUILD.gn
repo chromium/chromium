@@ -12,9 +12,16 @@ source_set("signin") {
   ]
   deps = [
     ":signin_ui",
+    "//components/metrics",
+    "//components/prefs",
+    "//ios/chrome/browser:application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 

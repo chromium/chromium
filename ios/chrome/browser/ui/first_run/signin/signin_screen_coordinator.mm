@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
+#import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 
@@ -52,7 +56,22 @@
   self.viewController.delegate = self;
   self.viewController.modalInPresentation = YES;
 
-  self.mediator = [[SigninScreenMediator alloc] init];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  PrefService* localPrefService = GetApplicationContext()->GetLocalState();
+  PrefService* prefService = browserState->GetPrefs();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  self.mediator = [[SigninScreenMediator alloc]
+      initWithAccountManagerService:accountManagerService
+              authenticationService:authenticationService
+                   localPrefService:localPrefService
+                        prefService:prefService
+                        syncService:syncService
+                     showFREConsent:self.showFREConsent];
   self.mediator.consumer = self.viewController;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]
@@ -62,6 +81,7 @@
 - (void)stop {
   self.delegate = nil;
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
 }
 
