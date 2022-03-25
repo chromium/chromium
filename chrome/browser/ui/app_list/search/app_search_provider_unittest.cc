@@ -46,6 +46,8 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/content/content_test_helper.h"
@@ -118,22 +120,31 @@ bool MoreRelevant(const ChromeSearchResult* result1,
 }
 
 void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
+  apps::AppType app_type;
+  apps::IconKeyPtr icon_key;
   proxy.AppRegistryCache().ForOneApp(
-      app_id, [&app](const apps::AppUpdate& update) {
-        app->app_type = ConvertAppTypeToMojomAppType(update.AppType());
-        app->icon_key = apps::mojom::IconKey::New(
+      app_id, [&app_type, &icon_key](const apps::AppUpdate& update) {
+        app_type = update.AppType();
+        icon_key = std::make_unique<apps::IconKey>(
             update.IconKey()->timeline + 1, update.IconKey()->resource_id,
             update.IconKey()->icon_effects);
       });
 
-  std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(app.Clone());
-  proxy.AppRegistryCache().OnApps(std::move(apps),
-                                  apps::mojom::AppType::kUnknown,
-                                  false /* should_notify_initialized */);
-  proxy.FlushMojoCallsForTesting();
+  std::vector<apps::AppPtr> apps;
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->icon_key = std::move(*icon_key);
+  apps.push_back(std::move(app));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    proxy.AppRegistryCache().OnApps(std::move(apps), apps::AppType::kUnknown,
+                                    false /* should_notify_initialized */);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_apps;
+    mojom_apps.push_back(apps::ConvertAppToMojomApp(apps[0]));
+    proxy.AppRegistryCache().OnApps(std::move(mojom_apps),
+                                    apps::mojom::AppType::kUnknown,
+                                    false /* should_notify_initialized */);
+    proxy.FlushMojoCallsForTesting();
+  }
 }
 
 class AppSearchProviderTest : public AppListTestBase {
