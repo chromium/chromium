@@ -92,6 +92,11 @@ export class ModulesElement extends PolymerElement {
         value: false,
       },
 
+      modulesFreRemoved_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * When the first run experience (FRE) is disabled and modules are
        * enabled, we show the modules without a FRE.
@@ -131,6 +136,7 @@ export class ModulesElement extends PolymerElement {
   private modulesLoadedAndVisibilityDetermined_: boolean;
   private modulesShownToUser_: boolean;
   private modulesFreVisible_: boolean;
+  private modulesFreRemoved_: boolean;
   private showModulesFre_: boolean;
   private dragEnabled_: boolean;
 
@@ -393,6 +399,10 @@ export class ModulesElement extends PolymerElement {
     this.$.removeModuleToast.hide();
 
     this.removedModuleData_ = null;
+
+    // Prevent user from resurfacing FRE when they are undoing removal of
+    // module.
+    this.modulesFreRemoved_ = false;
   }
 
   /**
@@ -436,14 +446,21 @@ export class ModulesElement extends PolymerElement {
     // restored if FRE opt out is undone.
     this.removedModuleData_ = null;
 
+    this.modulesFreRemoved_ = true;
+
     // Notify the user
     this.$.removeModuleFreToast.show();
   }
 
   private onUndoRemoveModuleFreButtonClick_() {
+    if (!this.modulesFreRemoved_) {
+      return;
+    }
+
     NewTabPageProxy.getInstance().handler.setModulesFreVisible(true);
     NewTabPageProxy.getInstance().handler.setModulesVisible(true);
     this.$.removeModuleFreToast.hide();
+    this.modulesFreRemoved_ = false;
   }
 
   /**
