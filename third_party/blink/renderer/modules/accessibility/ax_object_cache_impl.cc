@@ -2166,6 +2166,8 @@ void AXObjectCacheImpl::ChildrenChanged(Node* node) {
 }
 
 void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
+  TRACE_EVENT0("accessibility",
+               "AXObjectCacheImpl::ChildrenChanged(LayoutObject)");
   if (!layout_object)
     return;
 

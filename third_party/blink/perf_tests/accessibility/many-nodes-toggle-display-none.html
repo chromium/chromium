@@ -103,6 +103,7 @@ PerfTestRunner.startMeasureValuesAsync({
   iterationCount: 6,
   tracingCategories: 'accessibility',
   traceEventsToMeasure: [
+    'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
     'ProcessDeferredAccessibilityEvents',
     'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
   ]

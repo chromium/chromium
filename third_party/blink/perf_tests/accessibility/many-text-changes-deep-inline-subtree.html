@@ -68,6 +68,8 @@ PerfTestRunner.startMeasureValuesAsync({
     iterationCount: 6,
     tracingCategories: 'accessibility',
     traceEventsToMeasure: [
+      // Measuring 'AXObjectCacheImpl::ChildrenChanged(LayoutObject)'
+      // can lead to this test timing out.
       'ProcessDeferredAccessibilityEvents',
       'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
     ]
