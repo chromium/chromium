@@ -46,6 +46,21 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
                                           VP9PROFILE_PROFILE3,
                                           /*hardware_accelerated=*/false,
                                           1280 * 720)),
+        kDecodeStatsKeyVp9Hw(
+            VideoDescKey::MakeBucketedKey(/*is_decode_stats=*/true,
+                                          VP9PROFILE_PROFILE3,
+                                          /*hardware_accelerated=*/true,
+                                          1280 * 720)),
+        kDecodeStatsKeyVp9FullHd(
+            VideoDescKey::MakeBucketedKey(/*is_decode_stats=*/true,
+                                          VP9PROFILE_PROFILE3,
+                                          /*hardware_accelerated=*/false,
+                                          1920 * 1080)),
+        kDecodeStatsKeyVp94K(
+            VideoDescKey::MakeBucketedKey(/*is_decode_stats=*/true,
+                                          VP9PROFILE_PROFILE3,
+                                          /*hardware_accelerated=*/false,
+                                          3840 * 2160)),
         kDecodeStatsKeyH264(
             VideoDescKey::MakeBucketedKey(/*is_decode_stats=*/true,
                                           H264PROFILE_MIN,
@@ -87,8 +102,8 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   void VerifyNoPendingOps() { EXPECT_TRUE(stats_db_->pending_ops_.empty()); }
 
-  int GetMaxDaysToKeepStats() {
-    return WebrtcVideoStatsDBImpl::GetMaxDaysToKeepStats();
+  base::TimeDelta GetMaxTimeToKeepStats() {
+    return WebrtcVideoStatsDBImpl::GetMaxTimeToKeepStats();
   }
 
   int GetMaxEntriesPerConfig() {
@@ -122,28 +137,39 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   void VerifyReadStats(const VideoDescKey& key,
                        const VideoStatsEntry& expected) {
-    EXPECT_CALL(*this, MockGetVideoStatsCb(true, Pointee(Eq(expected))));
+    EXPECT_CALL(*this,
+                MockGetVideoStatsCb(true, absl::make_optional(expected)));
     stats_db_->GetVideoStats(
-        key, base::BindOnce(&WebrtcVideoStatsDBImplTest::GetVideoStatsCb,
+        key, base::BindOnce(&WebrtcVideoStatsDBImplTest::MockGetVideoStatsCb,
                             base::Unretained(this)));
     VerifyOnePendingOp("Read");
     fake_db_->GetCallback(true);
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  void VerifyReadStatsCollection(
+      const VideoDescKey& key,
+      const WebrtcVideoStatsDB::VideoStatsCollection& expected) {
+    EXPECT_CALL(*this, MockGetVideoStatsCollectionCb(
+                           true, absl::make_optional(expected)));
+    stats_db_->GetVideoStatsCollection(
+        key, base::BindOnce(
+                 &WebrtcVideoStatsDBImplTest::MockGetVideoStatsCollectionCb,
+                 base::Unretained(this)));
+    VerifyOnePendingOp("Read");
+    fake_db_->LoadCallback(true);
     testing::Mock::VerifyAndClearExpectations(this);
   }
 
   void VerifyEmptyStats(const VideoDescKey& key) {
-    EXPECT_CALL(*this, MockGetVideoStatsCb(true, nullptr));
+    EXPECT_CALL(*this,
+                MockGetVideoStatsCb(true, absl::optional<VideoStatsEntry>()));
     stats_db_->GetVideoStats(
-        key, base::BindOnce(&WebrtcVideoStatsDBImplTest::GetVideoStatsCb,
+        key, base::BindOnce(&WebrtcVideoStatsDBImplTest::MockGetVideoStatsCb,
                             base::Unretained(this)));
     VerifyOnePendingOp("Read");
     fake_db_->GetCallback(true);
     testing::Mock::VerifyAndClearExpectations(this);
-  }
-
-  // Unwraps move-only parameters to pass to the mock function.
-  void GetVideoStatsCb(bool success, std::unique_ptr<VideoStatsEntry> entry) {
-    MockGetVideoStatsCb(success, entry.get());
   }
 
   void AppendToProtoDB(const VideoDescKey& key,
@@ -171,7 +197,13 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   MOCK_METHOD1(OnInitialize, void(bool success));
 
-  MOCK_METHOD2(MockGetVideoStatsCb, void(bool success, VideoStatsEntry* entry));
+  MOCK_METHOD2(MockGetVideoStatsCb,
+               void(bool success, absl::optional<VideoStatsEntry> entry));
+
+  MOCK_METHOD2(MockGetVideoStatsCollectionCb,
+               void(bool success,
+                    absl::optional<WebrtcVideoStatsDB::VideoStatsCollection>
+                        collection));
 
   MOCK_METHOD1(MockAppendVideoStatsCb, void(bool success));
 
@@ -182,6 +214,9 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   const VideoDescKey kDecodeStatsKeyVp9;
+  const VideoDescKey kDecodeStatsKeyVp9Hw;
+  const VideoDescKey kDecodeStatsKeyVp9FullHd;
+  const VideoDescKey kDecodeStatsKeyVp94K;
   const VideoDescKey kDecodeStatsKeyH264;
   const VideoDescKey kEncodeStatsKeyVp9;
 
@@ -285,14 +320,14 @@ TEST_F(WebrtcVideoStatsDBImplTest, ExpiredStatsAreNotReturned) {
   VerifyReadStats(kDecodeStatsKeyVp9, aggregate_entry);
 
   // Set the clock to a date so that the first entry is expired.
-  clock.SetNow(base::Time::FromJsTime(stats1.timestamp) +
-               base::Days(1 + GetMaxDaysToKeepStats()));
+  clock.SetNow(base::Time::FromJsTime(stats1.timestamp) + base::Days(1) +
+               GetMaxTimeToKeepStats());
   VideoStatsEntry nonexpired_entry{stats2};
   VerifyReadStats(kDecodeStatsKeyVp9, nonexpired_entry);
 
   // Set the clock so that all data have expired.
-  clock.SetNow(base::Time::FromJsTime(stats2.timestamp) +
-               base::Days(1 + GetMaxDaysToKeepStats()));
+  clock.SetNow(base::Time::FromJsTime(stats2.timestamp) + base::Days(1) +
+               GetMaxTimeToKeepStats());
 
   // All stats are expired. Expect null entry.
   VerifyEmptyStats(kDecodeStatsKeyVp9);
@@ -302,9 +337,10 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureExpireDays) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::unique_ptr<base::FieldTrialList> field_trial_list;
 
-  int previous_max_days_to_keep_stats = GetMaxDaysToKeepStats();
+  base::TimeDelta previous_max_days_to_keep_stats = GetMaxTimeToKeepStats();
   constexpr int kNewMaxDaysToKeepStats = 4;
-  ASSERT_LT(kNewMaxDaysToKeepStats, previous_max_days_to_keep_stats);
+  ASSERT_LT(base::Days(kNewMaxDaysToKeepStats),
+            previous_max_days_to_keep_stats);
 
   // Override field trial.
   base::FieldTrialParams params;
@@ -312,7 +348,7 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureExpireDays) {
       base::NumberToString(kNewMaxDaysToKeepStats);
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kWebrtcMediaCapabilitiesParameters, params);
-  EXPECT_EQ(kNewMaxDaysToKeepStats, GetMaxDaysToKeepStats());
+  EXPECT_EQ(base::Days(kNewMaxDaysToKeepStats), GetMaxTimeToKeepStats());
 
   InitializeDB();
 
@@ -516,6 +552,45 @@ TEST_F(WebrtcVideoStatsDBImplTest, DiscardCorruptedDBData) {
   invalid_entry->set_p99_processing_time_ms(20000.0);
   AppendToProtoDB(kDecodeStatsKeyVp9, &invalid_proto);
   VerifyEmptyStats(kDecodeStatsKeyVp9);
+}
+
+TEST_F(WebrtcVideoStatsDBImplTest, WriteAndReadCollection) {
+  InitializeDB();
+
+  // Set test clock.
+  base::SimpleTestClock clock;
+  SetDBClock(&clock);
+  clock.SetNow(base::Time::Now());
+
+  // Append stats for multiple resolutions.
+  VideoStats stats1(clock.Now().ToJsTimeIgnoringNull(), 240, 6, 7.2);
+  VideoStatsEntry entry1{stats1};
+  AppendStats(kDecodeStatsKeyVp9, stats1);
+
+  VideoStats stats2(clock.Now().ToJsTimeIgnoringNull(), 360, 7, 9.2);
+  VideoStatsEntry entry2{stats2};
+  AppendStats(kDecodeStatsKeyVp9FullHd, stats2);
+
+  VideoStats stats3(clock.Now().ToJsTimeIgnoringNull(), 480, 11, 13.3);
+  VideoStatsEntry entry3{stats3};
+  AppendStats(kDecodeStatsKeyVp94K, stats3);
+
+  // Add elements that should not be returned.
+  VideoStats stats4(clock.Now().ToJsTimeIgnoringNull(), 490, 13, 15.3);
+  AppendStats(kEncodeStatsKeyVp9, stats4);
+  AppendStats(kDecodeStatsKeyVp9Hw, stats4);
+
+  // Created the expected collection that should be returned.
+  WebrtcVideoStatsDB::VideoStatsCollection expected;
+  expected.insert({kDecodeStatsKeyVp9.pixels, entry1});
+  expected.insert({kDecodeStatsKeyVp9FullHd.pixels, entry2});
+  expected.insert({kDecodeStatsKeyVp94K.pixels, entry3});
+
+  // The same collection is returned for all keys that are associated to the
+  // collection.
+  VerifyReadStatsCollection(kDecodeStatsKeyVp9, expected);
+  VerifyReadStatsCollection(kDecodeStatsKeyVp9FullHd, expected);
+  VerifyReadStatsCollection(kDecodeStatsKeyVp94K, expected);
 }
 
 }  // namespace media

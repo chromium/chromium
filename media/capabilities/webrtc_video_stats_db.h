@@ -10,8 +10,11 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -31,8 +34,14 @@ class MEDIA_EXPORT WebrtcVideoStatsDB {
     // Returns a concise string representation of the key for storing in DB.
     std::string Serialize() const;
 
+    // Returns a concise string representation of the key without pixels for
+    // querying the DB.
+    std::string SerializeWithoutPixels() const;
+
     // For debug logging. NOT interchangeable with Serialize().
     std::string ToLogStringForDebug() const;
+
+    static absl::optional<int> ParsePixelsFromKey(std::string key);
 
     // Note: operator == and != are defined outside this class.
     const bool is_decode_stats;
@@ -73,6 +82,12 @@ class MEDIA_EXPORT WebrtcVideoStatsDB {
   // |VideoDescKey|.
   using VideoStatsEntry = std::vector<VideoStats>;
 
+  // VideoStatsCollection is used to return a collection of entries
+  // corresponding to a certain key except for the number of pixels used. The
+  // number of pixels is instead used as a key in the map for each
+  // VideoStatsEntry.
+  using VideoStatsCollection = base::flat_map<int, VideoStatsEntry>;
+
   virtual ~WebrtcVideoStatsDB() = default;
 
   // The maximum number of pixels that a stats key can have without being
@@ -108,7 +123,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDB {
   // Number of days after which a stats entry will be discarded. This
   // avoids users getting stuck with a bad capability prediction that may have
   // been due to one-off circumstances.
-  static int GetMaxDaysToKeepStats();
+  static base::TimeDelta GetMaxTimeToKeepStats();
 
   // Run asynchronous initialization of database. Initialization must complete
   // before calling other APIs. |init_cb| must not be
@@ -126,13 +141,23 @@ class MEDIA_EXPORT WebrtcVideoStatsDB {
                                 const VideoStats& video_stats,
                                 AppendVideoStatsCB append_done_cb) = 0;
 
-  // Returns the stats  associated with `key`. The `get_stats_cb` will receive
+  // Returns the stats associated with `key`. The `get_stats_cb` will receive
   // the stats in addition to a boolean signaling if the call was successful.
-  // VideoStatsEntry can be nullptr if there was no data associated with `key`.
+  // VideoStatsEntry can be nullopt if there was no data associated with `key`.
   using GetVideoStatsCB =
-      base::OnceCallback<void(bool, std::unique_ptr<VideoStatsEntry>)>;
+      base::OnceCallback<void(bool, absl::optional<VideoStatsEntry>)>;
   virtual void GetVideoStats(const VideoDescKey& key,
                              GetVideoStatsCB get_stats_cb) = 0;
+
+  // Returns a collection of stats associated with `key` disregarding pixels.
+  // The `get_stats_cb` will receive the stats in addition to a boolean
+  // signaling if the call was successful. VideoStatsEntry can be nullopt if
+  // there was no data associated with `key`.
+  using GetVideoStatsCollectionCB =
+      base::OnceCallback<void(bool, absl::optional<VideoStatsCollection>)>;
+  virtual void GetVideoStatsCollection(
+      const VideoDescKey& key,
+      GetVideoStatsCollectionCB get_stats_cb) = 0;
 
   // Clear all statistics from the DB.
   virtual void ClearStats(base::OnceClosure clear_done_cb) = 0;

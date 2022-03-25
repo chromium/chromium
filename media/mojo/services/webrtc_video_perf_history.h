@@ -97,7 +97,7 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfHistory
   // at the rate given by `frames_per_second`.
   static bool PredictSmooth(
       bool is_decode,
-      const WebrtcVideoStatsDB::VideoStatsEntry* stats_entry,
+      const WebrtcVideoStatsDB::VideoStatsEntry& stats_entry,
       int frames_per_second);
 
   // Simulates what the smoothness response will be after the update to the DB
@@ -138,12 +138,12 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfHistory
   // Internal callback for database queries made from GetPerfInfo() (mojo API).
   // Assesses performance from database stats and passes results to
   // `got_info_cb`.
-  void OnGotStatsForRequest(
+  void OnGotStatsCollectionForRequest(
       const WebrtcVideoStatsDB::VideoDescKey& video_key,
       int frames_per_second,
       GetPerfInfoCallback got_info_cb,
       bool database_success,
-      std::unique_ptr<WebrtcVideoStatsDB::VideoStatsEntry> stats);
+      absl::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats);
 
   // Internal callback for database queries made from SavePerfRecord(). Compares
   // past performance to this latest record as means of "grading" the accuracy
@@ -153,7 +153,7 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfHistory
       const WebrtcVideoStatsDB::VideoStats& new_stats,
       base::OnceClosure save_done_cb,
       bool success,
-      std::unique_ptr<WebrtcVideoStatsDB::VideoStatsEntry> past_stats);
+      absl::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats);
 
   // Internal callback for saving to database. Will run `save_done_cb` if
   // nonempty.

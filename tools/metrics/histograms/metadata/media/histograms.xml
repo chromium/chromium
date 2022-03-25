@@ -5163,6 +5163,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.WebrtcVideoPerfHistory.SmoothPrediction.{Operation}"
+    units="custom" expires_after="2023-02-01">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Tracks how the smoothness prediction value was determined (smooth by
+    default, smooth from data, not smooth from data, implicitly smooth, smooth
+    override, or implicitly not smooth) multiplexed with the configuration
+    (codec, pixels, hardware_accelerated). See the code for details. This gives
+    a sparse histogram that is best interpreted using a script for
+    demultiplexing. The value is reported each time either encodingInfo() or
+    decodingInfo() are called and requests a smoothness prediction from
+    WebrtcVideoPerfHistory.
+  </summary>
+  <token key="Operation">
+    <variant name="Decode"/>
+    <variant name="Encode"/>
+  </token>
+</histogram>
+
 <histogram
     name="Media.WebrtcVideoPerfHistory.SmoothVolatility.{Operation}.{Framerate}"
     enum="SmoothVolatility" expires_after="2023-02-01">
