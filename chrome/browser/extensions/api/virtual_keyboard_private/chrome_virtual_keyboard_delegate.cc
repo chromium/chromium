@@ -589,6 +589,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
+  features.Append(
+      GenerateFeatureFlag("autocorrectparamstuning",
+                          base::FeatureList::IsEnabled(
+                              chromeos::features::kAutocorrectParamsTuning)));
 
   results->SetKey("features", std::move(features));
 
