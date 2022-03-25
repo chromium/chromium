@@ -66,8 +66,8 @@ public interface ContextualSearchManagementDelegate {
      */
     void onCloseContextualSearch(@StateChangeReason int reason);
 
-    /** Notifies that the Panel has transitioned from an open state to the peeking state. */
-    void onPanelCollapsed();
+    /** Notifies that the Panel has started a transition from an open state to the peeking state. */
+    void onPanelCollapsing();
 
     /**
      * @return An OverlayContentDelegate to watch events on the panel's content.

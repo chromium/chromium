@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
@@ -32,15 +33,17 @@ public interface ContextualSearchPanelInterface {
     boolean wasPromoInteractive();
     void destroyContent();
     void setSearchTerm(String searchTerm);
+    void setSearchTerm(String searchTerm, @Nullable String pronunciation);
     void setDidSearchInvolvePromo();
+    @VisibleForTesting
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
             @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
             @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent);
-    void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
-            @Px int defaultQueryInBarTextMaxWidthPx,
+    void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
+            String thumbnailUrl, String quickActionUri, int quickActionCategory,
+            @CardTag int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
+            boolean showDefaultSearchInBar, @Px int defaultQueryInBarTextMaxWidthPx,
             @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent,
             @Px int defaultQueryInContentTextMaxWidthPx);
     void setCaption(String caption);

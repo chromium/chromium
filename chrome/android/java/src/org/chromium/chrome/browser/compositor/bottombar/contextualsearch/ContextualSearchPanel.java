@@ -136,6 +136,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** Whether the current SERP (Search Result Page) is due to the In-Content Related Searches. */
     private boolean mIsRelatedSearchesInContentSerp;
 
+    /** Whether we have started collapsing the panel. */
+    private boolean mDidStartCollapsing;
+
     // ============================================================================================
     // Constructor
     // ============================================================================================
@@ -244,21 +247,17 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mPanelMetrics.onPanelStateChanged(
                 fromState, toState, reason, Profile.getLastUsedRegularProfile());
 
-        if (toState == PanelState.PEEKED) {
-            if (fromState == PanelState.CLOSED || fromState == PanelState.UNDEFINED) {
-                // If the Bar Banner is visible, it should animate when the SearchBar peeks.
-                if (getBarBannerControl().isVisible()) {
-                    getBarBannerControl().animateAppearance();
-                }
-                mManagementDelegate.onPanelFinishedShowing();
-            } else if (fromState == PanelState.EXPANDED || fromState == PanelState.MAXIMIZED) {
-                mManagementDelegate.onPanelCollapsed();
-                getRelatedSearchesInBarControl().onPanelCollapsed();
-                getRelatedSearchesInContentControl().onPanelCollapsed();
+        if (toState == PanelState.PEEKED
+                && (fromState == PanelState.CLOSED || fromState == PanelState.UNDEFINED)) {
+            // If the Bar Banner is visible, it should animate when the SearchBar peeks.
+            if (getBarBannerControl().isVisible()) {
+                getBarBannerControl().animateAppearance();
             }
+            mManagementDelegate.onPanelFinishedShowing();
         }
 
         super.setPanelState(toState, reason);
+        mDidStartCollapsing = false;
     }
 
     @Override
@@ -313,6 +312,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         if (mSceneLayer != null) mSceneLayer.hideTree();
         if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
+
+        mDidStartCollapsing = false;
     }
 
     // ============================================================================================
@@ -494,6 +495,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 && getSearchBarControl().inBarRelatedSearchesAnimationIsRunning()) {
             return;
         }
+
+        if (state == PanelState.PEEKED
+                && (getPanelState() == PanelState.EXPANDED
+                        || getPanelState() == PanelState.MAXIMIZED)) {
+            mManagementDelegate.onPanelCollapsing();
+            getRelatedSearchesInBarControl().onPanelCollapsing();
+            getRelatedSearchesInContentControl().onPanelCollapsing();
+        }
+
         super.animatePanelToState(state, reason, duration);
     }
 
@@ -645,14 +655,24 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Sets the search term to display in the SearchBar.
-     * This should be called when the search term is set without search term resolution, or
-     * after search term resolution completed.
+     * This should be called when the search term is set without search term resolution.
      * @param searchTerm The string that represents the search term.
      */
     @Override
     public void setSearchTerm(String searchTerm) {
+        setSearchTerm(searchTerm, null);
+    }
+
+    /**
+     * Sets the search term to display in the SearchBar.
+     * This should be called when the search term is set after search term resolution completed.
+     * @param searchTerm The string that represents the search term.
+     * @param pronunciation A string for the pronunciation when a Definition is shown.
+     */
+    @Override
+    public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         getImageControl().hideCustomImage(true);
-        getSearchBarControl().setSearchTerm(searchTerm);
+        getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
         mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Search Term draws.
         requestUpdate();
@@ -711,12 +731,13 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param showDefaultSearchInContent Whether the first query is the default query in the
      *         content.
      */
+    @VisibleForTesting
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
             @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar,
             @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent) {
-        onSearchTermResolved(searchTerm, thumbnailUrl, quickActionUri, quickActionCategory,
+        onSearchTermResolved(searchTerm, null, thumbnailUrl, quickActionUri, quickActionCategory,
                 cardTagEnum, relatedSearchesInBar, showDefaultSearchInBar,
                 ChipProperties.SHOW_WHOLE_TEXT /* defaultQueryInBarTextMaxWidthPx */,
                 relatedSearchesInContent, showDefaultSearchInContent,
@@ -726,6 +747,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /**
      * Handles showing the resolved search term in the SearchBar.
      * @param searchTerm The string that represents the search term.
+     * @param pronunciation A string for the pronunciation when a Definition is shown.
      * @param thumbnailUrl The URL of the thumbnail to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@code QuickActionCategory} for the quick action.
@@ -742,10 +764,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      *         pixels.
      */
     @Override
-    public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar,
-            @Px int defaultQueryInBarTextMaxWidthPx,
+    public void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
+            String thumbnailUrl, String quickActionUri, int quickActionCategory,
+            @CardTag int cardTagEnum, @Nullable List<String> relatedSearchesInBar,
+            boolean showDefaultSearchInBar, @Px int defaultQueryInBarTextMaxWidthPx,
             @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent,
             @Px int defaultQueryInContentTextMaxWidthPx) {
         boolean hadInBarSuggestions = getRelatedSearchesInBarControl().hasReleatedSearchesToShow();
@@ -761,22 +783,20 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             }
         }
 
-        // TODO(donnd): Rework the way definitions are displayed so we don't return early here,
-        // which is error prone. See https://crbug.com/1244107.
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {
-            getSearchBarControl().updateForDictionaryDefinition(searchTerm, cardTagEnum);
-            return;
+            getSearchBarControl().setVectorDrawableDefinitionIcon();
+        } else {
+            getImageControl().setThumbnailUrl(thumbnailUrl);
         }
 
-        getSearchBarControl().setSearchTerm(searchTerm);
+        getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
         getSearchBarControl().animateSearchTermResolution();
         // TODO(donnd): this can probably be removed or changed to an assert.
         if (mActivity == null || mToolbarManager == null) return;
 
         getSearchBarControl().setQuickAction(
                 quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
-        getImageControl().setThumbnailUrl(thumbnailUrl);
     }
 
     /**
@@ -843,11 +863,19 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getRelatedSearchesInContentControl().onUpdateFromCloseToPeek(percentage);
         getBarBannerControl().onUpdateFromCloseToPeek(percentage);
         getSearchBarControl().onUpdateFromCloseToPeek(percentage);
+        mDidStartCollapsing = false;
     }
 
     @Override
     protected void updatePanelForExpansion(float percentage) {
         super.updatePanelForExpansion(percentage);
+
+        if (getPanelState() == PanelState.EXPANDED && !mDidStartCollapsing && percentage < 0.5f) {
+            mDidStartCollapsing = true;
+            mManagementDelegate.onPanelCollapsing();
+            getRelatedSearchesInBarControl().onPanelCollapsing();
+            getRelatedSearchesInContentControl().onPanelCollapsing();
+        }
 
         getPromoControl().onUpdateFromPeekToExpand(percentage);
         getRelatedSearchesInBarControl().onUpdateFromPeekToExpand(percentage);
