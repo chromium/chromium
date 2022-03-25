@@ -616,27 +616,6 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
         unmask_auth_flow_type_);
   }
 
-  // Local boolean denotes whether to call AdditionallyPerformFidoAuth which
-  // delays the form filling and invokes an Authorization flow. If
-  // |unmask_auth_flow_type_| is kCvcThenFido, then the user is already opted-in
-  // and the new card must additionally be authorized through WebAuthn. Note
-  // that this and |should_respond_immediately| are mutually exclusive (can not
-  // both be true).
-  bool should_authorize_with_fido =
-      unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido;
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, we will delay the form filling for both intent-to-opt-in user
-  // opting in and opted-in user registering a new card (kCvcThenFido). So we
-  // check one more scenario for Android here. If the GetRealPan response
-  // includes |request_options|, that means the user showed intention to opt-in
-  // while unmasking and must complete the challenge before successfully
-  // opting-in and filling the form.
-  should_authorize_with_fido |= response.request_options.has_value();
-#endif
-  // Card authorization token is required in order to call
-  // AdditionallyPerformFidoAuth.
-  should_authorize_with_fido &= !response.card_authorization_token.empty();
-
   // Local boolean denotes whether to show the dialog that offers opting-in to
   // FIDO authentication after the CVC check. Note that this and
   // |should_respond_immediately| are NOT mutually exclusive. If both are true,
@@ -652,17 +631,18 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
                                 ->GetOrCreateFidoAuthenticationStrikeDatabase()
                                 ->IsMaxStrikesLimitReached();
 #endif
-
+  bool should_register_card_with_fido = ShouldRegisterCardWithFido(response);
   if (ShouldRespondImmediately(response)) {
-    // If ShouldRespondImmediately() returns true, |should_authorize_with_fido|
-    // should be false.
-    DCHECK(!should_authorize_with_fido);
+    // If ShouldRespondImmediately() returns true,
+    // |should_register_card_with_fido| should be false.
+    DCHECK(!should_register_card_with_fido);
     accessor_->OnCreditCardFetched(response.did_succeed
                                        ? CreditCardFetchResult::kSuccess
                                        : CreditCardFetchResult::kTransientError,
                                    response.card, response.cvc);
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-  } else if (should_authorize_with_fido) {
+  } else if (should_register_card_with_fido) {
+#if !BUILDFLAG(IS_IOS)
     absl::optional<base::Value> request_options = absl::nullopt;
     if (unmask_details_.fido_request_options.has_value()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
@@ -673,7 +653,17 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
       // user has chosen to opt-in.
       request_options = response.request_options->Clone();
     }
-    AdditionallyPerformFidoAuth(response, request_options->Clone());
+
+    // Save credit card for after authorization.
+    card_ = std::make_unique<CreditCard>(*(response.card));
+    cvc_ = response.cvc;
+
+    // Additionally authorizes the card with FIDO. It also delays the form
+    // filling.
+    GetOrCreateFIDOAuthenticator()->Authorize(weak_ptr_factory_.GetWeakPtr(),
+                                              response.card_authorization_token,
+                                              request_options->Clone());
+#endif
   }
   if (should_offer_fido_auth) {
     // CreditCardFIDOAuthenticator will handle enrollment completely.
@@ -877,6 +867,34 @@ bool CreditCardAccessManager::ShouldRespondImmediately(
   return !response.did_succeed || response.card_authorization_token.empty();
 }
 
+bool CreditCardAccessManager::ShouldRegisterCardWithFido(
+    const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
+  // Card authorization token is required in order to call
+  // CreditCardFIDOAuthenticator::Authorize(), so if we do not have a card
+  // authorization token populated we immediately return false.
+  if (response.card_authorization_token.empty())
+    return false;
+
+  // |unmask_auth_flow_type_| is kCvcThenFido, then the user is already opted-in
+  // and the new card must additionally be authorized through WebAuthn.
+  if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido)
+    return true;
+
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, we will delay the form filling for both intent-to-opt-in user
+  // opting in and opted-in user registering a new card (kCvcThenFido). So we
+  // check one more scenario for Android here. If the GetRealPan response
+  // includes |request_options|, that means the user showed intention to opt-in
+  // while unmasking and must complete the challenge before successfully
+  // opting-in and filling the form.
+  if (response.request_options.has_value())
+    return true;
+#endif
+
+  // No conditions to offer FIDO registration are met, so we return false.
+  return false;
+}
+
 void CreditCardAccessManager::ShowWebauthnOfferDialog(
     std::string card_authorization_token) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -924,19 +942,6 @@ void CreditCardAccessManager::HandleDialogUserResponse(
   }
 }
 #endif
-
-void CreditCardAccessManager::AdditionallyPerformFidoAuth(
-    const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response,
-    base::Value request_options) {
-#if !BUILDFLAG(IS_IOS)
-  // Save credit card for after authorization.
-  card_ = std::make_unique<CreditCard>(*(response.card));
-  cvc_ = response.cvc;
-  GetOrCreateFIDOAuthenticator()->Authorize(weak_ptr_factory_.GetWeakPtr(),
-                                            response.card_authorization_token,
-                                            request_options.Clone());
-#endif
-}
 
 std::string CreditCardAccessManager::GetKeyForUnmaskedCardsCache(
     const CreditCard& card) const {
