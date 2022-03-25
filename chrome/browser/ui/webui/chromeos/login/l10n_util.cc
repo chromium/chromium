@@ -52,18 +52,16 @@ namespace {
 constexpr char16_t kMostRelevantLanguagesDivider16[] =
     u"MOST_RELEVANT_LANGUAGES_DIVIDER";
 
-std::unique_ptr<base::DictionaryValue> CreateInputMethodsEntry(
+base::Value CreateInputMethodsEntry(
     const input_method::InputMethodDescriptor& method,
     const std::string selected,
     input_method::InputMethodUtil* util) {
   const std::string& ime_id = method.id();
-  std::unique_ptr<base::DictionaryValue> input_method(
-      new base::DictionaryValue);
-  input_method->GetDict().Set("value", ime_id);
-  input_method->GetDict().Set("title",
-                              util->GetInputMethodLongNameStripped(method));
-  input_method->GetDict().Set("selected", ime_id == selected);
-  return input_method;
+  base::Value::Dict input_method;
+  input_method.Set("value", ime_id);
+  input_method.Set("title", util->GetInputMethodLongNameStripped(method));
+  input_method.Set("selected", ime_id == selected);
+  return base::Value(std::move(input_method));
 }
 
 // Returns true if element was inserted.
@@ -74,14 +72,13 @@ bool InsertString(const std::string& str, std::set<std::string>* to) {
 }
 
 void AddOptgroupOtherLayouts(base::ListValue* input_methods_list) {
-  std::unique_ptr<base::DictionaryValue> optgroup(new base::DictionaryValue);
-  optgroup->GetDict().Set(
-      "optionGroupName",
-      l10n_util::GetStringUTF16(IDS_OOBE_OTHER_KEYBOARD_LAYOUTS));
-  input_methods_list->Append(std::move(optgroup));
+  base::Value::Dict optgroup;
+  optgroup.Set("optionGroupName",
+               l10n_util::GetStringUTF16(IDS_OOBE_OTHER_KEYBOARD_LAYOUTS));
+  input_methods_list->Append(base::Value(std::move(optgroup)));
 }
 
-std::unique_ptr<base::DictionaryValue> CreateLanguageEntry(
+base::Value CreateLanguageEntry(
     const std::string& language_code,
     const std::u16string& language_display_name,
     const std::u16string& language_native_display_name) {
@@ -92,14 +89,14 @@ std::unique_ptr<base::DictionaryValue> CreateLanguageEntry(
 
   const bool has_rtl_chars =
       base::i18n::StringContainsStrongRTLChars(display_name);
-  const std::string directionality = has_rtl_chars ? "rtl" : "ltr";
+  const char* directionality = has_rtl_chars ? "rtl" : "ltr";
 
-  auto dictionary = std::make_unique<base::DictionaryValue>();
-  dictionary->GetDict().Set("code", language_code);
-  dictionary->GetDict().Set("displayName", language_display_name);
-  dictionary->GetDict().Set("textDirection", directionality);
-  dictionary->GetDict().Set("nativeDisplayName", language_native_display_name);
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set("code", language_code);
+  dictionary.Set("displayName", language_display_name);
+  dictionary.Set("textDirection", directionality);
+  dictionary.Set("nativeDisplayName", language_native_display_name);
+  return base::Value(std::move(dictionary));
 }
 
 // Gets the list of languages with `descriptors` based on `base_language_codes`.
@@ -270,9 +267,9 @@ std::unique_ptr<base::ListValue> GetLanguageList(
     std::u16string display_name(out_display_names[i]);
     if (insert_divider && display_name == divider16) {
       // Insert divider.
-      auto dictionary = std::make_unique<base::DictionaryValue>();
-      dictionary->GetDict().Set("code", kMostRelevantLanguagesDivider);
-      language_list->Append(std::move(dictionary));
+      base::Value::Dict dictionary;
+      dictionary.Set("code", kMostRelevantLanguagesDivider);
+      language_list->Append(base::Value(std::move(dictionary)));
       continue;
     }
 
