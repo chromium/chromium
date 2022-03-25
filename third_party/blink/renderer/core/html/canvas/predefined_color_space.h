@@ -25,6 +25,10 @@ ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
                              PredefinedColorSpace& color_space,
                              ExceptionState& exception_state);
 
+// Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
+V8PredefinedColorSpace CORE_EXPORT
+PredefinedColorSpaceToV8(PredefinedColorSpace color_space);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_PREDEFINED_COLOR_SPACE_H_

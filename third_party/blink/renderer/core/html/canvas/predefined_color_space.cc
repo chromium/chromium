@@ -48,4 +48,22 @@ bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
   return true;
 }
 
+V8PredefinedColorSpace PredefinedColorSpaceToV8(
+    PredefinedColorSpace color_space) {
+  switch (color_space) {
+    case PredefinedColorSpace::kSRGB:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
+    case PredefinedColorSpace::kRec2020:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2020);
+    case PredefinedColorSpace::kP3:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kDisplayP3);
+    case PredefinedColorSpace::kRec2100HLG:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Hlg);
+    case PredefinedColorSpace::kRec2100PQ:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Pq);
+    case PredefinedColorSpace::kSRGBLinear:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGBLinear);
+  }
+}
+
 }  // namespace blink

@@ -176,8 +176,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
   GLenum drawingBufferFormat() const;
-  V8PredefinedColorSpace colorSpace() const;
-  void setColorSpace(const V8PredefinedColorSpace& color_space) const;
+  V8PredefinedColorSpace drawingBufferColorSpace() const;
+  void setDrawingBufferColorSpace(const V8PredefinedColorSpace& color_space,
+                                  ExceptionState&);
+
+  V8PredefinedColorSpace unpackColorSpace() const;
+  void setUnpackColorSpace(const V8PredefinedColorSpace& color_space,
+                           ExceptionState&);
 
   void activeTexture(GLenum texture);
   void attachShader(WebGLProgram*, WebGLShader*);
@@ -1918,7 +1923,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   bool has_been_drawn_to_ = false;
 
-  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
+  PredefinedColorSpace drawing_buffer_color_space_ =
+      PredefinedColorSpace::kSRGB;
+  PredefinedColorSpace unpack_color_space_ = PredefinedColorSpace::kSRGB;
+
   // The pixel format of the WebGL canvas. This is based on a deprecated
   // specification that is being replaced by drawingBufferStorage.
   CanvasPixelFormat pixel_format_deprecated_ = CanvasPixelFormat::kUint8;

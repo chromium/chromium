@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -1039,7 +1040,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   // TODO(https://crbug.com/1208480): Move color space to being a read-write
   // attribute instead of a context creation attribute.
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
-    color_space_ = requested_attributes.color_space;
+    drawing_buffer_color_space_ = requested_attributes.color_space;
     pixel_format_deprecated_ = requested_attributes.pixel_format;
   }
 
@@ -1123,7 +1124,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
       web_gl_version, chromium_image_usage, Host()->FilterQuality(),
-      color_space_, pixel_format_deprecated_,
+      drawing_buffer_color_space_, pixel_format_deprecated_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
 
@@ -1844,13 +1845,40 @@ GLenum WebGLRenderingContextBase::drawingBufferFormat() const {
   return isContextLost() ? 0 : GetDrawingBuffer()->StorageFormat();
 }
 
-V8PredefinedColorSpace WebGLRenderingContextBase::colorSpace() const {
-  return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
+V8PredefinedColorSpace WebGLRenderingContextBase::drawingBufferColorSpace()
+    const {
+  return PredefinedColorSpaceToV8(drawing_buffer_color_space_);
 }
 
-void WebGLRenderingContextBase::setColorSpace(
-    const V8PredefinedColorSpace& color_space) const {
+void WebGLRenderingContextBase::setDrawingBufferColorSpace(
+    const V8PredefinedColorSpace& v8_color_space,
+    ExceptionState& exception_state) {
+  // Some values for PredefinedColorSpace are supposed to be guarded behind
+  // runtime flags. Use `ValidateAndConvertColorSpace` to throw an exception if
+  // `v8_color_space` should not be exposed.
+  PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
+  if (!ValidateAndConvertColorSpace(v8_color_space, color_space,
+                                    exception_state)) {
+    return;
+  }
   NOTIMPLEMENTED();
+  drawing_buffer_color_space_ = color_space;
+}
+
+V8PredefinedColorSpace WebGLRenderingContextBase::unpackColorSpace() const {
+  return PredefinedColorSpaceToV8(unpack_color_space_);
+}
+
+void WebGLRenderingContextBase::setUnpackColorSpace(
+    const V8PredefinedColorSpace& v8_color_space,
+    ExceptionState& exception_state) {
+  PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
+  if (!ValidateAndConvertColorSpace(v8_color_space, color_space,
+                                    exception_state)) {
+    return;
+  }
+  NOTIMPLEMENTED();
+  unpack_color_space_ = color_space;
 }
 
 void WebGLRenderingContextBase::activeTexture(GLenum texture) {
@@ -5221,9 +5249,9 @@ SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
   // have been intentional.
   const SkAlphaType alpha_type =
       CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
-  return SkColorInfo(CanvasPixelFormatToSkColorType(pixel_format_deprecated_),
-                     alpha_type,
-                     PredefinedColorSpaceToSkColorSpace(color_space_));
+  return SkColorInfo(
+      CanvasPixelFormatToSkColorType(pixel_format_deprecated_), alpha_type,
+      PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
