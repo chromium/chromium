@@ -1993,6 +1993,14 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
     {"tab_count_button_on_start_surface", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
+const FeatureEntry::FeatureParam
+    kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito[] = {
+        {"start_surface_variation", "single"},
+        {"show_last_active_tab_only", "true"},
+        {"hide_switch_when_no_incognito_tabs", "false"},
+        {"tab_count_button_on_start_surface", "true"},
+        {"open_ntp_instead_of_start", "true"}};
+
 const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
     {"Canidate A", kStartSurfaceAndroid_CandidateA,
      std::size(kStartSurfaceAndroid_CandidateA), nullptr},
@@ -2003,6 +2011,9 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      std::size(kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit), nullptr},
     {"Canidate B", kStartSurfaceAndroid_CandidateB,
      std::size(kStartSurfaceAndroid_CandidateB), nullptr},
+    {"Canidate B + Always show Incognito icon",
+     kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito,
+     std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
     {"Single Surface", kStartSurfaceAndroid_SingleSurface,
      std::size(kStartSurfaceAndroid_SingleSurface), nullptr},
     {"Single Surface Finale", kStartSurfaceAndroid_SingleSurfaceFinale,
