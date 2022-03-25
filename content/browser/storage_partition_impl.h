@@ -71,7 +71,7 @@ class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
-class FontAccessManagerImpl;
+class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class IndexedDBControlWrapper;
@@ -243,11 +243,11 @@ class CONTENT_EXPORT StoragePartitionImpl
   QuotaContext* GetQuotaContext();
   AttributionManagerImpl* GetAttributionManager();
   void SetFontAccessManagerForTesting(
-      std::unique_ptr<FontAccessManagerImpl> font_access_manager);
+      std::unique_ptr<FontAccessManager> font_access_manager);
   ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
   AggregationServiceImpl* GetAggregationService();
-  FontAccessManagerImpl* GetFontAccessManager();
+  FontAccessManager* GetFontAccessManager();
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   MediaLicenseManager* GetMediaLicenseManager();
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -635,7 +635,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
   scoped_refptr<NativeIOContextImpl> native_io_context_;
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
-  std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
+  std::unique_ptr<FontAccessManager> font_access_manager_;
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
   std::unique_ptr<BrowsingTopicsSiteDataManager>
       browsing_topics_site_data_manager_;

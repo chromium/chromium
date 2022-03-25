@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_access_manager_impl.h"
+#include "content/browser/font_access/font_access_manager.h"
 
 #include <memory>
 #include <string>
@@ -37,9 +37,9 @@ namespace content {
 // This class exists so that tests can be written without enabling
 // the kFontAccess feature flag. This will be redundant once the flag
 // goes away.
-class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
+class FontAccessManagerBrowserBase : public ContentBrowserTest {
  public:
-  FontAccessManagerImplBrowserBase() {
+  FontAccessManagerBrowserBase() {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   }
 
@@ -51,7 +51,7 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
     return shell()->web_contents()->GetMainFrame();
   }
 
-  FontAccessManagerImpl* font_access_manager() {
+  FontAccessManager* font_access_manager() {
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
     return storage_partition->GetFontAccessManager();
@@ -73,8 +73,7 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
     storage_partition->SetFontAccessManagerForTesting(
-        FontAccessManagerImpl::CreateForTesting(
-            std::move(font_enumeration_cache)));
+        FontAccessManager::CreateForTesting(std::move(font_enumeration_cache)));
   }
 
  protected:
@@ -82,10 +81,9 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
   std::unique_ptr<FontEnumerationCache> enumeration_cache_;
 };
 
-class FontAccessManagerImplBrowserTest
-    : public FontAccessManagerImplBrowserBase {
+class FontAccessManagerBrowserTest : public FontAccessManagerBrowserBase {
  public:
-  FontAccessManagerImplBrowserTest() {
+  FontAccessManagerBrowserTest() {
     std::vector<base::Feature> enabled_features({
         blink::features::kFontAccess,
     });
@@ -95,7 +93,7 @@ class FontAccessManagerImplBrowserTest
 };
 
 // Disabled test: https://crbug.com/1224238
-IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserBase,
+IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserBase,
                        DISABLED_RendererInterfaceIsBound) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   // This tests that the renderer interface is bound even if the kFontAccess
@@ -114,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserBase,
       << "FontAccessManager remote is expected to be bound and connected.";
 }
 
-IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
+IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, EnumerationTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
@@ -133,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest,
                        EnumerationTestWithInvalidSelect) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
@@ -151,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
+IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, LocaleTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   OverrideFontAccessLocale("zh-cn");
   font_access_manager()->SkipPrivacyChecksForTesting(true);
@@ -173,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
   EXPECT_EQ(ms_yahei_utf8, result);
 }
 
-IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
-                       UnlocalizedFamilyTest) {
+IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, UnlocalizedFamilyTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   OverrideFontAccessLocale("zh-cn");
   font_access_manager()->SkipPrivacyChecksForTesting(true);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
-#define CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_H_
+#define CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -27,9 +27,9 @@ class FontEnumerationCache;
 
 // The ownership hierarchy for this class is:
 //
-// StoragePartitionImpl (1) <- (1) FontAccessManagerImpl
+// StoragePartitionImpl (1) <- (1) FontAccessManager
 //
-// FontAccessManagerImpl (1) <- (*) BindingContext
+// FontAccessManager (1) <- (*) BindingContext
 //
 // BindingContext (1) <- (1) GlobalRenderFrameHostId
 //
@@ -40,34 +40,30 @@ class FontEnumerationCache;
 // (N) : N is a number or *, which denotes zero or more
 //
 // In English:
-// * There's one FontAccessManagerImpl per StoragePartitionImpl
-// * Frames are bound to FontAccessManangerImpl via a BindingContext
-// * The FontAccessManagerImpl owns the lifetimes of FontAccessChoosers
-// * There is one FontAccessChooser for each Frame via its
-// GlobalRenderFrameHostId,
-//   obtained from a corresponding BindingContext
-class CONTENT_EXPORT FontAccessManagerImpl
+// * There's one FontAccessManager per StoragePartitionImpl
+// * Frames are bound to FontAccessManager via a BindingContext.
+class CONTENT_EXPORT FontAccessManager
     : public blink::mojom::FontAccessManager {
  public:
   // Factory method for production instances.
-  static std::unique_ptr<FontAccessManagerImpl> Create();
+  static std::unique_ptr<FontAccessManager> Create();
 
   // Factory method with dependency injection support for testing.
-  static std::unique_ptr<FontAccessManagerImpl> CreateForTesting(
+  static std::unique_ptr<FontAccessManager> CreateForTesting(
       base::SequenceBound<FontEnumerationCache> font_enumeration_cache);
 
   // The constructor is public for internal use of std::make_unique.
   //
-  // Production code should call FontAccessManagerImpl::Create(). Testing code
-  // should call FontAccessManagerImpl::CreateForTesting().
-  FontAccessManagerImpl(
+  // Production code should call FontAccessManager::Create(). Testing code
+  // should call FontAccessManager::CreateForTesting().
+  FontAccessManager(
       base::SequenceBound<FontEnumerationCache> font_enumeration_cache,
-      base::PassKey<FontAccessManagerImpl>);
+      base::PassKey<FontAccessManager>);
 
-  FontAccessManagerImpl(const FontAccessManagerImpl&) = delete;
-  FontAccessManagerImpl& operator=(const FontAccessManagerImpl&) = delete;
+  FontAccessManager(const FontAccessManager&) = delete;
+  FontAccessManager& operator=(const FontAccessManager&) = delete;
 
-  ~FontAccessManagerImpl() override;
+  ~FontAccessManager() override;
 
   void BindReceiver(
       GlobalRenderFrameHostId frame_id,
@@ -103,10 +99,10 @@ class CONTENT_EXPORT FontAccessManagerImpl
   bool skip_privacy_checks_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  base::WeakPtrFactory<FontAccessManagerImpl> weak_ptr_factory_
+  base::WeakPtrFactory<FontAccessManager> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_H_

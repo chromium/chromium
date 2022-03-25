@@ -64,7 +64,7 @@
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/browser/font_access/font_access_manager_impl.h"
+#include "content/browser/font_access/font_access_manager.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/host_zoom_level_context.h"
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
@@ -1356,7 +1356,7 @@ void StoragePartitionImpl::Initialize(
                                                settings.size_in_bytes());
   }
 
-  font_access_manager_ = FontAccessManagerImpl::Create();
+  font_access_manager_ = FontAccessManager::Create();
   compute_pressure_manager_ = ComputePressureManager::Create();
 
   if (base::FeatureList::IsEnabled(kPrivacySandboxAggregationService)) {
@@ -1641,13 +1641,13 @@ AttributionManagerImpl* StoragePartitionImpl::GetAttributionManager() {
   return attribution_manager_.get();
 }
 
-FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
+FontAccessManager* StoragePartitionImpl::GetFontAccessManager() {
   DCHECK(initialized_);
   return font_access_manager_.get();
 }
 
 void StoragePartitionImpl::SetFontAccessManagerForTesting(
-    std::unique_ptr<FontAccessManagerImpl> font_access_manager) {
+    std::unique_ptr<FontAccessManager> font_access_manager) {
   DCHECK(initialized_);
   DCHECK(font_access_manager);
   font_access_manager_ = std::move(font_access_manager);

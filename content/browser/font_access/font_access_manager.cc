@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_access_manager_impl.h"
+#include "content/browser/font_access/font_access_manager.h"
 
 #include <limits>
 #include <memory>
@@ -33,30 +33,29 @@
 namespace content {
 
 // static
-std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::Create() {
-  return std::make_unique<FontAccessManagerImpl>(
-      FontEnumerationCache::Create(), base::PassKey<FontAccessManagerImpl>());
+std::unique_ptr<FontAccessManager> FontAccessManager::Create() {
+  return std::make_unique<FontAccessManager>(
+      FontEnumerationCache::Create(), base::PassKey<FontAccessManager>());
 }
 
 // static
-std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::CreateForTesting(
+std::unique_ptr<FontAccessManager> FontAccessManager::CreateForTesting(
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache) {
-  return std::make_unique<FontAccessManagerImpl>(
-      std::move(font_enumeration_cache),
-      base::PassKey<FontAccessManagerImpl>());
+  return std::make_unique<FontAccessManager>(
+      std::move(font_enumeration_cache), base::PassKey<FontAccessManager>());
 }
 
-FontAccessManagerImpl::FontAccessManagerImpl(
+FontAccessManager::FontAccessManager(
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache,
-    base::PassKey<FontAccessManagerImpl>)
+    base::PassKey<FontAccessManager>)
     : font_enumeration_cache_(std::move(font_enumeration_cache)),
       results_task_runner_(content::GetUIThreadTaskRunner({})) {}
 
-FontAccessManagerImpl::~FontAccessManagerImpl() {
+FontAccessManager::~FontAccessManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void FontAccessManagerImpl::BindReceiver(
+void FontAccessManager::BindReceiver(
     GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -67,7 +66,7 @@ void FontAccessManagerImpl::BindReceiver(
                  });
 }
 
-void FontAccessManagerImpl::EnumerateLocalFonts(
+void FontAccessManager::EnumerateLocalFonts(
     EnumerateLocalFontsCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -125,11 +124,11 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   permission_controller->RequestPermissionFromCurrentDocument(
       PermissionType::FONT_ACCESS, rfh,
       /*user_gesture=*/true,
-      base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
+      base::BindOnce(&FontAccessManager::DidRequestPermission,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FontAccessManagerImpl::DidRequestPermission(
+void FontAccessManager::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,8 +140,8 @@ void FontAccessManagerImpl::DidRequestPermission(
     return;
   }
 
-// Per-platform delegation for obtaining cached font enumeration data occurs
-// here, after the permission has been granted.
+  // Per-platform delegation for obtaining cached font enumeration data occurs
+  // here, after the permission has been granted.
   font_enumeration_cache_
       .AsyncCall(&FontEnumerationCache::GetFontEnumerationData)
       .Then(base::BindOnce(
