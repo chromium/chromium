@@ -268,17 +268,39 @@ class FwupdClientImpl : public FwupdClient {
         sha_checksum = ParseCheckSum(checksum->GetString());
       }
 
-      const bool success = version && description && priority &&
-                           !filepath.empty() && !sha_checksum.empty();
+      std::string description_value = "";
+
+      if (description) {
+        description_value = description->GetString();
+      } else {
+        VLOG(1) << "Device: " << device_id
+                << " is missing its description text.";
+      }
+
+      const bool success =
+          version && priority && !filepath.empty() && !sha_checksum.empty();
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
                 << " with version: " << version->GetString();
-        updates.emplace_back(version->GetString(), description->GetString(),
+        updates.emplace_back(version->GetString(), description_value,
                              priority->GetInt(), filepath, sha_checksum);
       } else {
-        LOG(ERROR) << "Update version, description, filepath, checksum or "
-                   << "priority is not found.";
+        if (!version) {
+          LOG(ERROR) << "Device: " << device_id
+                     << " is missing its version field.";
+        }
+        if (!priority) {
+          LOG(ERROR) << "Device: " << device_id
+                     << " is missing its priority field.";
+        }
+        if (!uri) {
+          LOG(ERROR) << "Device: " << device_id << " is missing its URI field.";
+        }
+        if (!checksum) {
+          LOG(ERROR) << "Device: " << device_id
+                     << " is missing its checksum field.";
+        }
       }
     }
 
