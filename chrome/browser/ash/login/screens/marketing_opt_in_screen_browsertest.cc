@@ -194,7 +194,9 @@ void MarketingOptInScreenTest::SetUpOnMainThread() {
   GetScreen()->set_ingore_pref_sync_for_testing(true);
 
   OobeBaseTest::SetUpOnMainThread();
-  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+  auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
+  wizard_context->is_branded_build = true;
+  wizard_context->defer_oobe_flow_finished_for_tests = true;
 }
 
 MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
