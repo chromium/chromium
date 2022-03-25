@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
 namespace history_clusters {
@@ -182,6 +183,10 @@ struct Config {
   // Whether to assign labels to clusters. If the label exists, it will be shown
   // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
   bool should_label_clusters = false;
+
+  // The set of hosts for which all visits belonging to that host will not be in
+  // any cluster.
+  base::flat_set<std::string> hosts_to_skip_clustering_for;
 
   Config();
   Config(const Config& other);

@@ -195,6 +195,14 @@ Config::Config() {
   should_label_clusters = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "should_label_clusters",
       should_label_clusters);
+
+  const base::FeatureParam<std::string> kHostsToSkipClusteringFor{
+      &features::kOnDeviceClusteringBlocklists, "hosts_to_skip_clustering_for",
+      ""};
+  auto hosts = base::SplitString(kHostsToSkipClusteringFor.Get(), ",",
+                                 base::WhitespaceHandling::TRIM_WHITESPACE,
+                                 base::SplitResult::SPLIT_WANT_NONEMPTY);
+  hosts_to_skip_clustering_for = {hosts.begin(), hosts.end()};
 }
 
 Config::Config(const Config& other) = default;

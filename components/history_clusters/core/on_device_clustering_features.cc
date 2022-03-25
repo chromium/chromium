@@ -24,5 +24,8 @@ const base::Feature kSplitClusteringTasksToSmallerBatches{
     "JourneysSplitClusteringTasksToSmallerBatches",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOnDeviceClusteringBlocklists{
+    "JourneysOnDeviceClusteringBlocklist", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace history_clusters
