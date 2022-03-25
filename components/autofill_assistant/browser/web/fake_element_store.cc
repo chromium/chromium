@@ -25,7 +25,7 @@ ClientStatus FakeElementStore::GetElement(
 
   out_element->dom_object = it->second;
   if (web_contents_ != nullptr) {
-    out_element->container_frame_host = web_contents_->GetMainFrame();
+    out_element->SetRenderFrameHost(web_contents_->GetMainFrame());
   }
   return OkClientStatus();
 }

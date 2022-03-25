@@ -602,11 +602,11 @@ class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
                               bool is_main_frame) {
     if (is_main_frame) {
       EXPECT_EQ(shell()->web_contents()->GetMainFrame(),
-                result.container_frame_host);
+                result.render_frame_host());
       EXPECT_EQ(result.frame_stack().size(), 0u);
     } else {
       EXPECT_NE(shell()->web_contents()->GetMainFrame(),
-                result.container_frame_host);
+                result.render_frame_host());
       EXPECT_GE(result.frame_stack().size(), 1u);
     }
     EXPECT_FALSE(result.object_id().empty());
@@ -2758,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // This makes the devtools action fail.
   ElementFinder::Result element;
   element.dom_object.object_data.node_frame_id = "doesnotexist";
-  element.container_frame_host = web_contents()->GetMainFrame();
+  element.SetRenderFrameHost(web_contents()->GetMainFrame());
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
             WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
@@ -3210,9 +3210,9 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
 
   // Create fake element without object id and frame information only.
   ElementFinder::Result fake_frame_element;
-  fake_frame_element.container_frame_host = frame_element.container_frame_host;
+  fake_frame_element.SetRenderFrameHost(frame_element.render_frame_host());
   fake_frame_element.dom_object.object_data.node_frame_id =
-      frame_element.container_frame_host->GetDevToolsFrameToken().ToString();
+      frame_element.render_frame_host()->GetDevToolsFrameToken().ToString();
 
   ClientStatus button_status;
   ElementFinder::Result button_element;

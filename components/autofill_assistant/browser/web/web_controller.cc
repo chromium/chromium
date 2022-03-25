@@ -732,7 +732,7 @@ void WebController::WaitUntilElementIsStable(
                                               element.node_frame_id());
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
-  ptr->Start(element.container_frame_host, element.object_id(),
+  ptr->Start(element.render_frame_host(), element.object_id(),
              base::BindOnce(&WebController::OnWaitUntilElementIsStable,
                             weak_ptr_factory_.GetWeakPtr(), ptr,
                             base::TimeTicks::Now(), std::move(callback)));
@@ -1048,8 +1048,8 @@ void WebController::OnGetBackendNodeIdForFormAndFieldData(
     return;
   }
 
-  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
-      element.container_frame_host);
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(element.render_frame_host());
   if (driver == nullptr) {
     DVLOG(1) << __func__ << " Failed to get the autofill driver.";
     std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,

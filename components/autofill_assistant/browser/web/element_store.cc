@@ -44,7 +44,7 @@ ClientStatus ElementStore::RestoreElement(
     VLOG(1) << __func__ << " failed to resolve frame.";
     return ClientStatus(CLIENT_ID_RESOLUTION_FAILED);
   }
-  out_element->container_frame_host = frame;
+  out_element->SetRenderFrameHost(frame);
   return OkClientStatus();
 }
 

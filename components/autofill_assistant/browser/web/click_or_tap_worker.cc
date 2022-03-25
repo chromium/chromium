@@ -31,7 +31,7 @@ void ClickOrTapWorker::Start(const ElementFinder::Result& element,
       /* check_interval= */ base::Milliseconds(0), node_frame_id_);
 
   element_position_getter_->Start(
-      element.container_frame_host, element.object_id(),
+      element.render_frame_host(), element.object_id(),
       base::BindOnce(&ClickOrTapWorker::OnGetCoordinates,
                      weak_ptr_factory_.GetWeakPtr()));
 }

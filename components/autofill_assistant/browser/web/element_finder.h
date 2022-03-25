@@ -60,8 +60,9 @@ class ElementFinder : public WebControllerWorker {
   };
 
   // Result is the fully resolved element that can be used without limitations.
-  // This means that |container_frame_host| has been found and is not nullptr.
-  struct Result {
+  // This means that |render_frame_host()| has been found and is not nullptr.
+  class Result {
+   public:
     Result();
     ~Result();
     Result(const Result&);
@@ -72,8 +73,12 @@ class ElementFinder : public WebControllerWorker {
 
     DomObjectFrameStack dom_object;
 
-    // The render frame host contains the element.
-    raw_ptr<content::RenderFrameHost> container_frame_host = nullptr;
+    content::RenderFrameHost* render_frame_host() const {
+      if (!render_frame_id_) {
+        return nullptr;
+      }
+      return content::RenderFrameHost::FromID(*render_frame_id_);
+    }
 
     const std::string& object_id() const {
       return dom_object.object_data.object_id;
@@ -90,6 +95,17 @@ class ElementFinder : public WebControllerWorker {
     bool IsEmpty() const {
       return object_id().empty() && node_frame_id().empty();
     }
+
+    void SetRenderFrameHost(content::RenderFrameHost* render_frame_host) {
+      if (!render_frame_host) {
+        return;
+      }
+      render_frame_id_ = render_frame_host->GetGlobalId();
+    }
+
+   private:
+    // The id of the render frame host that contains the element.
+    absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the

@@ -1261,7 +1261,7 @@ TEST_F(UserDataUtilTextValueTest, GetUsername) {
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::USERNAME);
@@ -1279,7 +1279,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPassword) {
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
@@ -1301,7 +1301,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
   ElementFinder::Result element;
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
@@ -1382,7 +1382,7 @@ TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
   ElementFinder::Result element;
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
 
   TextValue text_value;
   text_value.mutable_password_manager_value()->set_credential_type(

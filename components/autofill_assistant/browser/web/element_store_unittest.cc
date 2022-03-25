@@ -87,7 +87,7 @@ TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
   ElementFinder::Result result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
-  EXPECT_EQ(web_contents_->GetMainFrame(), result.container_frame_host);
+  EXPECT_EQ(web_contents_->GetMainFrame(), result.render_frame_host());
 }
 
 TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {

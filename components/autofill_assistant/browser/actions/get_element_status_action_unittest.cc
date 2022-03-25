@@ -702,7 +702,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
       .WillOnce(WithArgs<1>([this](auto&& callback) {
         std::unique_ptr<ElementFinder::Result> element =
             std::make_unique<ElementFinder::Result>();
-        element->container_frame_host = web_contents_->GetMainFrame();
+        element->SetRenderFrameHost(web_contents_->GetMainFrame());
         std::move(callback).Run(OkClientStatus(), std::move(element));
       }));
   EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))

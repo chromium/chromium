@@ -159,10 +159,9 @@ void ElementFinder::Start(const Result& start_element, Callback callback) {
     return;
   }
 
-  if (start_element.container_frame_host == nullptr) {
+  current_frame_ = start_element.render_frame_host();
+  if (current_frame_ == nullptr) {
     current_frame_ = web_contents_->GetMainFrame();
-  } else {
-    current_frame_ = start_element.container_frame_host;
   }
   current_frame_id_ = start_element.node_frame_id();
   frame_stack_ = start_element.frame_stack();
@@ -244,7 +243,7 @@ void ElementFinder::ResultFound(const std::string& object_id) {
 
 ElementFinder::Result ElementFinder::BuildResult(const std::string& object_id) {
   Result result;
-  result.container_frame_host = current_frame_;
+  result.SetRenderFrameHost(current_frame_);
   result.dom_object.object_data.object_id = object_id;
   result.dom_object.object_data.node_frame_id = current_frame_id_;
   return result;

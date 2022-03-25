@@ -119,7 +119,7 @@ TEST_F(SendKeystrokeEventsActionTest, PasswordTextValueReturnLastTimeUsed) {
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
   element.dom_object.object_data.object_id = "id";
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
   mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
 
   EXPECT_CALL(mock_web_controller_,
@@ -159,7 +159,7 @@ TEST_F(SendKeystrokeEventsActionTest,
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
   element.dom_object.object_data.object_id = "id";
-  element.container_frame_host = web_contents_->GetMainFrame();
+  element.SetRenderFrameHost(web_contents_->GetMainFrame());
   mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
 
   EXPECT_CALL(mock_web_controller_,
