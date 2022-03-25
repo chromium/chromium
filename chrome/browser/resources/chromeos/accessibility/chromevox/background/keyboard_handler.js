@@ -7,6 +7,8 @@
  */
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
+import {MathHandler} from './math_handler.js';
+
 /**
  * @enum {string}
  * Internal pass through mode state (see usage below).

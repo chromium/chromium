@@ -6,12 +6,10 @@
  * @fileoverview Handles math output and exploration.
  */
 
-goog.provide('MathHandler');
-
 /**
  * Initializes math for output and exploration.
  */
-MathHandler = class {
+export class MathHandler {
   /**
    * @param {!chrome.automation.AutomationNode} node
    */
@@ -93,7 +91,7 @@ MathHandler = class {
     }
     return false;
   }
-};
+}
 
 
 /**
