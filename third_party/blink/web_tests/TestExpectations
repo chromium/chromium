@@ -7616,3 +7616,7 @@ crbug.com/1309633 [ Mac10.15 ] external/wpt/FileAPI/url/url-lifetime.html [ Fail
 # Sheriff 2022-03-24
 crbug.com/1309756 http/tests/images/force-reload.html [ Skip ]
 crbug.com/1309756 [ Mac11-arm64 ] http/tests/images/force-reload-image-document.html [ Skip ]
+
+# Sheriff 2022-03-25
+crbug.com/1197296 [ Linux ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+crbug.com/1197296 [ Linux ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
