@@ -106,8 +106,6 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   std::string ToString() const;
 
  private:
-  DeskTemplate();
-
   const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely
                            // identify the template.
 
