@@ -743,32 +743,28 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
             },
             std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId(),
             report.report_time()));
-  } else {
-    attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-        .WithArgs(*report.ReportId())
-        .Then(base::BindOnce(
-            [](base::OnceClosure done,
-               base::WeakPtr<AttributionManagerImpl> manager,
-               AttributionReport::Id report_id, bool success) {
-              std::move(done).Run();
 
-              if (manager && success) {
-                manager->MarkReportCompleted(report_id);
-                manager->NotifyReportsChanged(GetReportType(report_id));
-              }
-            },
-            std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId()));
+    // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
 
-    LogMetricsOnReportCompleted(report, info.status);
-  }
-
-  // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
-  if (info.status != SendResult::Status::kSent &&
-      info.status != SendResult::Status::kFailure &&
-      info.status != SendResult::Status::kDropped &&
-      info.status != SendResult::Status::kFailedToAssemble) {
     return;
   }
+
+  attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
+      .WithArgs(*report.ReportId())
+      .Then(base::BindOnce(
+          [](base::OnceClosure done,
+             base::WeakPtr<AttributionManagerImpl> manager,
+             AttributionReport::Id report_id, bool success) {
+            std::move(done).Run();
+
+            if (manager && success) {
+              manager->MarkReportCompleted(report_id);
+              manager->NotifyReportsChanged(GetReportType(report_id));
+            }
+          },
+          std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId()));
+
+  LogMetricsOnReportCompleted(report, info.status);
 
   NotifyReportSent(/*is_debug_report=*/false, std::move(report), info);
 }
