@@ -37,6 +37,7 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -525,6 +526,25 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
               IsEmpty());
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values, IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       PermissionsPolicyDisabled_SourceNotRegistered) {
+  GURL page_url = https_server()->GetURL(
+      "b.test", "/page_with_conversion_measurement_disabled.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  auto result =
+      EvalJs(web_contents(),
+             JsReplace("window.attributionReporting.registerSource($1);",
+                       register_url));
+  EXPECT_THAT(result.error, HasSubstr("Failed to execute 'registerSource' on "
+                                      "'AttributionReporting': Not allowed."));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
