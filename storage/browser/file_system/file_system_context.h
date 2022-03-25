@@ -350,6 +350,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   bool is_incognito() { return is_incognito_; }
 
+  // TODO(com/1231162): Remove this. Used only by test code and to migrate media
+  // license data to the new backend.
+  PluginPrivateFileSystemBackend* plugin_private_backend() const {
+    return plugin_private_backend_.get();
+  }
+
  private:
   // For CreateFileSystemOperation.
   friend class FileSystemOperationRunner;
@@ -426,11 +432,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // Returns a FileSystemBackend, used only by test code.
   SandboxFileSystemBackend* sandbox_backend() const {
     return sandbox_backend_.get();
-  }
-
-  // Used only by test code.
-  PluginPrivateFileSystemBackend* plugin_private_backend() const {
-    return plugin_private_backend_.get();
   }
 
   // Override the default leveldb Env with `env_override_` if set.

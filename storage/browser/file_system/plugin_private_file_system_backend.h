@@ -54,6 +54,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   class FileSystemIDToPluginMap;
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
+  // Used to migrate media license data to the new backend.
+  struct COMPONENT_EXPORT(STORAGE_BROWSER) CdmFileInfo {
+    CdmFileInfo(const std::string& name,
+                const std::string& legacy_file_system_id);
+    CdmFileInfo(const CdmFileInfo&);
+    CdmFileInfo(CdmFileInfo&&);
+    ~CdmFileInfo();
+
+    const std::string name;
+    const std::string legacy_file_system_id;
+  };
+
   PluginPrivateFileSystemBackend(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       const base::FilePath& profile_path,
@@ -145,13 +157,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
                                         int64_t* total_size,
                                         base::Time* last_modified_time);
 
+  // Used to migrate media license data to the new backend.
+  // TODO(crbug.com/1231162): Once all media license data has been migrated, the
+  // PPFS will have no more consumers and we can remove it entirely.
+  std::vector<CdmFileInfo> GetMediaLicenseFilesForOriginOnFileTaskRunner(
+      FileSystemContext* context,
+      const url::Origin& origin);
+
   ObfuscatedFileUtilMemoryDelegate* obfuscated_file_util_memory_delegate();
+  const base::FilePath& base_path() const { return base_path_; }
 
  private:
   friend class PluginPrivateFileSystemBackendTest;
 
   ObfuscatedFileUtil* obfuscated_file_util();
-  const base::FilePath& base_path() const { return base_path_; }
 
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   const FileSystemOptions file_system_options_;

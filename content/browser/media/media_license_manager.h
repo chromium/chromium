@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_LICENSE_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
@@ -13,10 +14,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -41,7 +44,35 @@ class CONTENT_EXPORT MediaLicenseManager {
     const media::CdmType cdm_type;
   };
 
+  // A CDM file for a given storage key can be uniquely identified by its name
+  // and CDM type.
+  struct CONTENT_EXPORT CdmFileId {
+    CdmFileId(const std::string& name, const media::CdmType& cdm_type);
+    CdmFileId(const CdmFileId&);
+    ~CdmFileId();
+
+    bool operator==(const CdmFileId& rhs) const {
+      return (name == rhs.name) && (cdm_type == rhs.cdm_type);
+    }
+    bool operator<(const CdmFileId& rhs) const {
+      return std::tie(name, cdm_type) < std::tie(rhs.name, rhs.cdm_type);
+    }
+
+    const std::string name;
+    const media::CdmType cdm_type;
+  };
+
+  struct CONTENT_EXPORT CdmFileIdAndContents {
+    CdmFileIdAndContents(const CdmFileId& file, std::vector<uint8_t> data);
+    CdmFileIdAndContents(const CdmFileIdAndContents&);
+    ~CdmFileIdAndContents();
+
+    const CdmFileId file;
+    const std::vector<uint8_t> data;
+  };
+
   MediaLicenseManager(
+      scoped_refptr<storage::FileSystemContext> file_system_context,
       const base::FilePath& bucket_base_path,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
@@ -67,6 +98,10 @@ class CONTENT_EXPORT MediaLicenseManager {
       MediaLicenseStorageHost* host,
       base::PassKey<MediaLicenseStorageHost> pass_key);
 
+  void MigrateMediaLicensesForTesting(base::OnceClosure done_closure) {
+    MigrateMediaLicenses(std::move(done_closure));
+  }
+
   const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return quota_manager_proxy_;
@@ -82,6 +117,11 @@ class CONTENT_EXPORT MediaLicenseManager {
     return bucket_base_path_.empty();
   }
 
+  const scoped_refptr<storage::FileSystemContext>& context() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return file_system_context_;
+  }
+
  private:
   void DidGetBucket(const blink::StorageKey& storage_key,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
@@ -90,7 +130,36 @@ class CONTENT_EXPORT MediaLicenseManager {
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
       bool success);
 
+  // TODO(crbug.com/1231162): The following methods are used to migrate from the
+  // old backend to the new backend. Remove once the migration is complete.
+  void MigrateMediaLicenses(base::OnceClosure done_closure);
+  void DidGetMediaLicenses(
+      base::flat_map<blink::StorageKey, std::vector<CdmFileId>> files);
+  void OpenPluginFileSystemsForStorageKey(
+      const blink::StorageKey& storage_key,
+      std::vector<CdmFileId> files,
+      base::OnceClosure done_migrating_storage_key_closure,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
+  void DidOpenPluginFileSystem(
+      const blink::StorageKey& storage_key,
+      std::vector<CdmFileId> files,
+      std::string file_system_root_uri,
+      base::OnceCallback<void(std::vector<CdmFileIdAndContents>)> callback,
+      base::File::Error result);
+  void DidReadFilesForStorageKey(
+      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
+      base::OnceClosure done_migrating_storage_key_closure,
+      std::vector<std::vector<CdmFileIdAndContents>> collected_files);
+  void DidMigrateMediaLicenses();
+  void DidClearPluginPrivateData();
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // TODO(crbug.com/1231162): These members are only used to help migrate from
+  // the old backend to the new backend. Remove once the migration is complete.
+  const scoped_refptr<storage::FileSystemContext> file_system_context_;
+  base::OnceClosure plugin_private_data_migration_closure_;
 
   // Task runner which all database operations are routed through.
   const scoped_refptr<base::SequencedTaskRunner> db_runner_;

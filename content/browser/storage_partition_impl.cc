@@ -1366,8 +1366,8 @@ void StoragePartitionImpl::Initialize(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   media_license_manager_ = std::make_unique<MediaLicenseManager>(
-      GetBucketBasePath(), browser_context_->GetSpecialStoragePolicy(),
-      quota_manager_proxy);
+      filesystem_context_, GetBucketBasePath(),
+      browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 }
 

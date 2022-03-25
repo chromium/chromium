@@ -27,10 +27,7 @@
 
 namespace content {
 
-MediaLicenseStorageHost::CdmFileId::CdmFileId(const std::string& name,
-                                              const media::CdmType& cdm_type)
-    : name(name), cdm_type(cdm_type) {}
-MediaLicenseStorageHost::CdmFileId::~CdmFileId() = default;
+using CdmFileId = MediaLicenseManager::CdmFileId;
 
 MediaLicenseStorageHost::MediaLicenseStorageHost(
     MediaLicenseManager* manager,

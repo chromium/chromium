@@ -81,23 +81,6 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
   }
 
  private:
-  // A CDM file for a given storage key can be uniquely identified by its name
-  // and CDM type.
-  struct CdmFileId {
-    CdmFileId(const std::string& name, const media::CdmType& cdm_type);
-    ~CdmFileId();
-
-    bool operator==(const CdmFileId& rhs) const {
-      return (name == rhs.name) && (cdm_type == rhs.cdm_type);
-    }
-    bool operator<(const CdmFileId& rhs) const {
-      return std::tie(name, cdm_type) < std::tie(rhs.name, rhs.cdm_type);
-    }
-
-    const std::string name;
-    const media::CdmType cdm_type;
-  };
-
   void OnReceiverDisconnect();
 
   void DidOpenFile(const std::string& file_name,
@@ -125,8 +108,8 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
   // Keep track of all media::mojom::CdmFile receivers, as each CdmFileImpl
   // object keeps a reference to |this|. If |this| goes away unexpectedly,
   // all remaining CdmFile receivers will be closed.
-  std::map<CdmFileId, std::unique_ptr<CdmFileImpl>> cdm_files_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<MediaLicenseManager::CdmFileId, std::unique_ptr<CdmFileImpl>>
+      cdm_files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<MediaLicenseStorageHost> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

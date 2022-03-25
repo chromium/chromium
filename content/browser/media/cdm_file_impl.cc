@@ -406,7 +406,6 @@ CdmFileImpl::CdmFileImpl(
   DVLOG(3) << __func__ << " " << file_name_;
   DCHECK(IsValidName(file_name_));
   DCHECK(host_);
-  DCHECK(base::FeatureList::IsEnabled(features::kMediaLicenseBackend));
 
   receiver_.Bind(std::move(pending_receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
