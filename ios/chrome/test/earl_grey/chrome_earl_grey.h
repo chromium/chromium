@@ -657,6 +657,9 @@ UIWindow* GetAnyKeyWindow();
 // Returns whether the NewOverflowMenu feature is enabled.
 - (BOOL)isNewOverflowMenuEnabled;
 
+// Returns whether the OmniboxUpdatedPopupUI feature is enabled.
+- (BOOL)isNewOmniboxPopupEnabled;
+
 // Returns whether the Thumbstrip feature is enabled for window with given
 // number.
 - (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;

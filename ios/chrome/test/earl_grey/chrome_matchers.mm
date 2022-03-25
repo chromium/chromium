@@ -140,6 +140,14 @@ id<GREYMatcher> Omnibox() {
   return [ChromeMatchersAppInterface omnibox];
 }
 
+id<GREYMatcher> OmniboxPopupRow() {
+  return [ChromeMatchersAppInterface omniboxPopupRow];
+}
+
+id<GREYMatcher> OmniboxPopupList() {
+  return [ChromeMatchersAppInterface omniboxPopupList];
+}
+
 id<GREYMatcher> DefocusedLocationView() {
   return [ChromeMatchersAppInterface defocusedLocationView];
 }

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -249,8 +250,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
-              grey_accessibilityID(@"omnibox suggestion 1"),
-              grey_kindOfClassName(@"OmniboxPopupRowCell"),
+              [ChromeEarlGrey isNewOmniboxPopupEnabled]
+                  ? grey_descendant(
+                        grey_accessibilityID(@"omnibox suggestion 0 1"))
+                  : grey_accessibilityID(@"omnibox suggestion 0 1"),
+              chrome_test_util::OmniboxPopupRow(),
               grey_descendant(
                   chrome_test_util::StaticTextWithAccessibilityLabel(URL)),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
@@ -1050,6 +1054,24 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
+}
+
+@end
+
+// Test case for the NTP home UI, except the new omnibox popup flag is enabled.
+@interface NewOmniboxPopupNTPHomeTestCase : NTPHomeTestCase
+@end
+
+@implementation NewOmniboxPopupNTPHomeTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

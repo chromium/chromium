@@ -32,6 +32,14 @@ struct ScrollOnChangeModifier<V: Equatable>: ViewModifier {
   }
 }
 
+/// Utility which provides a way to treat the `accessibilityIdentifier` view modifier as a value.
+struct AccessibilityIdentifierModifier: ViewModifier {
+  let identifier: String
+  func body(content: Content) -> some View {
+    content.accessibilityIdentifier(identifier)
+  }
+}
+
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
@@ -58,10 +66,11 @@ struct PopupView: View {
       let sectionContents =
         ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
           matchIndex, match in
+          let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
+
           PopupMatchRowView(
             match: match,
-            isHighlighted: IndexPath(row: matchIndex, section: sectionIndex)
-              == self.model.highlightedMatchIndexPath,
+            isHighlighted: indexPath == self.model.highlightedMatchIndexPath,
             selectionHandler: {
               model.delegate?.autocompleteResultConsumer(
                 model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
@@ -74,6 +83,9 @@ struct PopupView: View {
           )
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
+          .accessibilityElement(children: .contain)
+          .accessibilityIdentifier(
+            OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath))
         }
         .onDelete { indexSet in
           for matchIndex in indexSet {
@@ -97,9 +109,13 @@ struct PopupView: View {
 
   @ViewBuilder
   var listView: some View {
-    let listModifier = SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) })
-      .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
-      .concat(BlurredBackground())
+    let listModifier = AccessibilityIdentifierModifier(
+      identifier: kOmniboxPopupTableViewAccessibilityIdentifier
+    )
+    .concat(SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) }))
+    .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
+    .concat(BlurredBackground())
+
     if shouldSelfSize {
       SelfSizingList(
         bottomMargin: Dimensions.selfSizingListBottomMargin,
@@ -129,6 +145,7 @@ struct PopupView: View {
       let listAppearance = UITableView.appearance(whenContainedInInstancesOf: [
         appearanceContainerType
       ])
+
       listAppearance.backgroundColor = .clear
 
       if shouldSelfSize {

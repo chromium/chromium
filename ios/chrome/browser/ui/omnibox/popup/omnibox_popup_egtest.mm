@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -27,7 +28,7 @@ namespace {
 // Returns the popup row containing the |url| as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   return grey_allOf(
-      grey_kindOfClassName(@"OmniboxPopupRowCell"),
+      chrome_test_util::OmniboxPopupRow(),
       grey_descendant(chrome_test_util::StaticTextWithAccessibilityLabel(
           base::SysUTF8ToNSString(url.GetContent()))),
       grey_sufficientlyVisible(), nil);
@@ -133,8 +134,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(firstPageURL),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kOmniboxPopupTableViewAccessibilityIdentifier)]
+      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -373,8 +373,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(URL1),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kOmniboxPopupTableViewAccessibilityIdentifier)]
+      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Close the first page.
@@ -447,7 +446,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> row = grey_allOf(
-      grey_kindOfClassName(@"OmniboxPopupRowCell"),
+      chrome_test_util::OmniboxPopupRow(),
       grey_descendant(
           chrome_test_util::StaticTextWithAccessibilityLabel(@"hello")),
       grey_sufficientlyVisible(), nil);
@@ -458,11 +457,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
-  // Scroll the popup.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  // Scroll the popup. This swipes from the point located at 50% of the width of
+  // the frame horizontally and most importantly 10% of the height of the frame
+  // vertically. This is necessary if the center of the list's accessibility
+  // frame is not visible, as it is the default start point.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
+      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionUp,
+                                                            0.5, 0.1)];
 
   [[EarlGrey selectElementWithMatcher:row]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -476,6 +477,25 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
                     @"Keyboard Should not be Shown");
   }
+}
+
+@end
+
+// Test case for the omnibox popup, except new popup flag is enabled.
+@interface NewOmniboxPopupTestCase : OmniboxPopupTestCase
+
+@end
+
+@implementation NewOmniboxPopupTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

@@ -268,8 +268,8 @@ const CGFloat kTopAndBottomPadding = 8.0;
     // this method is called).
     rowCell.omniboxSemanticContentAttribute = self.semanticContentAttribute;
 
-    rowCell.accessibilityIdentifier = [NSString
-        stringWithFormat:@"omnibox suggestion %" PRIuNS, indexPath.row];
+    rowCell.accessibilityIdentifier = [OmniboxPopupAccessibilityIdentifierHelper
+        accessibilityIdentifierForRowAtIndexPath:indexPath];
   }
 }
 

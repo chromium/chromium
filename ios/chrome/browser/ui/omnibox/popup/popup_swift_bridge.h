@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/common/ui/colors/swift_bridge.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_POPUP_SWIFT_BRIDGE_H_

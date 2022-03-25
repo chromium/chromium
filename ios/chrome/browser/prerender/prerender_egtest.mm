@@ -12,6 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/version_info/version_info.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -170,9 +171,13 @@ GREYElementInteraction* RequestDesktopButton() {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityLabel(pageString),
-                                   grey_kindOfClassName(@"FadeTruncatingLabel"),
+                                   [ChromeEarlGrey isNewOmniboxPopupEnabled]
+                                       ? grey_accessibilityTrait(
+                                             UIAccessibilityTraitStaticText)
+                                       : grey_kindOfClassName(
+                                             @"FadeTruncatingLabel"),
                                    grey_ancestor(grey_accessibilityID(
-                                       @"omnibox suggestion 0")),
+                                       @"omnibox suggestion 0 0")),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
@@ -215,7 +220,7 @@ GREYElementInteraction* RequestDesktopButton() {
                                    grey_accessibilityLabel(pageString),
                                    grey_kindOfClassName(@"FadeTruncatingLabel"),
                                    grey_ancestor(grey_accessibilityID(
-                                       @"omnibox suggestion 0")),
+                                       @"omnibox suggestion 0 0")),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
@@ -240,6 +245,24 @@ GREYElementInteraction* RequestDesktopButton() {
   // The content of the page can be cached, check the button also.
   [ChromeEarlGreyUI openToolsMenu];
   [RequestDesktopButton() assertWithMatcher:grey_notNil()];
+}
+
+@end
+
+// Test case for the prerender, except new popup flag is enabled.
+@interface NewOmniboxPopupPrerenderTestCase : PrerenderTestCase
+@end
+
+@implementation NewOmniboxPopupPrerenderTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

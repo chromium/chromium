@@ -428,9 +428,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
       performAction:grey_typeText(@"Obama")];
 
   // The popup should open.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_notNil()];
 
   // Switch to the first tab.
@@ -439,9 +437,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 
   // The omnibox shouldn't be focused and the popup should be closed.
   [self checkLocationBarSteadyState];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -465,9 +461,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
       performAction:grey_typeText(@"Obama")];
 
   // The popup should open.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_notNil()];
 
   // Switch to the first tab.
@@ -476,9 +470,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 
   // The omnibox shouldn't be focused and the popup should be closed.
   [self checkLocationBarSteadyState];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -508,6 +500,25 @@ id<GREYMatcher> SearchCopiedTextButton() {
 - (void)checkLocationBarEditState {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+// Test case for the NTP home UI, except the new omnibox popup flag is enabled.
+@interface NewOmniboxPopupLocationBarSteadyStateTestCase
+    : LocationBarSteadyStateTestCase
+@end
+
+@implementation NewOmniboxPopupLocationBarSteadyStateTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

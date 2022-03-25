@@ -1113,6 +1113,10 @@ NSString* SerializedValue(const base::Value* value) {
   return IsNewOverflowMenuEnabled();
 }
 
++ (BOOL)isNewOmniboxPopupEnabled {
+  return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
+}
+
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
   return ShowThumbStripInTraitCollection(
       [self windowWithNumber:windowNumber].traitCollection);

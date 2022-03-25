@@ -31,9 +31,9 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
 namespace {
 // Waits for omnibox suggestion with index |suggestionID| to contain
 // |suggestion|.
-void WaitForOmniboxSuggestion(NSString* suggestion, int suggestionID) {
+void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   NSString* accessibilityID =
-      [NSString stringWithFormat:@"omnibox suggestion %d", suggestionID];
+      [NSString stringWithFormat:@"omnibox suggestion %d %d", section, row];
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
@@ -377,35 +377,35 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int suggestionID) {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
       performAction:grey_typeText(@"a")];
-  WaitForOmniboxSuggestion(@"a", 0);
+  WaitForOmniboxSuggestion(@"a", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"b")];
-  WaitForOmniboxSuggestion(@"ab", 0);
+  WaitForOmniboxSuggestion(@"ab", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"C")];
-  WaitForOmniboxSuggestion(@"abC", 0);
+  WaitForOmniboxSuggestion(@"abC", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"1")];
-  WaitForOmniboxSuggestion(@"abC1", 0);
+  WaitForOmniboxSuggestion(@"abC1", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"2")];
-  WaitForOmniboxSuggestion(@"abC12", 0);
+  WaitForOmniboxSuggestion(@"abC12", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"@")];
-  WaitForOmniboxSuggestion(@"abC12@", 0);
+  WaitForOmniboxSuggestion(@"abC12@", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"{")];
-  WaitForOmniboxSuggestion(@"abC12@{", 0);
+  WaitForOmniboxSuggestion(@"abC12@{", 0, 0);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"#")];
-  WaitForOmniboxSuggestion(@"abC12@{#", 0);
+  WaitForOmniboxSuggestion(@"abC12@{#", 0, 0);
 
   id<GREYMatcher> cancelButton =
       grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);

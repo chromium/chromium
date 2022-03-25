@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -551,6 +553,44 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)toolsMenuView {
   return grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+}
+
++ (id<GREYMatcher>)omniboxPopupRow {
+  if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    return grey_kindOfClassName(@"OmniboxPopupRowCell");
+  } else {
+    if (@available(iOS 15, *)) {
+      return grey_allOf(
+          grey_kindOfClassName(@"SwiftUI.ListTableViewCell"),
+          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
+          nil);
+    } else {
+      return grey_allOf(
+          grey_kindOfClassName(@"SwiftUI.ListCoreCellHost"),
+          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
+          nil);
+    }
+  }
+}
+
++ (id<GREYMatcher>)omniboxPopupList {
+  if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    return grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier);
+  } else {
+    if (@available(iOS 15, *)) {
+      return grey_accessibilityID(
+          kOmniboxPopupTableViewAccessibilityIdentifier);
+    } else {
+      // Implementation detail: the list is the closest ancestor of all popup.
+      // rows. It is the unique element with popup rows as descendants but no
+      // descendant having popup rows as descendants.
+      return grey_allOf(
+          grey_descendant([ChromeMatchersAppInterface omniboxPopupRow]),
+          grey_not(grey_descendant(
+              grey_descendant([ChromeMatchersAppInterface omniboxPopupRow]))),
+          nil);
+    }
+  }
 }
 
 + (id<GREYMatcher>)OKButton {

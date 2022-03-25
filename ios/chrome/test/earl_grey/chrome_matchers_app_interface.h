@@ -238,6 +238,12 @@
 // Returns matcher for the tools menu table view.
 + (id<GREYMatcher>)toolsMenuView;
 
+// Returns matcher for the omnibox popup list row views.
++ (id<GREYMatcher>)omniboxPopupRow;
+
+// Returns matcher for the omnibox popup list view.
++ (id<GREYMatcher>)omniboxPopupList;
+
 // Returns matcher for the OK button.
 + (id<GREYMatcher>)OKButton;
 

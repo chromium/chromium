@@ -20,7 +20,7 @@ struct PopupMatchTrailingButton: View {
 
   var body: some View {
     Button(action: action) {
-      Image(systemName: match.isAppendable ? "arrow.up.backward" : "arrow.right.square")
+      Image(systemName: match.isTabMatch ? "arrow.right.square" : "arrow.up.backward")
         .foregroundColor(Colors.trailingButtonColor)
         .aspectRatio(contentMode: .fit)
         .frame(
@@ -34,5 +34,9 @@ struct PopupMatchTrailingButton: View {
         )
     }
     .buttonStyle(.plain)
+    .accessibilityIdentifier(
+      match.isTabMatch
+        ? kOmniboxPopupRowSwitchTabAccessibilityIdentifier
+        : kOmniboxPopupRowAppendAccessibilityIdentifier)
   }
 }

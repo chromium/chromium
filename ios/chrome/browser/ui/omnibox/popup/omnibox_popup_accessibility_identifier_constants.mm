@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -11,5 +13,18 @@
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
 
+NSString* const kOmniboxPopupRowAppendAccessibilityIdentifier =
+    @"OmniboxPopupRowAppendAccessibilityIdentifier";
+
 NSString* const kOmniboxPopupTableViewAccessibilityIdentifier =
     @"OmniboxPopupTableViewAccessibilityIdentifier";
+
+@implementation OmniboxPopupAccessibilityIdentifierHelper
+
++ (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath {
+  return
+      [NSString stringWithFormat:@"omnibox suggestion %ld %ld",
+                                 (long)indexPath.section, (long)indexPath.row];
+}
+
+@end

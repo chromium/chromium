@@ -181,7 +181,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"omnibox suggestion 1"),
+                                              @"omnibox suggestion 0 1"),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 

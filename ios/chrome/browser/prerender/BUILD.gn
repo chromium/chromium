@@ -103,6 +103,7 @@ source_set("eg2_tests") {
   sources = [ "prerender_egtest.mm" ]
   deps = [
     "//components/version_info",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
