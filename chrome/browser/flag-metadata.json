@@ -787,6 +787,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "chrome-wide-echo-cancellation",
+    "owners": [ "olka", "saza" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "chromeos-direct-video-decoder",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // TODO(b/159825227): remove when the "old" video decoder is fully launched.

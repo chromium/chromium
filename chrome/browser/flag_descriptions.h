@@ -3288,6 +3288,11 @@ extern const char kSkipUndecryptablePasswordsDescription[];
 
 // Feature flags --------------------------------------------------------------
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+extern const char kChromeWideEchoCancellationName[];
+extern const char kChromeWideEchoCancellationDescription[];
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
 #if defined(DCHECK_IS_CONFIGURABLE)
 extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];

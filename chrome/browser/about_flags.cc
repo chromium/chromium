@@ -5323,6 +5323,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ntp_features::kRealboxUseGoogleGIcon)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    {"chrome-wide-echo-cancellation",
+     flag_descriptions::kChromeWideEchoCancellationName,
+     flag_descriptions::kChromeWideEchoCancellationDescription, kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(media::kChromeWideEchoCancellation)},
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
 #if defined(DCHECK_IS_CONFIGURABLE)
     {"dcheck-is-fatal", flag_descriptions::kDcheckIsFatalName,
      flag_descriptions::kDcheckIsFatalDescription, kOsWin,

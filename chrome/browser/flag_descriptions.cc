@@ -5688,6 +5688,14 @@ const char kSkipUndecryptablePasswordsDescription[] =
 
 // Feature flags --------------------------------------------------------------
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+extern const char kChromeWideEchoCancellationName[] =
+    "Chrome-wide echo cancellation";
+extern const char kChromeWideEchoCancellationDescription[] =
+    "Run WebRTC capture audio processing in the audio process instead of the "
+    "renderer processes, thereby cancelling echoes from more audio sources.";
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
 const char kDcheckIsFatalDescription[] =
