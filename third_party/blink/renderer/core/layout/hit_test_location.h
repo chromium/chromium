@@ -49,7 +49,6 @@ class CORE_EXPORT HitTestLocation {
   explicit HitTestLocation(const PhysicalOffset&);
   explicit HitTestLocation(const gfx::Point&);
   explicit HitTestLocation(const gfx::PointF&);
-  explicit HitTestLocation(const DoublePoint&);
   explicit HitTestLocation(const gfx::PointF&, const gfx::QuadF&);
   explicit HitTestLocation(const PhysicalRect&);
 

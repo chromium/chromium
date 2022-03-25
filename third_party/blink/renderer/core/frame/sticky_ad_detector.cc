@@ -80,7 +80,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   gfx::Size main_frame_size = main_frame->GetMainFrameViewportSize();
 
   // Hit test the bottom center of the viewport.
-  HitTestLocation location(DoublePoint(main_frame_size.width() / 2.0,
+  HitTestLocation location(gfx::PointF(main_frame_size.width() / 2.0,
                                        main_frame_size.height() * 9.0 / 10));
 
   HitTestResult result;

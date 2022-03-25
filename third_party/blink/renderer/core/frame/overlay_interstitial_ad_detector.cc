@@ -111,7 +111,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   if (main_frame->View()->HasDominantVideoElement())
     return;
 
-  HitTestLocation location(DoublePoint(main_frame_size.width() / 2.0,
+  HitTestLocation location(gfx::PointF(main_frame_size.width() / 2.0,
                                        main_frame_size.height() / 2.0));
   HitTestResult result;
   main_frame->ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);

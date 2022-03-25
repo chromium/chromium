@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -213,7 +214,7 @@ HTMLMapElement* TreeScope::GetImageMap(const String& url) const {
 // If the point is not in the viewport, returns false. Otherwise, adjusts the
 // point to account for the frame's zoom and scroll.
 static bool PointInFrameContentIfVisible(Document& document,
-                                         DoublePoint& point_in_frame) {
+                                         gfx::PointF& point_in_frame) {
   LocalFrame* frame = document.GetFrame();
   if (!frame)
     return false;
@@ -228,10 +229,10 @@ static bool PointInFrameContentIfVisible(Document& document,
   gfx::Rect visible_frame_rect(scrollable_area->VisibleContentRect().size());
   visible_frame_rect =
       gfx::ScaleToRoundedRect(visible_frame_rect, 1 / frame->PageZoomFactor());
-  if (!visible_frame_rect.Contains(ToRoundedPoint(point_in_frame)))
+  if (!visible_frame_rect.Contains(gfx::ToRoundedPoint(point_in_frame)))
     return false;
 
-  point_in_frame.Scale(frame->PageZoomFactor(), frame->PageZoomFactor());
+  point_in_frame.Scale(frame->PageZoomFactor());
   return true;
 }
 
@@ -242,7 +243,7 @@ HitTestResult HitTestInDocument(Document* document,
   if (!document->IsActive())
     return HitTestResult();
 
-  DoublePoint hit_point(x, y);
+  gfx::PointF hit_point(x, y);
   if (!PointInFrameContentIfVisible(*document, hit_point))
     return HitTestResult();
 
@@ -329,7 +330,7 @@ HeapVector<Member<Element>> TreeScope::ElementsFromHitTestResult(
 HeapVector<Member<Element>> TreeScope::ElementsFromPoint(double x,
                                                          double y) const {
   Document& document = RootNode().GetDocument();
-  DoublePoint hit_point(x, y);
+  gfx::PointF hit_point(x, y);
   if (!PointInFrameContentIfVisible(document, hit_point))
     return HeapVector<Member<Element>>();
 

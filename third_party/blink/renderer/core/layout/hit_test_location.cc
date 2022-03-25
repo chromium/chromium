@@ -56,9 +56,6 @@ HitTestLocation::HitTestLocation(const gfx::PointF& point,
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
-HitTestLocation::HitTestLocation(const DoublePoint& point)
-    : HitTestLocation(gfx::PointF(point)) {}
-
 HitTestLocation::HitTestLocation(const gfx::PointF& point,
                                  const gfx::QuadF& quad)
     : transformed_point_(point), transformed_rect_(quad), is_rect_based_(true) {
