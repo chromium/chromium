@@ -35,7 +35,8 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
   if (!policy_entry)
     return true;
 
-  const auto& web_apps_list = policy_entry->value()->GetList();
+  const auto& web_apps_list =
+      policy_entry->value(base::Value::Type::LIST)->GetList();
   const auto it = std::find_if(
       web_apps_list.begin(), web_apps_list.end(), [](const base::Value& entry) {
         return entry.FindKey(kManifestId)->GetString() == kWildcard;
