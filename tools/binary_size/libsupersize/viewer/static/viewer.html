@@ -410,6 +410,10 @@
       </header>
       <ul id="symboltree" class="tree" role="tree" aria-labelledby="headline"></ul>
     </main>
+    <!-- Empty .sizediff Message-->
+    <div id="no-symbols-msg" style="display:none">
+      This diff contains no symbols (no sizes changed).
+    </div>
     <!-- Metadata Node -->
     <div id="metadata-view" class="metadata" title="Metadata from .size/.sizediff file">
       <a class="node" tabindex="0" role="presentation">
@@ -628,12 +632,6 @@
     <div class="modal-content">
       <p>You are trying to access a private size file. Please sign in with your @google.com account.</p>
       <button type="button" class="signin text-button filled-button">Sign Me In</button>
-    </div>
-  </div>
-  <!-- Modal Empty .sizediff Dialog -->
-  <div id="error-modal" class="modal" style="display:none">
-    <div class="modal-content">
-      <p>This diff contains no symbols (no sizes changed).</p>
     </div>
   </div>
 </body>

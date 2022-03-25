@@ -292,3 +292,9 @@ ul {
   text-decoration: none;
   white-space: pre;
 }
+
+#no-symbols-msg {
+  position: relative;
+  text-align: center;
+  top: -1em;
+}

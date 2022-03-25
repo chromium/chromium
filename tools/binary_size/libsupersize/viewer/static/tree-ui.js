@@ -555,8 +555,7 @@ const newTreeElement = (() => {
    * @param {boolean} show
    */
   function toggleNoSymbolsMessage(show) {
-    const errorModal = document.getElementById('error-modal');
-    errorModal.querySelector('div').style.alignItems = 'center';
+    const errorModal = document.getElementById('no-symbols-msg');
     errorModal.style.display = show ? '' : 'none';
   }
 
