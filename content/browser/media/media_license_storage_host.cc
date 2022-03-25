@@ -63,8 +63,6 @@ void MediaLicenseStorageHost::Open(const std::string& file_name,
     return;
   }
 
-  // TODO(crbug.com/1231162): Notify the quota system of a write.
-
   const BindingContext& binding_context = receivers_.current_context();
   db_.AsyncCall(&MediaLicenseDatabase::OpenFile)
       .WithArgs(binding_context.cdm_type, file_name)
@@ -138,8 +136,6 @@ void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,
                                         WriteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1231162): Notify the quota system of a write.
-
   db_.AsyncCall(&MediaLicenseDatabase::WriteFile)
       .WithArgs(cdm_type, file_name, data)
       .Then(base::BindOnce(&MediaLicenseStorageHost::DidWriteFile,
@@ -169,11 +165,10 @@ void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
                                          DeleteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1231162): Notify the quota system of a write.
-
   db_.AsyncCall(&MediaLicenseDatabase::DeleteFile)
       .WithArgs(cdm_type, file_name)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&MediaLicenseStorageHost::DidWriteFile,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MediaLicenseStorageHost::DeleteBucketData(
