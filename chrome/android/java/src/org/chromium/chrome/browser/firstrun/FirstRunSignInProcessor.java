@@ -183,16 +183,4 @@ public final class FirstRunSignInProcessor {
         setFirstRunFlowSignInAccountName(syncConsentAccountName);
         setFirstRunFlowSignInSetup(showAdvancedSyncSettings);
     }
-
-    /**
-     * Allows the user to sign-in if there are no pending FRE sign-in requests.
-     */
-    public static void updateSigninManagerFirstRunCheckDone() {
-        SigninManager manager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        if (manager.isSyncOptInAllowed()) return;
-        if (!FirstRunStatus.getFirstRunFlowComplete()) return;
-        if (!getFirstRunFlowSignInComplete()) return;
-        manager.onFirstRunCheckDone();
-    }
 }

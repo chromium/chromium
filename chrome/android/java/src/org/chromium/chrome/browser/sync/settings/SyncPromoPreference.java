@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -75,7 +74,6 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.addObserver(this);
         signinManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
