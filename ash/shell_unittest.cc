@@ -34,13 +34,11 @@
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -427,65 +425,6 @@ TEST_F(ShellTest, ManagedWindowModeBasics) {
 
   // Clean up.
   widget->Close();
-}
-
-TEST_F(ShellTest, FullscreenWindowHidesShelf) {
-  ExpectAllContainers();
-
-  // Create a normal window.  It is not maximized.
-  views::Widget* widget = TestWidgetBuilder()
-                              .SetBounds(gfx::Rect(11, 22, 300, 400))
-                              .BuildOwnedByNativeWidget();
-  EXPECT_FALSE(widget->IsMaximized());
-
-  // Shelf defaults to visible.
-  EXPECT_EQ(SHELF_VISIBLE, Shell::GetPrimaryRootWindowController()
-                               ->GetShelfLayoutManager()
-                               ->visibility_state());
-
-  // Fullscreen window hides it.
-  widget->SetFullscreen(true);
-  EXPECT_EQ(SHELF_HIDDEN, Shell::GetPrimaryRootWindowController()
-                              ->GetShelfLayoutManager()
-                              ->visibility_state());
-
-  // Restoring the window restores it.
-  widget->Restore();
-  EXPECT_EQ(SHELF_VISIBLE, Shell::GetPrimaryRootWindowController()
-                               ->GetShelfLayoutManager()
-                               ->visibility_state());
-
-  // Clean up.
-  widget->Close();
-}
-
-// Various assertions around auto-hide behavior.
-// TODO(jamescook): Move this to ShelfTest.
-TEST_F(ShellTest, ToggleAutoHide) {
-  std::unique_ptr<aura::Window> window =
-      std::make_unique<aura::Window>(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
-  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
-  window->Init(ui::LAYER_TEXTURED);
-  ParentWindowInPrimaryRootWindow(window.get());
-  window->Show();
-  wm::ActivateWindow(window.get());
-
-  Shelf* shelf = GetPrimaryShelf();
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
 }
 
 // Tests that the cursor-filter is ahead of the drag-drop controller in the

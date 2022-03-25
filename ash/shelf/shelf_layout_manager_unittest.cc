@@ -59,6 +59,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -1308,6 +1309,29 @@ TEST_F(ShelfLayoutManagerTest, ShelfWithSystemModalWindowDualDisplay) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_1->GetAutoHideState());
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf_2->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_2->GetAutoHideState());
+}
+
+TEST_F(ShelfLayoutManagerTest, FullscreenWidgetHidesShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  // Create a normal window.
+  views::Widget* widget = TestWidgetBuilder()
+                              .SetBounds(gfx::Rect(11, 22, 300, 400))
+                              .BuildOwnedByNativeWidget();
+  ASSERT_FALSE(widget->IsFullscreen());
+
+  // Shelf defaults to visible.
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  // Fullscreen window hides it.
+  widget->SetFullscreen(true);
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+
+  // Restoring the window restores it.
+  widget->Restore();
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  // Clean up.
+  widget->Close();
 }
 
 // Tests that the shelf is only hidden for a fullscreen window at the front and

@@ -25,6 +25,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -108,6 +110,34 @@ TEST_F(ShelfTest, CheckHoverAfterMenu) {
 
   // Remove it.
   shelf_model()->RemoveItemAt(index);
+}
+
+// Various assertions around auto-hide behavior.
+TEST_F(ShelfTest, ToggleAutoHide) {
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindowInPrimaryRootWindow(window.get());
+  window->Show();
+  wm::ActivateWindow(window.get());
+
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
+  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
+  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
 }
 
 // Tests if shelf is hidden on secondary display after the primary display is
