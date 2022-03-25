@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   SetTitleOnReportsTableEmpty(kSentTitle);
 
   EXPECT_TRUE(ExecJsInWebUI(
-      R"(document.querySelector('input[type="checkbox"]').click();)"));
+      R"(document.querySelector('#report-table-wrapper input[type="checkbox"]').click();)"));
   EXPECT_TRUE(
       ExecJsInWebUI("document.getElementById('send-reports').click();"));
 
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, kSentTitle)));
 
   EXPECT_TRUE(ExecJsInWebUI(
-      R"(document.querySelectorAll('input[type="checkbox"]')[1].click();)"));
+      R"(document.querySelectorAll('#aggregatable-report-table-wrapper input[type="checkbox"]')[1].click();)"));
   EXPECT_TRUE(ExecJsInWebUI(
       "document.getElementById('send-aggregatable-reports').click();"));
 
@@ -1079,6 +1079,119 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       AttributionReport::ReportType::kAggregatableAttribution);
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       ToggleDebugReports) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  const base::Time now = base::Time::Now();
+
+  OverrideWebUIAttributionManager();
+
+  manager_.NotifyReportSent(
+      ReportBuilder(
+          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+          .SetReportTime(now)
+          .SetPriority(1)
+          .Build(),
+      /*is_debug_report=*/true,
+      SendResult(SendResult::Status::kSent,
+                 /*http_response_code=*/200));
+
+  ON_CALL(manager_, GetPendingReportsForInternalUse)
+      .WillByDefault(InvokeCallback(
+          {ReportBuilder(
+               AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+               .SetReportTime(now + base::Hours(1))
+               .SetPriority(2)
+               .Build()}));
+
+  // By default, debug reports are shown.
+  {
+    static constexpr char wait_script[] = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let label = document.querySelector('#show-debug-event-reports span');
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 2 &&
+            table.children[0].children[7].innerText === "1" &&
+            table.children[1].children[7].innerText === "2" &&
+            label.innerText === '') {
+          document.title = $1;
+        }
+      });
+      obs.observe(table, {'childList': true});
+      obs.observe(label, {'characterData': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+    ClickRefreshButton();
+    EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  }
+
+  // Toggle checkbox.
+  EXPECT_TRUE(ExecJsInWebUI(R"(
+      document.querySelector('#show-debug-event-reports input').click();)"));
+
+  manager_.NotifyReportSent(
+      ReportBuilder(
+          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+          .SetReportTime(now + base::Hours(2))
+          .SetPriority(3)
+          .Build(),
+      /*is_debug_report=*/true,
+      SendResult(SendResult::Status::kSent,
+                 /*http_response_code=*/200));
+
+  // The debug reports, including the newly received one, should be hidden and
+  // the label should indicate the number.
+  {
+    static constexpr char wait_script[] = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let label = document.querySelector('#show-debug-event-reports span');
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 1 &&
+            table.children[0].children[7].innerText === "2" &&
+            label.innerText === ' (2 hidden)') {
+          document.title = $1;
+        }
+      });
+      obs.observe(table, {'childList': true});
+      obs.observe(label, {'characterData': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle2)));
+
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
+    ClickRefreshButton();
+    EXPECT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
+  }
+
+  // Toggle checkbox.
+  EXPECT_TRUE(ExecJsInWebUI(R"(
+      document.querySelector('#show-debug-event-reports input').click();)"));
+
+  // The debug reports should be visible again and the hidden label should be
+  // cleared.
+  {
+    static constexpr char wait_script[] = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let label = document.querySelector('#show-debug-event-reports span');
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 3 &&
+            table.children[0].children[7].innerText === "1" &&
+            table.children[1].children[7].innerText === "2" &&
+            table.children[2].children[7].innerText === "3" &&
+            label.innerText === '') {
+          document.title = $1;
+        }
+      });
+      obs.observe(table, {'childList': true});
+      obs.observe(label, {'characterData': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle3)));
+
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
+    ClickRefreshButton();
+    EXPECT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
+  }
 }
 
 }  // namespace content
