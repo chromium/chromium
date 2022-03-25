@@ -1294,11 +1294,11 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
       }
     }
 
-    return;
+    // Send the progress report to the system notification regardless of whether
+    // Files app window exists as we may need to remove an existing
+    // notification.
   }
 
-  // If no Files app window exists we send the progress to the system
-  // notification.
   notification_manager_->HandleIOTaskProgress(status);
 }
 void EventRouter::OnRegistered(guest_os::GuestOsMountProviderRegistry::Id id,
