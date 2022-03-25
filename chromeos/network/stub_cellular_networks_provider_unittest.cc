@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/network/cellular_utils.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
@@ -50,11 +51,17 @@ class StubCellularNetworksProviderTest : public testing::Test {
   }
 
   void Init() {
-    handler_.Init(helper_.network_state_handler(),
-                  /*cellular_inhibitor=*/nullptr);
+    cellular_esim_profile_handler_.Init(helper_.network_state_handler(),
+                                        /*cellular_inhibitor=*/nullptr);
+    managed_cellular_pref_handler_.Init(helper_.network_state_handler());
+    ManagedCellularPrefHandler::RegisterLocalStatePrefs(
+        device_prefs_.registry());
+    managed_cellular_pref_handler_.SetDevicePrefs(&device_prefs_);
 
     provider_ = std::make_unique<StubCellularNetworksProvider>();
-    provider_->Init(helper_.network_state_handler(), &handler_);
+    provider_->Init(helper_.network_state_handler(),
+                    &cellular_esim_profile_handler_,
+                    &managed_cellular_pref_handler_);
   }
 
   void AddEuicc(int euicc_num) {
@@ -127,12 +134,22 @@ class StubCellularNetworksProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddIccidSmdpPairToPref(const std::string& iccid,
+                              const std::string& smdp_address) {
+    managed_cellular_pref_handler_.AddIccidSmdpPair(iccid, smdp_address);
+  }
+
+  void RemoveIccidSmdpPairFromPref(const std::string& iccid) {
+    managed_cellular_pref_handler_.RemovePairWithIccid(iccid);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_;
-  TestCellularESimProfileHandler handler_;
-
+  TestCellularESimProfileHandler cellular_esim_profile_handler_;
+  ManagedCellularPrefHandler managed_cellular_pref_handler_;
   std::unique_ptr<StubCellularNetworksProvider> provider_;
+  TestingPrefServiceSimple device_prefs_;
 };
 
 TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
@@ -145,14 +162,21 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   dbus::ObjectPath profile2_path =
       AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
                  /*activation_code=*/"code1");
+  dbus::ObjectPath profile3_path =
+      AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
+                 /*activation_code=*/"code1");
   HermesProfileClient::Properties* profile1_properties =
       HermesProfileClient::Get()->GetProperties(profile1_path);
   HermesProfileClient::Properties* profile2_properties =
       HermesProfileClient::Get()->GetProperties(profile2_path);
+  HermesProfileClient::Properties* profile3_properties =
+      HermesProfileClient::Get()->GetProperties(profile3_path);
 
   CallGetStubNetworkMetadata(profile1_properties->iccid().value(),
                              /*should_exist=*/false);
   CallGetStubNetworkMetadata(profile2_properties->iccid().value(),
+                             /*should_exist=*/true);
+  CallGetStubNetworkMetadata(profile3_properties->iccid().value(),
                              /*should_exist=*/true);
   CallGetStubNetworkMetadata(kTestPSimIccid, /*should_exist=*/true);
   CallGetStubNetworkMetadata("nonexistent_iccid", /*should_exist=*/false);
@@ -161,14 +185,30 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
 
   // Verify that stub services are created for eSIM profiles and pSIM iccids
   // on sim slot info.
+  AddIccidSmdpPairToPref(profile3_properties->iccid().value(), "smdp_address");
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(2u, new_stub_networks.size());
+  EXPECT_EQ(3u, new_stub_networks.size());
   NetworkState* network1 = new_stub_networks[0]->AsNetworkState();
   NetworkState* network2 = new_stub_networks[1]->AsNetworkState();
+  NetworkState* network3 = new_stub_networks[2]->AsNetworkState();
   EXPECT_TRUE(network1->IsNonShillCellularNetwork());
   EXPECT_TRUE(network2->IsNonShillCellularNetwork());
+  EXPECT_TRUE(network3->IsNonShillCellularNetwork());
   EXPECT_EQ(network1->iccid(), profile2_properties->iccid().value());
-  EXPECT_EQ(network2->iccid(), kTestPSimIccid);
+  EXPECT_FALSE(network1->IsManagedByPolicy());
+  EXPECT_EQ(network2->iccid(), profile3_properties->iccid().value());
+  EXPECT_TRUE(network2->IsManagedByPolicy());
+  EXPECT_EQ(network3->iccid(), kTestPSimIccid);
+
+  // Verify the stub networks becomes unmanaged once the iccid and smdp address
+  // pair is removed from pref.
+  new_stub_networks.clear();
+  RemoveIccidSmdpPairFromPref(profile3_properties->iccid().value());
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(3u, new_stub_networks.size());
+  network2 = new_stub_networks[1]->AsNetworkState();
+  EXPECT_EQ(network2->iccid(), profile3_properties->iccid().value());
+  EXPECT_FALSE(network2->IsManagedByPolicy());
 
   // Verify the stub networks are removed when corresponding slot is no longer
   // present. e.g. SIM removed.
@@ -177,7 +217,7 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   SetPSimSlotInfo(/*iccid=*/std::string());
   base::RunLoop().RunUntilIdle();
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(1u, network_list.size());
+  EXPECT_EQ(2u, network_list.size());
 
   // Verify that stub networks are removed when real networks are added to the
   // list.
@@ -190,7 +230,7 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   test_network->set_update_received();
   network_list.push_back(std::move(test_network));
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(1u, network_list.size());
+  EXPECT_EQ(2u, network_list.size());
 }
 
 TEST_F(StubCellularNetworksProviderTest, RemoveStubWhenCellularDisabled) {

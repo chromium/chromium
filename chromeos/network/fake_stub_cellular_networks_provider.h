@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeStubCellularNetworksProvider
   // used when a subsequent call to AddOrRemoveStubCellularNetworks() is made.
   // Note that an empty EID refers to a pSIM network.
   void AddStub(const std::string& stub_iccid,
-               const std::string& eid = std::string());
+               const std::string& eid = std::string(),
+               bool is_managed = false);
 
   // Removes a stub network with the provided ICCID and EID, reversing a
   // previous call to AddStub().
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeStubCellularNetworksProvider
   size_t stub_networks_add_count_ = 0;
   base::flat_set<IccidEidPair> stub_iccid_and_eid_pairs_;
   base::flat_map<std::string, std::string> iccid_to_guid_map_;
+  base::flat_set<std::string> managed_iccids_;
 };
 
 }  // namespace chromeos

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "chromeos/network/cellular_utils.h"
 
@@ -16,13 +17,17 @@ FakeStubCellularNetworksProvider::FakeStubCellularNetworksProvider() = default;
 FakeStubCellularNetworksProvider::~FakeStubCellularNetworksProvider() = default;
 
 void FakeStubCellularNetworksProvider::AddStub(const std::string& stub_iccid,
-                                               const std::string& stub_eid) {
+                                               const std::string& stub_eid,
+                                               bool is_managed) {
   stub_iccid_and_eid_pairs_.emplace(stub_iccid, stub_eid);
+  if (is_managed)
+    managed_iccids_.insert(stub_iccid);
 }
 
 void FakeStubCellularNetworksProvider::RemoveStub(const std::string& stub_iccid,
                                                   const std::string& stub_eid) {
   stub_iccid_and_eid_pairs_.erase(std::make_pair(stub_iccid, stub_eid));
+  managed_iccids_.erase(stub_iccid);
 }
 
 bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
@@ -39,7 +44,8 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     changed = true;
     for (const IccidEidPair& pair : stubs_to_add) {
       new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
-          pair.first, pair.second, GetGuidForStubIccid(pair.first), device));
+          pair.first, pair.second, GetGuidForStubIccid(pair.first),
+          base::Contains(managed_iccids_, pair.first), device));
       stub_networks_add_count_++;
     }
   }

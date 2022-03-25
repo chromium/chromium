@@ -622,6 +622,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
     const std::string& iccid,
     const std::string& eid,
     const std::string& guid,
+    bool is_managed,
     const DeviceState* cellular_device) {
   std::string path = GenerateStubCellularServicePath(iccid);
   auto new_state = std::make_unique<NetworkState>(path);
@@ -632,6 +633,9 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
   new_state->iccid_ = iccid;
   new_state->eid_ = eid;
   new_state->guid_ = guid;
+  if (is_managed) {
+    new_state->onc_source_ = ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY;
+  }
   new_state->activation_state_ = shill::kActivationStateActivated;
   return new_state;
 }

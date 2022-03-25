@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -20,6 +21,11 @@ void ManagedCellularPrefHandler::RegisterLocalStatePrefs(
 
 ManagedCellularPrefHandler::ManagedCellularPrefHandler() = default;
 ManagedCellularPrefHandler::~ManagedCellularPrefHandler() = default;
+
+void ManagedCellularPrefHandler::Init(
+    NetworkStateHandler* network_state_handler) {
+  network_state_handler_ = network_state_handler;
+}
 
 void ManagedCellularPrefHandler::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
@@ -41,6 +47,7 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
   ::prefs::ScopedDictionaryPrefUpdate update(
       device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
   update->SetString(iccid, smdp_address);
+  network_state_handler_->SyncStubCellularNetworks();
 }
 
 void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
@@ -57,6 +64,7 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
   ::prefs::ScopedDictionaryPrefUpdate update(
       device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
   update->Remove(iccid);
+  network_state_handler_->SyncStubCellularNetworks();
 }
 
 const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(

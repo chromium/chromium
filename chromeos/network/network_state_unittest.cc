@@ -459,12 +459,27 @@ TEST_F(NetworkStateTest, NonShillCellular) {
 
   std::unique_ptr<NetworkState> non_shill_cellular =
       NetworkState::CreateNonShillCellularNetwork(
-          kTestIccid, kTestEid, kTestGuid, GetCellularDevice());
+          kTestIccid, kTestEid, kTestGuid, /*is_managed=*/false,
+          GetCellularDevice());
   EXPECT_EQ(kTestIccid, non_shill_cellular->iccid());
   EXPECT_EQ(kTestEid, non_shill_cellular->eid());
   EXPECT_EQ(kTestGuid, non_shill_cellular->guid());
+  EXPECT_FALSE(non_shill_cellular->IsManagedByPolicy());
 
   base::Value dictionary(base::Value::Type::DICTIONARY);
+  non_shill_cellular->GetStateProperties(&dictionary);
+  EXPECT_EQ(kTestIccid, *dictionary.FindStringKey(shill::kIccidProperty));
+  EXPECT_EQ(kTestEid, *dictionary.FindStringKey(shill::kEidProperty));
+  EXPECT_EQ(kTestGuid, *dictionary.FindStringKey(shill::kGuidProperty));
+
+  non_shill_cellular = NetworkState::CreateNonShillCellularNetwork(
+      kTestIccid, kTestEid, kTestGuid, /*is_managed=*/true,
+      GetCellularDevice());
+  EXPECT_EQ(kTestIccid, non_shill_cellular->iccid());
+  EXPECT_EQ(kTestEid, non_shill_cellular->eid());
+  EXPECT_EQ(kTestGuid, non_shill_cellular->guid());
+  EXPECT_TRUE(non_shill_cellular->IsManagedByPolicy());
+
   non_shill_cellular->GetStateProperties(&dictionary);
   EXPECT_EQ(kTestIccid, *dictionary.FindStringKey(shill::kIccidProperty));
   EXPECT_EQ(kTestEid, *dictionary.FindStringKey(shill::kEidProperty));

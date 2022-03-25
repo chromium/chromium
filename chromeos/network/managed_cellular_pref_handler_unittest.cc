@@ -34,6 +34,7 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
   void Init() {
     managed_cellular_pref_handler_ =
         std::make_unique<ManagedCellularPrefHandler>();
+    managed_cellular_pref_handler_->Init(helper_.network_state_handler());
   }
 
   void SetDevicePrefs(bool set_to_null = false) {
@@ -57,6 +58,7 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
   TestingPrefServiceSimple device_prefs_;
 
   std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;

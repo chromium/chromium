@@ -2203,6 +2203,7 @@ TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks) {
   ASSERT_TRUE(cellular);
   EXPECT_FALSE(cellular->guid().empty());
   EXPECT_TRUE(cellular->IsNonShillCellularNetwork());
+  EXPECT_FALSE(cellular->IsManagedByPolicy());
   EXPECT_EQ(kStubCellularIccid, cellular->iccid());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
 
@@ -2224,6 +2225,31 @@ TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks) {
       NetworkTypePattern::Cellular(), /*configured_only=*/false,
       /*visible_only=*/false, /*limit=*/0, &network_list);
   EXPECT_EQ(0u, network_list.size());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+}
+
+TEST_F(NetworkStateHandlerTest, SyncManagedStubCellularNetworks) {
+  const char kStubCellularIccid[] = "test_iccid";
+  const char kStubCellularEid[] = "1234567890";
+  // Clear existing cellular networks.
+  service_test_->RemoveService(kShillManagerClientStubCellular);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler_->GetNetworkState(kShillManagerClientStubCellular));
+
+  test_observer_->reset_change_counts();
+  fake_stub_cellular_networks_provider_.AddStub(
+      kStubCellularIccid, kStubCellularEid, /*is_managed=*/true);
+
+  // Verify that managed stub cellular network was added and notified.
+  network_state_handler_->SyncStubCellularNetworks();
+  const NetworkState* cellular = network_state_handler_->FirstNetworkByType(
+      NetworkTypePattern::Cellular());
+  ASSERT_TRUE(cellular);
+  EXPECT_FALSE(cellular->guid().empty());
+  EXPECT_TRUE(cellular->IsNonShillCellularNetwork());
+  EXPECT_TRUE(cellular->IsManagedByPolicy());
+  EXPECT_EQ(kStubCellularIccid, cellular->iccid());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
 }
 

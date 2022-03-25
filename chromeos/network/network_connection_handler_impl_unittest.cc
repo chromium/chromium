@@ -212,7 +212,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     stub_cellular_networks_provider_ =
         std::make_unique<StubCellularNetworksProvider>();
     stub_cellular_networks_provider_->Init(
-        helper_.network_state_handler(), cellular_esim_profile_handler_.get());
+        helper_.network_state_handler(), cellular_esim_profile_handler_.get(),
+        /*managed_cellular_pref_handler=*/nullptr);
 
     cellular_connection_handler_.reset(new CellularConnectionHandler());
     cellular_connection_handler_->Init(helper_.network_state_handler(),

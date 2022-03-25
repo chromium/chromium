@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
   ~StubCellularNetworksProvider() override;
 
   void Init(NetworkStateHandler* network_state_handler,
-            CellularESimProfileHandler* cellular_esim_profile_handler);
+            CellularESimProfileHandler* cellular_esim_profile_handler,
+            ManagedCellularPrefHandler* managed_cellular_pref_handler);
 
  private:
   friend class StubCellularNetworksProviderTest;
@@ -71,6 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
 
   // Map which stores the GUID used for stubs created by this class. Each
   // network should use a consistent GUID throughout a session.

@@ -13,6 +13,8 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
+class NetworkStateHandler;
+
 // This class provides the ability to add, remove and get ICCID and SMDP+
 // address pair for managed cellular networks and stores it persistently in
 // prefs.
@@ -26,6 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  void Init(NetworkStateHandler* network_state_handler);
   void SetDevicePrefs(PrefService* device_prefs);
 
   // Add a new ICCID and SMDP+ address pair to device pref for a managed
@@ -42,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;
 
  private:
+  NetworkStateHandler* network_state_handler_ = nullptr;
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;
 };

@@ -10,6 +10,7 @@
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_event_log.h"
 
 namespace chromeos {
@@ -52,9 +53,11 @@ StubCellularNetworksProvider::~StubCellularNetworksProvider() {
 
 void StubCellularNetworksProvider::Init(
     NetworkStateHandler* network_state_handler,
-    CellularESimProfileHandler* cellular_esim_profile_handler) {
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    ManagedCellularPrefHandler* managed_cellular_pref_handler) {
   network_state_handler_ = network_state_handler;
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
+  managed_cellular_pref_handler_ = managed_cellular_pref_handler;
   network_state_handler_->set_stub_cellular_networks_provider(this);
   network_state_handler_->SyncStubCellularNetworks();
 }
@@ -166,12 +169,19 @@ bool StubCellularNetworksProvider::AddStubNetworks(
     if (base::Contains(all_iccids, iccid_eid_pair.first))
       continue;
 
+    bool is_managed = false;
+    if (managed_cellular_pref_handler_) {
+      is_managed = managed_cellular_pref_handler_->GetSmdpAddressFromIccid(
+          iccid_eid_pair.first);
+    }
     NET_LOG(EVENT) << "Adding stub cellular network for ICCID="
-                   << iccid_eid_pair.first << " EID=" << iccid_eid_pair.second;
+                   << iccid_eid_pair.first << " EID=" << iccid_eid_pair.second
+                   << ", is managed: " << is_managed;
     network_added = true;
     new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
         iccid_eid_pair.first, iccid_eid_pair.second,
-        GetGuidForStubIccid(iccid_eid_pair.first), cellular_device));
+        GetGuidForStubIccid(iccid_eid_pair.first), is_managed,
+        cellular_device));
   }
 
   return network_added;

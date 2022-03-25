@@ -89,7 +89,8 @@ void NetworkHandler::Init() {
   cellular_esim_profile_handler_->Init(network_state_handler_.get(),
                                        cellular_inhibitor_.get());
   stub_cellular_networks_provider_->Init(network_state_handler_.get(),
-                                         cellular_esim_profile_handler_.get());
+                                         cellular_esim_profile_handler_.get(),
+                                         managed_cellular_pref_handler_.get());
   cellular_connection_handler_->Init(network_state_handler_.get(),
                                      cellular_inhibitor_.get(),
                                      cellular_esim_profile_handler_.get());
@@ -120,6 +121,7 @@ void NetworkHandler::Init() {
         network_profile_handler_.get(), network_state_handler_.get(),
         managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
+    managed_cellular_pref_handler_->Init(network_state_handler_.get());
     esim_policy_login_metrics_logger_->Init(
         network_state_handler_.get(),
         managed_network_configuration_handler_.get());

@@ -182,6 +182,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
     managed_cellular_pref_handler_ =
         std::make_unique<ManagedCellularPrefHandler>();
+    managed_cellular_pref_handler_->Init(network_state_handler_.get());
     ManagedCellularPrefHandler::RegisterLocalStatePrefs(
         device_prefs_.registry());
     managed_cellular_pref_handler_->SetDevicePrefs(&device_prefs_);
