@@ -218,25 +218,25 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
 void RmadClientImpl::CalibrationOverallProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kCalibrationOverallSignal);
   dbus::MessageReader reader(signal);
-  uint32_t overall_progress;
-  if (!reader.PopUint32(&overall_progress)) {
-    LOG(ERROR) << "Unable to decode overall progress uint32 from "
+  int32_t overall_progress_status;
+  if (!reader.PopInt32(&overall_progress_status)) {
+    LOG(ERROR) << "Unable to decode overall progress status int32 from "
                << signal->GetMember() << " signal";
     return;
   }
   DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.CalibrationOverallProgress(
-        static_cast<rmad::CalibrationOverallStatus>(overall_progress));
+        static_cast<rmad::CalibrationOverallStatus>(overall_progress_status));
   }
 }
 
 void RmadClientImpl::ErrorReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kErrorSignal);
   dbus::MessageReader reader(signal);
-  uint32_t error;
-  if (!reader.PopUint32(&error)) {
-    LOG(ERROR) << "Unable to decode error uint32 from " << signal->GetMember()
+  int32_t error;
+  if (!reader.PopInt32(&error)) {
+    LOG(ERROR) << "Unable to decode error int32 from " << signal->GetMember()
                << " signal";
     return;
   }

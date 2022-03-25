@@ -106,7 +106,7 @@ class RmadClientTest : public testing::Test {
   // Passes an error signal to |client_|.
   void EmitErrorSignal(rmad::RmadErrorCode error) {
     dbus::Signal signal(rmad::kRmadInterfaceName, rmad::kErrorSignal);
-    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(error));
+    dbus::MessageWriter(&signal).AppendInt32(static_cast<int32_t>(error));
     EmitSignal(&signal);
   }
 
@@ -132,7 +132,7 @@ class RmadClientTest : public testing::Test {
       rmad::CalibrationOverallStatus status) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kCalibrationOverallSignal);
-    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(status));
+    dbus::MessageWriter(&signal).AppendInt32(static_cast<int32_t>(status));
     EmitSignal(&signal);
   }
 
