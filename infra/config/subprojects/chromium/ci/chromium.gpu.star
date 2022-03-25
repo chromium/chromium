@@ -119,6 +119,9 @@ ci.gpu.windows_builder(
     ),
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
