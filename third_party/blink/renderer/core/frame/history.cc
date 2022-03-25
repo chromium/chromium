@@ -184,25 +184,21 @@ void History::go(ScriptState* script_state,
     return;
   }
 
-  // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
-  // transition to MPArch completely.
-  if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
+  LocalDOMWindow* active_window = LocalDOMWindow::From(script_state);
+  // TODO(crbug.com/1309481): Remove this CHECK, and the `script_state`
+  // parameter altogether.
+  CHECK_EQ(DomWindow(), active_window);
+  if (!DomWindow()->GetFrame()->IsNavigationAllowed())
     return;
-  }
 
   DCHECK(IsMainThread());
-  auto* active_window = LocalDOMWindow::From(script_state);
-  if (!active_window)
-    return;
-
-  if (!active_window->GetFrame() ||
-      !active_window->GetFrame()->CanNavigate(*DomWindow()->GetFrame()) ||
-      !active_window->GetFrame()->IsNavigationAllowed() ||
-      !DomWindow()->GetFrame()->IsNavigationAllowed()) {
-    return;
-  }
 
   if (!DomWindow()->GetFrame()->navigation_rate_limiter().CanProceed())
+    return;
+
+  // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
+  // transition to MPArch completely.
+  if (DomWindow()->GetFrame()->IsInFencedFrameTree())
     return;
 
   if (delta) {
