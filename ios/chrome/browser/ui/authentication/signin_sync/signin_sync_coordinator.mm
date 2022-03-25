@@ -186,7 +186,8 @@
   self.viewController.delegate = self;
   PrefService* prefService = browserState->GetPrefs();
   self.viewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(prefService);
+      GetEnterpriseSignInRestrictions(authenticationService, prefService,
+                                      syncService);
   self.viewController.identitySwitcherPosition =
       fre_field_trial::GetSigninSyncScreenUIIdentitySwitcherPosition();
   self.viewController.stringsSet =
@@ -196,8 +197,7 @@
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   self.mediator = [[SigninSyncMediator alloc]
-      initWithAuthenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(browserState)
+      initWithAuthenticationService:authenticationService
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         browserState)
               accountManagerService:self.accountManagerService
@@ -206,8 +206,7 @@
                    syncSetupService:syncSetupService
               unifiedConsentService:UnifiedConsentServiceFactory::
                                         GetForBrowserState(browserState)
-                        syncService:SyncServiceFactory::GetForBrowserState(
-                                        self.browser->GetBrowserState())];
+                        syncService:syncService];
   self.mediator.delegate = self;
   self.mediator.selectedIdentity =
       self.accountManagerService->GetDefaultIdentity();

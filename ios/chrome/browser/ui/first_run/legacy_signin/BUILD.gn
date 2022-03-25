@@ -20,6 +20,7 @@ source_set("legacy_signin") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",

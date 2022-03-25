@@ -13,6 +13,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,12 +69,26 @@ bool HasManagedSyncDataType(PrefService* pref_service) {
 }
 
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
-    PrefService* pref_service) {
+    AuthenticationService* authentication_service,
+    PrefService* pref_service,
+    syncer::SyncService* sync_service) {
   EnterpriseSignInRestrictions restrictions = kNoEnterpriseRestriction;
-  if (IsForceSignInEnabled())
-    restrictions |= kEnterpriseForceSignIn;
+  switch (authentication_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+      restrictions |= kEnterpriseForceSignIn;
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      restrictions |= kEnterpriseSignInDisabled;
+      break;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      break;
+  }
   if (IsRestrictAccountsToPatternsEnabled())
     restrictions |= kEnterpriseRestrictAccounts;
+  if (IsSyncDisabledByPolicy(sync_service))
+    restrictions |= kEnterpriseSyncDisabled;
   if (HasManagedSyncDataType(pref_service))
     restrictions |= kEnterpriseSyncTypesListDisabled;
   return restrictions;

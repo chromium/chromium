@@ -6,7 +6,9 @@
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
@@ -37,9 +39,14 @@
   self.mediator.delegate = self;
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
   PrefService* prefService = browserState->GetPrefs();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.defaultAccountViewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(prefService);
+      GetEnterpriseSignInRestrictions(authenticationService, prefService,
+                                      syncService);
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
   self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;
