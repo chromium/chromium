@@ -1248,8 +1248,6 @@ TEST_P(CanvasRenderingContext2DTest,
 }
 
 TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kCanvas2dStaysGPUOnReadback);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
