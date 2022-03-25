@@ -95,7 +95,7 @@ class MockAttributionReportingContentBrowserClient
 
 class MockAttributionHost : public AttributionHost {
  public:
-  explicit MockAttributionHost(WebContents* contents);
+  static MockAttributionHost* Override(WebContents* web_contents);
 
   ~MockAttributionHost() override;
 
@@ -116,6 +116,9 @@ class MockAttributionHost : public AttributionHost {
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        const blink::AttributionSrcToken& attribution_src_token),
       (override));
+
+ private:
+  explicit MockAttributionHost(WebContents* web_contents);
 };
 
 class MockDataHost : public blink::mojom::AttributionDataHost {

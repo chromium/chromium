@@ -40,8 +40,6 @@ namespace content {
 
 namespace {
 
-AttributionHost* g_receiver_for_testing = nullptr;
-
 // Abstraction that wraps an iterator to a map. When this goes out of the scope,
 // the underlying iterator is erased from the map. This is useful for control
 // flows where map cleanup needs to occur regardless of additional early exit
@@ -68,14 +66,9 @@ class ScopedMapDeleter {
 }  // namespace
 
 AttributionHost::AttributionHost(WebContents* web_contents)
-    : AttributionHost(web_contents, AttributionManagerProvider::Default()) {}
-
-AttributionHost::AttributionHost(
-    WebContents* web_contents,
-    std::unique_ptr<AttributionManagerProvider> attribution_manager_provider)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
-      attribution_manager_provider_(std::move(attribution_manager_provider)),
+      attribution_manager_provider_(AttributionManagerProvider::Default()),
       receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
   // that the kConversionMeasurement feature is enabled.
@@ -442,11 +435,6 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
 void AttributionHost::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
     RenderFrameHost* rfh) {
-  if (g_receiver_for_testing) {
-    g_receiver_for_testing->receivers_.Bind(rfh, std::move(receiver));
-    return;
-  }
-
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
@@ -463,11 +451,6 @@ blink::mojom::ImpressionPtr AttributionHost::MojoImpressionFromImpression(
       impression.conversion_destination, impression.reporting_origin,
       impression.impression_data, impression.expiry, impression.priority,
       impression.attribution_src_token);
-}
-
-// static
-void AttributionHost::SetReceiverImplForTesting(AttributionHost* impl) {
-  g_receiver_for_testing = impl;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

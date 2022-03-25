@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -87,6 +88,8 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
     ASSERT_TRUE(https_server_->Start());
+
+    mock_attribution_host_ = MockAttributionHost::Override(web_contents());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,8 +102,13 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  MockAttributionHost& mock_attribution_host() {
+    return *mock_attribution_host_;
+  }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  base::raw_ptr<MockAttributionHost> mock_attribution_host_;
 };
 
 class AttributionSrcBasicSourceRegisteredBrowserTest
@@ -113,10 +121,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -162,8 +169,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   std::unique_ptr<MockDataHost> data_host;
   blink::AttributionSrcToken expected_token;
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterNavigationDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
               const blink::AttributionSrcToken& attribution_src_token) {
@@ -203,8 +209,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   std::unique_ptr<MockDataHost> data_host;
   blink::AttributionSrcToken expected_token;
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterNavigationDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
               const blink::AttributionSrcToken& attribution_src_token) {
@@ -244,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<MockDataHost> data_host;
   blink::AttributionSrcToken expected_token;
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterNavigationDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
               const blink::AttributionSrcToken& attribution_src_token) {
@@ -271,10 +275,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -311,10 +314,9 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -361,10 +363,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -396,10 +397,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -444,10 +444,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -491,10 +490,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -535,10 +533,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -602,10 +599,9 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -657,10 +653,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -705,10 +700,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -749,10 +743,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -802,10 +795,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -848,10 +840,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -894,8 +885,7 @@ class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
                        SourceNotRegisteredOnPrerender) {
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterDataHost).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
 
   const GURL kInitialUrl =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
@@ -923,10 +913,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
                        SourceRegisteredOnActivatedPrerender) {
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -989,10 +978,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -1048,10 +1036,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -1118,10 +1105,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -1195,10 +1181,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
