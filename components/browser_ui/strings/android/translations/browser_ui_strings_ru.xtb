@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2704606927547763573">Скопировано</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
+<translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="2785051990912111074">Будут удалены файлы cookie для <ph name="WEBSITE" />.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Чтобы пропустить 10 секунд, дважды нажмите слева или справа.</translation>
 <translation id="3797520601150691162">Не использовать тёмную тему для конкретного сайта</translation>
 <translation id="381841723434055211">Номера телефонов</translation>
+<translation id="3826050100957962900">Предложения войти в аккаунт от третьих сторон</translation>
 <translation id="3835233591525155343">Использование устройства</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перемотать вперед</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6689172468748959065">Фото профиля</translation>
 <translation id="6697925417670533197">Текущие скачивания</translation>
+<translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="6749077623962119521">Отозвать разрешения?</translation>
 <translation id="6766622839693428701">Проведите вниз, чтобы закрыть панель.</translation>

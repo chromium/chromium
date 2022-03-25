@@ -980,6 +980,7 @@
 <translation id="3969052498612555048">រកមិនឃើញលេខកូដរបស់អ្នកឬ? <ph name="BEGIN_LINK" />យកលេខកូដថ្មី<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ត្រូវបានរារាំង</translation>
+<translation id="3978338123949022456">មុខងារស្វែងរក សូមវាយបញ្ចូលសំណួរ និងចុច "Enter" ដើម្បីស្វែងរកជាមួយ <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">បិទអក្សររត់​ក្នុងពេលជាក់ស្ដែង​ឥឡូវនេះ</translation>
 <translation id="3987940399970879459">តិចជាង 1 MB</translation>
 <translation id="3990250421422698716">គម្លាតរុញ</translation>
@@ -1003,7 +1004,6 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">ការតំឡើងប្រូកស៊ីត្រូវបានកំណត់ឲ្យប្រើ URL ស្គ្រីបផេក មិនមែនម៉ាស៊ីនមេប្រូកស៊ីដែលថេរទេ។</translation>
 <translation id="4082393374666368382">ការកំណត់៖ ការគ្រប់គ្រង</translation>
-<translation id="4084120443451129199">មុខងារស្វែងរក សូមចុច Enter ដើម្បីស្វែងរក <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4087296516249690906">ប៊ូតុងបង្កើត​ព្រឹត្តិការណ៍ ចុច Enter ដើម្បីបង្កើត​ព្រឹត្តិការណ៍ថ្មី​នៅក្នុង Google ប្រតិទិន​បានរហ័ស</translation>
 <translation id="4088981014127559358">ការប្ដូរ​រូបភាព Y នៃចំហៀងទី 1</translation>
 <translation id="4089152113577680600">ទម្រទី 14</translation>

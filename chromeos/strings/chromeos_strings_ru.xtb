@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Предложения</translation>
 <translation id="1476467821656042872">Этим устройством управляет <ph name="MANAGER" />. Ваши действия могут отслеживаться.</translation>
 <translation id="1478594628797167447">Сканер</translation>
+<translation id="1486019694341708158">Чтобы выбрать заставку, активируйте переключатель.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />: обновление встроенного ПО…</translation>
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
+<translation id="2138109643290557664">Течение воды</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
 <translation id="4275799948641988986">Кто будет пользоваться устройством после ремонта?</translation>
 <translation id="4289540628985791613">Обзор</translation>
+<translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Клавиша <ph name="KEY_NAME" /> нажата</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">Настроить сеть "<ph name="NAME" />"</translation>
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
+<translation id="7191009787982536050">Анимированная заставка</translation>
 <translation id="7212734716605298123">Обновление встроенного ПО на внешних устройствах</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Легкий бриз</translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>
 <translation id="7297226631177386107">Не удается подключиться к HTTPS-сайтам через брандмауэр.</translation>
 <translation id="7302860742311162920">ICCID</translation>
