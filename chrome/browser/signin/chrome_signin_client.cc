@@ -329,6 +329,18 @@ absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
       crosapi::mojom::SessionType::kChildSession;
   return is_child_session;
 }
+
+void ChromeSigninClient::RemoveAllAccounts() {
+  if (GetInitialPrimaryAccount().has_value()) {
+    DLOG(ERROR) << "It is not allowed to remove the initial primary account.";
+    return;
+  }
+
+  DCHECK(!profile_->IsMainProfile());
+  g_browser_process->profile_manager()
+      ->GetAccountProfileMapper()
+      ->RemoveAllAccounts(profile_->GetPath());
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ChromeSigninClient::SetURLLoaderFactoryForTest(

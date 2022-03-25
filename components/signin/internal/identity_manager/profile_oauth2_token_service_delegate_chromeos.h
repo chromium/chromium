@@ -20,6 +20,7 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class AccountTrackerService;
+class SigninClient;
 
 namespace signin {
 class ProfileOAuth2TokenServiceDelegateChromeOS
@@ -31,6 +32,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   // `NetworkConnectorTracker`, and `account_manager::AccountManagerFacade`.
   // These objects must all outlive `this` delegate.
   ProfileOAuth2TokenServiceDelegateChromeOS(
+      SigninClient* signin_client,
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
       account_manager::AccountManagerFacade* account_manager_facade,
@@ -98,6 +100,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
                                   const GoogleServiceAuthError& error);
 
   // Non-owning pointers.
+  SigninClient* const signin_client_;
   AccountTrackerService* const account_tracker_service_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
   account_manager::AccountManagerFacade* const account_manager_facade_;

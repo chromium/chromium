@@ -140,6 +140,9 @@ class AccountProfileMapper
   void CreateNewProfileWithAccount(const account_manager::AccountKey& account,
                                    AddAccountCallback callback);
 
+  // Remove all accounts from profile with profile_path.
+  void RemoveAllAccounts(const base::FilePath& profile_path);
+
   // account_manager::AccountManagerFacade::Observer:
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;

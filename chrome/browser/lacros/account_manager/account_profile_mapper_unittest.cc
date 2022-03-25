@@ -944,6 +944,99 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
                        {{main_path(), {"B"}}});
 }
 
+// Tests removing all accounts from a secondary profile (User signed out from
+// chrome) before initialization.
+// TODO(crbug.com/1260291): Update this comment when secondary profiles are
+// not deleted when their primary account is removed from the OS to reflect that
+// RemoveAllAccounts would also be called in this case.
+TEST_F(AccountProfileMapperTest,
+       RemoveAllAccountsFromSecondaryProfile_BeforeInitialization) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper = CreateMapperNonInitialized(
+      {{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"B", "C"}}});
+  mapper->RemoveAllAccounts(other_path);
+  CompleteFacadeGetAccountsGaia({"A", "B", "C"});
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {}}});
+}
+
+// Tests removing all accounts from a secondary profile and account removed from
+// the OS before initialization.
+TEST_F(
+    AccountProfileMapperTest,
+    RemoveAllAccountsFromSecondaryProfile_OSAccountsChanged_BeforeInitialization) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper = CreateMapperNonInitialized(
+      {{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  // "C" is removed from the ProfileAttributeEntry by RemoveStaleAccounts.
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"B"}}});
+  mapper->RemoveAllAccounts(other_path);
+  CompleteFacadeGetAccountsGaia({"A", "B"});
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {}}});
+}
+
+// Tests removing all accounts from a secondary profile.
+TEST_F(AccountProfileMapperTest, RemoveAllAccountsFromSecondaryProfile) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"B", "C"}}});
+  mapper->RemoveAllAccounts(other_path);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {}}});
+}
+
+// Tests removing all accounts from main profile is not allowed.
+TEST_F(AccountProfileMapperTest, RemoveAllAccountsFromPrimaryProfile) {
+  AccountProfileMapper* mapper = CreateMapper({{main_path(), {"A", "B"}}});
+  SetPrimaryAccountForProfile(main_path(), "A");
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  ExpectOnAccountRemoved(&mock_observer, {});
+  mapper->RemoveAllAccounts(main_path());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A", "B"}}});
+}
+
+// Tests removing all accounts from profile before initialization but profile
+// is deleted during initialization.
+TEST_F(
+    AccountProfileMapperTest,
+    RemoveAllAccountsFromSecondaryProfile_ProfileDeletedDuringInitialization) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper = CreateMapperNonInitialized(
+      {{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  SetPrimaryAccountForProfile(other_path, "B");
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  ExpectOnAccountRemoved(&mock_observer, {});
+  mapper->RemoveAllAccounts(other_path);
+  // Removing the primary account will delete the profile.
+  // TODO(crbug.com/1260291): Rely on managed profile.
+  CompleteFacadeGetAccountsGaia({"A", "C"});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
+  ProfileAttributesStorageTestObserver(attributes_storage())
+      .WaitForProfileBeingDeleted(other_path);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
 // Tests that accounts from deleted profile remain unassigned.
 TEST_F(AccountProfileMapperTest, DeleteProfile) {
   base::FilePath other_path = GetProfilePath("Other");

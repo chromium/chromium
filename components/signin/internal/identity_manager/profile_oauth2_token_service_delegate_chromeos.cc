@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/public/base/signin_client.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -138,11 +139,13 @@ class PersistentErrorsHelper : public base::RefCounted<PersistentErrorsHelper> {
 
 ProfileOAuth2TokenServiceDelegateChromeOS::
     ProfileOAuth2TokenServiceDelegateChromeOS(
+        SigninClient* signin_client,
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
         account_manager::AccountManagerFacade* account_manager_facade,
         bool is_regular_profile)
-    : account_tracker_service_(account_tracker_service),
+    : signin_client_(signin_client),
+      account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       account_manager_facade_(account_manager_facade),
       backoff_entry_(&kBackoffPolicy),
@@ -517,8 +520,14 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
-  // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(!signin_client_->GetInitialPrimaryAccount().has_value());
+  ScopedBatchChange batch(this);
+  signin_client_->RemoveAllAccounts();
+#else
+  // Signing out of Chrome is not possible on Chrome OS Ash.
   NOTREACHED();
+#endif
 }
 
 const net::BackoffEntry*

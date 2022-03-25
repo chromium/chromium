@@ -55,12 +55,13 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
 }
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
+    SigninClient* signin_client,
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile) {
   return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-      account_tracker_service, network_connection_tracker,
+      signin_client, account_tracker_service, network_connection_tracker,
       account_manager_facade, is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -123,7 +124,7 @@ CreateOAuth2TokenServiceDelegate(
                                 std::move(device_accounts_provider),
                                 account_tracker_service);
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  return CreateCrOsOAuthDelegate(account_tracker_service,
+  return CreateCrOsOAuthDelegate(signin_client, account_tracker_service,
                                  network_connection_tracker,
                                  account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)

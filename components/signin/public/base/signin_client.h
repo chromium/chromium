@@ -103,6 +103,9 @@ class SigninClient : public KeyedService {
   // Returns whether account used to sign into Chrome OS is a child account.
   // Returns nullopt for secondary / non-main profiles in LaCrOS.
   virtual absl::optional<bool> IsInitialPrimaryAccountChild() const = 0;
+
+  // Removes all accounts.
+  virtual void RemoveAllAccounts() = 0;
 #endif
 };
 

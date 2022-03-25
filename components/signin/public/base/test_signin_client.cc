@@ -133,4 +133,6 @@ void TestSigninClient::SetInitialPrimaryAccountForTests(
   is_initial_primary_account_child_ = is_child;
 }
 
+void TestSigninClient::RemoveAllAccounts() {}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
