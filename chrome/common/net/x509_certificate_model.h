@@ -10,11 +10,16 @@
 
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/parse_name.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 // This namespace defines a set of functions to be used in UI-related bits of
 // X509 certificates.
 namespace x509_certificate_model {
+
+struct NotPresent : absl::monostate {};
+struct Error : absl::monostate {};
+using OptionalStringOrError = absl::variant<Error, NotPresent, std::string>;
 
 class X509CertificateModel {
  public:
@@ -35,6 +40,20 @@ class X509CertificateModel {
   // The rest of the methods should only be called if |is_valid()| returns true.
   std::string GetVersion() const;
   std::string GetSerialNumberHexified() const;
+
+  // These methods returns the issuer/subject commonName/orgName/orgUnitName
+  // formatted as a string, if present. Returns NotPresent if the attribute
+  // type was not present, or Error if there was a parsing error.
+  // The Get{Issuer,Subject}CommonName methods return the last (most specific)
+  // commonName, while the other methods return the first (most general) value.
+  // This matches the NSS behaviour of CERT_GetCommonName, CERT_GetOrgName,
+  // CERT_GetOrgUnitName.
+  OptionalStringOrError GetIssuerCommonName() const;
+  OptionalStringOrError GetIssuerOrgName() const;
+  OptionalStringOrError GetIssuerOrgUnitName() const;
+  OptionalStringOrError GetSubjectCommonName() const;
+  OptionalStringOrError GetSubjectOrgName() const;
+  OptionalStringOrError GetSubjectOrgUnitName() const;
 
  private:
   bool ParseExtensions(const net::der::Input& extensions_tlv);

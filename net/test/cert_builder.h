@@ -120,6 +120,9 @@ class CertBuilder {
   // the value |common_name| tagged as a UTF8String.
   void SetSubjectCommonName(base::StringPiece common_name);
 
+  // Sets the subject to |subject_tlv|.
+  void SetSubject(base::span<const uint8_t> subject_tlv);
+
   // Sets the SAN for the certificate to a single dNSName.
   void SetSubjectAltName(const std::string& dns_name);
 

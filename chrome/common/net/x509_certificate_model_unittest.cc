@@ -5,11 +5,16 @@
 #include "chrome/common/net/x509_certificate_model.h"
 
 #include "net/cert/x509_util.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class X509CertificateModel : public testing::TestWithParam<std::string> {};
+
+using x509_certificate_model::Error;
+using x509_certificate_model::NotPresent;
+using x509_certificate_model::OptionalStringOrError;
 
 TEST_P(X509CertificateModel, InvalidCert) {
   x509_certificate_model::X509CertificateModel model(
@@ -43,6 +48,16 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   EXPECT_EQ("3", model.GetVersion());
   EXPECT_EQ("2F:DF:BC:F6:AE:91:52:6D:0F:9A:A3:DF:40:34:3E:9A",
             model.GetSerialNumberHexified());
+  EXPECT_EQ(OptionalStringOrError("Thawte SGC CA"),
+            model.GetIssuerCommonName());
+  EXPECT_EQ(OptionalStringOrError("Thawte Consulting (Pty) Ltd."),
+            model.GetIssuerOrgName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetIssuerOrgUnitName());
+
+  EXPECT_EQ(OptionalStringOrError("www.google.com"),
+            model.GetSubjectCommonName());
+  EXPECT_EQ(OptionalStringOrError("Google Inc"), model.GetSubjectOrgName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -56,6 +71,46 @@ TEST_P(X509CertificateModel, GetNDNCertFields) {
   // The model just returns the hex of the DER bytes, so the leading zeros are
   // included.
   EXPECT_EQ("00:DB:B7:C6:06:47:AF:37:A2", model.GetSerialNumberHexified());
+
+  EXPECT_EQ(OptionalStringOrError("New Dream Network Certificate Authority"),
+            model.GetIssuerCommonName());
+  EXPECT_EQ(OptionalStringOrError("New Dream Network, LLC"),
+            model.GetIssuerOrgName());
+  EXPECT_EQ(OptionalStringOrError("Security"), model.GetIssuerOrgUnitName());
+  EXPECT_EQ(OptionalStringOrError("New Dream Network Certificate Authority"),
+            model.GetSubjectCommonName());
+  EXPECT_EQ(OptionalStringOrError("New Dream Network, LLC"),
+            model.GetSubjectOrgName());
+  EXPECT_EQ(OptionalStringOrError("Security"), model.GetSubjectOrgUnitName());
+}
+
+TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //   SET {
+  //     SEQUENCE {
+  //       # commonName
+  //       OBJECT_IDENTIFIER { 2.5.4.3 }
+  //       # Not a valid IA5String:
+  //       IA5String { "a \xf6 b" }
+  //     }
+  //   }
+  // }
+  const uint8_t kSubject[] = {0x30, 0x10, 0x31, 0x0e, 0x30, 0x0c,
+                              0x06, 0x03, 0x55, 0x04, 0x03, 0x16,
+                              0x05, 0x61, 0x20, 0xf6, 0x20, 0x62};
+  builder->SetSubject(kSubject);
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), "");
+  ASSERT_TRUE(model.is_valid());
+  EXPECT_EQ(OptionalStringOrError(Error()), model.GetSubjectCommonName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

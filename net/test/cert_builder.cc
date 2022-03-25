@@ -337,6 +337,11 @@ void CertBuilder::SetSubjectCommonName(base::StringPiece common_name) {
   Invalidate();
 }
 
+void CertBuilder::SetSubject(base::span<const uint8_t> subject_tlv) {
+  subject_tlv_.assign(subject_tlv.begin(), subject_tlv.end());
+  Invalidate();
+}
+
 void CertBuilder::SetSubjectAltName(const std::string& dns_name) {
   SetSubjectAltNames({dns_name}, {});
 }

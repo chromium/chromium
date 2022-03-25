@@ -4,6 +4,7 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
+#include "base/containers/adapters.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,6 +18,57 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace x509_certificate_model {
+
+namespace {
+
+// The certificate viewer may be used to view client certificates, so use the
+// relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
+constexpr auto kNameStringHandling =
+    net::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
+
+OptionalStringOrError FindAttributeOfType(
+    net::der::Input oid,
+    const net::RelativeDistinguishedName& rdn) {
+  // In X.509, RelativeDistinguishedName is a Set, so order has no meaning, and
+  // generally only has one element anyway. Just traverse in encoded order.
+  for (const net::X509NameAttribute& name_attribute : rdn) {
+    if (name_attribute.type == oid) {
+      std::string rv;
+      if (!name_attribute.ValueAsStringWithUnsafeOptions(kNameStringHandling,
+                                                         &rv)) {
+        return Error();
+      }
+      return rv;
+    }
+  }
+  return NotPresent();
+}
+
+// Returns the value of the most general name of |oid| type.
+// Distinguished Names are specified in least to most specific.
+OptionalStringOrError FindFirstNameOfType(net::der::Input oid,
+                                          const net::RDNSequence& rdns) {
+  for (const net::RelativeDistinguishedName& rdn : rdns) {
+    OptionalStringOrError r = FindAttributeOfType(oid, rdn);
+    if (!absl::holds_alternative<NotPresent>(r))
+      return r;
+  }
+  return NotPresent();
+}
+
+// Returns the value of the most specific name of |oid| type.
+// Distinguished Names are specified in least to most specific.
+OptionalStringOrError FindLastNameOfType(net::der::Input oid,
+                                         const net::RDNSequence& rdns) {
+  for (const net::RelativeDistinguishedName& rdn : base::Reversed(rdns)) {
+    OptionalStringOrError r = FindAttributeOfType(oid, rdn);
+    if (!absl::holds_alternative<NotPresent>(r))
+      return r;
+  }
+  return NotPresent();
+}
+
+}  // namespace
 
 X509CertificateModel::X509CertificateModel(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
@@ -74,6 +126,52 @@ std::string X509CertificateModel::GetSerialNumberHexified() const {
   DCHECK(parsed_successfully_);
   return ProcessRawBytesWithSeparators(tbs_.serial_number.UnsafeData(),
                                        tbs_.serial_number.Length(), ':', ':');
+}
+
+OptionalStringOrError X509CertificateModel::GetIssuerCommonName() const {
+  DCHECK(parsed_successfully_);
+  // Return the last (most specific) commonName. This matches NSS
+  // CERT_GetCommonName.
+  return FindLastNameOfType(net::der::Input(net::kTypeCommonNameOid),
+                            issuer_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetIssuerOrgName() const {
+  DCHECK(parsed_successfully_);
+  // Return the first (most general) orgName. This matches NSS CERT_GetOrgName.
+  return FindFirstNameOfType(net::der::Input(net::kTypeOrganizationNameOid),
+                             issuer_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetIssuerOrgUnitName() const {
+  DCHECK(parsed_successfully_);
+  // Return the first (most general) orgUnitName. This matches NSS
+  // CERT_GetOrgUnitName.
+  return FindFirstNameOfType(net::der::Input(net::kTypeOrganizationUnitNameOid),
+                             issuer_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetSubjectCommonName() const {
+  DCHECK(parsed_successfully_);
+  // Return the last (most specific) commonName. This matches NSS
+  // CERT_GetCommonName.
+  return FindLastNameOfType(net::der::Input(net::kTypeCommonNameOid),
+                            subject_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetSubjectOrgName() const {
+  DCHECK(parsed_successfully_);
+  // Return the first (most general) orgName. This matches NSS CERT_GetOrgName.
+  return FindFirstNameOfType(net::der::Input(net::kTypeOrganizationNameOid),
+                             subject_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetSubjectOrgUnitName() const {
+  DCHECK(parsed_successfully_);
+  // Return the first (most general) orgUnitName. This matches NSS
+  // CERT_GetOrgUnitName.
+  return FindFirstNameOfType(net::der::Input(net::kTypeOrganizationUnitNameOid),
+                             subject_rdns_);
 }
 
 bool X509CertificateModel::ParseExtensions(
