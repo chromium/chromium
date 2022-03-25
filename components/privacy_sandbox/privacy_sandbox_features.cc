@@ -21,4 +21,8 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
     &kPrivacySandboxSettings3, "show-sample-data", false};
 
+const base::Feature kOverridePrivacySandboxSettingsLocalTesting{
+    "OverridePrivacySandboxSettingsLocalTesting",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace privacy_sandbox

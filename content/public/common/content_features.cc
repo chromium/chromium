@@ -666,6 +666,11 @@ const base::Feature kProcessSharingWithStrictSiteInstances{
 const base::Feature kHighPriorityBeforeUnload{
     "HighPriorityBeforeUnload", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables exposure of ads APIs in the renderer: Attribution Reporting,
+// FLEDGE, Topics.
+const base::Feature kPrivacySandboxAdsAPIsOverride{
+    "PrivacySandboxAdsAPIsOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Private Network Access checks for all types of web workers.
 //
 // This affects initial worker script fetches, fetches initiated by workers

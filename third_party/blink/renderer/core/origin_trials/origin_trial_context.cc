@@ -491,6 +491,9 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "Portals")
     return base::FeatureList::IsEnabled(features::kPortals);
 
+  if (trial_name == "PrivacySandboxAdsAPIs")
+    return base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIs);
+
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
 
@@ -507,15 +510,27 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(
         features::kSpeculationRulesPrefetchProxy);
   }
-  if (trial_name == "ConversionMeasurement" &&
-      !base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
-    return false;
-  }
 
   if (trial_name == "Prerender2")
     return base::FeatureList::IsEnabled(features::kPrerender2);
 
   return true;
+}
+
+Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
+    const String& trial_name) {
+  if (trial_name == "PrivacySandboxAdsAPIs") {
+    Vector<OriginTrialFeature> restricted;
+    if (!base::FeatureList::IsEnabled(features::kFledge))
+      restricted.push_back(OriginTrialFeature::kFledge);
+    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics))
+      restricted.push_back(OriginTrialFeature::kTopicsAPI);
+    if (!base::FeatureList::IsEnabled(features::kConversionMeasurement))
+      restricted.push_back(OriginTrialFeature::kAttributionReporting);
+    return restricted;
+  }
+
+  return {};
 }
 
 OriginTrialStatus OriginTrialContext::EnableTrialFromName(
@@ -526,12 +541,22 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
     return OriginTrialStatus::kTrialNotAllowed;
   }
 
+  Vector<OriginTrialFeature> restricted =
+      RestrictedFeaturesForTrial(trial_name);
+
   bool did_enable_feature = false;
   for (OriginTrialFeature feature :
        origin_trials::FeaturesForTrial(trial_name.Utf8())) {
     if (!origin_trials::FeatureEnabledForOS(feature)) {
       DVLOG(1) << "EnableTrialFromName: feature " << static_cast<int>(feature)
                << " is disabled on current OS.";
+      continue;
+    }
+
+    if (restricted.Contains(feature)) {
+      DVLOG(1) << "EnableTrialFromName: feature " << static_cast<int>(feature)
+               << " is restricted from being enabled via the trial: "
+               << trial_name << ".";
       continue;
     }
 

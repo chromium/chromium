@@ -37587,6 +37587,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4184" label="ComputePressureObserver_Unobserve"/>
   <int value="4185" label="ComputePressureObserver_Disconnect"/>
   <int value="4186" label="ComputePressureObserver_TakeRecords"/>
+  <int value="4187" label="PrivacySandboxAdsAPIs"/>
+  <int value="4188" label="Fledge"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -51848,6 +51850,7 @@ from previous Chrome versions.
   <int value="-2020024440" label="scroll-end-effect"/>
   <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
+  <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
@@ -55388,6 +55391,7 @@ from previous Chrome versions.
   <int value="399177140" label="FillingPasswordsFromAnyOrigin:enabled"/>
   <int value="399398207"
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:enabled"/>
+  <int value="400239639" label="PrivacySandboxAdsAPIsOverride:enabled"/>
   <int value="400272381" label="LazyFrameLoading:disabled"/>
   <int value="400322063" label="ash-disable-screen-orientation-lock"/>
   <int value="401606992" label="AnimatedImageResume:enabled"/>

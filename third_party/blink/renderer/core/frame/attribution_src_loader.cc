@@ -287,7 +287,7 @@ AttributionSrcLoader::CanRegisterAttribution(
   LocalDOMWindow* window = local_frame_->DomWindow();
   DCHECK(window);
 
-  if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(window))
+  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
     return RegisterResult::kNotAllowed;
 
   const bool feature_policy_enabled = window->IsFeatureEnabled(
@@ -321,6 +321,13 @@ AttributionSrcLoader::CanRegisterAttribution(
             : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
         reporting_origin->ToString(), element, request_id);
     return RegisterResult::kUntrustworthyOrigin;
+  }
+
+  UseCounter::Count(window, mojom::blink::WebFeature::kConversionAPIAll);
+
+  // Only record the ads APIs counter if enabled in that manner.
+  if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(window)) {
+    UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
   return RegisterResult::kSuccess;

@@ -3505,6 +3505,8 @@ enum WebFeature {
   kComputePressureObserver_Unobserve = 4184,
   kComputePressureObserver_Disconnect = 4185,
   kComputePressureObserver_TakeRecords = 4186,
+  kPrivacySandboxAdsAPIs = 4187,
+  kFledge = 4188,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

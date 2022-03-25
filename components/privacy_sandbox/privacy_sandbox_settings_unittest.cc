@@ -93,9 +93,11 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
     return &browser_task_environment_;
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
       mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -884,6 +886,36 @@ TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsMockDelegateTestInstance,
                          PrivacySandboxSettingsMockDelegateTest,
+                         testing::Bool());
+
+class PrivacySandboxSettingLocalOverrideTest
+    : public PrivacySandboxSettingsTest {
+  void InitializeFeaturesBeforeStart() override {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {privacy_sandbox::kPrivacySandboxSettings3,
+           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          {privacy_sandbox::kPrivacySandboxSettings3},
+          {privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting});
+    }
+  }
+};
+
+TEST_P(PrivacySandboxSettingLocalOverrideTest, FollowsOverrideBehavior) {
+  // When the Release 3 flag is enabled, APIs should always be disabled in
+  // incognito. The Release 3 flag is set based on the test param.
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  if (GetParam())
+    EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+  else
+    EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingLocalOverrideTestInstance,
+                         PrivacySandboxSettingLocalOverrideTest,
                          testing::Bool());
 
 }  // namespace privacy_sandbox

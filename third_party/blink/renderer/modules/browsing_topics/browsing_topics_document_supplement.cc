@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -55,6 +56,12 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
                                       "A browsing context is required when "
                                       "calling document.browsingTopics().");
     return ScriptPromise();
+  }
+
+  if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(
+          document.GetExecutionContext())) {
+    UseCounter::Count(document,
+                      mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
   ScriptPromiseResolver* resolver =

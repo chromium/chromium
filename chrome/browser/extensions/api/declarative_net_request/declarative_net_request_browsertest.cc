@@ -185,7 +185,8 @@ class DeclarativeNetRequestBrowserTest
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-         blink::features::kFencedFrames},
+         blink::features::kFencedFrames,
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());

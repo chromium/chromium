@@ -343,6 +343,12 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   if (delegate_->IsPrivacySandboxRestricted())
     return false;
 
+  // For Measurement and Relevance APIs, we explicitly do not require the
+  // underlying pref to be enabled if there is a local flag enabling the APIs to
+  // allow for local testing.
+  bool should_override_setting_for_local_testing = base::FeatureList::IsEnabled(
+      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting);
+
   // Which preference is consulted is dependent on whether release 3 of the
   // settings is available.
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
@@ -350,10 +356,17 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
     if (incognito_profile_)
       return false;
 
-    // For Privacy Sadnbox Settings 3, APIs may be restricted via the delegate.
+    if (should_override_setting_for_local_testing) {
+      return true;
+    }
+
+    // For Privacy Sandbox Settings 3, APIs may be restricted via the delegate.
     // The V2 pref was introduced with the 3rd Privacy Sandbox release.
     return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
   }
+
+  if (should_override_setting_for_local_testing)
+    return true;
 
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }

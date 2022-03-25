@@ -41,7 +41,7 @@
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionReportTo;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionExpiry;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourcePriority;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionSrc;
+    [RuntimeEnabled=AttributionReporting, CEReactions,Reflect] attribute USVString attributionSrc;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLAnchorElement-partial

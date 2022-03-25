@@ -152,6 +152,9 @@ const base::Feature kPath2DPaintCache{"Path2DPaintCache",
 const base::Feature kLayoutNGBlockInInline{"LayoutNGBlockInInline",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kPrivacySandboxAdsAPIs{"PrivacySandboxAdsAPIs",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

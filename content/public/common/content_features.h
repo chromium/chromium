@@ -165,6 +165,7 @@ CONTENT_EXPORT extern const base::Feature kPepper3DImageChromium;
 CONTENT_EXPORT extern const base::Feature kPepperCrossOriginRedirectRestriction;
 CONTENT_EXPORT extern const base::Feature kPictureInPictureV2;
 CONTENT_EXPORT extern const base::Feature kHighPriorityBeforeUnload;
+CONTENT_EXPORT extern const base::Feature kPrivacySandboxAdsAPIsOverride;
 CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessForWorkers;
 CONTENT_EXPORT extern const base::Feature
     kPrivateNetworkAccessRespectPreflightResults;
