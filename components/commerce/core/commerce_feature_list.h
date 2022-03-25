@@ -82,7 +82,7 @@ extern const base::Feature kDiscountConsentV2;
 constexpr base::FeatureParam<bool> kOptimizeRendererSignal(
     &ntp_features::kNtpChromeCartModule,
     "optimize-renderer-signal",
-    false);
+    true);
 
 constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
     &ntp_features::kNtpChromeCartModule,
