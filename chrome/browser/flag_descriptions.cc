@@ -2482,6 +2482,10 @@ const char kAppsShortcutDefaultOffName[] = "Apps Shortcut Default Off";
 const char kAppsShortcutDefaultOffDescription[] =
     "Changes the apps shortcut on the bookmarks bar to default to off.";
 
+const char kTabGroupsAutoCreateName[] = "Tab Groups Auto Create";
+const char kTabGroupsAutoCreateDescription[] =
+    "Automatically creates groups for users, if tab groups are enabled.";
+
 const char kTabGroupsNewBadgePromoName[] = "Tab Groups 'New' Badge Promo";
 const char kTabGroupsNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for creating a tab "
