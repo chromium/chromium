@@ -34,13 +34,11 @@
 
 using media_router::AccessCodeCastHandler;
 
-// Creates default params for showing AccessCodeCastDialog in ChromeOS
+// Creates default params for showing AccessCodeCastDialog
 views::Widget::InitParams CreateParams() {
   views::Widget::InitParams params;
   params.remove_standard_frame = true;
   params.corner_radius = 12;
-  // Dialog frame view has its own shadow.
-  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.type = views::Widget::InitParams::Type::TYPE_BUBBLE;
   // Make sure the dialog border is rendered correctly
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
