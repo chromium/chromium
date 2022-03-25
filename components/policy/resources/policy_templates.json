@@ -28269,9 +28269,10 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'tags': [],
       'desc': '''This settings enables or disables signin interception.
 
-      When this policy not set or is set to True, the signin interception dialog triggers when a Google account is added on the web, and the user may benefit from moving this account to another (new or existing) profile.
+      When this policy not set or is enabled, the signin interception dialog triggers when a Google account is added on the web, and the user may benefit from moving this account to another (new or existing) profile.
 
-      When this is set to False, the signin interception dialog does not trigger.''',
+      When this is disabled, the signin interception dialog does not trigger.
+      When this is disabled, a dialog will still be shown if managed account profile separation is enforced by <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph>.''',
     },
     {
       'name': 'WebXRImmersiveArEnabled',
@@ -29016,8 +29017,6 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'caption': '''Add restrictions on managed accounts''',
       'tags': [],
       'desc': '''
-      This policy requires <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME">SigninInterceptionEnabled</ph> to be set to True to take effect.
-
       If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph> at the machine level, all managed accounts will be forced to be primary.
       If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph> on an account, that account will always be a primary account, but may have secondary accounts in its profile.
 
