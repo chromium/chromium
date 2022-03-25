@@ -63,11 +63,11 @@ const char kDeviceActiveClientQueryMembershipResult[] =
 
 // Record the minute the device activity client transitions out of idle.
 const char kDeviceActiveClientTransitionOutOfIdleMinute[] =
-    "Ash.DeviceActiveClient.TransitionOutOfIdleMinute";
+    "Ash.DeviceActiveClient.RecordedTransitionOutOfIdleMinute";
 
 // Record the minute the device activity client transitions to check in.
 const char kDeviceActiveClientTransitionToCheckInMinute[] =
-    "Ash.DeviceActiveClient.TransitionToCheckInMinute";
+    "Ash.DeviceActiveClient.RecordedTransitionToCheckInMinute";
 
 // Generates the full histogram name for histogram variants based on state.
 std::string HistogramVariantName(const std::string& histogram_prefix,
@@ -99,28 +99,26 @@ void RecordQueryMembershipResultBoolean(bool is_member) {
 }
 
 // Return the minute of the current UTC time.
-base::TimeDelta GetCurrentMinute() {
+int GetCurrentMinute() {
   base::Time cur_time = base::Time::Now();
 
   // Extract minute from exploded |cur_time| in UTC.
   base::Time::Exploded exploded_utc;
   cur_time.UTCExplode(&exploded_utc);
 
-  return base::Minutes(exploded_utc.minute);
+  return exploded_utc.minute;
 }
 
 void RecordTransitionOutOfIdleMinute() {
-  base::UmaHistogramCustomTimes(kDeviceActiveClientTransitionOutOfIdleMinute,
-                                GetCurrentMinute(), base::Minutes(0),
-                                base::Minutes(59),
-                                60 /* number of histogram buckets */);
+  base::UmaHistogramCustomCounts(kDeviceActiveClientTransitionOutOfIdleMinute,
+                                 GetCurrentMinute(), 0, 59,
+                                 60 /* number of histogram buckets */);
 }
 
 void RecordTransitionToCheckInMinute() {
-  base::UmaHistogramCustomTimes(kDeviceActiveClientTransitionToCheckInMinute,
-                                GetCurrentMinute(), base::Minutes(0),
-                                base::Minutes(59),
-                                60 /* number of histogram buckets */);
+  base::UmaHistogramCustomCounts(kDeviceActiveClientTransitionToCheckInMinute,
+                                 GetCurrentMinute(), 0, 59,
+                                 60 /* number of histogram buckets */);
 }
 
 // Histogram sliced by duration and state.

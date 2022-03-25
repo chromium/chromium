@@ -1641,6 +1641,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.DeviceActiveClient.Recorded{DeviceActivityClientTransitionMethod}Minute"
+    units="int" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Emitted in the minute during the hour that DeviceActivityClient
+    {DeviceActivityClientTransitionMethod} is called. ChromeOS only.
+  </summary>
+  <token key="DeviceActivityClientTransitionMethod">
+    <variant name="TransitionOutOfIdle" summary="transition-out-of-idle"/>
+    <variant name="TransitionToCheckIn" summary="transition-to-check-in"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.DeviceActiveClient.Response.{DeviceActiveClientState}"
     enum="DeviceActiveClientPsmResponse" expires_after="2022-11-01">
   <owner>hirthanan@google.com</owner>
@@ -1662,21 +1677,6 @@ chromium-metrics-reviews@google.com.
     States are defined in //ash/components/device_activity_client.h. ChromeOS
     only.
   </summary>
-</histogram>
-
-<histogram
-    name="Ash.DeviceActiveClient.{DeviceActivityClientTransitionMethod}Minute"
-    units="minutes" expires_after="2022-11-01">
-  <owner>hirthanan@google.com</owner>
-  <owner>chromeos-data-team@google.com</owner>
-  <summary>
-    Emitted in the minute during the hour that DeviceActivityClient
-    {DeviceActivityClientTransitionMethod} is called. ChromeOS only.
-  </summary>
-  <token key="DeviceActivityClientTransitionMethod">
-    <variant name="TransitionOutOfIdle" summary="transition-out-of-idle"/>
-    <variant name="TransitionToCheckIn" summary="transition-to-check-in"/>
-  </token>
 </histogram>
 
 <histogram name="Ash.DeviceActiveController.PsmDeviceActiveSecretIsSet"
