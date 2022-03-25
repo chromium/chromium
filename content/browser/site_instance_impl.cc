@@ -745,6 +745,17 @@ bool SiteInstanceImpl::RequiresDedicatedProcess() {
   return site_info_.RequiresDedicatedProcess(GetIsolationContext());
 }
 
+bool SiteInstanceImpl::RequiresOriginKeyedProcess() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!has_site_)
+    return false;
+
+  // TODO(wjmaclean): once SiteInstanceGroups are ready we may give logically
+  // (same-process) isolated origins their own SiteInstances ... in that case we
+  // should consider updating this function.
+  return site_info_.requires_origin_keyed_process();
+}
+
 void SiteInstanceImpl::IncrementRelatedActiveContentsCount() {
   browsing_instance_->increment_active_contents_count();
 }

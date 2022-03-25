@@ -169,6 +169,10 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // process. This only returns true under the "site per process" process model.
   virtual bool RequiresDedicatedProcess() = 0;
 
+  // Returns true if this SiteInstance is for a process-isolated origin with its
+  // own OriginAgentCluster.
+  virtual bool RequiresOriginKeyedProcess() = 0;
+
   // Return whether this SiteInstance and the provided |url| are part of the
   // same web site, for the purpose of assigning them to processes accordingly.
   // The decision is currently based on the registered domain of the URLs

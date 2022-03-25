@@ -76,12 +76,17 @@ void NavigationMetricsRecorder::DidFinishNavigation(
   // process and register a synthetic field trial if so.  Note that this needs
   // to go before the IsInPrimaryMainFrame() check, as we want to register
   // navigations to isolated sites from both main frames and subframes.
+  auto* site_instance =
+      navigation_handle->GetRenderFrameHost()->GetSiteInstance();
   if (is_synthetic_isolation_trial_enabled_ &&
-      navigation_handle->GetRenderFrameHost()
-          ->GetSiteInstance()
-          ->RequiresDedicatedProcess()) {
+      site_instance->RequiresDedicatedProcess()) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SiteIsolationActive", "Enabled");
+  }
+
+  if (site_instance->RequiresOriginKeyedProcess()) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "ProcessIsolatedOriginAgentClusterActive", "Enabled");
   }
 
   // Also register a synthetic field trial when we encounter a navigation to an
