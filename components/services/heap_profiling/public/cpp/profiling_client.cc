@@ -49,7 +49,6 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   if (started_profiling_)
     return;
   started_profiling_ = true;
-  base::trace_event::MallocDumpProvider::GetInstance()->DisableMetrics();
 
 #if BUILDFLAG(IS_APPLE)
   // On macOS, this call is necessary to shim malloc zones that were created
