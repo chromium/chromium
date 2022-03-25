@@ -382,10 +382,10 @@ TEST_P(PartitionedCookiesEnabledClientHintsTest,
   // The Origin Trial token expires in 2033.  Generate a new token by then, or
   // find a better way to re-generate a test trial token.
   static constexpr char kValidOriginTrialToken[] =
-      "A1ZeT+cUjeN+YRlvnoNP67cBtEZqx9Z4Gx/AmfsCIHvyULWM6t12q1Kd6YWHdMtF/"
-      "eC6MYGv0GMwIZo2J380WQ0AAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0N"
-      "DQiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMTY0ODE2M"
-      "jU4Mn0=";
+      "A4s/"
+      "iPKfhEfgqQIIuz4zLuCpONpXOuYyJFBhBx1MfgS1aNhFujyhsg4lkfTRfjzQCI3aUbMwtNm2"
+      "5elLTR4UIgAAAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVh"
+      "dHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
   VerifyClientHintEnabledWithOriginTrialToken(
       kValidOriginTrialToken,
@@ -397,10 +397,10 @@ TEST_P(PartitionedCookiesEnabledClientHintsTest,
        EnabledPartitionedCookiesClientHintWithInvalidOriginTrialToken) {
   // Changed the first character of the token in the last test.
   static constexpr char kValidOriginTrialToken[] =
-      "B1ZeT+cUjeN+YRlvnoNP67cBtEZqx9Z4Gx/AmfsCIHvyULWM6t12q1Kd6YWHdMtF/"
-      "eC6MYGv0GMwIZo2J380WQ0AAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0N"
-      "DQiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMTY0ODE2M"
-      "jU4Mn0=";
+      "B4s/"
+      "iPKfhEfgqQIIuz4zLuCpONpXOuYyJFBhBx1MfgS1aNhFujyhsg4lkfTRfjzQCI3aUbMwtNm2"
+      "5elLTR4UIgAAAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVh"
+      "dHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
   VerifyClientHintEnabledWithOriginTrialToken(
       kValidOriginTrialToken,
