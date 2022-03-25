@@ -7819,10 +7819,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled-20_20220325",
-                    "enable_features": [
-                        "WebRTC-Audio-AgcMinMicLevelExperiment"
-                    ]
+                    "name": "Enabled-20_20220325"
                 }
             ]
         }
