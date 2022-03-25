@@ -143,14 +143,6 @@ typedef struct {
   bool customized_dialog;
 } MockConfiguration;
 
-// absl::optional fields should be nullopt to prevent the corresponding
-// methods from having EXPECT_CALL set on the mocks.
-typedef struct {
-  RequestParameters inputs;
-  RequestExpectations expected;
-  MockConfiguration config;
-} AuthRequestTestCase;
-
 static const MockClientIdConfiguration kDefaultClientMetadata{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
 
@@ -347,10 +339,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   void RunAuthTest(const RequestParameters& request_parameters,
                    const RequestExpectations& expectation,
                    const MockConfiguration& configuration) {
-    AuthRequestTestCase test_case = {request_parameters, expectation,
-                                     configuration};
     SetupIdpNetworkRequestManager(GURL(request_parameters.provider));
-    SetMockExpectations(test_case);
+    SetMockExpectations(request_parameters, expectation, configuration);
     auto auth_response = PerformAuthRequest(
         GURL(request_parameters.provider), request_parameters.client_id,
         request_parameters.nonce, request_parameters.prefer_auto_sign_in);
@@ -465,29 +455,30 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return revoke_helper.status();
   }
 
-  bool IsExpectedFetched(MockConfiguration conf,
+  bool IsExpectedFetched(MockConfiguration config,
                          FetchedEndpoint expected_endpoint) {
-    return (conf.expected_fetched_endpoints & expected_endpoint) != 0;
+    return (config.expected_fetched_endpoints & expected_endpoint) != 0;
   }
 
-  void SetMediatedMockExpectations(const MockConfiguration& conf,
-                                   std::string token,
-                                   bool prefer_auto_sign_in) {
-    if (IsExpectedFetched(conf, FetchedEndpoint::ACCOUNTS)) {
+  void SetMediatedMockExpectations(const RequestParameters& request_parameters,
+                                   const MockConfiguration& config) {
+    if (IsExpectedFetched(config, FetchedEndpoint::ACCOUNTS)) {
       EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _))
           .WillOnce(Invoke(
               [&](const GURL&, const std::string&,
                   IdpNetworkRequestManager::AccountsRequestCallback callback) {
-                std::move(callback).Run(conf.accounts_response, conf.accounts);
+                std::move(callback).Run(config.accounts_response,
+                                        config.accounts);
               }));
     } else {
       EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _))
           .Times(0);
     }
 
-    if (IsExpectedFetched(conf, FetchedEndpoint::ACCOUNTS) &&
-        conf.accounts_response == FetchStatus::kSuccess) {
-      if (!prefer_auto_sign_in && !conf.customized_dialog) {
+    if (IsExpectedFetched(config, FetchedEndpoint::ACCOUNTS) &&
+        config.accounts_response == FetchStatus::kSuccess) {
+      if (!request_parameters.prefer_auto_sign_in &&
+          !config.customized_dialog) {
         // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
         // even though the bit is set we may not exercise the AutoSignIn flow.
         // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
@@ -515,15 +506,16 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           .Times(0);
     }
 
-    if (IsExpectedFetched(conf, FetchedEndpoint::TOKEN)) {
-      auto delivered_token =
-          conf.token_response == FetchStatus::kSuccess ? token : std::string();
+    if (IsExpectedFetched(config, FetchedEndpoint::TOKEN)) {
+      auto delivered_token = config.token_response == FetchStatus::kSuccess
+                                 ? config.token
+                                 : std::string();
       EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
           .WillOnce(Invoke(
               [=](const GURL& idp_signin_url, const std::string& account_id,
                   const std::string& request,
                   IdpNetworkRequestManager::TokenRequestCallback callback) {
-                std::move(callback).Run(conf.token_response, delivered_token);
+                std::move(callback).Run(config.token_response, delivered_token);
               }));
       task_environment()->FastForwardBy(base::Seconds(3));
     } else {
@@ -532,45 +524,45 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
   }
 
-  void SetMockExpectations(const AuthRequestTestCase& test_case) {
-    if (IsExpectedFetched(test_case.config, FetchedEndpoint::MANIFEST)) {
+  void SetMockExpectations(const RequestParameters& request_parameters,
+                           const RequestExpectations& expectation,
+                           const MockConfiguration& config) {
+    if (IsExpectedFetched(config, FetchedEndpoint::MANIFEST)) {
       EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
           .WillOnce(Invoke(
               [&](absl::optional<int>, absl::optional<int>,
                   IdpNetworkRequestManager::FetchManifestCallback callback) {
                 IdpNetworkRequestManager::Endpoints endpoints;
-                endpoints.accounts =
-                    test_case.config.manifest.accounts_endpoint;
-                endpoints.token = test_case.config.manifest.token_endpoint;
+                endpoints.accounts = config.manifest.accounts_endpoint;
+                endpoints.token = config.manifest.token_endpoint;
                 endpoints.client_metadata =
-                    test_case.config.manifest.client_metadata_endpoint;
-                std::move(callback).Run(test_case.config.manifest.fetch_status,
-                                        endpoints, IdentityProviderMetadata());
+                    config.manifest.client_metadata_endpoint;
+                std::move(callback).Run(config.manifest.fetch_status, endpoints,
+                                        IdentityProviderMetadata());
               }));
     } else {
       EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _)).Times(0);
     }
 
-    if (IsExpectedFetched(test_case.config, FetchedEndpoint::CLIENT_METADATA)) {
+    if (IsExpectedFetched(config, FetchedEndpoint::CLIENT_METADATA)) {
       EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
           .WillOnce(
               Invoke([&](const GURL&, const std::string& client_id,
                          IdpNetworkRequestManager::FetchClientMetadataCallback
                              callback) {
-                EXPECT_EQ(test_case.inputs.client_id, client_id);
+                EXPECT_EQ(request_parameters.client_id, client_id);
                 std::move(callback).Run(
-                    test_case.config.client_metadata.fetch_status,
+                    config.client_metadata.fetch_status,
                     IdpNetworkRequestManager::ClientMetadata{
-                        test_case.config.client_metadata.privacy_policy_url,
-                        test_case.config.client_metadata.terms_of_service_url});
+                        config.client_metadata.privacy_policy_url,
+                        config.client_metadata.terms_of_service_url});
               }));
     } else {
       EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
           .Times(0);
     }
 
-    SetMediatedMockExpectations(test_case.config, test_case.config.token,
-                                test_case.inputs.prefer_auto_sign_in);
+    SetMediatedMockExpectations(request_parameters, config);
   }
 
   // Expectations have to be set explicitly in advance using
