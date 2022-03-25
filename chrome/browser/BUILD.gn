@@ -123,7 +123,7 @@ source_set("browser_process") {
 }
 
 # Use a static library here because many test binaries depend on this but don't
-# require many files from it.This makes linking more efficient.
+# require many files from it. This makes linking more efficient.
 static_library("browser") {
   sources = [
     "about_flags.cc",
@@ -4390,6 +4390,8 @@ static_library("browser") {
       "usb/web_usb_chooser_desktop.h",
       "usb/web_usb_detector.cc",
       "usb/web_usb_detector.h",
+      "user_notes/user_note_service_factory.cc",
+      "user_notes/user_note_service_factory.h",
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",
@@ -4471,6 +4473,8 @@ static_library("browser") {
       "//components/soda",
       "//components/soda:constants",
       "//components/ukm/content",
+      "//components/user_notes:features",
+      "//components/user_notes/browser",
       "//components/web_modal",
       "//courgette:courgette_lib",
       "//services/device/public/cpp/hid",
