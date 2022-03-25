@@ -7,6 +7,7 @@
  *
  */
 import {GestureCommandData} from '../background/gesture_command_data.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 /**
  * Class to manage the keyboard explorer.

@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox commands.
  */
 import {TypingEcho} from '../common/editable_text_base.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille_background.js';

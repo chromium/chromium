@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 /**
  * @enum {string}
