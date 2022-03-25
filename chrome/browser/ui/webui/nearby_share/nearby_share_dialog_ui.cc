@@ -88,7 +88,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Register callback to handle "cancel-button-event" from nearby_*.html files.
-  web_ui->RegisterDeprecatedMessageCallback(
+  web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
                                    base::Unretained(this)));
 
@@ -167,15 +167,14 @@ void NearbyShareDialogUI::WebContentsCreated(
   Navigate(&nav_params);
 }
 
-void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
+void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
   if (!sharesheet_controller_)
     return;
 
-  base::Value::ConstListView args_list = args->GetListDeprecated();
-  CHECK_EQ(1u, args_list.size());
-  CHECK_GE(args_list[0].GetInt(), 0);
-  CHECK_LE(args_list[0].GetInt(), static_cast<int>(CloseReason::kMax));
-  CloseReason reason = static_cast<CloseReason>(args_list[0].GetInt());
+  CHECK_EQ(1u, args.size());
+  CHECK_GE(args[0].GetInt(), 0);
+  CHECK_LE(args[0].GetInt(), static_cast<int>(CloseReason::kMax));
+  CloseReason reason = static_cast<CloseReason>(args[0].GetInt());
 
   sharesheet::SharesheetResult sharesheet_result;
   switch (reason) {
