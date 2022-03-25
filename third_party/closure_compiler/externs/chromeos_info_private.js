@@ -99,6 +99,7 @@ chrome.chromeosInfoPrivate.AssistantStatus = {
  *   customizationId: (string|undefined),
  *   homeProvider: (string|undefined),
  *   hwid: (string|undefined),
+ *   isMeetDevice: (boolean|undefined),
  *   initialLocale: (string|undefined),
  *   isOwner: (boolean|undefined),
  *   sessionType: (!chrome.chromeosInfoPrivate.SessionType|undefined),
