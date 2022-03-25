@@ -212,16 +212,22 @@ base::LazyInstance<std::vector<
     WebContentsImpl::FriendWrapper::CreatedCallback>>::DestructorAtExit
     g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
 
-bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHost* host) {
+bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHostImpl* host) {
   // This method scans the frame tree rather than checking whether
   // host->delegate() == this, which allows it to return false when the host
   // for a frame that is pending or pending deletion.
   if (!host)
     return false;
 
-  for (FrameTreeNode* node : tree->Nodes()) {
-    if (node->current_frame_host()->GetRenderWidgetHost() == host)
+  for (FrameTreeNode* node : tree->NodesIncludingInnerTreeNodes()) {
+    // We might cross a WebContents boundary here, but it's fine as we are only
+    // comparing the RWHI with the given `host`, which is always guaranteed to
+    // belong to the same WebContents as `tree`.
+    if (node->current_frame_host()->GetRenderWidgetHost() == host) {
+      DCHECK_EQ(WebContentsImpl::FromFrameTreeNode(node),
+                WebContentsImpl::FromRenderWidgetHostImpl(host));
       return true;
+    }
   }
   return false;
 }

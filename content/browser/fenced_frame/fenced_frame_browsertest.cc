@@ -880,6 +880,35 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UnloadHandler) {
   }
 }
 
+// Tests that an input event targeted to a fenced frame correctly
+// triggers a user interaction notification for WebContentsObservers.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UserInteractionForFencedFrame) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("c.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+
+  ::testing::NiceMock<MockWebContentsObserver> web_contents_observer(
+      web_contents());
+  EXPECT_CALL(web_contents_observer, DidGetUserInteraction(testing::_))
+      .Times(1);
+
+  // Target an event to the fenced frame's RenderWidgetHostView.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_event.SetPositionInWidget(5, 5);
+  fenced_frame_rfh->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {
