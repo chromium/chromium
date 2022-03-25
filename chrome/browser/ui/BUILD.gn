@@ -2042,6 +2042,8 @@ static_library("ui") {
       "app_list/search/mixer.h",
       "app_list/search/omnibox_answer_result.cc",
       "app_list/search/omnibox_answer_result.h",
+      "app_list/search/omnibox_lacros_provider.cc",
+      "app_list/search/omnibox_lacros_provider.h",
       "app_list/search/omnibox_provider.cc",
       "app_list/search/omnibox_provider.h",
       "app_list/search/omnibox_result.cc",

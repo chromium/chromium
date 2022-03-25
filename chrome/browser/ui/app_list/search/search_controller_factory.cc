@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
+#include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -106,8 +107,14 @@ std::unique_ptr<SearchController> CreateSearchController(
                          profile, list_controller,
                          base::DefaultClock::GetInstance(), model_updater));
 
-  controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
-                                                profile, list_controller));
+  if (app_list_features::IsLauncherLacrosIntegrationEnabled()) {
+    controller->AddProvider(
+        omnibox_group_id,
+        std::make_unique<OmniboxLacrosProvider>(profile, list_controller));
+  } else {
+    controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
+                                                  profile, list_controller));
+  }
 
   size_t assistant_group_id = controller->AddGroup(kMaxAssistantTextResults);
   controller->AddProvider(assistant_group_id,
