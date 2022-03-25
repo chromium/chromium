@@ -18,9 +18,9 @@ void FederatedAuthRequestService::Create(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   DCHECK(host);
 
-  // TODO(kenrb): This should also be verified in the renderer process before
-  // the mojo method is invoked, causing the promise to be rejected.
-  // https://crbug.com/1141125
+  // TODO(yigu): Once cross-orign support is implemented, we should reject the
+  // request with specific error messages instead of crashing the renderer.
+  // https://crbug.com/1286839.
   // It is safe to access host->GetLastCommittedOrigin during construction
   // but DocumentService::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {

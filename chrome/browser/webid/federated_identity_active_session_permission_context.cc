@@ -85,6 +85,10 @@ void FederatedIdentityActiveSessionPermissionContext::RevokeActiveSession(
     const std::string& account_identifier) {
   auto idp_string = identity_provider.Serialize();
   const auto object = GetGrantedObject(relying_party, idp_string);
+  // TODO(cbiesinger): if the provided |account_identifier| does not match the
+  // one we used when granting the permission, return early will leave an entry
+  // in the storage that cannot be removed afterwards. This should be fixed as
+  // part of https://crbug.com/1306852.
   if (!object)
     return;
   auto new_object = object->value.Clone();
