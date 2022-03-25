@@ -47,8 +47,9 @@ bool WillDispatchTabUpdatedEvent(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    Event* event,
-    const base::DictionaryValue* listener_filter) {
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::Value::List>* event_args_out,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -65,19 +66,22 @@ bool WillDispatchTabUpdatedEvent(
       changed_properties.Set(property, value->Clone());
   }
 
-  event->event_args->Append(base::Value(std::move(changed_properties)));
-  event->event_args->Append(std::move(tab_value));
+  *event_args_out = std::make_unique<base::Value::List>();
+  (*event_args_out)->Append(ExtensionTabUtil::GetTabId(contents));
+  (*event_args_out)->Append(base::Value(std::move(changed_properties)));
+  (*event_args_out)->Append(std::move(tab_value));
   return true;
 }
 
-bool WillDispatchTabCreatedEvent(WebContents* contents,
-                                 bool active,
-                                 content::BrowserContext* browser_context,
-                                 Feature::Context target_context,
-                                 const Extension* extension,
-                                 Event* event,
-                                 const base::DictionaryValue* listener_filter) {
-  event->event_args->ClearList();
+bool WillDispatchTabCreatedEvent(
+    WebContents* contents,
+    bool active,
+    content::BrowserContext* browser_context,
+    Feature::Context target_context,
+    const Extension* extension,
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::Value::List>* event_args_out,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -86,7 +90,9 @@ bool WillDispatchTabCreatedEvent(WebContents* contents,
           ->ToValue());
   tab_value.SetBoolKey(tabs_constants::kSelectedKey, active);
   tab_value.SetBoolKey(tabs_constants::kActiveKey, active);
-  event->event_args->Append(std::move(tab_value));
+
+  *event_args_out = std::make_unique<base::Value::List>();
+  (*event_args_out)->Append(std::move(tab_value));
   return true;
 }
 
@@ -585,24 +591,13 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
   DCHECK(!changed_property_names.empty());
   DCHECK(contents);
 
-  // The state of the tab (as seen from the extension point of view) has
-  // changed.  Send a notification to the extension.
-  std::unique_ptr<base::ListValue> args_base(new base::ListValue);
-
-  // First arg: The id of the tab that changed.
-  args_base->Append(ExtensionTabUtil::GetTabId(contents));
-
-  // Second arg: An object containing the changes to the tab state.  Filled in
-  // by WillDispatchTabUpdatedEvent as a copy of changed_properties, if the
-  // extension has the tabs permission.
-
-  // Third arg: An object containing the state of the tab. Filled in by
-  // WillDispatchTabUpdatedEvent.
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
   auto event = std::make_unique<Event>(
       events::TABS_ON_UPDATED, api::tabs::OnUpdated::kEventName,
-      std::move(*args_base).TakeListDeprecated(), profile);
+      // The event arguments depend on the extension's permission. They are set
+      // in WillDispatchTabUpdatedEvent().
+      std::vector<base::Value>(), profile);
   event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,

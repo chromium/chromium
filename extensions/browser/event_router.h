@@ -516,12 +516,13 @@ class EventRouter : public KeyedService,
 struct Event {
   // This callback should return true if the event should be dispatched to the
   // given context and extension, and false otherwise.
-  using WillDispatchCallback =
-      base::RepeatingCallback<bool(content::BrowserContext*,
-                                   Feature::Context,
-                                   const Extension*,
-                                   Event*,
-                                   const base::DictionaryValue*)>;
+  using WillDispatchCallback = base::RepeatingCallback<bool(
+      content::BrowserContext*,
+      Feature::Context,
+      const Extension*,
+      const base::DictionaryValue*,
+      std::unique_ptr<base::Value::List>* event_args_out,
+      mojom::EventFilteringInfoPtr* event_filtering_info_out)>;
 
   // The identifier for the event, for histograms. In most cases this
   // correlates 1:1 with |event_name|, in some cases events will generate
@@ -550,10 +551,11 @@ struct Event {
   mojom::EventFilteringInfoPtr filter_info;
 
   // If specified, this is called before dispatching an event to each
-  // extension. The third argument is a mutable reference to event_args,
-  // allowing the caller to provide different arguments depending on the
-  // extension and profile. This is guaranteed to be called synchronously with
+  // extension. This is guaranteed to be called synchronously with
   // DispatchEvent, so callers don't need to worry about lifetime.
+  // The args |event_args_out|, |event_filtering_info_out| allows caller to
+  // provide modified `Event::event_args`, `Event::filter_info` depending on the
+  // extension and profile.
   //
   // NOTE: the Extension argument to this may be NULL because it's possible for
   // this event to be dispatched to non-extension processes, like WebUI.

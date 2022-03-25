@@ -968,17 +968,33 @@ void EventRouter::DispatchEventToProcess(
     return;
   }
 
+  std::unique_ptr<base::Value::List> modified_event_args;
+  mojom::EventFilteringInfoPtr modified_event_filter_info;
   if (!event->will_dispatch_callback.is_null() &&
-      !event->will_dispatch_callback.Run(listener_context, target_context,
-                                         extension, event, listener_filter)) {
+      !event->will_dispatch_callback.Run(
+          listener_context, target_context, extension, listener_filter,
+          &modified_event_args, &modified_event_filter_info)) {
     return;
   }
+
+  base::ListValue* event_args_to_use = event->event_args.get();
+  std::unique_ptr<base::ListValue> list_modified_event_args;
+  if (modified_event_args) {
+    // If `will_dispatch_callback` provided modified args, use it.
+    list_modified_event_args = base::ListValue::From(
+        std::make_unique<base::Value>(std::move(*modified_event_args)));
+    event_args_to_use = list_modified_event_args.get();
+  }
+
+  mojom::EventFilteringInfoPtr filter_info =
+      modified_event_filter_info ? std::move(modified_event_filter_info)
+                                 : event->filter_info.Clone();
 
   int event_id = g_extension_event_id.GetNext();
   DispatchExtensionMessage(process, worker_thread_id, listener_context,
                            extension_id, event_id, event->event_name,
-                           event->event_args.get(), event->user_gesture,
-                           event->filter_info.Clone());
+                           event_args_to_use, event->user_gesture,
+                           std::move(filter_info));
 
   for (TestObserver& observer : test_observers_)
     observer.OnDidDispatchEventToProcess(*event);

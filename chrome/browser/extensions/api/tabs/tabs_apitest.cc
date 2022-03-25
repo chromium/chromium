@@ -17,9 +17,13 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -377,6 +381,67 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpenerCraziness) {
 // using chrome.runtime.OnMessage.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessage) {
   ASSERT_TRUE(RunExtensionTest("tabs/send_message"));
+}
+
+// Tests that extension with "tabs" permission does not leak tab info to another
+// extension without "tabs" permission.
+//
+// Regression test for https://crbug.com/1302959
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
+  constexpr char kManifestWithTabsPermission[] =
+      R"({
+        "name": "test", "version": "1", "manifest_version": 2,
+        "background": {"scripts": ["background.js"]},
+        "permissions": ["tabs"]
+      })";
+  constexpr char kBackgroundJSWithTabsPermission[] =
+      "chrome.tabs.onUpdated.addListener(() => {});";
+
+  constexpr char kManifestWithoutTabsPermission[] =
+      R"({
+        "name": "test", "version": "1", "manifest_version": 2,
+        "background": {"scripts": ["background.js"]}
+      })";
+  constexpr char kBackgroundJSWithoutTabsPermission[] =
+      R"(
+        let urlStr = '%s';
+        chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+          chrome.test.assertEq(3, Array.from(arguments).length);
+          // Note: we'll search within all of the arguments, just to make sure
+          // we don't miss any inadvertently added ones. See
+          // https://crbug.com/1302959 for details.
+          let argumentsStr = JSON.stringify(arguments);
+          let containsUrlStr = argumentsStr.indexOf(urlStr) != -1;
+          chrome.test.assertFalse(containsUrlStr);
+          if (tab.status == 'complete') {
+            chrome.test.notifyPass();
+          }
+        });
+      )";
+
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // First load the extension with "tabs" permission.
+  // Note that order is important for this regression test.
+  extensions::TestExtensionDir ext_dir1;
+  ext_dir1.WriteManifest(kManifestWithTabsPermission);
+  ext_dir1.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     kBackgroundJSWithTabsPermission);
+  ASSERT_TRUE(LoadExtension(ext_dir1.UnpackedPath()));
+
+  // Then load the extension without "tabs" permission.
+  extensions::ResultCatcher catcher;
+  extensions::TestExtensionDir ext_dir2;
+  ext_dir2.WriteManifest(kManifestWithoutTabsPermission);
+  ext_dir2.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(kBackgroundJSWithoutTabsPermission,
+                                        url.spec().c_str()));
+  ASSERT_TRUE(LoadExtension(ext_dir2.UnpackedPath()));
+
+  // Now open a tab and ensure the extension in |ext_dir2| does not see any info
+  // that is guarded by "tabs" permission.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 class IncognitoExtensionApiTabTest : public ExtensionApiTabTest,
