@@ -53,6 +53,16 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
   void NotifyIsolateDisposal() override;
 
  private:
+  template <typename EventType>
+  void AddMainThreadBatchedEvents(
+      const v8::metrics::GarbageCollectionBatchedEvents<EventType>&
+          batched_events,
+      ContextId context_id) {
+    for (auto event : batched_events.events) {
+      AddMainThreadEvent(event, context_id);
+    }
+  }
+
   struct UkmRecorderAndSourceId {
     ukm::UkmRecorder* recorder;
     ukm::SourceId source_id;

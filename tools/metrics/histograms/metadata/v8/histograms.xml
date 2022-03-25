@@ -879,6 +879,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Duration of individual incremental marking steps on the main thread during a
+    garbage collection of the unified heap.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -886,6 +896,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Duration of individual incremental marking steps on the main thread during a
     garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Incremental.Sweep" units="ms"
+    expires_after="M109">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Duration of individual incremental sweeping steps on the main thread during
+    a garbage collection of the unified heap.
   </summary>
 </histogram>
 

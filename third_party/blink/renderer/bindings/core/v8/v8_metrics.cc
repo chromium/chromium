@@ -325,6 +325,10 @@ void ReportCppIncrementalLatencyEvent(int64_t duration_us) {
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
     ContextId context_id) {
+  if (event.wall_clock_duration_in_us != -1) {
+    UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Incremental.Mark",
+                        base::Microseconds(event.wall_clock_duration_in_us));
+  }
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
@@ -335,17 +339,12 @@ void V8MetricsRecorder::AddMainThreadEvent(
 }
 
 void V8MetricsRecorder::AddMainThreadEvent(
-    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalMark&
-        batched_events,
-    ContextId context_id) {
-  for (auto event : batched_events.events) {
-    AddMainThreadEvent(event, context_id);
-  }
-}
-
-void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
     ContextId context_id) {
+  if (event.wall_clock_duration_in_us != -1) {
+    UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Incremental.Sweep",
+                        base::Microseconds(event.wall_clock_duration_in_us));
+  }
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
@@ -356,12 +355,17 @@ void V8MetricsRecorder::AddMainThreadEvent(
 }
 
 void V8MetricsRecorder::AddMainThreadEvent(
-    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalSweep&
-        batched_events,
+    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalMark&
+        event,
     ContextId context_id) {
-  for (auto event : batched_events.events) {
-    AddMainThreadEvent(event, context_id);
-  }
+  AddMainThreadBatchedEvents(event, context_id);
+}
+
+void V8MetricsRecorder::AddMainThreadEvent(
+    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalSweep&
+        event,
+    ContextId context_id) {
+  AddMainThreadBatchedEvents(event, context_id);
 }
 
 void V8MetricsRecorder::AddMainThreadEvent(
