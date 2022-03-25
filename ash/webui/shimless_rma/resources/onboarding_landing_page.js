@@ -42,6 +42,12 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   static get properties() {
     return {
       /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
+      /**
        * List of unqualified components from rmad service, not i18n.
        * @protected
        */
@@ -103,6 +109,27 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
     return Promise.reject(new Error('Hardware verification is not complete.'));
   }
 
+  /** @protected */
+  onGetStartedButtonClicked_(e) {
+    e.preventDefault();
+
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            if (!this.verificationInProgress_) {
+              return this.shimlessRmaService_.beginFinalization();
+            }
+
+            return Promise.reject(
+                new Error('Hardware verification is not complete.'));
+          })
+        },
+        ));
+  }
+
   /**
    * @protected
    * @return {string}
@@ -145,6 +172,11 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   /** @private */
   closeDialog_() {
     this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
+  }
+
+  /** @protected */
+  isGetStartedButtonDisabled_() {
+    return this.verificationInProgress_ || this.allButtonsDisabled;
   }
 }
 

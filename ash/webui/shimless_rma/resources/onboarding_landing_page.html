@@ -3,6 +3,10 @@
     height: 30px;
     width: 30px;
   }
+
+  #nextButtonCaret {
+    margin-inline-start: 5px;
+  }
 </style>
 
 <base-page>
@@ -29,6 +33,13 @@
         </span>
       </span>
     </div>
+    <cr-button id="nextButton" class="action-button"
+        on-click="onGetStartedButtonClicked_"
+        disabled="[[isGetStartedButtonDisabled_(verificationInProgress_,
+        allButtonsDisabled)]]">
+      [[i18n('getStartedButtonLabel')]]
+      <span id="nextButtonCaret">&#62;</span>
+    </cr-button>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">
