@@ -189,53 +189,6 @@ class NetworkStateListDetailedView::InfoBubble
 };
 
 //------------------------------------------------------------------------------
-
-// Special layout to overlap the scanning throbber and the info button.
-class InfoThrobberLayout : public views::LayoutManager {
- public:
-  InfoThrobberLayout() = default;
-
-  InfoThrobberLayout(const InfoThrobberLayout&) = delete;
-  InfoThrobberLayout& operator=(const InfoThrobberLayout&) = delete;
-
-  ~InfoThrobberLayout() override = default;
-
-  // views::LayoutManager
-  void Layout(views::View* host) override {
-    gfx::Size max_size(GetMaxChildSize(host));
-    // Center each child view within |max_size|.
-    for (auto* child : host->children()) {
-      if (!child->GetVisible())
-        continue;
-      gfx::Size child_size = child->GetPreferredSize();
-      gfx::Point origin;
-      origin.set_x((max_size.width() - child_size.width()) / 2);
-      origin.set_y((max_size.height() - child_size.height()) / 2);
-      gfx::Rect bounds(origin, child_size);
-      bounds.Inset(-host->GetInsets());
-      child->SetBoundsRect(bounds);
-    }
-  }
-
-  gfx::Size GetPreferredSize(const views::View* host) const override {
-    gfx::Point origin;
-    gfx::Rect rect(origin, GetMaxChildSize(host));
-    rect.Inset(-host->GetInsets());
-    return rect.size();
-  }
-
- private:
-  gfx::Size GetMaxChildSize(const views::View* host) const {
-    gfx::Size max_size;
-    for (const auto* child : host->children()) {
-      if (child->GetVisible())
-        max_size.SetToMax(child->GetPreferredSize());
-    }
-    return max_size;
-  }
-};
-
-//------------------------------------------------------------------------------
 // NetworkStateListDetailedView
 
 NetworkStateListDetailedView::NetworkStateListDetailedView(
