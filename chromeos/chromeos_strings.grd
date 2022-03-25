@@ -2665,8 +2665,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" translateable="false" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
         Provisioning the device...
       </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_PROGRESS" translateable="false" desc="Message to display current progress of provisioning.">
-        Progress <ph name="PROGRESS_PERCENT">$1<ex>25</ex></ph>%.
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_IN_PROGRESS" translateable="false" desc="Message to display while the device is provisioning.">
+        Provisioning the device. Do not turn off the power.
       </message>
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE" translateable="false" desc="Message to display when provisioning is complete.">
         Complete.
