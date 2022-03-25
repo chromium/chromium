@@ -24,7 +24,8 @@ template("create_js_source_maps") {
         }
       }
     }
-    outputs = [ "$target_gen_dir/{{source}}.map" ]
+    rebased = rebase_path("{{source}}.map", root_out_dir, "/")
+    outputs = [ "$root_out_dir/$rebased" ]
     args = [ "{{source}}" ]
   }
 }
