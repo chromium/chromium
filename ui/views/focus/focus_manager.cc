@@ -642,7 +642,7 @@ bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
   // variable.
   base::WeakPtr<Widget> widget_weak_ptr = widget_->GetWeakPtr();
   const bool close_widget_on_deactivate =
-      widget_delegate->close_on_deactivate();
+      widget_delegate->ShouldCloseOnDeactivate();
 #endif
 
   // The parent view must be focused for it to process events.

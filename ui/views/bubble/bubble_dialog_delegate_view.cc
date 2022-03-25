@@ -5,11 +5,14 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include <algorithm>
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -383,10 +386,49 @@ class BubbleDialogDelegate::ThemeObserver : public ViewObserver {
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
+class BubbleDialogDelegateView::CloseOnDeactivatePin::Pins {
+ public:
+  Pins() = default;
+  ~Pins() = default;
+
+  bool is_pinned() const { return !pins_.empty(); }
+
+  base::WeakPtr<Pins> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
+  void AddPin(CloseOnDeactivatePin* pin) {
+    const auto result = pins_.insert(pin);
+    DCHECK(result.second);
+  }
+
+  void RemovePin(CloseOnDeactivatePin* pin) {
+    const auto result = pins_.erase(pin);
+    DCHECK(result);
+  }
+
+ protected:
+  std::set<CloseOnDeactivatePin*> pins_;
+  base::WeakPtrFactory<Pins> weak_ptr_factory_{this};
+};
+
+BubbleDialogDelegate::CloseOnDeactivatePin::CloseOnDeactivatePin(
+    base::WeakPtr<Pins> pins)
+    : pins_(pins) {
+  pins_->AddPin(this);
+}
+
+BubbleDialogDelegate::CloseOnDeactivatePin::~CloseOnDeactivatePin() {
+  Pins* const pins = pins_.get();
+  if (pins)
+    pins->RemovePin(this);
+}
+
 BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow)
-    : arrow_(arrow), shadow_(shadow) {
+    : arrow_(arrow),
+      shadow_(shadow),
+      close_on_deactivate_pins_(
+          std::make_unique<CloseOnDeactivatePin::Pins>()) {
   SetOwnedByWidget(true);
   SetAnchorView(anchor_view);
   SetArrow(arrow);
@@ -576,6 +618,16 @@ View* BubbleDialogDelegate::GetAnchorView() const {
   if (!anchor_view_observer_)
     return nullptr;
   return anchor_view_observer_->anchor_view();
+}
+
+bool BubbleDialogDelegate::ShouldCloseOnDeactivate() const {
+  return close_on_deactivate_ && !close_on_deactivate_pins_->is_pinned();
+}
+
+std::unique_ptr<BubbleDialogDelegate::CloseOnDeactivatePin>
+BubbleDialogDelegate::PreventCloseOnDeactivate() {
+  return base::WrapUnique(
+      new CloseOnDeactivatePin(close_on_deactivate_pins_->GetWeakPtr()));
 }
 
 void BubbleDialogDelegate::SetHighlightedButton(Button* highlighted_button) {
@@ -857,7 +909,7 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
 }
 
 void BubbleDialogDelegate::OnDeactivate() {
-  if (close_on_deactivate_ && GetWidget())
+  if (ShouldCloseOnDeactivate() && GetWidget())
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 

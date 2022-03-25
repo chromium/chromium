@@ -22,6 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -280,6 +281,9 @@ BEGIN_METADATA(DotView, views::View)
 END_METADATA
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+                                      kHelpBubbleElementIdForTesting);
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
@@ -558,6 +562,7 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
     SetInitiallyFocusedView(close_button);
   }
 
+  SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -578,6 +583,10 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   SizeToContents();
 
   widget->ShowInactive();
+  auto* const anchor_bubble =
+      anchor_view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  if (anchor_bubble)
+    anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
   MaybeStartAutoCloseTimer();
 }
 

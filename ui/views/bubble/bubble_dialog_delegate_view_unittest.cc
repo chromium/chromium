@@ -521,6 +521,79 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
   }
 }
 
+TEST_F(BubbleDialogDelegateViewTest, PinBlocksCloseOnDeactivate) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  BubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  bubble_delegate->set_close_on_deactivate(true);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+
+  // Pin the bubble so it does not go away on loss of focus.
+  auto pin = bubble_delegate->PreventCloseOnDeactivate();
+  bubble_widget->Show();
+  anchor_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+
+  // Unpin the window. The next time the bubble loses activation, it should
+  // close as expected.
+  pin.reset();
+  bubble_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  anchor_widget->Activate();
+  EXPECT_TRUE(bubble_widget->IsClosed());
+}
+
+TEST_F(BubbleDialogDelegateViewTest, CloseOnDeactivatePinCanOutliveBubble) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  BubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  bubble_delegate->set_close_on_deactivate(true);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+
+  // Pin the bubble so it does not go away on loss of focus.
+  auto pin = bubble_delegate->PreventCloseOnDeactivate();
+  bubble_widget->Show();
+  anchor_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  bubble_widget->CloseNow();
+  pin.reset();
+}
+
+TEST_F(BubbleDialogDelegateViewTest, MultipleCloseOnDeactivatePins) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  BubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  bubble_delegate->set_close_on_deactivate(true);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+
+  // Pin the bubble so it does not go away on loss of focus.
+  auto pin = bubble_delegate->PreventCloseOnDeactivate();
+  auto pin2 = bubble_delegate->PreventCloseOnDeactivate();
+  bubble_widget->Show();
+  anchor_widget->Activate();
+
+  // Unpinning one pin does not reset the state; both must be unpinned.
+  pin.reset();
+  bubble_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  anchor_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+
+  // Fully unpin the window. The next time the bubble loses activation,
+  // it should close as expected.
+  pin2.reset();
+  bubble_widget->Activate();
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  anchor_widget->Activate();
+  EXPECT_TRUE(bubble_widget->IsClosed());
+}
+
 TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);

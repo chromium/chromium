@@ -666,11 +666,6 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   if (!promo_controller)
     return;
 
-  // Make sure the Save/Update bubble doesn't get closed when the IPH bubble is
-  // opened.
-  const bool old_close_on_deactivate = close_on_deactivate();
-  set_close_on_deactivate(false);
-
   switch (type) {
     case IPHType::kRegular:
       if (promo_controller->MaybeShowPromo(
@@ -701,8 +696,6 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
       break;
     }
   }
-
-  set_close_on_deactivate(old_close_on_deactivate);
 }
 
 void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {

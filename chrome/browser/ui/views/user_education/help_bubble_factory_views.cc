@@ -22,24 +22,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
-// Returns whether losing focus would cause a widget to be destroyed.
-// This prevents us from accidentally closing a widget a bubble is anchored to
-// at the cost of not being able to directly access the help bubble.
-bool BlurWouldCloseWidget(const views::Widget* widget) {
-  // Right now, we can only ask the question if we know the bubble is
-  // controlled by a BubbleDialogDelegateView, since runtime type information
-  // isn't present for any of the other objects involved.
-  auto* const contents = widget->widget_delegate()->GetContentsView();
-  return contents &&
-         views::IsViewClass<views::BubbleDialogDelegateView>(contents) &&
-         static_cast<const views::BubbleDialogDelegateView*>(contents)
-             ->close_on_deactivate();
-}
-
-}  // namespace
-
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleViews)
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryViews)
 
@@ -75,8 +57,7 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
   // If the focus isn't in the help bubble, focus the help bubble.
   // Note that if is_focus_in_ancestor_widget is true, then anchor both exists
   // and has a widget, so anchor->GetWidget() will always be valid.
-  if (is_focus_in_ancestor_widget &&
-      !BlurWouldCloseWidget(anchor->GetWidget())) {
+  if (is_focus_in_ancestor_widget) {
     help_bubble_view_->GetWidget()->Activate();
     help_bubble_view_->RequestFocus();
     return true;

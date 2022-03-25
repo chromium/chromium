@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
@@ -144,9 +145,34 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Miscellaneous bubble behaviors:
   //
 
+  // Represents a pin that prevents a widget from closing on deactivation, even
+  // if `close_on_deactivate` is set to true. Prevents closing on deactivation
+  // until its destruction; if it outlives the widget it does nothing.
+  class VIEWS_EXPORT CloseOnDeactivatePin {
+   public:
+    virtual ~CloseOnDeactivatePin();
+
+    CloseOnDeactivatePin(const CloseOnDeactivatePin&) = delete;
+    void operator=(const CloseOnDeactivatePin&) = delete;
+
+   private:
+    class Pins;
+    friend class BubbleDialogDelegate;
+    explicit CloseOnDeactivatePin(base::WeakPtr<Pins> pins);
+
+    const base::WeakPtr<Pins> pins_;
+  };
+
   // Whether the bubble closes when it ceases to be the active window.
-  bool close_on_deactivate() const { return close_on_deactivate_; }
   void set_close_on_deactivate(bool close) { close_on_deactivate_ = close; }
+
+  // Returns whether the bubble should close on deactivation. May not match
+  // `close_on_deactivate` if PreventCloseOnDeactivate() has been called.
+  bool ShouldCloseOnDeactivate() const;
+
+  // Prevents close-on-deactivate for the duration of the lifetime of the pin
+  // that is returned. The pin does nothing after the widget is closed.
+  std::unique_ptr<CloseOnDeactivatePin> PreventCloseOnDeactivate();
 
   // Explicitly set the button to automatically highlight when the bubble is
   // shown. By default the anchor is highlighted, if it is a button.
@@ -360,6 +386,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;
+  std::unique_ptr<CloseOnDeactivatePin::Pins> close_on_deactivate_pins_;
 
   // Whether the |anchor_widget_| (or the |highlighted_button_tracker_|, when
   // provided) should be highlighted when this bubble is shown.
