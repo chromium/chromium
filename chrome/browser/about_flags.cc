@@ -4731,9 +4731,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-universal-links", flag_descriptions::kEnableUniversalLinksName,
      flag_descriptions::kEnableUniversalLinksDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kEnableUniveralLinks)},
-    {"new-usb-backend", flag_descriptions::kNewUsbBackendName,
-     flag_descriptions::kNewUsbBackendDescription, kOsMac,
-     FEATURE_VALUE_TYPE(device::kNewUsbBackend)},
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)

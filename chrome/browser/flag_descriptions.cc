@@ -1657,10 +1657,6 @@ const char kDestroySystemProfilesDescription[] =
     "owned by the System Profile. This requires "
     "#destroy-profile-on-browser-close.";
 
-const char kNewUsbBackendName[] = "Enable new USB backend";
-const char kNewUsbBackendDescription[] =
-    "Enables the new experimental USB backend for macOS";
-
 const char kNotificationsRevampName[] = "Notifications Revamp";
 const char kNotificationsRevampDescription[] =
     "Enable notification UI revamp and grouped web notifications.";
