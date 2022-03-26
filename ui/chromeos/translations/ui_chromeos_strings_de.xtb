@@ -54,7 +54,7 @@
 <translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1439919885608649279">Person mit Blumen</translation>
 <translation id="1471718551822868769">Slowakisch</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" konnte nicht hochgeladen werden. In Ihrem Google Drive-Konto ist nicht genügend Speicherplatz frei.</translation>
+<translation id="1474339897586437869">"<ph name="FILENAME" />" konnte nicht hochgeladen werden. In deinem Google Drive-Konto ist nicht genügend Speicherplatz verfügbar.</translation>
 <translation id="1482884275703521657">Finnisch</translation>
 <translation id="148466539719134488">Schweizerdeutsch</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" kann nicht umbenannt werden. <ph name="ERROR_MESSAGE" /></translation>
@@ -323,7 +323,7 @@
 <translation id="3811494700605067549">1 Datei ausgewählt</translation>
 <translation id="3817579325494460411">Keine Angabe</translation>
 <translation id="3819448694985509187">Falsche PIN. Du hast noch 1 Versuch.</translation>
-<translation id="3822559385185038546">Dieser Proxy wird von Ihrem Administrator erzwungen</translation>
+<translation id="3822559385185038546">Dieser Proxy wird von deinem Administrator erzwungen</translation>
 <translation id="3830674330436234648">Keine Wiedergabe verfügbar</translation>
 <translation id="383652340667548381">Serbisch</translation>
 <translation id="385051799172605136">Zurück</translation>
@@ -417,7 +417,7 @@
 <translation id="4720185134442950733">Mobilfunknetz</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> Fotos gesichert</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Das Video wird von Ihrem Übertragungsgerät leider nicht unterstützt.</translation>
+<translation id="4732760563705710320">Das Video wird von deinem Übertragungsgerät leider nicht unterstützt.</translation>
 <translation id="4737050008115666127">Landung</translation>
 <translation id="4747271164117300400">Mazedonisch</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -478,7 +478,7 @@
    <ph name="LINE_BREAKS" />
    Wenn Sie Ihr Gerät entfernen, während es verwendet wird, können Daten verloren gehen. Warten Sie, bis der Vorgang abgeschlossen ist, und werfen Sie das Gerät dann über die App "Dateien" aus.</translation>
 <translation id="5159560892333415631">Papierkorb leeren</translation>
-<translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es später erneut.</translation>
+<translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfe deine Verbindung und versuche es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>
 <translation id="5170477580121653719">Verbleibender Speicherplatz in Google Drive: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">Miniaturbildansicht</translation>
@@ -488,12 +488,12 @@
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5253070652067921974">Erstellt von</translation>
 <translation id="5257456363153333584">Libelle</translation>
-<translation id="5262311848634918433"><ph name="MARKUP_1" />Greifen Sie überall auf Ihre Dateien zu, auch offline.<ph name="MARKUP_2" />
+<translation id="5262311848634918433"><ph name="MARKUP_1" />Greife überall auf deine Dateien zu, auch offline.<ph name="MARKUP_2" />
     Dateien in Google Drive sind aktuell und auf jedem Gerät verfügbar.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />Bewahren Sie Ihre Dateien sicher auf.<ph name="MARKUP_5" />
-    Was auch immer mit Ihrem Gerät passiert, Ihre Dateien sind in Google Drive sicher gespeichert.<ph name="MARKUP_6" />
-    <ph name="MARKUP_7" />Teilen, erstellen und bearbeiten<ph name="MARKUP_8" />
-    Sie Ihre Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
+    <ph name="MARKUP_4" />Bewahre deine Dateien sicher auf.<ph name="MARKUP_5" />
+    Was auch immer mit deinem Gerät passiert, deine Dateien sind in Google Drive sicher gespeichert.<ph name="MARKUP_6" />
+    <ph name="MARKUP_7" />Teile, erstelle und bearbeite<ph name="MARKUP_8" />
+    deine Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -558,7 +558,7 @@
 <translation id="5818003990515275822">Koreanisch</translation>
 <translation id="5819442873484330149">Hangul 3 Set (Final)</translation>
 <translation id="5832976493438355584">Gesperrt</translation>
-<translation id="5833610766403489739">Diese Datei kann nicht gefunden werden. Bitte überprüfen Sie Ihre Einstellung für den Downloadspeicherort und versuchen Sie es erneut.</translation>
+<translation id="5833610766403489739">Diese Datei kann nicht gefunden werden. Bitte überprüfe deine Einstellung für den Downloadspeicherort und versuche es erneut.</translation>
 <translation id="5838451609423551646">Auswahl aller Einträge wurde aufgehoben.</translation>
 <translation id="5838825566232597749">Internationale US-amerikanische Workman-Tastatur</translation>
 <translation id="5845721951356578987">Pflegekraft</translation>
@@ -684,7 +684,7 @@
 <translation id="6970230597523682626">Bulgarisch</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6976795442547527108">Löwe</translation>
-<translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit Ihrem Chrome OS-Gerät. Suchen Sie im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
+<translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Sie haben keinen freien Speicherplatz mehr.</translation>
@@ -922,14 +922,14 @@
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
-<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für Sie sicherer zu machen. Früher konnten Sie von jeder beliebigen Website aufgefordert werden, eine Erweiterung zu Ihrem Browser hinzuzufügen. In neueren Versionen von Google Chrome müssen Sie Chrome ausdrücklich mitteilen, dass Sie diese Erweiterungen installieren möchten, indem Sie sie über die Seite "Erweiterungen" hinzufügen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite "Erweiterungen" hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9129931661813833980">Ordner anpinnen</translation>
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>
 <translation id="9131598836763251128">Eine oder mehrere Dateien auswählen</translation>
 <translation id="9133055936679483811">Fehler beim Zippen. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Diese Datei wurde für Computer entwickelt, die mit Macintosh-Software betrieben werden. Die Datei ist nicht kompatibel mit Ihrem Chrome OS-Gerät. Suchen Sie im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
+<translation id="9134524245363717059">Diese Datei wurde für Computer entwickelt, die mit Macintosh-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="9144340019284012223">Katalanisch</translation>
 <translation id="914873105831852105">Ungültige PIN. Du hast noch 1 Versuch.</translation>
 <translation id="9153934054460603056">Identität und Passwort speichern</translation>

@@ -56,7 +56,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="3596628256176442606">Dieser Dienst ermöglicht eingehende Verbindungen von Chromoting-Clients.</translation>
 <translation id="369442766917958684">Offline</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
-<translation id="3776024066357219166">Ihre Chrome Remote Desktop-Sitzung wurde beendet.</translation>
+<translation id="3776024066357219166">Deine Chrome Remote Desktop-Sitzung wurde beendet.</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">Ungültige Hostinhaberdomain</translation>
@@ -82,12 +82,12 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ist nicht richtig konfiguriert. Bitte wählen Sie einen anderen Standardbrowser und aktivieren Sie dann die URL-Weiterleitung noch einmal.</translation>
 <translation id="4635770493235256822">Remote-Geräte</translation>
 <translation id="4660011489602794167">Tastatur anzeigen</translation>
-<translation id="4703799847237267011">Ihre Chromoting-Sitzung wurde beendet.</translation>
+<translation id="4703799847237267011">Deine Chromoting-Sitzung wurde beendet.</translation>
 <translation id="4741792197137897469">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chrome an.</translation>
 <translation id="4784508858340177375">Der X-Server ist abgestürzt oder konnte nicht gestartet werden.</translation>
 <translation id="4798680868612952294">Mausoptionen</translation>
 <translation id="4804818685124855865">Verbindung trennen</translation>
-<translation id="4808503597364150972">Bitte geben Sie Ihre PIN für <ph name="HOSTNAME" /> ein.</translation>
+<translation id="4808503597364150972">Bitte gib deine PIN für <ph name="HOSTNAME" /> ein.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Druck senden</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
@@ -153,8 +153,8 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="7678209621226490279">Links verankern</translation>
 <translation id="7693372326588366043">Liste der Hosts aktualisieren</translation>
 <translation id="7714222945760997814">Fehler melden</translation>
-<translation id="7868137160098754906">Geben Sie Ihre PIN für den Remote-Computer ein.</translation>
-<translation id="7895403300744144251">Die Sicherheitsrichtlinien auf dem Remote-Computer gestatten keine Verbindungen von Ihrem Konto.</translation>
+<translation id="7868137160098754906">Gib deine PIN für den Remote-Computer ein.</translation>
+<translation id="7895403300744144251">Die Sicherheitsrichtlinien auf dem Remote-Computer gestatten keine Verbindungen von deinem Konto.</translation>
 <translation id="7936528439960309876">Rechts verankern</translation>
 <translation id="7970576581263377361">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chromium an.</translation>
 <translation id="7981525049612125370">Die Remote-Sitzung ist abgelaufen.</translation>
@@ -162,7 +162,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8060029310790625334">Hilfe</translation>
 <translation id="806699900641041263">Verbindung zu <ph name="HOSTNAME" /> wird hergestellt</translation>
-<translation id="8073845705237259513">Wenn Sie Chrome Remote Desktop verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
+<translation id="8073845705237259513">Wenn du Chrome Remote Desktop verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="809687642899217504">Meine Computer</translation>
 <translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie, ob das Gerät online ist, und versuchen Sie es erneut.</translation>
 <translation id="8295077433896346116">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
@@ -171,7 +171,7 @@ Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unt
 
 Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie ihn und klicken Sie noch einmal auf das Kästchen.</translation>
 <translation id="8305209735512572429">Remoting-Prozess für die Web Authentication App</translation>
-<translation id="8383794970363966105">Wenn Sie Chromoting verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
+<translation id="8383794970363966105">Wenn du Chromoting verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="8386846956409881180">Der Host wurde mit ungültigen OAuth-Anmeldedaten konfiguriert.</translation>
 <translation id="8397385476380433240">Berechtigung für <ph name="PRODUCT_NAME" /> gewähren</translation>
 <translation id="8406498562923498210">Wählen Sie die Sitzung aus, die auf Ihrem Chrome Remote Desktop gestartet werden soll. Beachten Sie jedoch, dass einige Sitzungstypen nicht gleichzeitig auf dem Chrome Remote Desktop und in der lokalen Konsole ausgeführt werden können.</translation>
