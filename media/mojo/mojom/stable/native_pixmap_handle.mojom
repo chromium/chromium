@@ -4,13 +4,23 @@
 
 module media.stable.mojom;
 
-import "ui/gfx/mojom/native_handle_types.mojom";
+// Based on |gfx.mojom.NativePixmapPlane|.
+// Next min field ID: 4
+[Stable]
+struct NativePixmapPlane {
+  uint32 stride@0;
+  uint64 offset@1;
+  uint64 size@2;
+
+  // A platform-specific handle to the underlying memory object.
+  handle<platform> buffer_handle@3;
+};
 
 // Based on |gfx.mojom.NativePixmapHandle|.
 // Next min field ID: 2
 [Stable]
 struct NativePixmapHandle {
-  array<gfx.mojom.NativePixmapPlane> planes@0;
+  array<NativePixmapPlane> planes@0;
   uint64 modifier@1;
 };
 
