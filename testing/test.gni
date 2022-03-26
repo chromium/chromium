@@ -971,11 +971,6 @@ template("script_test") {
 
     data = [ invoker.script ]
 
-    if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
-      use_vpython3 = false
-      data += [ "//.vpython" ]
-    }
-
     if (defined(invoker.data)) {
       data += invoker.data
     }

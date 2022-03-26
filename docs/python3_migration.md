@@ -114,9 +114,7 @@ All targets in the build use Python3 now, and anything declared via an
 
 Test targets that run by invoking python scripts (like telemetry_unittests
 or blink_web_tests) should eventually migrate to using the [script_test]
-GN templates. Once you do that, they will use Python3 by default. However,
-some tests may specify `run_under_python2 = true` as a template variable
-to use Python2, so when you're ready to test Python3, just delete that line.
+GN templates. Once you do that, they will use Python3 by default.
 
 Some tests still need to be migrated to `script_test()`
 ([crbug.com/1208648](https://crbug.com/1208648)). The process for

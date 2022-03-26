@@ -20,8 +20,6 @@
 #     build product. Paths can be relative to the containing gn file
 #     or source-absolute.
 #   executable_args: List of arguments to write into the wrapper.
-#   use_vpython3: If false, invoke the generated wrapper with vpython instead
-#     of vpython3.
 #
 # Example wrapping a checked-in script:
 #   generate_wrapper("sample_wrapper") {
@@ -70,7 +68,10 @@ template("generate_wrapper") {
     if (!defined(data)) {
       data = []
     }
-    data += [ _wrapper_script ]
+    data += [
+      _wrapper_script,
+      "//.vpython3",
+    ]
     outputs = [ _wrapper_script ]
 
     _rebased_executable_to_wrap =
@@ -92,10 +93,6 @@ template("generate_wrapper") {
       _script_language,
     ]
 
-    if (!defined(invoker.use_vpython3) || invoker.use_vpython3) {
-      args += [ "--use-vpython3" ]
-      data += [ "//.vpython3" ]
-    }
     args += [ "--" ]
     args += _wrapped_arguments
 
