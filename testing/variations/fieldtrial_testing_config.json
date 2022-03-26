@@ -2589,6 +2589,21 @@
             ]
         }
     ],
+    "CrosDeviceActiveCountingMonthlyCheckIn": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceActiveClientMonthlyCheckIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosLazyLoginWebUI": [
         {
             "platforms": [
