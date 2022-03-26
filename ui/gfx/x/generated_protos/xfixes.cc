@@ -147,7 +147,10 @@ void ReadEvent<XFixes::CursorNotifyEvent>(XFixes::CursorNotifyEvent* event_,
 std::string XFixes::BadRegionError::ToString() const {
   std::stringstream ss_;
   ss_ << "XFixes::BadRegionError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -158,6 +161,9 @@ void ReadError<XFixes::BadRegionError>(XFixes::BadRegionError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -169,6 +175,15 @@ void ReadError<XFixes::BadRegionError>(XFixes::BadRegionError* error_,
 
   // sequence
   Read(&sequence, &buf);
+
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }
@@ -1983,6 +1998,112 @@ Future<void> XFixes::DeletePointerBarrier(
 Future<void> XFixes::DeletePointerBarrier(const Barrier& barrier) {
   return XFixes::DeletePointerBarrier(
       XFixes::DeletePointerBarrierRequest{barrier});
+}
+
+Future<void> XFixes::SetClientDisconnectMode(
+    const XFixes::SetClientDisconnectModeRequest& request) {
+  if (!connection_->Ready() || !present())
+    return {};
+
+  WriteBuffer buf;
+
+  auto& disconnect_mode = request.disconnect_mode;
+
+  // major_opcode
+  uint8_t major_opcode = info_.major_opcode;
+  buf.Write(&major_opcode);
+
+  // minor_opcode
+  uint8_t minor_opcode = 33;
+  buf.Write(&minor_opcode);
+
+  // length
+  // Caller fills in length for writes.
+  Pad(&buf, sizeof(uint16_t));
+
+  // disconnect_mode
+  uint32_t tmp10;
+  tmp10 = static_cast<uint32_t>(disconnect_mode);
+  buf.Write(&tmp10);
+
+  Align(&buf, 4);
+
+  return connection_->SendRequest<void>(&buf, "XFixes::SetClientDisconnectMode",
+                                        false);
+}
+
+Future<void> XFixes::SetClientDisconnectMode(
+    const ClientDisconnectFlags& disconnect_mode) {
+  return XFixes::SetClientDisconnectMode(
+      XFixes::SetClientDisconnectModeRequest{disconnect_mode});
+}
+
+Future<XFixes::GetClientDisconnectModeReply> XFixes::GetClientDisconnectMode(
+    const XFixes::GetClientDisconnectModeRequest& request) {
+  if (!connection_->Ready() || !present())
+    return {};
+
+  WriteBuffer buf;
+
+  // major_opcode
+  uint8_t major_opcode = info_.major_opcode;
+  buf.Write(&major_opcode);
+
+  // minor_opcode
+  uint8_t minor_opcode = 34;
+  buf.Write(&minor_opcode);
+
+  // length
+  // Caller fills in length for writes.
+  Pad(&buf, sizeof(uint16_t));
+
+  Align(&buf, 4);
+
+  return connection_->SendRequest<XFixes::GetClientDisconnectModeReply>(
+      &buf, "XFixes::GetClientDisconnectMode", false);
+}
+
+Future<XFixes::GetClientDisconnectModeReply> XFixes::GetClientDisconnectMode() {
+  return XFixes::GetClientDisconnectMode(
+      XFixes::GetClientDisconnectModeRequest{});
+}
+
+template <>
+COMPONENT_EXPORT(X11)
+std::unique_ptr<XFixes::GetClientDisconnectModeReply> detail::ReadReply<
+    XFixes::GetClientDisconnectModeReply>(ReadBuffer* buffer) {
+  auto& buf = *buffer;
+  auto reply = std::make_unique<XFixes::GetClientDisconnectModeReply>();
+
+  auto& sequence = (*reply).sequence;
+  auto& disconnect_mode = (*reply).disconnect_mode;
+
+  // response_type
+  uint8_t response_type;
+  Read(&response_type, &buf);
+
+  // pad0
+  Pad(&buf, 1);
+
+  // sequence
+  Read(&sequence, &buf);
+
+  // length
+  uint32_t length;
+  Read(&length, &buf);
+
+  // disconnect_mode
+  uint32_t tmp11;
+  Read(&tmp11, &buf);
+  disconnect_mode = static_cast<XFixes::ClientDisconnectFlags>(tmp11);
+
+  // pad1
+  Pad(&buf, 20);
+
+  Align(&buf, 4);
+  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+
+  return reply;
 }
 
 }  // namespace x11

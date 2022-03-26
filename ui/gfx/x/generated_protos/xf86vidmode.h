@@ -135,42 +135,63 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   struct BadClockError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadHTimingsError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadVTimingsError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ModeUnsuitableError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ExtensionDisabledError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ClientNotLocalError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ZoomLockedError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

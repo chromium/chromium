@@ -248,24 +248,33 @@ class COMPONENT_EXPORT(X11) Xv {
 
   struct BadPortError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadEncodingError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadControlError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct VideoNotifyEvent {
-    static constexpr int type_id = 81;
+    static constexpr int type_id = 83;
     static constexpr uint8_t opcode = 0;
     VideoNotifyReason reason{};
     uint16_t sequence{};
@@ -279,7 +288,7 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct PortNotifyEvent {
-    static constexpr int type_id = 82;
+    static constexpr int type_id = 84;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     Time time{};

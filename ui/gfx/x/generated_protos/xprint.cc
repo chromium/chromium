@@ -112,7 +112,10 @@ void ReadEvent<XPrint::AttributNotifyEvent>(XPrint::AttributNotifyEvent* event_,
 std::string XPrint::BadContextError::ToString() const {
   std::stringstream ss_;
   ss_ << "XPrint::BadContextError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -123,6 +126,9 @@ void ReadError<XPrint::BadContextError>(XPrint::BadContextError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -135,12 +141,24 @@ void ReadError<XPrint::BadContextError>(XPrint::BadContextError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XPrint::BadSequenceError::ToString() const {
   std::stringstream ss_;
   ss_ << "XPrint::BadSequenceError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -151,6 +169,9 @@ void ReadError<XPrint::BadSequenceError>(XPrint::BadSequenceError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -162,6 +183,15 @@ void ReadError<XPrint::BadSequenceError>(XPrint::BadSequenceError* error_,
 
   // sequence
   Read(&sequence, &buf);
+
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }
@@ -271,6 +301,9 @@ Future<XPrint::PrintGetPrinterListReply> XPrint::PrintGetPrinterList(
     // printer_name_elem
     buf.Write(&printer_name_elem);
   }
+
+  // pad0
+  Align(&buf, 4);
 
   // locale
   DCHECK_EQ(static_cast<size_t>(localeLen), locale.size());
@@ -444,6 +477,9 @@ Future<void> XPrint::CreateContext(
     // printerName_elem
     buf.Write(&printerName_elem);
   }
+
+  // pad0
+  Align(&buf, 4);
 
   // locale
   DCHECK_EQ(static_cast<size_t>(localeLen), locale.size());
@@ -839,12 +875,18 @@ Future<void> XPrint::PrintPutDocumentData(
     buf.Write(&data_elem);
   }
 
+  // pad0
+  Align(&buf, 4);
+
   // doc_format
   DCHECK_EQ(static_cast<size_t>(len_fmt), doc_format.size());
   for (auto& doc_format_elem : doc_format) {
     // doc_format_elem
     buf.Write(&doc_format_elem);
   }
+
+  // pad1
+  Align(&buf, 4);
 
   // options
   DCHECK_EQ(static_cast<size_t>(len_options), options.size());

@@ -489,6 +489,7 @@ The patch that fixed this server bug in X.org CVS is here:
 		<list type="char" name="gl_extension_string">
 			<fieldref>gl_str_len</fieldref>
 		</list>
+		<pad align="4" />
 		<list type="char" name="glx_extension_string">
 			<fieldref>glx_str_len</fieldref>
 		</list>
@@ -525,6 +526,7 @@ The patch that fixed this server bug in X.org CVS is here:
 		<list type="char" name="gl_extension_string">
 			<fieldref>gl_str_len</fieldref>
 		</list>
+		<pad align="4" />
 		<list type="char" name="glx_extension_string">
 			<fieldref>glx_str_len</fieldref>
 		</list>

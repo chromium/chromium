@@ -158,6 +158,8 @@ class COMPONENT_EXPORT(X11) Record {
   struct BadContextError : public x11::Error {
     uint16_t sequence{};
     uint32_t invalid_record{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

@@ -1,8 +1,15 @@
 '''
 This module contains the classes which represent XCB data types.
 '''
+import sys
 from xcbgen.expr import Field, Expression
 from xcbgen.align import Alignment, AlignmentLog
+
+if sys.version_info[:2] >= (3, 3):
+    from xml.etree.ElementTree import SubElement
+else:
+    from xml.etree.cElementTree import SubElement
+
 import __main__
 
 verbose_align_log = False
@@ -503,6 +510,8 @@ class ComplexType(Type):
 
     Public fields added:
     fields is an array of Field objects describing the structure fields.
+    length_expr is an expression that defines the length of the structure.
+
     '''
     def __init__(self, name, elt):
         Type.__init__(self, name)
@@ -512,6 +521,7 @@ class ComplexType(Type):
         self.nmemb = 1
         self.size = 0
         self.lenfield_parent = [self]
+        self.length_expr = None
 
         # get required_start_alignment
         required_start_align_element = elt.find("required_start_align")
@@ -572,6 +582,9 @@ class ComplexType(Type):
                 fd_name = child.get('name')
                 type = module.get_type('INT32')
                 type.make_fd_of(module, self, fd_name)
+                continue
+            elif child.tag == 'length':
+                self.length_expr = Expression(list(child)[0], self)
                 continue
             else:
                 # Hit this on Reply
@@ -1345,6 +1358,15 @@ class Error(ComplexType):
         self.opcodes = {}
         if self.required_start_align is None:
             self.required_start_align = Alignment(4,0)
+
+        # All errors are basically the same, but they still got different XML
+        # for historic reasons. This 'invents' the missing parts.
+        if len(self.elt) < 1:
+            SubElement(self.elt, "field", type="CARD32", name="bad_value")
+        if len(self.elt) < 2:
+            SubElement(self.elt, "field", type="CARD16", name="minor_opcode")
+        if len(self.elt) < 3:
+            SubElement(self.elt, "field", type="CARD8", name="major_opcode")
 
     def add_opcode(self, opcode, name, main):
         self.opcodes[name] = opcode

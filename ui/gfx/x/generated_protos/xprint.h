@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(X11) XPrint {
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 50;
+    static constexpr int type_id = 52;
     static constexpr uint8_t opcode = 0;
     uint8_t detail{};
     uint16_t sequence{};
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(X11) XPrint {
   };
 
   struct AttributNotifyEvent {
-    static constexpr int type_id = 51;
+    static constexpr int type_id = 53;
     static constexpr uint8_t opcode = 1;
     uint8_t detail{};
     uint16_t sequence{};
@@ -146,12 +146,18 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   struct BadContextError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadSequenceError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

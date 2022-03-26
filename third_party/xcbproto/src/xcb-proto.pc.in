@@ -4,6 +4,7 @@ datarootdir=@datarootdir@
 datadir=@datadir@
 libdir=@libdir@
 xcbincludedir=${pc_sysrootdir}@xcbincludedir@
+PYTHON_PREFIX=@PYTHON_PREFIX@
 pythondir=${pc_sysrootdir}@pythondir@
 
 Name: XCB Proto

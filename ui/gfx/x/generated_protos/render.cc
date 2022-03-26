@@ -56,7 +56,10 @@ Render::Render(Connection* connection, const x11::QueryExtensionReply& info)
 std::string Render::PictFormatError::ToString() const {
   std::stringstream ss_;
   ss_ << "Render::PictFormatError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -67,6 +70,9 @@ void ReadError<Render::PictFormatError>(Render::PictFormatError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -79,12 +85,24 @@ void ReadError<Render::PictFormatError>(Render::PictFormatError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string Render::PictureError::ToString() const {
   std::stringstream ss_;
   ss_ << "Render::PictureError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -95,6 +113,9 @@ void ReadError<Render::PictureError>(Render::PictureError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -107,12 +128,24 @@ void ReadError<Render::PictureError>(Render::PictureError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string Render::PictOpError::ToString() const {
   std::stringstream ss_;
   ss_ << "Render::PictOpError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -123,6 +156,9 @@ void ReadError<Render::PictOpError>(Render::PictOpError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -135,12 +171,24 @@ void ReadError<Render::PictOpError>(Render::PictOpError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string Render::GlyphSetError::ToString() const {
   std::stringstream ss_;
   ss_ << "Render::GlyphSetError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -151,6 +199,9 @@ void ReadError<Render::GlyphSetError>(Render::GlyphSetError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -163,12 +214,24 @@ void ReadError<Render::GlyphSetError>(Render::GlyphSetError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string Render::GlyphError::ToString() const {
   std::stringstream ss_;
   ss_ << "Render::GlyphError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -179,6 +242,9 @@ void ReadError<Render::GlyphError>(Render::GlyphError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -190,6 +256,15 @@ void ReadError<Render::GlyphError>(Render::GlyphError* error_,
 
   // sequence
   Read(&sequence, &buf);
+
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }

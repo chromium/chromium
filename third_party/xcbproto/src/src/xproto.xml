@@ -2982,25 +2982,21 @@ results (no grabs are established) if there is a conflicting grab for any combin
 
       ]]></description>
       <field name="owner_events"><![CDATA[
-If 1, the `grab_window` will still get the pointer events. If 0, events are not
+If 1, the `grab_window` will still get the key events. If 0, events are not
 reported to the `grab_window`.
       ]]></field>
       <field name="grab_window"><![CDATA[
-Specifies the window on which the pointer should be grabbed.
+Specifies the window on which the key should be grabbed.
       ]]></field>
       <field name="key"><![CDATA[
 The keycode of the key to grab.
 
 The special value `XCB_GRAB_ANY` means grab any key.
       ]]></field>
-      <field name="cursor"><![CDATA[
-Specifies the cursor that should be displayed or `XCB_NONE` to not change the
-cursor.
-      ]]></field>
       <field name="modifiers"><![CDATA[
 The modifiers to grab.
 
-Using the special value `XCB_MOD_MASK_ANY` means grab the pointer with all
+Using the special value `XCB_MOD_MASK_ANY` means grab the key with all
 possible modifier combinations.
       ]]></field>
       <!-- the enum doc is sufficient. -->
@@ -3011,7 +3007,8 @@ Another client has already issued a GrabKey with the same button/key
 combination on the same window.
       ]]></error>
       <error type="Value"><![CDATA[
-TODO: reasons?
+The key is not `XCB_GRAB_ANY` and not in the range specified by `min_keycode`
+and `max_keycode` in the connection setup.
       ]]></error>
       <error type="Window"><![CDATA[
 The specified `window` does not exist.

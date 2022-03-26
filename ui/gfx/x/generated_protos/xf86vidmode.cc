@@ -57,7 +57,10 @@ XF86VidMode::XF86VidMode(Connection* connection,
 std::string XF86VidMode::BadClockError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::BadClockError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -68,6 +71,9 @@ void ReadError<XF86VidMode::BadClockError>(XF86VidMode::BadClockError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -80,12 +86,24 @@ void ReadError<XF86VidMode::BadClockError>(XF86VidMode::BadClockError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::BadHTimingsError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::BadHTimingsError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -97,6 +115,9 @@ void ReadError<XF86VidMode::BadHTimingsError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -109,12 +130,24 @@ void ReadError<XF86VidMode::BadHTimingsError>(
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::BadVTimingsError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::BadVTimingsError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -126,6 +159,9 @@ void ReadError<XF86VidMode::BadVTimingsError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -138,12 +174,24 @@ void ReadError<XF86VidMode::BadVTimingsError>(
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ModeUnsuitableError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::ModeUnsuitableError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -155,6 +203,9 @@ void ReadError<XF86VidMode::ModeUnsuitableError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -167,12 +218,24 @@ void ReadError<XF86VidMode::ModeUnsuitableError>(
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ExtensionDisabledError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::ExtensionDisabledError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -184,6 +247,9 @@ void ReadError<XF86VidMode::ExtensionDisabledError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -196,12 +262,24 @@ void ReadError<XF86VidMode::ExtensionDisabledError>(
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ClientNotLocalError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::ClientNotLocalError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -213,6 +291,9 @@ void ReadError<XF86VidMode::ClientNotLocalError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -225,12 +306,24 @@ void ReadError<XF86VidMode::ClientNotLocalError>(
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ZoomLockedError::ToString() const {
   std::stringstream ss_;
   ss_ << "XF86VidMode::ZoomLockedError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -242,6 +335,9 @@ void ReadError<XF86VidMode::ZoomLockedError>(
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -253,6 +349,15 @@ void ReadError<XF86VidMode::ZoomLockedError>(
 
   // sequence
   Read(&sequence, &buf);
+
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }

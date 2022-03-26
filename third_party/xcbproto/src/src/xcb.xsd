@@ -101,6 +101,13 @@ authorization from the authors.
   <!-- field replaces FIELD, PARAM, and REPLY. -->
   <xsd:element name="field" type="var" />
 
+  <!-- Length of data structures -->
+  <xsd:element name="length">
+    <xsd:complexType>
+      <xsd:group ref="expression" />
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- fd passing parameter -->
   <xsd:element name="fd">
     <xsd:complexType>
@@ -210,6 +217,7 @@ authorization from the authors.
       <xsd:element ref="list" />
       <xsd:element ref="fd" />
       <xsd:element ref="required_start_align" />
+      <xsd:element ref="length" />
     </xsd:choice>
   </xsd:group>
 

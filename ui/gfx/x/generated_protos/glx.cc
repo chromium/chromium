@@ -2797,6 +2797,9 @@ Future<void> Glx::SetClientInfoARB(
     buf.Write(&gl_extension_string_elem);
   }
 
+  // pad0
+  Align(&buf, 4);
+
   // glx_extension_string
   DCHECK_EQ(static_cast<size_t>(glx_str_len), glx_extension_string.size());
   for (auto& glx_extension_string_elem : glx_extension_string) {
@@ -2955,6 +2958,9 @@ Future<void> Glx::SetClientInfo2ARB(
     // gl_extension_string_elem
     buf.Write(&gl_extension_string_elem);
   }
+
+  // pad0
+  Align(&buf, 4);
 
   // glx_extension_string
   DCHECK_EQ(static_cast<size_t>(glx_str_len), glx_extension_string.size());

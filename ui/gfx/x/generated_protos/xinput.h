@@ -70,7 +70,7 @@ class Future;
 class COMPONENT_EXPORT(X11) Input {
  public:
   static constexpr unsigned major_version = 2;
-  static constexpr unsigned minor_version = 3;
+  static constexpr unsigned minor_version = 4;
 
   Input(Connection* connection, const x11::QueryExtensionReply& info);
 
@@ -226,6 +226,7 @@ class COMPONENT_EXPORT(X11) Input {
     Valuator = 2,
     Scroll = 3,
     Touch = 8,
+    Gesture = 9,
   };
 
   enum class DeviceType : int {
@@ -279,6 +280,8 @@ class COMPONENT_EXPORT(X11) Input {
     Enter = 2,
     FocusIn = 3,
     TouchBegin = 4,
+    GesturePinchBegin = 5,
+    GestureSwipeBegin = 6,
   };
 
   enum class ModifierMask : int {
@@ -373,6 +376,14 @@ class COMPONENT_EXPORT(X11) Input {
   enum class BarrierFlags : int {
     PointerReleased = 1 << 0,
     DeviceIsGrabbed = 1 << 1,
+  };
+
+  enum class GesturePinchEventFlags : int {
+    GesturePinchCancelled = 1 << 0,
+  };
+
+  enum class GestureSwipeEventFlags : int {
+    GestureSwipeCancelled = 1 << 0,
   };
 
   struct Fp3232 {
@@ -1222,6 +1233,18 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t num_touches{};
   };
 
+  struct GestureClass {
+    bool operator==(const GestureClass& other) const {
+      return type == other.type && len == other.len &&
+             sourceid == other.sourceid && num_touches == other.num_touches;
+    }
+
+    DeviceClassType type{};
+    uint16_t len{};
+    DeviceId sourceid{};
+    uint8_t num_touches{};
+  };
+
   struct ValuatorClass {
     bool operator==(const ValuatorClass& other) const {
       return type == other.type && len == other.len &&
@@ -1272,11 +1295,15 @@ class COMPONENT_EXPORT(X11) Input {
       TouchMode mode{};
       uint8_t num_touches{};
     };
+    struct Gesture {
+      uint8_t num_touches{};
+    };
     absl::optional<Key> key{};
     absl::optional<Button> button{};
     absl::optional<Valuator> valuator{};
     absl::optional<Scroll> scroll{};
     absl::optional<Touch> touch{};
+    absl::optional<Gesture> gesture{};
   };
 
   struct XIDeviceInfo {
@@ -1630,33 +1657,110 @@ class COMPONENT_EXPORT(X11) Input {
     x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
+  struct GesturePinchEvent {
+    static constexpr int type_id = 38;
+    enum Opcode {
+      Begin = 27,
+      Update = 28,
+      End = 29,
+    } opcode{};
+    uint16_t sequence{};
+    DeviceId deviceid{};
+    Time time{};
+    uint32_t detail{};
+    Window root{};
+    Window event{};
+    Window child{};
+    Fp1616 root_x{};
+    Fp1616 root_y{};
+    Fp1616 event_x{};
+    Fp1616 event_y{};
+    Fp1616 delta_x{};
+    Fp1616 delta_y{};
+    Fp1616 delta_unaccel_x{};
+    Fp1616 delta_unaccel_y{};
+    Fp1616 scale{};
+    Fp1616 delta_angle{};
+    DeviceId sourceid{};
+    ModifierInfo mods{};
+    GroupInfo group{};
+    GesturePinchEventFlags flags{};
+
+    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  };
+
+  struct GestureSwipeEvent {
+    static constexpr int type_id = 39;
+    enum Opcode {
+      Begin = 30,
+      Update = 31,
+      End = 32,
+    } opcode{};
+    uint16_t sequence{};
+    DeviceId deviceid{};
+    Time time{};
+    uint32_t detail{};
+    Window root{};
+    Window event{};
+    Window child{};
+    Fp1616 root_x{};
+    Fp1616 root_y{};
+    Fp1616 event_x{};
+    Fp1616 event_y{};
+    Fp1616 delta_x{};
+    Fp1616 delta_y{};
+    Fp1616 delta_unaccel_x{};
+    Fp1616 delta_unaccel_y{};
+    DeviceId sourceid{};
+    ModifierInfo mods{};
+    GroupInfo group{};
+    GestureSwipeEventFlags flags{};
+
+    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  };
+
   using EventForSend = std::array<uint8_t, 32>;
   struct DeviceError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct EventError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ModeError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct DeviceBusyError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ClassError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
@@ -3499,6 +3603,38 @@ inline constexpr x11::Input::BarrierFlags operator&(
   using T = std::underlying_type_t<x11::Input::BarrierFlags>;
   return static_cast<x11::Input::BarrierFlags>(static_cast<T>(l) &
                                                static_cast<T>(r));
+}
+
+inline constexpr x11::Input::GesturePinchEventFlags operator|(
+    x11::Input::GesturePinchEventFlags l,
+    x11::Input::GesturePinchEventFlags r) {
+  using T = std::underlying_type_t<x11::Input::GesturePinchEventFlags>;
+  return static_cast<x11::Input::GesturePinchEventFlags>(static_cast<T>(l) |
+                                                         static_cast<T>(r));
+}
+
+inline constexpr x11::Input::GesturePinchEventFlags operator&(
+    x11::Input::GesturePinchEventFlags l,
+    x11::Input::GesturePinchEventFlags r) {
+  using T = std::underlying_type_t<x11::Input::GesturePinchEventFlags>;
+  return static_cast<x11::Input::GesturePinchEventFlags>(static_cast<T>(l) &
+                                                         static_cast<T>(r));
+}
+
+inline constexpr x11::Input::GestureSwipeEventFlags operator|(
+    x11::Input::GestureSwipeEventFlags l,
+    x11::Input::GestureSwipeEventFlags r) {
+  using T = std::underlying_type_t<x11::Input::GestureSwipeEventFlags>;
+  return static_cast<x11::Input::GestureSwipeEventFlags>(static_cast<T>(l) |
+                                                         static_cast<T>(r));
+}
+
+inline constexpr x11::Input::GestureSwipeEventFlags operator&(
+    x11::Input::GestureSwipeEventFlags l,
+    x11::Input::GestureSwipeEventFlags r) {
+  using T = std::underlying_type_t<x11::Input::GestureSwipeEventFlags>;
+  return static_cast<x11::Input::GestureSwipeEventFlags>(static_cast<T>(l) &
+                                                         static_cast<T>(r));
 }
 
 #endif  // UI_GFX_X_GENERATED_PROTOS_XINPUT_H_

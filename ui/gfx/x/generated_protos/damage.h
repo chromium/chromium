@@ -92,6 +92,9 @@ class COMPONENT_EXPORT(X11) Damage {
 
   struct BadDamageError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

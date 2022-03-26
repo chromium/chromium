@@ -70,7 +70,7 @@ class Future;
 
 class COMPONENT_EXPORT(X11) XFixes {
  public:
-  static constexpr unsigned major_version = 5;
+  static constexpr unsigned major_version = 6;
   static constexpr unsigned minor_version = 0;
 
   XFixes(Connection* connection, const x11::QueryExtensionReply& info);
@@ -130,6 +130,11 @@ class COMPONENT_EXPORT(X11) XFixes {
     NegativeY = 1 << 3,
   };
 
+  enum class ClientDisconnectFlags : int {
+    Default = 0,
+    Terminate = 1 << 0,
+  };
+
   struct SelectionNotifyEvent {
     static constexpr int type_id = 18;
     static constexpr uint8_t opcode = 0;
@@ -159,6 +164,9 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   struct BadRegionError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
@@ -641,6 +649,33 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> DeletePointerBarrier(const Barrier& barrier = {});
 
+  struct SetClientDisconnectModeRequest {
+    ClientDisconnectFlags disconnect_mode{};
+  };
+
+  using SetClientDisconnectModeResponse = Response<void>;
+
+  Future<void> SetClientDisconnectMode(
+      const SetClientDisconnectModeRequest& request);
+
+  Future<void> SetClientDisconnectMode(
+      const ClientDisconnectFlags& disconnect_mode = {});
+
+  struct GetClientDisconnectModeRequest {};
+
+  struct GetClientDisconnectModeReply {
+    uint16_t sequence{};
+    ClientDisconnectFlags disconnect_mode{};
+  };
+
+  using GetClientDisconnectModeResponse =
+      Response<GetClientDisconnectModeReply>;
+
+  Future<GetClientDisconnectModeReply> GetClientDisconnectMode(
+      const GetClientDisconnectModeRequest& request);
+
+  Future<GetClientDisconnectModeReply> GetClientDisconnectMode();
+
  private:
   Connection* const connection_;
   x11::QueryExtensionReply info_{};
@@ -788,6 +823,22 @@ inline constexpr x11::XFixes::BarrierDirections operator&(
   using T = std::underlying_type_t<x11::XFixes::BarrierDirections>;
   return static_cast<x11::XFixes::BarrierDirections>(static_cast<T>(l) &
                                                      static_cast<T>(r));
+}
+
+inline constexpr x11::XFixes::ClientDisconnectFlags operator|(
+    x11::XFixes::ClientDisconnectFlags l,
+    x11::XFixes::ClientDisconnectFlags r) {
+  using T = std::underlying_type_t<x11::XFixes::ClientDisconnectFlags>;
+  return static_cast<x11::XFixes::ClientDisconnectFlags>(static_cast<T>(l) |
+                                                         static_cast<T>(r));
+}
+
+inline constexpr x11::XFixes::ClientDisconnectFlags operator&(
+    x11::XFixes::ClientDisconnectFlags l,
+    x11::XFixes::ClientDisconnectFlags r) {
+  using T = std::underlying_type_t<x11::XFixes::ClientDisconnectFlags>;
+  return static_cast<x11::XFixes::ClientDisconnectFlags>(static_cast<T>(l) &
+                                                         static_cast<T>(r));
 }
 
 #endif  // UI_GFX_X_GENERATED_PROTOS_XFIXES_H_
