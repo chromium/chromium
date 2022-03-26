@@ -13,6 +13,8 @@
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +52,8 @@ class CastMediaNotificationProducerTest : public testing::Test {
   }
 
   void TearDown() override { notification_producer_.reset(); }
+
+  TestingProfile* profile() { return &profile_; }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -139,6 +143,23 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
 
   notification_producer_->OnRoutesUpdated(
       {mirroring_route, multizone_member_route, connecting_route});
+  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
+}
+
+TEST_F(CastMediaNotificationProducerTest, NonLocalRoutesWithoutNotifications) {
+  MediaRoute non_local_route = CreateRoute("non-local-route");
+  non_local_route.set_local(false);
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      profile()->GetTestingPrefService();
+
+  notification_producer_->OnRoutesUpdated({non_local_route});
+  EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
+
+  // There is no need to call |OnRouteUpdated()| here because this is a
+  // client-side change.
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      false);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

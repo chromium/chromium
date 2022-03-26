@@ -155,7 +155,7 @@ CastMediaNotificationItem::CastMediaNotificationItem(
       profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
-      is_local_presentation_(route.is_local_presentation()),
+      route_is_local_(route.is_local()),
       image_downloader_(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,

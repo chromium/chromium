@@ -241,7 +241,8 @@ MediaSessionItemProducer::GetMediaItem(const std::string& id) {
   return it == sessions_.end() ? nullptr : it->second.item()->GetWeakPtr();
 }
 
-std::set<std::string> MediaSessionItemProducer::GetActiveControllableItemIds() {
+std::set<std::string> MediaSessionItemProducer::GetActiveControllableItemIds()
+    const {
   return active_controllable_session_ids_;
 }
 

@@ -10,6 +10,9 @@
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
+namespace global_media_controls {
+class MediaItemManager;
+}
 
 // The contextual menu of the media toolbar button has two items, both of which
 // are related to Cast. So this class should be instantiated only when
@@ -33,6 +36,7 @@ class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+  void MenuClosed(ui::SimpleMenuModel* source) override;
 
   void ToggleShowOtherSessions();
 
@@ -42,5 +46,6 @@ class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   const raw_ptr<Browser> browser_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTEXTUAL_MENU_H_

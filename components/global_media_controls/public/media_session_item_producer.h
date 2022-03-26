@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   // MediaItemProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
       const std::string& id) override;
-  std::set<std::string> GetActiveControllableItemIds() override;
+  std::set<std::string> GetActiveControllableItemIds() const override;
   bool HasFrozenItems() override;
   void OnItemShown(const std::string& id, MediaItemUI* item_ui) override;
   bool IsItemActivelyPlaying(const std::string& id) override;

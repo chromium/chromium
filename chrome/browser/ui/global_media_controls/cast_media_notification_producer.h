@@ -48,7 +48,7 @@ class CastMediaNotificationProducer
   // global_media_controls::MediaItemProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
       const std::string& id) override;
-  std::set<std::string> GetActiveControllableItemIds() override;
+  std::set<std::string> GetActiveControllableItemIds() const override;
   bool HasFrozenItems() override;
   void OnItemShown(const std::string& id,
                    global_media_controls::MediaItemUI* item_ui) override;

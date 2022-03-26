@@ -78,7 +78,7 @@ class CastMediaNotificationItem
   }
   Profile* profile() { return profile_; }
   bool is_active() const { return is_active_; }
-  bool is_local_presentation() const { return is_local_presentation_; }
+  bool route_is_local() const { return route_is_local_; }
 
   base::WeakPtr<CastMediaNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -139,7 +139,8 @@ class CastMediaNotificationItem
 
   std::unique_ptr<CastMediaSessionController> session_controller_;
   const media_router::MediaRoute::Id media_route_id_;
-  const bool is_local_presentation_;
+  // True if the route is started from the |profile_| on the current device.
+  const bool route_is_local_;
   ImageDownloader image_downloader_;
   media_session::MediaMetadata metadata_;
   std::vector<media_session::mojom::MediaSessionAction> actions_;

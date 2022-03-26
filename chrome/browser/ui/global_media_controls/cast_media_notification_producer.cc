@@ -14,10 +14,15 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
+// Returns false if a notification item shouldn't be created for |route|.
+// If a route should be hidden, it's not possible to create an item
+// for this route until the next time |OnModuleUpdated()| is called.
 bool ShouldHideNotification(const raw_ptr<Profile> profile,
                             const media_router::MediaRoute& route) {
   // TODO(crbug.com/1195382): Display multizone group route.
@@ -26,16 +31,18 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
   }
 
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
-    // Hide a route if it's not for display or it's a mirroring route.
+    // Hide a route if it's a mirroring route.
     if (route.media_source().IsTabMirroringSource() ||
         route.media_source().IsDesktopMirroringSource() ||
         route.media_source().IsLocalFileSource())
       return true;
   } else if (route.controller_type() !=
              media_router::RouteControllerType::kGeneric) {
+    // Hide a route if it doesn't have a generic controller (play, pause etc.).
     return true;
   }
 
+  // Skip the multizone member check if it's a DIAL route.
   if (!route.media_source().IsCastPresentationUrl()) {
     return false;
   }
@@ -83,11 +90,30 @@ CastMediaNotificationProducer::GetMediaItem(const std::string& id) {
 }
 
 std::set<std::string>
-CastMediaNotificationProducer::GetActiveControllableItemIds() {
+CastMediaNotificationProducer::GetActiveControllableItemIds() const {
   std::set<std::string> ids;
   for (const auto& item : items_) {
-    if (item.second.is_active())
-      ids.insert(item.first);
+    if (!item.second.is_active())
+      continue;
+
+// kMediaRouterShowCastSessionsStartedByOtherDevices is not registered on
+// Android nor ChromeOS.
+// // TODO(crbug.com/1308053): Enable it on ChromeOS once Cast+GMC ships.
+#if !BUILDFLAG(IS_CHROMEOS)
+    // The non-local Cast session filter should not be put in
+    // |ShouldHideNotification()| because it's used to determine if an item
+    // should be created. It's possible that users later change the pref to
+    // show all Cast sessions.
+    if (media_router::GlobalMediaControlsCastStartStopEnabled(profile_) &&
+        !this->profile_->GetPrefs()->GetBoolean(
+            media_router::prefs::
+                kMediaRouterShowCastSessionsStartedByOtherDevices) &&
+        !item.second.route_is_local()) {
+      continue;
+    }
+#endif
+
+    ids.insert(item.first);
   }
   return ids;
 }
@@ -170,17 +196,15 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
 }
 
 size_t CastMediaNotificationProducer::GetActiveItemCount() const {
-  return std::count_if(items_.begin(), items_.end(), [](const auto& item) {
-    return item.second.is_active();
-  });
+  return GetActiveControllableItemIds().size();
 }
 
 bool CastMediaNotificationProducer::HasActiveItems() const {
-  return GetActiveItemCount() != 0;
+  return !GetActiveControllableItemIds().empty();
 }
 
 bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
   return std::find_if(items_.begin(), items_.end(), [](const auto& item) {
-           return item.second.is_local_presentation();
+           return item.second.route_is_local();
          }) != items_.end();
 }

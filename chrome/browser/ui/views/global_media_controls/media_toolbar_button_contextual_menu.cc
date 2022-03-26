@@ -9,12 +9,23 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+
+namespace {
+global_media_controls::MediaItemManager* GetItemManagerFromBrowser(
+    Browser* browser) {
+  return MediaNotificationServiceFactory::GetForProfile(browser->profile())
+      ->media_item_manager();
+}
+}  // namespace
 
 std::unique_ptr<MediaToolbarButtonContextualMenu>
 MediaToolbarButtonContextualMenu::Create(Browser* browser) {
@@ -27,7 +38,7 @@ MediaToolbarButtonContextualMenu::Create(Browser* browser) {
 
 MediaToolbarButtonContextualMenu::MediaToolbarButtonContextualMenu(
     Browser* browser)
-    : browser_(browser) {}
+    : browser_(browser), item_manager_(GetItemManagerFromBrowser(browser_)) {}
 
 MediaToolbarButtonContextualMenu::~MediaToolbarButtonContextualMenu() = default;
 
@@ -76,6 +87,12 @@ void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
 #endif
     default:
       NOTREACHED();
+  }
+}
+
+void MediaToolbarButtonContextualMenu::MenuClosed(ui::SimpleMenuModel* source) {
+  if (item_manager_) {
+    item_manager_->OnItemsChanged();
   }
 }
 

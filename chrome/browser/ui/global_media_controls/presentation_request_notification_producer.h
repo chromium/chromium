@@ -65,7 +65,7 @@ class PresentationRequestNotificationProducer final
   base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
       const std::string& id) override;
   // Returns the supplemental notification's id if it should be shown.
-  std::set<std::string> GetActiveControllableItemIds() override;
+  std::set<std::string> GetActiveControllableItemIds() const override;
   bool HasFrozenItems() override;
   void OnItemShown(const std::string& id,
                    global_media_controls::MediaItemUI* item_ui) override;

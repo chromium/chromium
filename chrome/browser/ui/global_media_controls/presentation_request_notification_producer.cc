@@ -100,7 +100,7 @@ PresentationRequestNotificationProducer::GetMediaItem(const std::string& id) {
 }
 
 std::set<std::string>
-PresentationRequestNotificationProducer::GetActiveControllableItemIds() {
+PresentationRequestNotificationProducer::GetActiveControllableItemIds() const {
   return (item_ && !should_hide_) ? std::set<std::string>({item_->id()})
                                   : std::set<std::string>();
 }
