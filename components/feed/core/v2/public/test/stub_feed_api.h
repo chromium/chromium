@@ -107,6 +107,7 @@ class StubFeedApi : public FeedApi {
                        ContentOrder content_order) override {}
   ContentOrder GetContentOrder(const StreamType& stream_type) override;
   ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
+  void IncrementFollowedFromWebPageMenuCount() override {}
 
  private:
   StubWebFeedSubscriptions web_feed_subscriptions_;

@@ -213,6 +213,9 @@ class FeedApi {
       const feedui::StreamUpdate& stream_update) = 0;
   // Returns the time of the last successful content fetch.
   virtual base::Time GetLastFetchTime(const StreamType& stream_type) = 0;
+  // Increase the count of the number of times the user has followed from the
+  // web page menu.
+  virtual void IncrementFollowedFromWebPageMenuCount() = 0;
 };
 
 }  // namespace feed

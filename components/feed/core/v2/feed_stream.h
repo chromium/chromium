@@ -180,6 +180,7 @@ class FeedStream : public FeedApi,
                        ContentOrder content_order) override;
   ContentOrder GetContentOrder(const StreamType& stream_type) override;
   ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
+  void IncrementFollowedFromWebPageMenuCount() override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;

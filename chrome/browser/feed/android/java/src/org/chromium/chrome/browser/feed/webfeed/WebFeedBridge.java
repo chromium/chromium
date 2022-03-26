@@ -141,6 +141,11 @@ public class WebFeedBridge {
         WebFeedBridgeJni.get().refreshRecommendedFeeds(callback);
     }
 
+    /** Increase the count of the number of times the user has followed from the web page menu. */
+    public static void incrementFollowedFromWebPageMenuCount() {
+        WebFeedBridgeJni.get().incrementFollowedFromWebPageMenuCount();
+    }
+
     /** Container for results from a follow request. */
     public static class FollowResults {
         /** Status of follow request. */
@@ -249,5 +254,6 @@ public class WebFeedBridge {
         void refreshSubscriptions(Callback<Boolean> callback);
         void refreshRecommendedFeeds(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
+        void incrementFollowedFromWebPageMenuCount();
     }
 }

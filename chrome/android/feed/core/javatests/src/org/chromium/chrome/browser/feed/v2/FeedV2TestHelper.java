@@ -64,6 +64,7 @@ public class FeedV2TestHelper {
         enumNames.put("kClosedDialog", FeedUserActionType.CLOSED_DIALOG);
         enumNames.put("kShowSnackbar", FeedUserActionType.SHOW_SNACKBAR);
         enumNames.put("kOpenedNativeContextMenu", FeedUserActionType.OPENED_NATIVE_CONTEXT_MENU);
+        enumNames.put("kTappedFollowButton", FeedUserActionType.TAPPED_FOLLOW_BUTTON);
         return getEnumHistogramValues("ContentSuggestions.Feed.UserActions", enumNames);
     }
 

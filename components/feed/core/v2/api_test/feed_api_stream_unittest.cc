@@ -2993,6 +2993,17 @@ TEST_F(FeedApiTest, NoticeOpenAndDismissActions) {
       "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true, 1);
 }
 
+TEST_F(FeedApiTest, FollowedFromWebPageMenuCount) {
+  // Arrange.
+  TestWebFeedSurface surface(stream_.get());
+  // Act.
+  stream_->IncrementFollowedFromWebPageMenuCount();
+  // Assert.
+  EXPECT_EQ(1, stream_->GetMetadata().followed_from_web_page_menu_count());
+  EXPECT_EQ(1, stream_->GetRequestMetadata(kWebFeedStream, false)
+                   .followed_from_web_page_menu_count);
+}
+
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,

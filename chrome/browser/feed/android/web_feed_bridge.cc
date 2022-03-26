@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/feed/android/feed_stream.h"
 #include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_follow_util.h"
@@ -31,6 +32,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
+
+class Profile;
 
 namespace feed {
 
@@ -77,6 +80,14 @@ WebFeedSubscriptions* GetSubscriptions() {
   if (!profile)
     return nullptr;
   return GetSubscriptionsForProfile(profile);
+}
+
+FeedApi* GetStream() {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(profile);
+  if (!service)
+    return nullptr;
+  return service->GetStream();
 }
 
 // ToJava functions convert C++ types to Java. Used in `AdaptCallbackForJava`.
@@ -345,6 +356,15 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
   history_service->GetDailyVisitsToHost(
       *url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
       std::move(callback), &TaskTracker());
+}
+
+static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
+    JNIEnv* env) {
+  FeedApi* stream = GetStream();
+  if (!stream)
+    return;
+
+  stream->IncrementFollowedFromWebPageMenuCount();
 }
 
 }  // namespace feed

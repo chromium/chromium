@@ -57,6 +57,7 @@ struct RequestMetadata {
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
+  int followed_from_web_page_menu_count = 0;
   std::vector<std::string> acknowledged_notice_keys;
 };
 

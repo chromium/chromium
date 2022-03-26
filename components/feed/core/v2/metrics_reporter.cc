@@ -583,6 +583,7 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kTappedDismissPostFollowActiveHelp:
     case FeedUserActionType::kTappedDiscoverFeedPreview:
     case FeedUserActionType::kOpenedAutoplaySettings:
+    case FeedUserActionType::kTappedFollowButton:
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
 

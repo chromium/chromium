@@ -912,6 +912,8 @@ RequestMetadata FeedStream::GetCommonRequestMetadata(
       result.session_id = session_id;
     }
   }
+  result.followed_from_web_page_menu_count =
+      metadata_.followed_from_web_page_menu_count();
 
   DCHECK(result.session_id.empty() || result.client_instance_id.empty());
   return result;
@@ -1083,6 +1085,13 @@ bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
     return false;
   }
   return true;
+}
+
+void FeedStream::IncrementFollowedFromWebPageMenuCount() {
+  feedstore::Metadata metadata = GetMetadata();
+  metadata.set_followed_from_web_page_menu_count(
+      metadata.followed_from_web_page_menu_count() + 1);
+  SetMetadata(std::move(metadata));
 }
 
 void FeedStream::ClearAll() {

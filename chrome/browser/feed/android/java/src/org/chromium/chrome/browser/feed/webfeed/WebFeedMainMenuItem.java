@@ -17,8 +17,11 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -152,6 +155,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
                             FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
                         }
                     });
+                    WebFeedBridge.incrementFollowedFromWebPageMenuCount();
+                    FeedServiceBridge.reportOtherUserAction(
+                            StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_BUTTON);
                     mAppMenuHandler.hideAppMenu();
                 });
     }

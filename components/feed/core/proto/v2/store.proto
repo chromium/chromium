@@ -126,6 +126,9 @@ message Metadata {
   // Whether personalization is enabled for Discover, as reported by the last
   // FeedQuery response.
   bool discover_personalization_enabled = 8;
+  // Count of how many times the user has followed from the main menu, so we
+  // can show appropriate user education help for the following feed.
+  int32 followed_from_web_page_menu_count = 9;
 }
 
 // A set of StreamStructures that should be applied to a stream.
