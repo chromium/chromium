@@ -11,14 +11,16 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -38,22 +40,24 @@ const gfx::VectorIcon& GetIconOfResizeButton(
 
 CameraPreviewView::CameraPreviewView(
     CaptureModeCameraController* camera_controller,
-    const gfx::Size& preview_view_preferred_size)
+    const CameraId& camera_id,
+    const gfx::Size& preferred_size,
+    mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
+    const media::VideoCaptureFormat& capture_format)
     : camera_controller_(camera_controller),
+      camera_id_(camera_id),
+      camera_video_renderer_(std::move(camera_video_source), capture_format),
+      camera_video_host_view_(
+          AddChildView(std::make_unique<views::NativeViewHost>())),
       resize_button_(AddChildView(std::make_unique<CaptureModeButton>(
           base::BindRepeating(&CameraPreviewView::OnResizeButtonPressed,
                               base::Unretained(this)),
           GetIconOfResizeButton(
               camera_controller_->is_camera_preview_collapsed())))) {
-  SetPaintToLayer();
-  // TODO: The solid color contents view will be replaced later by the view that
-  // will render the video frams.
-  SetBackground(views::CreateSolidBackground(gfx::kGoogleGrey700));
+  SetPreferredSize(preferred_size);
 
-  // TODO(crbug.com/1295325): Update this when implementing video frames
-  // rendering.
-  SetPreferredSize(preview_view_preferred_size);
-
+  resize_button_->SetPaintToLayer();
+  resize_button_->layer()->SetFillsBoundsOpaquely(false);
   resize_button_->SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80),
@@ -62,6 +66,17 @@ CameraPreviewView::CameraPreviewView(
 }
 
 CameraPreviewView::~CameraPreviewView() = default;
+
+void CameraPreviewView::AddedToWidget() {
+  camera_video_host_view_->Attach(camera_video_renderer_.host_window());
+  // This must be called after the renderer's `host_window()` has been attached
+  // to the `NativeViewHost`, and before we call `Initialize()`, since
+  // `Initialize()` will create a layer tree frame sink for the `host_window()`
+  // and we're not allowed to change the event targeting policy after that.
+  DisableEventHandlingInCameraVideoHostHierarchy();
+
+  camera_video_renderer_.Initialize();
+}
 
 bool CameraPreviewView::OnMousePressed(const ui::MouseEvent& event) {
   camera_controller_->StartDraggingPreview(GetEventScreenLocation(event));
@@ -119,6 +134,8 @@ void CameraPreviewView::Layout() {
       resize_button_size.width(), resize_button_size.height());
   resize_button_->SetBoundsRect(bounds);
 
+  camera_video_host_view_->SetBoundsRect(GetContentsBounds());
+
   GetWidget()->GetLayer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(height() / 2.f));
 }
@@ -144,6 +161,21 @@ void CameraPreviewView::UpdateResizeButtonTooltip() {
       camera_controller_->is_camera_preview_collapsed()
           ? IDS_ASH_SCREEN_CAPTURE_TOOLTIP_EXPAND_SELFIE_CAMERA
           : IDS_ASH_SCREEN_CAPTURE_TOOLTIP_COLLAPSE_SELFIE_CAMERA));
+}
+
+void CameraPreviewView::DisableEventHandlingInCameraVideoHostHierarchy() {
+  camera_video_host_view_->SetCanProcessEventsWithinSubtree(false);
+  camera_video_host_view_->SetFocusBehavior(FocusBehavior::NEVER);
+  auto* const host_window = camera_video_renderer_.host_window();
+  auto* const widget_window = GetWidget()->GetNativeWindow();
+  DCHECK(host_window);
+  DCHECK(host_window->parent());
+  DCHECK(widget_window);
+
+  for (auto* window = host_window; window && window != widget_window;
+       window = window->parent()) {
+    window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
+  }
 }
 
 BEGIN_METADATA(CameraPreviewView, views::View)

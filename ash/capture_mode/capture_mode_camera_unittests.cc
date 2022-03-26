@@ -16,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/fake_camera_device.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
@@ -26,12 +27,17 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/paint/skia_paint_canvas.h"
+#include "media/base/video_frame.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -683,12 +689,19 @@ TEST_F(CaptureModeCameraTest, CheckCameraOptions) {
   // Check the camera device 1 is added back to the camera menu and it's checked
   // automatically. Check the selected option's label matches with the camera
   // device 1's display name.
+  // Note that `device_id_1` ("/dev/video0") comes before `device_id_2`
+  // ("/dev/video1") in sort order, so it will be added first in the menu.
+  EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin));
   EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin + 1));
   EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
-  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin + 1));
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin + 1));
+  EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
+                kCameraDevicesBegin)),
+            display_name_1);
   EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
                 kCameraDevicesBegin + 1)),
-            display_name_1);
+            display_name_2);
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
 }
 
@@ -1845,5 +1858,137 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
+
+// A test fixture for testing the rendered video frames. The boolean parameter
+// determines the type of the buffer that backs the video frames. `true` means
+// the `kGpuMemoryBuffer` is used, `false` means the `kSharedMemory` buffer type
+// is used.
+class CaptureModeCameraFramesTest : public CaptureModeCameraTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  CaptureModeCameraFramesTest() = default;
+  CaptureModeCameraFramesTest(const CaptureModeCameraFramesTest&) = delete;
+  CaptureModeCameraFramesTest& operator=(const CaptureModeCameraFramesTest&) =
+      delete;
+  ~CaptureModeCameraFramesTest() override = default;
+
+  bool ShouldUseGpuMemoryBuffers() const { return GetParam(); }
+
+  // CaptureModeCameraFramesTest:
+  void SetUp() override {
+    CaptureModeCameraTest::SetUp();
+    CaptureModeTestApi test_api;
+    test_api.SetForceUseGpuMemoryBufferForCameraFrames(
+        ShouldUseGpuMemoryBuffers());
+    AddDefaultCamera();
+    ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
+    test_api.SelectCameraAtIndex(0);
+    const CameraId camera_id(kDefaultCameraModelId, 1);
+    EXPECT_EQ(camera_id, GetCameraController()->selected_camera());
+  }
+
+  void TearDown() override {
+    CaptureModeTestApi().SetForceUseGpuMemoryBufferForCameraFrames(false);
+    CaptureModeCameraTest::TearDown();
+  }
+};
+
+namespace {
+
+// Waits for several rendered frames and verifies that the content of the
+// received video frames are the same as that of the produced video frames.
+void WaitForAndVerifyRenderedVideoFrame() {
+  // Render a number of frames that are 3 times the size of the buffer pool.
+  // This allows us to exercise calls to `OnNewBuffer()` and potentially
+  // `OnFrameDropped()`.
+  for (size_t i = 0; i < 3 * FakeCameraDevice::kMaxBufferCount; ++i) {
+    base::RunLoop loop;
+    CaptureModeTestApi().SetOnCameraVideoFrameRendered(
+        base::BindLambdaForTesting([&loop](
+                                       scoped_refptr<media::VideoFrame> frame) {
+          ASSERT_TRUE(frame);
+          const gfx::Size frame_size = frame->visible_rect().size();
+          const auto produced_frame_bitmap =
+              FakeCameraDevice::GetProducedFrameAsBitmap(frame_size);
+
+          media::PaintCanvasVideoRenderer renderer;
+          SkBitmap received_frame_bitmap;
+
+          scoped_refptr<viz::RasterContextProvider> raster_context_provider =
+              aura::Env::GetInstance()
+                  ->context_factory()
+                  ->SharedMainThreadRasterContextProvider();
+          received_frame_bitmap.allocN32Pixels(frame_size.width(),
+                                               frame_size.height());
+          cc::SkiaPaintCanvas canvas(received_frame_bitmap);
+          renderer.Copy(frame, &canvas, raster_context_provider.get());
+
+          EXPECT_TRUE(gfx::test::AreBitmapsEqual(produced_frame_bitmap,
+                                                 received_frame_bitmap));
+
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+}
+
+}  // namespace
+
+TEST_P(CaptureModeCameraFramesTest, VerifyFrames) {
+  CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
+  EXPECT_TRUE(GetCameraController()->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+}
+
+TEST_P(CaptureModeCameraFramesTest, TurnOffCameraWhileRendering) {
+  CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+  test_api.TurnCameraOff();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
+TEST_P(CaptureModeCameraFramesTest, DisconnectCameraWhileRendering) {
+  CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+  RemoveDefaultCamera();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
+TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
+  CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  auto* preview_view = camera_controller->camera_preview_view_for_test();
+  ASSERT_TRUE(preview_view);
+  EXPECT_EQ(preview_view->camera_id(), camera_controller->selected_camera());
+  WaitForAndVerifyRenderedVideoFrame();
+
+  // Adding a new camera while rendering an existing one should not affect
+  // anything since the new one is not selected yet.
+  const std::string device_id = "/dev/video0";
+  const std::string display_name = "Integrated Webcam";
+  const std::string model_id = "0123:4567";
+  AddFakeCamera(device_id, display_name, model_id);
+  EXPECT_EQ(preview_view, camera_controller->camera_preview_view_for_test());
+
+  // Now select the new camera, a new widget should be created immediately for
+  // the new camera.
+  const CameraId second_camera_id(model_id, 1);
+  camera_controller->SetSelectedCamera(second_camera_id);
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_NE(preview_view, camera_controller->camera_preview_view_for_test());
+  preview_view = camera_controller->camera_preview_view_for_test();
+  EXPECT_EQ(preview_view->camera_id(), second_camera_id);
+  WaitForAndVerifyRenderedVideoFrame();
+}
+
+INSTANTIATE_TEST_SUITE_P(All, CaptureModeCameraFramesTest, testing::Bool());
 
 }  // namespace ash

@@ -4,6 +4,10 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 
+#include "ash/capture_mode/camera_video_frame_handler.h"
+#include "ash/capture_mode/camera_video_frame_renderer.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -149,6 +153,40 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
   auto* session = controller_->capture_mode_session();
   auto* dialog_controller = session->folder_selection_dialog_controller_.get();
   return dialog_controller ? dialog_controller->dialog_window() : nullptr;
+}
+
+void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
+  DCHECK(controller_->camera_controller());
+  CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(value);
+}
+
+size_t CaptureModeTestApi::GetNumberOfAvailableCameras() const {
+  DCHECK(controller_->camera_controller());
+  return controller_->camera_controller()->available_cameras().size();
+}
+
+void CaptureModeTestApi::SelectCameraAtIndex(size_t index) {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  DCHECK_LT(index, GetNumberOfAvailableCameras());
+  const auto& camera_info = camera_controller->available_cameras()[index];
+  camera_controller->SetSelectedCamera(camera_info.camera_id);
+}
+
+void CaptureModeTestApi::TurnCameraOff() {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  camera_controller->SetSelectedCamera(CameraId());
+}
+
+void CaptureModeTestApi::SetOnCameraVideoFrameRendered(
+    CameraVideoFrameCallback callback) {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  DCHECK(camera_controller->camera_preview_widget());
+  DCHECK(camera_controller->camera_preview_view_);
+  camera_controller->camera_preview_view_->camera_video_renderer_
+      .on_video_frame_rendered_for_test_ = std::move(callback);
 }
 
 void CaptureModeTestApi::SetType(bool for_video) {
