@@ -251,6 +251,8 @@ enum KeyboardCode {
   VKEY_EMOJI_PICKER = 0xED,
   // Start dictation.
   VKEY_DICTATE = 0xEE,
+  // All applications - this also triggers the launcher in Chrome OS.
+  VKEY_ALL_APPLICATIONS = 0xEF,
 };
 
 }  // namespace ui

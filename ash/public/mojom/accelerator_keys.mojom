@@ -216,6 +216,7 @@ enum VKey {
   kClose = 0xEC,
   kEmojiPicker = 0xED,
   kDictate = 0xEE,
+  kAllApplications = 0xEF,
 };
 
 // Contains all sources of shortcuts, new sources must added to this enum.
