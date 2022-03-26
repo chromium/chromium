@@ -7,10 +7,8 @@
  */
 
 goog.require('BrailleCommandData');
-goog.require('BrailleKeyEvent');
-goog.require('Spannable');
-goog.require('AbstractTts');
 goog.require('BrailleKeyCommand');
+goog.require('BrailleKeyEvent');
 goog.require('ChromeVox');
 goog.require('ChromeVoxState');
 goog.require('KeyMap');
@@ -19,3 +17,4 @@ goog.require('KeyUtil');
 goog.require('LibLouis');
 goog.require('Msgs');
 goog.require('NavBraille');
+goog.require('Spannable');

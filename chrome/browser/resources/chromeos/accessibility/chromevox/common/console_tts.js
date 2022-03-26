@@ -10,7 +10,6 @@ goog.provide('ConsoleTts');
 
 goog.require('LogStore');
 goog.require('SpeechLog');
-goog.require('AbstractTts');
 goog.require('TtsInterface');
 
 /**

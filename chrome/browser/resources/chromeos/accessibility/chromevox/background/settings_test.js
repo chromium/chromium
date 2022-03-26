@@ -29,6 +29,12 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   `);
     super.testGenPreamble();
   }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+  }
 };
 
 TEST_F(

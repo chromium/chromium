@@ -15,6 +15,8 @@
  */
 import {ChromeVoxEvent} from '../background/custom_automation_event.js';
 
+import {AbstractTts} from './abstract_tts.js';
+
 /**
  * A class containing the information needed to speak
  * a text change event to the user.

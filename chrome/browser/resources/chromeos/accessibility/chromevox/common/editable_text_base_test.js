@@ -96,7 +96,14 @@ ChromeVoxEditableTextUnitTest = class extends testing.Test {
     })();
   }
 
+  /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModules('AbstractTts', '/chromevox/common/abstract_tts.js');
+    await importModules(
+        ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
+        '/chromevox/common/editable_text_base.js');
+
     // TODO: These tests are all assuming we used the IBeam cursor.
     // We need to add coverage for block cursor.
     ChromeVoxEditableTextBase.useIBeamCursor = true;
@@ -122,7 +129,6 @@ ChromeVoxEditableTextUnitTest = class extends testing.Test {
 ChromeVoxEditableTextUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../../common/closure_shim.js',
-  'abstract_tts.js',
   'chromevox.js',
   'msgs.js',
   'tts_interface.js',

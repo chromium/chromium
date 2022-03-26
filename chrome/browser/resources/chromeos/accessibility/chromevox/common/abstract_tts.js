@@ -8,17 +8,11 @@
  *
  */
 
-goog.provide('AbstractTts');
-
-goog.require('Msgs');
-goog.require('TtsInterface');
-goog.require('goog.i18n.MessageFormat');
-
 /**
  * Creates a new instance.
  * @implements {TtsInterface}
  */
-AbstractTts = class {
+export class AbstractTts {
   constructor() {
     this.ttsProperties = new Object();
 
@@ -72,7 +66,12 @@ AbstractTts = class {
     }
   }
 
-  /** @override */
+  /**
+   * @param {string} textString
+   * @param {QueueMode} queueMode
+   * @param {Object=} properties
+   * @override
+   */
   speak(textString, queueMode, properties) {
     return this;
   }
@@ -274,7 +273,7 @@ AbstractTts = class {
       this.ttsProperties[key] = value;
     }
   }
-};
+}
 
 
 /**

@@ -16,6 +16,12 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
     window.press = this.press;
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+  }
+
   runOnOptionsPage(callback) {
     const mockFeedback = this.createMockFeedback();
     chrome.automation.getDesktop((desktop) => {

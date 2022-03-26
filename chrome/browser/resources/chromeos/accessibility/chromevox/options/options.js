@@ -8,6 +8,7 @@
  */
 import {ChromeVoxPrefs} from '../background/prefs.js';
 
+import {AbstractTts} from '../common/abstract_tts.js';
 import {TtsBackground} from '../common/tts_background.js';
 
 /** @const {string} */

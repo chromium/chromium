@@ -6,7 +6,6 @@
  * @fileoverview Loads the options script.
  */
 
-goog.require('AbstractTts');
 goog.require('BluetoothBrailleDisplayUI');
 goog.require('BrailleTable');
 goog.require('BrailleTranslatorManager');
@@ -16,3 +15,8 @@ goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');
 goog.require('Msgs');
 goog.require('PanelCommand');
+goog.require('PhoneticData');
+goog.require('TtsInterface');
+
+goog.require('constants');
+goog.require('goog.i18n.MessageFormat');
