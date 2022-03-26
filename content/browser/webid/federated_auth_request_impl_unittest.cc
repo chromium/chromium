@@ -460,8 +460,44 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return (config.expected_fetched_endpoints & expected_endpoint) != 0;
   }
 
-  void SetMediatedMockExpectations(const RequestParameters& request_parameters,
-                                   const MockConfiguration& config) {
+  void SetMockExpectations(const RequestParameters& request_parameters,
+                           const RequestExpectations& expectation,
+                           const MockConfiguration& config) {
+    if (IsExpectedFetched(config, FetchedEndpoint::MANIFEST)) {
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
+          .WillOnce(Invoke(
+              [&](absl::optional<int>, absl::optional<int>,
+                  IdpNetworkRequestManager::FetchManifestCallback callback) {
+                IdpNetworkRequestManager::Endpoints endpoints;
+                endpoints.accounts = config.manifest.accounts_endpoint;
+                endpoints.token = config.manifest.token_endpoint;
+                endpoints.client_metadata =
+                    config.manifest.client_metadata_endpoint;
+                std::move(callback).Run(config.manifest.fetch_status, endpoints,
+                                        IdentityProviderMetadata());
+              }));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _)).Times(0);
+    }
+
+    if (IsExpectedFetched(config, FetchedEndpoint::CLIENT_METADATA)) {
+      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
+          .WillOnce(
+              Invoke([&](const GURL&, const std::string& client_id,
+                         IdpNetworkRequestManager::FetchClientMetadataCallback
+                             callback) {
+                EXPECT_EQ(request_parameters.client_id, client_id);
+                std::move(callback).Run(
+                    config.client_metadata.fetch_status,
+                    IdpNetworkRequestManager::ClientMetadata{
+                        config.client_metadata.privacy_policy_url,
+                        config.client_metadata.terms_of_service_url});
+              }));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
+          .Times(0);
+    }
+
     if (IsExpectedFetched(config, FetchedEndpoint::ACCOUNTS)) {
       EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _))
           .WillOnce(Invoke(
@@ -522,47 +558,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
           .Times(0);
     }
-  }
-
-  void SetMockExpectations(const RequestParameters& request_parameters,
-                           const RequestExpectations& expectation,
-                           const MockConfiguration& config) {
-    if (IsExpectedFetched(config, FetchedEndpoint::MANIFEST)) {
-      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
-          .WillOnce(Invoke(
-              [&](absl::optional<int>, absl::optional<int>,
-                  IdpNetworkRequestManager::FetchManifestCallback callback) {
-                IdpNetworkRequestManager::Endpoints endpoints;
-                endpoints.accounts = config.manifest.accounts_endpoint;
-                endpoints.token = config.manifest.token_endpoint;
-                endpoints.client_metadata =
-                    config.manifest.client_metadata_endpoint;
-                std::move(callback).Run(config.manifest.fetch_status, endpoints,
-                                        IdentityProviderMetadata());
-              }));
-    } else {
-      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _)).Times(0);
-    }
-
-    if (IsExpectedFetched(config, FetchedEndpoint::CLIENT_METADATA)) {
-      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
-          .WillOnce(
-              Invoke([&](const GURL&, const std::string& client_id,
-                         IdpNetworkRequestManager::FetchClientMetadataCallback
-                             callback) {
-                EXPECT_EQ(request_parameters.client_id, client_id);
-                std::move(callback).Run(
-                    config.client_metadata.fetch_status,
-                    IdpNetworkRequestManager::ClientMetadata{
-                        config.client_metadata.privacy_policy_url,
-                        config.client_metadata.terms_of_service_url});
-              }));
-    } else {
-      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
-          .Times(0);
-    }
-
-    SetMediatedMockExpectations(request_parameters, config);
   }
 
   // Expectations have to be set explicitly in advance using
