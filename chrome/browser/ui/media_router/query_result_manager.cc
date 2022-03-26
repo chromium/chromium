@@ -159,6 +159,22 @@ std::vector<MediaSource> QueryResultManager::GetSourcesForCastMode(
                                                   : cast_mode_it->second;
 }
 
+std::vector<MediaSinkWithCastModes> QueryResultManager::GetSinksWithCastModes()
+    const {
+  std::vector<MediaSinkWithCastModes> sinks;
+  for (const auto& sink_pair : sinks_with_sources_) {
+    MediaSinkWithCastModes sink_with_cast_modes(sink_pair.second.sink());
+    sink_with_cast_modes.cast_modes = sink_pair.second.GetCastModes();
+    sinks.push_back(sink_with_cast_modes);
+  }
+  for (const auto& sink : all_sinks_) {
+    if (!base::Contains(sinks_with_sources_, sink.id()))
+      sinks.push_back(MediaSinkWithCastModes(sink));
+  }
+
+  return sinks;
+}
+
 void QueryResultManager::RemoveOldSourcesForCastMode(
     MediaCastMode cast_mode,
     const std::vector<MediaSource>& new_sources) {
@@ -260,16 +276,7 @@ bool QueryResultManager::AreSourcesValidForCastMode(
 }
 
 void QueryResultManager::NotifyOnResultsUpdated() {
-  std::vector<MediaSinkWithCastModes> sinks;
-  for (const auto& sink_pair : sinks_with_sources_) {
-    MediaSinkWithCastModes sink_with_cast_modes(sink_pair.second.sink());
-    sink_with_cast_modes.cast_modes = sink_pair.second.GetCastModes();
-    sinks.push_back(sink_with_cast_modes);
-  }
-  for (const auto& sink : all_sinks_) {
-    if (!base::Contains(sinks_with_sources_, sink.id()))
-      sinks.push_back(MediaSinkWithCastModes(sink));
-  }
+  std::vector<MediaSinkWithCastModes> sinks = GetSinksWithCastModes();
   for (QueryResultManager::Observer& observer : observers_)
     observer.OnResultsUpdated(sinks);
 }

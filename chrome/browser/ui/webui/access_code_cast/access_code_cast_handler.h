@@ -150,8 +150,6 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
 
   // The id of the media sink discovered from the access code;
   absl::optional<MediaSink::Id> sink_id_;
-  // Set of cast modes supported by the discovered sink;
-  media_router::CastModeSet supported_cast_modes_;
 
   // Monitors and reports sink availability.
   std::unique_ptr<QueryResultManager> query_result_manager_;

@@ -126,8 +126,12 @@ MediaRouterUI::~MediaRouterUI() {
   // If |start_presentation_context_| still exists, then it means presentation
   // route request was never attempted.
   if (start_presentation_context_) {
+    std::vector<MediaSinkWithCastModes> sinks;
+    if (query_result_manager_.get()) {
+      sinks = query_result_manager_->GetSinksWithCastModes();
+    }
     bool presentation_sinks_available = std::any_of(
-        sinks_.begin(), sinks_.end(), [](const MediaSinkWithCastModes& sink) {
+        sinks.begin(), sinks.end(), [](const MediaSinkWithCastModes& sink) {
           return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION);
         });
     if (presentation_sinks_available) {
@@ -188,11 +192,6 @@ void MediaRouterUI::InitWithDefaultMediaSource() {
       presentation_manager_->HasDefaultPresentationRequest()) {
     OnDefaultPresentationChanged(
         &presentation_manager_->GetDefaultPresentationRequest());
-  } else {
-    // Register for MediaRoute updates without a media source.
-    routes_observer_ = std::make_unique<UIMediaRoutesObserver>(
-        GetMediaRouter(), base::BindRepeating(&MediaRouterUI::OnRoutesUpdated,
-                                              base::Unretained(this)));
   }
 }
 
@@ -424,6 +423,10 @@ void MediaRouterUI::InitCommon() {
       initiator_,
       base::BindRepeating(&MediaRouterUI::UpdateSinks, base::Unretained(this)));
 
+  routes_observer_ = std::make_unique<UIMediaRoutesObserver>(
+      GetMediaRouter(), base::BindRepeating(&MediaRouterUI::OnRoutesUpdated,
+                                            base::Unretained(this)));
+
   StartObservingIssues();
 }
 
@@ -460,21 +463,12 @@ void MediaRouterUI::OnDefaultPresentationChanged(
   query_result_manager_->SetSourcesForCastMode(
       MediaCastMode::PRESENTATION, sources,
       presentation_request_->frame_origin);
-  // Register for MediaRoute updates.
-  routes_observer_ = std::make_unique<UIMediaRoutesObserver>(
-      GetMediaRouter(), base::BindRepeating(&MediaRouterUI::OnRoutesUpdated,
-                                            base::Unretained(this)));
   UpdateModelHeader();
 }
 
 void MediaRouterUI::OnDefaultPresentationRemoved() {
   presentation_request_.reset();
   query_result_manager_->RemoveSourcesForCastMode(MediaCastMode::PRESENTATION);
-
-  // Register for MediaRoute updates.
-  routes_observer_ = std::make_unique<UIMediaRoutesObserver>(
-      GetMediaRouter(), base::BindRepeating(&MediaRouterUI::OnRoutesUpdated,
-                                            base::Unretained(this)));
 
   UpdateModelHeader();
 }

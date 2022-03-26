@@ -114,6 +114,9 @@ class QueryResultManager {
   // vector if there is none.
   std::vector<MediaSource> GetSourcesForCastMode(MediaCastMode cast_mode) const;
 
+  // Returns all of the currently known sinks with the cast modes they support
+  std::vector<MediaSinkWithCastModes> GetSinksWithCastModes() const;
+
  private:
   class MediaSourceMediaSinksObserver;
   class AnyMediaSinksObserver;

@@ -153,8 +153,15 @@ AccessCodeCastHandler::~AccessCodeCastHandler() {
   // If |start_presentation_context_| still exists, then it means presentation
   // route request was never attempted.
   if (start_presentation_context_) {
-    if (sink_id_ &&
-        base::Contains(supported_cast_modes_, MediaCastMode::PRESENTATION)) {
+    std::vector<MediaSinkWithCastModes> sinks;
+    if (query_result_manager_.get()) {
+      sinks = query_result_manager_->GetSinksWithCastModes();
+    }
+    bool presentation_sinks_available = std::any_of(
+        sinks.begin(), sinks.end(), [](const MediaSinkWithCastModes& sink) {
+          return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION);
+        });
+    if (presentation_sinks_available) {
       start_presentation_context_->InvokeErrorCallback(
           blink::mojom::PresentationError(blink::mojom::PresentationErrorType::
                                               PRESENTATION_REQUEST_CANCELLED,
