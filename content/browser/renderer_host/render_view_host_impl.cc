@@ -628,6 +628,7 @@ void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
       if (rvh == this) {
         RenderFrameHostImpl* rfh = entry->render_frame_host();
         rfh->MaybeEvictFromBackForwardCache();
+        break;
       }
     }
   }
