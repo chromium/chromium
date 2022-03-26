@@ -910,6 +910,10 @@ extern const char kEnrollmentIdUploadedOnChromad[];
 extern const char kLastChromadMigrationAttemptTime[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN)
+extern const char kHardwareSecureDecryptionDisabledTimes[];
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kAttemptedToEnableAutoupdate[];
 

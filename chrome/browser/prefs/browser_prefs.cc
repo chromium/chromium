@@ -412,6 +412,7 @@
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
+#include "chrome/browser/media/media_foundation_service_monitor.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -1159,6 +1160,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   component_updater::RegisterPrefsForSwReporter(registry);
   safe_browsing::RegisterChromeCleanerScanCompletionTimePref(registry);
+  MediaFoundationServiceMonitor::RegisterPrefs(registry);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   IncompatibleApplicationsUpdater::RegisterLocalStatePrefs(registry);
   ModuleDatabase::RegisterLocalStatePrefs(registry);

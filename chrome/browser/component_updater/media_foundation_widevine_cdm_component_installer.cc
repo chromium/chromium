@@ -24,6 +24,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,15 +103,25 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  // Ensure MediaFoundationService process is monitored.
-  MediaFoundationServiceMonitor::GetInstance();
-
   VLOG(1) << "Register Media Foundation Widevine CDM";
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kHardwareSecure,
       /*capability=*/absl::nullopt, /*supports_sub_key_systems=*/false,
       kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmType,
       version, GetCdmPath(install_dir));
+
+  // Ensures MediaFoundationService process is monitored.
+  // TODO(crbug.com/1296219): This is tricky. Move the init to a better place.
+  MediaFoundationServiceMonitor::GetInstance();
+
+  // Check whether hardware secure decryption CDM should be disabled.
+  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryptionFallback) &&
+      MediaFoundationServiceMonitor::
+          IsHardwareSecureDecryptionDisabledByPref()) {
+    VLOG(1) << "Media Foundation Widevine CDM disabled due to previous errors";
+    cdm_info.status = content::CdmInfo::Status::kDisabled;
+  }
+
   content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 
@@ -118,7 +129,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
 bool MediaFoundationWidevineCdmComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  // TODO(crbug.com/1225681) Compare manifest version and DLL's version.
+  // TODO(crbug.com/1225681): Compare manifest version and DLL's version.
   return base::PathExists(GetCdmPath(install_dir));
 }
 

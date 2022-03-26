@@ -2662,6 +2662,14 @@ const char kLastChromadMigrationAttemptTime[] =
     "chromad.last_migration_attempt_time";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN)
+// A list of base::Time value indicating the timestamps when hardware secure
+// decryption was disabled due to errors or crashes. The implementation
+// maintains a max size of the list (e.g. 2).
+const char kHardwareSecureDecryptionDisabledTimes[] =
+    "media.hardware_secure_decryption.disabled_times";
+#endif  // BUILDFLAG(IS_WIN)
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

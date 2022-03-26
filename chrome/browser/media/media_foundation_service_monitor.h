@@ -11,11 +11,20 @@
 #include "content/public/browser/service_process_host.h"
 #include "ui/display/display_observer.h"
 
+class PrefRegistrySimple;
+
 class MediaFoundationServiceMonitor final
     : public content::ServiceProcessHost::Observer,
       public base::PowerSuspendObserver,
       public display::DisplayObserver {
  public:
+  // Register the pref used in this class.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Returns whether hardware secure decryption should be disabled according to
+  // the date stored in "Local State".
+  static bool IsHardwareSecureDecryptionDisabledByPref();
+
   // Returns the MediaFoundationServiceMonitor singleton.
   static MediaFoundationServiceMonitor* GetInstance();
 
