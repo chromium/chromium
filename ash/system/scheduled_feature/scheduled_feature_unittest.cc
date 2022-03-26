@@ -15,12 +15,13 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/geolocation/geolocation_controller_test_util.h"
+#include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/pattern.h"
@@ -70,69 +71,6 @@ class TestScheduledFeature : public ScheduledFeature {
   const char* GetFeatureName() const override { return "TestFeature"; }
 };
 
-// An observer class to GeolocationController which updates sunset and sunrise
-// time.
-class GeolocationControllerObserver : public GeolocationController::Observer {
- public:
-  GeolocationControllerObserver() = default;
-
-  GeolocationControllerObserver(const GeolocationControllerObserver&) = delete;
-  GeolocationControllerObserver& operator=(
-      const GeolocationControllerObserver&) = delete;
-
-  ~GeolocationControllerObserver() override = default;
-
-  // TODO(crbug.com/1269915): Add `sunset_` and `sunrise_` and update their
-  // values when receiving the new position.
-  void OnGeopositionChanged(bool possible_change_in_timezone) override {
-    position_received_num_++;
-    possible_change_in_timezone_ = possible_change_in_timezone;
-  }
-
-  int position_received_num() const { return position_received_num_; }
-  bool possible_change_in_timezone() const {
-    return possible_change_in_timezone_;
-  }
-
- private:
-  // The number of times a new position is received.
-  int position_received_num_ = 0;
-  bool possible_change_in_timezone_ = false;
-};
-
-// A fake implementation of GeolocationController that doesn't perform any
-// actual geoposition requests.
-class FakeGeolocationController : public GeolocationController {
- public:
-  FakeGeolocationController(base::SimpleTestClock* test_clock,
-                            std::unique_ptr<base::MockOneShotTimer> mock_timer)
-      : GeolocationController(/*url_context_getter=*/nullptr) {
-    SetTimerForTesting(std::move(mock_timer));
-    SetClockForTesting(test_clock);
-  }
-
-  FakeGeolocationController(const FakeGeolocationController&) = delete;
-  FakeGeolocationController& operator=(const FakeGeolocationController&) =
-      delete;
-
-  ~FakeGeolocationController() override = default;
-
-  void set_position_to_send(const Geoposition& position) {
-    position_to_send_ = position;
-  }
-
- protected:
-  // GeolocationController:
-  void RequestGeoposition() override {
-    OnGeoposition(position_to_send_, /*server_error=*/false, base::TimeDelta());
-  }
-
- private:
-  // The position to send to the observer by the controller the next time
-  // `OnGeoposition()` is invoked.
-  Geoposition position_to_send_;
-};
-
 class ScheduledFeatureTest : public NoSessionAshTestBase {
  public:
   ScheduledFeatureTest() = default;
@@ -150,7 +88,15 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
         AccountId::FromUserEmail(kUser2Email));
   }
 
-  ScheduledFeature* feature() { return feature_.get(); }
+  TestScheduledFeature* feature() const { return feature_.get(); }
+  GeolocationController* geolocation_controller() {
+    return geolocation_controller_;
+  }
+  base::SimpleTestClock* test_clock() { return &test_clock_; }
+  const base::MockOneShotTimer* mock_timer_ptr() const {
+    return mock_timer_ptr_;
+  }
+  TestGeolocationUrlLoaderFactory* factory() const { return factory_; }
 
   // AshTestBase:
   void SetUp() override {
@@ -160,12 +106,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
 
     // Simulate user 1 login.
     SimulateNewUserFirstLogin(kUser1Email);
-
-    std::unique_ptr<base::MockOneShotTimer> mock_timer =
-        std::make_unique<base::MockOneShotTimer>();
-    mock_timer_ptr_ = mock_timer.get();
-    geolocation_controller_ = std::make_unique<FakeGeolocationController>(
-        &test_clock_, std::move(mock_timer));
 
     // Use user prefs of NightLight, which is an example of ScheduledFeature.
     feature_ = std::make_unique<TestScheduledFeature>(
@@ -177,13 +117,28 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     feature_->OnActiveUserPrefServiceChanged(
         Shell::Get()->session_controller()->GetActivePrefService());
 
+    // Set the clock of geolocation controller to our test clock to control the
+    // time now.
+    geolocation_controller_ = ash::Shell::Get()->geolocation_controller();
     base::Time now;
     EXPECT_TRUE(base::Time::FromUTCString("23 Dec 2021 12:00:00", &now));
-    test_clock_.SetNow(now);
+    test_clock()->SetNow(now);
+    geolocation_controller()->SetClockForTesting(&test_clock_);
+
+    // Set the timer of geolocation controller to `mock_timer` to allow us to
+    // trigger new geoposition receiving.
+    std::unique_ptr<base::MockOneShotTimer> mock_timer =
+        std::make_unique<base::MockOneShotTimer>();
+    mock_timer_ptr_ = mock_timer.get();
+    geolocation_controller()->SetTimerForTesting(std::move(mock_timer));
+
+    // `factory_` allows the test to control the value of geoposition
+    // that the geolocation provider sends back upon geolocation request.
+    factory_ = static_cast<TestGeolocationUrlLoaderFactory*>(
+        geolocation_controller()->GetFactoryForTesting());
   }
 
   void TearDown() override {
-    geolocation_controller_.reset();
     feature_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -227,11 +182,35 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     return TimeOfDay(hour * 60).SetClock(&test_clock_);
   }
 
- protected:
+  // Fires the timer of the scheduler to request geoposition and wait for all
+  // observers to receive the latest geoposition from the server.
+  void FireTimerToFetchGeoposition() {
+    GeopositionResponsesWaiter waiter;
+    // Make sure that the timer is running indicating that the client runs
+    // the scheduler.
+    EXPECT_TRUE(mock_timer_ptr()->IsRunning());
+    // Fast forward the scheduler to reach the time when the controller
+    // requests for geoposition from the server in
+    // `GeolocationController::RequestGeoposition`.
+    mock_timer_ptr_->Fire();
+    // Waits for the observers to receive the geoposition from the server.
+    waiter.Wait();
+  }
+
+  // Sets the geoposition to be returned from the `factory_` upon the
+  // `GeolocationController` request.
+  void SetServerPosition(const Geoposition& position) {
+    position_ = position;
+    factory_->set_position(position_);
+  }
+
+ private:
   std::unique_ptr<TestScheduledFeature> feature_;
-  std::unique_ptr<FakeGeolocationController> geolocation_controller_;
+  GeolocationController* geolocation_controller_;
   base::SimpleTestClock test_clock_;
   base::MockOneShotTimer* mock_timer_ptr_;
+  TestGeolocationUrlLoaderFactory* factory_;
+  Geoposition position_;
 };
 
 // Tests that switching users retrieves the feature settings for the active
@@ -267,7 +246,7 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
 // types.
 TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // Now is 6:00 PM.
-  test_clock_.SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
   SetFeatureEnabled(false);
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kNone);
   // Start time is at 3:00 PM and end time is at 8:00 PM.
@@ -301,7 +280,7 @@ TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
 // Tests what happens when the time now reaches the end of the feature
 // interval when the feature mode is on.
 TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
-  test_clock_.SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
@@ -316,7 +295,7 @@ TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
   //      start                    end & now
   //
   // Now is 8:00 PM.
-  test_clock_.SetNow(MakeTimeOfDay(8, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(8, AmPm::kPM).ToTimeToday());
   feature()->timer()->FireNow();
   EXPECT_FALSE(GetEnabled());
   // The timer should still be running, but now scheduling the start at 3:00 PM
@@ -335,7 +314,7 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   //        |                   |              |
   //      start                end            now
   //
-  test_clock_.SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
@@ -370,7 +349,7 @@ TEST_F(ScheduledFeatureTest, ChangingStartTimesThatDontChangeTheStatus) {
   //        |             |             |
   //       now          start          end
   //
-  test_clock_.SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());  // 4:00 PM.
+  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());  // 4:00 PM.
   SetFeatureEnabled(false);
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kNone);
   feature()->SetCustomStartTime(MakeTimeOfDay(6, AmPm::kPM));  // 6:00 PM.
@@ -406,33 +385,33 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
   // Set time now to 10:00 AM.
   base::Time current_time = MakeTimeOfDay(10, AmPm::kAM).ToTimeToday();
-  test_clock_.SetNow(current_time);
+  test_clock()->SetNow(current_time);
   EXPECT_FALSE(feature()->timer()->IsRunning());
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(geolocation_controller_->GetSunsetTime() - current_time,
+  EXPECT_EQ(geolocation_controller()->GetSunsetTime() - current_time,
             feature()->timer()->GetCurrentDelay());
 
   // Firing a timer should to advance the time to sunset and automatically turn
   // on the feature.
-  current_time = geolocation_controller_->GetSunsetTime();
-  test_clock_.SetNow(current_time);
+  current_time = geolocation_controller()->GetSunsetTime();
+  test_clock()->SetNow(current_time);
   feature()->timer()->FireNow();
   EXPECT_TRUE(feature()->timer()->IsRunning());
   EXPECT_TRUE(GetEnabled());
   EXPECT_EQ(
-      geolocation_controller_->GetSunriseTime() + base::Days(1) - current_time,
+      geolocation_controller()->GetSunriseTime() + base::Days(1) - current_time,
       feature()->timer()->GetCurrentDelay());
 
   // Firing a timer should advance the time to sunrise and automatically turn
   // off the feature.
-  current_time = geolocation_controller_->GetSunriseTime();
-  test_clock_.SetNow(current_time);
+  current_time = geolocation_controller()->GetSunriseTime();
+  test_clock()->SetNow(current_time);
   feature()->timer()->FireNow();
   EXPECT_FALSE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(geolocation_controller_->GetSunsetTime() - current_time,
+  EXPECT_EQ(geolocation_controller()->GetSunsetTime() - current_time,
             feature()->timer()->GetCurrentDelay());
 }
 
@@ -451,28 +430,29 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   //       now        sunset            sunrise
   //
 
-  // Prepare a valid geoposition.
-  const Geoposition position = CreateGeoposition(
-      kFakePosition1_Latitude, kFakePosition1_Longitude, test_clock_.Now());
-
   GeolocationControllerObserver observer1;
-  geolocation_controller_->AddObserver(&observer1);
-  EXPECT_TRUE(mock_timer_ptr_->IsRunning());
-  geolocation_controller_->set_position_to_send(position);
+  geolocation_controller()->AddObserver(&observer1);
+  EXPECT_TRUE(mock_timer_ptr()->IsRunning());
   EXPECT_FALSE(observer1.possible_change_in_timezone());
 
-  // Fire timer to fetch position update.
-  mock_timer_ptr_->Fire();
+  // Prepare a valid geoposition.
+  const Geoposition position = CreateGeoposition(
+      kFakePosition1_Latitude, kFakePosition1_Longitude, test_clock()->Now());
+
+  // Set and fetch position update.
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
   EXPECT_TRUE(observer1.possible_change_in_timezone());
-  const base::Time sunset_time1 = geolocation_controller_->GetSunsetTime();
-  const base::Time sunrise_time1 = geolocation_controller_->GetSunriseTime();
+  EXPECT_TRUE(mock_timer_ptr()->IsRunning());
+  const base::Time sunset_time1 = geolocation_controller()->GetSunsetTime();
+  const base::Time sunrise_time1 = geolocation_controller()->GetSunriseTime();
   // Our assumption is that GeolocationController gives us sunrise time
   // earlier in the same day before sunset.
   ASSERT_GT(sunset_time1, sunrise_time1);
   ASSERT_LT(sunset_time1 - base::Days(1), sunrise_time1);
 
   // Set time now to be 4 hours before sunset.
-  test_clock_.SetNow(sunset_time1 - base::Hours(4));
+  test_clock()->SetNow(sunset_time1 - base::Hours(4));
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   EXPECT_FALSE(feature()->GetEnabled());
@@ -482,16 +462,16 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   EXPECT_EQ(base::Hours(4), feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunset.
-  test_clock_.SetNow(sunset_time1);  // Now is sunset time of the position1.
+  test_clock()->SetNow(sunset_time1);  // Now is sunset time of the position1.
   feature()->timer()->FireNow();
   EXPECT_TRUE(feature()->GetEnabled());
   // Timer is running scheduling the end at sunrise of the second day.
   EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunrise_time1 + base::Days(1) - test_clock_.Now(),
+  EXPECT_EQ(sunrise_time1 + base::Days(1) - test_clock()->Now(),
             feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
-  test_clock_.SetNow(sunrise_time1);  // Now is sunrise time of the position1
+  test_clock()->SetNow(sunrise_time1);  // Now is sunrise time of the position1
 
   // Now simulate user changing position.
   // Position 2 sunset and sunrise times.
@@ -502,35 +482,39 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   //
 
   const Geoposition position2 = CreateGeoposition(
-      kFakePosition2_Latitude, kFakePosition2_Longitude, test_clock_.Now());
-  geolocation_controller_->set_position_to_send(position2);
-  mock_timer_ptr_->Fire();
+      kFakePosition2_Latitude, kFakePosition2_Longitude, test_clock()->Now());
+  // Replace a response `position` with `position2`.
+  factory()->ClearResponses();
+  SetServerPosition(position2);
+  FireTimerToFetchGeoposition();
   EXPECT_TRUE(observer1.possible_change_in_timezone());
-  const base::Time sunset_time2 = geolocation_controller_->GetSunsetTime();
-  const base::Time sunrise_time2 = geolocation_controller_->GetSunriseTime();
+  EXPECT_TRUE(mock_timer_ptr()->IsRunning());
+
+  const base::Time sunset_time2 = geolocation_controller()->GetSunsetTime();
+  const base::Time sunrise_time2 = geolocation_controller()->GetSunriseTime();
   // We choose the second location such that the new sunrise time is later
   // in the day compared to the old sunrise time, which is also the current
   // time.
-  ASSERT_GT(test_clock_.Now(), sunset_time2);
-  ASSERT_LT(test_clock_.Now(), sunset_time2 + base::Days(1));
-  ASSERT_GT(test_clock_.Now(), sunrise_time2);
-  ASSERT_LT(test_clock_.Now(), sunrise_time2 + base::Days(1));
+  ASSERT_GT(test_clock()->Now(), sunset_time2);
+  ASSERT_LT(test_clock()->Now(), sunset_time2 + base::Days(1));
+  ASSERT_GT(test_clock()->Now(), sunrise_time2);
+  ASSERT_LT(test_clock()->Now(), sunrise_time2 + base::Days(1));
 
   // Expect that the scheduled end delay has been updated to sunrise of the
   // same (second) day in location 2, and the status hasn't changed.
   EXPECT_TRUE(feature()->GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunrise_time2 + base::Days(1) - test_clock_.Now(),
+  EXPECT_EQ(sunrise_time2 + base::Days(1) - test_clock()->Now(),
             feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
-  test_clock_.SetNow(sunrise_time2 +
-                     base::Days(1));  // Now is sunrise time of the position2.
+  test_clock()->SetNow(sunrise_time2 +
+                       base::Days(1));  // Now is sunrise time of the position2.
   feature()->timer()->FireNow();
   EXPECT_FALSE(feature()->GetEnabled());
   // Timer is running scheduling the start at the sunset of the next day.
   EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunset_time2 + base::Days(1) - test_clock_.Now(),
+  EXPECT_EQ(sunset_time2 + base::Days(1) - test_clock()->Now(),
             feature()->timer()->GetCurrentDelay());
 }
 
@@ -538,7 +522,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
 // correctly if the time has changed meanwhile.
 TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   // Now is 4:00 PM.
-  test_clock_.SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());
   feature()->SetEnabled(false);
   // Start time is at 6:00 PM and end time is at 10:00 PM. The feature should be
   // off.
@@ -558,7 +542,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
 
   // Now simulate that the device was suspended for 3 hours, and the time now
   // is 7:00 PM when the devices was resumed. Expect that the feature turns on.
-  test_clock_.SetNow(MakeTimeOfDay(7, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(7, AmPm::kPM).ToTimeToday());
   feature()->SuspendDone(base::TimeDelta::Max());
 
   EXPECT_TRUE(feature()->GetEnabled());
@@ -575,7 +559,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
 // Case 1: "Now" is less than both "end" and "start".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
   // Now is 4:00 AM.
-  test_clock_.SetNow(MakeTimeOfDay(4, AmPm::kAM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kAM).ToTimeToday());
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 6:00 AM. "Now" is less than
   // both. The feature should be on.
@@ -597,7 +581,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
 // Case 2: "Now" is between "end" and "start".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
   // Now is 6:00 AM.
-  test_clock_.SetNow(MakeTimeOfDay(6, AmPm::kAM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kAM).ToTimeToday());
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 4:00 AM. "Now" is between both.
   // The feature should be off.
@@ -619,7 +603,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
 // Case 3: "Now" is greater than both "start" and "end".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase3) {
   // Now is 11:00 PM.
-  test_clock_.SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 4:00 AM. "Now" is greater than
   // both. the feature should be on.
@@ -658,7 +642,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
   //    2pm       4pm         7pm           10pm                         9am
   //
 
-  test_clock_.SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
@@ -688,7 +672,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
 
     // Apply the test's case fake time, and fire the timer if there's a change
     // expected in the feature's status.
-    test_clock_.SetNow(test_case.fake_now);
+    test_clock()->SetNow(test_case.fake_now);
     if (user_1_previous_status != test_case.user_1_expected_status)
       feature()->timer()->FireNow();
     user_1_previous_status = test_case.user_1_expected_status;
@@ -730,7 +714,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
 
 TEST_F(ScheduledFeatureTest,
        ManualStatusToggleCanPersistAfterResumeFromSuspend) {
-  test_clock_.SetNow(MakeTimeOfDay(11, kAM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(11, kAM).ToTimeToday());
 
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
@@ -746,18 +730,18 @@ TEST_F(ScheduledFeatureTest,
 
   // Simulate suspend and then resume at 2:00 PM (which is outside the user's
   // custom schedule). However, the manual toggle to on should be kept.
-  test_clock_.SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_TRUE(feature()->GetEnabled());
 
   // Suspend again and resume at 5:00 PM (which is within the user's custom
   // schedule). The schedule should be applied normally.
-  test_clock_.SetNow(MakeTimeOfDay(5, kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(5, kPM).ToTimeToday());
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_TRUE(feature()->GetEnabled());
 
   // Suspend and resume at 9:00 PM and expect the feature to be off.
-  test_clock_.SetNow(MakeTimeOfDay(9, kPM).ToTimeToday());
+  test_clock()->SetNow(MakeTimeOfDay(9, kPM).ToTimeToday());
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_FALSE(feature()->GetEnabled());
 }

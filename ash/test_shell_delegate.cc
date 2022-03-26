@@ -53,7 +53,7 @@ TestShellDelegate::CreateDesksTemplatesDelegate() const {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestShellDelegate::GetGeolocationSharedURLLoaderFactory() const {
+TestShellDelegate::GetGeolocationUrlLoaderFactory() const {
   return static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(
       base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 }

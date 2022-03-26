@@ -132,7 +132,7 @@ ChromeShellDelegate::CreateDesksTemplatesDelegate() const {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ChromeShellDelegate::GetGeolocationSharedURLLoaderFactory() const {
+ChromeShellDelegate::GetGeolocationUrlLoaderFactory() const {
   return g_browser_process->shared_url_loader_factory();
 }
 

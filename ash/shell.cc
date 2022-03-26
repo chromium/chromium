@@ -115,6 +115,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/hps/hps_orientation_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
@@ -835,13 +836,16 @@ Shell::~Shell() {
   // Removes itself as an observer of |pref_service_|.
   shelf_controller_.reset();
 
-  // NightLightControllerImpl depends on the PrefService as well as the window
-  // tree host manager, and must be destructed before them. crbug.com/724231.
+  // NightLightControllerImpl depends on the PrefService, the window tree host
+  // manager, and `geolocation_controller_`, so it must be destructed before
+  // them. crbug.com/724231.
   night_light_controller_ = nullptr;
   // Similarly for DockedMagnifierController.
   docked_magnifier_controller_ = nullptr;
   // Similarly for PrivacyScreenController.
   privacy_screen_controller_ = nullptr;
+
+  geolocation_controller_.reset();
 
   // NearbyShareDelegateImpl must be destroyed before SessionController and
   // NearbyShareControllerImpl.
@@ -1070,8 +1074,12 @@ void Shell::Init(
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddAshColorMixer));
 
-  // Night Light depends on the display manager, the display color manager, and
-  // aura::Env, so initialize it after all have been initialized.
+  geolocation_controller_ = std::make_unique<GeolocationController>(
+      shell_delegate_->GetGeolocationUrlLoaderFactory());
+
+  // Night Light depends on the display manager, the display color manager,
+  // aura::Env, and geolocation controller, so initialize it after all have
+  // been initialized.
   night_light_controller_ = std::make_unique<NightLightControllerImpl>();
 
   // Privacy Screen depends on the display manager, so initialize it after

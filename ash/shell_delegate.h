@@ -69,7 +69,7 @@ class ASH_EXPORT ShellDelegate {
   // Returns the geolocation loader factory used to initialize geolocation
   // provider.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetGeolocationSharedURLLoaderFactory() const = 0;
+  GetGeolocationUrlLoaderFactory() const = 0;
 
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;

@@ -39,7 +39,8 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 
 GeolocationController::GeolocationController(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
-    : provider_(std::move(factory),
+    : factory_(factory.get()),
+      provider_(std::move(factory),
                 SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()) {

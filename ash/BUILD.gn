@@ -2601,6 +2601,8 @@ test("ash_unittests") {
     "system/eche/eche_icon_loading_indicator_view_unittest.cc",
     "system/eche/eche_tray_unittest.cc",
     "system/firmware_update/firmware_update_notification_controller_unittest.cc",
+    "system/geolocation/geolocation_controller_test_util.cc",
+    "system/geolocation/geolocation_controller_test_util.h",
     "system/geolocation/geolocation_controller_unittest.cc",
     "system/gesture_education/gesture_education_notification_controller_unittest.cc",
     "system/holding_space/holding_space_animation_registry_unittest.cc",

@@ -129,6 +129,7 @@ class FloatController;
 class FocusCycler;
 class FrameThrottlingController;
 class FullscreenMagnifierController;
+class GeolocationController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
@@ -429,6 +430,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   FullscreenMagnifierController* fullscreen_magnifier_controller() {
     return fullscreen_magnifier_controller_.get();
   }
+  GeolocationController* geolocation_controller() {
+    return geolocation_controller_.get();
+  }
   HighlighterController* highlighter_controller() {
     return highlighter_controller_.get();
   }
@@ -490,9 +494,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   NightLightControllerImpl* night_light_controller() {
     return night_light_controller_.get();
   }
-  PrivacyScreenController* privacy_screen_controller() {
-    return privacy_screen_controller_.get();
-  }
   OverlayEventFilter* overlay_filter() { return overlay_filter_.get(); }
   ParentAccessController* parent_access_controller() {
     return parent_access_controller_.get();
@@ -511,6 +512,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   PowerEventObserver* power_event_observer() {
     return power_event_observer_.get();
+  }
+  PrivacyScreenController* privacy_screen_controller() {
+    return privacy_screen_controller_.get();
   }
   quick_pair::Mediator* quick_pair_mediator() {
     return quick_pair_mediator_.get();
@@ -768,6 +772,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       firmware_update_notification_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
+  std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<HpsNotifyController> hps_notify_controller_;
   std::unique_ptr<HpsOrientationController> hps_orientation_controller_;

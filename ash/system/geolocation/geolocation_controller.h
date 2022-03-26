@@ -89,6 +89,8 @@ class ASH_EXPORT GeolocationController
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
+  network::SharedURLLoaderFactory* GetFactoryForTesting() { return factory_; }
+
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
 
   void SetClockForTesting(base::Clock* clock);
@@ -127,6 +129,8 @@ class ASH_EXPORT GeolocationController
   // receive a geoposition (which happens at least once a day). This reduces
   // the chances of getting inaccurate values, especially around DST changes.
   base::Time GetSunRiseSet(bool sunrise) const;
+
+  network::SharedURLLoaderFactory* const factory_;
 
   // The IP-based geolocation provider.
   SimpleGeolocationProvider provider_;

@@ -66,6 +66,10 @@ TestGeolocationUrlLoaderFactory::Clone() {
   return nullptr;
 }
 
+void TestGeolocationUrlLoaderFactory::ClearResponses() {
+  test_url_loader_factory_.ClearResponses();
+}
+
 TestGeolocationUrlLoaderFactory::~TestGeolocationUrlLoaderFactory() = default;
 
 }  // namespace ash
