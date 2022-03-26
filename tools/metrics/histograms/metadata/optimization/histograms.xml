@@ -961,8 +961,27 @@ chromium-metrics-reviews@google.com.
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Net error codes for GetModelsRequest to the Optimization Guide Service on
-    success and failure.
+    success and failure. Recorded once per GetModelsRequest where the model was
+    fetched for. It is not advisable to sum up the counts across
+    OptimizationTargets as the GetModelsRequests bundle requests for various
+    OptimizationTargets into single request to the server.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode.{OptimizationTarget}"
+    enum="NetErrorCodes" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Net error codes for GetModelsRequest to the Optimization Guide Service on
+    success and failure for {OptimizationTarget}. Recorded once per
+    GetModelsRequest where the model for {OptimizationTarget} was fetched for.
+    It is not advisable to sum up the counts across OptimizationTargets as the
+    GetModelsRequests bundle requests for various OptimizationTargets into
+    single request to the server.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram
@@ -972,8 +991,27 @@ chromium-metrics-reviews@google.com.
   <owner>sophiechang@chromium.org</owner>
   <summary>
     For each GetModelsRequest to the Optimization Guide Service, log the HTTP
-    response code on success and failure.
+    response code on success and failure. Recorded once per GetModelsRequest
+    where the model was fetched for. It is not advisable to sum up the counts
+    across OptimizationTargets as the GetModelsRequests bundle requests for
+    various OptimizationTargets into single request to the server.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status.{OptimizationTarget}"
+    enum="HttpResponseCode" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    For each GetModelsRequest to the Optimization Guide Service for
+    {OptimizationTarget}, log the HTTP response code on success and failure.
+    Recorded once per GetModelsRequest where the model for {OptimizationTarget}
+    was fetched for. It is not advisable to sum up the counts across
+    OptimizationTargets as the GetModelsRequests bundle requests for various
+    OptimizationTargets into single request to the server.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -154,6 +155,26 @@ void PredictionModelFetcherImpl::HandleResponse(
       "OptimizationGuide.PredictionModelFetcher."
       "GetModelsResponse.NetErrorCode",
       -net_status);
+
+  for (const auto& model_info : pending_models_request_->requested_models()) {
+    if (response_code >= 0 &&
+        response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
+      base::UmaHistogramEnumeration(
+          "OptimizationGuide.PredictionModelFetcher."
+          "GetModelsResponse.Status." +
+              optimization_guide::GetStringNameForOptimizationTarget(
+                  model_info.optimization_target()),
+          static_cast<net::HttpStatusCode>(response_code),
+          net::HTTP_VERSION_NOT_SUPPORTED);
+    }
+    // Net error codes are negative but histogram enums must be positive.
+    base::UmaHistogramSparse(
+        "OptimizationGuide.PredictionModelFetcher."
+        "GetModelsResponse.NetErrorCode." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                model_info.optimization_target()),
+        -net_status);
+  }
 
   if (net_status == net::OK && response_code == net::HTTP_OK &&
       get_models_response->ParseFromString(get_models_response_data)) {

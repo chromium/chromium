@@ -323,6 +323,10 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
   // Should not have made fetch request.
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
+      "PainfulPageLoad",
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
@@ -367,6 +371,10 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status",
+      net::HTTP_NOT_FOUND, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
+      "PainfulPageLoad",
       net::HTTP_NOT_FOUND, 1);
 
   histogram_tester.ExpectTotalCount(
