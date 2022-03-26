@@ -40,8 +40,15 @@ media::stable::mojom::VideoFrameDataPtr MakeVideoFrameData(
   CHECK(input->HasGpuMemoryBuffer());
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
       input->GetGpuMemoryBuffer()->CloneHandle();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   CHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
   CHECK(!gpu_memory_buffer_handle.native_pixmap_handle.planes.empty());
+#else
+  // We should not be trying to serialize a media::VideoFrame for the purposes
+  // of this interface outside of Linux and Chrome OS.
+  CHECK(false);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   return media::stable::mojom::VideoFrameData::NewGpuMemoryBufferData(
       media::stable::mojom::GpuMemoryBufferVideoFrameData::New(
@@ -525,6 +532,7 @@ const gfx::GpuMemoryBufferId& StructTraits<
   return input.id;
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 gfx::NativePixmapHandle StructTraits<
     media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
@@ -533,6 +541,7 @@ gfx::NativePixmapHandle StructTraits<
   CHECK_EQ(input.type, gfx::NATIVE_PIXMAP);
   return std::move(input.native_pixmap_handle);
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
@@ -542,12 +551,17 @@ bool StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
   if (!data.ReadId(&output->id))
     return false;
 
-  if (!data.ReadPlatformHandle(&output->native_pixmap_handle))
-    return false;
-
   output->type = gfx::NATIVE_PIXMAP;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (!data.ReadPlatformHandle(&output->native_pixmap_handle))
+    return false;
   return true;
+#else
+  // We should not be trying to de-serialize a gfx::GpuMemoryBufferHandle for
+  // the purposes of this interface outside of Linux and Chrome OS.
+  return false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 // static

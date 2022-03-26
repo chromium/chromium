@@ -150,26 +150,28 @@ mojom("stable_video_decoder") {
 mojom("native_pixmap_handle") {
   sources = [ "native_pixmap_handle.mojom" ]
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "media.stable.mojom.NativePixmapHandle"
-          cpp = "::gfx::NativePixmapHandle"
-          move_only = true
-        },
-        {
-          mojom = "media.stable.mojom.NativePixmapPlane"
-          cpp = "::gfx::NativePixmapPlane"
-          move_only = true
-        },
-      ]
-      traits_headers = [
-        "native_pixmap_handle_mojom_traits.h",
-        "//ui/gfx/native_pixmap_handle.h",
-      ]
-      traits_sources = [ "native_pixmap_handle_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx:memory_buffer" ]
-    },
-  ]
+  if (is_linux || is_chromeos) {
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "media.stable.mojom.NativePixmapHandle"
+            cpp = "::gfx::NativePixmapHandle"
+            move_only = true
+          },
+          {
+            mojom = "media.stable.mojom.NativePixmapPlane"
+            cpp = "::gfx::NativePixmapPlane"
+            move_only = true
+          },
+        ]
+        traits_headers = [
+          "native_pixmap_handle_mojom_traits.h",
+          "//ui/gfx/native_pixmap_handle.h",
+        ]
+        traits_sources = [ "native_pixmap_handle_mojom_traits.cc" ]
+        traits_public_deps = [ "//ui/gfx:memory_buffer" ]
+      },
+    ]
+  }
 }
