@@ -388,16 +388,16 @@ void DeviceActivityClient::TransitionOutOfIdle(
         }
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
         if (base::FeatureList::IsEnabled(
-                features::kDeviceActiveClientMonthlyCheckIn)) {
-          // During rollout, we perform CheckIn without CheckMembership for
-          // powerwash, recovery, or RMA devices.
-          TransitionToCheckIn(current_use_case);
+                features::kDeviceActiveClientMonthlyCheckMembership)) {
+          TransitionToCheckMembershipOprf(current_use_case);
           return;
         }
 
         if (base::FeatureList::IsEnabled(
-                features::kDeviceActiveClientMonthlyCheckMembership)) {
-          TransitionToCheckMembershipOprf(current_use_case);
+                features::kDeviceActiveClientMonthlyCheckIn)) {
+          // During rollout, we perform CheckIn without CheckMembership for
+          // powerwash, recovery, or RMA devices.
+          TransitionToCheckIn(current_use_case);
           return;
         }
 
