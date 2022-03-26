@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/gtest_prod_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/views/controls/button/button.h"
@@ -96,6 +97,12 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   void PurgeAndClose();
 
   void HideBubble();
+
+  // Receives the `status` change when the video streaming is started or
+  // stopped. Controls the bubble widget based on the different `status`
+  // changes. There are two cases: 1. Shows the bubble when the streaming is
+  // started. 2. Purges and closes the bubble when the streaming is stopped.
+  void OnStreamStatusChanged(eche_app::mojom::StreamStatus status);
 
   // Set up the params and init the bubble.
   // Note: This function makes the bubble active and makes the

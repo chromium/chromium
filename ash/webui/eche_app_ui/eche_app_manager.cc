@@ -5,15 +5,17 @@
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
-#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_notification_generator.h"
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 #include "ash/webui/eche_app_ui/eche_signaler.h"
+#include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
+#include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
@@ -40,8 +42,7 @@ EcheAppManager::EcheAppManager(
         presence_monitor_client,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
     LaunchAppHelper::CloseEcheAppFunction close_eche_app_function,
-    LaunchAppHelper::LaunchNotificationFunction launch_notification_function,
-    StreamStatusChangedFunction stream_status_changed_function)
+    LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -61,7 +62,8 @@ EcheAppManager::EcheAppManager(
                                             launch_eche_app_function,
                                             close_eche_app_function,
                                             launch_notification_function)),
-      display_stream_handler_(std::make_unique<EcheDisplayStreamHandler>()),
+      stream_status_change_handler_(
+          std::make_unique<EcheStreamStatusChangeHandler>()),
       eche_notification_click_handler_(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,
@@ -96,13 +98,15 @@ EcheAppManager::EcheAppManager(
           pref_service,
           multidevice_setup_client,
           connection_manager_.get())),
-      stream_status_changed_function_(
-          std::move(stream_status_changed_function)) {
+      eche_tray_stream_status_observer_(
+          features::IsEcheCustomWidgetEnabled()
+              ? std::make_unique<EcheTrayStreamStatusObserver>(
+                    stream_status_change_handler_.get())
+              : nullptr) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
       std::move(system_info), remote_cros_network_config_.get());
-  display_stream_handler_->AddObserver(this);
 }
 
 EcheAppManager::~EcheAppManager() = default;
@@ -129,16 +133,7 @@ void EcheAppManager::BindNotificationGeneratorInterface(
 
 void EcheAppManager::BindDisplayStreamHandlerInterface(
     mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
-  display_stream_handler_->Bind(std::move(receiver));
-}
-
-void EcheAppManager::OnStartStreaming() {
-  stream_status_changed_function_.Run(
-      mojom::StreamStatus::kStreamStatusStarted);
-}
-
-void EcheAppManager::OnStreamStatusChanged(mojom::StreamStatus status) {
-  stream_status_changed_function_.Run(status);
+  stream_status_change_handler_->Bind(std::move(receiver));
 }
 
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
@@ -149,6 +144,7 @@ AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
   system_info_provider_.reset();
+  eche_tray_stream_status_observer_.reset();
   apps_access_manager_.reset();
   notification_generator_.reset();
   eche_recent_app_click_handler_.reset();
@@ -158,8 +154,7 @@ void EcheAppManager::Shutdown() {
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();
-  display_stream_handler_->RemoveObserver(this);
-  display_stream_handler_.reset();
+  stream_status_change_handler_.reset();
   launch_app_helper_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();

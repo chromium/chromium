@@ -32,8 +32,7 @@ class EcheTrayTest : public AshTestBase {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kEcheSWA,
-                              chromeos::features::kEcheCustomWidget,
-                              chromeos::features::kEcheSWAInBackground},
+                              chromeos::features::kEcheCustomWidget},
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());
@@ -138,6 +137,40 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
   EXPECT_FALSE(phone_hub_tray()->eche_loading_indicator()->GetAnimating());
+}
+
+TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
+  // Verify the eche tray button is not active, and the eche tray bubble
+  // is not shown initially.
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
+
+  // Allow us to create the bubble but it is not visible until we need this
+  // bubble to show up.
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
+
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_FALSE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // When the streaming status changes, the bubble should show up.
+  eche_tray()->OnStreamStatusChanged(
+      eche_app::mojom::StreamStatus::kStreamStatusStarted);
+  // Wait for the tray bubble widget to open.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Change the streaming status, the bubble should be closed.
+  eche_tray()->OnStreamStatusChanged(
+      eche_app::mojom::StreamStatus::kStreamStatusStopped);
+  // Wait for the tray bubble widget to close.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->GetVisible());
 }
 
 }  // namespace ash

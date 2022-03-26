@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_DISPLAY_STREAM_HANDLER_H_
-#define ASH_WEBUI_ECHE_APP_UI_ECHE_DISPLAY_STREAM_HANDLER_H_
+#ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_STREAM_STATUS_CHANGE_HANDLER_H_
+#define ASH_WEBUI_ECHE_APP_UI_ECHE_STREAM_STATUS_CHANGE_HANDLER_H_
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
@@ -13,13 +13,11 @@
 namespace ash {
 namespace eche_app {
 
-// Implements the EcheDisplayStreamHandler interface to allow the WebUI to sync
-// the status of the display stream for Eche, e.g. When the display stream is
-// started  in the Eche Web, we can register `Observer` and get this status via
-// `OnStartStreaming` event.
-// TODO(paulzchen): Consider using `DisplayStreamEventHandler` to replace
-// `DisplayStreamHandler`.
-class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
+// Implements the DisplayStreamHandler interface to allow the WebUI to sync the
+// status of the video streaming for Eche, e.g. When the video streaming is
+// started in the Eche Web, we can register `Observer` and get this status via
+// `OnStartStreaming` and `OnStreamStatusChanged` event.
+class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -29,11 +27,12 @@ class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
     virtual void OnStreamStatusChanged(mojom::StreamStatus status) = 0;
   };
 
-  EcheDisplayStreamHandler();
-  ~EcheDisplayStreamHandler() override;
+  EcheStreamStatusChangeHandler();
+  ~EcheStreamStatusChangeHandler() override;
 
-  EcheDisplayStreamHandler(const EcheDisplayStreamHandler&) = delete;
-  EcheDisplayStreamHandler& operator=(const EcheDisplayStreamHandler&) = delete;
+  EcheStreamStatusChangeHandler(const EcheStreamStatusChangeHandler&) = delete;
+  EcheStreamStatusChangeHandler& operator=(
+      const EcheStreamStatusChangeHandler&) = delete;
 
   // mojom::DisplayStreamHandler:
   void StartStreaming() override;
@@ -56,4 +55,4 @@ class EcheDisplayStreamHandler : public mojom::DisplayStreamHandler {
 }  // namespace eche_app
 }  // namespace ash
 
-#endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_DISPLAY_STREAM_HANDLER_H_
+#endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_STREAM_STATUS_CHANGE_HANDLER_H_

@@ -143,29 +143,6 @@ TEST_F(EcheAppManagerFactoryTest, CloseEche) {
   EXPECT_FALSE(eche_tray()->is_active());
 }
 
-TEST_F(EcheAppManagerFactoryTest, OnStreamStateChanged) {
-  const int64_t user_id = 1;
-  const char16_t visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-  EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, gfx::Image());
-
-  // Eche tray should be visible when streaming is active
-  EcheAppManagerFactory::OnStreamStateChanged(
-      GetProfile(), mojom::StreamStatus::kStreamStatusStarted);
-  // Wait for Eche Tray to load Eche Web to complete
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(eche_tray()->is_active());
-
-  // Eche tray should not be visible when streaming is finished
-  EcheAppManagerFactory::OnStreamStateChanged(
-      GetProfile(), mojom::StreamStatus::kStreamStatusStopped);
-  // Wait for Eche Web to close
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(eche_tray()->is_active());
-}
-
 TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   const int64_t user_id = 1;
   const char16_t visible_name[] = u"Fake App";
@@ -177,29 +154,6 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   base::RunLoop().RunUntilIdle();
   // Eche tray should be visible when streaming is active, not ative when
   // launch.
-  EXPECT_FALSE(eche_tray()->is_active());
-}
-
-TEST_F(EcheAppManagerFactoryWithBackgroundTest, OnStreamStateChanged) {
-  const int64_t user_id = 1;
-  const char16_t visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-  EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, gfx::Image());
-
-  // Eche tray should be visible when streaming is active
-  EcheAppManagerFactory::OnStreamStateChanged(
-      GetProfile(), mojom::StreamStatus::kStreamStatusStarted);
-  // Wait for Eche Tray to load Eche Web to complete
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(eche_tray()->is_active());
-
-  // Eche tray should not be visible when streaming is finished
-  EcheAppManagerFactory::OnStreamStateChanged(
-      GetProfile(), mojom::StreamStatus::kStreamStatusStopped);
-  // Wait for Eche Web to close
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(eche_tray()->is_active());
 }
 

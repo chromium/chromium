@@ -8,15 +8,12 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
-#include "ash/root_window_controller.h"
 #include "ash/services/secure_channel/presence_monitor_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-#include "ash/shell.h"
-#include "ash/system/eche/eche_tray.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
+#include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/bind.h"
@@ -32,7 +29,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -47,20 +43,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/image/image.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace eche_app {
 
 namespace {
-
-EcheTray* GetEcheTray() {
-  return Shell::GetPrimaryRootWindowController()
-      ->GetStatusAreaWidget()
-      ->eche_tray();
-}
 
 // Enumeration of possible interactions with a PhoneHub notification. Keep in
 // sync with corresponding enum in tools/metrics/histograms/enums.xml. These
@@ -71,12 +59,6 @@ enum class NotificationInteraction {
   kOpenAppStreaming = 1,
   kMaxValue = kOpenAppStreaming,
 };
-
-void LaunchBubble(const GURL& url, const gfx::Image& icon) {
-  auto* eche_tray = GetEcheTray();
-  DCHECK(eche_tray);
-  eche_tray->LoadBubble(url, icon);
-}
 
 void LaunchWebApp(const std::string& package_name,
                   const absl::optional<int64_t>& notification_id,
@@ -199,9 +181,7 @@ void EcheAppManagerFactory::ShowNotification(
 // static
 void EcheAppManagerFactory::CloseEche(Profile* profile) {
   if (features::IsEcheCustomWidgetEnabled()) {
-    auto* eche_tray = GetEcheTray();
-    if (eche_tray)
-      eche_tray->PurgeAndClose();
+    CloseBubble();
     return;
   }
   for (auto* browser : *(BrowserList::GetInstance())) {
@@ -232,20 +212,6 @@ void EcheAppManagerFactory::LaunchEcheApp(
                                 NotificationInteraction::kOpenAppStreaming);
   EcheAppManagerFactory::GetInstance()
       ->CloseConnectionOrLaunchErrorNotifications();
-}
-
-// static
-void EcheAppManagerFactory::OnStreamStateChanged(
-    Profile* profile,
-    const mojom::StreamStatus status) {
-  if (status == mojom::StreamStatus::kStreamStatusStarted &&
-      features::IsEcheCustomWidgetEnabled()) {
-    auto* eche_tray = GetEcheTray();
-    if (eche_tray)
-      eche_tray->ShowBubble();
-  } else if (status == mojom::StreamStatus::kStreamStatusStopped) {
-    CloseEche(profile);
-  }
 }
 
 EcheAppManagerFactory::EcheAppManagerFactory()
@@ -306,9 +272,7 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
       base::BindRepeating(&EcheAppManagerFactory::CloseEche, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
-                          weak_ptr_factory_.GetWeakPtr(), profile),
-      base::BindRepeating(&EcheAppManagerFactory::OnStreamStateChanged,
-                          profile));
+                          weak_ptr_factory_.GetWeakPtr(), profile));
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(

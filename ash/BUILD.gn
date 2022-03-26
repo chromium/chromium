@@ -2114,6 +2114,7 @@ component("ash") {
     "//ash/services/recording",
     "//ash/services/recording/public/mojom",
     "//ash/system/machine_learning:user_settings_event_proto",
+    "//ash/webui/eche_app_ui/mojom:mojom",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//base",

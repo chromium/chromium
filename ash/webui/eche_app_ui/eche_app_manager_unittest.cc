@@ -15,7 +15,7 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
-#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
+#include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/bind.h"
@@ -45,8 +45,6 @@ void LaunchNotificationFunction(
     const absl::optional<std::u16string>& title,
     const absl::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
-
-void StreamStatusChangedFunction(const mojom::StreamStatus status) {}
 
 class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
  public:
@@ -119,8 +117,7 @@ class EcheAppManagerTest : public testing::Test {
         std::move(fake_presence_monitor_client),
         base::BindRepeating(&LaunchEcheAppFunction),
         base::BindRepeating(&CloseEcheAppFunction),
-        base::BindRepeating(&LaunchNotificationFunction),
-        base::BindRepeating(&StreamStatusChangedFunction));
+        base::BindRepeating(&LaunchNotificationFunction));
   }
 
   mojo::Remote<mojom::SignalingMessageExchanger>&

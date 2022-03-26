@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -27,6 +27,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "components/account_id/account_id.h"
@@ -193,6 +194,23 @@ bool EcheTray::ShouldEnableExtraKeyboardAccessibility() {
 
 void EcheTray::HideBubble(const TrayBubbleView* bubble_view) {
   HideBubbleWithView(bubble_view);
+}
+
+void EcheTray::OnStreamStatusChanged(eche_app::mojom::StreamStatus status) {
+  switch (status) {
+    case eche_app::mojom::StreamStatus::kStreamStatusStarted:
+      ShowBubble();
+      break;
+    case eche_app::mojom::StreamStatus::kStreamStatusStopped:
+      PurgeAndClose();
+      break;
+    case eche_app::mojom::StreamStatus::kStreamStatusInitializing:
+      // Ignores initializing stream status.
+      break;
+    case eche_app::mojom::StreamStatus::kStreamStatusUnknown:
+      PA_LOG(WARNING) << "Unexpected stream status";
+      break;
+  }
 }
 
 void EcheTray::OnLockStateChanged(bool locked) {

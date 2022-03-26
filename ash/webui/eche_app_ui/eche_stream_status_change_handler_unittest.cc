@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
+#include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -10,7 +10,7 @@ namespace ash {
 namespace eche_app {
 namespace {
 
-class FakeObserver : public EcheDisplayStreamHandler::Observer {
+class FakeObserver : public EcheStreamStatusChangeHandler::Observer {
  public:
   FakeObserver() = default;
   ~FakeObserver() override = default;
@@ -22,7 +22,7 @@ class FakeObserver : public EcheDisplayStreamHandler::Observer {
     return last_notified_stream_status_;
   }
 
-  // EcheDisplayStreamHandler::Observer:
+  // EcheStreamStatusChangeHandler::Observer:
   void OnStartStreaming() override { ++num_start_streaming_calls_; }
   void OnStreamStatusChanged(mojom::StreamStatus status) override {
     last_notified_stream_status_ = status;
@@ -36,17 +36,18 @@ class FakeObserver : public EcheDisplayStreamHandler::Observer {
 
 }  // namespace
 
-class EcheDisplayStreamHandlerTest : public testing::Test {
+class EcheStreamStatusChangeHandlerTest : public testing::Test {
  protected:
-  EcheDisplayStreamHandlerTest() = default;
-  EcheDisplayStreamHandlerTest(const EcheDisplayStreamHandlerTest&) = delete;
-  EcheDisplayStreamHandlerTest& operator=(const EcheDisplayStreamHandlerTest&) =
+  EcheStreamStatusChangeHandlerTest() = default;
+  EcheStreamStatusChangeHandlerTest(const EcheStreamStatusChangeHandlerTest&) =
       delete;
-  ~EcheDisplayStreamHandlerTest() override = default;
+  EcheStreamStatusChangeHandlerTest& operator=(
+      const EcheStreamStatusChangeHandlerTest&) = delete;
+  ~EcheStreamStatusChangeHandlerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    handler_ = std::make_unique<EcheDisplayStreamHandler>();
+    handler_ = std::make_unique<EcheStreamStatusChangeHandler>();
     handler_->AddObserver(&fake_observer_);
   }
 
@@ -69,15 +70,15 @@ class EcheDisplayStreamHandlerTest : public testing::Test {
 
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<EcheDisplayStreamHandler> handler_;
+  std::unique_ptr<EcheStreamStatusChangeHandler> handler_;
 };
 
-TEST_F(EcheDisplayStreamHandlerTest, StartStreaming) {
+TEST_F(EcheStreamStatusChangeHandlerTest, StartStreaming) {
   StartStreaming();
   EXPECT_EQ(1u, GetNumObserverStartStreamingCalls());
 }
 
-TEST_F(EcheDisplayStreamHandlerTest, OnStreamStatusChanged) {
+TEST_F(EcheStreamStatusChangeHandlerTest, OnStreamStatusChanged) {
   NotifyStreamStatus(mojom::StreamStatus::kStreamStatusInitializing);
   EXPECT_EQ(mojom::StreamStatus::kStreamStatusInitializing,
             GetObservedStreamStatus());

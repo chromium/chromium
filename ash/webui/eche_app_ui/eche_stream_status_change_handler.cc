@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
+#include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
@@ -10,42 +10,42 @@
 namespace ash {
 namespace eche_app {
 
-EcheDisplayStreamHandler::EcheDisplayStreamHandler() = default;
+EcheStreamStatusChangeHandler::EcheStreamStatusChangeHandler() = default;
 
-EcheDisplayStreamHandler::~EcheDisplayStreamHandler() = default;
+EcheStreamStatusChangeHandler::~EcheStreamStatusChangeHandler() = default;
 
-void EcheDisplayStreamHandler::StartStreaming() {
-  PA_LOG(INFO) << "echeapi EcheDisplayStreamHandler StartStreaming";
+void EcheStreamStatusChangeHandler::StartStreaming() {
+  PA_LOG(INFO) << "echeapi EcheStreamStatusChangeHandler StartStreaming";
   NotifyStartStreaming();
 }
 
-void EcheDisplayStreamHandler::OnStreamStatusChanged(
+void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
     mojom::StreamStatus status) {
-  PA_LOG(INFO) << "echeapi EcheDisplayStreamHandler OnStreamStatusChanged "
+  PA_LOG(INFO) << "echeapi EcheStreamStatusChangeHandler OnStreamStatusChanged "
                << status;
   NotifyStreamStatusChanged(status);
 }
 
-void EcheDisplayStreamHandler::Bind(
+void EcheStreamStatusChangeHandler::Bind(
     mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
   display_stream_receiver_.reset();
   display_stream_receiver_.Bind(std::move(receiver));
 }
 
-void EcheDisplayStreamHandler::AddObserver(Observer* observer) {
+void EcheStreamStatusChangeHandler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void EcheDisplayStreamHandler::RemoveObserver(Observer* observer) {
+void EcheStreamStatusChangeHandler::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EcheDisplayStreamHandler::NotifyStartStreaming() {
+void EcheStreamStatusChangeHandler::NotifyStartStreaming() {
   for (auto& observer : observer_list_)
     observer.OnStartStreaming();
 }
 
-void EcheDisplayStreamHandler::NotifyStreamStatusChanged(
+void EcheStreamStatusChangeHandler::NotifyStreamStatusChanged(
     mojom::StreamStatus status) {
   for (auto& observer : observer_list_)
     observer.OnStreamStatusChanged(status);
