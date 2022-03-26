@@ -32,6 +32,7 @@ StatsTest.*
 TrainingDataCollectorImplTest.*
 UkmConfigTest.*
 UkmDatabaseBackendTest.*
+UkmDataManagerImplTest.*
 UkmMetricsTableTest.*
 UkmObserverTest.*
 UkmUrlTableTest.*

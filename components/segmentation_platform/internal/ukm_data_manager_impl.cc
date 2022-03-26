@@ -24,8 +24,16 @@ UkmDataManagerImpl::~UkmDataManagerImpl() {
   ukm_database_.reset();
 }
 
+void UkmDataManagerImpl::InitializeForTesting(
+    std::unique_ptr<UkmDatabase> ukm_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  DCHECK(!ukm_database_);
+  ukm_database_ = std::move(ukm_database);
+}
+
 void UkmDataManagerImpl::Initialize(const base::FilePath& database_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  DCHECK(!ukm_database_);
   ukm_database_ = std::make_unique<UkmDatabase>(database_path);
 }
 
@@ -74,6 +82,9 @@ void UkmDataManagerImpl::PauseOrResumeObservation(bool pause) {
 
 void UkmDataManagerImpl::StopObservingUkm() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  if (!ukm_observer_)
+    return;
+
   DCHECK(ukm_database_);
   DCHECK(url_signal_handler_);
   ukm_observer_.reset();

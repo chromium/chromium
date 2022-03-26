@@ -19,7 +19,8 @@ UserActionSignalHandler::UserActionSignalHandler(
 }
 
 UserActionSignalHandler::~UserActionSignalHandler() {
-  base::RemoveActionCallback(action_callback_);
+  if (metrics_enabled_)
+    base::RemoveActionCallback(action_callback_);
 }
 
 void UserActionSignalHandler::EnableMetrics(bool enable_metrics) {

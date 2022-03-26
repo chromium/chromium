@@ -24,6 +24,8 @@ class UkmDataManagerImpl : public UkmDataManager {
   UkmDataManagerImpl(UkmDataManagerImpl&) = delete;
   UkmDataManagerImpl& operator=(UkmDataManagerImpl&) = delete;
 
+  void InitializeForTesting(std::unique_ptr<UkmDatabase> ukm_database);
+
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path) override;
   bool IsUkmEngineEnabled() override;

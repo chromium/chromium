@@ -9,40 +9,21 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_simple_task_runner.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
-#include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/database/signal_database_impl.h"
-#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
-#include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
-#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/internal/proto/signal.pb.h"
-#include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
-#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
-#include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
+#include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
-#include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
-#include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
-#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,51 +33,9 @@ using ::testing::Invoke;
 namespace segmentation_platform {
 namespace {
 
-constexpr char kTestSegmentationKey1[] = "test_key1";
-constexpr char kTestSegmentationKey2[] = "test_key2";
-constexpr char kTestSegmentationKey3[] = "test_key3";
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 const int64_t kModelVersion = 123;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
-
-std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
-  std::vector<std::unique_ptr<Config>> configs;
-  {
-    std::unique_ptr<Config> config = std::make_unique<Config>();
-    config->segmentation_key = kTestSegmentationKey1;
-    config->segment_selection_ttl = base::Days(28);
-    config->segment_ids = {
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
-    configs.push_back(std::move(config));
-  }
-  {
-    std::unique_ptr<Config> config = std::make_unique<Config>();
-    config->segmentation_key = kTestSegmentationKey2;
-    config->segment_selection_ttl = base::Days(10);
-    config->segment_ids = {
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE};
-    configs.push_back(std::move(config));
-  }
-  {
-    std::unique_ptr<Config> config = std::make_unique<Config>();
-    config->segmentation_key = kTestSegmentationKey3;
-    config->segment_selection_ttl = base::Days(14);
-    config->segment_ids = {
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB};
-    configs.push_back(std::move(config));
-  }
-  {
-    // Empty config.
-    std::unique_ptr<Config> config = std::make_unique<Config>();
-    config->segmentation_key = "test_key";
-    configs.push_back(std::move(config));
-  }
-
-  return configs;
-}
 
 // A mock of the ServiceProxy::Observer.
 class MockServiceProxyObserver : public ServiceProxy::Observer {
@@ -113,73 +52,32 @@ class MockServiceProxyObserver : public ServiceProxy::Observer {
 
 }  // namespace
 
-class SegmentationPlatformServiceImplTest : public testing::Test {
+class SegmentationPlatformServiceImplTest
+    : public testing::Test,
+      public SegmentationPlatformServiceTestBase {
  public:
   explicit SegmentationPlatformServiceImplTest(
-      std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr) {
-    if (ukm_data_manager) {
-      ukm_data_manager_ = std::move(ukm_data_manager);
-    } else {
-      ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
-    }
-  }
+      std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr)
+      : ukm_data_manager_(ukm_data_manager
+                              ? std::move(ukm_data_manager)
+                              : std::make_unique<UkmDataManagerImpl>()) {}
 
   ~SegmentationPlatformServiceImplTest() override = default;
 
   void SetUp() override {
-    task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    auto segment_db =
-        std::make_unique<leveldb_proto::test::FakeDB<proto::SegmentInfo>>(
-            &segment_db_entries_);
-    auto signal_db =
-        std::make_unique<leveldb_proto::test::FakeDB<proto::SignalData>>(
-            &signal_db_entries_);
-    auto segment_storage_config_db = std::make_unique<
-        leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>(
-        &segment_storage_config_db_entries_);
-    segment_db_ = segment_db.get();
-    signal_db_ = signal_db.get();
-    segment_storage_config_db_ = segment_storage_config_db.get();
-
-    SegmentationPlatformService::RegisterProfilePrefs(pref_service_.registry());
-    SetUpPrefs();
-
-    std::vector<std::unique_ptr<Config>> configs = CreateTestConfigs();
     // TODO(ssid): use mock a history service here.
-    segmentation_platform_service_impl_ =
-        std::make_unique<SegmentationPlatformServiceImpl>(
-            std::move(segment_db), std::move(signal_db),
-            std::move(segment_storage_config_db), ukm_data_manager_.get(),
-            std::make_unique<TestModelProviderFactory>(&model_provider_data_),
-            &pref_service_, /*history_service=*/nullptr, task_runner_,
-            &test_clock_, std::move(configs));
+    SegmentationPlatformServiceTestBase::InitPlatform(
+        ukm_data_manager_.get(), /*history_service=*/nullptr);
+
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
   }
 
   void TearDown() override {
-    segmentation_platform_service_impl_.reset();
-    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
-    // to be destroyed.
-    task_runner_->RunUntilIdle();
-  }
-
-  virtual void SetUpPrefs() {
-    DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
-    base::Value* dictionary = update.Get();
-
-    base::Value segmentation_result(base::Value::Type::DICTIONARY);
-    segmentation_result.SetIntKey(
-        "segment_id",
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-    dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
-  }
-
-  virtual std::vector<std::unique_ptr<Config>> CreateConfigs() {
-    return CreateTestConfigs();
+    SegmentationPlatformServiceTestBase::DestroyPlatform();
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -343,22 +241,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::map<std::string, proto::SegmentInfo> segment_db_entries_;
-  std::map<std::string, proto::SignalData> signal_db_entries_;
-  std::map<std::string, proto::SignalStorageConfigs>
-      segment_storage_config_db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> segment_db_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> signal_db_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>
-      segment_storage_config_db_;
-  TestModelProviderFactory::Data model_provider_data_;
-  TestingPrefServiceSimple pref_service_;
-  base::SimpleTestClock test_clock_;
-  std::unique_ptr<UkmDataManager> ukm_data_manager_;
-  std::unique_ptr<SegmentationPlatformServiceImpl>
-      segmentation_platform_service_impl_;
   MockServiceProxyObserver observer_;
+  std::unique_ptr<UkmDataManager> ukm_data_manager_;
 };
 
 TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {

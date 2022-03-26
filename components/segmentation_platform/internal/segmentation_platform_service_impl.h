@@ -129,6 +129,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
  private:
   friend class SegmentationPlatformServiceImplTest;
+  friend class TestServicesForPlatform;
 
   void OnSegmentInfoDatabaseInitialized(bool success);
   void OnSignalDatabaseInitialized(bool success);

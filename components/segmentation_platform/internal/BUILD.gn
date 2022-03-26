@@ -221,6 +221,8 @@ source_set("unit_tests") {
     "mock_ukm_data_manager.h",
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
+    "segmentation_platform_service_test_base.cc",
+    "segmentation_platform_service_test_base.h",
     "segmentation_ukm_helper_unittest.cc",
     "selection/segment_result_provider_unittest.cc",
     "selection/segment_score_provider_unittest.cc",
@@ -244,6 +246,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser:browser",
+    "//components/history/core/test",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
@@ -264,10 +267,13 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     # IMPORTANT NOTE: When adding new tests, also remember to update the list of
     # tests in //components/segmentation_platform/components_unittests.filter
+    # TODO(ssid): Move all these tests out of tflite check once
+    # model_execution_manager is not tflite dependent.
     sources += [
       "execution/model_execution_manager_impl_unittest.cc",
       "execution/optimization_guide/optimization_guide_segmentation_model_provider_unittest.cc",
       "execution/optimization_guide/segmentation_model_executor_unittest.cc",
+      "ukm_data_manager_impl_unittest.cc",
     ]
     deps += [
       ":optimization_guide_segmentation_handler",

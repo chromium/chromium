@@ -73,6 +73,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
  private:
   friend class SegmentationPlatformServiceImplTest;
+  friend class TestServicesForPlatform;
 
   struct ExecutionState;
   struct ModelExecutionTraceEvent;
