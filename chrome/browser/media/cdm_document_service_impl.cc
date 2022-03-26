@@ -51,6 +51,7 @@
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
+#include "chrome/browser/media/media_foundation_service_monitor.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "sandbox/policy/win/lpac_capability.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -363,7 +364,36 @@ void CdmDocumentServiceImpl::SetCdmClientToken(
 
 void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event) {
   DVLOG(1) << __func__ << ": event=" << static_cast<int>(event);
-  NOTIMPLEMENTED();
+
+  // CdmDocumentServiceImpl is shared by all CDMs in the same RenderFrame.
+  //
+  // We choose to only report a significant playback at most once and an error
+  // at most once because:
+  // 1. A site could create many CDM instances, e.g. to prefetch licenses. This
+  //    could cause multiple errors to be reported.
+  // 2. The media::Renderer could be destroyed and then recreated as part of the
+  //    suspend/resume process (e.g. paused for long time).This could cause
+  //    multiple significant playback to be reported.
+  // In both cases, our data could be skewed if we don't throttle them.
+  //
+  // If an error happens after a significant playback both will be reported.
+  // This is fine since MediaFoundationServiceMonitor calculates a score.
+  switch (event) {
+    case media::CdmEvent::kSignificantPlayback:
+      if (!has_reported_significant_playback_) {
+        has_reported_significant_playback_ = true;
+        MediaFoundationServiceMonitor::GetInstance()->OnSignificantPlayback();
+      }
+      break;
+    case media::CdmEvent::kPlaybackError:
+      [[fallthrough]];
+    case media::CdmEvent::kCdmError:
+      if (!has_reported_cdm_error_) {
+        has_reported_cdm_error_ = true;
+        MediaFoundationServiceMonitor::GetInstance()->OnPlaybackOrCdmError();
+      }
+      break;
+  }
 }
 
 // This function goes over each folder located under the MediaFoundationCdm

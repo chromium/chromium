@@ -28,6 +28,11 @@
 // Implements media::mojom::CdmDocumentService. Can only be used on the
 // UI thread because PlatformVerificationFlow and the pref service lives on the
 // UI thread.
+// Ownership Note: There's one CdmDocumentServiceImpl per RenderFrame per
+// service type ( MediaFoundationService or CdmService). For
+// MediaFoundationService's case, this can be seen in the ownership chain of
+// InterfaceFactoryImpl -> MediaFoundationCdmFactory -> MojoCdmHelper
+// -> mojo::Remote<mojom::CdmDocumentService>.
 class CdmDocumentServiceImpl final
     : public content::DocumentService<media::mojom::CdmDocumentService> {
  public:
@@ -87,6 +92,12 @@ class CdmDocumentServiceImpl final
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<ash::attestation::PlatformVerificationFlow>
       platform_verification_flow_;
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // See comments in OnCdmEvent() implementation.
+  bool has_reported_cdm_error_ = false;
+  bool has_reported_significant_playback_ = false;
 #endif
 
   const raw_ptr<content::RenderFrameHost> render_frame_host_;

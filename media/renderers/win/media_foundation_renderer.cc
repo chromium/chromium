@@ -679,7 +679,7 @@ void MediaFoundationRenderer::SendStatistics() {
     return;
   }
 
-  const int kSignificantPlaybackFrames = 1800;  // About 30 fps for 1 minute.
+  const int kSignificantPlaybackFrames = 5400;  // About 30 fps for 3 minutes.
   if (!has_reported_significant_playback_ && cdm_proxy_ &&
       new_stats.video_frames_decoded >= kSignificantPlaybackFrames) {
     has_reported_significant_playback_ = true;
