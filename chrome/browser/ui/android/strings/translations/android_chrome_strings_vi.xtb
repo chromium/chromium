@@ -68,6 +68,9 @@
 <translation id="1320912611264252795">Các thư mục của luồng lưu dấu trang đã mở trên toàn màn hình</translation>
 <translation id="1327257854815634930">Lịch sử di chuyển đang mở</translation>
 <translation id="1331212799747679585">Chrome không thể cập nhật. Tùy chọn khác</translation>
+<translation id="1332100670807501334">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.
+
+Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạn cũng xoá những thông tin đo lường liên quan. Xem <ph name="BEGIN_LINK" />nhật ký duyệt web của bạn<ph name="END_LINK" />.</translation>
 <translation id="1332501820983677155">Phím tắt cho các tính năng của Google Chrome</translation>
 <translation id="1344653310988386453">Thêm đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="1347468774581902829">Quản lý hoạt động</translation>
@@ -115,6 +118,7 @@
 Dựa trên tương tác của bạn với một trang web (chẳng hạn như thường xuyên đăng nhập vào một tài khoản), trang web đó có thể phát hành một mã thông báo tin cậy cho trình duyệt của bạn. Sau đó, nếu các trang web khác bạn truy cập cũng kiểm tra và tìm thấy một mã thông báo tin cậy hợp lệ, thì khả năng cao là các trang web đó sẽ xác định bạn là một người thực chứ không phải một bot.
 
 Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và các bên sẽ không thể dùng mã này để tìm ra bạn là ai.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá những mối quan tâm mà bạn không muốn Chrome xem xét.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1633659023549081553">Khám phá nội dung mới trên trang chủ của Chrome</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
@@ -147,6 +151,9 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="1849863543394887018">Bạn có thể tắt thông báo trong phần cài đặt</translation>
+<translation id="1854311313115643875">Trong giai đoạn dùng thử, tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.
+
+Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạn cũng xoá những thông tin đo lường liên quan. Xem <ph name="BEGIN_LINK" />nhật ký duyệt web của bạn<ph name="END_LINK" />.</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
@@ -311,6 +318,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2746842245914314523">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt Chrome. Trong thời gian dùng thử, các tương tác của bạn với các trang web có thể chưa trở nên riêng tư hơn so với khi không sử dụng những tính năng mới này.</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
 <translation id="2762000892062317888">vừa xong</translation>
+<translation id="2765569104201273438">Trong giai đoạn thử nghiệm, Chrome sẽ ước đoán những chủ đề mà bạn có thể quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="276969039800130567">Đăng nhập bằng địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
@@ -793,6 +801,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
 <translation id="5517095782334947753">Bạn có dấu trang, lịch sử, mật khẩu và các cài đặt khác từ <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5524761631371622910">Trong giai đoạn dùng thử và nếu Chrome ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng.</translation>
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5555525474779371165">Chọn chế độ bảo vệ bằng tính năng Duyệt web an toàn của bạn</translation>
@@ -825,6 +834,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="570347048394355941">Chuyển sang thẻ</translation>
 <translation id="572328651809341494">Các thẻ gần đây</translation>
 <translation id="5726692708398506830">Phóng to mọi nội dung trên trang</translation>
+<translation id="5727531838415286053">Nếu Chrome ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="5748802427693696783">Đã chuyển sang thẻ chuẩn</translation>
 <translation id="5749068826913805084">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống.</translation>
 <translation id="5749237766298580851">Tắt <ph name="SEPARATOR" /> Không khuyến nghị</translation>
@@ -900,6 +910,7 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="6085886413119427067">Xác định cách kết nối với các trang web qua đường kết nối an toàn</translation>
 <translation id="6091413777268123602">Nhờ bản dùng thử Hộp cát về quyền riêng tư, các trang web có thể đem đến trải nghiệm duyệt web như trước nhưng dùng ít dữ liệu của bạn hơn. Như vậy tức là quyền riêng tư của bạn được đảm bảo hơn và hoạt động theo dõi qua nhiều trang web thì giảm bớt. Chúng tôi sẽ thêm các bản dùng thử mới khi những bản dùng thử đó sẵn sàng cho quá trình thử nghiệm.</translation>
 <translation id="60923314841986378">Còn <ph name="HOURS" /> giờ</translation>
+<translation id="609511393187302037">Chrome đang nghiên cứu các cách để hạn chế hoạt động theo dõi qua nhiều trang web đồng thời giúp các trang web ngăn chặn hành vi lừa đảo và quảng cáo không liên quan.</translation>
 <translation id="6095578583683628124">Nếu bạn cũng dùng Google làm công cụ tìm kiếm mặc định, thì bạn sẽ nhận được các nội dung đề xuất phù hợp và có liên quan đến ngữ cảnh hơn</translation>
 <translation id="6108923351542677676">Đang thiết lập…</translation>
 <translation id="6112702117600201073">Làm mới trang</translation>
@@ -947,6 +958,11 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6364438453358674297">Xóa đề xuất khỏi lịch sử?</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Chrome sẽ thường xuyên tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập. Chế độ cài đặt này có thể dẫn đến việc dùng dữ liệu nhiều hơn.</translation>
+<translation id="6385407407546870227">Trong giai đoạn dùng thử, để giảm nội dung rác và lừa đảo, hệ thống dựa vào các trust token (mã thông báo tin cậy) để giúp các trang web chống lại tình trạng lừa đảo cũng như phân biệt được bot với người.
+
+Dựa trên tương tác của bạn với một trang web (chẳng hạn như thường xuyên đăng nhập vào một tài khoản), trang web đó có thể phát hành một mã thông báo tin cậy cho trình duyệt của bạn. Sau đó, nếu các trang web khác bạn truy cập cũng kiểm tra và tìm thấy một mã thông báo tin cậy hợp lệ, thì khả năng cao là các trang web đó sẽ xác định bạn là một người thực chứ không phải một bot.
+
+Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và các bên sẽ không thể dùng mã này để tìm ra bạn là ai.</translation>
 <translation id="6395288395575013217">LIÊN KẾT</translation>
 <translation id="6397616442223433927">Đã có kết nối mạng trở lại</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> trên <ph name="VIOLATED_URL" /></translation>
@@ -1341,6 +1357,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8445448999790540984">Không xuất được mật khẩu</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8453310803815879010">Bắt đầu Trò chơi Khủng long</translation>
+<translation id="8455351369246067579">Chrome có thể ước đoán những chủ đề mà bạn quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8473863474539038330">Địa chỉ và các tùy chọn khác</translation>
@@ -1447,6 +1464,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
 <translation id="8987641763863173640">Quản lý chế độ cài đặt Xem trước video</translation>
 <translation id="898854820045159673">Đã thêm phản ứng</translation>
+<translation id="8989968390305463310">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy cũng như mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome tự động xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>

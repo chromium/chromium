@@ -28,6 +28,7 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="1597911401261118146">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Để làm cho Chrome an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá những mối quan tâm mà bạn không muốn Chrome xem xét.</translation>
 <translation id="1628000112320670027">Nhận trợ giúp về Chrome</translation>
 <translation id="1662146548738125461">Giới thiệu về ChromeOS Flex</translation>
 <translation id="1674870198290878346">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
@@ -48,12 +49,14 @@
 <translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
 <translation id="2018528049276128029">Mỗi hồ sơ đều có thông tin riêng trên Chrome, chẳng hạn như dấu trang, các trang web đã truy cập, mật khẩu và nhiều thông tin khác</translation>
 <translation id="2063848847527508675">Chrome OS cần được khởi động lại để áp dụng bản cập nhật.</translation>
+<translation id="207902854391093810">Trong giai đoạn dùng thử, tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
 <translation id="2094648590148273905">Điều khoản của ChromeOS Flex</translation>
 <translation id="2094919256425865063">Bạn vẫn muốn thoát khỏi Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="2123055963409958220">Giúp cải thiện Chrome bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
+<translation id="2131230230468101642">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá các mối quan tâm mà bạn không muốn Chrome xem xét.</translation>
 <translation id="2151406531797534936">Vui lòng khởi động lại Chrome ngay bây giờ</translation>
 <translation id="2258103955319320201">Để truy cập vào nội dung của bạn trên trình duyệt Chrome bằng mọi thiết bị, hãy đăng nhập rồi bật tính năng đồng bộ hóa</translation>
 <translation id="2290014774651636340">Khóa API của Google bị thiếu. Một số chức năng của Google Chrome sẽ bị tắt.</translation>
@@ -80,6 +83,7 @@
 <translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
 <translation id="2746842245914314523">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt Chrome. Trong thời gian dùng thử, các tương tác của bạn với các trang web có thể chưa trở nên riêng tư hơn so với khi không sử dụng những tính năng mới này.</translation>
 <translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
+<translation id="2765569104201273438">Trong giai đoạn thử nghiệm, Chrome sẽ ước đoán những chủ đề mà bạn có thể quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="2770231113462710648">Thay đổi trình duyệt mặc định thành:</translation>
 <translation id="2775140325783767197">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
@@ -161,6 +165,7 @@
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4450664632294415862">Chrome – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Một hoạt động khác trên Google Chrome đang diễn ra. Vui lòng thử lại sau.</translation>
+<translation id="4459234553906210702">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
 <translation id="4480040274068703980">Chrome OS không thể đồng bộ hóa dữ liệu của bạn do lỗi khi đăng nhập.</translation>
 <translation id="4521185804071812304">Không bắt buộc: Giúp cải thiện hiệu suất và các tính năng của Chrome OS bằng cách tự động gửi dữ liệu sử dụng và chẩn đoán cho Google.</translation>
 <translation id="4561051373932531560">Google Chrome cho phép bạn nhấp vào số điện thoại trên web và gọi tới số đó bằng Skype!</translation>
@@ -171,6 +176,7 @@
 <translation id="4627412468266359539">Không bắt buộc: Giúp cải thiện các tính năng và hiệu suất của ChromeOS Flex bằng cách tự động gửi dữ liệu sử dụng và thông tin chẩn đoán cho Google.</translation>
 <translation id="4633000520311261472">Để làm cho Chrome an toàn hơn, chúng tôi đã vô hiệu hóa một số tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="4728575227883772061">Không cài đặt được do lỗi chưa xác định. Nếu Google Chrome hiện đang chạy, vui lòng đóng Google Chrome và thử lại.</translation>
+<translation id="4747730611090640388">Chrome có thể ước đoán mối quan tâm của bạn.  Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Tệp này có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
@@ -196,14 +202,18 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5357889879764279201">Nhận trợ giúp liên quan đến ChromeOS Flex</translation>
 <translation id="5386244825306882791">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome hoặc tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="5394833366792865639">Chia sẻ một thẻ Chrome</translation>
+<translation id="5412485296464121825">Các trang web có thể lưu trữ thông tin trên Chrome về mối quan tâm của bạn. Ví dụ: sau khi bạn truy cập một trang web bán giày chạy marathon, trang web đó có thể sẽ xác định rằng bạn quan tâm đến chạy marathon. Sau đó, nếu bạn truy cập một trang web khác để đăng ký thi chạy, thì trang web đó sẽ hiện quảng cáo giày chạy dựa trên mối quan tâm của bạn.</translation>
 <translation id="5430073640787465221">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. Google Chrome không thể khôi phục cài đặt của bạn.</translation>
+<translation id="5524761631371622910">Trong giai đoạn dùng thử và nếu Chrome ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng.</translation>
 <translation id="556024056938947818">Google Chrome đang cố gắng hiển thị mật khẩu.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5590556711361520802">Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy. Chrome có thể chia sẻ tối đa 3 mối quan tâm mà không cần nêu danh tính của bạn.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="5686916850681061684">Tùy chỉnh và kiểm soát Google Chrome. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome sẽ khởi động lại sau 1 giây}other{Google Chrome sẽ khởi động lại sau # giây}}</translation>
+<translation id="5727531838415286053">Nếu Chrome ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="5736850870166430177">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
 <translation id="573759479754913123">Giới thiệu về Chrome OS</translation>
 <translation id="5756509061973259733">Thiết bị này đã có một hồ sơ trên Chrome sử dụng tài khoản này</translation>
@@ -217,6 +227,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5941830788786076944">Chọn Google Chrome làm trình duyệt mặc định</translation>
 <translation id="6070348360322141662">Để bảo mật hơn, Google Chrome sẽ mã hóa dữ liệu của bạn</translation>
 <translation id="608006075545470555">Thêm Hồ sơ công việc vào trình duyệt này</translation>
+<translation id="609511393187302037">Chrome đang nghiên cứu các cách để hạn chế hoạt động theo dõi qua nhiều trang web đồng thời giúp các trang web ngăn chặn hành vi lừa đảo và quảng cáo không liên quan.</translation>
 <translation id="6113794647360055231">Chrome được cải tiến hơn</translation>
 <translation id="6145313976051292476">Mở tệp PDF trong Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -278,6 +289,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="7629695634924605473">Chrome cho bạn biết mật khẩu của bạn có bị đánh cắp hay không</translation>
 <translation id="7641148173327520642">Quản trị viên hệ thống đã định cấu hình Google Chrome để mở <ph name="ALTERNATIVE_BROWSER_NAME" /> khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Biểu trưng Chrome Enterprise</translation>
+<translation id="7655455401911432608">Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chrome trên thiết bị này.</translation>
 <translation id="7665553140559834626">Chạy lại để cập nhật &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Trình cài đặt không thể tạo thư mục tạm thời. Vui lòng kiểm tra dung lượng ổ đĩa còn trống và quyền cài đặt phần mềm.</translation>
 <translation id="7748512868279796735">Bạn có thể dùng các tài khoản sau đây cho hồ sơ này trên Chrome</translation>
@@ -305,11 +317,13 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="828798499196665338">Cha mẹ bạn đã tắt tùy chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chrome. Bạn không được phép bật <ph name="EXTENSION_TYPE_PARAMETER" /> này.</translation>
 <translation id="8290100596633877290">Chà! Google Chrome đã bị lỗi. Mở lại bây giờ không? </translation>
 <translation id="8342675569599923794">Tệp này nguy hiểm, do đó Chrome đã chặn tệp.</translation>
+<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Các trang web có thể lưu trữ thông tin trên Chrome về mối quan tâm của bạn. Ví dụ: sau khi bạn truy cập một trang web bán giày chạy marathon, trang web đó có thể sẽ xác định rằng bạn quan tâm đến chạy marathon. Sau đó, nếu bạn truy cập một trang web khác để đăng ký thi chạy, thì trang web đó sẽ hiện quảng cáo giày chạy dựa trên mối quan tâm của bạn.</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Chrome có thể ước đoán mối quan tâm của bạn. Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="8394720698884623075">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome</translation>
 <translation id="840084489713044809">Google Chrome muốn xuất các mật khẩu của bạn.</translation>
 <translation id="8433638294851456451">Để gửi số điện thoại từ thiết bị này đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
+<translation id="8455351369246067579">Chrome có thể ước đoán những chủ đề mà bạn quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="8498858610309223613">Google Chrome vừa áp dụng một bản cập nhật bảo mật đặc biệt. Vui lòng khởi động lại ngay bây giờ và chúng tôi sẽ khôi phục các thẻ của bạn.</translation>
 <translation id="8516431725144212809">Mối quan tâm của bạn theo ước đoán của Chrome</translation>
 <translation id="8521348052903287641">Quy tắc kết nối để Google Chrome Dev cho phép lưu lượng truy cập mDNS.</translation>
@@ -322,12 +336,14 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>
 <translation id="8629311577791198377">Khi bạn đóng tất cả cửa sổ Chrome, thì cookie và dữ liệu trang web sẽ tự động bị xóa</translation>
 <translation id="8641606876632989680">Chrome sẽ thông báo khi mật khẩu bạn dùng để đăng nhập đã bị lộ</translation>
+<translation id="8649026945479135076">Các trang web bạn truy cập thường ghi nhớ các mối quan tâm của bạn để cá nhân hoá trải nghiệm cho bạn. Các trang web cũng có thể lưu trữ thông tin trên Chrome về mối quan tâm của bạn.</translation>
 <translation id="8669527147644353129">Trình trợ giúp của Google Chrome</translation>
 <translation id="8679801911857917785">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome.</translation>
 <translation id="8686817260976772516">Với các hồ sơ trên Chrome, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="8712767363896337380">Sắp xong rồi! Hãy chạy lại Chrome để hoàn tất quá trình cập nhật.</translation>
 <translation id="873133009373065397">Google Chrome không thể xác định hoặc đặt trình duyệt mặc định</translation>
 <translation id="8823341990149967727">Chrome đã lỗi thời</translation>
+<translation id="8825634023950448068">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Và nếu Chrome xác định nhầm hoặc bạn không muốn thấy một vài quảng cáo nhất định, bạn có thể xoá mối quan tâm tương ứng.</translation>
 <translation id="8834965163890861871">Google Chrome đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="884296878221830158">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome hoặc nhấp vào nút Trang chủ.</translation>
 <translation id="8862326446509486874">Bạn không có quyền thích hợp để cài đặt cấp hệ thống. Thử chạy lại trình cài đặt với vai trò Quản trị viên.</translation>
@@ -335,12 +351,14 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="8922193594870374009">Để gửi số điện thoại từ <ph name="ORIGIN" /> đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
 <translation id="8983720963221508955">Bạn đã bật tính năng Duyệt web an toàn có tăng cường bảo vệ trong tài khoản. Giờ hãy sử dụng tính năng này trên Chrome.</translation>
 <translation id="8986207147630327271">Bạn đang thêm một hồ sơ công việc vào trình duyệt này và chỉ quản trị viên của bạn mới có quyền kiểm soát hồ sơ công việc này.</translation>
+<translation id="8989968390305463310">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy cũng như mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome tự động xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Đã có bản cập nhật Chrome}=1{Đã có bản cập nhật Chrome}other{Đã có bản cập nhật Chrome từ # ngày trước}}</translation>
 <translation id="9026991721384951619">Chrome OS không thể đồng bộ hóa dữ liệu của bạn do chi tiết đăng nhập tài khoản của bạn đã lỗi thời.</translation>
 <translation id="9053892488859122171">Hệ thống ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome yêu cầu Windows 7 trở lên.</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>
 <translation id="9138603949443464873">Để áp dụng các mục thay đổi của bạn, hãy khởi động lại Chrome</translation>
+<translation id="9195993889682885387">Chrome có thể ước đoán các mối quan tâm của bạn dựa trên nhật ký duyệt web trong những tuần gần đây. Thông tin này được lưu trong thiết bị của bạn.</translation>
 <translation id="919706545465235479">Cập nhật Chrome để bắt đầu đồng bộ hóa</translation>
 <translation id="922152298093051471">Tùy chỉnh Chrome</translation>
 <translation id="93760716455950538">Khởi động lại ChromeOS Flex</translation>
