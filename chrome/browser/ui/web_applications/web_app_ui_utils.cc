@@ -20,6 +20,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -28,9 +33,6 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
 #if BUILDFLAG(IS_CHROMEOS)
   bool show_app_link_in_app_window = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1297868): implement `ShowAppManagementPage()` for lacros.
-  bool show_app_link_in_app_window = false;
 #else
   bool show_app_link_in_app_window =
       base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage);
@@ -64,6 +66,29 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
   return helper->GetAppId();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowAppManagementPage(const AppId& app_id) {
+  auto* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    LOG(ERROR) << "AppServiceProxy not available.";
+    return;
+  }
+
+  auto remote_version =
+      service->GetInterfaceVersion(crosapi::mojom::AppServiceProxy::Uuid_);
+
+  if (remote_version < int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                               kShowAppManagementPageMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version " << remote_version
+                 << " does not support ShowAppManagementPage().";
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->ShowAppManagementPage(
+      app_id);
+}
+#endif
+
 }  // namespace
 
 bool GetLabelIdsForAppManagementLinkInPageInfo(
@@ -93,8 +118,8 @@ bool HandleAppManagementLinkClickedInPageInfo(
       ash::settings::AppManagementEntryPoint::kPageInfoView);
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1297868): implement for lacros.
-  return false;
+  ShowAppManagementPage(*app_id);
+  return true;
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithWebContents(web_contents),
                              *app_id, AppSettingsPageEntryPoint::kPageInfoView);

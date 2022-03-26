@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 module crosapi.mojom;
 
@@ -172,6 +172,10 @@ interface AppServiceProxy {
   AddPreferredApp@3(
       string app_id,
       Intent intent);
+
+  // In the Settings SWA, show the app management page for |app_id|.
+  [MinVersion=16]
+  ShowAppManagementPage@4(string app_id);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

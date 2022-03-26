@@ -14,7 +14,10 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -40,6 +43,8 @@ bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {
 }  // namespace
 
 namespace apps {
+
+class AppUpdate;
 
 SubscriberCrosapi::SubscriberCrosapi(Profile* profile) : profile_(profile) {}
 
@@ -162,6 +167,17 @@ void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->AddPreferredApp(
       app_id, apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_));
+}
+
+void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  if (!proxy->AppRegistryCache().ForOneApp(app_id,
+                                           [](const apps::AppUpdate&) {})) {
+    LOG(WARNING) << "Unknown app: " << app_id;
+    return;
+  }
+  chrome::ShowAppManagementPage(
+      profile_, app_id, ash::settings::AppManagementEntryPoint::kPageInfoView);
 }
 
 void SubscriberCrosapi::OnSubscriberDisconnected() {

@@ -8,9 +8,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -19,6 +22,8 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -79,6 +84,38 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
 
   // Wait for item to stop existing in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+}
+
+// Test that ShowSiteSettings() launches the Settings SWA.
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
+  if (!IsServiceAvailable() ||
+      chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::AppServiceProxy::Uuid_) <
+          static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                               kShowAppManagementPageMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  const GURL app_url = https_server()->GetURL("/web_apps/basic.html");
+  const AppId app_id = InstallPWA(app_url);
+  AppRegistrationWaiter(profile(), app_id).Await();
+  AppRegistrationWaiter(profile(), kOsSettingsAppId).Await();
+
+  Browser* browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  ChromePageInfoDelegate delegate(web_contents);
+
+  // Wait for item to exist in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+
+  // Settings should not yet exist in the shelf.
+  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false);
+
+  delegate.ShowSiteSettings(app_url);
+
+  // Settings should now exist in the shelf.
+  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/true);
 }
 
 }  // namespace web_app
