@@ -105,23 +105,22 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    *     |rangeMoveAndAssert|.
    * @param {string=} opt_testType Either CURSOR or RANGE.
    */
-  runCursorMovesOnDocument(doc, moves, opt_testType) {
-    this.runWithLoadedTree(doc, function(root) {
-      let start = null;
+  async runCursorMovesOnDocument(doc, moves, opt_testType) {
+    const root = await this.runWithLoadedTree(doc);
+    let start = null;
 
-      // This occurs as a result of a load complete.
-      start =
-          AutomationUtil.findNodePost(root, FORWARD, AutomationPredicate.leaf);
+    // This occurs as a result of a load complete.
+    start =
+        AutomationUtil.findNodePost(root, FORWARD, AutomationPredicate.leaf);
 
+    const cursor = new cursors.Cursor(start, 0);
+    if (!opt_testType || opt_testType === this.CURSOR) {
       const cursor = new cursors.Cursor(start, 0);
-      if (!opt_testType || opt_testType === this.CURSOR) {
-        const cursor = new cursors.Cursor(start, 0);
-        this.cursorMoveAndAssert(cursor, moves);
-      } else if (opt_testType === this.RANGE) {
-        const range = new cursors.Range(cursor, cursor);
-        this.rangeMoveAndAssert(range, moves);
-      }
-    });
+      this.cursorMoveAndAssert(cursor, moves);
+    } else if (opt_testType === this.RANGE) {
+      const range = new cursors.Range(cursor, cursor);
+      this.rangeMoveAndAssert(range, moves);
+    }
   }
 
   get simpleDoc() {
@@ -147,29 +146,30 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
 };
 
 
-TEST_F('AccessibilityExtensionCursorsTest', 'CharacterCursor', function() {
-  this.runCursorMovesOnDocument(this.simpleDoc, [
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
-    // Bumps up against edge.
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'CharacterCursor', async function() {
+      await this.runCursorMovesOnDocument(this.simpleDoc, [
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
+        // Bumps up against edge.
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
 
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 2, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 3, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 4, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 5, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 2, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 3, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 4, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 5, value: 'start '}],
 
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 0, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 0, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
 
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],
-  ]);
-});
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],
+      ]);
+    });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'WordCursor', function() {
-  this.runCursorMovesOnDocument(this.simpleDoc, [
+TEST_F('AccessibilityExtensionCursorsTest', 'WordCursor', async function() {
+  await this.runCursorMovesOnDocument(this.simpleDoc, [
     // Word (BOUND).
     [WORD, BOUND, BACKWARD, {index: 0, value: 'start '}],
     [WORD, BOUND, BACKWARD, {index: 0, value: 'start '}],
@@ -191,25 +191,27 @@ TEST_F('AccessibilityExtensionCursorsTest', 'WordCursor', function() {
   ]);
 });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'CharacterWordCursor', function() {
-  this.runCursorMovesOnDocument(this.simpleDoc, [
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'CharacterWordCursor',
+    async function() {
+      await this.runCursorMovesOnDocument(this.simpleDoc, [
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
 
-    [WORD, DIRECTIONAL, FORWARD, {index: 0, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'same line'}],
-    [WORD, DIRECTIONAL, FORWARD, {index: 5, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 4, value: 'same line'}],
-    [WORD, DIRECTIONAL, FORWARD, {index: 5, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, FORWARD, {index: 6, value: 'same line'}],
-    [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],
-    [CHARACTER, DIRECTIONAL, BACKWARD, {index: 4, value: 'start '}],
-    [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}]
-  ]);
-});
+        [WORD, DIRECTIONAL, FORWARD, {index: 0, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'same line'}],
+        [WORD, DIRECTIONAL, FORWARD, {index: 5, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 4, value: 'same line'}],
+        [WORD, DIRECTIONAL, FORWARD, {index: 5, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, FORWARD, {index: 6, value: 'same line'}],
+        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],
+        [CHARACTER, DIRECTIONAL, BACKWARD, {index: 4, value: 'start '}],
+        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}]
+      ]);
+    });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', function() {
-  this.runCursorMovesOnDocument(this.simpleDoc, [
+TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', async function() {
+  await this.runCursorMovesOnDocument(this.simpleDoc, [
     // Line (BOUND).
     [LINE, BOUND, FORWARD, {value: 'same line'}],
     [LINE, BOUND, FORWARD, {value: 'same line'}],
@@ -226,8 +228,8 @@ TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', function() {
   ]);
 });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'SyncCursor', function() {
-  this.runCursorMovesOnDocument(this.simpleDoc, [
+TEST_F('AccessibilityExtensionCursorsTest', 'SyncCursor', async function() {
+  await this.runCursorMovesOnDocument(this.simpleDoc, [
     [WORD, SYNC, FORWARD, {index: 0, value: 'start '}],
 
     [NODE, DIRECTIONAL, FORWARD, {value: 'same line'}],
@@ -241,8 +243,8 @@ TEST_F('AccessibilityExtensionCursorsTest', 'SyncCursor', function() {
   ]);
 });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'CharacterRange', function() {
-  this.runCursorMovesOnDocument(
+TEST_F('AccessibilityExtensionCursorsTest', 'CharacterRange', async function() {
+  await this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
         [
@@ -303,8 +305,8 @@ TEST_F('AccessibilityExtensionCursorsTest', 'CharacterRange', function() {
       this.RANGE);
 });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'WordRange', function() {
-  this.runCursorMovesOnDocument(
+TEST_F('AccessibilityExtensionCursorsTest', 'WordRange', async function() {
+  await this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
         [
@@ -341,8 +343,8 @@ TEST_F('AccessibilityExtensionCursorsTest', 'WordRange', function() {
 });
 
 
-TEST_F('AccessibilityExtensionCursorsTest', 'LineRange', function() {
-  this.runCursorMovesOnDocument(
+TEST_F('AccessibilityExtensionCursorsTest', 'LineRange', async function() {
+  await this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
         [LINE, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
@@ -365,251 +367,238 @@ TEST_F('AccessibilityExtensionCursorsTest', 'LineRange', function() {
 
 TEST_F(
     'AccessibilityExtensionCursorsTest', 'DontSplitOnNodeNavigation',
-    function() {
-      this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-        const para = root.firstChild;
-        assertEquals('paragraph', para.role);
-        let cursor = new cursors.Cursor(para.firstChild, 0);
-        cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
-        assertEquals('staticText', cursor.node.role);
-        assertEquals('end', cursor.node.name);
+    async function() {
+      const root = await this.runWithLoadedTree(this.multiInlineDoc);
+      const para = root.firstChild;
+      assertEquals('paragraph', para.role);
+      let cursor = new cursors.Cursor(para.firstChild, 0);
+      cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
+      assertEquals('staticText', cursor.node.role);
+      assertEquals('end', cursor.node.name);
 
-        cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
-        assertEquals('staticText', cursor.node.role);
-        assertEquals('start diff line', cursor.node.name);
+      cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
+      assertEquals('staticText', cursor.node.role);
+      assertEquals('start diff line', cursor.node.name);
 
-        assertEquals('inlineTextBox', cursor.node.firstChild.role);
-        assertEquals('start ', cursor.node.firstChild.name);
-        assertEquals('diff ', cursor.node.firstChild.nextSibling.name);
-        assertEquals('line', cursor.node.lastChild.name);
-      });
+      assertEquals('inlineTextBox', cursor.node.firstChild.role);
+      assertEquals('start ', cursor.node.firstChild.name);
+      assertEquals('diff ', cursor.node.firstChild.nextSibling.name);
+      assertEquals('line', cursor.node.lastChild.name);
     });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'WrappingCursors', function() {
-  this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-    const first = root;
-    const last = root.lastChild.firstChild;
-    let cursor = new cursors.WrappingCursor(first, -1);
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'WrappingCursors', async function() {
+      const root = await this.runWithLoadedTree(this.multiInlineDoc);
+      const first = root;
+      const last = root.lastChild.firstChild;
+      let cursor = new cursors.WrappingCursor(first, -1);
 
-    // Wrap from first node to last node.
-    cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
-    assertEquals(last, cursor.node);
+      // Wrap from first node to last node.
+      cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
+      assertEquals(last, cursor.node);
 
-    // Wrap from last node to first node.
-    cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
-    assertEquals(first, cursor.node);
-  });
-});
+      // Wrap from last node to first node.
+      cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
+      assertEquals(first, cursor.node);
+    });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'IsInWebRange', function() {
-  this.runWithLoadedTree(this.simpleDoc, function(root) {
-    const para = root.firstChild;
-    const webRange = cursors.Range.fromNode(para);
-    const auraRange = cursors.Range.fromNode(root.parent);
-    assertFalse(auraRange.isWebRange());
-    assertTrue(webRange.isWebRange());
-  });
+TEST_F('AccessibilityExtensionCursorsTest', 'IsInWebRange', async function() {
+  const root = await this.runWithLoadedTree(this.simpleDoc);
+  const para = root.firstChild;
+  const webRange = cursors.Range.fromNode(para);
+  const auraRange = cursors.Range.fromNode(root.parent);
+  assertFalse(auraRange.isWebRange());
+  assertTrue(webRange.isWebRange());
 });
 
 // Disabled due to being flaky on ChromeOS. See https://crbug.com/1227435.
 TEST_F(
     'AccessibilityExtensionCursorsTest', 'DISABLED_SingleDocSelection',
-    function() {
-      this.runWithLoadedTree(
-          `
+    async function() {
+      const root = await this.runWithLoadedTree(`
     <span>start</span>
     <p><a href="google.com">google home page</a></p>
     <p>some more text</p>
     <p>end of text</p>
-  `,
-          function(root) {
-            // For some reason, Blink fails if we don't first select something
-            // on the page.
-            ChromeVoxState.instance.currentRange.select();
-            const link = root.find({role: RoleType.LINK});
-            const p1 = root.find({role: RoleType.PARAGRAPH});
-            const p2 = p1.nextSibling;
+  `);
+      // For some reason, Blink fails if we don't first select something
+      // on the page.
+      ChromeVoxState.instance.currentRange.select();
+      const link = root.find({role: RoleType.LINK});
+      const p1 = root.find({role: RoleType.PARAGRAPH});
+      const p2 = p1.nextSibling;
 
-            const singleSel = new cursors.Range(
-                new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
+      const singleSel = new cursors.Range(
+          new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
 
-            const multiSel = new cursors.Range(
-                new cursors.Cursor(p1.firstChild, 2),
-                new cursors.Cursor(p2.firstChild, 4));
+      const multiSel = new cursors.Range(
+          new cursors.Cursor(p1.firstChild, 2),
+          new cursors.Cursor(p2.firstChild, 4));
 
-            function verifySel() {
-              if (root.selectionStartObject === link.firstChild) {
-                assertEquals(link.firstChild, root.selectionStartObject);
-                assertEquals(0, root.selectionStartOffset);
-                assertEquals(link.firstChild, root.selectionEndObject);
-                assertEquals(1, root.selectionEndOffset);
-                this.listenOnce(root, 'textSelectionChanged', verifySel);
-                multiSel.select();
-              } else if (root.selectionStartObject === p1.firstChild) {
-                assertEquals(p1.firstChild, root.selectionStartObject);
-                assertEquals(2, root.selectionStartOffset);
-                assertEquals(p2.firstChild, root.selectionEndObject);
-                assertEquals(4, root.selectionEndOffset);
-              }
-            }
+      function verifySel() {
+        if (root.selectionStartObject === link.firstChild) {
+          assertEquals(link.firstChild, root.selectionStartObject);
+          assertEquals(0, root.selectionStartOffset);
+          assertEquals(link.firstChild, root.selectionEndObject);
+          assertEquals(1, root.selectionEndOffset);
+          this.listenOnce(root, 'textSelectionChanged', verifySel);
+          multiSel.select();
+        } else if (root.selectionStartObject === p1.firstChild) {
+          assertEquals(p1.firstChild, root.selectionStartObject);
+          assertEquals(2, root.selectionStartOffset);
+          assertEquals(p2.firstChild, root.selectionEndObject);
+          assertEquals(4, root.selectionEndOffset);
+        }
+      }
 
-            this.listenOnce(root, 'textSelectionChanged', verifySel, true);
-            singleSel.select();
-          });
+      this.listenOnce(root, 'textSelectionChanged', verifySel, true);
+      singleSel.select();
     });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'InlineElementOffset',
+    async function() {
+      const root = await this.runWithLoadedTree(`
     <span>start</span>
     <p>This<br> is a<a href="#g">test</a>of selection</p>
-  `,
-      function(root) {
-        root.addEventListener(
-            'textSelectionChanged', this.newCallback(function(evt) {
-              // Test setup moves initial focus; ensure we don't test that here.
-              if (testNode !== root.selectionStartObject) {
-                return;
-              }
+  `);
+      root.addEventListener(
+          'textSelectionChanged', this.newCallback(function(evt) {
+            // Test setup moves initial focus; ensure we don't test that here.
+            if (testNode !== root.selectionStartObject) {
+              return;
+            }
 
-              // This is a little unexpected though not really incorrect; Ctrl+C
-              // works.
-              assertEquals(testNode, root.selectionStartObject);
-              assertEquals(ofSelectionNode, root.selectionEndObject);
-              assertEquals(4, root.selectionStartOffset);
-              assertEquals(1, root.selectionEndOffset);
-            }));
+            // This is a little unexpected though not really incorrect; Ctrl+C
+            // works.
+            assertEquals(testNode, root.selectionStartObject);
+            assertEquals(ofSelectionNode, root.selectionEndObject);
+            assertEquals(4, root.selectionStartOffset);
+            assertEquals(1, root.selectionEndOffset);
+          }));
 
-        // This is the link's static text.
-        const testNode = root.lastChild.lastChild.previousSibling.firstChild;
-        assertEquals(RoleType.STATIC_TEXT, testNode.role);
-        assertEquals('test', testNode.name);
+      // This is the link's static text.
+      const testNode = root.lastChild.lastChild.previousSibling.firstChild;
+      assertEquals(RoleType.STATIC_TEXT, testNode.role);
+      assertEquals('test', testNode.name);
 
-        const ofSelectionNode = root.lastChild.lastChild;
-        const cur = new cursors.Cursor(ofSelectionNode, 0);
-        assertEquals('of selection', cur.selectionNode.name);
-        assertEquals(RoleType.STATIC_TEXT, cur.selectionNode.role);
-        assertEquals(0, cur.selectionIndex);
+      const ofSelectionNode = root.lastChild.lastChild;
+      const cur = new cursors.Cursor(ofSelectionNode, 0);
+      assertEquals('of selection', cur.selectionNode.name);
+      assertEquals(RoleType.STATIC_TEXT, cur.selectionNode.role);
+      assertEquals(0, cur.selectionIndex);
 
-        const curIntoO = new cursors.Cursor(ofSelectionNode, 1);
-        assertEquals('of selection', curIntoO.selectionNode.name);
-        assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode.role);
-        assertEquals(1, curIntoO.selectionIndex);
+      const curIntoO = new cursors.Cursor(ofSelectionNode, 1);
+      assertEquals('of selection', curIntoO.selectionNode.name);
+      assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode.role);
+      assertEquals(1, curIntoO.selectionIndex);
 
-        const oRange = new cursors.Range(cur, curIntoO);
-        oRange.select();
-      });
-});
+      const oRange = new cursors.Range(cur, curIntoO);
+      oRange.select();
+    });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'ContentEquality', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'ContentEquality', async function() {
+      const root = await this.runWithLoadedTree(`
     <div role="region" aria-label="test region">this is a test</button>
-  `,
-      function(root) {
-        const region = root.firstChild;
-        assertEquals(RoleType.REGION, region.role);
-        const staticText = region.firstChild;
-        assertEquals(RoleType.STATIC_TEXT, staticText.role);
-        const inlineTextBox = staticText.firstChild;
-        assertEquals(RoleType.INLINE_TEXT_BOX, inlineTextBox.role);
+  `);
+      const region = root.firstChild;
+      assertEquals(RoleType.REGION, region.role);
+      const staticText = region.firstChild;
+      assertEquals(RoleType.STATIC_TEXT, staticText.role);
+      const inlineTextBox = staticText.firstChild;
+      assertEquals(RoleType.INLINE_TEXT_BOX, inlineTextBox.role);
 
-        const rootRange = cursors.Range.fromNode(root);
-        const regionRange = cursors.Range.fromNode(region);
-        const staticTextRange = cursors.Range.fromNode(staticText);
-        const inlineTextBoxRange = cursors.Range.fromNode(inlineTextBox);
+      const rootRange = cursors.Range.fromNode(root);
+      const regionRange = cursors.Range.fromNode(region);
+      const staticTextRange = cursors.Range.fromNode(staticText);
+      const inlineTextBoxRange = cursors.Range.fromNode(inlineTextBox);
 
-        // Positive cases.
-        assertTrue(regionRange.contentEquals(staticTextRange));
-        assertTrue(staticTextRange.contentEquals(regionRange));
-        assertTrue(inlineTextBoxRange.contentEquals(staticTextRange));
-        assertTrue(staticTextRange.contentEquals(inlineTextBoxRange));
+      // Positive cases.
+      assertTrue(regionRange.contentEquals(staticTextRange));
+      assertTrue(staticTextRange.contentEquals(regionRange));
+      assertTrue(inlineTextBoxRange.contentEquals(staticTextRange));
+      assertTrue(staticTextRange.contentEquals(inlineTextBoxRange));
 
-        // Negative cases.
-        assertFalse(rootRange.contentEquals(regionRange));
-        assertFalse(rootRange.contentEquals(staticTextRange));
-        assertFalse(rootRange.contentEquals(inlineTextBoxRange));
-        assertFalse(regionRange.contentEquals(rootRange));
-        assertFalse(staticTextRange.contentEquals(rootRange));
-        assertFalse(inlineTextBoxRange.contentEquals(rootRange));
-      });
-});
+      // Negative cases.
+      assertFalse(rootRange.contentEquals(regionRange));
+      assertFalse(rootRange.contentEquals(staticTextRange));
+      assertFalse(rootRange.contentEquals(inlineTextBoxRange));
+      assertFalse(regionRange.contentEquals(rootRange));
+      assertFalse(staticTextRange.contentEquals(rootRange));
+      assertFalse(inlineTextBoxRange.contentEquals(rootRange));
+    });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'DeepEquivalency', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'DeepEquivalency', async function() {
+      const root = await this.runWithLoadedTree(`
     <p style="word-spacing:100000px">this is a test</p>
-  `,
-      function(root) {
-        const textNode = root.find({role: RoleType.STATIC_TEXT});
+  `);
+      const textNode = root.find({role: RoleType.STATIC_TEXT});
 
-        let text = new cursors.Cursor(textNode, 2);
-        deep = text.deepEquivalent;
-        assertEquals('this ', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(2, deep.index);
+      let text = new cursors.Cursor(textNode, 2);
+      deep = text.deepEquivalent;
+      assertEquals('this ', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(2, deep.index);
 
-        text = new cursors.Cursor(textNode, 5);
-        deep = text.deepEquivalent;
-        assertEquals('is ', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(0, deep.index);
+      text = new cursors.Cursor(textNode, 5);
+      deep = text.deepEquivalent;
+      assertEquals('is ', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(0, deep.index);
 
-        text = new cursors.Cursor(textNode, 7);
-        deep = text.deepEquivalent;
-        assertEquals('is ', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(2, deep.index);
+      text = new cursors.Cursor(textNode, 7);
+      deep = text.deepEquivalent;
+      assertEquals('is ', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(2, deep.index);
 
-        text = new cursors.Cursor(textNode, 8);
-        deep = text.deepEquivalent;
-        assertEquals('a ', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(0, deep.index);
+      text = new cursors.Cursor(textNode, 8);
+      deep = text.deepEquivalent;
+      assertEquals('a ', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(0, deep.index);
 
-        text = new cursors.Cursor(textNode, 11);
-        deep = text.deepEquivalent;
-        assertEquals('test', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(1, deep.index);
+      text = new cursors.Cursor(textNode, 11);
+      deep = text.deepEquivalent;
+      assertEquals('test', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(1, deep.index);
 
-        // This is the only selection that can be placed at the length of the
-        // node's text. This only happens at the end of a line.
-        text = new cursors.Cursor(textNode, 14);
-        deep = text.deepEquivalent;
-        assertEquals('test', deep.node.name);
-        assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
-        assertEquals(4, deep.index);
+      // This is the only selection that can be placed at the length of the
+      // node's text. This only happens at the end of a line.
+      text = new cursors.Cursor(textNode, 14);
+      deep = text.deepEquivalent;
+      assertEquals('test', deep.node.name);
+      assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
+      assertEquals(4, deep.index);
 
-        // However, any offset larger is invalid.
-        text = new cursors.Cursor(textNode, 15);
-        deep = text.deepEquivalent;
-        assertTrue(text.equals(deep));
-      });
-});
+      // However, any offset larger is invalid.
+      text = new cursors.Cursor(textNode, 15);
+      deep = text.deepEquivalent;
+      assertTrue(text.equals(deep));
+    });
 
 TEST_F(
     'AccessibilityExtensionCursorsTest', 'DeepEquivalencyBeyondLastChild',
-    function() {
-      this.runWithLoadedTree(
-          `
+    async function() {
+      const root = await this.runWithLoadedTree(`
     <p>test</p>
-  `,
-          function(root) {
-            const paragraph = root.find({role: RoleType.PARAGRAPH});
-            assertEquals(1, paragraph.children.length);
-            const cursor = new cursors.Cursor(paragraph, 1);
+  `);
+      const paragraph = root.find({role: RoleType.PARAGRAPH});
+      assertEquals(1, paragraph.children.length);
+      const cursor = new cursors.Cursor(paragraph, 1);
 
-            const deep = cursor.deepEquivalent;
-            assertEquals(RoleType.STATIC_TEXT, deep.node.role);
-            assertEquals(4, deep.index);
-          });
+      const deep = cursor.deepEquivalent;
+      assertEquals(RoleType.STATIC_TEXT, deep.node.role);
+      assertEquals(4, deep.index);
     });
 
 TEST_F(
     'AccessibilityExtensionCursorsTest', 'MovementByWordThroughNonInlineText',
-    function() {
-      this.runCursorMovesOnDocument(this.buttonAndInlineTextDoc, [
+    async function() {
+      await this.runCursorMovesOnDocument(this.buttonAndInlineTextDoc, [
         // Move forward by word.
         // 'text' start and end indices.
         [WORD, DIRECTIONAL, FORWARD, {index: 7, value: 'Inline text content'}],

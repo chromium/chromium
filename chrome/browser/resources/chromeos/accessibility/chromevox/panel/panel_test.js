@@ -88,180 +88,167 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 };
 
-TEST_F('ChromeVoxPanelTest', 'ActivateMenu', function() {
-  this.runWithLoadedTree(this.linksDoc, async function(root) {
-    new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-    await this.waitForMenu('panel_search_menu');
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem('panel_menu_jump', 'Go To Beginning Of Table');
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem(
-        'panel_menu_speech', 'Announce Current Battery Status');
-  });
+TEST_F('ChromeVoxPanelTest', 'ActivateMenu', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+  await this.waitForMenu('panel_search_menu');
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem('panel_menu_jump', 'Go To Beginning Of Table');
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem(
+      'panel_menu_speech', 'Announce Current Battery Status');
 });
 
 // TODO(https://crbug.com/1299765): Re-enable once flaky timeouts are fixed.
-TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', function() {
-  this.runWithLoadedTree(this.linksDoc, async function(root) {
-    CommandHandlerInterface.instance.onCommand('showLinksList');
-    await this.waitForMenu('role_link');
-    this.fireMockEvent('ArrowLeft')();
-    this.assertActiveMenuItem('role_landmark', 'No items');
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem('role_link', 'apple Internal link');
-    this.fireMockEvent('ArrowUp')();
-    this.assertActiveMenuItem('role_link', 'banana Internal link');
-  });
+TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  CommandHandlerInterface.instance.onCommand('showLinksList');
+  await this.waitForMenu('role_link');
+  this.fireMockEvent('ArrowLeft')();
+  this.assertActiveMenuItem('role_landmark', 'No items');
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem('role_link', 'apple Internal link');
+  this.fireMockEvent('ArrowUp')();
+  this.assertActiveMenuItem('role_link', 'banana Internal link');
 });
 
-TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', function() {
-  this.runWithLoadedTree(
-      `<button>Cancel</button><button>OK</button>`, async function(root) {
-        CommandHandlerInterface.instance.onCommand('showFormsList');
-        await this.waitForMenu('panel_menu_form_controls');
-        this.fireMockEvent('ArrowDown')();
-        this.assertActiveMenuItem('panel_menu_form_controls', 'OK Button');
-        this.fireMockEvent('ArrowUp')();
-        this.assertActiveMenuItem('panel_menu_form_controls', 'Cancel Button');
-      });
+TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
+  await this.runWithLoadedTree(`<button>Cancel</button><button>OK</button>`);
+  CommandHandlerInterface.instance.onCommand('showFormsList');
+  await this.waitForMenu('panel_menu_form_controls');
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem('panel_menu_form_controls', 'OK Button');
+  this.fireMockEvent('ArrowUp')();
+  this.assertActiveMenuItem('panel_menu_form_controls', 'Cancel Button');
 });
 
-TEST_F('ChromeVoxPanelTest', 'SearchMenu', function() {
+TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
   const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(this.linksDoc, async function(root) {
-    new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-    await this.waitForMenu('panel_search_menu');
-    await mockFeedback
-        .expectSpeech('Search the menus', /Type to search the menus/)
-        .call(() => {
-          this.fireMockQuery('jump')();
-          this.assertActiveSearchMenuItem('Jump To Details');
-        })
-        .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-        .call(() => {
-          this.fireMockEvent('ArrowDown')();
-          this.assertActiveSearchMenuItem('Jump To The Bottom Of The Page');
-        })
-        .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-        .call(() => {
-          this.fireMockEvent('ArrowDown')();
-          this.assertActiveSearchMenuItem('Jump To The Top Of The Page');
-        })
-        .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-        .call(() => {
-          this.fireMockEvent('ArrowDown')();
-          this.assertActiveSearchMenuItem('Jump To Details');
-        })
-        .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-        .replay();
-  });
+  await this.runWithLoadedTree(this.linksDoc);
+  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+  await this.waitForMenu('panel_search_menu');
+  await mockFeedback
+      .expectSpeech('Search the menus', /Type to search the menus/)
+      .call(() => {
+        this.fireMockQuery('jump')();
+        this.assertActiveSearchMenuItem('Jump To Details');
+      })
+      .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
+      .call(() => {
+        this.fireMockEvent('ArrowDown')();
+        this.assertActiveSearchMenuItem('Jump To The Bottom Of The Page');
+      })
+      .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
+      .call(() => {
+        this.fireMockEvent('ArrowDown')();
+        this.assertActiveSearchMenuItem('Jump To The Top Of The Page');
+      })
+      .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
+      .call(() => {
+        this.fireMockEvent('ArrowDown')();
+        this.assertActiveSearchMenuItem('Jump To Details');
+      })
+      .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
+      .replay();
 });
 
 // TODO(crbug.com/1088438): flaky crashes.
-TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', function() {
+TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
   const doGestureAsync = async (gesture) => {
     doGesture(gesture)();
   };
-  this.runWithLoadedTree(
-      `<button>Cancel</button><button>OK</button>`, async function(root) {
-        doGestureAsync(Gesture.TAP4);
-        await this.waitForMenu('panel_search_menu');
-        // GestureCommandHandler behaves in special ways only with range over
-        // the panel. Fake this out by setting range there.
-        const desktop = root.parent.root;
-        const panelNode = desktop.find(
-            {role: 'rootWebArea', attributes: {name: 'ChromeVox Panel'}});
-        ChromeVoxState.instance.setCurrentRange(
-            cursors.Range.fromNode(panelNode));
+  await this.runWithLoadedTree(`<button>Cancel</button><button>OK</button>`);
+  doGestureAsync(Gesture.TAP4);
+  await this.waitForMenu('panel_search_menu');
+  // GestureCommandHandler behaves in special ways only with range over
+  // the panel. Fake this out by setting range there.
+  const desktop = root.parent.root;
+  const panelNode = desktop.find(
+      {role: 'rootWebArea', attributes: {name: 'ChromeVox Panel'}});
+  ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(panelNode));
 
-        doGestureAsync(Gesture.SWIPE_RIGHT1);
-        await this.waitForMenu('panel_menu_jump');
+  doGestureAsync(Gesture.SWIPE_RIGHT1);
+  await this.waitForMenu('panel_menu_jump');
 
-        doGestureAsync(Gesture.SWIPE_RIGHT1);
-        await this.waitForMenu('panel_menu_speech');
+  doGestureAsync(Gesture.SWIPE_RIGHT1);
+  await this.waitForMenu('panel_menu_speech');
 
-        doGestureAsync(Gesture.SWIPE_LEFT1);
-        await this.waitForMenu('panel_menu_jump');
-      });
+  doGestureAsync(Gesture.SWIPE_LEFT1);
+  await this.waitForMenu('panel_menu_jump');
 });
 
-TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', function() {
-  this.runWithLoadedTree(this.internationalButtonDoc, async function(root) {
-    // Turn on language switching and set available voice list.
-    localStorage['languageSwitching'] = 'true';
-    this.getPanelWindow().LocaleOutputHelper.instance.availableVoices_ =
-        [{'lang': 'en-US'}, {'lang': 'es-ES'}];
-    CommandHandlerInterface.instance.onCommand('showFormsList');
-    await this.waitForMenu('panel_menu_form_controls');
-    this.fireMockEvent('ArrowDown')();
-    this.assertActiveMenuItem(
-        'panel_menu_form_controls', 'español: Prueba Button');
-    this.fireMockEvent('ArrowUp')();
-    this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
-  });
+TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', async function() {
+  await this.runWithLoadedTree(this.internationalButtonDoc);
+  // Turn on language switching and set available voice list.
+  localStorage['languageSwitching'] = 'true';
+  this.getPanelWindow().LocaleOutputHelper.instance.availableVoices_ =
+      [{'lang': 'en-US'}, {'lang': 'es-ES'}];
+  CommandHandlerInterface.instance.onCommand('showFormsList');
+  await this.waitForMenu('panel_menu_form_controls');
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem(
+      'panel_menu_form_controls', 'español: Prueba Button');
+  this.fireMockEvent('ArrowUp')();
+  this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
 });
 
-TEST_F('ChromeVoxPanelTest', 'ActionsMenu', function() {
-  this.runWithLoadedTree(this.linksDoc, async function(root) {
-    CommandHandlerInterface.instance.onCommand('showActionsMenu');
-    await this.waitForMenu('panel_menu_actions');
-    this.fireMockEvent('ArrowDown')();
-    this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
-    this.fireMockEvent('ArrowUp')();
-    this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
-  });
+TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  CommandHandlerInterface.instance.onCommand('showActionsMenu');
+  await this.waitForMenu('panel_menu_actions');
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
+  this.fireMockEvent('ArrowUp')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
 });
 
-TEST_F('ChromeVoxPanelTest', 'ShortcutsAreInternationalized', function() {
-  this.runWithLoadedTree(this.linksDoc, async function(root) {
-    new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-    await this.waitForMenu('panel_search_menu');
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem(
-        'panel_menu_jump', 'Go To Beginning Of Table',
-        'Search+Alt+Shift+ArrowLeft');
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem(
-        'panel_menu_speech', 'Announce Current Battery Status',
-        'Search+O, then B');
-    // Skip the tabs menu.
-    this.fireMockEvent('ArrowRight')();
-    this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem(
-        'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
-  });
+TEST_F('ChromeVoxPanelTest', 'ShortcutsAreInternationalized', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+  await this.waitForMenu('panel_search_menu');
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem(
+      'panel_menu_jump', 'Go To Beginning Of Table',
+      'Search+Alt+Shift+ArrowLeft');
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem(
+      'panel_menu_speech', 'Announce Current Battery Status',
+      'Search+O, then B');
+  // Skip the tabs menu.
+  this.fireMockEvent('ArrowRight')();
+  this.fireMockEvent('ArrowRight')();
+  this.assertActiveMenuItem(
+      'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
 });
 
 // Ensure 'Touch Gestures' is not in the panel menus by default.
 TEST_F(
     'ChromeVoxPanelTest', 'TouchGesturesMenuNotAvailableWhenNotInTouchMode',
-    function() {
-      this.runWithLoadedTree(this.linksDoc, async function(root) {
-        new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-        await this.waitForMenu('panel_search_menu');
-        do {
-          this.fireMockEvent('ArrowRight')();
-          assertFalse(this.isMenuTitleMessage('panel_menu_touchgestures'));
-        } while (!this.isMenuTitleMessage('panel_search_menu'));
-      });
+    async function() {
+      await this.runWithLoadedTree(this.linksDoc);
+      new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+      await this.waitForMenu('panel_search_menu');
+      do {
+        this.fireMockEvent('ArrowRight')();
+        assertFalse(this.isMenuTitleMessage('panel_menu_touchgestures'));
+      } while (!this.isMenuTitleMessage('panel_search_menu'));
     });
 
 // Ensure 'Touch Gesture' is in the panel menus when touch mode is enabled.
 TEST_F(
     'ChromeVoxPanelTest', 'TouchGesturesMenuAvailableWhenInTouchMode',
-    function() {
-      this.runWithLoadedTree(this.linksDoc, async function(root) {
-        this.getPanel().setTouchGestureSourceForTesting();
-        new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-        await this.waitForMenu('panel_search_menu');
+    async function() {
+      await this.runWithLoadedTree(this.linksDoc);
+      this.getPanel().setTouchGestureSourceForTesting();
+      new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+      await this.waitForMenu('panel_search_menu');
 
-        // Look for Touch Gestures menu, fail if getting back to start.
-        do {
-          this.fireMockEvent('ArrowRight')();
-          assertFalse(this.isMenuTitleMessage('panel_search_menu'));
-        } while (!this.isMenuTitleMessage('panel_menu_touchgestures'));
+      // Look for Touch Gestures menu, fail if getting back to start.
+      do {
+        this.fireMockEvent('ArrowRight')();
+        assertFalse(this.isMenuTitleMessage('panel_search_menu'));
+      } while (!this.isMenuTitleMessage('panel_menu_touchgestures'));
 
-        this.assertActiveMenuItem(
-            'panel_menu_touchgestures', 'Click on current item');
-      });
+      this.assertActiveMenuItem(
+          'panel_menu_touchgestures', 'Click on current item');
     });

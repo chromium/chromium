@@ -54,7 +54,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
 };
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabled', function() {
-  this.runWithLoadedTree('', () => {
+  this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');

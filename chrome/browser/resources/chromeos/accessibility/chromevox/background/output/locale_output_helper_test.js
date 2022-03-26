@@ -178,402 +178,393 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'MultipleLanguagesLabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.multipleLanguagesLabeledDoc, function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('es', 'español: Hola.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('en', 'English: Hello.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('fr', 'français: Salut.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('it', 'italiano: Ciao amico.');
-        mockFeedback.replay();
-      });
+      await this.runWithLoadedTree(this.multipleLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('es', 'español: Hola.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('en', 'English: Hello.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('fr', 'français: Salut.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('it', 'italiano: Ciao amico.');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'NestedLanguagesLabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.nestedLanguagesLabeledDoc, function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'en', 'In the morning, I sometimes eat breakfast.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'fr', 'français: Dans l\'apres-midi, je dejeune.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'en', 'English: Hello it\'s a pleasure to meet you. ');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('fr', 'français: Comment ca va?');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'en', 'English: Switching back to English. ');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('es', 'español: Hola.');
-        mockFeedback.call(doCmd('nextLine'))
-            .expectSpeechWithLocale('en', 'English: Goodbye.');
-        mockFeedback.replay();
-      });
+      await this.runWithLoadedTree(this.nestedLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en', 'In the morning, I sometimes eat breakfast.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'fr', 'français: Dans l\'apres-midi, je dejeune.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'en', 'English: Hello it\'s a pleasure to meet you. ');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('fr', 'français: Comment ca va?');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('en', 'English: Switching back to English. ');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('es', 'español: Hola.');
+      mockFeedback.call(doCmd('nextLine'))
+          .expectSpeechWithLocale('en', 'English: Goodbye.');
+      mockFeedback.replay();
     });
 
-TEST_F('ChromeVoxLocaleOutputHelperTest', 'ButtonAndLinkDocTest', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(this.buttonAndLinkDoc, function(root) {
-    localStorage['languageSwitching'] = 'true';
-    this.setAvailableVoices();
-    mockFeedback
-        .call(doCmd('jumpToTop'))
-        // Use the author-provided language of 'es'.
-        .expectSpeechWithLocale(
-            'es', 'español: This is a paragraph, written in English.')
-        .call(doCmd('nextObject'))
-        .expectSpeechWithLocale('es', 'This is a button, written in English.')
-        .expectSpeechWithLocale(
-            undefined, 'Button', 'Press Search+Space to activate')
-        .call(doCmd('nextObject'))
-        .expectSpeechWithLocale('es', 'Este es un enlace.')
-        .expectSpeechWithLocale(undefined, 'Link');
-    mockFeedback.replay();
-  });
-});
-
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'ButtonAndLinkDocTest',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.buttonAndLinkDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback
+          .call(doCmd('jumpToTop'))
+          // Use the author-provided language of 'es'.
+          .expectSpeechWithLocale(
+              'es', 'español: This is a paragraph, written in English.')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('es', 'This is a button, written in English.')
+          .expectSpeechWithLocale(
+              undefined, 'Button', 'Press Search+Space to activate')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('es', 'Este es un enlace.')
+          .expectSpeechWithLocale(undefined, 'Link');
+      mockFeedback.replay();
+    });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'JapaneseAndEnglishUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(
-          this.japaneseAndEnglishUnlabeledDoc, function(root) {
-            localStorage['languageSwitching'] = 'true';
-            this.setAvailableVoices();
-            mockFeedback
-                .call(doCmd('jumpToTop'))
-                // Expect the node's contents to be read in one language
-                // (English).
-                // Language detection does not run on small runs of text, like
-                // the one in this test, we are falling back on the UI language
-                // of the browser, which is en-US. Please see testGenPreamble
-                // for more details.
-                .expectSpeechWithLocale(
-                    'en-us',
-                    'Hello, my name is 太田あきひろ. It\'s a pleasure to meet' +
-                        ' you. どうぞよろしくお願いします.');
-            mockFeedback.replay();
-          });
+      const root =
+          await this.runWithLoadedTree(this.japaneseAndEnglishUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback
+          .call(doCmd('jumpToTop'))
+          // Expect the node's contents to be read in one language
+          // (English).
+          // Language detection does not run on small runs of text, like
+          // the one in this test, we are falling back on the UI language
+          // of the browser, which is en-US. Please see testGenPreamble
+          // for more details.
+          .expectSpeechWithLocale(
+              'en-us',
+              'Hello, my name is 太田あきひろ. It\'s a pleasure to meet' +
+                  ' you. どうぞよろしくお願いします.');
+      mockFeedback.replay();
     });
-
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'EnglishAndKoreanUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.englishAndKoreanUnlabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'en-us',
-                'This text is written in English. 차에 한하여 중임할 수.' +
-                    ' This text is also written in English.');
-        mockFeedback.replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.englishAndKoreanUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en-us',
+              'This text is written in English. 차에 한하여 중임할 수.' +
+                  ' This text is also written in English.');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'EnglishAndFrenchUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.englishAndFrenchUnlabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'en',
-                'This entire object should be read in English, even' +
-                    ' the following French passage: ' +
-                    'salut mon ami! Ca va? Bien, et toi? It\'s hard to' +
-                    ' differentiate between latin-based languages.');
-        mockFeedback.replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.englishAndFrenchUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en',
+              'This entire object should be read in English, even' +
+                  ' the following French passage: ' +
+                  'salut mon ami! Ca va? Bien, et toi? It\'s hard to' +
+                  ' differentiate between latin-based languages.');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'JapaneseCharacterUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(
-          this.japaneseCharacterUnlabeledDoc, function(root) {
-            localStorage['languageSwitching'] = 'true';
-            this.setAvailableVoices();
-            mockFeedback.call(doCmd('jumpToTop'))
-                .expectSpeechWithLocale('en-us', 'ど');
-            mockFeedback.replay();
-          });
+      const root =
+          await this.runWithLoadedTree(this.japaneseCharacterUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('en-us', 'ど');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'JapaneseAndChineseUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.japaneseAndChineseUnlabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'en-us',
-                '天気はいいですね. 右万諭全中結社原済権人点掲年難出面者会追');
-        mockFeedback.replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.japaneseAndChineseUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en-us',
+              '天気はいいですね. 右万諭全中結社原済権人点掲年難出面者会追');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'JapaneseAndChineseLabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
       // Only difference between doc used in this test and
       // this.japaneseAndChineseUnlabeledDoc is the lang="zh" attribute.
-      this.runWithLoadedTree(
-          `
+      const root = await this.runWithLoadedTree(`
         <meta charset="utf-8">
         <p lang="zh">
           天気はいいですね. 右万諭全中結社原済権人点掲年難出面者会追
         </p>
-    `,
-          function(root) {
-            localStorage['languageSwitching'] = 'true';
-            this.setAvailableVoices();
-            mockFeedback.call(doCmd('jumpToTop'))
-                .expectSpeechWithLocale(
-                    'zh',
-                    '中文: 天気はいいですね. 右万諭全中結社原済権人点掲年難出面者会追');
-            mockFeedback.replay();
-          });
+    `);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'zh',
+              '中文: 天気はいいですね. 右万諭全中結社原済権人点掲年難出面者会追');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'JapaneseAndKoreanUnlabeledDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.japaneseAndKoreanUnlabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        // Language detection runs and assigns language of 'ko' to the node.
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'ko',
-                '한국어: 私は. 법률이 정하는 바에 의하여 대법관이 아닌 법관을 둘 수' +
-                    ' 있다');
-        mockFeedback.replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.japaneseAndKoreanUnlabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      // Language detection runs and assigns language of 'ko' to the node.
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'ko',
+              '한국어: 私は. 법률이 정하는 바에 의하여 대법관이 아닌 법관을 둘 수' +
+                  ' 있다');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'AsturianAndJapaneseDocTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.asturianAndJapaneseDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('ja', '日本語: ど')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale(
-                'ast',
-                'asturianu: Pretend that this text is Asturian. Testing' +
-                    ' three-letter language code logic.');
-        mockFeedback.replay();
-      });
+      const root = await this.runWithLoadedTree(this.asturianAndJapaneseDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('ja', '日本語: ど')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale(
+              'ast',
+              'asturianu: Pretend that this text is Asturian. Testing' +
+                  ' three-letter language code logic.');
+      mockFeedback.replay();
     });
 
 
 TEST_F(
-    'ChromeVoxLocaleOutputHelperTest', 'LanguageSwitchingOffTest', function() {
+    'ChromeVoxLocaleOutputHelperTest', 'LanguageSwitchingOffTest',
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.multipleLanguagesLabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'false';
-        this.setAvailableVoices();
-        // Locale should not be set if the language switching feature is off.
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(undefined, 'Hola.')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale(undefined, 'Hello.')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale(undefined, 'Salut.')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale(undefined, 'Ciao amico.');
-        mockFeedback.replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.multipleLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'false';
+      this.setAvailableVoices();
+      // Locale should not be set if the language switching feature is off.
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(undefined, 'Hola.')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale(undefined, 'Hello.')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale(undefined, 'Salut.')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale(undefined, 'Ciao amico.');
+      mockFeedback.replay();
     });
 
-TEST_F('ChromeVoxLocaleOutputHelperTest', 'DefaultToUILocaleTest', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(
-      this.japaneseAndInvalidLanguagesLabeledDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('ja', '日本語: どうぞよろしくお願いします')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('en-us', 'English (United States): Test')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('en-us', 'Yikes');
-        mockFeedback.replay();
-      });
-});
-
-TEST_F('ChromeVoxLocaleOutputHelperTest', 'NoAvailableVoicesTest', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(this.vietnameseAndUrduLabeledDoc, function(root) {
-    localStorage['languageSwitching'] = 'true';
-    this.setAvailableVoices();
-    mockFeedback.call(doCmd('jumpToTop'))
-        .expectSpeechWithLocale(
-            'en-us', 'No voice available for language: Vietnamese')
-        .call(doCmd('nextObject'))
-        .expectSpeechWithLocale(
-            'en-us', 'No voice available for language: Urdu');
-    mockFeedback.replay();
-  });
-});
-
-TEST_F('ChromeVoxLocaleOutputHelperTest', 'WordNavigationTest', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(this.nestedLanguagesLabeledDoc, function() {
-    localStorage['languageSwitching'] = 'true';
-    this.setAvailableVoices();
-    mockFeedback.call(doCmd('jumpToTop'))
-        .expectSpeechWithLocale(
-            'en', 'In the morning, I sometimes eat breakfast.')
-        .call(doCmd('nextLine'))
-        .expectSpeechWithLocale(
-            'fr', 'français: Dans l\'apres-midi, je dejeune.')
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `l'apres`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `-`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `midi`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `,`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `je`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `dejeune`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `.`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `English: Hello`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `it's`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `a`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `pleasure`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `to`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `meet`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `you`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('en', `.`)
-        .call(doCmd('nextWord'))
-        .expectSpeechWithLocale('fr', `français: Comment`)
-        .call(doCmd('previousWord'))
-        .expectSpeechWithLocale('en', `English: .`)
-        .call(doCmd('previousWord'))
-        .expectSpeechWithLocale('en', `you`)
-        .replay();
-  });
-});
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'DefaultToUILocaleTest',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(
+          this.japaneseAndInvalidLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('ja', '日本語: どうぞよろしくお願いします')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('en-us', 'English (United States): Test')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('en-us', 'Yikes');
+      mockFeedback.replay();
+    });
 
 TEST_F(
-    'ChromeVoxLocaleOutputHelperTest', 'CharacterNavigationTest', function() {
+    'ChromeVoxLocaleOutputHelperTest', 'NoAvailableVoicesTest',
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.nestedLanguagesLabeledDoc, function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale(
-                'en', 'In the morning, I sometimes eat breakfast.')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'fr', 'français: Dans l\'apres-midi, je dejeune.')
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('fr', `a`)
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('fr', `n`)
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('fr', `s`)
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('fr', ` `)
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('fr', `l`)
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'en', `English: Hello it's a pleasure to meet you. `)
-            .call(doCmd('nextCharacter'))
-            .expectSpeechWithLocale('en', `e`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('en', `H`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `français: .`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `e`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `n`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `u`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `e`)
-            .call(doCmd('previousCharacter'))
-            .expectSpeechWithLocale('fr', `j`)
-            .replay();
-      });
+      const root =
+          await this.runWithLoadedTree(this.vietnameseAndUrduLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en-us', 'No voice available for language: Vietnamese')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale(
+              'en-us', 'No voice available for language: Urdu');
+      mockFeedback.replay();
+    });
+
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'WordNavigationTest', async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(this.nestedLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en', 'In the morning, I sometimes eat breakfast.')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'fr', 'français: Dans l\'apres-midi, je dejeune.')
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `l'apres`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `-`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `midi`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `,`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `je`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `dejeune`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `.`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `English: Hello`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `it's`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `a`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `pleasure`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `to`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `meet`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `you`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('en', `.`)
+          .call(doCmd('nextWord'))
+          .expectSpeechWithLocale('fr', `français: Comment`)
+          .call(doCmd('previousWord'))
+          .expectSpeechWithLocale('en', `English: .`)
+          .call(doCmd('previousWord'))
+          .expectSpeechWithLocale('en', `you`)
+          .replay();
+    });
+
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'CharacterNavigationTest',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(this.nestedLanguagesLabeledDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale(
+              'en', 'In the morning, I sometimes eat breakfast.')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'fr', 'français: Dans l\'apres-midi, je dejeune.')
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('fr', `a`)
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('fr', `n`)
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('fr', `s`)
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('fr', ` `)
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('fr', `l`)
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'en', `English: Hello it's a pleasure to meet you. `)
+          .call(doCmd('nextCharacter'))
+          .expectSpeechWithLocale('en', `e`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('en', `H`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `français: .`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `e`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `n`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `u`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `e`)
+          .call(doCmd('previousCharacter'))
+          .expectSpeechWithLocale('fr', `j`)
+          .replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'SwitchBetweenChineseDialectsTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.chineseDoc, function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('en-us', 'United States')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'zh-hans', '中文（简体）: Simplified Chinese')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale(
-                'zh-hant', '中文（繁體）: Traditional Chinese');
-        mockFeedback.replay();
-      });
+      await this.runWithLoadedTree(this.chineseDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('en-us', 'United States')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale('zh-hans', '中文（简体）: Simplified Chinese')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale(
+              'zh-hant', '中文（繁體）: Traditional Chinese');
+      mockFeedback.replay();
     });
 
 TEST_F(
     'ChromeVoxLocaleOutputHelperTest', 'SwitchBetweenPortugueseDialectsTest',
-    function() {
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.portugueseDoc, function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('en-us', 'United States')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('pt-br', 'português (Brasil): Brazil')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('pt-pt', 'português (Portugal): Portugal');
-        mockFeedback.replay();
-      });
+      await this.runWithLoadedTree(this.portugueseDoc);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('en-us', 'United States')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale('pt-br', 'português (Brasil): Brazil')
+          .call(doCmd('nextLine'))
+          .expectSpeechWithLocale('pt-pt', 'português (Portugal): Portugal');
+      mockFeedback.replay();
     });
 
 // Tests logic in shouldAnnounceLocale_(). We only announce the locale once when
@@ -581,26 +572,24 @@ TEST_F(
 // less specific locales, e.g. 'en-us' -> 'en' should not be announced. Finally,
 // subsequent transitions to the same locale, e.g. 'en' -> 'en-us' should not be
 // announced.
-TEST_F('ChromeVoxLocaleOutputHelperTest', 'MaybeAnnounceLocale', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'MaybeAnnounceLocale', async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(`
   <p lang="en">Start</p>
   <p lang="en-ca">Middle</p>
   <p lang="en">Penultimate</p>
   <p lang="en-ca">End</p>
-  `,
-      function() {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback.call(doCmd('jumpToTop'))
-            .expectSpeechWithLocale('en', 'Start')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('en-ca', 'English (Canada): Middle')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('en', 'Penultimate')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('en-ca', 'End')
-            .replay();
-      });
-});
+  `);
+      localStorage['languageSwitching'] = 'true';
+      this.setAvailableVoices();
+      mockFeedback.call(doCmd('jumpToTop'))
+          .expectSpeechWithLocale('en', 'Start')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('en-ca', 'English (Canada): Middle')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('en', 'Penultimate')
+          .call(doCmd('nextObject'))
+          .expectSpeechWithLocale('en-ca', 'End')
+          .replay();
+    });

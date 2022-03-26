@@ -46,8 +46,7 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
 
   /** @return {!MockFeedback} */
   createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
+    const mockFeedback = new MockFeedback(this.newCallback());
     mockFeedback.install();
     return mockFeedback;
   }
@@ -126,14 +125,10 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   }
 
   /** @override */
-  runWithLoadedTree(doc, callback, opt_params = {}) {
-    callback = this.newCallback(callback);
-    const wrappedCallback = (node) => {
-      CommandHandlerInterface.instance.onCommand('nextObject');
-      callback(node);
-    };
-
-    super.runWithLoadedTree(doc, wrappedCallback, opt_params);
+  async runWithLoadedTree(doc, opt_params = {}) {
+    const rootWebArea = await super.runWithLoadedTree(doc, opt_params);
+    CommandHandlerInterface.instance.onCommand('nextObject');
+    return rootWebArea;
   }
 
   /**
