@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.LEFT_RIGHT_MARGINS;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -119,14 +118,6 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
-    public void testSetLeftRightMargins() {
-        int parentViewStartMargin = 30;
-        createMediator(parentViewStartMargin);
-
-        Assert.assertEquals(-parentViewStartMargin, mModel.get(LEFT_RIGHT_MARGINS));
-    }
-
-    @Test
     public void testSetPortraitPaddings() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         createMediator();
@@ -134,12 +125,12 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                mModel.get(EDGE_PADDINGS));
+                (int) (mModel.get(EDGE_PADDINGS)));
         Assert.assertEquals(
                 (int) ((mDisplayMetrics.widthPixels - mModel.get(EDGE_PADDINGS)
                                - mResources.getDimensionPixelOffset(R.dimen.tile_view_width) * 4.5)
                         / 4),
-                mModel.get(INTERVAL_PADDINGS));
+                (int) (mModel.get(INTERVAL_PADDINGS)));
     }
 
     @Test
@@ -149,18 +140,14 @@ public class MostVisitedMediatorUnitTest {
         mMediator.onTileDataChanged();
 
         Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                mModel.get(EDGE_PADDINGS));
+                (int) (mModel.get(EDGE_PADDINGS)));
         Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                mModel.get(INTERVAL_PADDINGS));
+                (int) (mModel.get(INTERVAL_PADDINGS)));
     }
 
     private void createMediator() {
-        createMediator(/*parentViewStartMargin=*/0);
-    }
-
-    private void createMediator(int parentViewStartMargin) {
-        mMediator = new MostVisitedListMediator(mResources, mMvTilesLayout, mTileRenderer, mModel,
-                false, parentViewStartMargin, false);
+        mMediator = new MostVisitedListMediator(
+                mResources, mMvTilesLayout, mTileRenderer, mModel, false, false);
         mMediator.initWithNative(mSuggestionsUiDelegate, mContextMenuManager, mTileGroupDelegate,
                 mOfflinePageBridge, mTileRenderer);
     }

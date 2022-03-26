@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.LEFT_RIGHT_MARGINS;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.filters.SmallTest;
@@ -89,16 +87,5 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
         Assert.assertEquals(11, params.leftMargin);
         params = (MarginLayoutParams) mThirdChildView.getLayoutParams();
         Assert.assertEquals(11, params.rightMargin);
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testLeftRightMarginsSet() {
-        mModel.set(LEFT_RIGHT_MARGINS, 12);
-        ViewGroup parentView = (ViewGroup) mView.getParent();
-        MarginLayoutParams params = (MarginLayoutParams) parentView.getLayoutParams();
-        Assert.assertEquals(12, params.leftMargin);
-        Assert.assertEquals(12, params.rightMargin);
     }
 }

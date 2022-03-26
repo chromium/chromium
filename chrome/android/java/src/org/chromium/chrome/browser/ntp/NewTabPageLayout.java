@@ -98,6 +98,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private static final int MAX_TILE_COLUMNS = 4;
 
     private final int mTileGridLayoutBleed;
+    private final Context mContext;
     private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
 
     private View mMiddleSpacer; // Spacer between toolbar and Most Likely.
@@ -176,6 +177,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
      */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         Resources res = getResources();
         mTileGridLayoutBleed = res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
     }
@@ -248,7 +250,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
         mNoSearchLogoSpacer = findViewById(R.id.no_search_logo_spacer);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)) {
+        if (isScrollableMVTEnabled()) {
             // If SHOW_SCROLLABLE_MV_ON_NTP is true, TileGroup and other logic will be handled by
             // MostVisitedListCoordinator.
             initializeMostVisitedListCoordinator(
@@ -392,12 +394,16 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private void initializeMostVisitedListCoordinator(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
         assert mMvTilesLayout != null;
         mMostVisitedListCoordinator = new MostVisitedListCoordinator(mActivity,
                 activityLifecycleDispatcher, mMvTilesLayout.findViewById(R.id.mv_tiles_layout),
-                mWindowAndroid,
-                getResources().getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2));
+                mWindowAndroid, /*shouldShowPlaceholderPreNative=*/false);
+        // Let mMvTilesLayout attached to the edge of the screen.
+        int lateralPaddingsForNTP = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.ntp_header_lateral_paddings_v2);
+        MarginLayoutParams params = (MarginLayoutParams) mMvTilesLayout.getLayoutParams();
+        params.leftMargin = -lateralPaddingsForNTP;
+        params.rightMargin = -lateralPaddingsForNTP;
         mMostVisitedListCoordinator.initWithNative(
                 mManager, tileGroupDelegate, touchEnabledDelegate);
     }
@@ -470,7 +476,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private void insertSiteSectionView() {
         int insertionPoint = indexOfChild(mMiddleSpacer) + 1;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)) {
+        if (isScrollableMVTEnabled()) {
             setClipToPadding(false);
             mMvTilesLayout = (ViewGroup) LayoutInflater.from(this.getContext())
                                      .inflate(R.layout.mv_tiles_layout, this, false);
@@ -1070,6 +1076,11 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             measureExactly(mSearchProviderLogoView, exploreWidth,
                     mSearchProviderLogoView.getMeasuredHeight());
         }
+    }
+
+    private boolean isScrollableMVTEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
     /**

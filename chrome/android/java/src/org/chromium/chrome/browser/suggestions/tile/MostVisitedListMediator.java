@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.LEFT_RIGHT_MARGINS;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -45,8 +44,7 @@ public class MostVisitedListMediator implements TileGroup.Observer {
 
     public MostVisitedListMediator(Resources resources, MvTilesLayout mvTilesLayout,
             TileRenderer renderer, PropertyModel propertyModel,
-            boolean shouldShowPlaceholderPreNative, int parentViewLeftAndRightPaddings,
-            boolean isTablet) {
+            boolean shouldShowPlaceholderPreNative, boolean isTablet) {
         mResources = resources;
         mMvTilesLayout = mvTilesLayout;
         mRenderer = renderer;
@@ -59,9 +57,6 @@ public class MostVisitedListMediator implements TileGroup.Observer {
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
 
         maybeSetPortraitIntervalPaddings();
-
-        // Let mv_tiles_container attached to the edge of the screen on phones.
-        mModel.set(LEFT_RIGHT_MARGINS, isTablet ? 0 : -parentViewLeftAndRightPaddings);
 
         if (shouldShowPlaceholderPreNative) maybeShowMvTilesPlaceholder();
     }
@@ -116,12 +111,6 @@ public class MostVisitedListMediator implements TileGroup.Observer {
             mTileGroup.destroy();
             mTileGroup = null;
         }
-        // When mMvTilesLayout is destroyed, all child views are removed. When Start surface is
-        // shown again, the child views are added back with initial margins and paddings, but the
-        // values of property key were already set before and the settings of margins and paddings
-        // values would be skipped. So we need to reset property keys here too.
-        mModel.set(EDGE_PADDINGS, 0);
-        mModel.set(INTERVAL_PADDINGS, 0);
     }
 
     public boolean isMVTilesCleanedUp() {

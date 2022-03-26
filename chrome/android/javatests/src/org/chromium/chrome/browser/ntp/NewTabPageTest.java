@@ -24,6 +24,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.Nullable;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -381,6 +382,21 @@ public class NewTabPageTest {
         Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
     }
 
+    ////////////////Scrollable MVT tests start////////////////////////////
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    public void testMostVisitedTilesMargins() {
+        int lateralPaddingsForNTP =
+                mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
+                        R.dimen.ntp_header_lateral_paddings_v2);
+        ViewGroup mMVTCarouselContainer = mNtp.getView().findViewById(R.id.mv_tiles_container);
+        MarginLayoutParams params = (MarginLayoutParams) mMVTCarouselContainer.getLayoutParams();
+        Assert.assertEquals(-lateralPaddingsForNTP, params.leftMargin);
+        Assert.assertEquals(-lateralPaddingsForNTP, params.leftMargin);
+    }
+
     /**
      * Tests opening a most visited item in a new tab.
      */
@@ -434,6 +450,7 @@ public class NewTabPageTest {
 
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(testSite.url));
     }
+    ////////////////Scrollable MVT tests end////////////////////////////
 
     @Test
     @MediumTest

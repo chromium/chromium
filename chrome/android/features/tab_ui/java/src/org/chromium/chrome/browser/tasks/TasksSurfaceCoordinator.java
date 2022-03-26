@@ -41,10 +41,12 @@ import org.chromium.chrome.browser.tasks.mv_tiles.MostVisitedTileNavigationDeleg
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -147,7 +149,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
             mMostVisitedCoordinator = new MostVisitedListCoordinator(activity,
                     activityLifecycleDispatcher, mvTilesLayout, windowAndroid,
-                    /*parentViewLeftAndRightPaddings=*/0);
+                    TabUiFeatureUtilities.supportInstantStart(
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                            mActivity));
         }
 
         if (hasQueryTiles) {

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.LEFT_RIGHT_MARGINS;
 
 import android.view.View;
 
@@ -23,8 +22,6 @@ final class MostVisitedListViewBinder {
             view.setIntervalPaddings(model.get(INTERVAL_PADDINGS));
         } else if (EDGE_PADDINGS == propertyKey) {
             view.setEdgePaddings(model.get(EDGE_PADDINGS));
-        } else if (LEFT_RIGHT_MARGINS == propertyKey) {
-            view.setLeftAndRightMargins(model.get(LEFT_RIGHT_MARGINS));
         }
     }
 }

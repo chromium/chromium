@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
@@ -41,14 +40,6 @@ public class MvTilesLayout extends LinearLayout {
         if (childCount == 0) return;
         updateSingleTileViewStartMargin((TileView) getChildAt(0), edgePadding);
         updateSingleTileViewEndMargin((TileView) getChildAt(childCount - 1), edgePadding);
-    }
-
-    void setLeftAndRightMargins(int margin) {
-        // Set the margins of the parent view (mv_tiles_container).
-        ViewGroup parentView = (ViewGroup) getParent();
-        MarginLayoutParams params = (MarginLayoutParams) parentView.getLayoutParams();
-        params.leftMargin = margin;
-        params.rightMargin = margin;
     }
 
     SuggestionsTileView findTileView(Tile tile) {
