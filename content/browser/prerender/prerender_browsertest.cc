@@ -5895,4 +5895,65 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   NavigatePrimaryPage(kPrerenderingUrl);
 }
 
+class PrerenderFencedFrameBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frames */> {
+ public:
+  PrerenderFencedFrameBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames,
+        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+  }
+  ~PrerenderFencedFrameBrowserTest() override = default;
+
+  bool IsShadowDomImpl() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PrerenderFencedFrameBrowserTest,
+                       PrerenderFencedFrameBrowserTest) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  const GURL kFencedFrameUrl = GetUrl("/title1.html");
+  constexpr char kAddFencedFrameScript[] = R"({
+    const fenced_frame = document.createElement('fencedframe');
+    fenced_frame.src = $1;
+    document.body.appendChild(fenced_frame);
+  })";
+
+  // We see a navigation to about:blank for Shadow DOM, but not MPArch, so we
+  // need to account for another navigation with that implementation.
+  const int kNumNavigations = IsShadowDomImpl() ? 4 : 3;
+  TestNavigationObserver nav_observer(web_contents(), kNumNavigations);
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_EQ(kPrerenderingUrl, nav_observer.last_navigation_url());
+  EXPECT_TRUE(ExecJs(prerendered_rfh,
+                     JsReplace(kAddFencedFrameScript, kFencedFrameUrl)));
+  // Since we've deferred creating the fenced frame delegate, we should see no
+  // child frames.
+  size_t child_frame_count = 0;
+  prerendered_rfh->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+        if (rfh != prerendered_rfh)
+          child_frame_count++;
+      }));
+  EXPECT_EQ(0lu, child_frame_count);
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(kPrerenderingUrl, nav_observer.last_navigation_url());
+  nav_observer.Wait();
+  EXPECT_EQ(kFencedFrameUrl, nav_observer.last_navigation_url());
+}
+
+INSTANTIATE_TEST_SUITE_P(PrerenderFencedFrameBrowserTest,
+                         PrerenderFencedFrameBrowserTest,
+                         testing::Bool());
+
 }  // namespace content

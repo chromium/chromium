@@ -106,8 +106,11 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
  private:
   // This method will only navigate the underlying frame if the element
-  // `isConnected()`.
+  // `isConnected()`. It will be deferred if the page is currently prerendering.
   void Navigate();
+
+  // Delegate creation will be deferred if the page is currently prerendering.
+  void CreateDelegateAndNavigate();
 
   // Node overrides.
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;

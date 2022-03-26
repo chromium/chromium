@@ -7205,6 +7205,16 @@ void RenderFrameHostImpl::CreateFencedFrame(
         pending_receiver,
     blink::mojom::FencedFrameMode mode,
     CreateFencedFrameCallback callback) {
+  // We should defer fenced frame creation during prerendering, so creation at
+  // this point is an error.
+  if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
+    bad_message::ReceivedBadMessage(GetProcess(),
+                                    bad_message::FF_CREATE_WHILE_PRERENDERING);
+    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+                            blink::RemoteFrameToken(),
+                            base::UnguessableToken::Create());
+    return;
+  }
   if (!blink::features::IsFencedFramesEnabled() ||
       !blink::features::IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(

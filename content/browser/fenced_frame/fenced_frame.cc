@@ -86,6 +86,11 @@ FencedFrame::~FencedFrame() {
 
 void FencedFrame::Navigate(const GURL& url,
                            base::TimeTicks navigation_start_time) {
+  // We don't need guard against a bad message in the case of prerendering since
+  // we wouldn't even establish the mojo connection in that case.
+  DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
+            owner_render_frame_host_->GetLifecycleState());
+
   FrameTreeNode* inner_root = frame_tree_->root();
 
   // TODO(crbug.com/1237552): Resolve the discussion around navigations being

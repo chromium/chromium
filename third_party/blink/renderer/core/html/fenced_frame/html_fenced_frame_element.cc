@@ -76,6 +76,8 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
+  DCHECK(!GetDocument().IsPrerendering());
+
   // The `frame_delegate_` will not exist if the element was not allowed to
   // create its underlying frame at insertion-time.
   if (frame_delegate_)
@@ -108,6 +110,21 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(
       outer_element->GetExecutionContext()));
 
+  // If the element has been disconnected by the time we attempt to create the
+  // delegate (eg, due to deferral while prerendering), we should not create the
+  // delegate.
+  //
+  // NB: this check should remain at the beginning of this function so that the
+  // remainder of the function can safely assume the frame is connected.
+  if (!outer_element->isConnected()) {
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Can't create a fenced frame when disconnected."));
+    return nullptr;
+  }
+
   if (outer_element->GetExecutionContext()->IsSandboxed(
           kFencedFrameMandatoryUnsandboxedFlags)) {
     outer_element->GetDocument().AddConsoleMessage(
@@ -122,8 +139,29 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     return nullptr;
   }
 
-  // We know we're not in a detached frame because of the other checks in
-  // `DidNotifySubtreeInsertionsToDocument()`.
+  if (!SubframeLoadingDisabler::CanLoadFrame(*outer_element)) {
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Can't create a fenced frame. Subframe loading disabled."));
+    return nullptr;
+  }
+
+  // The frame limit only needs to be checked on initial creation before
+  // attempting to insert it into the DOM. This behavior matches how iframes
+  // handles frame limits.
+  if (!outer_element->IsCurrentlyWithinFrameLimit()) {
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Can't create a fenced frame. Frame limit exceeded."));
+    return nullptr;
+  }
+
+  // We must be connected at this point due to the isConnected check at the top
+  // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
   if (Frame* ancestor = outer_element->GetDocument().GetFrame()) {
     mojom::blink::FencedFrameMode current_mode = outer_element->GetMode();
@@ -195,21 +233,7 @@ Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(
 }
 
 void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
-  // This method is the only place that sets `frame_delegate_`, and it cannot be
-  // called twice before removal.
-  DCHECK(!frame_delegate_);
-
-  if (!SubframeLoadingDisabler::CanLoadFrame(*this))
-    return;
-
-  // The frame limit only needs to be checked on initial creation before
-  // attempting to insert it into the DOM. This behavior matches how iframes
-  // handles frame limits.
-  if (!IsCurrentlyWithinFrameLimit())
-    return;
-
-  frame_delegate_ = FencedFrameDelegate::Create(this);
-  Navigate();
+  CreateDelegateAndNavigate();
 }
 
 void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
@@ -270,6 +294,13 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 void HTMLFencedFrameElement::Navigate() {
   if (!isConnected())
     return;
+
+  // Please see HTMLFencedFrameDelegate::Create for a list of conditions which
+  // could result in not having a frame delegate at this point, one of which is
+  // prerendering. If this function is called while prerendering we won't have a
+  // delegate and will bail early, but this should still be correct since,
+  // post-activation, CreateDelegateAndNavigate will be run which will navigate
+  // to the most current src.
   if (!frame_delegate_)
     return;
 
@@ -298,6 +329,24 @@ void HTMLFencedFrameElement::Navigate() {
 
   if (!frozen_frame_size_)
     FreezeFrameSize();
+}
+
+void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
+  // We may queue up several calls to CreateDelegateAndNavigate while
+  // prerendering, but we should only actually create the delegate once. Note,
+  // this will also mean that we skip calling Navigate() again, but the result
+  // should still be correct since the first Navigate call will use the
+  // up-to-date src.
+  if (frame_delegate_)
+    return;
+  if (GetDocument().IsPrerendering()) {
+    GetDocument().AddPostPrerenderingActivationStep(
+        WTF::Bind(&HTMLFencedFrameElement::CreateDelegateAndNavigate,
+                  WrapWeakPersistent(this)));
+    return;
+  }
+  frame_delegate_ = FencedFrameDelegate::Create(this);
+  Navigate();
 }
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
