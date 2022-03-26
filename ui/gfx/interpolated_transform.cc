@@ -41,17 +41,11 @@ bool MassageRotationIfMultipleOfNinetyDegrees(gfx::Transform* rotation,
   // n should now be in the range [0, 3]
   // clang-format off
   if (n == 1) {
-    transform.matrix().set3x3( 0,  1,  0,
-                              -1,  0,  0,
-                               0,  0,  1);
+    transform.matrix().setRotateAboutZAxisSinCos(1, 0);
   } else if (n == 2) {
-    transform.matrix().set3x3(-1,  0,  0,
-                               0, -1,  0,
-                               0,  0,  1);
+    transform.matrix().setRotateAboutZAxisSinCos(0, -1);
   } else if (n == 3) {
-    transform.matrix().set3x3( 0, -1,  0,
-                               1,  0,  0,
-                               0,  0,  1);
+    transform.matrix().setRotateAboutZAxisSinCos(-1, 0);
   }
   // clang-format on
 

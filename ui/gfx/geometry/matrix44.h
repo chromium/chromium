@@ -54,13 +54,6 @@ struct Vector4 {
 
 // This is the underlying data structure of Transform. Don't use this type
 // directly. The public methods can be called through Transform::matrix().
-//
-// This class was originally SkMatrix44, then moved into Chromium as
-// skia::Matrix44, then moved here. For now this class mostly follows the
-// Skia coding style, especially the naming convention. This is to make the
-// API of this class similar to SkM44 to ease experiment with different
-// underlying matrix data structure of Transform.
-//
 class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
   enum Uninitialized_Constructor { kUninitialized_Constructor };
@@ -109,7 +102,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    * [ g h i ]      [ 0 0 1 0 ]
    *                [ g h 0 i ]
    */
-  explicit Matrix44(const SkMatrix& sk_matrix);
+  explicit Matrix44(const SkMatrix&);
 
   // Inverse conversion of the above.
   SkMatrix asM33() const;
@@ -216,20 +209,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   CATransform3D ToCATransform3D() const;
 #endif
 
-  /* This sets the top-left of the matrix and clears the translation and
-   * perspective components (with [3][3] set to 1).  m_ij is interpreted
-   * as the matrix entry at row = i, col = j. */
-  void set3x3(SkScalar m_00,
-              SkScalar m_10,
-              SkScalar m_20,
-              SkScalar m_01,
-              SkScalar m_11,
-              SkScalar m_21,
-              SkScalar m_02,
-              SkScalar m_12,
-              SkScalar m_22);
-  void set3x3RowMajorf(const float[]);
-
   Matrix44& setTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
   Matrix44& preTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
   Matrix44& postTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
@@ -248,21 +227,20 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
     return this->postScale(scale, scale, scale);
   }
 
-  void setRotateDegreesAbout(SkScalar x,
-                             SkScalar y,
-                             SkScalar z,
-                             SkScalar degrees) {
-    this->setRotateAbout(x, y, z, degrees * SK_ScalarPI / 180);
-  }
+  // Sets this matrix to rotate about the specified unit-length axis vector,
+  // by an angle specified by its sin() and cos(). This does not attempt to
+  // verify that axis(x, y, z).length() == 1 or that the sin, cos values are
+  // correct.
+  void setRotateUnitSinCos(SkScalar x,
+                           SkScalar y,
+                           SkScalar z,
+                           SkScalar sin_angle,
+                           SkScalar cos_angle);
 
-  /** Rotate about the vector [x,y,z]. If that vector is not unit-length,
-      it will be automatically resized.
-   */
-  void setRotateAbout(SkScalar x, SkScalar y, SkScalar z, SkScalar radians);
-  /** Rotate about the vector [x,y,z]. Does not check the length of the
-      vector, assuming it is unit-length.
-   */
-  void setRotateAboutUnit(SkScalar x, SkScalar y, SkScalar z, SkScalar radians);
+  // Special case for x, y or z axis of the above function.
+  void setRotateAboutXAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
+  void setRotateAboutYAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
+  void setRotateAboutZAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
 
   void setConcat(const Matrix44& a, const Matrix44& b);
   inline void preConcat(const Matrix44& m) { this->setConcat(*this, m); }
@@ -326,9 +304,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   TypeMask fTypeMask;
 
   static constexpr int kAllPublic_Masks = 0xF;
-
-  void as3x4RowMajorf(float[]) const;
-  void set3x4RowMajorf(const float[]);
 
   SkScalar transX() const { return fMat[3][0]; }
   SkScalar transY() const { return fMat[3][1]; }

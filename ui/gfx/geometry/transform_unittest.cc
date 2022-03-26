@@ -169,8 +169,8 @@ void InitializeApproxIdentityMatrix(Transform* transform) {
 #define LOOSE_ERROR_THRESHOLD 1e-7
 
 TEST(XFormTest, Equality) {
-  Transform lhs, rhs, interpolated;
-  rhs.matrix().set3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  Transform lhs, interpolated;
+  Transform rhs(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
   interpolated = lhs;
   for (int i = 0; i <= 100; ++i) {
     for (int row = 0; row < 4; ++row) {
@@ -1395,6 +1395,14 @@ TEST(XFormTest, verifyConstructorFor2dElements) {
   EXPECT_ROW2_EQ(3.0f, 4.0f, 0.0f, 6.0f, transform);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, transform);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, transform);
+}
+
+TEST(XFormTest, FromQuaternion) {
+  Transform t(Quaternion(1, 2, 3, 4));
+  EXPECT_ROW1_EQ(-25.f, -20.f, 22.f, 0.f, t);
+  EXPECT_ROW2_EQ(28.f, -19.f, 4.f, 0.f, t);
+  EXPECT_ROW3_EQ(-10.f, 20.f, -9.f, 0.f, t);
+  EXPECT_ROW4_EQ(0.f, 0.f, 0.f, 1.f, t);
 }
 
 TEST(XFormTest, verifyAssignmentOperator) {
@@ -2663,7 +2671,7 @@ TEST(XFormTest, TransformRRectF) {
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 
   Matrix44 rot(Matrix44::kUninitialized_Constructor);
-  rot.set3x3(0, 1, 0, -1, 0, 0, 0, 0, 1);
+  rot.setRotateAboutZAxisSinCos(1, 0);
   Transform rotation_90_Clock(rot);
 
   rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),

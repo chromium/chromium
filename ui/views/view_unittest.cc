@@ -1345,19 +1345,11 @@ void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
 namespace {
 
 void RotateCounterclockwise(gfx::Transform* transform) {
-  // clang-format off
-  transform->matrix().set3x3(0, -1, 0,
-                             1,  0, 0,
-                             0,  0, 1);
-  // clang-format on
+  transform->matrix().setRotateAboutZAxisSinCos(-1, 0);
 }
 
 void RotateClockwise(gfx::Transform* transform) {
-  // clang-format off
-  transform->matrix().set3x3( 0, 1, 0,  // NOLINT
-                             -1, 0, 0,
-                              0, 0, 1);
-  // clang-format on
+  transform->matrix().setRotateAboutZAxisSinCos(1, 0);
 }
 
 }  // namespace
