@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURE_DEVICE_MAC_H_
-#define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURE_DEVICE_MAC_H_
+#ifndef CONTENT_BROWSER_MEDIA_CAPTURE_SCREEN_CAPTURE_KIT_DEVICE_MAC_H_
+#define CONTENT_BROWSER_MEDIA_CAPTURE_SCREEN_CAPTURE_KIT_DEVICE_MAC_H_
 
 #include <stdint.h>
 
@@ -20,11 +20,8 @@ class VideoCaptureDevice;
 namespace content {
 
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
-CreateDesktopCaptureDeviceMac(const DesktopMediaID& source);
-
-std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
 CreateScreenCaptureKitDeviceMac(const DesktopMediaID& source);
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURE_DEVICE_MAC_H_
+#endif  // CONTENT_BROWSER_MEDIA_CAPTURE_SCREEN_CAPTURE_KIT_DEVICE_MAC_H_

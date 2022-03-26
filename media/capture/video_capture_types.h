@@ -196,7 +196,13 @@ enum class VideoCaptureError {
   kVideoCaptureImplTimedOutOnStart = 128,
   kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError = 129,
   kLacrosVideoCaptureDeviceProxyEncounteredFatalError = 130,
-  kMaxValue = 130
+  kScreenCaptureKitFailedGetShareableContent = 131,
+  kScreenCaptureKitFailedAddStreamOutput = 132,
+  kScreenCaptureKitFailedStartCapture = 133,
+  kScreenCaptureKitFailedStopCapture = 134,
+  kScreenCaptureKitStreamError = 135,
+  kScreenCaptureKitFailedToFindSCDisplay = 136,
+  kMaxValue = 136
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

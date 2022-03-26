@@ -247,6 +247,12 @@ enum VideoCaptureError {
   [MinVersion=2] kVideoCaptureImplTimedOutOnStart,
   [MinVersion=3] kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError,
   [MinVersion=3] kLacrosVideoCaptureDeviceProxyEncounteredFatalError,
+  [MinVersion=4] kScreenCaptureKitFailedGetShareableContent,
+  [MinVersion=4] kScreenCaptureKitFailedAddStreamOutput,
+  [MinVersion=4] kScreenCaptureKitFailedStartCapture,
+  [MinVersion=4] kScreenCaptureKitFailedStopCapture,
+  [MinVersion=4] kScreenCaptureKitStreamError,
+  [MinVersion=4] kScreenCaptureKitFailedToFindSCDisplay,
 };
 
 [Stable, Extensible]

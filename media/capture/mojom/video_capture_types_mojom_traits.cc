@@ -756,6 +756,23 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
         kLacrosVideoCaptureDeviceProxyEncounteredFatalError:
       return media::mojom::VideoCaptureError::
           kLacrosVideoCaptureDeviceProxyEncounteredFatalError;
+    case media::VideoCaptureError::kScreenCaptureKitFailedGetShareableContent:
+      return media::mojom::VideoCaptureError::
+          kScreenCaptureKitFailedGetShareableContent;
+    case media::VideoCaptureError::kScreenCaptureKitFailedAddStreamOutput:
+      return media::mojom::VideoCaptureError::
+          kScreenCaptureKitFailedAddStreamOutput;
+    case media::VideoCaptureError::kScreenCaptureKitFailedStartCapture:
+      return media::mojom::VideoCaptureError::
+          kScreenCaptureKitFailedStartCapture;
+    case media::VideoCaptureError::kScreenCaptureKitFailedStopCapture:
+      return media::mojom::VideoCaptureError::
+          kScreenCaptureKitFailedStopCapture;
+    case media::VideoCaptureError::kScreenCaptureKitStreamError:
+      return media::mojom::VideoCaptureError::kScreenCaptureKitStreamError;
+    case media::VideoCaptureError::kScreenCaptureKitFailedToFindSCDisplay:
+      return media::mojom::VideoCaptureError::
+          kScreenCaptureKitFailedToFindSCDisplay;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1335,6 +1352,30 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kLacrosVideoCaptureDeviceProxyEncounteredFatalError:
       *output = media::VideoCaptureError::
           kLacrosVideoCaptureDeviceProxyEncounteredFatalError;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kScreenCaptureKitFailedGetShareableContent:
+      *output =
+          media::VideoCaptureError::kScreenCaptureKitFailedGetShareableContent;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kScreenCaptureKitFailedAddStreamOutput:
+      *output =
+          media::VideoCaptureError::kScreenCaptureKitFailedAddStreamOutput;
+      return true;
+    case media::mojom::VideoCaptureError::kScreenCaptureKitFailedStartCapture:
+      *output = media::VideoCaptureError::kScreenCaptureKitFailedStartCapture;
+      return true;
+    case media::mojom::VideoCaptureError::kScreenCaptureKitFailedStopCapture:
+      *output = media::VideoCaptureError::kScreenCaptureKitFailedStopCapture;
+      return true;
+    case media::mojom::VideoCaptureError::kScreenCaptureKitStreamError:
+      *output = media::VideoCaptureError::kScreenCaptureKitStreamError;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kScreenCaptureKitFailedToFindSCDisplay:
+      *output =
+          media::VideoCaptureError::kScreenCaptureKitFailedToFindSCDisplay;
       return true;
   }
   NOTREACHED();

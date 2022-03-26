@@ -46,6 +46,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
+#include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -87,6 +88,8 @@ const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kScreenCaptureKitMac{"ScreenCaptureKitMac",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
@@ -455,8 +458,16 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kDesktopCaptureMacV2))
+  // Prefer using ScreenCaptureKit. After that try DesktopCaptureDeviceMac, and
+  // if both fail, use the generic DesktopCaptureDevice.
+  if (!video_capture_device &&
+      base::FeatureList::IsEnabled(kScreenCaptureKitMac)) {
+    video_capture_device = CreateScreenCaptureKitDeviceMac(desktop_id);
+  }
+  if (!video_capture_device &&
+      base::FeatureList::IsEnabled(kDesktopCaptureMacV2)) {
     video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
+  }
 #endif
   if (!video_capture_device)
     video_capture_device = DesktopCaptureDevice::Create(desktop_id);
