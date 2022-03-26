@@ -27,28 +27,28 @@ QueryTilesInternalsUIMessageHandler::~QueryTilesInternalsUIMessageHandler() =
     default;
 
 void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startFetch", base::BindRepeating(
                         &QueryTilesInternalsUIMessageHandler::HandleStartFetch,
                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "purgeDb",
       base::BindRepeating(&QueryTilesInternalsUIMessageHandler::HandlePurgeDb,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus,
           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getTileData",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleGetTileData,
           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setServerUrl",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleSetServerUrl,
@@ -56,39 +56,38 @@ void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleGetTileData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetTileData());
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetServiceStatus());
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleStartFetch(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   tile_service_->StartFetchForTiles(false /*is_from_reduce_mode*/,
                                     base::BindOnce([](bool reschedule) {}));
 }
 
 void QueryTilesInternalsUIMessageHandler::HandlePurgeDb(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   tile_service_->PurgeDb();
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleSetServerUrl(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  DCHECK_EQ(args->GetListDeprecated().size(), 1u)
-      << "Missing argument server URL.";
-  tile_service_->SetServerUrl(args->GetListDeprecated()[0].GetString());
+  DCHECK_EQ(args.size(), 1u) << "Missing argument server URL.";
+  tile_service_->SetServerUrl(args[0].GetString());
 }
 
 void QueryTilesInternalsUIMessageHandler::OnServiceStatusChanged(
