@@ -99,7 +99,6 @@ namespace blink {
 
 class AdTracker;
 class AttributionSrcLoader;
-class AnchorElementInteractionTracker;
 class AssociatedInterfaceProvider;
 class BrowserInterfaceBrokerProxy;
 class Color;
@@ -876,7 +875,6 @@ class CORE_EXPORT LocalFrame final
   // use the instance owned by their local root.
   Member<SmoothScrollSequencer> smooth_scroll_sequencer_;
   Member<ContentCaptureManager> content_capture_manager_;
-  Member<AnchorElementInteractionTracker> anchor_element_interaction_tracker_;
 
   InterfaceRegistry* const interface_registry_;
 

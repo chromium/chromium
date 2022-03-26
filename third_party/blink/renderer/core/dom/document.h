@@ -110,6 +110,7 @@ enum class CSPDisposition : int32_t;
 
 namespace blink {
 
+class AnchorElementInteractionTracker;
 class AnimationClock;
 class AXContext;
 class AXObjectCache;
@@ -2119,6 +2120,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<Element> document_element_;
   UserActionElementSet user_action_elements_;
   Member<RootScrollerController> root_scroller_controller_;
+  Member<AnchorElementInteractionTracker> anchor_element_interaction_tracker_;
 
   double overscroll_accumulated_delta_x_ = 0;
   double overscroll_accumulated_delta_y_ = 0;

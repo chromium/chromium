@@ -808,6 +808,8 @@ static_library("browser") {
     "metrics/variations/chrome_variations_service_client.cc",
     "metrics/variations/chrome_variations_service_client.h",
     "native_window_notification_source.h",
+    "navigation_predictor/anchor_element_preloader.cc",
+    "navigation_predictor/anchor_element_preloader.h",
     "navigation_predictor/navigation_predictor.cc",
     "navigation_predictor/navigation_predictor.h",
     "navigation_predictor/navigation_predictor_features.cc",

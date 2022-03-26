@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANCHOR_ELEMENT_LISTENER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANCHOR_ELEMENT_LISTENER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_LISTENER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_LISTENER_H_
 
+#include "base/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 
@@ -14,11 +15,15 @@ class Node;
 class Event;
 class HTMLAnchorElement;
 class KURL;
+class ExecutionContext;
 
 // Listens for kPointerdown events, and checks to see if an anchor
 // element is clicked with a valid href to be eligible for preloading.
 class CORE_EXPORT AnchorElementListener : public NativeEventListener {
  public:
+  explicit AnchorElementListener(
+      base::RepeatingCallback<void(const KURL&)> callback);
+
   void Invoke(ExecutionContext* execution_context, Event* event) override;
 
  private:
@@ -29,17 +34,9 @@ class CORE_EXPORT AnchorElementListener : public NativeEventListener {
   KURL GetHrefEligibleForPreloading(
       const HTMLAnchorElement& html_anchor_element);
 
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest, ValidHref);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest, InvalidHref);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest, OneAnchorElementCheck);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest, NestedAnchorElementCheck);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest,
-                           NestedDivAnchorElementCheck);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest,
-                           MultipleNestedAnchorElementCheck);
-  FRIEND_TEST_ALL_PREFIXES(AnchorElementListenerTest, NoAnchorElementCheck);
+  base::RepeatingCallback<void(const KURL&)> tracker_callback_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANCHOR_ELEMENT_LISTENER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_LISTENER_H_

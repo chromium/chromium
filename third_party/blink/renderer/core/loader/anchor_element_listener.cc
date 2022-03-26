@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/anchor_element_listener.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
+namespace {
+constexpr const int16_t kMainEventButtonValue = 0;
+constexpr const int16_t kAuxiliaryEventButtonValue = 1;
+}  // namespace
+
 namespace blink {
+
+AnchorElementListener::AnchorElementListener(
+    base::RepeatingCallback<void(const KURL&)> callback)
+    : tracker_callback_(std::move(callback)) {}
 
 void AnchorElementListener::Invoke(ExecutionContext* execution_context,
                                    Event* event) {
@@ -20,6 +30,11 @@ void AnchorElementListener::Invoke(ExecutionContext* execution_context,
   if (!event->target()->ToNode()->IsHTMLElement()) {
     return;
   }
+  // TODO(crbug.com/1297312): Check if user changed the default mouse settings
+  if (DynamicTo<PointerEvent>(event)->button() != kMainEventButtonValue &&
+      DynamicTo<PointerEvent>(event)->button() != kAuxiliaryEventButtonValue) {
+    return;
+  }
   Node* node = event->srcElement()->ToNode();
   HTMLAnchorElement* html_anchor_element =
       FirstAnchorElementIncludingSelf(node);
@@ -30,8 +45,7 @@ void AnchorElementListener::Invoke(ExecutionContext* execution_context,
   if (anchor_url.IsEmpty()) {
     return;
   }
-  // TODO(crbug.com/1297312): send URL back up to the tracker. Tracker will then
-  // communicate with with the browser process to preload.
+  tracker_callback_.Run(anchor_url);
 }
 
 HTMLAnchorElement* AnchorElementListener::FirstAnchorElementIncludingSelf(

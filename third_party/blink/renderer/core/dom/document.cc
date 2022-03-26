@@ -249,6 +249,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
@@ -2723,6 +2724,11 @@ void Document::Initialize() {
     autosizer->UpdatePageInfo();
 
   GetFrame()->DidAttachDocument();
+  if (AnchorElementInteractionTracker::IsFeatureEnabled() &&
+      !GetFrame()->IsProvisional()) {
+    anchor_element_interaction_tracker_ =
+        MakeGarbageCollected<AnchorElementInteractionTracker>(*this);
+  }
   lifecycle_.AdvanceTo(DocumentLifecycle::kStyleClean);
 
   if (View())
@@ -7943,6 +7949,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(meta_theme_color_elements_);
   visitor->Trace(unassociated_listed_elements_);
   visitor->Trace(intrinsic_size_observer_);
+  visitor->Trace(anchor_element_interaction_tracker_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
