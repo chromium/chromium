@@ -124,6 +124,7 @@ Injini yakho yokusesha iyi-<ph name="DSE_NAME" />. Bona imiyalelo yabo yokusula 
 <translation id="199425419756152024">Buka iphasiwedi</translation>
 <translation id="2015722694326466240">Ukuze ubone amaphasiwedi, kufanele uqale ngokusetha ikhodi yokudlula kudivayisi yakho.</translation>
 <translation id="2021670401941426298">Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kusebenza.</translation>
+<translation id="202292859882676807">Ukufinyelela Kwemakrofoni Kuvunyelwe</translation>
 <translation id="2073572773299281212">Isebenze ezinsukwini ezingu-<ph name="DAYS" /> ezedlule</translation>
 <translation id="2074131957428911366">Ungahlala ukhetha ukuthi yini ezovunyelaniswa <ph name="BEGIN_LINK" />kuzilungiselelo<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
@@ -369,6 +370,7 @@ Landela lezi zinyathelo ezingezansi:</translation>
 <translation id="430967081421617822">Sonke isikhathi</translation>
 <translation id="4334428914252001502">1 i-athikili engafundiwe.</translation>
 <translation id="4338650699862464074">Ithumela ama-URL amakhasi owavakashelayo ku-Google.</translation>
+<translation id="4343046787186034850">Ukufinyelela Kwemakhera Nemakrofoni Kuvunyelwe</translation>
 <translation id="4359125752503270327">Leli khasi lizovuleka kolunye uhlelo lokusebenza.</translation>
 <translation id="4375040482473363939">Usesho lwekhodi ye-QR</translation>
 <translation id="4378154925671717803">Ifoni</translation>
@@ -389,6 +391,7 @@ Landela lezi zinyathelo ezingezansi:</translation>
 <translation id="4540780316273593836">Kukhona Okungahambanga Kahle</translation>
 <translation id="457386861538956877">Okuningi...</translation>
 <translation id="4592368184551360546">Ikhibhodi</translation>
+<translation id="4606247758155004938">Ibhrawuza yakho iphethwe inhlangano yakho.</translation>
 <translation id="461440297010471931">Ukusesha nge-Google</translation>
 <translation id="4619564267100705184">Qinisekisa ukuthi nguwe</translation>
 <translation id="4619615317237390068">Amathebhu kusuka kwamanye amadivayisi</translation>
@@ -510,6 +513,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Inguqulo engu-<ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Manje ibonisa iwindi eli-1 le-Chrome}one{Manje ibonisa amawindi angu-{count} we-Chrome}other{Manje ibonisa amawindi angu-{count} we-Chrome}}</translation>
+<translation id="5701270923492462699">Ukufinyelela Kwekhamera Kuvunyelwe</translation>
 <translation id="5704908597376970822">Ayikwazi ukungena ngemvume.</translation>
 <translation id="5706552126692816153">Isebenze ngosuku olungu-1 oludlule</translation>
 <translation id="5711039611392265845">Ukuze uthole ezinye izilungiselelo ezihambisana nobumfihlo, ukuvikelwa, nokuqoqwa kwedatha, bona <ph name="BEGIN_LINK" />Ukuvumelanisa namasevisi e-Google<ph name="END_LINK" />.</translation>

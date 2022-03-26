@@ -520,6 +520,7 @@
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2505268675989099013">Захистити обліковий запис</translation>
 <translation id="2512101340618156538">Заборонено (за умовчанням)</translation>
+<translation id="2512413427717747692">Кнопка "Зробити Chrome веб-переглядачем за умовчанням": щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Enter</translation>
 <translation id="2515629240566999685">перевірити сигнал у своїй місцевості</translation>
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
 <translation id="2521736961081452453">Створити форму</translation>
@@ -779,6 +780,7 @@
 <translation id="3364869320075768271">Сайт <ph name="URL" /> хоче отримати доступ до ваших даних і пристрою віртуальної реальності</translation>
 <translation id="3366477098757335611">Переглянути картки</translation>
 <translation id="3369192424181595722">Помилка годинника</translation>
+<translation id="3371064404604898522">Зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="3371076217486966826">URL-адресі потрібен дозвіл, щоб <ph name="URL" />:
       • створити 3D-карту вашого оточення та відстежувати положення камери;
       • використовувати вашу камеру.</translation>
@@ -978,6 +980,7 @@
 <translation id="3969052498612555048">Не вдається знайти код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
+<translation id="3978338123949022456">Режим пошуку: щоб здійснити пошук на <ph name="KEYWORD_SUFFIX" />, введіть запит і натисніть Enter</translation>
 <translation id="3986705137476756801">Наразі вимкнути живі субтитри</translation>
 <translation id="3987940399970879459">Менше 1 МБ</translation>
 <translation id="3990250421422698716">Поступове зміщення</translation>
@@ -1715,6 +1718,7 @@
 <translation id="63172326633386613">Керувати налаштуваннями спеціальних можливостей</translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
 <translation id="6322182122604171028">Не вдалося скористатися Windows Hello</translation>
+<translation id="6326947323444967009">Зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
 <translation id="6328784461820205019">"З’єднання не конфіденційне", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" або "Помилка сертифіката SSL"</translation>
 <translation id="6328786501058569169">Це оманливий сайт</translation>
@@ -2561,6 +2565,7 @@
 <translation id="9080712759204168376">Підсумок замовлення</translation>
 <translation id="9089260154716455634">Правило неробочого часу:</translation>
 <translation id="9095388113577226029">Інші мови…</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Tab, а потім – Enter</translation>
 <translation id="9101630580131696064">Лоток 1</translation>
 <translation id="9103872766612412690">Веб-сайт <ph name="SITE" /> зазвичай використовує шифрування для захисту вашої інформації. Під час цієї спроби Chromium під’єднатися до сторінки <ph name="SITE" /> з неї отримано незвичні й неправильні облікові дані. Це може статися, коли зловмисник намагається видавати себе за веб-сайт <ph name="SITE" /> або з’єднання перервано екраном входу Wi-Fi. Ваша інформація залишається захищеною, оскільки Chromium припинив з’єднання до того, як почався обмін будь-якими даними.</translation>
 <translation id="9106062320799175032">Додайте платіжну адресу</translation>

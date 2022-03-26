@@ -519,6 +519,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2505268675989099013">Protexer conta</translation>
 <translation id="2512101340618156538">Permiso non concedido (opción predeterminada)</translation>
+<translation id="2512413427717747692">Botón para establecer Chrome como navegador predeterminado. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Introducir</translation>
 <translation id="2515629240566999685">Comprobar o sinal da túa zona</translation>
 <translation id="2521385132275182522">Grampa na parte inferior dereita</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
@@ -778,6 +779,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3364869320075768271"><ph name="URL" /> quere utilizar os teus datos e o teu dispositivo de realidade virtual</translation>
 <translation id="3366477098757335611">Ver tarxetas</translation>
 <translation id="3369192424181595722">Erro do reloxo</translation>
+<translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3371076217486966826"><ph name="URL" /> quere facer o seguinte:
       • Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara
       • Usar a túa cámara</translation>
@@ -977,6 +979,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3969052498612555048">Non es quen de atopar o código? <ph name="BEGIN_LINK" />Xerar novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
+<translation id="3978338123949022456">Modo de busca. Escribe unha consulta e preme Introducir para facer a busca con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Desactivar polo momento a función Subtítulos instantáneos</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
@@ -1714,6 +1717,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="63172326633386613">Xestionar configuración de accesibilidade</translation>
 <translation id="6321917430147971392">Comproba a configuración de DNS</translation>
 <translation id="6322182122604171028">Non se puido utilizar Windows Hello</translation>
+<translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
 <translation id="6328784461820205019">"A conexión non é privada", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ou "Erro de certificado SSL"</translation>
 <translation id="6328786501058569169">Este sitio é enganoso</translation>
@@ -2559,6 +2563,7 @@ Detalles adicionais:
 <translation id="9080712759204168376">Resumo do pedido</translation>
 <translation id="9089260154716455634">Política fóra do horario:</translation>
 <translation id="9095388113577226029">Máis idiomas…</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="9101630580131696064">Bandexa 1</translation>
 <translation id="9103872766612412690">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chromium tentou conectar con <ph name="SITE" />, o sitio web devolveu credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión de wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chromium detivo a conexión antes de intercambiar datos.</translation>
 <translation id="9106062320799175032">Engade un enderezo de facturación</translation>

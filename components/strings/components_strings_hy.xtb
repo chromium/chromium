@@ -520,6 +520,7 @@
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2505268675989099013">Պաշտպանել հաշիվը</translation>
 <translation id="2512101340618156538">Արգելված է (կանխադրված)</translation>
+<translation id="2512413427717747692">«Դարձնել Chrome-ը կանխադրված դիտարկիչ» կոճակ։ Սեղմեք Enter՝ iOS-ի կարգավորումներում Chrome-ը համակարգի կանխադրված դիտարկիչը դարձնելու համար։</translation>
 <translation id="2515629240566999685">Ստուգել ազդանշանը ձեր տարածքում</translation>
 <translation id="2521385132275182522">Ամրակ ներքևի աջ կողմում</translation>
 <translation id="2521736961081452453">Ստեղծել ձև</translation>
@@ -779,6 +780,7 @@
 <translation id="3364869320075768271"><ph name="URL" /> կայքն ուզում է օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="3366477098757335611">Դիտել քարտերը</translation>
 <translation id="3369192424181595722">Ժամացույցի սխալ</translation>
+<translation id="3371064404604898522">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="3371076217486966826"><ph name="URL" /> կայքն ուզում է՝
       • Ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը
       • Օգտագործել ձեր տեսախցիկը</translation>
@@ -978,6 +980,7 @@
 <translation id="3969052498612555048">Չե՞ք կարողանում գտնել ձեր կոդը։ <ph name="BEGIN_LINK" />Ստանալ նոր կոդ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-ն արգելափակված է</translation>
+<translation id="3978338123949022456">Որոնման ռեժիմ, մուտքագրեք հարցումը և սեղմեք Enter՝ <ph name="KEYWORD_SUFFIX" />-ում որոնելու համար</translation>
 <translation id="3986705137476756801">Անջատել Կենդանի ենթագրերը</translation>
 <translation id="3987940399970879459">1 ՄԲ-ից քիչ</translation>
 <translation id="3990250421422698716">Աստիճանական տեղաշարժ</translation>
@@ -1716,6 +1719,7 @@
 <translation id="63172326633386613">Կառավարել հատուկ գործառույթների կարգավորումները</translation>
 <translation id="6321917430147971392">Ստուգեք ձեր DNS կարգավորումները</translation>
 <translation id="6322182122604171028">Չհաջողվեց օգտագործել Windows Hello-ն</translation>
+<translation id="6326947323444967009">Դարձրեք Chrome-ը համակարգի կանխադրված դիտարկիչ iOS-ի կարգավորումներում</translation>
 <translation id="6328639280570009161">Անջատեք ցանցի գործողությունների կանխատեսումը</translation>
 <translation id="6328784461820205019">«Ձեր կապը պաշտպանված չէ» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» կամ «&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;» կամ «SSL հավաստագրի սխալ»</translation>
 <translation id="6328786501058569169">Սա կեղծ կայք է</translation>
@@ -2561,6 +2565,7 @@
 <translation id="9080712759204168376">Պատվերի ամփոփագիրը</translation>
 <translation id="9089260154716455634">Ոչ աշխատանքային ժամանակին վերաբերող կանոն՝</translation>
 <translation id="9095388113577226029">Այլ լեզուներ…</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի iOS-ի կարգավորումներում Chrome-ը դարձնեք համակարգի կանխադրված դիտարկիչը։</translation>
 <translation id="9101630580131696064">Դարակ 1</translation>
 <translation id="9103872766612412690">Ձեր տվյալները պաշտպանելու համար <ph name="SITE" /> կայքը սովորաբար գաղտնագրում է օգտագործում: Chromium-ի՝ <ph name="SITE" /> կայքին կապակցվելու փորձի ժամանակ կայքը վերադարձրեց արտասովոր և սխալ մուտքային տվյալներ: Հնարավոր է, որ <ph name="SITE" /> կայքի անվան տակ նենգորդ է հանդես գալիս, կամ Wi-Fi մուտքի էկրանի կապն ընդհատվել է: Ձեր տվյալները, այնուամենայնիվ, ապահով են, քանի որ Chromium-ն ընդհատել էր կապը՝ նախքան տեղի կունենար տվյալների փոխանակում:</translation>
 <translation id="9106062320799175032">Ավելացրեք վճարային հասցեն</translation>

@@ -2436,6 +2436,7 @@
 <translation id="3390013585654699824">एपका विवरणहरू</translation>
 <translation id="3391512812407811893">प्राइभेसी स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="3393554941209044235">Chrome को डकुमेन्ट विश्लेषण</translation>
+<translation id="3393582007140394275">स्क्रिन कास्ट गर्न सकिएन।</translation>
 <translation id="3394850431319394743">संरक्षित सामग्री प्ले गर्न आइडेन्टिफायर प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="3396744558790608201">तपाईं वेब ब्राउज गर्दा र वेबमा किनमेल गर्दा तपाईंलाई देखाइने भिजुअल सामग्रीका बारेमा थप जानकारी प्राप्त गर्नका निम्ति साइटको कुनै पनि क्षेत्र खोज्न चाहनुहुन्छ भने उक्त क्षेत्रमा गई दायाँ क्लिक गर्नुहोस् र "Google लेन्स प्रयोग गरी फोटो खोज्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="3396800784455899911">"स्वीकार गरी जारी राख्नुहोस् " नामक बटनमा क्लिक गरेर तपाईं Google का यी सेवाहरूका लागि माथि वर्णन गरिएको प्रक्रियामा सहमति जनाउनु हुन्छ।</translation>
@@ -2829,6 +2830,7 @@
 <translation id="3753033997400164841">एक पटक भण्डारण गर्नुहोस्। सबैतिर प्रयोग गर्नुहोस्</translation>
 <translation id="3755411799582650620">तपाईंको <ph name="PHONE_NAME" />ले अब  यो<ph name="DEVICE_TYPE" /> पनि अनलक गर्न सक्छ।</translation>
 <translation id="375636864092143889">साइटले तपाईंको माइक्रोफोन प्रयोग गर्दै छ</translation>
+<translation id="3756485814916578707">स्क्रिन कास्ट गरिँदै छ</translation>
 <translation id="3756578970075173856">PIN सेट गर्नुहोस्</translation>
 <translation id="3756795331760037744"><ph name="SUPERVISED_USER_NAME" /> लाई मद्दत गर्ने प्रयोजनका लागि Google सहायकलाई उनको डिभाइसको स्क्रिनमा भएको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3757733214359997190">कुनै पनि साइट फेला परेन</translation>
@@ -3987,6 +3989,7 @@
 <translation id="4924002401726507608">प्रतिक्रिया पेस गर्नुहोस्</translation>
 <translation id="4924352752174756392">१२ गुणा</translation>
 <translation id="4925320384394644410">तपाईंका पोर्टहरू यहाँ देखा पर्ने छन्</translation>
+<translation id="49265687513387605">स्क्रिन कास्ट गर्न सकिएन।  आफ्नो स्क्रिन सेयर गर्न थाल्न आफूले प्रम्प्ट पुष्टि गरेको वा नगरेको कुरा जाँच गर्नुहोस्।</translation>
 <translation id="4927753642311223124">यहाँ हेर्ने कुरा केही पनि छैन, अघि बढ्नुहोस्।</translation>
 <translation id="4929386379796360314">यो प्रिन्टरमार्फत प्रिन्ट गर्नुहोस्</translation>
 <translation id="4930447554870711875">विकासकर्ताहरू</translation>
@@ -4100,6 +4103,7 @@
 <translation id="5052499409147950210">साइट सम्पादन गर्नुहोस्</translation>
 <translation id="505347685865235222">नाम नभएको समूह - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google लेन्समार्फत फोटो खोज्नुहोस्</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome कस्टमाइज गर्नुहोस्<ph name="END_LINK" /> मा गई कार्डसम्बन्धी सबै विकल्पहरू हेर्नुहोस्</translation>
 <translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5057110919553308744">तपाईंले विस्तारमा क्लिक गर्दा</translation>
 <translation id="505776528429481161">नजिकै रहेका डिभाइसहरू सजिलै कनेक्ट तथा सेटअप गर्नुहोस्</translation>
@@ -5491,6 +5495,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूरा भयो</translation>
 <translation id="645286928527869380">खानेकुरा बनाउने तरिका</translation>
 <translation id="6452961788130242735">नेटवर्कको समस्या वा अनुपयुक्त क्षेत्र</translation>
+<translation id="6453191633103419909">ट्याब/स्क्रिन प्रोजेक्सनको गुणस्तर</translation>
 <translation id="6453921811609336127">अर्को इनपुट विधि प्रयोग गर्न <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> थिच्नुहोस्</translation>
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>
@@ -7802,6 +7807,7 @@
 <translation id="8779944680596936487">साइटहरूले तपाईंले ती साइटमा गर्नुभएका गतिविधिहरू हेर्ने प्रयोजनका लागि मात्र कुकीहरू प्रयोग गर्न सक्छन्</translation>
 <translation id="8780123805589053431">Google बाट छविका विवरणहरू प्राप्त गर्नुहोस्</translation>
 <translation id="8780443667474968681">आवाजमार्फत खोजी गर्ने सुविधा निष्क्रिय पारिएको छ।</translation>
+<translation id="8780872768304638315">वेब ड्राइभमा सेभ गर्न सकिएन</translation>
 <translation id="8781834595282316166">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
 <translation id="8783526165720272136">म्यासेजिङ एपहरू</translation>

@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">То значи да ће Chromium сваки пут захтевати мобилни сајт.</translation>
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1257458525759135959">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chromium-у да додаје слике</translation>
+<translation id="1266817106503861676">Урадите више помоћу још једноставнијег, безбеднијег и бржег Chromium-а.</translation>
 <translation id="1289216811211435351">Пређите на Chromium</translation>
 <translation id="1361748954329991663">Chromium је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chromium-а.</translation>
 <translation id="1431818719585918472">Дозволите Chromium-у да закључа картице без архивирања.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Копирана у Chromium</translation>
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="3472200483164753384">Није подржано у верзији Chromium Canary</translation>
+<translation id="3567399274263440288">Да бисте користили Chromium на најбољи начин, пријавите се на Chromium помоћу Google налога.</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="3650632991272923014">Корисник <ph name="USER_EMAIL1" /> је користио Chromium и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
 <translation id="3805899903892079518">Chromium не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
@@ -82,6 +84,7 @@
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="632825460376924298">Дозволите пријављивање у Chromium</translation>
 <translation id="6337530241089703714">Одаберите да ли ћете обрисати Chromium податке са овог уређаја или их задржати</translation>
+<translation id="6364764337654495917">Коришћењем Chromium-а прихватате <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium је управо постао бољи! Доступна је нова верзија.</translation>
 <translation id="6752854822223394465">Ваша организација подешава Chromium...</translation>
 <translation id="6820823224820483452">Chromium није успео да провери све лозинке. Пробајте поново сутра.</translation>
@@ -102,6 +105,7 @@
 <translation id="7400689562045506105">Користите Chromium свуда</translation>
 <translation id="766897673682622022">Ваша лозинка је откривена при упаду у податке. Chromium препоручује да одмах промените лозинку.</translation>
 <translation id="7674213385180944843">Отворите Подешавања &gt; Приватност &gt; Камера &gt; Chromium и укључите камеру.</translation>
+<translation id="7724877991918731397">Chromium шаље извештаје о коришћењу и отказивању Google-у ради побољшања апликације. <ph name="BEGIN_LINK" />Управљајте<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Савет за Chromium. Нека дугмад се сада налазе у дну екрана, попут дугмади Назад, Напред и Претражи.</translation>
 <translation id="7763454117143368771">Користите Chromium као подразумевани прегледач да бисте се одбранили од опасних сајтова и заштитили лозинке</translation>
 <translation id="786327964234957808">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chromium подацима управља <ph name="DOMAIN" />. На овај начин бришете податке са овог уређаја, али подаци остају на <ph name="USER_EMAIL1" />.</translation>

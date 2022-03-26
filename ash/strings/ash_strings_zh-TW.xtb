@@ -236,6 +236,7 @@
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="243878895369688216">昨天開啟過</translation>
+<translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄製</translation>
 <translation id="24452542372838207">展開通知</translation>
 <translation id="2450205753526923158">螢幕截圖模式</translation>
 <translation id="2456008742792828469">日曆，<ph name="CURRENT_MONTH_YEAR" /></translation>

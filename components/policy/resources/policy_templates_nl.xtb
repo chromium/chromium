@@ -2535,13 +2535,6 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="3791179836066841809">Documentatie voor beleid</translation>
 <translation id="3791556154364029875">Floating Workspace aanzetten en externe browservensters openen bij inloggen</translation>
-<translation id="3794413118360704299">Met dit beleid kan een beheerder instellingen voor geïnstalleerde web-apps opgeven.
-
-      Dit beleid wijst een web-app-ID toe aan de specifieke instelling. Zie <ph name="WEB_APP_ID_REFERENCE_URL" /> voor instructies om de ID voor een geïnstalleerde web-app te bepalen.
-Met de speciale ID <ph name="DEFAULT_SCOPE" /> kan een standaardconfiguratie worden ingesteld die van toepassing is op alle web-apps waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
-
-      Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden uitgevoerd tijdens de OS-login. Als je dit veld instelt op <ph name="BLOCKED" />, wordt de web-app niet uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet aanzetten. Als je dit veld instelt op <ph name="RUN_WINDOWED" />, wordt de web-app uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet uitzetten. Als je dit veld instelt op <ph name="ALLOWED" />, kan de gebruiker instellen dat de web-app wordt uitgevoerd tijdens de OS-login. De standaardconfiguratie staat alleen de waarden <ph name="ALLOWED" /> en <ph name="BLOCKED" /> toe.
-      </translation>
 <translation id="3796527892245558832">Profielkiezer beschikbaar bij opstarten</translation>
 <translation id="3798922329287609568">Als je dit beleid instelt, wordt de duplexstand voor afdrukken beperkt.
 
@@ -3508,15 +3501,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       Als je het beleid niet toepast, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
 <translation id="5039110755072335605">Ondersteuning voor CORS-verzoekheaders zonder jokertekens</translation>
 <translation id="504116558738617678">Waarschuwingen voor weinig schijfruimte alleen tonen als het apparaat onbeheerd is of er slechts 1 gebruiker is</translation>
-<translation id="5052278640307929670">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben.
-
-      Als een beleid in de lijst staat en er een conflict is tussen bronnen met:
-
-      * Hetzelfde bereik en niveau: de waarden worden samengevoegd in een nieuw beleidswoordenboek.
-
-      * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
-
-      Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
 <translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
 <translation id="5056708224511062314">Vergrootglas staat uit</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
@@ -6372,15 +6356,6 @@ Deze beleidsregels zijn uitsluitend bedoeld voor het configureren van instanties
 Je hoeft deze instellingen niet handmatig te configureren. Je kunt gebruiksvriendelijke templates voor Windows, Mac en Linux downloaden via <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, maar het toewijzen van beleidsregels via een register wordt nog steeds ondersteund voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein.</translation>
-<translation id="8261874086461353268">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
-
-      Als een beleid in de lijst staat en er een conflict is tussen bronnen met:
-
-      * Hetzelfde bereik en niveau: de waarden worden samengevoegd in een nieuw beleidswoordenboek.
-
-      * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
-
-      Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>

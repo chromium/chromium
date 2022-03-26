@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Prijavite se u Chrome</translation>
 <translation id="2919738076569633423">Korišćenjem Chrome-a prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korišćenja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Izaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Google Chrome-a.</translation>
 <translation id="3030414234702425231">Odjavljujete se sa naloga kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, što će izbrisati Chrome podatke sa ovog uređaja. Podaci će ostati na Google nalogu.</translation>
+<translation id="3121002401028999199">Chrome šalje Google-u izveštaje o korišćenju i otkazivanju radi poboljšanja aplikacije. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Nalog ne funkcioniše na Google Chrome-u. Kontaktirajte administratora domena ili se prijavite pomoću običnog Google naloga.</translation>
 <translation id="3173834708294760622">Google Chrome stranica</translation>
 <translation id="3196546062792660320">Chrome vam štedi vreme tako što postavlja naloge na veb. Možete da dodajete ili uklanjate naloge u podešavanjima.</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">Vaša lozinka je otkrivena pri upadu u podatke. Chrome preporučuje da odmah promenite lozinku.</translation>
 <translation id="7693590760643069321">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi da pristupi kameri</translation>
+<translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">Ostanite bezbedni uz Google Chrome</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Korišćenjem Chrome-a prihvatate <ph name="BEGIN_LINK" />Uslove korišćenja usluge<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
 </translationbundle>

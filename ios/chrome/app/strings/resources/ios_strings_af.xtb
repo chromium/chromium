@@ -124,6 +124,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="199425419756152024">Bekyk wagwoord</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="2021670401941426298">Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
+<translation id="202292859882676807">Mikrofoontoegang word toegelaat</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -369,6 +370,7 @@ Volg die stappe hieronder:</translation>
 <translation id="430967081421617822">Alle tye</translation>
 <translation id="4334428914252001502">1 ongeleesde artikel.</translation>
 <translation id="4338650699862464074">Stuur URL'e van bladsye wat jy besoek na Google toe.</translation>
+<translation id="4343046787186034850">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="4359125752503270327">Hierdie bladsy sal in 'n ander program oopmaak.</translation>
 <translation id="4375040482473363939">QR-kodesoektog</translation>
 <translation id="4378154925671717803">Foon</translation>
@@ -511,6 +513,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Weergawe <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Wys nou in 1 Chrome-venster}other{Wys nou in {count} Chrome-vensters}}</translation>
+<translation id="5701270923492462699">Kameratoegang word toegelaat</translation>
 <translation id="5704908597376970822">Kan nie aanmeld nie.</translation>
 <translation id="5706552126692816153">1 dag gelede aktief</translation>
 <translation id="5711039611392265845">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering- en Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling.</translation>

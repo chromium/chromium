@@ -239,6 +239,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie wagwoordsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="243878895369688216">Gister oopgemaak</translation>
+<translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
 <translation id="24452542372838207">Vou kennisgewing uit</translation>
 <translation id="2450205753526923158">Skermkiekiemodus</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -794,6 +795,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5909862606227538307">Onaktiewe lessenaar.</translation>
+<translation id="5911231045062997865">Lacros-vensters word nie tans gesteun nie Ander programme sal gestoor word.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>

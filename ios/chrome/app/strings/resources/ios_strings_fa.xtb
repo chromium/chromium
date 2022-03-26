@@ -124,6 +124,7 @@
 <translation id="199425419756152024">مشاهده گذرواژه</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="2021670401941426298">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
+<translation id="202292859882676807">دسترسی به میکروفون مجاز است</translation>
 <translation id="2073572773299281212">آخرین فعالیت: <ph name="DAYS" /> روز قبل</translation>
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">از ابتدا تا الآن</translation>
 <translation id="4334428914252001502">۱ مقاله خوانده‌نشده.</translation>
 <translation id="4338650699862464074">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند.</translation>
+<translation id="4343046787186034850">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="4359125752503270327">این صفحه در برنامه دیگری باز می‌شود.</translation>
 <translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="4378154925671717803">تلفن</translation>
@@ -510,6 +512,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">نسخه <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏درحال نمایش ۱ پنجره Chrome}one{‏درحال نمایش {count} پنجره Chrome}other{‏درحال نمایش {count} پنجره Chrome}}</translation>
+<translation id="5701270923492462699">دسترسی به دوربین مجاز است</translation>
 <translation id="5704908597376970822">ورود به سیستم ممکن نیست.</translation>
 <translation id="5706552126692816153">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="5711039611392265845">‏برای تنظیمات بیشتری که با حریم‌خصوصی، امنیت و جمع‌آوری داده مرتبط هستند، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>

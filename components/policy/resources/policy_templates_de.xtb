@@ -2545,12 +2545,6 @@ Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
 <translation id="3791179836066841809">Richtliniendokumentation</translation>
 <translation id="3791556154364029875">Unverankerten Arbeitsbereich aktivieren und Remote-Browserfenster bei der Anmeldung öffnen</translation>
-<translation id="3794413118360704299">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben.
-
-      Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Unter <ph name="WEB_APP_ID_REFERENCE_URL" /> erfährst du, wie du die ID einer installierten Web-App bestimmst.
-      Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> kannst du eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
-
-      Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während OS Login verwendet werden kann. Ist es auf <ph name="BLOCKED" /> gesetzt, funktioniert die Web-App während OS Login nicht. Nutzer können dies später nicht aktivieren. Ist es auf <ph name="RUN_WINDOWED" /> gesetzt, funktioniert die Web-App während OS Login. Nutzer können dies später nicht deaktivieren. Wenn das Feld auf <ph name="ALLOWED" /> gesetzt ist, können Nutzer die Web-App so konfigurieren, dass sie während OS Login funktioniert. Die Standardkonfiguration lässt nur die Werte <ph name="ALLOWED" /> und <ph name="BLOCKED" /> zu.</translation>
 <translation id="3796527892245558832">Profil-Picker beim Start verfügbar</translation>
 <translation id="3798922329287609568">Durch diese Richtlinie kann der Duplexdruck eingeschränkt werden.
 
@@ -3518,15 +3512,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
-<translation id="5052278640307929670">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene.
-
-      Wenn sich eine Richtlinie auf der Liste befindet und dadurch ein Konflikt zwischen Quellen entsteht mit:
-
-      * gleichem Bereich und gleicher Ebene: In diesem Fall werden die Werte zu einer neuen Richtlinienliste zusammengeführt.
-
-      * unterschiedlichem Bereich und unterschiedlicher Ebene: In diesem Fall wird die Richtlinie mit der höchsten Priorität angewendet.
-
-      Steht eine Richtlinie nicht auf der Liste und entsteht dadurch ein Konflikt zwischen Quellen, Bereichen oder Ebene, wird die Richtlinie mit der höchsten Priorität angewendet.</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
@@ -6378,15 +6363,6 @@ Diese Richtlinien dienen ausschließlich der Konfiguration von internen <ph name
 Diese Einstellungen müssen nicht manuell konfiguriert werden. Nutzerfreundliche Vorlagen für Windows, Mac und Linux sind unter <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" /> zum Download verfügbar.
 
 Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte zu konfigurieren, die Bereitstellung von Richtlinien über die Registrierung wird jedoch auch weiterhin von Windows-Instanzen unterstützt, die Teil einer <ph name="MS_AD_NAME" />-Domain sind.</translation>
-<translation id="8261874086461353268">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene. Dabei werden die Schlüssel des Wörterbuchs auf der ersten Ebene aus jeder Quelle zusammengeführt. Der Schlüssel aus der Quelle mit der höchsten Priorität hat Vorrang.
-
-      Wenn sich eine Richtlinie in der Liste befindet und ein Konflikt zwischen Quellen entsteht mit:
-
-      * identischem Bereich und identischer Ebene: In diesem Fall werden die Werte zu einem neuen Richtlinienwörterbuch zusammengeführt.
-
-      * unterschiedlichem Bereich und unterschiedlicher Ebene: In diesem Fall wird die Richtlinie mit der höchsten Priorität angewendet.
-
-      Steht eine Richtlinie nicht auf der Liste und entsteht dadurch ein Konflikt zwischen Quellen, Bereichen oder Ebene, wird die Richtlinie mit der höchsten Priorität angewendet.</translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>

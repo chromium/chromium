@@ -23,6 +23,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="1779356040007214683">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa một số tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="1808667845054772817">Cài đặt lại Chromium</translation>
 <translation id="185970820835152459">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn được sử dụng cho trình duyệt Chromium, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="1863308913976887472">Các trang web có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn. Ví dụ: sau khi bạn truy cập một trang web bán giày chạy marathon, trang web đó có thể sẽ xác định rằng bạn quan tâm đến chạy marathon. Sau đó, nếu bạn truy cập một trang web khác để đăng ký thi chạy, thì trang web đó sẽ hiện quảng cáo giày chạy dựa trên mối quan tâm của bạn.</translation>
 <translation id="1881322772814446296">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình Chromium của bạn. Dữ liệu Chromium của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. Bạn có thể tùy chọn tạo cấu hình mới để giữ cho dữ liệu Chromium hiện có của bạn riêng biệt. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Bằng việc tắt tính năng này, bạn có thể đăng nhập vào các trang web của Google, chẳng hạn như Gmail mà không cần đăng nhập vào Chromium</translation>
 <translation id="1929939181775079593">Chromium không phản hồi. Chạy lại ngay bây giờ?</translation>
@@ -68,6 +69,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="3032706164202344641">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau.</translation>
 <translation id="3032787606318309379">Đang thêm vào Chromium...</translation>
 <translation id="3068515742935458733">Giúp cải thiện Chromium bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
+<translation id="3101560983689755071">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy cũng như mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chromium tự động xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="3103660991484857065">Trình cài đặt không thể giải nén tệp lưu trữ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="3130323860337406239">Chromium đang sử dụng micrô của bạn.</translation>
 <translation id="3155163173539279776">Chạy lại Chromium</translation>
@@ -81,6 +83,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="3283186697780795848">Bạn đã cài đặt Chromium phiên bản <ph name="PRODUCT_VERSION" /></translation>
 <translation id="328888136576916638">Khóa API của Google bị thiếu. Một số chức năng của Chromium sẽ bị tắt.</translation>
 <translation id="3296368748942286671">Tiếp tục chạy các ứng dụng dưới nền khi Chromium bị đóng</translation>
+<translation id="3307012127645342367">Chromium có thể ước đoán những chủ đề mà bạn quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="331951419404882060">Chromium OS không thể đồng bộ hóa dữ liệu của bạn do lỗi khi đăng nhập.</translation>
 <translation id="3349211344363550267">Chromium cho rằng bạn không nên mở hoặc tải tệp này xuống</translation>
 <translation id="3350761136195634146">Đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
@@ -90,6 +93,8 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="3474745554856756813">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chromium dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Phím tắt <ph name="SHORTCUT" /> có thể giúp chuyển đổi giữa các hồ sơ trên Chromium</translation>
 <translation id="3509308970982693815">Hãy đóng tất cả cửa sổ Chromium và thử lại.</translation>
+<translation id="3533435340678213462">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá các mối quan tâm mà bạn không muốn Chromium xem xét.</translation>
+<translation id="3567254597502212821">Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chromium trên thiết bị này.</translation>
 <translation id="3575459661164320785">Máy tính của bạn có phần mềm độc hại. Chromium có thể xóa phần mềm này, khôi phục các tùy chọn cài đặt của bạn và tắt tiện ích để giúp trình duyệt hoạt động lại bình thường.</translation>
 <translation id="3639635944603682591">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chromium bằng <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium.}=1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
@@ -121,6 +126,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="4544142686420020088">Đã xảy ra lỗi nên Chromium chưa cập nhật được. <ph name="BEGIN_LINK" />Hãy khắc phục các vấn đề cập nhật và các bản cập nhật không thành công của Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Tiếp tục đăng nhập vào hồ sơ mới trên Chromium?</translation>
 <translation id="4567424176335768812">Bạn đã đăng nhập với tên <ph name="USER_EMAIL_ADDRESS" />. Bây giờ, bạn có thể truy cập dấu trang, lịch sử và các cài đặt khác trên tất cả những thiết bị đã đăng nhập của bạn.</translation>
+<translation id="4573461485909695379">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt Chromium. Trong thời gian dùng thử, các tương tác của bạn với các trang web có thể chưa trở nên riêng tư hơn so với khi không sử dụng những tính năng mới này.</translation>
 <translation id="459535195905078186">Ứng dụng Chromium</translation>
 <translation id="4621240073146040695">Gần được cập nhật! Hãy khởi chạy lại Chromium để hoàn tất cập nhật.</translation>
 <translation id="4665829708273112819">Cảnh báo: Chromium không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
@@ -137,9 +143,11 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="4943838377383847465">Chromium đang chạy trong nền.</translation>
 <translation id="4987820182225656817">Khách có thể sử dụng Chromium mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="4994636714258228724">Thêm chính bạn vào Chromium</translation>
+<translation id="5114678101347489141">Chromium đang nghiên cứu các tính năng mới cho phép các trang web giữ nguyên trải nghiệm duyệt web nhưng dùng ít thông tin của bạn hơn</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> đã đăng nhập vào hồ sơ này trên Chromium. Thao tác này sẽ tạo một hồ sơ mới trên Chromium cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Để áp dụng các mục thay đổi của bạn, hãy chạy lại Chromium</translation>
+<translation id="5296845517486664001">Trong giai đoạn dùng thử và nếu Chromium ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chromium xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng.</translation>
 <translation id="5358375970380395591">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình Chromium của bạn. Dữ liệu Chromium của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Đang cập nhật Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Cho phép đăng nhập vào Chromium</translation>
@@ -147,6 +155,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="5427571867875391349">Đặt Chromium là trình duyệt mặc định của bạn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium phiên bản beta</translation>
 <translation id="5480860683791598150">Chromium cần quyền truy cập vào vị trí của bạn để chia sẻ thông tin vị trí với trang web này</translation>
+<translation id="5487574057737591516">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Và nếu Chromium xác định nhầm hoặc bạn không muốn thấy một vài quảng cáo nhất định, bạn có thể xoá mối quan tâm tương ứng.</translation>
 <translation id="549669000822060376">Vui lòng đợi khi Chromium cài đặt các bản cập nhật hệ thống mới nhất.</translation>
 <translation id="5496810170689441661">Chromium đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>
@@ -160,7 +169,9 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="5883558403894052917">Chromium nhận thấy rằng các mục này chứa phần mềm độc hại:</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng</translation>
+<translation id="5972142260211327093">Nếu Chromium ngẫu nhiên đưa bạn vào một giai đoạn dùng thử đang hoạt động, nhật ký duyệt web của bạn sẽ ảnh hưởng đến quảng cáo mà bạn thấy cũng như các mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chromium xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="5987687638152509985">Cập nhật Chromium để bắt đầu đồng bộ hóa</translation>
+<translation id="5988505247484123880">Các trang web bạn truy cập thường ghi nhớ các mối quan tâm của bạn để cá nhân hoá trải nghiệm cho bạn. Các trang web cũng có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn.</translation>
 <translation id="6039377483953237732">Phiên bản Chromium OS</translation>
 <translation id="6055895534982063517">Hiện đã có phiên bản Chromium mới và phiên bản này nhanh hơn bao giờ hết.</translation>
 <translation id="6063093106622310249">&amp;Mở trong Chromium</translation>
@@ -187,6 +198,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="6333502561965082103">Một hoạt động khác trên Chromium đang diễn ra. Vui lòng thử lại sau.</translation>
 <translation id="6334986366598267305">Giờ đây, việc sử dụng Chromium bằng tài khoản Google của bạn và trên máy tính dùng chung trở nên dễ dàng hơn.</translation>
 <translation id="6373523479360886564">Bạn có chắc chắn muốn gỡ cài đặt Chromium không?</translation>
+<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Chromium có thể ước đoán mối quan tâm của bạn. Sau đó, trang web mà bạn truy cập có thể đề nghị Chromium cung cấp mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="6403826409255603130">Chromium là trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Đây là một trình duyệt web nhanh, ổn định và dễ sử dụng. Duyệt web trở nên an toàn hơn với tính năng bảo vệ chống lại phần mềm độc hại và lừa đảo được tích hợp sẵn vào Chromium.</translation>
 <translation id="6434250628340475518">Hệ thống Chromium OS</translation>
 <translation id="6455857529632101747">Chào mừng bạn đến với hồ sơ trên Chromium</translation>
@@ -213,6 +225,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6893813176749746474">Chromium đã được cập nhật nhưng bạn đã không sử dụng trình duyệt này trong ít nhất 30 ngày.</translation>
 <translation id="691026815377248078">Chromium cần có quyền truy cập Bluetooth để tiếp tục 
  ghép nối. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="6929417474050522668">Trong giai đoạn thử nghiệm, tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chromium cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
 <translation id="6964305034639999644">Mở đường liên kết trong cửa sổ ẩn danh của Chromium</translation>
 <translation id="6978145336957848883">Mật khẩu yếu thường dễ đoán. Chromium có thể <ph name="BEGIN_LINK" />tạo mật khẩu mạnh và ghi nhớ mật khẩu này cho bạn<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
@@ -223,6 +236,8 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="7197677400338048821">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ.</translation>
 <translation id="7218568399872925918">Các trang web bạn truy cập ghi nhớ thông tin của bạn cho đến khi bạn đóng Chromium</translation>
 <translation id="7223968959479464213">Trình quản lý tác vụ - Chromium</translation>
+<translation id="7246575524853130370">Mối quan tâm của bạn theo ước đoán của Chromium</translation>
+<translation id="7309928523159922338">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập đề nghị Chromium cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
 <translation id="731795002583552498">Đang cập nhật Chromium</translation>
 <translation id="7318036098707714271">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. 
 
@@ -240,6 +255,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium sẽ khởi động lại sau 1 phút}other{Chromium sẽ khởi động lại sau # phút}}</translation>
 <translation id="7549178288319965365">Giới thiệu về Chromium OS</translation>
 <translation id="7561906087460245826">Đồng thời xóa dữ liệu khỏi Chromium (<ph name="URL" />)</translation>
+<translation id="7582945390259497898">Chromium có thể ước đoán các mối quan tâm của bạn. Sau đó, trang web mà bạn truy cập có thể đề nghị Chromium cung cấp mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="7585853947355360626">Nếu một tùy chọn cài đặt không hiển thị trên trang này, hãy tìm trong mục <ph name="LINK_BEGIN" />
       cài đặt của Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7597596667193879455">Bạn đã bật tính năng Duyệt web an toàn có tăng cường bảo vệ trong tài khoản. Giờ hãy sử dụng tính năng này trên Chromium.</translation>
@@ -255,7 +271,9 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7828947555739565424">Thiết bị này đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
 <translation id="7857220146454061152">Để nhận được các bản cập nhật Chromium trong tương lai, bạn cần dùng OS X 10.11 trở lên. Máy tính này đang dùng OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium không thể cập nhật lên phiên bản mới nhất nên bạn đang bỏ lỡ các tính năng và bản vá bảo mật mới.</translation>
+<translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá những mối quan tâm mà bạn không muốn Chromium xem xét.</translation>
 <translation id="788352880609666695">Bạn có thể dùng các tài khoản sau đây cho hồ sơ này trên Chromium</translation>
+<translation id="7885790220882123871">Trong giai đoạn thử nghiệm, Chromium sẽ ước đoán những chủ đề mà bạn có thể quan tâm. Sau đó, các trang web bạn truy cập có thể sử dụng thông tin này để hiện quảng cáo liên quan mà không cần biết danh tính của bạn. Các mối quan tâm được xác định dựa trên nhật ký duyệt web gần đây. Bạn có thể xem cũng như quản lý những mối quan tâm như vậy.</translation>
 <translation id="7898472181347242998">Để kiểm tra xem thiết bị của bạn đã cập nhật hay chưa, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Bạn đã đăng nhập vào Chromium là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7975919845073681630">Đây là cài đặt thứ cấp của Chromium và không thể trở thành trình duyệt mặc định của bạn.</translation>
@@ -272,10 +290,13 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Khởi động lại Chromium trong vòng một ngày}other{Khởi động lại Chromium trong vòng # ngày}}</translation>
 <translation id="8453117565092476964">Tệp lưu trữ trình cài đặt bị hỏng hoặc không hợp lệ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="8493179195440786826">Chromium đã lỗi thời</translation>
+<translation id="8532294751095800159">Chromium đang nghiên cứu các cách để hạn chế hoạt động theo dõi qua nhiều trang web đồng thời giúp các trang web ngăn chặn hành vi lừa đảo và quảng cáo không liên quan.</translation>
 <translation id="8550334526674375523">Hồ sơ công việc này hoàn toàn riêng biệt với hồ sơ cá nhân của bạn.</translation>
 <translation id="8558383651099478961">Cha mẹ bạn đã tắt tùy chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium. Bạn không được phép thêm <ph name="EXTENSION_TYPE_PARAMETER" /> này.</translation>
 <translation id="8568283329061645092">Chromium có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
+<translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Các trang web có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn. Ví dụ: sau khi bạn truy cập một trang web bán giày chạy marathon, trang web đó có thể sẽ xác định rằng bạn quan tâm đến chạy marathon. Sau đó, nếu bạn truy cập một trang web khác để đăng ký thi chạy, thì trang web đó sẽ hiện quảng cáo giày chạy dựa trên mối quan tâm của bạn.</translation>
+<translation id="8613260731306218890">Sau đó, trang web mà bạn truy cập có thể đề nghị Chromium cung cấp mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy. Chromium có thể chia sẻ tối đa 3 mối quan tâm mà không cần nêu danh tính của bạn.</translation>
 <translation id="8619360774459241877">Đang khởi động Chromium...</translation>
 <translation id="8621669128220841554">Không thể cài đặt do xảy ra lỗi không xác định. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="8697124171261953979">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium hoặc tìm kiếm từ Thanh địa chỉ.</translation>
@@ -285,10 +306,12 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8796602469536043152">Chromium cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
 <translation id="8803635938069941624">Điều khoản Chromium OS</translation>
 <translation id="8821041990367117597">Chromium không thể đồng bộ hóa dữ liệu của bạn vì chi tiết đăng nhập tài khoản của bạn đã cũ.</translation>
+<translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Loại dữ liệu được sử dụng:<ph name="END_BOLD" /> Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chromium trên thiết bị này.</translation>
 <translation id="8862326446509486874">Bạn không có quyền thích hợp để cài đặt cấp hệ thống. Thử chạy lại trình cài đặt với vai trò Quản trị viên.</translation>
 <translation id="8880203542552872219">Nếu vậy, vui lòng chỉnh sửa mật khẩu đã lưu trong Chromium để khớp với mật khẩu mới.</translation>
 <translation id="8897323336392112261">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium hoặc nhấp vào nút Trang chủ.</translation>
 <translation id="8907580949721785412">Chromium đang cố gắng hiển thị mật khẩu. Nhập mật khẩu Windows của bạn để cho phép thực hiện việc này.</translation>
+<translation id="8931379085695076764">Chromium có thể ước đoán các mối quan tâm của bạn dựa trên nhật ký duyệt web trong những tuần gần đây. Thông tin này được lưu trong thiết bị của bạn.</translation>
 <translation id="8941642502866065432">Không thể cập nhật Chromium</translation>
 <translation id="8974095189086268230">Chromium OS trở nên khả thi là nhờ các <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="897581876605952338">Biểu tượng Chromium Enterprise</translation>
@@ -299,6 +322,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="91086099826398415">Mở đường liên kết trong thẻ mới của Chromium</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>
 <translation id="9158494823179993217">Quản trị viên hệ thống của bạn đã định cấu hình Chromium để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="918498593289823464">Bạn có thể thay đổi quyết định bất cứ lúc nào trong phần cài đặt trên Chromium. Trong thời gian dùng thử, các tương tác của bạn với các trang web có thể chưa trở nên riêng tư hơn so với khi không sử dụng những tính năng mới này.</translation>
 <translation id="9185526690718004400">Chạy lại để cập nhật &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Hệ thống Chromium OS</translation>

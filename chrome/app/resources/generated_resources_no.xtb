@@ -2447,6 +2447,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3390013585654699824">Informasjon om appen</translation>
 <translation id="3391512812407811893">Prøvefunksjoner i Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome-dokumentanalyse</translation>
+<translation id="3393582007140394275">Kunne ikke caste skjermen.</translation>
 <translation id="3394850431319394743">Nettsteder som har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="3396744558790608201">Høyreklikk og velg «Søk i bilder med Google Lens» for å søke i en valgfri region på nettstedet og finne ut mer om det visuelle innholdet du ser mens du surfer og handler på nettet.</translation>
 <translation id="3396800784455899911">Ved å klikke på «Godta og fortsett»-knappen godtar du behandlingen som beskrives ovenfor, for disse Google-tjenestene.</translation>
@@ -2840,6 +2841,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3753033997400164841">Lagre én gang. Bruk overalt</translation>
 <translation id="3755411799582650620">Du kan nå også låse opp <ph name="DEVICE_TYPE" /> med <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Nettstedet bruker mikrofonen din</translation>
+<translation id="3756485814916578707">Caster skjermen</translation>
 <translation id="3756578970075173856">Angi PIN-kode</translation>
 <translation id="3756795331760037744">La Google-assistenten bruke informasjon på skjermen til <ph name="SUPERVISED_USER_NAME" /> for å hjelpe</translation>
 <translation id="3757733214359997190">Fant ingen nettsteder</translation>
@@ -3997,6 +3999,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4924002401726507608">Send inn tilbakemelding</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portene dine vises her</translation>
+<translation id="49265687513387605">Kunne ikke caste skjermen. Sjekk om du har bekreftet forespørselen om å begynne å dele skjermen din.</translation>
 <translation id="4927753642311223124">Her er det ikke noe nytt. Men intet nytt er jo godt nytt!</translation>
 <translation id="4929386379796360314">Destinasjoner for utskrift</translation>
 <translation id="4930447554870711875">Utviklere</translation>
@@ -4110,6 +4113,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5052499409147950210">Rediger nettstedet</translation>
 <translation id="505347685865235222">Gruppe uten navn – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Søk etter bildet med Google Lens</translation>
+<translation id="5054374119096692193">Se alle kortalternativene i <ph name="BEGIN_LINK" />Tilpass Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Kobler til beholderen</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>
 <translation id="505776528429481161">Koble til og konfigurer enheter i nærheten enkelt</translation>
@@ -5501,6 +5505,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> fullført</translation>
 <translation id="645286928527869380">Oppskriftsideer</translation>
 <translation id="6452961788130242735">Nettverksproblem eller ugyldig område</translation>
+<translation id="6453191633103419909">Projeksjonskvalitet for faner og skjermer</translation>
 <translation id="6453921811609336127">For å bytte til neste inndatametode, trykk på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellomrom<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
@@ -7812,6 +7817,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8779944680596936487">Nettsteder kan bare bruke informasjonskapsler til å se nettleseraktiviteten din på sitt eget nettsted</translation>
 <translation id="8780123805589053431">Få bildebeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøk er slått av.</translation>
+<translation id="8780872768304638315">Kunne ikke lagre i</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>
 <translation id="8782565991310229362">Oppstart av kiosk-appen er avbrutt.</translation>
 <translation id="8783526165720272136">Meldingsapper</translation>

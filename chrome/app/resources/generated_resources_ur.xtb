@@ -2437,6 +2437,7 @@
 <translation id="3390013585654699824">ایپ کی تفصیلات</translation>
 <translation id="3391512812407811893">رازداری سینڈ باکس ٹرائلز</translation>
 <translation id="3393554941209044235">‏Chrome کی دستاویز کا تجزیہ</translation>
+<translation id="3393582007140394275">اسکرین کاسٹ کرنے سے قاصر۔</translation>
 <translation id="3394850431319394743">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت دی گئی</translation>
 <translation id="3396744558790608201">‏دائیں طرف کلک کریں اور "Google لینز سے تصاویر تلاش کریں" منتخب کر کے سائٹ کا کوئی بھی حصہ تلاش کریں تاکہ ویب پر براؤز اور خریداری کرتے وقت نظر آنے والے ویژوئل مواد کے بارے میں مزید جان سکیں۔</translation>
 <translation id="3396800784455899911">‏"قبول کریں اور جاری رکھیں" بٹن پر کلک کر کے، آپ ان Google سروسز کیلئے اوپر وضاحت کردہ کارروائی سے اتفاق کرتے ہیں۔</translation>
@@ -2831,6 +2832,7 @@
 <translation id="3753033997400164841">ایک بار اسٹور کریں۔ ہر جگہ استعمال کریں</translation>
 <translation id="3755411799582650620">آپ کا <ph name="PHONE_NAME" /> اب اس <ph name="DEVICE_TYPE" /> کو بھی غیر مقفل کر سکتا ہے۔</translation>
 <translation id="375636864092143889">سائٹ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
+<translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3756578970075173856">‏PIN سیٹ کریں</translation>
 <translation id="3756795331760037744">‏Google اسسٹنٹ کو مدد کیلئے <ph name="SUPERVISED_USER_NAME" /> کی اسکرین پر معلومات کا استعمال کرنے کی اجازت دیں</translation>
 <translation id="3757733214359997190">کوئی سائٹ نہیں ملی</translation>
@@ -3990,6 +3992,7 @@
 <translation id="4924002401726507608">تاثرات جمع کرائیں</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">آپ کے پورٹس یہاں دکھائی دیں گے</translation>
+<translation id="49265687513387605">اسکرین کاسٹ کرنے سے قاصر۔ چیک کر کے دیکھیں کہ آیا آپ نے اپنی اسکرین کا اشتراک کرنے کیلئے پرامپٹ کی توثیق کر دی ہے۔</translation>
 <translation id="4927753642311223124">یہاں دیکھنے کیلئے کچھ نہیں ہے، آگے بڑھیں۔</translation>
 <translation id="4929386379796360314">پرنٹ کی منزلیں</translation>
 <translation id="4930447554870711875">ڈویلپرز</translation>
@@ -4103,6 +4106,7 @@
 <translation id="5052499409147950210">سائٹ میں ترمیم کریں</translation>
 <translation id="505347685865235222">بغیر نام کے گروپ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">‏Google لینز سے تصویر تلاش کریں</translation>
+<translation id="5054374119096692193">‏<ph name="BEGIN_LINK" />حسب ضرورت Chrome<ph name="END_LINK" /> میں کارڈ کے تمام اختیارات دیکھیں</translation>
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
 <translation id="5057110919553308744">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
 <translation id="505776528429481161">آسانی سے قریبی آلات سے منسلک ہوں اور سیٹ اپ کریں</translation>
@@ -4719,6 +4723,7 @@
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5659833766619490117">اس صفحہ کا ترجمہ نہیں کیا جا سکا</translation>
 <translation id="5662513737565158057">‏Linux ایپس کے کام کرنے کا طریقہ تبدیل کریں۔</translation>
+<translation id="5667293444945855280">میلوئیر</translation>
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
 <translation id="5668351004957198136">ناکام</translation>
 <translation id="56702779821643359">اپنے آس پاس کے لوگوں کے ساتھ فائلز کا اشتراک کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -5494,6 +5499,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> مکمل</translation>
 <translation id="645286928527869380">پکوان کی ترکیب کے آئیڈیاز</translation>
 <translation id="6452961788130242735">نیٹ ورک کا مسئلہ یا خراب دائرہ کار</translation>
+<translation id="6453191633103419909">ٹیب/اسکرین پروجیکشن کوالٹی</translation>
 <translation id="6453921811609336127">‏اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> دبائیں۔</translation>
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
@@ -7804,6 +7810,7 @@
 <translation id="8779944680596936487">سائٹس صرف کوکیز کو از خود سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="8780123805589053431">‏Google سے تصویر کی تفصیلات حاصل کریں</translation>
 <translation id="8780443667474968681">صوتی تلاش بند کر دی گئی ہے۔</translation>
+<translation id="8780872768304638315">اس میں محفوظ کرنے میں ناکام</translation>
 <translation id="8781834595282316166">گروپ میں نیا ٹیب</translation>
 <translation id="8782565991310229362">کیوسک ایپلیکیشن کی شروعات منسوخ ہو گئی۔</translation>
 <translation id="8783526165720272136">پیغام رسانی ایپس</translation>

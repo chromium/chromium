@@ -2572,13 +2572,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn không đặt chính sách này, thì tùy chọn cài đặt mặc định sẽ không được cho phép cho người dùng do doanh nghiệp quan lý và được cho phép cho người dùng không được quản lý.</translation>
 <translation id="3791179836066841809">Tài liệu chính sách</translation>
 <translation id="3791556154364029875">Bật chế độ không gian làm việc nổi và chạy cửa sổ trình duyệt từ xa khi đăng nhập</translation>
-<translation id="3794413118360704299">Chính sách này cho phép quản trị viên chỉ định chế độ cài đặt cho các ứng dụng web đã cài đặt.
-
-      Chính sách này liên kết một mã nhận dạng ứng dụng web với chế độ cài đặt cụ thể của nó. Hãy xem <ph name="WEB_APP_ID_REFERENCE_URL" /> để được hướng dẫn cách xác định mã nhận dạng cho một ứng dụng web đã cài đặt.
-      Bạn có thể thiết lập cấu hình mặc định bằng cách sử dụng mã nhận dạng đặc biệt <ph name="DEFAULT_SCOPE" />, mã này áp dụng cho tất cả ứng dụng web mà không cần cấu hình tuỳ chỉnh trong chính sách này.
-
-      Trường <ph name="RUN_ON_OS_LOGIN_FIELD" /> sẽ chỉ định liệu một ứng dụng web có thể chạy trong quá trình đăng nhập vào hệ điều hành hay không. Nếu bạn thiết lập trường này thành <ph name="BLOCKED" />, ứng dụng web sẽ không chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không bật được chế độ này. Nếu bạn thiết lập trường này thành <ph name="RUN_WINDOWED" />, ứng dụng web sẽ chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không tắt được chế độ này. Nếu bạn thiết lập trường này thành <ph name="ALLOWED" />, người dùng sẽ có quyền định cấu hình để chạy ứng dụng web khi đăng nhập vào hệ điều hành. Cấu hình mặc định chỉ chấp nhận các giá trị <ph name="ALLOWED" /> và <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Bật bộ chọn hồ sơ khi khởi động</translation>
 <translation id="3798922329287609568">Việc đặt chính sách này sẽ hạn chế chế độ in hai mặt.
 
@@ -3550,15 +3543,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
       Nếu bạn đặt chính sách này thành Tắt, <ph name="PRODUCT_NAME" /> sẽ ngừng gửi các truy vấn đó.</translation>
 <translation id="5039110755072335605">hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS</translation>
 <translation id="504116558738617678">Chỉ hiển thị các cảnh báo dung lượng ổ đĩa thấp nếu thiết bị không được quản lý hoặc chỉ có 1 người dùng</translation>
-<translation id="5052278640307929670">Việc đặt chính sách này cho phép hợp nhất các chính sách đã chọn khi các chính sách đó thuộc nhiều nguồn, có cùng phạm vi và cấp độ.
-
-      Nếu một chính sách nằm trong danh sách và có xung đột giữa những nguồn có:
-
-      * Cùng phạm vi và cấp độ: Các giá trị nhập vào danh sách chính sách mới.
-
-      * Khác phạm vi hoặc cấp độ: Chính sách có mức ưu tiên cao nhất sẽ được áp dụng.
-
-      Nếu một chính sách nằm trong danh sách và có xung đột giữa các nguồn, phạm vi hoặc cấp độ, thì chính sách có mức độ ưu tiên cao nhất sẽ được áp dụng.</translation>
 <translation id="5055474681190962362">Ngày trong tháng [1-31] nên khởi động lại thiết bị (diễn giải theo múi giờ địa phương trên thiết bị). Chỉ được dùng khi "tần suất" là "MONTHLY". Nếu con số này lớn hơn số ngày tối đa trong một tháng cụ thể, thì ngày cuối cùng trong tháng đó sẽ được chọn.</translation>
 <translation id="5056708224511062314">Đã tắt kính lúp màn hình</translation>
 <translation id="5058573563327660283">Lựa chọn chiến lược dùng để giải phóng dung lượng đĩa trong khi dọn sạch tự động (không dùng nữa)</translation>
@@ -6434,15 +6418,6 @@ Những chính sách này chỉ dùng cho mục đích định cấu hình các 
 Bạn không cần định cấu hình các cài đặt này theo cách thủ công! Bạn có thể tải xuống các mẫu dễ sử dụng dành cho Windows, Mac và Linux từ <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù việc cấp phép chính sách qua cổng đăng ký vẫn được hỗ trợ cho các phiên bản Windows tham gia miền <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261874086461353268">Việc đặt chính sách này cho phép hợp nhất các chính sách đã chọn khi các chính sách đó thuộc nhiều nguồn, có cùng phạm vi và cấp độ. Quá trình hợp nhất này bao gồm việc hợp nhất các khóa ở cấp độ đầu tiên của từ điển thuộc mỗi nguồn. Khóa thuộc nguồn có mức độ ưu tiên cao nhất sẽ được ưu tiên.
-
-      Nếu một chính sách nằm trong danh sách và có xung đột giữa những nguồn có:
-
-      * Cùng phạm vi và cấp độ: Các giá trị hợp nhất vào từ điển chính sách mới.
-
-      * Khác phạm vi hoặc cấp độ: Chính sách có mức ưu tiên cao nhất sẽ được áp dụng.
-
-      Nếu một chính sách nằm trong danh sách và có xung đột giữa các nguồn, phạm vi hoặc cấp độ, thì chính sách có mức độ ưu tiên cao nhất sẽ được áp dụng.</translation>
 <translation id="8266778278542911985">Nếu bạn đặt chính sách này thành 3, thì các trang web có thể yêu cầu quyền truy cập vào cổng nối tiếp. Nếu bạn đặt chính sách này thành 2, quyền truy cập vào cổng nối tiếp sẽ bị từ chối.
 
       Nếu bạn không đặt chính sách này, thì các trang web có thể yêu cầu quyền truy cập nhưng người dùng được quyền thay đổi tùy chọn cài đặt này.</translation>

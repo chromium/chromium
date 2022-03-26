@@ -124,6 +124,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="199425419756152024">Xem mật khẩu</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="2021670401941426298">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm bạn đang dùng.</translation>
+<translation id="202292859882676807">Đã cho phép truy cập micrô</translation>
 <translation id="2073572773299281212">Hoạt động <ph name="DAYS" /> ngày trước</translation>
 <translation id="2074131957428911366">Bạn luôn có thể chọn nội dung muốn đồng bộ hóa trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
@@ -369,6 +370,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="430967081421617822">Từ trước đến nay</translation>
 <translation id="4334428914252001502">1 bài viết chưa đọc.</translation>
 <translation id="4338650699862464074">Gửi URL của các trang bạn truy cập cho Google.</translation>
+<translation id="4343046787186034850">Đã cho phép truy cập máy ảnh và micrô</translation>
 <translation id="4359125752503270327">Trang này sẽ mở trong ứng dụng khác.</translation>
 <translation id="4375040482473363939">Tìm kiếm mã QR</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
@@ -510,6 +512,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Phiên bản <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Đang hiển thị 1 cửa sổ Chrome}other{Đang hiển thị {count} cửa sổ Chrome}}</translation>
+<translation id="5701270923492462699">Đã cho phép truy cập máy ảnh</translation>
 <translation id="5704908597376970822">Không đăng nhập được.</translation>
 <translation id="5706552126692816153">Hoạt động 1 ngày trước</translation>
 <translation id="5711039611392265845">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa và các dịch vụ của Google<ph name="END_LINK" />.</translation>

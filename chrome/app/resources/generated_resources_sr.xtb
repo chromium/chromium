@@ -2437,6 +2437,7 @@
 <translation id="3390013585654699824">Детаљи о апликацији</translation>
 <translation id="3391512812407811893">Пробе Заштићеног окружења приватности</translation>
 <translation id="3393554941209044235">Chrome анализа докумената</translation>
+<translation id="3393582007140394275">Пребацивање екрана није успело.</translation>
 <translation id="3394850431319394743">Дозвољена употреба идентификатора за пуштање заштићеног садржаја</translation>
 <translation id="3396744558790608201">Кликните десним тастером и изаберите „Претражи слике помоћу Google објектива“ да бисте претражили било који део сајта и сазнали више о визуелном садржају који видите док прегледате и купујте на вебу.</translation>
 <translation id="3396800784455899911">Ако кликнете на дугме „Прихвати и настави“, прихватате горенаведену обраду за ове Google услуге.</translation>
@@ -2830,6 +2831,7 @@
 <translation id="3753033997400164841">Сачувајте једном. Користите свуда</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> телефон сада може да откључава и овај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сајт користи микрофон</translation>
+<translation id="3756485814916578707">Пребацује се екран</translation>
 <translation id="3756578970075173856">Подесите PIN</translation>
 <translation id="3756795331760037744">Дозволите да Google помоћник користи информације на екрану детета <ph name="SUPERVISED_USER_NAME" /> да би пружио помоћ</translation>
 <translation id="3757733214359997190">Није пронађен ниједан сајт</translation>
@@ -3989,6 +3991,7 @@
 <translation id="4924002401726507608">Пошаљите повратне информације</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Портови ће се приказивати овде</translation>
+<translation id="49265687513387605">Пребацивање екрана није успело. Проверите да ли сте потврдили упит за почетак дељења екрана.</translation>
 <translation id="4927753642311223124">Нема шта да се види овде. Наставите даље.</translation>
 <translation id="4929386379796360314">Одредишта за штампање</translation>
 <translation id="4930447554870711875">Програмери</translation>
@@ -4102,6 +4105,7 @@
 <translation id="5052499409147950210">Измените сајт</translation>
 <translation id="505347685865235222">Група без назива – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Тражите слику уз Google објектив</translation>
+<translation id="5054374119096692193">Прикажи све опције картица у менију <ph name="BEGIN_LINK" />Прилагодите Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Повезује се са контејнером</translation>
 <translation id="5057110919553308744">Када кликнете на додатак</translation>
 <translation id="505776528429481161">Лако се повежите и подесите уређаје у близини</translation>
@@ -5494,6 +5498,7 @@
 <translation id="6452251728599530347">Довршено је <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Идеје за рецепте</translation>
 <translation id="6452961788130242735">Проблем са мрежом или погрешан домен</translation>
+<translation id="6453191633103419909">Квалитет пројекције за картицу/екран</translation>
 <translation id="6453921811609336127">Да бисте прешли на следећи метод уноса, притисните <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Тастер за размак<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455894534188563617">&amp;Нови директоријум</translation>
@@ -7807,6 +7812,7 @@
 <translation id="8779944680596936487">Сајтови могу да користе колачиће само да би видели активности прегледања код њих</translation>
 <translation id="8780123805589053431">Преузимај описе слика са Google-а</translation>
 <translation id="8780443667474968681">Гласовна претрага је искључена.</translation>
+<translation id="8780872768304638315">Није успело чување на</translation>
 <translation id="8781834595282316166">Нова картица у групи</translation>
 <translation id="8782565991310229362">Покретање киоск апликације је отказано.</translation>
 <translation id="8783526165720272136">Апликације за размену порука</translation>

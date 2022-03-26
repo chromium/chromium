@@ -694,6 +694,19 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se a política não for definida, será possível manipular toda a lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicativos fixados a serem mostrados no iniciador</translation>
+<translation id="1805056271257244521">Quando esta política estiver ativada, a função setTimeout() do JavaScript com um tempo limite de 0 ms não vai ser limitada a 1 ms.
+          Quando ela estiver desativada, a função setTimeout() do JavaScript com um tempo limite de 0 ms vai ser limitada a 1 ms.
+          Se a política for deixada sem definição, use o comportamento padrão do navegador para o tempo limite da função setTimeout().
+
+          Esse é um recurso que obedece aos padrões da Web, mas pode mudar a ordem das tarefas
+           em uma página da Web, levando a um comportamento inesperado em sites que dependem de
+           uma certa ordenação. Também pode afetar sites com muitas funções setTimeout()
+           com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
+
+          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no canal estável.
+
+          Esta é uma política temporária que está planejada para ser removida no Chrome 105. Este prazo pode ser prorrogado para as empresas, caso seja necessário.
+          </translation>
 <translation id="1808715480127969042">Bloquear cookies nestes sites</translation>
 <translation id="1810261428246410396">Permitir que o tethering instantâneo seja usado.</translation>
 <translation id="1813672770917912317">Permite definir se o <ph name="PRODUCT_NAME" /> executará o mecanismo JavaScript V8 com o compilador JIT (Just In Time) ativado ou não.
@@ -2402,6 +2415,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="35668690622495904">
           As chamadas não são recusadas por se originarem em contextos fora da
           lista de permissões. Elas ainda podem ser recusadas por outros motivos.</translation>
+<translation id="3568762199045490351">A função setTimeout() do JavaScript com um tempo limite de 0 ms vai ser limitada a 1 ms.</translation>
 <translation id="3575011234198230041">Autenticação HTTP</translation>
 <translation id="3577251398714997599">Configurações de anúncios para sites com anúncios invasivos</translation>
 <translation id="3577628175311752799">Usar uma política de referenciador padrão de no-referrer-when-downgrade.</translation>
@@ -2567,13 +2581,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
-<translation id="3794413118360704299">Esta política permite que um administrador especifique configurações para apps da Web instalados.
-
-      Esta política mapeia um ID de app da Web para a própria configuração específica. Consulte <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver instruções sobre como determinar o ID de um app da Web instalado.
-      Uma configuração padrão pode ser definida usando o ID especial <ph name="DEFAULT_SCOPE" />, que se aplica a todos os apps da Web sem uma configuração personalizada nesta política.
-
-      O campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica se um app da Web pode ser executado durante o Login do SO. Se ele for definido como <ph name="BLOCKED" />, o app da Web não vai ser executado durante o Login do SO e o usuário não vai poder ativar essa opção mais tarde. Se ele for definido como <ph name="RUN_WINDOWED" />, o app da Web vai ser executado durante o Login do SO e o usuário não vai poder desativar essa opção mais tarde. Se ele for definido como <ph name="ALLOWED" />, o usuário vai poder configurar o app da Web para ser executado no Login do SO. A configuração padrão permite apenas os valores <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Seletor de perfil disponível na inicialização</translation>
 <translation id="3798922329287609568">A definição da política restringe a impressão em modo duplex.
 
@@ -3162,6 +3169,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4480694116501920047">Forçar SafeSearch</translation>
 <translation id="4481202456143946404">A versão válida dos Termos de Serviço derivados do Google3 CL que introduziu uma nova versão dos Termos.</translation>
+<translation id="4483120730995943109">A função setTimeout() do JavaScript com um tempo limite de 0 ms não vai ser limitada a 1 ms.</translation>
 <translation id="4483649828988077221">Desativar a atualização automática</translation>
 <translation id="4484515651939984695">Especificar por quanto tempo (em segundos) um dispositivo de transmissão selecionado com um código de acesso ou QR permanece na lista aparelhos desse tipo no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurar o URL da página "Nova guia"</translation>
@@ -3579,15 +3587,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se ela for definida como "Desativada", o <ph name="PRODUCT_NAME" /> não enviará essas consultas.</translation>
 <translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
-<translation id="5052278640307929670">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de fontes diferentes com os mesmos escopos e níveis.
-
-      Se uma política estiver na lista e houver um conflito entre fontes com:
-
-      * o mesmo escopo e nível: os valores serão mesclados em uma nova lista de políticas;
-
-      * diferentes escopos ou níveis: a política com maior prioridade será aplicada.
-
-      Se uma política não estiver na lista e houver um conflito entre fontes, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="5055474681190962362">Dia do mês [1-31] em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "MONTHLY". Caso seja maior que o número máximo de dias de um mês específico, o último dia do mês será usado.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>
@@ -3686,6 +3685,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       * moderada, os usuários poderão escolher apenas o Modo restrito moderado e o Modo restrito rigoroso no YouTube, e não poderão desativar o Modo restrito;
 
       * desativada ou se nenhum valor for definido, o Modo restrito no YouTube não será aplicado pelo Chrome. Políticas externas, como as do YouTube, ainda poderão aplicar o Modo restrito.</translation>
+<translation id="5191476996923842491">Comportamento padrão para o tempo limite mínimo da função setTimeout().</translation>
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5196520640744454600">Ativar as teclas de aderência na tela de login</translation>
 <translation id="5196630732055960309">Permitir a API File Handling nesses apps da Web</translation>
@@ -5499,6 +5499,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7138678301420049075">Outro</translation>
+<translation id="7138762292550697459">Controle o tempo limite mínimo da função setTimeout() do JavaScript.</translation>
 <translation id="7143539889272595839">Se esta política for ativada, os relatórios anônimos de uso e dados de falha do Chrome serão enviados ao Google por padrão. Os usuários ainda poderão mudar essa opção nas configurações do Chrome.
 
       Se a política for desativada, os relatórios anônimos também serão desativados e nenhum dado de uso ou falha será enviado ao Google. Os usuários não poderão mudar essa configuração.
@@ -6466,15 +6467,6 @@ Essas políticas devem ser usadas estritamente para configurar instâncias do <p
 Não é necessário definir essas configurações manualmente. Modelos fáceis de usar para Windows, Mac e Linux estão disponíveis para download em <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o provisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261874086461353268">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de fontes diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada fonte. A chave da fonte de maior prioridade tem precedência.
-
-      Se uma política estiver na lista e houver um conflito entre fontes com:
-
-      * o mesmo escopo e nível: os valores serão mesclados em um novo dicionário de política;
-
-      * diferentes escopos ou níveis: a política com maior prioridade será aplicada.
-
-      Se uma política não estiver na lista e houver um conflito entre fontes, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="8266778278542911985">Se a política for definida como 3, os sites poderão solicitar acesso a portas seriais. Se for definida como 2, os sites não poderão acessar portas seriais.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>

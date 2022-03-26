@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Zaloguj się w Chrome</translation>
 <translation id="2919738076569633423">Używając Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK_TOS" />Warunki korzystania z usługi<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Wybierz <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Google Chrome.</translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
+<translation id="3121002401028999199">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google raporty o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="3173834708294760622">Strona Google Chrome</translation>
 <translation id="3196546062792660320">Chrome oszczędza Twój czas, zapisując konta w internecie. Konta możesz dodawać i usuwać w Ustawieniach.</translation>
@@ -108,6 +110,7 @@ Pamiętaj, że:
 <translation id="766361182512894255">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chrome zaleca jego natychmiastową zmianę.</translation>
 <translation id="7693590760643069321">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
+<translation id="7780154209050837198">Aby w pełni wykorzystać możliwości Chrome, zaloguj się na konto Google.</translation>
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
 <translation id="8022947259858476807">Używaj domyślnie Chrome, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
@@ -125,6 +128,7 @@ Pamiętaj, że:
 <translation id="8736550665979974340">Dbaj o swoje bezpieczeństwo, używając Google Chrome</translation>
 <translation id="8772179140489533211">Pokazuj prośby o zalogowanie się w Chrome.</translation>
 <translation id="8788269841521769222">Nie musisz go zapamiętywać. Menedżer haseł Google zapisze je na koncie <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Używając Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Ustawić Chrome jako domyślną przeglądarkę?</translation>
 <translation id="9122931302567044771">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 </translationbundle>

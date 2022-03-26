@@ -2573,13 +2573,6 @@ Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
 <translation id="3791179836066841809">Dokumentasi kebijakan</translation>
 <translation id="3791556154364029875">Aktifkan ruang kerja mengambang dan luncurkan jendela browser jarak jauh saat login</translation>
-<translation id="3794413118360704299">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal.
-
-      Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Lihat <ph name="WEB_APP_ID_REFERENCE_URL" /> untuk petunjuk terkait cara menentukan ID bagi aplikasi web terinstal.
-      Konfigurasi default dapat disetel menggunakan ID khusus <ph name="DEFAULT_SCOPE" />, yang diterapkan ke semua aplikasi web tanpa konfigurasi khusus di kebijakan ini.
-
-      Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat dijalankan selama login OS. Jika kolom ini disetel ke <ph name="BLOCKED" />, aplikasi web tidak akan dijalankan selama login OS dan pengguna tidak akan dapat mengaktifkannya nanti. Jika kolom ini disetel ke <ph name="RUN_WINDOWED" />, aplikasi web akan dijalankan selama login OS dan pengguna tidak akan dapat menonaktifkannya nanti. Jika kolom ini disetel ke <ph name="ALLOWED" />, pengguna akan dapat mengonfigurasi aplikasi web untuk dijalankan saat login OS. Konfigurasi default hanya mengizinkan nilai <ph name="ALLOWED" /> dan <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Alat pilih profil tersedia saat browser dimulai</translation>
 <translation id="3798922329287609568">Jika kebijakan disetel, mode dupleks pencetakan akan dibatasi.
 
@@ -3562,15 +3555,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan berhenti mengirimkan kueri tersebut.</translation>
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>
-<translation id="5052278640307929670">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama.
-
-      Jika kebijakan ada dalam daftar dan terdapat konflik antara sumber dengan:
-
-      * Cakupan dan level yang sama: Nilai-nilai tersebut digabungkan ke dalam daftar kebijakan baru.
-
-      * Cakupan atau level berbeda: Kebijakan dengan prioritas tertinggi akan diterapkan.
-
-      Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
 <translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>
@@ -6453,15 +6437,6 @@ Kebijakan ini khusus ditujukan untuk mengonfigurasi instance internal <ph name="
 Setelan ini tidak perlu dikonfigurasi secara manual! Template untuk Windows, Mac dan Linux yang mudah digunakan dapat didownload dari <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GPO, meski menyediakan kebijakan melalui registry tetap didukung untuk instance Windows yang bergabung dalam domain <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261874086461353268">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi diutamakan.
-
-      Jika kebijakan ada dalam daftar dan terdapat konflik antara sumber dengan:
-
-      * Cakupan dan level yang sama: Nilai-nilai tersebut digabungkan ke dalam kamus kebijakan baru.
-
-      * Cakupan atau level berbeda: Kebijakan dengan prioritas tertinggi akan diterapkan.
-
-      Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>

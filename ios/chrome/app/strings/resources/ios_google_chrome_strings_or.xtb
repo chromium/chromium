@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2919738076569633423">Chrome ବ୍ୟବହାର କରି, ଆପଣ <ph name="BEGIN_LINK_TOS" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK_TOS" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ଚୟନ କରନ୍ତୁ</translation>
+<translation id="2993413480261249761">ସରଳ, ସୁରକ୍ଷିତ ଏବଂ ପୂର୍ବ ଅପେକ୍ଷା-ଅଧିକ-ଦ୍ରୁତ Chrome ସହ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="3030414234702425231">ଯେହେତୁ ଆପଣ <ph name="SIGNOUT_MANAGED_DOMAIN" />ଙ୍କ ଦ୍ଵାରା ପରିଚାଳିତ ଏକ ଆକାଉଣ୍ଟରୁ ସାଇନ୍ ଆଉଟ୍ କରୁଛନ୍ତି, ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର Chrome ଡାଟା ଡିଲିଟ୍ କରାଯିବ। ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ରହିବ।</translation>
+<translation id="3121002401028999199">ଆପଟିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chrome, Googleକୁ ବ୍ୟବହାର ଏବଂ କ୍ରାସ ରିପୋର୍ଟଗୁଡ଼ିକ ପଠାଏ। <ph name="BEGIN_LINK" />ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ Google Chromeରେ କାର୍ଯ୍ୟ କରେ ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ଡୋମେନ୍ ବ୍ୟବସ୍ଥାପକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ କିମ୍ବା ସାଇନ୍ ଇନ୍ କରିବା ପାଇଁ ଏକ ନିୟମିତ Google ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3173834708294760622">Google Chrome ପୃଷ୍ଠା</translation>
 <translation id="3196546062792660320">Chrome ଆପଣଙ୍କର ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ୱେବ୍‍କୁ ନେ‍ଇ ଆପଣଙ୍କ ସମୟ ବଞ୍ଚାଏ। ଆପଣ ସେଟିଂସ୍‍‍ରେ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଯୋଗ କରିପାରିବେ କିମ୍ବା କାଢ଼ିଦେ‍ଇପାରିବେ।</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନ ଯୋଗୁଁ ଆପଣଙ୍କ ପାସୱାର୍ଡଟି ଚୋରି ହୋଇଯାଇଛି। Chrome ବର୍ତ୍ତମାନ ପାସୱାର୍ଡକୁ ବଦଳାଇବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="7693590760643069321">ବର୍ତ୍ତମାନ ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି Chrome ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="7698568245838009292">Chrome କ୍ୟାମେରାକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="7780154209050837198">Chromeରୁ ସବୁଠାରୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="7855730255114109580">Google Chrome ଅପ୍-ଟୁ-ଡେଟ୍ ଅଛି</translation>
 <translation id="8022947259858476807">ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା, ୱିଜେଟଗୁଡ଼ିକରୁ ସନ୍ଧାନ କରିବା ଏବଂ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସ୍ୱତଃପୂରଣ କରିବା ପାଇଁ Chromeକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8160472928944011082">Chrome କୁ ଅପଡେଟ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Google Chrome ସହ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
 <translation id="8772179140489533211">Chromeରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ ଦେଖାଏ।</translation>
 <translation id="8788269841521769222">ଆପଣଙ୍କୁ ଏହି ପାସୱାର୍ଡ ମନେ ରଖିବା ଆବଶ୍ୟକ ହେବ ନାହିଁ। <ph name="EMAIL" />ର Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଏହା ସେଭ ହୋଇଯିବ</translation>
+<translation id="9064404358728865190">Chrome ବ୍ୟବହାର କରି, ଆପଣ <ph name="BEGIN_LINK" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="9112744793181547300">Chromeକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରିବେ?</translation>
 <translation id="9122931302567044771">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chrome ଏକ ଡେସ୍କଟପ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
 </translationbundle>

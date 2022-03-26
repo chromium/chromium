@@ -2435,6 +2435,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3390013585654699824">Szczegóły aplikacji</translation>
 <translation id="3391512812407811893">Wersje próbne w Piaskownicy prywatności</translation>
 <translation id="3393554941209044235">Analiza dokumentu w Chrome</translation>
+<translation id="3393582007140394275">Nie udało się przesłać ekranu.</translation>
 <translation id="3394850431319394743">Mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="3396744558790608201">Kliknij prawym przyciskiem myszy i wybierz „Wyszukaj informacje o obrazie za pomocą Obiektywu Google”, aby przeszukać dowolny obszar witryny i dowiedzieć się więcej o treściach wizualnych, które wyświetlają się, gdy przeglądasz internet i robisz w nim zakupy.</translation>
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
@@ -2828,6 +2829,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3753033997400164841">Zapisz raz – używaj w dowolnym miejscu</translation>
 <translation id="3755411799582650620">Telefon <ph name="PHONE_NAME" /> może teraz odblokowywać też urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Strona używa mikrofonu</translation>
+<translation id="3756485814916578707">Przesyłam ekran</translation>
 <translation id="3756578970075173856">Ustawianie kodu PIN</translation>
 <translation id="3756795331760037744">Pozwól Asystentowi Google na używanie informacji wyświetlanych na ekranie użytkownika <ph name="SUPERVISED_USER_NAME" /> w celu oferowania pomocy</translation>
 <translation id="3757733214359997190">Nie znaleziono stron</translation>
@@ -3987,6 +3989,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4924002401726507608">Prześlij opinię</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Tu pojawią się porty</translation>
+<translation id="49265687513387605">Nie udało się przesłać ekranu. Sprawdź, czy potwierdziłeś(-aś) prośbę o rozpoczęcie udostępniania ekranu.</translation>
 <translation id="4927753642311223124">Nic tu nie ma.</translation>
 <translation id="4929386379796360314">Miejsca docelowe drukowania</translation>
 <translation id="4930447554870711875">Deweloperzy</translation>
@@ -4100,6 +4103,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5052499409147950210">Edytowanie strony internetowej</translation>
 <translation id="505347685865235222">Grupa bez nazwy – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Szukaj grafiki za pomocą Obiektywu Google</translation>
+<translation id="5054374119096692193">Zobacz wszystkie opcje kart w sekcji <ph name="BEGIN_LINK" />dostosowania Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Łączę się z kontenerem</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="505776528429481161">Łatwe łączenie się z urządzeniami w pobliżu i ich konfigurowanie</translation>
@@ -5480,6 +5484,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Przykładowe przepisy</translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
+<translation id="6453191633103419909">Jakość wyświetlania karty/ekranu</translation>
 <translation id="6453921811609336127">Aby przełączyć się na następną metodę wprowadzania, naciśnij <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />Spacja<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">W określonych witrynach</translation>
 <translation id="6455894534188563617">&amp;Nowy folder</translation>
@@ -7794,6 +7799,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8779944680596936487">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8780123805589053431">Pobieraj opisy obrazów z Google</translation>
 <translation id="8780443667474968681">Wyszukiwanie głosowe zostało wyłączone.</translation>
+<translation id="8780872768304638315">Nie udało się zapisać na:</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>
 <translation id="8782565991310229362">Uruchamianie aplikacji kiosku zostało anulowane.</translation>
 <translation id="8783526165720272136">Aplikacje do obsługi wiadomości</translation>

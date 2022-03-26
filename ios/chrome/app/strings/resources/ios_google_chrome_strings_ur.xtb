@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
 <translation id="2919738076569633423">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK_TOS" />سروس کی شرائط<ph name="END_LINK_TOS" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> منتخب کریں</translation>
+<translation id="2993413480261249761">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chrome کے ساتھ مزید کام کریں۔</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
+<translation id="3121002401028999199">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور کریش رپورٹس Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">‏آپ کا اکاؤنٹ Google Chrome پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
 <translation id="3173834708294760622">‏Google Chrome صفحہ</translation>
 <translation id="3196546062792660320">‏Chrome آپ کے اکاؤنٹس کو ویب پر لا کر آپ کا وقت بچاتا ہے۔ آپ ترتیبات میں اکاؤنٹس کو شامل کر سکتے یا ہٹا سکتے ہیں۔</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">‏ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ Chrome کی تجویز ہے کہ آپ ابھی پاس ورڈ تبدیل کریں۔</translation>
 <translation id="7693590760643069321">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome کا استعمال کر سکتے ہیں۔</translation>
 <translation id="7698568245838009292">‏Chrome کیمرے تک رسائی حاصل کرنا چاہے گا</translation>
+<translation id="7780154209050837198">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chrome میں سائن ان کریں۔</translation>
 <translation id="7855730255114109580">‏Google Chrome اپ ٹو ڈیٹ ہے</translation>
 <translation id="8022947259858476807">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chrome کا بطور ڈیفالٹ استعمال کریں</translation>
 <translation id="8160472928944011082">‏Chrome اپ ڈیٹ نہیں کیا جا سکتا</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">‏Google Chrome کے ساتھ محفوظ رہیں</translation>
 <translation id="8772179140489533211">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے۔</translation>
 <translation id="8788269841521769222">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="EMAIL" /> کے لیے محفوظ کیا جائے گا</translation>
+<translation id="9064404358728865190">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="9112744793181547300">‏Chrome کو ڈیفالٹ کے بطور سیٹ کریں؟</translation>
 <translation id="9122931302567044771">‏اس کا مطلب ہے کہ Chrome ہر بار ڈیسک ٹاپ سائٹ کی درخواست کرے گا۔</translation>
 </translationbundle>

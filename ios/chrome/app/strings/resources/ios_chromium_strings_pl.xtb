@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę mobilną.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1257458525759135959">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chromium na dodanie ich do Twoich zdjęć</translation>
+<translation id="1266817106503861676">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Chromium.</translation>
 <translation id="1289216811211435351">Przejdź na Chromium</translation>
 <translation id="1361748954329991663">Przeglądarka Chromium jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chromium.</translation>
 <translation id="1431818719585918472">Pozwól Chromium blokować karty incognito.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Skopiowana do Chromium</translation>
 <translation id="3344973607274501920">Przeglądarce Chromium nie udało się sprawdzić Twoich haseł. Sprawdź połączenie z internetem.</translation>
 <translation id="3472200483164753384">Nieobsługiwane w Chromium Canary</translation>
+<translation id="3567399274263440288">Aby w pełni wykorzystać możliwości Chromium, zaloguj się na konto Google.</translation>
 <translation id="3639997914391704523">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="3650632991272923014">Użytkownik <ph name="USER_EMAIL1" /> korzystał z Chromium i zapisał na tym urządzeniu swoje zakładki, hasła i inne ustawienia.</translation>
 <translation id="3805899903892079518">Chromium nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
@@ -84,6 +86,7 @@ Pamiętaj, że:
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
 <translation id="632825460376924298">Zezwalaj na logowanie w Chromium</translation>
 <translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
+<translation id="6364764337654495917">Używając Chromium, wyrażasz zgodę na <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6752854822223394465">Twoja organizacja konfiguruje Chromium…</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
@@ -104,6 +107,7 @@ Pamiętaj, że:
 <translation id="7400689562045506105">Korzystaj z Chromium w dowolnym miejscu</translation>
 <translation id="766897673682622022">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chromium zaleca jego natychmiastową zmianę.</translation>
 <translation id="7674213385180944843">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Chromium i włącz aparat.</translation>
+<translation id="7724877991918731397">Aby pomóc nam ulepszać aplikację, Chromium wysyła do Google raporty o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Wskazówka dla użytkowników Chromium. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
 <translation id="7763454117143368771">Używaj Chromium jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="786327964234957808">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoimi istniejącymi danymi Chromium zarządza <ph name="DOMAIN" />. Dane zostaną usunięte z tego urządzenia, ale pozostaną na koncie <ph name="USER_EMAIL1" />.</translation>

@@ -2575,13 +2575,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si esta política no se configura, Smart Lock se inhabilita para los usuarios administrados por empresas y se habilita para los no administrados.</translation>
 <translation id="3791179836066841809">Documentación de la política</translation>
 <translation id="3791556154364029875">Habilitar los espacios de trabajo flotantes y abrir ventanas de navegador a distancia tras iniciar sesión</translation>
-<translation id="3794413118360704299">Esta política permite que un administrador especifique ajustes para las aplicaciones web instaladas.
-
-      Esta política asociará un ID de aplicación web a su ajuste específico. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver las instrucciones sobre cómo determinar el ID de una aplicación web instalada.
-      Se puede definir una configuración predeterminada mediante el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web para las que no se haya definido una configuración personalizada en esta política.
-
-      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web se puede ejecutar durante el inicio de sesión en el sistema operativo. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el sistema operativo. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Selector de perfil disponible al iniciar</translation>
 <translation id="3798922329287609568">Si se establece esta política, se restringe el modo de impresión por las dos caras.
 
@@ -3562,15 +3555,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se inhabilita la política, <ph name="PRODUCT_NAME" /> no podrá enviar esas consultas.</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
-<translation id="5052278640307929670">Si se asigna un valor a esta política, se podrán combinar las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel.
-
-      Si una política está en la lista y se produce algún conflicto entre las fuentes:
-
-      * Si tienen los mismos permisos y niveles: los valores se fusionan en una nueva lista de políticas.
-
-      * Si tienen distintos permisos o niveles: se aplicará la política que tenga la mayor prioridad.
-
-      Si una política no está en la lista y se produce un conflicto entre distintos permisos, niveles o fuentes, se aplicará la política con mayor prioridad.</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
@@ -6461,15 +6445,6 @@ Estas políticas están destinadas exclusivamente a la configuración de instanc
 No es necesario configurar estas opciones manualmente. En la página <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />, puedes encontrar plantillas fáciles de utilizar para Windows, Mac y Linux.
 
 Te recomendamos que utilices GPO para configurar la política en Windows, aunque aún se admite la asignación de la política a través del registro para instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261874086461353268">Si se asigna un valor a esta política, se podrán combinar las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación consiste en fusionar las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave procedente de la fuente que tenga la mayor prioridad.
-
-      Si una política está en la lista y se produce algún conflicto entre las fuentes:
-
-      * Si tienen los mismos permisos y niveles: los valores se fusionarán en un nuevo diccionario de políticas.
-
-      * Si tienen distintos permisos o niveles: se aplicará la política que tenga la mayor prioridad.
-
-      Si una política no está en la lista y se produce un conflicto entre distintos permisos, niveles o fuentes, se aplicará la política con mayor prioridad.</translation>
 <translation id="8266778278542911985">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los puertos serie. Si se le asigna el valor 2, se denegará el acceso a los puertos serie.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>

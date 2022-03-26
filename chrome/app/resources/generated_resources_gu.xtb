@@ -2436,6 +2436,7 @@
 <translation id="3390013585654699824">ઍપની વિગતો</translation>
 <translation id="3391512812407811893">પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશ</translation>
 <translation id="3393554941209044235">Chromeના દસ્તાવેજનું વિશ્લેષણ</translation>
+<translation id="3393582007140394275">સ્ક્રીનને કાસ્ટ કરી શકતા નથી.</translation>
 <translation id="3394850431319394743">સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3396744558790608201">તમે જ્યારે વેબ બ્રાઉઝ કરો કે ખરીદી કરો, ત્યારે તમને દેખાઈ રહેલા વિઝ્યુઅલ કન્ટેન્ટ વિશે વધુ જાણવા સાઇટના કોઈપણ વિભાગમાં શોધવા માટે, રાઇટ ક્લિક કરીને “Google Lens વડે છબીઓ શોધો” પસંદ કરો.</translation>
 <translation id="3396800784455899911">"સ્વીકારો અને ચાલુ રાખો" બટન પર ક્લિક કરીને, તમે આ Google સેવાઓ માટે ઉપર વર્ણવેલી પ્રક્રિયા સાથે સંમત થાઓ છો.</translation>
@@ -2829,6 +2830,7 @@
 <translation id="3753033997400164841">એકવાર સ્ટોર કરો. ગમે ત્યાં ઉપયોગ કરો</translation>
 <translation id="3755411799582650620">તમારો <ph name="PHONE_NAME" /> હવે આ <ph name="DEVICE_TYPE" /> ને પણ અનલૉક કરી શકે છે.</translation>
 <translation id="375636864092143889">સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
+<translation id="3756485814916578707">સ્ક્રીનને કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3756578970075173856">પિન સેટ કરો</translation>
 <translation id="3756795331760037744">સહાય કરવા માટે Google Assistantને <ph name="SUPERVISED_USER_NAME" />ની સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="3757733214359997190">કોઈ સાઇટ મળી નથી</translation>
@@ -3988,6 +3990,7 @@
 <translation id="4924002401726507608">પ્રતિસાદ સબમિટ કરો</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">તમારા પોર્ટ અહીં દેખાશે</translation>
+<translation id="49265687513387605">સ્ક્રીનને કાસ્ટ કરી શકતા નથી.  ચેક કરી જુઓ કે તમારી સ્ક્રીન શેર કરવાનું શરૂ કરવા માટેના સંકેતને તમે કન્ફર્મ કર્યો છે કે નહીં.</translation>
 <translation id="4927753642311223124">અહીં જોવા માટે કંઈ નથી, આગળ વધો.</translation>
 <translation id="4929386379796360314">નિર્ધારિત સ્થાન પ્રિન્ટ કરો</translation>
 <translation id="4930447554870711875">ડેવલપર</translation>
@@ -4101,6 +4104,7 @@
 <translation id="5052499409147950210">સાઇટમાં ફેરફાર કરો</translation>
 <translation id="505347685865235222">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens વડે છબી શોધો</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeને કસ્ટમાઇઝ કરો<ph name="END_LINK" />માં કાર્ડના તમામ વિકલ્પો જુઓ</translation>
 <translation id="5056950756634735043">કન્ટેનર સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
 <translation id="505776528429481161">નજીક હોય એવા ડિવાઇસ સાથે સરળતાથી કનેક્ટ કરો અને તેમનું સેટઅપ કરો</translation>
@@ -5495,6 +5499,7 @@ USB ડિવાઇસ</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> પૂર્ણ</translation>
 <translation id="645286928527869380">રૅસિપિના વિચારો</translation>
 <translation id="6452961788130242735">નેટવર્ક સમસ્યા અથવા અયોગ્ય ક્ષેત્ર</translation>
+<translation id="6453191633103419909">ટૅબ/સ્ક્રીન પ્રોજેક્શન ક્વૉલિટી</translation>
 <translation id="6453921811609336127">આગલી ઇનપુટ પદ્ધતિ પર સ્વિચ કરવા માટે, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> દબાવો</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
@@ -7802,6 +7807,7 @@ USB ડિવાઇસ</translation>
 <translation id="8779944680596936487">અલગ-અલગ સાઇટ પોતપોતાની સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર કુકીનો ઉપયોગ કરી શકશે</translation>
 <translation id="8780123805589053431">Google તરફથી છબીનાં વર્ણનો મેળવો</translation>
 <translation id="8780443667474968681">વૉઇસ શોધ સેવા બંધ કરવામાં આવી છે.</translation>
+<translation id="8780872768304638315">આમાં સાચવવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8781834595282316166">ગ્રૂપમાં નવું ટૅબ</translation>
 <translation id="8782565991310229362">કિઓસ્ક ઍપ્લિકેશન લોન્ચ રદ કર્યું.</translation>
 <translation id="8783526165720272136">મેસેજિંગ ઍપ</translation>

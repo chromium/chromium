@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="243878895369688216">Відкрито вчора</translation>
+<translation id="2441427462554639370">Запис завершився через критично малий обсяг пам’яті</translation>
 <translation id="24452542372838207">Розгорнути сповіщення</translation>
 <translation id="2450205753526923158">Режим знімка екрана</translation>
 <translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>

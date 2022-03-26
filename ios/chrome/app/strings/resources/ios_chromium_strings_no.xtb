@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Dette betyr at Chromium kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
+<translation id="1266817106503861676">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Kopiert til Chromium</translation>
 <translation id="3344973607274501920">Chromium kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
+<translation id="3567399274263440288">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din.</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
@@ -84,6 +86,7 @@ Dette bør du tenke over:
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>
+<translation id="6364764337654495917">Ved å bruke Chromium samtykker du i <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="6752854822223394465">Organisasjonen din konfigurerer Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
@@ -104,6 +107,7 @@ Dette bør du tenke over:
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
 <translation id="766897673682622022">Passordet ditt har vært avdekket i et databrudd. Chromium anbefaler at du bytter passord nå.</translation>
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
+<translation id="7724877991918731397">For å bidra til å gjøre appen bedre sender Chromium bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium-tips. Noen knapper, slik som Tilbake, Frem og Søk, er nå nederst på skjermen.</translation>
 <translation id="7763454117143368771">Bruk Chromium som standardnettleser for å holde deg beskyttet mot farlige nettsteder og holde passordene dine trygge</translation>
 <translation id="786327964234957808">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chromium-dataene dine administreres av <ph name="DOMAIN" />. Dette fører til at dataene dine slettes fra denne enheten, men de blir værende i <ph name="USER_EMAIL1" />.</translation>

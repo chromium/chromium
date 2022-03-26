@@ -2565,13 +2565,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="3791179836066841809">Documentación para la política</translation>
 <translation id="3791556154364029875">Habilitar Floating Workspace y abrir ventanas del navegador remotas al acceder</translation>
-<translation id="3794413118360704299">Esta política permite que un administrador especifique la configuración para las aplicaciones web instaladas.
-
-      Esta política asigna una ID de aplicación web a su parámetro de configuración específico. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para obtener instrucciones sobre cómo determinar la ID de una aplicación web instalada.
-      Puedes establecer un parámetro de configuración determinado con la ID especial <ph name="DEFAULT_SCOPE" />, que aplica a todas las aplicaciones web y no tiene una configuración personalizada en su política.
-
-      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si se puede ejecutar una aplicación web durante el acceso al SO. Si este campo se establece como <ph name="BLOCKED" />, no se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si este campo se establece como <ph name="RUN_WINDOWED" />, se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si este campo se establece como <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el acceso al SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Selector de perfiles disponible en el inicio</translation>
 <translation id="3798922329287609568">Si estableces la política, se restringirá el modo de impresión doble.
 
@@ -3552,15 +3545,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
-<translation id="5052278640307929670">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles.
-
-      Si la lista incluye una política y hay conflicto entre fuentes con las siguientes características:
-
-      * Tienen los mismos alcances y niveles: se fusionarán los valores en una nueva lista de políticas.
-
-      * Tienen diferentes alcances y niveles: se aplicará la política con la prioridad más alta.
-
-      Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
 <translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
@@ -6448,15 +6432,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       No es necesario ajustar manualmente estas opciones de configuración. Hay plantillas para Windows, Mac y Linux disponibles para descargar en <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
       Se recomienda configurar la política en Windows a través de GPO, aunque, para las instancias de Windows que son parte de un dominio de <ph name="MS_AD_NAME" />, todavía es posible hacer la disposición de políticas a través del registro.</translation>
-<translation id="8261874086461353268">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
-
-      Si la lista incluye una política y hay conflicto entre fuentes con las siguientes características:
-
-      * Tienen los mismos alcances y niveles: se fusionarán los valores en un nuevo diccionario de políticas.
-
-      * Tienen diferentes alcances y niveles: se aplicará la política con la prioridad más alta.
-
-      Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
 <translation id="8266778278542911985">Si estableces la política en 3, los sitios web podrán solicitar acceso a los puertos en serie. Si la estableces en 2, se rechaza el acceso a los puertos en serie.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>

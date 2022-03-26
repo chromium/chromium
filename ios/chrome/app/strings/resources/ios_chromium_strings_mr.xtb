@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">याचा अर्थ असा, की Chromium हे प्रत्येक वेळी मोबाइल साइटची विनंती करेल.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1257458525759135959">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chromium ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
+<translation id="1266817106503861676">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Chromium वापरून आणखी बरेच काही करा.</translation>
 <translation id="1289216811211435351">Chromium वर स्विच करा</translation>
 <translation id="1361748954329991663">Chromium कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chromium च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
 <translation id="1431818719585918472">Chromium ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Chromium वर कॉपी केले</translation>
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="3472200483164753384">Chromium कॅनरी वर सपोर्ट नाही</translation>
+<translation id="3567399274263440288">Chromium चा पुरेपूर वापर करण्यासाठी, तुमचे Google खाते वापरून Chromium मध्ये साइन इन करा.</translation>
 <translation id="3639997914391704523">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chromium तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> हा Chromium वापरत होता आणि त्याने या डिव्हाइसवर बुकमार्क, पासवर्ड आणि इतर सेटिंग्ज ठेवली आहेत.</translation>
 <translation id="3805899903892079518">Chromium ला तुमच्या फोटो किंवा व्हिडिओ ॲक्सेस नाही. iOS सेटिंग्ज&gt; गोपनीयता&gt; फोटो  ॲक्सेस सक्षम करा.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">Chromium मधून साइन आउट करायचे?</translation>
 <translation id="632825460376924298">Chromium मध्ये साइन-इन करण्याची अनुमती द्या</translation>
 <translation id="6337530241089703714">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा की ठेवायचा ते निवडा</translation>
+<translation id="6364764337654495917">Chromium वापरून, तुम्ही <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="6424492062988593837">Chrome आता सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
 <translation id="6752854822223394465">तुमची संस्था Chromium सेट करत आहे...</translation>
 <translation id="6820823224820483452">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">Chromium सर्वत्र वापरा</translation>
 <translation id="766897673682622022">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. Chromium आता पासवर्ड बदलण्याची शिफारस करते.</translation>
 <translation id="7674213385180944843">सेटिंग्ज &gt; गोपनीयता &gt; कॅमेरा &gt; Chromium उघडा आणि कॅमेरा सुरू करा.</translation>
+<translation id="7724877991918731397">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chromium हे Google ला वापर आणि क्रॅश अहवाल पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium टीप. काही बटणे आता तुमच्या स्क्रीनच्या तळाशी आहेत, जसे की मागे, पुढे आणि शोध.</translation>
 <translation id="7763454117143368771">धोकादायक साइटपासून संरक्षित राहण्यासाठी आणि तुमचे पासवर्ड सुरक्षित ठेवण्यासाठी तुमचा डीफॉल्ट ब्राउझर म्हणून Chromium वापरा</translation>
 <translation id="786327964234957808">तुम्ही संकालित केलेली खाती <ph name="USER_EMAIL1" /> वरून <ph name="USER_EMAIL2" /> वर स्विच करीत आहात. तुमचा विद्यमान Chromium डेटा <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला आहे. हे तुमचा डेटा या डिव्हाइस वरून हटवेल परंतु तुमचा डेटा <ph name="USER_EMAIL1" /> मध्ये असेल.</translation>

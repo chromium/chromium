@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">स्क्रिनसेभरसम्बन्धी विकल्पहरू चयन गर्न यो सुविधा अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
+<translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="4793756956024303490">कम्प्रेसनसम्बन्धी एल्गोरिदम</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">परिवार</translation>
+<translation id="5695599963893094957">आफ्नो किबोर्डको कुनै की थिच्नुहोस्। तपाईं एकै पटकमा ४ वटासम्म कीहरू थिच्न सक्नुहुन्छ।</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ पेज</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
@@ -471,6 +474,7 @@
 <translation id="6348738456043757611">युजरनेम र पासवर्ड</translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
 <translation id="6379086450106841622">टचस्क्रिन</translation>
+<translation id="6381741036071372448">आफ्नो किबोर्ड जाँच्नुहोस्</translation>
 <translation id="6388847657025262518">स्क्यानरको डकुमेन्ट फिडर जाम भएको छ। फिडर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6410257289063177456">छवि फाइलहरू</translation>
 <translation id="641081527798843608">विषयको मिलान</translation>

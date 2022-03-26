@@ -165,7 +165,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="1959679933317802873">Inhalte werden abgerufen</translation>
 <translation id="1960290143419248813">Chrome-Updates werden für diese Version von Android nicht mehr unterstützt</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
-<translation id="1966710179511230534">Bitte aktualisieren Sie Ihre Anmeldeinformationen.</translation>
+<translation id="1966710179511230534">Bitte aktualisiere deine Anmeldeinformationen.</translation>
 <translation id="197288927597451399">Behalten</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
@@ -261,7 +261,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2494974097748878569">Google Assistant für Chrome</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
-<translation id="2497852260688568942">Die Synchronisierung wurde von Ihrem Administrator deaktiviert</translation>
+<translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="250020030759455918">Du kannst deinen Anmeldestatus für <ph name="SITE_NAME" />, Browserdaten und Websitedaten in Chrome einsehen</translation>
 <translation id="2512164632052122970">Content-Sprachen</translation>
 <translation id="2513403576141822879">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung und Google-Dienste<ph name="END_LINK" /></translation>
@@ -1446,7 +1446,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="898854820045159673">Reaktion hinzugefügt</translation>
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
-<translation id="8998729206196772491">Sie melden sich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chrome abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
+<translation id="8998729206196772491">Du meldest dich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
 <translation id="9028914725102941583">Synchronisierung aktivieren, um geräteübergreifend zu teilen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>

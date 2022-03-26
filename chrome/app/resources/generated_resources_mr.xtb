@@ -2452,6 +2452,7 @@
 <translation id="3390013585654699824">अ‍ॅपचे तपशील</translation>
 <translation id="3391512812407811893">प्रायव्हसी सॅंडबॉक्स चाचण्या</translation>
 <translation id="3393554941209044235">Chrome दस्तऐवज विश्लेषण</translation>
+<translation id="3393582007140394275">स्क्रीन कास्ट करता आली नाही.</translation>
 <translation id="3394850431319394743">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती आहे</translation>
 <translation id="3396744558790608201">तुम्ही वेबवर ब्राउझ किंवा खरेदी करत असताना तुम्हाला त्यावर दिसत असलेल्या व्हिज्युअल आशयाबद्दल अधिक जाणून घेण्यासाठी साइटचा कोणताही भाग शोधण्याकरिता राइट क्लिक करा आणि “Google Lens वापरून इमेज शोधा” हे निवडा.</translation>
 <translation id="3396800784455899911">"स्वीकारा आणि सुरू ठेवा" या बटणावर क्लिक करून तुम्ही या Google सेवांसाठी वर वर्णन केलेल्या प्रक्रियांना सहमती दर्शवता.</translation>
@@ -2845,6 +2846,7 @@
 <translation id="3753033997400164841">एकदा स्टोअर करा. कुठेही वापरा</translation>
 <translation id="3755411799582650620">तुमचा <ph name="PHONE_NAME" /> आता हे <ph name="DEVICE_TYPE" /> देखील अनलॉॅक करू शकतो.</translation>
 <translation id="375636864092143889">साइट तुमचा मायक्रोफोन वापरत आहे</translation>
+<translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3756578970075173856">पिन सेट करा</translation>
 <translation id="3756795331760037744">मदत करण्यासाठी Google Assistant ला <ph name="SUPERVISED_USER_NAME" /> च्या स्क्रीनवरील माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
@@ -4003,6 +4005,7 @@
 <translation id="4924002401726507608">फीडबॅक सबमिट करा</translation>
 <translation id="4924352752174756392">१२x</translation>
 <translation id="4925320384394644410">तुमच्या पोस्ट येथे दिसतील</translation>
+<translation id="49265687513387605">स्क्रीन कास्ट करता आली नाही. तुमची स्क्रीन शेअर करण्यासाठी आलेली सूचना तुम्ही कंफर्म केली आहे का हे पाहण्यासाठी तपासा.</translation>
 <translation id="4927753642311223124">येथे पाहण्यासाठी काही नाही, पुढे चला.</translation>
 <translation id="4929386379796360314">गंतव्यस्थाने प्रिंट करा</translation>
 <translation id="4930447554870711875">डेव्हलपर</translation>
@@ -4116,6 +4119,7 @@
 <translation id="5052499409147950210">साइट संपादित करा</translation>
 <translation id="505347685865235222">निनावी गट - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens सह इमेज शोधा</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome कस्टमाइझ करा<ph name="END_LINK" /> मध्ये कार्डशी संबंधित सर्व पर्याय पहा</translation>
 <translation id="5056950756634735043">कंटेनरशी कनेक्ट करत आहे</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
 <translation id="505776528429481161">सहजपणे कनेक्ट करा आणि जवळची डिव्हाइस सेट करा</translation>
@@ -5509,6 +5513,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूर्ण</translation>
 <translation id="645286928527869380">पाककलेशी संबंधित कल्पना</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या किंवा वाईट क्षेत्र</translation>
+<translation id="6453191633103419909">टॅब/स्क्रीनच्या प्रोजेक्शनची गुणवत्ता</translation>
 <translation id="6453921811609336127">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दाबा</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
@@ -7819,6 +7824,7 @@
 <translation id="8779944680596936487">साइट फक्त कुकीचा वापर त्यांच्या स्वतःच्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी करू शकतात</translation>
 <translation id="8780123805589053431">Google कडून इमेज वर्णन मिळवा</translation>
 <translation id="8780443667474968681">व्हॉइस शोध बंद केले गेले आहे.</translation>
+<translation id="8780872768304638315">मध्ये सेव्ह करता आले नाही</translation>
 <translation id="8781834595282316166">गटामधील नवीन टॅब</translation>
 <translation id="8782565991310229362">कियोस्क ॲप्लिकेशन लाँच रद्द झाले.</translation>
 <translation id="8783526165720272136">मेसेजिंग ॲप्स</translation>

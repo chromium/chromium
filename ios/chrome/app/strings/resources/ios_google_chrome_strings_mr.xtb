@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
 <translation id="2919738076569633423">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK_TOS" />सेवा अटी<ph name="END_LINK_TOS" /> यांना सहमती दर्शवता.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> निवडा</translation>
+<translation id="2993413480261249761">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा.</translation>
 <translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
+<translation id="3121002401028999199">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश अहवाल पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="3173834708294760622">Google Chrome पेज</translation>
 <translation id="3196546062792660320">तुमची खाती वेबवर आणून Chrome तुमचा वेळ वाचविते. तुम्ही सेटिंग्जमध्ये खाती जोडू किंवा काढू शकता.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. Chrome आता पासवर्ड बदलण्याची शिफारस करते.</translation>
 <translation id="7693590760643069321">तुम्ही आता कधीही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता तेव्हा, Chrome वापरू शकता.</translation>
 <translation id="7698568245838009292">Chrome ला कॅमेरा ॲक्सेस करायचा आहे</translation>
+<translation id="7780154209050837198">Chrome चा पुरेपूर वापर करण्यासाठी, तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा.</translation>
 <translation id="7855730255114109580">Google Chrome अपडेट झाले आहे</translation>
 <translation id="8022947259858476807">लिंक उघडण्यासाठी, विजेटमध्ये शोधण्यासाठी आणि इतर ॲप्समध्ये पासवर्ड ऑटोफिल करण्यासाठी बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="8160472928944011082">Chrome अपडेट करू शकत नाही</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>
 <translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="8788269841521769222">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
+<translation id="9064404358728865190">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="9112744793181547300">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 <translation id="9122931302567044771">याचा अर्थ असा, की Chrome हे प्रत्येक वेळी साइटच्या डेस्कटॉप आवृत्तीची विनंती करेल.</translation>
 </translationbundle>

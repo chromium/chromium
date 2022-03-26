@@ -167,7 +167,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2473876017985765807">Sie haben bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2476359652512522418">Nicht ausgewählt</translation>
-<translation id="2497852260688568942">Die Synchronisierung wurde von Ihrem Administrator deaktiviert</translation>
+<translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="2500374554657206846">Optionen zum Speichern von Passwörtern</translation>
 <translation id="2523363575747517183">Diese Website versucht wiederholt, eine andere App zu öffnen.</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
@@ -346,7 +346,7 @@ Gehen Sie so vor:</translation>
 <translation id="4108314971463891922">Folgen</translation>
 <translation id="411254640334432676">Fehler beim Download</translation>
 <translation id="4112644173421521737">Suche</translation>
-<translation id="4113030288477039509">Von Ihrem Administrator verwaltet</translation>
+<translation id="4113030288477039509">Von deinem Administrator verwaltet</translation>
 <translation id="4121993058175073134">Zum Senden von Exportdaten E-Mail-Konto in App "Einstellungen" konfigurieren</translation>
 <translation id="4124987746317609294">Zeitraum</translation>
 <translation id="4152011295694446843">Hier werden Ihre Lesezeichen angezeigt</translation>
@@ -514,7 +514,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5706552126692816153">Vor 1 Tag aktiv</translation>
 <translation id="5711039611392265845">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung und Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Fügen Sie einen neuen Tab hinzu, um privat im Web zu surfen</translation>
-<translation id="5728700505257787410">Beim Anmelden in Ihrem Konto ist ein Fehler aufgetreten.</translation>
+<translation id="5728700505257787410">Beim Anmelden in deinem Konto ist ein Fehler aufgetreten.</translation>
 <translation id="5731784586962650619">Passwörter in anderen Apps</translation>
 <translation id="5737974891429562743">Die Anmeldeinformationen für das Konto sind veraltet. Aktualisieren Sie sie zur Synchronisierung.</translation>
 <translation id="5738887413654608789">Dann können Sie relevante Webseiten zu Objekten in Ihrer Umgebung entdecken.</translation>
@@ -812,7 +812,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Seite übersetzen</translation>
 <translation id="8205564605687841303">Abbrechen</translation>
-<translation id="8206354486702514201">Diese Einstellung wird von Ihrem Administrator erzwungen.</translation>
+<translation id="8206354486702514201">Diese Einstellung wird von deinem Administrator erzwungen.</translation>
 <translation id="8225985093977202398">Bilder &amp; Dateien im Cache</translation>
 <translation id="8237382152611443140">Öffnen Sie die Einstellungen für das automatische Ausfüllen von Passwörtern</translation>
 <translation id="8261506727792406068">Löschen</translation>
@@ -867,7 +867,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8721297211384281569">Menü "Tools"</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8730621377337864115">Fertig</translation>
-<translation id="8741995161408053644">Möglicherweise sind in Ihrem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
+<translation id="8741995161408053644">Möglicherweise sind in deinem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
 <translation id="8750037785291841318">Hier werden Ihre Tabs angezeigt</translation>
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
@@ -877,7 +877,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standardansicht für Websites</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
-<translation id="8840513115188359703">Sie werden nicht von Ihrem Google-Konto abgemeldet.</translation>
+<translation id="8840513115188359703">Du wirst nicht von deinem Google-Konto abgemeldet.</translation>
 <translation id="8843129975935593190">Ihre Organisation legt fest, was Sie synchronisieren können.</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tabs}}</translation>
@@ -895,7 +895,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8985320356172329008">In Google angemeldet als</translation>
 <translation id="9000089900434778519">Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
-<translation id="9034759925968272072">Sie werden nicht von Ihrem Google-Konto abgemeldet. Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für Ihr Google-Konto.</translation>
+<translation id="9034759925968272072">Du wirst nicht von deinem Google-Konto abgemeldet. Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für dein Google-Konto.</translation>
 <translation id="9037965129289936994">Original anzeigen</translation>
 <translation id="9039373489628511875">Bandbreite</translation>
 <translation id="9055772144595778347">Anmeldefehler</translation>

@@ -2437,6 +2437,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3390013585654699824">Detalji o aplikaciji</translation>
 <translation id="3391512812407811893">Probe Zaštićenog okruženja privatnosti</translation>
 <translation id="3393554941209044235">Chrome analiza dokumenata</translation>
+<translation id="3393582007140394275">Prebacivanje ekrana nije uspelo.</translation>
 <translation id="3394850431319394743">Dozvoljena upotreba identifikatora za puštanje zaštićenog sadržaja</translation>
 <translation id="3396744558790608201">Kliknite desnim tasterom i izaberite „Pretraži slike pomoću Google objektiva“ da biste pretražili bilo koji deo sajta i saznali više o vizuelnom sadržaju koji vidite dok pregledate i kupujte na vebu.</translation>
 <translation id="3396800784455899911">Ako kliknete na dugme „Prihvati i nastavi“, prihvatate gorenavedenu obradu za ove Google usluge.</translation>
@@ -2830,6 +2831,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3753033997400164841">Sačuvajte jednom. Koristite svuda</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> telefon sada može da otključava i ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Sajt koristi mikrofon</translation>
+<translation id="3756485814916578707">Prebacuje se ekran</translation>
 <translation id="3756578970075173856">Podesite PIN</translation>
 <translation id="3756795331760037744">Dozvolite da Google pomoćnik koristi informacije na ekranu deteta <ph name="SUPERVISED_USER_NAME" /> da bi pružio pomoć</translation>
 <translation id="3757733214359997190">Nije pronađen nijedan sajt</translation>
@@ -3989,6 +3991,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4924002401726507608">Pošaljite povratne informacije</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portovi će se prikazivati ovde</translation>
+<translation id="49265687513387605">Prebacivanje ekrana nije uspelo. Proverite da li ste potvrdili upit za početak deljenja ekrana.</translation>
 <translation id="4927753642311223124">Nema šta da se vidi ovde. Nastavite dalje.</translation>
 <translation id="4929386379796360314">Odredišta za štampanje</translation>
 <translation id="4930447554870711875">Programeri</translation>
@@ -4102,6 +4105,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5052499409147950210">Izmenite sajt</translation>
 <translation id="505347685865235222">Grupa bez naziva – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Tražite sliku uz Google objektiv</translation>
+<translation id="5054374119096692193">Prikaži sve opcije kartica u meniju <ph name="BEGIN_LINK" />Prilagodite Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezuje se sa kontejnerom</translation>
 <translation id="5057110919553308744">Kada kliknete na dodatak</translation>
 <translation id="505776528429481161">Lako se povežite i podesite uređaje u blizini</translation>
@@ -5494,6 +5498,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6452251728599530347">Dovršeno je <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Ideje za recepte</translation>
 <translation id="6452961788130242735">Problem sa mrežom ili pogrešan domen</translation>
+<translation id="6453191633103419909">Kvalitet projekcije za karticu/ekran</translation>
 <translation id="6453921811609336127">Da biste prešli na sledeći metod unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Taster za razmak<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Na određenim sajtovima</translation>
 <translation id="6455894534188563617">&amp;Novi direktorijum</translation>
@@ -7807,6 +7812,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8779944680596936487">Sajtovi mogu da koriste kolačiće samo da bi videli aktivnosti pregledanja kod njih</translation>
 <translation id="8780123805589053431">Preuzimaj opise slika sa Google-a</translation>
 <translation id="8780443667474968681">Glasovna pretraga je isključena.</translation>
+<translation id="8780872768304638315">Nije uspelo čuvanje na</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje kiosk aplikacije je otkazano.</translation>
 <translation id="8783526165720272136">Aplikacije za razmenu poruka</translation>

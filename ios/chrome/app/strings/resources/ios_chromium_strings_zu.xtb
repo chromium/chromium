@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Lokhu kusho ukuthi i-Chromium izocela isayithi yeselula ngaso sonke isikhathi.</translation>
 <translation id="1185134272377778587">Mayelana ne-Chromium</translation>
 <translation id="1257458525759135959">Ukuze ulondoloze izithombe, thepha Amasethingi ukuze uvumele i-Chromium ingeze ezithombeni zakho</translation>
+<translation id="1266817106503861676">Yenza okuningi nge-Chromium elula, ephephile nesheshayo kunangaphambilini.</translation>
 <translation id="1289216811211435351">Shintshela ku-Chromium</translation>
 <translation id="1361748954329991663">I-Chromium iphelelwe isikhathi. Uma kungekho sibuyekezo esitholakalayo <ph name="BEGIN_LINK" />ku-App Store<ph name="END_LINK" />, kungenzeka ukuthi idivayisi yakho ayisazisekeli izinguqulo ezintsha ze-Chromium.</translation>
 <translation id="1431818719585918472">Vumela i-Chromium ikhiye amathebhu wakho we-Incognito.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Ikopishelwe ku-Chromium</translation>
 <translation id="3344973607274501920">I-Chromium ayikwazanga ukuhlola iphasiwedi yakho. Zama ukuhlola ukuxhumeka kwakho ku-inthanethi.</translation>
 <translation id="3472200483164753384">Ayisekelwe ku-Chromium Canary</translation>
+<translation id="3567399274263440288">Ukuze uthole okuningi kwe-Chromium, ngena ngemvume ku-Chromium nge-Google Account yakho</translation>
 <translation id="3639997914391704523">I-Chromium ingahlola amaphasiwedi akho uma ungena ngemvume nge-Akhawunti yakho ye-Google.</translation>
 <translation id="3650632991272923014">U-<ph name="USER_EMAIL1" /> ubesebenzisa i-Chromium futhi washiya amabhukhimakhi, amaphasiwedi, namanye amasethingi kule divayisi.</translation>
 <translation id="3805899903892079518">I-Chromium ayinakho ukufinyelela kuzithombe zakho noma amavidiyo. Nika amandla ukufinyelela kuzilungiselelo ze-iOS &gt; Ubumfihlo &gt; Izithombe.</translation>
@@ -82,6 +84,7 @@ Izinto okufanele uzicabangele:
 <translation id="6268381023930128611">Phuma ku-Chromium?</translation>
 <translation id="632825460376924298">Vumela Ukungena ngemvume kwe-Chromium</translation>
 <translation id="6337530241089703714">Khetha ukuthi usule yini idatha yakho ye-Chromium ekule divayisi noma uyigcine</translation>
+<translation id="6364764337654495917">Ngokusebenzisa i-Chromium, uvumelana nokuthi <ph name="BEGIN_LINK" />Imigomo Yesevisi<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">I-Chromium ingocono nakakhulu! Inguqulo entsha iyatholakala.</translation>
 <translation id="6752854822223394465">Inhlangano yakho isetha i-Chromium...</translation>
 <translation id="6820823224820483452">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa.</translation>
@@ -102,6 +105,7 @@ Izinto okufanele uzicabangele:
 <translation id="7400689562045506105">Sebenzisa i-Chromium yonke indawo</translation>
 <translation id="766897673682622022">Iphasiwedi yakho idalulwe ekwephulweni kwesivumelwano sedatha. I-Chromium incoma ukushintsha iphasiwedi manje.</translation>
 <translation id="7674213385180944843">Vula izilungiselelo &gt; Ubumfihlo &gt; Ikhamera &gt; i-Chromium uphinde uvule ikhamera.</translation>
+<translation id="7724877991918731397">Ukuze isize ukuthuthukisa i-app, i-Chromium ithumela imibiko yokusetshenziswa nokuphahlazeka ku-Google. <ph name="BEGIN_LINK" />Phatha<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Ithiphu ye-Chromium. Ezinye izinkinobho manje ziphansi kwesikrini sakho, njengokuthi Emuva, Phambili, nokuthi Usesho.</translation>
 <translation id="7763454117143368771">Sebenzisa i-Chromium njengesiphequluli sakho esiyinhloko ukuze uhlale uvikelekile kumasayithi ayingozi futhi ugcine amphasiwedi akho aphephile</translation>
 <translation id="786327964234957808">Ushintsha ama-akhawunti okuvumelanisa kusukela ku-<ph name="USER_EMAIL1" /> ukuya ku-<ph name="USER_EMAIL1" />. Idatha yakho ekhona ye-Chromium iphethwe yi-<ph name="DOMAIN" />. Lokhu kuzosusa idatha kusukela kule divayisi, kodwa idatha yakho izohlala ku-<ph name="USER_EMAIL2" />.</translation>

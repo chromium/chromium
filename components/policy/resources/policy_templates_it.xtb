@@ -2563,13 +2563,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
 <translation id="3791556154364029875">Abilita l'area di lavoro mobile e avvia le finestre del browser remoto al momento dell'accesso</translation>
-<translation id="3794413118360704299">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate.
-
-      Questo criterio associa un ID app web alla relativa impostazione specifica. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID di un'app web installata.
-      È possibile impostare una configurazione predefinita usando l'ID speciale <ph name="DEFAULT_SCOPE" />, che si applica a tutte le app web senza configurazione personalizzata in questo criterio.
-
-      Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se è possibile o meno eseguire un'app web durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Selettore profilo disponibile all'avvio</translation>
 <translation id="3798922329287609568">La configurazione del criterio consente di limitare la modalità di stampa fronte/retro.
 
@@ -3541,15 +3534,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
-<translation id="5052278640307929670">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello.
-
-      Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini:
-
-      * Se hanno lo stesso ambito e lo stesso livello: i valori verranno uniti nel nuovo elenco dei criteri.
-
-      * Se hanno ambito o livello diversi: verrà applicato il criterio con la priorità massima.
-
-      Se un criterio è nell'elenco, nel caso ci sia conflitto tra le origini, l'ambito o il livello, verrà applicato il criterio con la priorità massima.</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
@@ -6411,15 +6395,6 @@ Queste norme devono essere utilizzate esclusivamente per la configurazione delle
 Non è necessario configurare manualmente queste impostazioni. È possibile scaricare modelli di facile utilizzo per Windows, Mac e Linux da <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anche se la specifica di norme tramite il registro di sistema è ancora supportata per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261874086461353268">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di livello superiore del dizionario da ciascuna origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
-
-      Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini:
-
-      * Se hanno lo stesso ambito e lo stesso livello: i valori verranno uniti nel nuovo dizionario dei criteri.
-
-      * Se hanno ambito o livello diversi: verrà applicato il criterio con la priorità massima.
-
-      Se un criterio è nell'elenco, nel caso ci sia conflitto tra le origini, l'ambito o il livello, verrà applicato il criterio con la priorità massima.</translation>
 <translation id="8266778278542911985">Se il criterio viene impostato su 3, i siti web possono chiedere l'accesso alle porte seriali. Se il criterio viene impostato su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>

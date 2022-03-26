@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2919738076569633423">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Få mer gjort med Google Chrome-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
+<translation id="3121002401028999199">For å bidra til å gjøre appen bedre sender Chrome bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
@@ -108,6 +110,7 @@ Dette bør du tenke over:
 <translation id="766361182512894255">Passordet ditt har vært avdekket i et databrudd. Chrome anbefaler at du bytter passord nå.</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
+<translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
@@ -125,6 +128,7 @@ Dette bør du tenke over:
 <translation id="8736550665979974340">Hold deg trygg med Google Chrome</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
 <translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 </translationbundle>
