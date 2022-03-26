@@ -469,7 +469,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnGooglePhotosPhotoFetched(
       const GooglePhotosWallpaperParams& params,
       SetWallpaperCallback callback,
-      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo);
+      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+      bool success);
 
   void GetGooglePhotosWallpaperFromCacheOrDownload(
       const GooglePhotosWallpaperParams& params,

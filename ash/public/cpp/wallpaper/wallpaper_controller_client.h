@@ -71,7 +71,8 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       FetchImagesForCollectionCallback callback) = 0;
 
   using FetchGooglePhotosPhotoCallback = base::OnceCallback<void(
-      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto>)>;
+      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto>,
+      bool success)>;
   virtual void FetchGooglePhotosPhoto(
       const AccountId& account_id,
       const std::string& id,

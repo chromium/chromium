@@ -762,10 +762,12 @@ void PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection(
 void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     const ash::WallpaperInfo& info,
     const GURL& wallpaper_data_url,
-    mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo) {
+    mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo,
+    bool success) {
   std::vector<std::string> attribution;
-  if (!photo.is_null())
+  if (!photo.is_null()) {
     attribution.push_back(photo->name);
+  }
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       wallpaper_data_url, attribution, info.layout, info.type,
       /*key=*/info.location));

@@ -101,11 +101,13 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
   base::Time::Exploded exploded_time{2011, 6, 3, 15, 12, 0, 0, 0};
   DCHECK(base::Time::FromUTCExploded(exploded_time, &time));
   if (fetch_google_photos_photo_fails_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, /*success=*/false);
   } else {
-    std::move(callback).Run(personalization_app::mojom::GooglePhotosPhoto::New(
-        id, "test_name", base::TimeFormatFriendlyDate(time),
-        GURL("https://google.com/picture.png")));
+    std::move(callback).Run(
+        personalization_app::mojom::GooglePhotosPhoto::New(
+            id, "test_name", base::TimeFormatFriendlyDate(time),
+            GURL("https://google.com/picture.png")),
+        /*success=*/true);
   }
 }
 

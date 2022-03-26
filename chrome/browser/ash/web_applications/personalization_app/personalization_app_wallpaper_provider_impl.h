@@ -223,8 +223,8 @@ class PersonalizationAppWallpaperProviderImpl
   void SendGooglePhotosAttribution(
       const ash::WallpaperInfo& info,
       const GURL& wallpaper_data_url,
-      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto>
-          photo);
+      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo,
+      bool success);
 
   // Called when the user sets an image, or cancels/confirms preview wallpaper.
   // If a new image is set in preview mode, will minimize all windows except the

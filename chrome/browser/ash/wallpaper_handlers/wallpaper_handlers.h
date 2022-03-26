@@ -176,6 +176,10 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // Returns the count of results contained within the specified `result`.
   virtual absl::optional<size_t> GetResultCount(const T& result) = 0;
 
+  // Contains logic for different HTTP error codes that we receive, as they can
+  // carry information on the state of the user's Google Photos library.
+  virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
+
  private:
   void OnTokenReceived(const GURL& service_url,
                        base::TimeTicks start_time,
@@ -308,6 +312,7 @@ class GooglePhotosPhotosFetcher
 
  protected:
   // GooglePhotosFetcher:
+  absl::optional<base::Value> CreateErrorResponse(int error_code) override;
   GooglePhotosPhotosCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
   absl::optional<size_t> GetResultCount(

@@ -37,6 +37,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -592,6 +593,12 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
 }
 
 template <typename T>
+absl::optional<base::Value> GooglePhotosFetcher<T>::CreateErrorResponse(
+    int error_code) {
+  return absl::nullopt;
+}
+
+template <typename T>
 void GooglePhotosFetcher<T>::OnTokenReceived(
     const GURL& service_url,
     base::TimeTicks start_time,
@@ -635,11 +642,15 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
     LOG(ERROR) << "Google Photos API request to " << service_url.spec()
                << " failed.";
     auto* response_info = url_loaders_[service_url]->ResponseInfo();
+    absl::optional<base::Value> error_response;
     if (response_info && response_info->headers) {
       LOG(ERROR) << "HTTP response code: "
                  << response_info->headers->response_code();
+      error_response =
+          CreateErrorResponse(response_info->headers->response_code());
+      return;
     }
-    OnResponseReady(service_url, start_time, absl::nullopt);
+    OnResponseReady(service_url, start_time, std::move(error_response));
     return;
   }
 
@@ -857,6 +868,19 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
   }
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));
+}
+
+absl::optional<base::Value> GooglePhotosPhotosFetcher::CreateErrorResponse(
+    int error_code) {
+  // If the server gives us 404, that means the request succeeded, but no
+  // photos with the given attributes exist. We return an empty list of photos
+  // to communicate this back to the caller.
+  if (error_code == net::HTTP_NOT_FOUND) {
+    absl::optional<base::Value> empty_list(base::Value::Type::DICT);
+    empty_list->SetKey("item", base::Value(base::Value::Type::LIST));
+    return empty_list;
+  }
+  return absl::nullopt;
 }
 
 GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
