@@ -98,6 +98,12 @@ void GrpcServicesInitializer::AddDeviceStateEventObserver(
   device_state_event_handler_driver_->AddObserver(observer);
 }
 
+void GrpcServicesInitializer::AddMediaActionFallbackEventObserver(
+    GrpcServicesObserver<::assistant::api::OnMediaActionFallbackEventRequest>*
+        observer) {
+  media_action_fallback_event_handler_driver_->AddObserver(observer);
+}
+
 ActionService* GrpcServicesInitializer::GetActionService() {
   return action_handler_driver_.get();
 }
@@ -140,6 +146,14 @@ void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
       EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>(
       &server_builder_, libassistant_client_.get(), assistant_service_address_);
   service_drivers_.emplace_back(device_state_event_handler_driver_.get());
+
+  media_action_fallback_event_handler_driver_ =
+      std::make_unique<EventHandlerDriver<
+          ::assistant::api::MediaActionFallbackEventHandlerInterface>>(
+          &server_builder_, libassistant_client_.get(),
+          assistant_service_address_);
+  service_drivers_.emplace_back(
+      media_action_fallback_event_handler_driver_.get());
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {
@@ -172,6 +186,7 @@ void GrpcServicesInitializer::RegisterEventHandlers() {
   assistant_display_event_handler_driver_->StartRegistration();
   conversation_state_event_handler_driver_->StartRegistration();
   device_state_event_handler_driver_->StartRegistration();
+  media_action_fallback_event_handler_driver_->StartRegistration();
 }
 
 }  // namespace libassistant

@@ -32,19 +32,15 @@ class MediaController : public mojom::MediaController,
 
   // AssistantClientObserver implementation:
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
-  void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
-  void OnAssistantClientDestroyed() override;
 
  private:
-  class DeviceStateEventObserver;
-  class LibassistantMediaHandler;
+  class GrpcEventsObserver;
 
   AssistantClient* assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
   mojo::Remote<mojom::MediaDelegate> delegate_;
-  std::unique_ptr<DeviceStateEventObserver> device_state_event_observer_;
-  std::unique_ptr<LibassistantMediaHandler> handler_;
+  std::unique_ptr<GrpcEventsObserver> events_observer_;
 };
 
 }  // namespace libassistant

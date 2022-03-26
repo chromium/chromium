@@ -56,6 +56,9 @@ class FakeAssistantClient : public AssistantClient {
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void AddMediaActionFallbackEventObserver(
+      GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer)
+      override;
   void SendVoicelessInteraction(
       const ::assistant::api::Interaction& interaction,
       const std::string& description,

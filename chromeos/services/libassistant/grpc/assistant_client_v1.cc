@@ -29,6 +29,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
@@ -443,6 +444,17 @@ void AssistantClientV1::AddDeviceStateEventObserver(
   device_state_event_observer_list_.AddObserver(observer);
 }
 
+void AssistantClientV1::AddMediaActionFallbackEventObserver(
+    GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer) {
+  media_action_fallback_event_observer_list_.AddObserver(observer);
+
+  // Register handler for media actions.
+  auto callback = base::BindRepeating(&AssistantClientV1::HandleMediaAction,
+                                      weak_factory_.GetWeakPtr());
+  assistant_manager_internal()->RegisterFallbackMediaHandler(
+      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(callback)));
+}
+
 void AssistantClientV1::SendVoicelessInteraction(
     const ::assistant::api::Interaction& interaction,
     const std::string& description,
@@ -534,6 +546,19 @@ void AssistantClientV1::GetAssistantSettings(
 void AssistantClientV1::AddMediaManagerListener() {
   assistant_manager()->GetMediaManager()->AddListener(
       media_manager_listener_.get());
+}
+
+void AssistantClientV1::HandleMediaAction(
+    const std::string& action_name,
+    const std::string& media_action_args_proto) {
+  OnMediaActionFallbackEventRequest request;
+  auto* media_action = request.mutable_event()->mutable_on_media_action_event();
+  media_action->set_action_name(action_name);
+  media_action->set_action_args(media_action_args_proto);
+
+  for (auto& observer : media_action_fallback_event_observer_list_) {
+    observer.OnGrpcMessage(request);
+  }
 }
 
 void AssistantClientV1::NotifyConversationStateEvent(

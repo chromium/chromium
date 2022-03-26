@@ -88,6 +88,9 @@ void FakeAssistantClient::StopAssistantInteraction(bool cancel_conversation) {}
 void FakeAssistantClient::AddConversationStateEventObserver(
     GrpcServicesObserver<OnConversationStateEventRequest>* observer) {}
 
+void FakeAssistantClient::AddMediaActionFallbackEventObserver(
+    GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer) {}
+
 void FakeAssistantClient::SetInternalOptions(const std::string& locale,
                                              bool spoken_feedback_enabled) {}
 

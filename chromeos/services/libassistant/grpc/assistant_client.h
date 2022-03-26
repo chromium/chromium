@@ -24,6 +24,7 @@ class OnAssistantDisplayEventRequest;
 class OnConversationStateEventRequest;
 class OnDeviceStateEventRequest;
 class OnDisplayRequestRequest;
+class OnMediaActionFallbackEventRequest;
 class OnSpeakerIdEnrollmentEventRequest;
 class StartSpeakerIdEnrollmentRequest;
 class UpdateAssistantSettingsResponse;
@@ -78,6 +79,8 @@ class AssistantClient {
   // Media:
   using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
   using OnDeviceStateEventRequest = ::assistant::api::OnDeviceStateEventRequest;
+  using OnMediaActionFallbackEventRequest =
+      ::assistant::api::OnMediaActionFallbackEventRequest;
 
   // Conversation:
   using OnConversationStateEventRequest =
@@ -137,9 +140,10 @@ class AssistantClient {
   // Sets the current media status of media playing outside of libassistant.
   // Setting external state will stop any internally playing media.
   virtual void SetExternalPlaybackState(const MediaStatus& status_proto) = 0;
-
   virtual void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) = 0;
+  virtual void AddMediaActionFallbackEventObserver(
+      GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer) = 0;
 
   // Conversation methods.
   virtual void SendVoicelessInteraction(

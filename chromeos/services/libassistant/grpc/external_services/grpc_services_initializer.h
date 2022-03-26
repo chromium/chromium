@@ -24,6 +24,7 @@ class AlarmTimerEventHandlerInterface;
 class AssistantDisplayEventHandlerInterface;
 class ConversationStateEventHandlerInterface;
 class DeviceStateEventHandlerInterface;
+class MediaActionFallbackEventHandlerInterface;
 }  // namespace api
 }  // namespace assistant
 
@@ -62,6 +63,9 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
           observer);
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
+          observer);
+  void AddMediaActionFallbackEventObserver(
+      GrpcServicesObserver<::assistant::api::OnMediaActionFallbackEventRequest>*
           observer);
 
   ActionService* GetActionService();
@@ -133,6 +137,10 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<
       EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>
       device_state_event_handler_driver_;
+
+  std::unique_ptr<EventHandlerDriver<
+      ::assistant::api::MediaActionFallbackEventHandlerInterface>>
+      media_action_fallback_event_handler_driver_;
 };
 
 }  // namespace libassistant

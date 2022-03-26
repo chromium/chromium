@@ -54,6 +54,9 @@ class AssistantClientImpl : public AssistantClientV1 {
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void AddMediaActionFallbackEventObserver(
+      GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer)
+      override;
   void SendVoicelessInteraction(
       const ::assistant::api::Interaction& interaction,
       const std::string& description,

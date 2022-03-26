@@ -57,6 +57,9 @@ class AssistantClientV1 : public AssistantClient {
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void AddMediaActionFallbackEventObserver(
+      GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer)
+      override;
   void SendVoicelessInteraction(
       const ::assistant::api::Interaction& interaction,
       const std::string& description,
@@ -108,6 +111,8 @@ class AssistantClientV1 : public AssistantClient {
   class AssistantManagerDelegateImpl;
 
   void AddMediaManagerListener();
+  void HandleMediaAction(const std::string& action_name,
+                         const std::string& media_action_args_proto);
 
   void NotifyConversationStateEvent(
       const OnConversationStateEventRequest& request);
@@ -140,6 +145,9 @@ class AssistantClientV1 : public AssistantClient {
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
+
+  base::ObserverList<GrpcServicesObserver<OnMediaActionFallbackEventRequest>>
+      media_action_fallback_event_observer_list_;
 
   base::ObserverList<
       GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>

@@ -175,6 +175,11 @@ void AssistantClientImpl::AddDeviceStateEventObserver(
   grpc_services_.AddDeviceStateEventObserver(observer);
 }
 
+void AssistantClientImpl::AddMediaActionFallbackEventObserver(
+    GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer) {
+  grpc_services_.AddMediaActionFallbackEventObserver(observer);
+}
+
 void AssistantClientImpl::SendVoicelessInteraction(
     const ::assistant::api::Interaction& interaction,
     const std::string& description,
