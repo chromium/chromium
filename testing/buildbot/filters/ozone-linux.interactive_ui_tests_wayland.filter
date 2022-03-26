@@ -42,10 +42,15 @@
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
 
-# Extremely flaky.
--MenuControllerUITest.TestMouseOverShownMenu
+# TODO(crbug.com/523255,crbug.com/1192997): Fix flaky MenuItemView tests.
+-MenuItemViewTestBasic2.SelectItem2
 -MenuItemViewTestInsert20.InsertItem20
 -MenuItemViewTestInsert00.InsertItem00
+-MenuItemViewTestInsert12.InsertItem12
+-MenuItemViewTestInsert22.InsertItem22
+
+# Extremely flaky.
+-MenuControllerUITest.TestMouseOverShownMenu
 -BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
 
 # TODO(crbug.com/1195324): flaky fullscreen notification test
