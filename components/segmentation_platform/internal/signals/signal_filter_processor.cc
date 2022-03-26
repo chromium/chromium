@@ -24,10 +24,9 @@ namespace {
 class FilterExtractor {
  public:
   explicit FilterExtractor(
-      const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-          segment_infos) {
-    for (const auto& pair : segment_infos) {
-      const proto::SegmentInfo& segment_info = pair.second;
+      const DefaultModelManager::SegmentInfoList& segment_infos) {
+    for (const auto& info : segment_infos) {
+      const proto::SegmentInfo& segment_info = info->segment_info;
       const auto& metadata = segment_info.model_metadata();
       AddUmaFeatures(metadata);
       AddUkmFeatures(metadata);
@@ -105,8 +104,8 @@ void SignalFilterProcessor::OnSignalListUpdated() {
 }
 
 void SignalFilterProcessor::FilterSignals(
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
-  FilterExtractor extractor(*segment_infos);
+    DefaultModelManager::SegmentInfoList segment_infos) {
+  FilterExtractor extractor(segment_infos);
 
   stats::RecordSignalsListeningCount(extractor.user_actions,
                                      extractor.histograms);

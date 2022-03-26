@@ -9,6 +9,9 @@
 
 namespace segmentation_platform {
 
+DefaultModelManager::SegmentInfoWrapper::SegmentInfoWrapper() = default;
+DefaultModelManager::SegmentInfoWrapper::~SegmentInfoWrapper() = default;
+
 DefaultModelManager::DefaultModelManager(
     ModelProviderFactory* model_provider_factory,
     const std::vector<OptimizationTarget>& segment_ids)
@@ -66,7 +69,7 @@ void DefaultModelManager::GetNextSegmentInfoFromDefaultModel(
   if (!default_provider) {
     // If there are no more default providers, return the result so far.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(*result)));
     return;
   }
 
@@ -82,11 +85,12 @@ void DefaultModelManager::OnFetchDefaultModel(
     OptimizationTarget segment_id,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version) {
-  proto::SegmentInfo segment_info;
-  segment_info.set_segment_id(segment_id);
-  segment_info.mutable_model_metadata()->CopyFrom(metadata);
-  segment_info.set_model_version(model_version);
-  result->push_back(std::make_pair(segment_id, segment_info));
+  auto info = std::make_unique<SegmentInfoWrapper>();
+  info->segment_source = DefaultModelManager::SegmentSource::DEFAULT_MODEL;
+  info->segment_info.set_segment_id(segment_id);
+  info->segment_info.mutable_model_metadata()->CopyFrom(metadata);
+  info->segment_info.set_model_version(model_version);
+  result->push_back(std::move(info));
 
   GetNextSegmentInfoFromDefaultModel(
       std::move(result), std::move(remaining_segment_ids), std::move(callback));
@@ -117,12 +121,19 @@ void DefaultModelManager::OnGetAllSegmentInfoFromDatabase(
 void DefaultModelManager::OnGetAllSegmentInfoFromDefaultModel(
     MultipleSegmentInfoCallback callback,
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos_from_db,
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
-        segment_infos_from_default_model) {
-  std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> merged_results =
-      std::move(segment_infos_from_db);
-  for (const auto& segment_info : *segment_infos_from_default_model)
-    merged_results->push_back(std::move(segment_info));
+    SegmentInfoList segment_infos_from_default_model) {
+  SegmentInfoList merged_results;
+  if (segment_infos_from_db) {
+    for (auto it : *segment_infos_from_db) {
+      merged_results.push_back(std::make_unique<SegmentInfoWrapper>());
+      merged_results.back()->segment_source = SegmentSource::DATABASE;
+      merged_results.back()->segment_info.Swap(&it.second);
+    }
+  }
+  merged_results.insert(
+      merged_results.end(),
+      std::make_move_iterator(segment_infos_from_default_model.begin()),
+      std::make_move_iterator(segment_infos_from_default_model.end()));
 
   std::move(callback).Run(std::move(merged_results));
 }

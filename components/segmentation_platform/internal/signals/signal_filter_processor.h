@@ -8,14 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
-class DefaultModelManager;
 class HistogramSignalHandler;
+class SegmentInfoDatabase;
 class UserActionSignalHandler;
 class UkmDataManager;
 
@@ -48,8 +48,7 @@ class SignalFilterProcessor {
   void EnableMetrics(bool enable_metrics);
 
  private:
-  void FilterSignals(
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
+  void FilterSignals(DefaultModelManager::SegmentInfoList segment_infos);
 
   raw_ptr<SegmentInfoDatabase> segment_database_;
   raw_ptr<UserActionSignalHandler> user_action_signal_handler_;

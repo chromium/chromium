@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -39,10 +40,21 @@ class DefaultModelManager {
 
   // Callback for returning a list of segment infos associated with IDs.
   // The same segment ID can be repeated multiple times.
-  using SegmentInfoList =
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>;
-  using MultipleSegmentInfoCallback =
-      base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
+  enum class SegmentSource {
+    DATABASE,
+    DEFAULT_MODEL,
+  };
+  struct SegmentInfoWrapper {
+    SegmentInfoWrapper();
+    ~SegmentInfoWrapper();
+    SegmentInfoWrapper(const SegmentInfoWrapper&) = delete;
+    SegmentInfoWrapper& operator=(const SegmentInfoWrapper&) = delete;
+
+    SegmentSource segment_source;
+    proto::SegmentInfo segment_info;
+  };
+  using SegmentInfoList = std::vector<std::unique_ptr<SegmentInfoWrapper>>;
+  using MultipleSegmentInfoCallback = base::OnceCallback<void(SegmentInfoList)>;
 
   // Utility function to get the segment info from both the database and the
   // default model for a given set of segment IDs. The result can contain
@@ -80,12 +92,13 @@ class DefaultModelManager {
   void OnGetAllSegmentInfoFromDatabase(
       const std::vector<OptimizationTarget>& segment_ids,
       MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoList> segment_infos);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
 
   void OnGetAllSegmentInfoFromDefaultModel(
       MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoList> segment_infos_from_db,
-      std::unique_ptr<SegmentInfoList> segment_infos_from_default_model);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
+          segment_infos_from_db,
+      SegmentInfoList segment_infos_from_default_model);
 
   // Default model providers.
   std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>

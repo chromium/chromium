@@ -34,13 +34,12 @@ class DefaultModelManagerTest : public testing::Test {
                 .second;
   }
 
-  void OnGetAllSegments(
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> entries) {
+  void OnGetAllSegments(DefaultModelManager::SegmentInfoList entries) {
     get_all_segment_result_.swap(entries);
   }
 
-  const SegmentInfoDatabase::SegmentInfoList& get_all_segment_result() const {
-    return *get_all_segment_result_;
+  const DefaultModelManager::SegmentInfoList& get_all_segment_result() const {
+    return get_all_segment_result_;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -48,7 +47,7 @@ class DefaultModelManagerTest : public testing::Test {
   TestModelProviderFactory::Data model_provider_data_;
   TestModelProviderFactory model_provider_factory_;
   std::unique_ptr<DefaultModelManager> default_model_manager_;
-  std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> get_all_segment_result_;
+  DefaultModelManager::SegmentInfoList get_all_segment_result_;
   base::WeakPtrFactory<DefaultModelManagerTest> weak_ptr_factory_{this};
 };
 
@@ -101,15 +100,15 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   // Verify that model exists from both sources in order: segment_1 from db,
   // segment_1 from model, segment_2 from model.
   EXPECT_EQ(3u, get_all_segment_result().size());
-  EXPECT_EQ(segment_1, get_all_segment_result()[0].first);
+  EXPECT_EQ(segment_1, get_all_segment_result()[0]->segment_info.segment_id());
   EXPECT_EQ(model_version_db,
-            get_all_segment_result()[0].second.model_version());
-  EXPECT_EQ(segment_1, get_all_segment_result()[1].first);
+            get_all_segment_result()[0]->segment_info.model_version());
+  EXPECT_EQ(segment_1, get_all_segment_result()[1]->segment_info.segment_id());
   EXPECT_EQ(model_version_default,
-            get_all_segment_result()[1].second.model_version());
-  EXPECT_EQ(segment_2, get_all_segment_result()[2].first);
+            get_all_segment_result()[1]->segment_info.model_version());
+  EXPECT_EQ(segment_2, get_all_segment_result()[2]->segment_info.segment_id());
   EXPECT_EQ(model_version_default,
-            get_all_segment_result()[2].second.model_version());
+            get_all_segment_result()[2]->segment_info.model_version());
 
   // Query again, this time with a segment ID that doesn't exist in either
   // sources.
@@ -130,7 +129,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
                      weak_ptr_factory_.GetWeakPtr()));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, get_all_segment_result().size());
-  EXPECT_EQ(segment_2, get_all_segment_result()[0].first);
+  EXPECT_EQ(segment_2, get_all_segment_result()[0]->segment_info.segment_id());
 
   // Query for a model only available in the database.
   default_model_manager_->GetAllSegmentInfoFromBothModels(
@@ -139,7 +138,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
                      weak_ptr_factory_.GetWeakPtr()));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, get_all_segment_result().size());
-  EXPECT_EQ(segment_3, get_all_segment_result()[0].first);
+  EXPECT_EQ(segment_3, get_all_segment_result()[0]->segment_info.segment_id());
 }
 
 }  // namespace segmentation_platform

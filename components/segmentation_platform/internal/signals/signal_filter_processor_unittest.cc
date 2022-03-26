@@ -56,18 +56,30 @@ class TestDefaultModelManager : public DefaultModelManager {
       const std::vector<OptimizationTarget>& segment_ids,
       MultipleSegmentInfoCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            std::make_unique<DefaultModelManager::SegmentInfoList>()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  DefaultModelManager::SegmentInfoList()));
   }
 
   void GetAllSegmentInfoFromBothModels(
       const std::vector<OptimizationTarget>& segment_ids,
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback) override {
-    segment_database->GetSegmentInfoForSegments(segment_ids,
-                                                std::move(callback));
+    segment_database->GetSegmentInfoForSegments(
+        segment_ids,
+        base::BindOnce(
+            [](DefaultModelManager::MultipleSegmentInfoCallback callback,
+               std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> db_list) {
+              DefaultModelManager::SegmentInfoList list;
+              for (auto& pair : *db_list) {
+                list.push_back(std::make_unique<
+                               DefaultModelManager::SegmentInfoWrapper>());
+                list.back()->segment_source =
+                    DefaultModelManager::SegmentSource::DATABASE;
+                list.back()->segment_info.Swap(&pair.second);
+              }
+              std::move(callback).Run(std::move(list));
+            },
+            std::move(callback)));
   }
 };
 

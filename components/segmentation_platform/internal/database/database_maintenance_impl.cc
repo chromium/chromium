@@ -40,10 +40,10 @@ using CleanupItem = DatabaseMaintenanceImpl::CleanupItem;
 
 namespace {
 std::set<SignalIdentifier> CollectAllSignalIdentifiers(
-    const SegmentInfoDatabase::SegmentInfoList& segment_infos) {
+    const DefaultModelManager::SegmentInfoList& segment_infos) {
   std::set<SignalIdentifier> signal_ids;
-  for (const auto& pair : segment_infos) {
-    const proto::SegmentInfo& segment_info = pair.second;
+  for (const auto& info : segment_infos) {
+    const proto::SegmentInfo& segment_info = info->segment_info;
     const auto& metadata = segment_info.model_metadata();
     auto features =
         metadata_utils::GetAllUmaFeatures(metadata, /*include_outputs=*/true);
@@ -115,9 +115,9 @@ void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
 }
 
 void DatabaseMaintenanceImpl::OnSegmentInfoCallback(
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
+    DefaultModelManager::SegmentInfoList segment_infos) {
   std::set<SignalIdentifier> signal_ids =
-      CollectAllSignalIdentifiers(*segment_infos);
+      CollectAllSignalIdentifiers(segment_infos);
   stats::RecordMaintenanceSignalIdentifierCount(signal_ids.size());
 
   auto all_tasks = GetAllTasks(signal_ids);
