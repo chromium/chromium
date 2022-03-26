@@ -62,9 +62,9 @@ namespace {
 constexpr int kIconSize = 22;
 
 constexpr int kHeaderHeight = 40;
-constexpr int kHeaderHorizontalInteriorMargins = 12;
+constexpr int kHeaderHorizontalInteriorMargins = 0;
 constexpr gfx::Insets kHeaderDefaultSpacing =
-    gfx::Insets(/*vertical=*/0, /*horizontal=*/8);
+    gfx::Insets(/*vertical=*/0, /*horizontal=*/6);
 
 constexpr gfx::Insets kBubblePadding(/*vertical=*/8, /*horizontal=*/8);
 
@@ -330,7 +330,7 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
       ->SetInteriorMargin(
           gfx::Insets(/*vertical=*/0,
                       /*horizontal=*/kHeaderHorizontalInteriorMargins))
-      .SetCollapseMargins(true)
+      .SetCollapseMargins(false)
       .SetMinimumCrossAxisSize(kHeaderHeight)
       .SetDefault(views::kMarginsKey, kHeaderDefaultSpacing)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
