@@ -280,10 +280,8 @@ bool AshColorProvider::IsDarkModeEnabled() const {
     return false;
   }
 
-  // Keep it at dark mode if it is not in an active user session or
-  // kDarkLightMode feature is not enabled.
-  // TODO(minch): Besides OOBE, make LIGHT as the color mode for other
-  // non-active user session as well while enabling D/L feature.
+  // Keep the color mode as DARK in login screen or when dark/light mode feature
+  // is not enabled.
   if (!active_user_pref_service_ || !features::IsDarkLightModeEnabled())
     return true;
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
