@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+import os
 import subprocess
 import sys
 
@@ -17,5 +18,12 @@ if __name__ == '__main__':
     print("Usage: %s output_file command..." % sys.argv[0], file=sys.stderr)
     sys.exit(1)
 
+  # This script is designed to run binaries produced by the current build. We
+  # may prefix it with "./" to avoid picking up system versions that might
+  # also be on the path.
+  path = sys.argv[2]
+  if not os.path.isabs(path):
+    path = './' + path
+
   with open(sys.argv[1], 'w') as fp:
-    sys.exit(subprocess.check_call(sys.argv[2:], stdout=fp))
+    sys.exit(subprocess.check_call([path] + sys.argv[3:], stdout=fp))
