@@ -1061,8 +1061,6 @@ void DownloadItemView::PaintDownloadProgress(
     const gfx::RectF& bounds,
     const base::TimeDelta& indeterminate_progress_time,
     int percent_done) const {
-  const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
-
   // Calculate progress.
   SkScalar start_pos = SkIntToScalar(270);  // 12 o'clock
   SkScalar sweep_angle = SkDoubleToScalar(360 * percent_done / 100.0);
@@ -1074,9 +1072,12 @@ void DownloadItemView::PaintDownloadProgress(
     sweep_angle = SkIntToScalar(50);
   }
 
-  views::DrawProgressRing(canvas, gfx::RectFToSkRect(bounds),
-                          SkColorSetA(color, 0x33), color,
-                          /*stroke_width=*/1.7f, start_pos, sweep_angle);
+  const auto* color_provider = GetColorProvider();
+  views::DrawProgressRing(
+      canvas, gfx::RectFToSkRect(bounds),
+      color_provider->GetColor(kColorDownloadItemProgressRingBackground),
+      color_provider->GetColor(kColorDownloadItemProgressRingForeground),
+      /*stroke_width=*/1.7f, start_pos, sweep_angle);
 }
 
 ui::ImageModel DownloadItemView::GetIcon() const {

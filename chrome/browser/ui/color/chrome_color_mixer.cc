@@ -226,6 +226,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorAccent};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
+  mixer[kColorDownloadItemProgressRingBackground] = {
+      ui::SetAlpha(kColorDownloadItemProgressRingForeground, 0x33)};
+  mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
   mixer[kColorDownloadShelfButtonText] =
