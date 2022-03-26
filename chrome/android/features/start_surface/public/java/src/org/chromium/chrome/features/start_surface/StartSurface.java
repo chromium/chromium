@@ -199,6 +199,11 @@ public interface StartSurface {
          * @return The Tab switcher container view.
          */
         ViewGroup getTabSwitcherContainer();
+
+        /*
+         * Returns whether start surface homepage is showing.
+         */
+        boolean isShowingStartSurfaceHomepage();
     }
 
     /**

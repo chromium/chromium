@@ -215,6 +215,12 @@ public class StartSurfaceMVTilesTest {
 
         TabUiTestHelper.enterTabSwitcher(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(startSurfaceCoordinator.isMVTilesInitializedForTesting());
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.primary_tasks_surface_view));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(startSurfaceCoordinator.isMVTilesInitializedForTesting());
         });
     }

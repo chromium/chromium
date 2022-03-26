@@ -167,11 +167,27 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
-        if (!mIsMVTilesInitialized && mMostVisitedCoordinator != null) {
-            initializeMVTiles();
-            mIsMVTilesInitialized = true;
-        }
         mMediator.initialize();
+    }
+
+    @Override
+    public void initializeMVTiles() {
+        if (!LibraryLoader.getInstance().isInitialized() || mIsMVTilesInitialized
+                || mMostVisitedCoordinator == null) {
+            return;
+        }
+
+        Profile profile = Profile.getLastUsedRegularProfile();
+        MostVisitedTileNavigationDelegate navigationDelegate =
+                new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
+        mSuggestionsUiDelegate =
+                new MostVisitedSuggestionsUiDelegate(navigationDelegate, profile, mSnackbarManager);
+        mTileGroupDelegate =
+                new TileGroupDelegateImpl(mActivity, profile, navigationDelegate, mSnackbarManager);
+
+        mMostVisitedCoordinator.initWithNative(
+                mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
+        mIsMVTilesInitialized = true;
     }
 
     @Override
@@ -270,19 +286,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public boolean isMVTilesInitialized() {
         return mIsMVTilesInitialized;
-    }
-
-    private void initializeMVTiles() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        MostVisitedTileNavigationDelegate navigationDelegate =
-                new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
-        mSuggestionsUiDelegate =
-                new MostVisitedSuggestionsUiDelegate(navigationDelegate, profile, mSnackbarManager);
-        mTileGroupDelegate =
-                new TileGroupDelegateImpl(mActivity, profile, navigationDelegate, mSnackbarManager);
-
-        mMostVisitedCoordinator.initWithNative(
-                mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
     }
 
     /** Suggestions UI Delegate for constructing the TileGroup. */

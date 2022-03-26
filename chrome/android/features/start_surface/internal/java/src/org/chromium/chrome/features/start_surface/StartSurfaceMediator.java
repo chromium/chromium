@@ -106,6 +106,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
     private final boolean mExcludeQueryTiles;
+    private final Runnable mInitializeMVTilesRunnable;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -174,7 +175,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
             boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
-            boolean hadWarmStart, JankTracker jankTracker) {
+            boolean hadWarmStart, JankTracker jankTracker, Runnable initializeMVTilesRunnable) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabModelSelector = tabModelSelector;
@@ -190,6 +191,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         mHadWarmStart = hadWarmStart;
         mJankTracker = jankTracker;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
+        mInitializeMVTilesRunnable = initializeMVTilesRunnable;
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -345,11 +347,15 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             LensMetrics.recordShown(LensEntryPoint.TASKS_SURFACE, shouldShowLensButton);
             mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, shouldShowLensButton);
 
+            // This is for Instant Start when overview is already visible while the omnibox, Feed
+            // and MV tiles haven't been set.
             if (mController.overviewVisible()) {
                 mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
-                if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                        && mExploreSurfaceCoordinatorFactory != null) {
-                    setExploreSurfaceVisibility(!mIsIncognito);
+                if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                    if (mExploreSurfaceCoordinatorFactory != null) {
+                        setExploreSurfaceVisibility(!mIsIncognito);
+                    }
+                    if (mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
                 }
             }
         }
@@ -502,14 +508,14 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController = */ true);
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             boolean hasNormalTab = getNormalTabCount() > 0;
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
+            setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
             setTabCarouselVisibility(
                     hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
-            setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
+            setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             // TODO(qinmin): show query tiles when flag is enabled.
             setQueryTilesVisibility(false);
             setFakeBoxVisibility(!mIsIncognito);
@@ -689,6 +695,19 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     public boolean inShowState() {
         return mStartSurfaceState != StartSurfaceState.NOT_SHOWN
                 && mStartSurfaceState != StartSurfaceState.DISABLED;
+    }
+
+    @Override
+    public boolean isShowingStartSurfaceHomepage() {
+        // When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage
+        // is showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
+        // SHOWN_HOMEPAGE or NOT_SHOWN, homepage is showing.
+        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                || mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
+                || mStartSurfaceState == StartSurfaceState.SHOWING_START
+                || (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS
+                        && (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                || mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN));
     }
 
     // Implements TabSwitcher.OverviewModeObserver.
@@ -921,7 +940,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     }
 
     private void setMVTilesVisibility(boolean isVisible) {
-        if (mExcludeMVTiles || isVisible == mPropertyModel.get(MV_TILES_VISIBLE)) return;
+        if (mExcludeMVTiles) return;
+        if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
     }
 

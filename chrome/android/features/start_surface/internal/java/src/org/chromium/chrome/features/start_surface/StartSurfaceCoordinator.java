@@ -283,7 +283,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
-                startSurfaceOneshotSupplier, hadWarmStart, jankTracker);
+                startSurfaceOneshotSupplier, hadWarmStart, jankTracker,
+                mTasksSurface != null ? mTasksSurface::initializeMVTiles : null);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {

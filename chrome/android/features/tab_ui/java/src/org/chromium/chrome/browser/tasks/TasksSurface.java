@@ -33,6 +33,13 @@ public interface TasksSurface {
     void initialize();
 
     /**
+     * Called to initialize MV tiles.
+     * It should be called before MV tiles is showing.
+     * It might be called many times.
+     */
+    void initializeMVTiles();
+
+    /**
      * Set the listener to get the {@link Layout#onTabSelecting} event from the Grid Tab Switcher.
      * @param listener The {@link TabSwitcher.OnTabSelectingListener} to use.
      */

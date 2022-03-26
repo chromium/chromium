@@ -142,6 +142,8 @@ public class StartSurfaceMediatorUnitTest {
     private PrefService mPrefService;
     @Mock
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    @Mock
+    private Runnable mInitializeMVTilesRunnable;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -1263,6 +1265,20 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
     }
 
+    @Test
+    public void testInitializeMVTilesWhenShownHomepage() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doReturn(2).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+        verify(mInitializeMVTilesRunnable).run();
+    }
+
     private StartSurfaceMediator createStartSurfaceMediator(
             boolean isStartSurfaceEnabled, boolean excludeMVTiles) {
         return createStartSurfaceMediator(
@@ -1289,7 +1305,7 @@ public class StartSurfaceMediatorUnitTest {
                         isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                         mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
                         true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                        new DummyJankTracker());
+                        new DummyJankTracker(), mInitializeMVTilesRunnable);
         return mediator;
     }
 }

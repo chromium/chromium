@@ -698,23 +698,10 @@ public class StartSurfaceLayout extends Layout {
     }
 
     /**
-     * When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage is
-     * showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
-     * SHOWN_HOMEPAGE or NOT_SHOWN, homepage is showing.
      * @return Whether start surface homepage is showing.
      */
     private boolean isShowingStartSurfaceHomepage() {
-        @StartSurfaceState
-        int currentState = mController.getStartSurfaceState();
-        @StartSurfaceState
-        int previousState = mController.getPreviousStartSurfaceState();
-
-        return currentState == StartSurfaceState.SHOWN_HOMEPAGE
-                || currentState == StartSurfaceState.SHOWING_HOMEPAGE
-                || currentState == StartSurfaceState.SHOWING_START
-                || (currentState == StartSurfaceState.SHOWING_PREVIOUS
-                        && (previousState == StartSurfaceState.SHOWN_HOMEPAGE
-                                || previousState == StartSurfaceState.NOT_SHOWN));
+        return mController.isShowingStartSurfaceHomepage();
     }
 
     private boolean isHidingStartSurfaceHomepage() {
