@@ -14,7 +14,6 @@ goog.require('ChromeVoxState');
 goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('KeyCode');
-goog.require('KeyMap');
 goog.require('KeyUtil');
 goog.require('LocaleOutputHelper');
 goog.require('Msgs');

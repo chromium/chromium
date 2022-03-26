@@ -11,7 +11,6 @@ goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('ChromeVox');
 goog.require('ChromeVoxState');
-goog.require('KeyMap');
 goog.require('KeySequence');
 goog.require('KeyUtil');
 goog.require('LibLouis');

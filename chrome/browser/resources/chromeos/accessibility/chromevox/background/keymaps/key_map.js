@@ -20,14 +20,9 @@
  * UserCommands.
  */
 
-goog.provide('KeyMap');
+// TODO(dtseng): KeyUtil only needed for sticky mode.
 
-goog.require('KeyCode');
-
-// TODO(dtseng): Only needed for sticky mode.
-goog.require('KeyUtil');
-
-KeyMap = class {
+export class KeyMap {
   /**
    * @param {Array<Object<{command: string, sequence: KeySequence}>>}
    * commandsAndKeySequences An array of pairs - KeySequences and commands.
@@ -212,7 +207,7 @@ KeyMap = class {
       this.commandToKey_[binding.command] = binding.sequence;
     }
   }
-};
+}
 
 // This is intentionally not type-checked, as it is a serialized set of
 // KeySequence objects.

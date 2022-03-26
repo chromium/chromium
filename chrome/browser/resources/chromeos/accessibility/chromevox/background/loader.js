@@ -30,7 +30,6 @@ goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');
 goog.require('JaPhoneticMap');
 goog.require('KeyCode');
-goog.require('KeyMap');
 goog.require('KeySequence');
 goog.require('KeyUtil');
 goog.require('LibLouis.FormType');
