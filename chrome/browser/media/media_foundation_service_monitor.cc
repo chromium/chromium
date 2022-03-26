@@ -4,10 +4,12 @@
 
 #include "chrome/browser/media/media_foundation_service_monitor.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cdm_registry.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
 #include "ui/display/screen.h"
 
@@ -111,7 +113,8 @@ void MediaFoundationServiceMonitor::OnPowerOrDisplayChange() {
 void MediaFoundationServiceMonitor::AddSample(int failure_score) {
   samples_.AddSample(failure_score);
 
-  if (samples_.GetUnroundedAverage() >= kMaxAverageFailureScore) {
+  if (samples_.GetUnroundedAverage() >= kMaxAverageFailureScore &&
+      base::FeatureList::IsEnabled(media::kHardwareSecureDecryptionFallback)) {
     content::CdmRegistry::GetInstance()->DisableHardwareSecureCdms();
   }
 }

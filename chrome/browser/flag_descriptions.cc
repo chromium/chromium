@@ -3905,6 +3905,14 @@ const char kHardwareSecureDecryptionExperimentDescription[] =
     "Enable/Disable the use of hardware secure Content Decryption Module (CDM) "
     "for experimental protected content playback.";
 
+const char kHardwareSecureDecryptionFallbackName[] =
+    "Hardware Secure Decryption Fallback";
+const char kHardwareSecureDecryptionFallbackDescription[] =
+    "Allows automatically disabling hardware secure Content Decryption Module "
+    "(CDM) after failures or crashes. Subsequent playback may use software "
+    "secure CDMs. If this feature is disabled, the fallback will never happen "
+    "and users could be stuck with playback failures.";
+
 const char kMediaFoundationClearName[] = "MediaFoundation for Clear";
 const char kMediaFoundationClearDescription[] =
     "Enable/Disable the use of MediaFoundation for non-protected content "

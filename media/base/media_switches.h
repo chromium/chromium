@@ -143,6 +143,7 @@ MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsModernUI;
 MEDIA_EXPORT extern const base::Feature kHardwareMediaKeyHandling;
 MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryption;
 MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryptionExperiment;
+MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryptionFallback;
 MEDIA_EXPORT extern const base::Feature kInternalMediaSession;
 MEDIA_EXPORT extern const base::Feature kKeepRvfcFrameAlive;
 MEDIA_EXPORT extern const base::Feature kKeyPressMonitoring;

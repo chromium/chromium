@@ -53200,6 +53200,7 @@ from previous Chrome versions.
   <int value="-1150881704"
       label="ArcNativeBridge64BitSupportExperiment:enabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
+  <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
   <int value="-1145702446" label="ChromeHomeInactivitySheetExpansion:enabled"/>
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
@@ -54642,6 +54643,7 @@ from previous Chrome versions.
   <int value="-131673218" label="FileHandlingAPI:disabled"/>
   <int value="-131257916" label="OmniboxCompactSuggestions:disabled"/>
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
+  <int value="-129823932" label="HardwareSecureDecryptionFallback:disabled"/>
   <int value="-128687277"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>

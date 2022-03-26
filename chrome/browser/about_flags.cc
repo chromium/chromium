@@ -3509,6 +3509,13 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(media::kHardwareSecureDecryptionExperiment),
     },
     {
+        "enable-hardware-secure-decryption-fallback",
+        flag_descriptions::kHardwareSecureDecryptionFallbackName,
+        flag_descriptions::kHardwareSecureDecryptionFallbackDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(media::kHardwareSecureDecryptionFallback),
+    },
+    {
         "enable-media-foundation-clear",
         flag_descriptions::kMediaFoundationClearName,
         flag_descriptions::kMediaFoundationClearDescription,

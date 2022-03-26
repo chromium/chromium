@@ -2196,6 +2196,13 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-hardware-secure-decryption-fallback",
+    "owners": [
+      "xhwang", "media-dev"
+    ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "enable-heavy-ad-intervention",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 90
