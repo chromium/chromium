@@ -10,11 +10,33 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "printing/printing_features.h"
+#endif
+
 namespace printing {
+
+HWND PrintingContextSystemDialogWin::GetWindow() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Delving through the view tree to get to root window happens separately
+    // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
+    // before sending the identified window owner to the Print Backend service.
+    // This means that this call is happening in the service, and thus should
+    // just use the parent view as-is instead of looking for the root window.
+    // TODO(crbug.com/809738)  Pursue having a service-level instantiation of
+    // `PrintingContextSystemDialogWin` for this behavior.  That would ensure
+    // this logic would be compile-time driven and only invoked by the service.
+    return reinterpret_cast<HWND>(delegate_->GetParentView());
+  }
+#endif
+  return GetRootWindow(delegate_->GetParentView());
+}
 
 PrintingContextSystemDialogWin::PrintingContextSystemDialogWin(
     Delegate* delegate)
@@ -29,7 +51,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
     PrintSettingsCallback callback) {
   DCHECK(!in_print_job_);
 
-  HWND window = GetRootWindow(delegate_->GetParentView());
+  HWND window = GetWindow();
   DCHECK(window);
 
   // Show the OS-dependent dialog box.

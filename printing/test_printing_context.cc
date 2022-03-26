@@ -59,7 +59,15 @@ void TestPrintingContext::AskUserForSettings(int max_pages,
                                              bool is_scripted,
                                              PrintSettingsCallback callback) {
   // Do not actually ask the user with a dialog, just pretend like user
-  // selected the default printer and used the default settings for it.
+  // made some kind of interaction.
+  if (ask_user_for_settings_cancel_) {
+    // Pretend the user hit the Cancel button.
+    std::move(callback).Run(mojom::ResultCode::kCanceled);
+    return;
+  }
+
+  // Pretend the user selected the default printer and used the default
+  // settings for it.
   scoped_refptr<PrintBackend> print_backend =
       PrintBackend::CreateInstance(/*locale=*/std::string());
   std::string printer_name;
@@ -80,6 +88,9 @@ void TestPrintingContext::AskUserForSettings(int max_pages,
 mojom::ResultCode TestPrintingContext::UseDefaultSettings() {
   scoped_refptr<PrintBackend> print_backend =
       PrintBackend::CreateInstance(/*locale=*/std::string());
+  if (use_default_settings_fails_)
+    return mojom::ResultCode::kFailed;
+
   std::string printer_name;
   mojom::ResultCode result = print_backend->GetDefaultPrinterName(printer_name);
   if (result != mojom::ResultCode::kSuccess)

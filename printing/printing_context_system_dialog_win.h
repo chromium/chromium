@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextSystemDialogWin
  private:
   friend class MockPrintingContextWin;
 
+  HWND GetWindow();
+
   virtual HRESULT ShowPrintDialog(PRINTDLGEX* options);
 
   // Reads the settings from the selected device context. Updates settings_ and

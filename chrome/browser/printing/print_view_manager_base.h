@@ -121,6 +121,20 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   void SetPrintingRFH(content::RenderFrameHost* rfh);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Register with the `PrintBackendServiceManager` as a client for queries
+  // which will require a UI (the system print dialog).  Some platforms have
+  // limitations on having multiple clients of this type; this function returns
+  // `false` if such a registration fails because of this restriction.  In
+  // that case no further attempts to make the queries should be made.
+  bool RegisterSystemPrintClient();
+
+  // Unregister with the `PrintBackendServiceManager` if a client for queries
+  // which require a UI.  This function can be called even if there is no
+  // current registration.
+  void UnregisterSystemPrintClient();
+#endif
+
   // content::WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
@@ -258,6 +272,11 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   // Whether printing is enabled.
   BooleanPrefMember printing_enabled_;
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Client ID with the print backend service manager for this print job.
+  absl::optional<uint32_t> service_manager_client_id_;
+#endif
 
   const scoped_refptr<PrintQueriesQueue> queue_;
 

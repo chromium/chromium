@@ -106,8 +106,12 @@ bool PrintViewManager::PrintForSystemDialogNow(
     return false;
   }
 
-  // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
-  // system print is enabled out-of-process.
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Register this worker so that the service persists as long as the user
+  // keeps the system print dialog UI displayed.
+  if (!RegisterSystemPrintClient())
+    return false;
+#endif
 
   SetPrintingRFH(print_preview_rfh_);
   GetPrintRenderFrame(print_preview_rfh_)->PrintForSystemDialog();

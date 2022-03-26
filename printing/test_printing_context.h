@@ -56,6 +56,12 @@ class TestPrintingContext : public PrintingContext {
     document_done_blocked_by_permissions_ = true;
   }
 
+  // Enables tests to fail with a failed error.
+  void SetUseDefaultSettingsFails() { use_default_settings_fails_ = true; }
+
+  // Enables tests to fail with a canceled error.
+  void SetAskUserForSettingsCanceled() { ask_user_for_settings_cancel_ = true; }
+
   // PrintingContext overrides:
   void AskUserForSettings(int max_pages,
                           bool has_selection,
@@ -84,6 +90,8 @@ class TestPrintingContext : public PrintingContext {
 
  private:
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
+  bool use_default_settings_fails_ = false;
+  bool ask_user_for_settings_cancel_ = false;
   bool new_document_blocked_by_permissions_ = false;
 #if BUILDFLAG(IS_WIN)
   bool render_page_blocked_by_permissions_ = false;

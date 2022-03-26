@@ -166,15 +166,10 @@ void PrintJobWorker::GetSettings(bool ask_user_for_settings,
   // When we delegate to a destination, we don't ask the user for settings.
   // TODO(mad): Ask the destination for settings.
   if (ask_user_for_settings) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PrintJobWorker::GetSettingsWithUI,
-                       base::Unretained(this), document_page_count,
-                       has_selection, is_scripted, std::move(callback)));
+    InvokeGetSettingsWithUI(document_page_count, has_selection, is_scripted,
+                            std::move(callback));
   } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&PrintJobWorker::UseDefaultSettings,
-                                  base::Unretained(this), std::move(callback)));
+    InvokeUseDefaultSettings(std::move(callback));
   }
 }
 
@@ -260,6 +255,23 @@ void PrintJobWorker::UpdatePrintSettingsFromPOD(
 void PrintJobWorker::GetSettingsDone(SettingsCallback callback,
                                      mojom::ResultCode result) {
   std::move(callback).Run(printing_context_->TakeAndResetSettings(), result);
+}
+
+void PrintJobWorker::InvokeUseDefaultSettings(SettingsCallback callback) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PrintJobWorker::UseDefaultSettings,
+                                base::Unretained(this), std::move(callback)));
+}
+
+void PrintJobWorker::InvokeGetSettingsWithUI(uint32_t document_page_count,
+                                             bool has_selection,
+                                             bool is_scripted,
+                                             SettingsCallback callback) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrintJobWorker::GetSettingsWithUI, base::Unretained(this),
+                     document_page_count, has_selection, is_scripted,
+                     std::move(callback)));
 }
 
 void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,

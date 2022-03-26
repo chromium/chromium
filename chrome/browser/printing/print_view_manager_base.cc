@@ -55,12 +55,9 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
+#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "printing/printing_features.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/printing/print_error_dialog.h"
@@ -69,6 +66,10 @@
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
 #include "components/prefs/pref_service.h"
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -324,9 +325,12 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   if (!content::RenderFrameHost::FromID(rfh_id) || !rfh->IsRenderFrameLive())
     return false;
 
-  // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
-  // system print is enabled out-of-process.  A corresponding unregister should
-  // go in `ReleasePrintJob()`.
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Register this worker so that the service persists as long as the user
+  // keeps the system print dialog UI displayed.
+  if (!RegisterSystemPrintClient())
+    return false;
+#endif
 
   SetPrintingRFH(rfh);
   GetPrintRenderFrame(rfh)->PrintRequestedPages();
@@ -465,6 +469,16 @@ void PrintViewManagerBase::GetDefaultPrintSettingsReply(
     GetDefaultPrintSettingsCallback callback,
     mojom::PrintParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+      !params->document_cookie) {
+    // The attempt to use the default settings failed.  There should be no
+    // subsequent call to get settings from the user that would normally be
+    // shared as part of this client registration.  Immediately notify the
+    // service manager that this client is no longer needed.
+    UnregisterSystemPrintClient();
+  }
+#endif
   set_cookie(params->document_cookie);
   std::move(callback).Run(std::move(params));
 }
@@ -475,6 +489,11 @@ void PrintViewManagerBase::ScriptedPrintReply(
     mojom::PrintPagesParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Finished getting all settings (defaults and from user), no further need
+  // to be registered as a system print client.
+  UnregisterSystemPrintClient();
+#endif
   if (!content::RenderProcessHost::FromID(process_id)) {
     // Early return if the renderer is not alive.
     return;
@@ -610,6 +629,15 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
                                  mojom::PrintParams::New());
     return;
   }
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+      !service_manager_client_id_.has_value()) {
+    // Renderer process has requested settings outside of the expected setup.
+    GetDefaultPrintSettingsReply(std::move(callback),
+                                 mojom::PrintParams::New());
+    return;
+  }
+#endif
 
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   auto callback_wrapper =
@@ -676,6 +704,14 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
     return;
   }
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+      !service_manager_client_id_.has_value()) {
+    // Renderer process has requested settings outside of the expected setup.
+    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    return;
+  }
+#endif
   auto callback_wrapper = base::BindOnce(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), render_process_host->GetID());
@@ -918,6 +954,13 @@ void PrintViewManagerBase::ReleasePrintJob() {
   content::RenderFrameHost* rfh = printing_rfh_;
   printing_rfh_ = nullptr;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Ensure that any residual registration of printing client is released.
+  // This might be necessary in some abnormal cases, such as the associated
+  // render process having terminated.
+  UnregisterSystemPrintClient();
+#endif
+
   if (!print_job_)
     return;
 
@@ -1019,6 +1062,31 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
   CHECK(rfh->IsRenderFrameLive());
   printing_rfh_ = rfh;
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+bool PrintViewManagerBase::RegisterSystemPrintClient() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!service_manager_client_id_.has_value());
+  service_manager_client_id_ =
+      PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
+  if (!service_manager_client_id_.has_value()) {
+    DVLOG(1) << "Multiple system print clients not allowed, skipping user "
+                "request.";
+    return false;
+  }
+  return true;
+}
+
+void PrintViewManagerBase::UnregisterSystemPrintClient() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!service_manager_client_id_.has_value())
+    return;
+
+  PrintBackendServiceManager::GetInstance().UnregisterClient(
+      *service_manager_client_id_);
+  service_manager_client_id_.reset();
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 void PrintViewManagerBase::ReleasePrinterQuery() {
   int current_cookie = cookie();

@@ -134,6 +134,14 @@ class PrintJobWorker {
   // Reports settings back to `callback`.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
+  // Helper functions to invoke the desired way of getting system print
+  // settings.
+  virtual void InvokeUseDefaultSettings(SettingsCallback callback);
+  virtual void InvokeGetSettingsWithUI(uint32_t document_page_count,
+                                       bool has_selection,
+                                       bool is_scripted,
+                                       SettingsCallback callback);
+
   // Called on the UI thread to update the print settings.
   virtual void UpdatePrintSettings(base::Value new_settings,
                                    SettingsCallback callback);
