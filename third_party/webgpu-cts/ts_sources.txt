@@ -3,10 +3,11 @@ src/common/internal/stack.ts
 src/common/internal/logging/log_message.ts
 src/common/internal/logging/result.ts
 src/common/internal/logging/logger.ts
+src/common/util/types.ts
+src/common/util/data_tables.ts
 src/common/util/timeout.ts
 src/common/util/util.ts
 src/common/internal/logging/test_case_recorder.ts
-src/common/util/types.ts
 src/common/runtime/helper/options.ts
 src/common/internal/query/encode_selectively.ts
 src/common/internal/query/json_param_value.ts
@@ -42,7 +43,6 @@ src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/version.ts
 src/common/util/collect_garbage.ts
 src/common/util/colors.ts
-src/common/util/data_tables.ts
 src/common/util/preprocessor.ts
 src/unittests/unit_test.ts
 src/demo/a.spec.ts
