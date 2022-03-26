@@ -1979,6 +1979,31 @@ unsigned int aom_get_mb_ss_c(const int16_t*);
 unsigned int aom_get_mb_ss_sse2(const int16_t*);
 #define aom_get_mb_ss aom_get_mb_ss_sse2
 
+void aom_get_sse_sum_8x8_quad_c(const uint8_t* src_ptr,
+                                int source_stride,
+                                const uint8_t* ref_ptr,
+                                int ref_stride,
+                                unsigned int* sse,
+                                int* sum);
+void aom_get_sse_sum_8x8_quad_sse2(const uint8_t* src_ptr,
+                                   int source_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   unsigned int* sse,
+                                   int* sum);
+void aom_get_sse_sum_8x8_quad_avx2(const uint8_t* src_ptr,
+                                   int source_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   unsigned int* sse,
+                                   int* sum);
+RTCD_EXTERN void (*aom_get_sse_sum_8x8_quad)(const uint8_t* src_ptr,
+                                             int source_stride,
+                                             const uint8_t* ref_ptr,
+                                             int ref_stride,
+                                             unsigned int* sse,
+                                             int* sum);
+
 void aom_h_predictor_16x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,
                              const uint8_t* above,
@@ -8612,6 +8637,9 @@ static void setup_rtcd_internal(void) {
   aom_get_blk_sse_sum = aom_get_blk_sse_sum_sse2;
   if (flags & HAS_AVX2)
     aom_get_blk_sse_sum = aom_get_blk_sse_sum_avx2;
+  aom_get_sse_sum_8x8_quad = aom_get_sse_sum_8x8_quad_sse2;
+  if (flags & HAS_AVX2)
+    aom_get_sse_sum_8x8_quad = aom_get_sse_sum_8x8_quad_avx2;
   aom_h_predictor_32x32 = aom_h_predictor_32x32_sse2;
   if (flags & HAS_AVX2)
     aom_h_predictor_32x32 = aom_h_predictor_32x32_avx2;

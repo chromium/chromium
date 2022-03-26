@@ -1072,6 +1072,25 @@ void aom_get_blk_sse_sum_c(const int16_t* data,
 unsigned int aom_get_mb_ss_c(const int16_t*);
 #define aom_get_mb_ss aom_get_mb_ss_c
 
+void aom_get_sse_sum_8x8_quad_c(const uint8_t* src_ptr,
+                                int source_stride,
+                                const uint8_t* ref_ptr,
+                                int ref_stride,
+                                unsigned int* sse,
+                                int* sum);
+void aom_get_sse_sum_8x8_quad_neon(const uint8_t* src_ptr,
+                                   int source_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   unsigned int* sse,
+                                   int* sum);
+RTCD_EXTERN void (*aom_get_sse_sum_8x8_quad)(const uint8_t* src_ptr,
+                                             int source_stride,
+                                             const uint8_t* ref_ptr,
+                                             int ref_stride,
+                                             unsigned int* sse,
+                                             int* sum);
+
 void aom_h_predictor_16x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,
                              const uint8_t* above,
@@ -4958,6 +4977,9 @@ static void setup_rtcd_internal(void) {
   aom_get8x8var = aom_get8x8var_c;
   if (flags & HAS_NEON)
     aom_get8x8var = aom_get8x8var_neon;
+  aom_get_sse_sum_8x8_quad = aom_get_sse_sum_8x8_quad_c;
+  if (flags & HAS_NEON)
+    aom_get_sse_sum_8x8_quad = aom_get_sse_sum_8x8_quad_neon;
   aom_h_predictor_16x16 = aom_h_predictor_16x16_c;
   if (flags & HAS_NEON)
     aom_h_predictor_16x16 = aom_h_predictor_16x16_neon;
