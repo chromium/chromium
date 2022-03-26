@@ -505,8 +505,7 @@ class MenuControllerTest : public ViewsTestBase,
 
     // Adjust the final bounds to not include the shadow and border.
     const gfx::Insets border_and_shadow_insets =
-        BubbleBorder::GetBorderAndShadowInsets(
-            MenuConfig::instance().touchable_menu_shadow_elevation);
+        GetBorderAndShadowInsets(/*is_submenu=*/false);
     final_bounds.Inset(border_and_shadow_insets);
 
     // Test that the menu will show on screen.
@@ -552,8 +551,7 @@ class MenuControllerTest : public ViewsTestBase,
 
     // Adjust the final bounds to not include the shadow and border.
     const gfx::Insets border_and_shadow_insets =
-        BubbleBorder::GetBorderAndShadowInsets(
-            MenuConfig::instance().touchable_menu_shadow_elevation);
+        GetBorderAndShadowInsets(/*is_submenu=*/false);
     final_bounds.Inset(border_and_shadow_insets);
 
     // Test that the menu is within the monitor bounds.
@@ -603,8 +601,7 @@ class MenuControllerTest : public ViewsTestBase,
 
     // Adjust the final bounds to not include the shadow and border.
     const gfx::Insets border_and_shadow_insets =
-        BubbleBorder::GetBorderAndShadowInsets(
-            MenuConfig::instance().touchable_menu_shadow_elevation);
+        GetBorderAndShadowInsets(/*is_submenu=*/false);
 
     options.anchor_bounds = gfx::Rect(monitor_bounds.origin(), anchor_size);
     gfx::Rect final_bounds = CalculateBubbleMenuBounds(options);
@@ -655,8 +652,7 @@ class MenuControllerTest : public ViewsTestBase,
 
     // Adjust the final bounds to not include the shadow and border.
     const gfx::Insets border_and_shadow_insets =
-        BubbleBorder::GetBorderAndShadowInsets(
-            MenuConfig::instance().touchable_menu_shadow_elevation);
+        GetBorderAndShadowInsets(/*is_submenu=*/true);
 
     MenuItemView* parent_item = item->GetParentMenuItem();
     SubmenuView* sub_menu = parent_item->GetSubmenu();
@@ -878,6 +874,23 @@ class MenuControllerTest : public ViewsTestBase,
     menu_controller_->OpenMenuImpl(parent, true);
   }
 
+  gfx::Insets GetBorderAndShadowInsets(bool is_submenu) {
+    const MenuConfig& menu_config = MenuConfig::instance();
+    int elevation = menu_config.touchable_menu_shadow_elevation;
+    BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Increase the submenu shadow elevation and change the shadow style to
+    // ChromeOS system UI shadow style when using Ash System UI layout.
+    if (menu_controller_->use_ash_system_ui_layout()) {
+      if (is_submenu)
+        elevation = menu_config.touchable_submenu_shadow_elevation;
+
+      shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
+    }
+#endif
+    return BubbleBorder::GetBorderAndShadowInsets(elevation, shadow_type);
+  }
+
  private:
   void Init() {
     owner_ = std::make_unique<GestureTestWidget>();
@@ -1063,8 +1076,7 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   constexpr gfx::Rect monitor_bounds(0, 0, 500, 500);
   constexpr gfx::Size menu_size(100, 200);
   const gfx::Insets border_and_shadow_insets =
-      BubbleBorder::GetBorderAndShadowInsets(
-          MenuConfig::instance().touchable_menu_shadow_elevation);
+      GetBorderAndShadowInsets(/*is_submenu=*/false);
 
   // Calculate the suitable anchor point to ensure that if the menu shows below
   // the anchor point, the bottom of the menu should be one pixel off the
@@ -1128,8 +1140,7 @@ TEST_F(MenuControllerTest, VerifyContextMenuBubblePositionAfterSizeChanges) {
   constexpr gfx::Rect kMonitorBounds(0, 0, 500, 500);
   constexpr gfx::Size kMenuSize(100, 200);
   const gfx::Insets border_and_shadow_insets =
-      BubbleBorder::GetBorderAndShadowInsets(
-          MenuConfig::instance().touchable_menu_shadow_elevation);
+      GetBorderAndShadowInsets(/*is_submenu=*/false);
 
   // Calculate the suitable anchor point to ensure that if the menu shows below
   // the anchor point, the bottom of the menu should be one pixel off the

@@ -2503,9 +2503,18 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   const MenuConfig& menu_config = MenuConfig::instance();
   // Shadow insets are built into MenuScrollView's preferred size so it must be
   // compensated for when determining the bounds of touchable menus.
+  BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
+  int elevation = menu_config.touchable_menu_shadow_elevation;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (use_ash_system_ui_layout_) {
+    shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
+    elevation = item->GetParentMenuItem()
+                    ? menu_config.touchable_submenu_shadow_elevation
+                    : menu_config.touchable_menu_shadow_elevation;
+  }
+#endif
   const gfx::Insets border_and_shadow_insets =
-      BubbleBorder::GetBorderAndShadowInsets(
-          menu_config.touchable_menu_shadow_elevation);
+      BubbleBorder::GetBorderAndShadowInsets(elevation, shadow_type);
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
 

@@ -385,23 +385,32 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
   const MenuConfig& menu_config = MenuConfig::instance();
-  const int border_radius = menu_config.CornerRadiusForMenu(
-      content_view_->GetMenuItem()->GetMenuController());
+  auto* menu_controller = content_view_->GetMenuItem()->GetMenuController();
+  const int border_radius = menu_config.CornerRadiusForMenu(menu_controller);
+  const bool use_ash_system_ui_layout =
+      menu_controller->use_ash_system_ui_layout();
+
   ui::ColorId id = ui::kColorMenuBackground;
+  BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   id = ui::kColorAshSystemUIMenuBackground;
+  // For ash system ui, we use chromeos system ui shadow.
+  if (use_ash_system_ui_layout)
+    shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
 #endif
+
   const SkColor color =
       GetWidget() ? GetColorProvider()->GetColor(id) : gfx::kPlaceholderColor;
-  auto bubble_border = std::make_unique<BubbleBorder>(
-      arrow_, BubbleBorder::STANDARD_SHADOW, color);
-  if (content_view_->GetMenuItem()
-          ->GetMenuController()
-          ->use_ash_system_ui_layout() ||
-      border_radius > 0) {
+  auto bubble_border =
+      std::make_unique<BubbleBorder>(arrow_, shadow_type, color);
+  if (use_ash_system_ui_layout || border_radius > 0) {
     bubble_border->SetCornerRadius(border_radius);
+
+    const bool is_top_menu = !content_view_->GetMenuItem()->GetParentMenuItem();
     bubble_border->set_md_shadow_elevation(
-        menu_config.touchable_menu_shadow_elevation);
+        is_top_menu ? menu_config.touchable_menu_shadow_elevation
+                    : menu_config.touchable_submenu_shadow_elevation);
+
     gfx::Insets insets(menu_config.vertical_touchable_menu_item_padding, 0);
     if (GetFootnote())
       insets.Set(menu_config.vertical_touchable_menu_item_padding, 0, 0, 0);
