@@ -3437,6 +3437,27 @@ RenderFrameImpl::GetRemoteNavigationAssociatedInterfaces() {
   return GetRemoteAssociatedInterfaces();
 }
 
+namespace {
+
+// Emit the trace event using a helper as we:
+// a) want to ensure that the trace event covers the entire function.
+// b) we want to emit the new child routing id as an argument.
+// c) child routing id becomes available only after a sync call.
+struct CreateChildFrameTraceEvent {
+  explicit CreateChildFrameTraceEvent(int routing_id) {
+    TRACE_EVENT_BEGIN("navigation,rail", "RenderFrameImpl::createChildFrame",
+                      "routing_id", routing_id);
+  }
+
+  ~CreateChildFrameTraceEvent() {
+    TRACE_EVENT_END("navigation,rail", "child_routing_id", child_routing_id);
+  }
+
+  int child_routing_id = -1;
+};
+
+}  // namespace
+
 blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     blink::mojom::TreeScopeType scope,
     const blink::WebString& name,
@@ -3445,6 +3466,10 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     const blink::WebFrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType frame_owner_element_type,
     blink::WebPolicyContainerBindParams policy_container_bind_params) {
+  // Tracing analysis uses this to find main frames when this value is
+  // MSG_ROUTING_NONE, and build the frame tree otherwise.
+  CreateChildFrameTraceEvent trace_event(routing_id_);
+
   // Allocate child routing ID. This is a synchronous call.
   int child_routing_id;
   blink::LocalFrameToken frame_token;
@@ -3453,6 +3478,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
           child_routing_id, frame_token, devtools_frame_token)) {
     return nullptr;
   }
+  trace_event.child_routing_id = child_routing_id;
 
   // The unique name generation logic was moved out of Blink, so for historical
   // reasons, unique name generation needs to take something called the
@@ -3490,11 +3516,6 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       scope, name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
       blink::mojom::FrameOwnerProperties::From(frame_owner_properties),
       frame_owner_element_type);
-
-  // Tracing analysis uses this to find main frames when this value is
-  // MSG_ROUTING_NONE, and build the frame tree otherwise.
-  TRACE_EVENT2("navigation,rail", "RenderFrameImpl::createChildFrame", "id",
-               routing_id_, "child", child_routing_id);
 
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
