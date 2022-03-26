@@ -568,9 +568,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       convert_yuva(matrix, libyuv::I444AlphaToARGBMatrix);
       break;
     case PIXEL_FORMAT_YUV420AP10:
-      // TODO(wtc): Use libyuv::I010AlphaToARGBMatrixFilter after
-      // https://crbug.com/libyuv/922 is fixed.
-      convert_yuva16(matrix, libyuv::I010AlphaToARGBMatrix);
+      convert_yuva16_with_filter(matrix, libyuv::I010AlphaToARGBMatrixFilter);
       break;
     case PIXEL_FORMAT_YUV422AP10:
       convert_yuva16_with_filter(matrix, libyuv::I210AlphaToARGBMatrixFilter);
