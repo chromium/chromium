@@ -51,6 +51,11 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
 
   const FrameSinkBundleId& id() const { return id_; }
 
+  // Called by the identified sink itself to notify the bundle that the sink
+  // needs (or no longer needs) BeginFrame notifications. This is distinct from
+  // SetNeedsBeginFrame(), as the latter is only called by clients.
+  void SetSinkNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame);
+
   void AddFrameSink(CompositorFrameSinkSupport* support);
   void UpdateFrameSink(CompositorFrameSinkSupport* support,
                        BeginFrameSource* old_source);

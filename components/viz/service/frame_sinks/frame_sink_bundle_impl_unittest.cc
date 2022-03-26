@@ -266,6 +266,9 @@ class FrameSinkBundleImplTest : public testing::Test {
   FrameSinkManagerImpl& manager() { return manager_; }
   TestBundleClient& test_client() { return test_client_; }
   mojo::Remote<mojom::FrameSinkBundle>& bundle() { return bundle_; }
+  FakeExternalBeginFrameSource& begin_frame_source() {
+    return begin_frame_source_;
+  }
 
  private:
   const gpu::SyncToken frame_sync_token_{MakeVerifiedSyncToken(42)};
@@ -300,9 +303,17 @@ TEST_F(FrameSinkBundleImplTest, DestroyOnDisconnect) {
 }
 
 TEST_F(FrameSinkBundleImplTest, OnBeginFrame) {
+  // By default the bundle does not observe the BeginFrameSource. The only
+  // observer is the (non-bundled) main-frame sink.
+  EXPECT_EQ(1u, begin_frame_source().num_observers());
+
   TestFrameSink frame_a(manager(), kSubFrameA, kMainFrame, kBundleId);
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
+
+  // The bundle should observe the BeginFrameSource on behalf of all its sinks,
+  // so the only observers should now be the main-frame sink and the bundle.
+  EXPECT_EQ(2u, begin_frame_source().num_observers());
 
   // OnBeginFrame() should elicit a single batch of notifications to the bundle
   // client, with a notification for each frame in the bundle.
@@ -320,6 +331,14 @@ TEST_F(FrameSinkBundleImplTest, OnBeginFrame) {
   test_client().WaitForNextFlush(nullptr, &begin_frames, nullptr);
   EXPECT_THAT(begin_frames,
               UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameC)));
+
+  // Finally, if all sinks unsubscribe from BeginFrame notifications, the bundle
+  // should stop observing the BeginFrameSource.
+  EXPECT_EQ(2u, begin_frame_source().num_observers());
+  manager().GetFrameSinkForId(kSubFrameA)->SetNeedsBeginFrame(false);
+  EXPECT_EQ(2u, begin_frame_source().num_observers());
+  manager().GetFrameSinkForId(kSubFrameC)->SetNeedsBeginFrame(false);
+  EXPECT_EQ(1u, begin_frame_source().num_observers());
 }
 
 TEST_F(FrameSinkBundleImplTest, SubmitAndAck) {
