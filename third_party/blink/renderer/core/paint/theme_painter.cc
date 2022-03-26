@@ -293,6 +293,9 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
 
   double min = input->Minimum();
   double max = input->Maximum();
+  if (min >= max)
+    return;
+
   ControlPart part = o.StyleRef().EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
   if (part != kSliderHorizontalPart && part != kSliderVerticalPart)
