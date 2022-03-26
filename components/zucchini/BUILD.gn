@@ -76,8 +76,6 @@ static_library("zucchini_lib") {
     "patch_utils.h",
     "patch_writer.cc",
     "patch_writer.h",
-    "reference_bytes_mixer.cc",
-    "reference_bytes_mixer.h",
     "reference_set.cc",
     "reference_set.h",
     "rel32_finder.cc",

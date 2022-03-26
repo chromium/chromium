@@ -64,4 +64,23 @@ void Rel32WriterX86::PutNext(Reference ref) {
   image_.write<uint32_t>(ref.location, code);
 }
 
+void OutputArmCopyDispFailure(uint32_t addr_type) {
+  // Failed to mix old payload bits with new operation bits. The main cause of
+  // this rare failure is when BL (encoding T1) with payload bits representing
+  // disp % 4 == 2 transforms into BLX (encoding T2). Error arises because BLX
+  // requires payload bits to have disp == 0 (mod 4). Mixing failures are not
+  // fatal to patching; we simply fall back to direct copy and forgo benefits
+  // from mixing for these cases. TODO(huangs, etiennep): Ongoing discussion on
+  // whether we should just nullify all payload disp so we won't have to deal
+  // with this case, but at the cost of having Zucchini-apply do more work.
+  static int output_quota = 10;
+  if (output_quota > 0) {
+    LOG(WARNING) << "Reference byte mix failed with type = " << addr_type << "."
+                 << std::endl;
+    --output_quota;
+    if (!output_quota)
+      LOG(WARNING) << "(Additional output suppressed)";
+  }
+}
+
 }  // namespace zucchini

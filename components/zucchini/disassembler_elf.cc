@@ -614,6 +614,14 @@ std::unique_ptr<ReferenceWriter> DisassemblerElfArm<TRAITS>::MakeWriteRel32(
                                                        image);
 }
 
+template <class TRAITS>
+template <class ADDR_TRAITS>
+std::unique_ptr<ReferenceMixer> DisassemblerElfArm<TRAITS>::MakeMixRel32(
+    ConstBufferView src_image,
+    ConstBufferView dst_image) {
+  return std::make_unique<Rel32MixerArm<ADDR_TRAITS>>(src_image, dst_image);
+}
+
 /******** DisassemblerElfAArch32 ********/
 
 DisassemblerElfAArch32::DisassemblerElfAArch32() = default;
@@ -637,30 +645,40 @@ std::vector<ReferenceGroup> DisassemblerElfAArch32::MakeReferenceGroups()
        &DisassemblerElfAArch32::MakeReadRel32<
            AArch32Rel32Translator::AddrTraits_A24>,
        &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_A24>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch32Rel32Translator::AddrTraits_A24>},
       {ReferenceTypeTraits{2, TypeTag(AArch32ReferenceType::kRel32_T8),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch32::MakeReadRel32<
            AArch32Rel32Translator::AddrTraits_T8>,
        &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T8>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch32Rel32Translator::AddrTraits_T8>},
       {ReferenceTypeTraits{2, TypeTag(AArch32ReferenceType::kRel32_T11),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch32::MakeReadRel32<
            AArch32Rel32Translator::AddrTraits_T11>,
        &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T11>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch32Rel32Translator::AddrTraits_T11>},
       {ReferenceTypeTraits{4, TypeTag(AArch32ReferenceType::kRel32_T20),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch32::MakeReadRel32<
            AArch32Rel32Translator::AddrTraits_T20>,
        &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T20>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch32Rel32Translator::AddrTraits_T20>},
       {ReferenceTypeTraits{4, TypeTag(AArch32ReferenceType::kRel32_T24),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch32::MakeReadRel32<
            AArch32Rel32Translator::AddrTraits_T24>,
        &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T24>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch32Rel32Translator::AddrTraits_T24>},
   };
 }
@@ -725,18 +743,24 @@ std::vector<ReferenceGroup> DisassemblerElfAArch64::MakeReferenceGroups()
        &DisassemblerElfAArch64::MakeReadRel32<
            AArch64Rel32Translator::AddrTraits_Immd14>,
        &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd14>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch64Rel32Translator::AddrTraits_Immd14>},
       {ReferenceTypeTraits{4, TypeTag(AArch64ReferenceType::kRel32_Immd19),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch64::MakeReadRel32<
            AArch64Rel32Translator::AddrTraits_Immd19>,
        &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd19>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch64Rel32Translator::AddrTraits_Immd19>},
       {ReferenceTypeTraits{4, TypeTag(AArch64ReferenceType::kRel32_Immd26),
                            PoolTag(ArmReferencePool::kPoolRel32)},
        &DisassemblerElfAArch64::MakeReadRel32<
            AArch64Rel32Translator::AddrTraits_Immd26>,
        &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd26>,
+       &DisassemblerElfAArch32::MakeMixRel32<
            AArch64Rel32Translator::AddrTraits_Immd26>},
   };
 }

@@ -17,7 +17,6 @@ class EquivalenceMap;
 class OffsetMapper;
 class ImageIndex;
 class PatchElementWriter;
-class ReferenceBytesMixer;
 class ReferenceDeltaSink;
 class ReferenceSet;
 class TargetPool;
@@ -44,12 +43,13 @@ bool GenerateEquivalencesAndExtraData(ConstBufferView new_image,
 // Writes raw delta between |old_image| and |new_image| matched by
 // |equivalence_map| to |patch_writer|, using |new_image_index| to ignore
 // reference bytes.
-bool GenerateRawDelta(ConstBufferView old_image,
-                      ConstBufferView new_image,
-                      const EquivalenceMap& equivalence_map,
-                      const ImageIndex& new_image_index,
-                      ReferenceBytesMixer* reference_bytes_mixer,
-                      PatchElementWriter* patch_writer);
+bool GenerateRawDelta(
+    ConstBufferView old_image,
+    ConstBufferView new_image,
+    const EquivalenceMap& equivalence_map,
+    const ImageIndex& new_image_index,
+    const std::map<TypeTag, std::unique_ptr<ReferenceMixer>>& reference_mixers,
+    PatchElementWriter* patch_writer);
 
 // Writes reference delta between references from |old_refs| and from
 // |new_refs| to |patch_writer|. |projected_target_pool| contains projected

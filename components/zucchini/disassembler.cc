@@ -42,6 +42,15 @@ std::unique_ptr<ReferenceWriter> ReferenceGroup::GetWriter(
   return (disasm->*writer_factory_)(image);
 }
 
+std::unique_ptr<ReferenceMixer> ReferenceGroup::GetMixer(
+    ConstBufferView old_image,
+    ConstBufferView new_image,
+    Disassembler* disasm) const {
+  if (mixer_factory_)
+    return (disasm->*mixer_factory_)(old_image, new_image);
+  return nullptr;
+}
+
 /******** Disassembler ********/
 
 Disassembler::Disassembler(int num_equivalence_iterations)

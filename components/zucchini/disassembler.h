@@ -102,6 +102,10 @@ class ReferenceGroup {
   using WriterFactory = std::unique_ptr<ReferenceWriter> (Disassembler::*)(
       MutableBufferView image);
 
+  // Member function pointer used to obtain a ReferenceMixer.
+  using MixerFactory = std::unique_ptr<ReferenceMixer> (
+      Disassembler::*)(ConstBufferView old_image, ConstBufferView new_image);
+
   // RefinedGeneratorFactory and RefinedReceptorFactory don't have to be
   // identical to GeneratorFactory and ReceptorFactory, but they must be
   // convertible. As a result, they can be pointer to member function of a
@@ -113,6 +117,18 @@ class ReferenceGroup {
       : traits_(traits),
         reader_factory_(static_cast<ReaderFactory>(reader_factory)),
         writer_factory_(static_cast<WriterFactory>(writer_factory)) {}
+
+  template <class RefinedReaderFactory,
+            class RefinedWriterFactory,
+            class RefinedMixerFactory>
+  ReferenceGroup(ReferenceTypeTraits traits,
+                 RefinedReaderFactory reader_factory,
+                 RefinedWriterFactory writer_factory,
+                 RefinedMixerFactory mixer_factory)
+      : traits_(traits),
+        reader_factory_(static_cast<ReaderFactory>(reader_factory)),
+        writer_factory_(static_cast<WriterFactory>(writer_factory)),
+        mixer_factory_(static_cast<MixerFactory>(mixer_factory)) {}
 
   // Returns a reader for all references in the binary.
   // Invalidates any other writer or reader previously obtained for |disasm|.
@@ -131,6 +147,12 @@ class ReferenceGroup {
   std::unique_ptr<ReferenceWriter> GetWriter(MutableBufferView image,
                                              Disassembler* disasm) const;
 
+  // Returns mixer for references between |old_image| and |new_image|, assuming
+  // they both contain the same type of executable as |disasm|.
+  std::unique_ptr<ReferenceMixer> GetMixer(ConstBufferView old_image,
+                                           ConstBufferView new_image,
+                                           Disassembler* disasm) const;
+
   // Returns traits describing the reference type.
   const ReferenceTypeTraits& traits() const { return traits_; }
 
@@ -147,6 +169,7 @@ class ReferenceGroup {
   ReferenceTypeTraits traits_;
   ReaderFactory reader_factory_ = nullptr;
   WriterFactory writer_factory_ = nullptr;
+  MixerFactory mixer_factory_ = nullptr;
 };
 
 }  // namespace zucchini

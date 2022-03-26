@@ -6,6 +6,7 @@
 #define COMPONENTS_ZUCCHINI_REL32_UTILS_H_
 
 #include <algorithm>
+#include <array>
 #include <deque>
 #include <memory>
 
@@ -148,14 +149,6 @@ class Rel32WriterArm : public ReferenceWriter {
   AddressTranslator::OffsetToRvaCache offset_to_rva_;
 };
 
-// Type for specialized versions of ArmCopyDisp().
-// TODO(etiennep/huangs): Fold ReferenceByteMixer into Disassembler and remove
-//     direct function pointer usage.
-using ArmCopyDispFun = bool (*)(ConstBufferView src_view,
-                                offset_t src_idx,
-                                MutableBufferView dst_view,
-                                offset_t dst_idx);
-
 // Copier that makes |*dst_it| similar to |*src_it| (both assumed to point to
 // rel32 instructions of type ADDR_TRAITS) by copying the displacement (i.e.,
 // payload bits) from |src_it| to |dst_it|. If successful, updates |*dst_it|,
@@ -178,6 +171,41 @@ bool ArmCopyDisp(ConstBufferView src_view,
   }
   return false;
 }
+
+// Outputs error message (throttled) on ArmCopyDisp failure.
+void OutputArmCopyDispFailure(uint32_t addr_type);
+
+// Mixer for ARM rel32 References of a specific type.
+template <class ADDR_TRAITS>
+class Rel32MixerArm : public ReferenceMixer {
+  using code_t = typename ADDR_TRAITS::code_t;
+  static constexpr size_t kCodeWidth = sizeof(code_t);
+
+ public:
+  Rel32MixerArm(ConstBufferView src_image, ConstBufferView dst_image)
+      : src_image_(src_image), dst_image_(dst_image) {}
+  ~Rel32MixerArm() override = default;
+
+  ConstBufferView Mix(offset_t src_offset, offset_t dst_offset) override {
+    ConstBufferView::const_iterator new_it = dst_image_.begin() + dst_offset;
+    MutableBufferView out_buffer_view(out_buffer_.data(), kCodeWidth);
+    std::copy(new_it, new_it + kCodeWidth, out_buffer_view.begin());
+
+    if (!ArmCopyDisp<ADDR_TRAITS>(src_image_, src_offset, out_buffer_view,
+                                  0U)) {
+      OutputArmCopyDispFailure(static_cast<uint32_t>(ADDR_TRAITS::addr_type));
+      // Fall back to direct copy.
+      std::copy(new_it, new_it + kCodeWidth, out_buffer_.begin());
+    }
+    return ConstBufferView(out_buffer_.data(), kCodeWidth);
+  }
+
+ private:
+  ConstBufferView src_image_;
+  ConstBufferView dst_image_;
+
+  std::array<uint8_t, sizeof(code_t)> out_buffer_;
+};
 
 }  // namespace zucchini
 
