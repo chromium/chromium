@@ -73,13 +73,13 @@ class EnterpriseProfileWelcomeHandler
   void CallProceedCallbackForTesting(signin::SigninChoice choice);
 
  private:
-  void HandleInitialized(const base::ListValue* args);
+  void HandleInitialized(const base::Value::List& args);
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
   // a single integer value for the height the native view should resize to.
   void HandleInitializedWithSize(const base::ListValue* args);
-  void HandleProceed(const base::ListValue* args);
-  void HandleCancel(const base::ListValue* args);
+  void HandleProceed(const base::Value::List& args);
+  void HandleCancel(const base::Value::List& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -11,6 +12,7 @@ import './signin_shared_css.js';
 import './signin_vars_css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -39,7 +41,7 @@ export interface EnterpriseProfileWelcomeAppElement {
 }
 
 const EnterpriseProfileWelcomeAppElementBase =
-    WebUIListenerMixin(PolymerElement);
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class EnterpriseProfileWelcomeAppElement extends
     EnterpriseProfileWelcomeAppElementBase {
@@ -76,12 +78,27 @@ export class EnterpriseProfileWelcomeAppElement extends
         }
       },
 
+      showLinkDataCheckbox_: {
+        type: String,
+        reflectToAttribute: true,
+        value() {
+          return loadTimeData.getBoolean('showLinkDataCheckbox');
+        }
+      },
+
       /** The label for the button to proceed with the flow */
       proceedLabel_: String,
 
       disableProceedButton_: {
         type: Boolean,
         value: false,
+      },
+
+      linkData_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+        observer: 'linkDataChanged_'
       }
     };
   }
@@ -93,6 +110,8 @@ export class EnterpriseProfileWelcomeAppElement extends
   private isModalDialog_: boolean;
   private proceedLabel_: string;
   private disableProceedButton_: boolean;
+  private linkData_: boolean;
+  private defaultProceedLabel_: string;
   private enterpriseProfileWelcomeBrowserProxy_:
       EnterpriseProfileWelcomeBrowserProxy =
           EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
@@ -107,10 +126,15 @@ export class EnterpriseProfileWelcomeAppElement extends
         info => this.setProfileInfo_(info));
   }
 
+  private linkDataChanged_(linkData: boolean) {
+    this.proceedLabel_ = linkData ? this.i18n('proceedAlternateLabel') :
+                                    this.defaultProceedLabel_;
+  }
+
   /** Called when the proceed button is clicked. */
   private onProceed_() {
     this.disableProceedButton_ = true;
-    this.enterpriseProfileWelcomeBrowserProxy_.proceed();
+    this.enterpriseProfileWelcomeBrowserProxy_.proceed(this.linkData_);
   }
 
   /** Called when the cancel button is clicked. */
@@ -124,7 +148,8 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.enterpriseTitle_ = info.enterpriseTitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
-    this.proceedLabel_ = info.proceedLabel;
+    this.defaultProceedLabel_ = info.proceedLabel;
+    this.proceedLabel_ = this.defaultProceedLabel_;
   }
 }
 

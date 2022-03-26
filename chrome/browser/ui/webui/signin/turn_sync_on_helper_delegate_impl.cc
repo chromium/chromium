@@ -82,7 +82,8 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(browser->profile()->GetPath());
   browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, GenerateNewProfileColor(entry).color,
+      account_info, /*force_new_profile=*/true,
+      GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
              bool prompt_for_new_profile, signin::SigninChoice choice) {

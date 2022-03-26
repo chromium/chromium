@@ -5,10 +5,10 @@
 import 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
 
 import {EnterpriseProfileWelcomeAppElement} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
-
 import {EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -67,6 +67,37 @@ suite('EnterpriseProfileWelcomeTest', function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
     app.$.cancelButton.click();
     await browserProxy.whenCalled('cancel');
+  });
+
+  test('linkData', async function() {
+    assertTrue(isChildVisible(app, '#proceedButton'));
+    assertFalse(isChildVisible(app, '#linkData'));
+
+    loadTimeData.overrideValues({'showLinkDataCheckbox': true});
+
+    document.body.innerHTML = '';
+    app = document.createElement('enterprise-profile-welcome-app');
+    document.body.appendChild(app);
+    await waitAfterNextRender(app);
+    await browserProxy.whenCalled('initialized');
+
+    assertTrue(isChildVisible(app, '#proceedButton'));
+    assertTrue(isChildVisible(app, '#linkData'));
+
+    const linkDataCheckbox: CrCheckboxElement =
+        app.shadowRoot!.querySelector('#linkData')!;
+    assertEquals(
+        app.i18n('linkDataText'), linkDataCheckbox.textContent!.trim());
+    assertFalse(linkDataCheckbox.checked);
+
+    linkDataCheckbox.click();
+
+    await waitAfterNextRender(app.$.proceedButton);
+
+    assertTrue(linkDataCheckbox.checked);
+    assertEquals(
+        app.i18n('proceedAlternateLabel'),
+        app.$.proceedButton.textContent!.trim());
   });
 
   test('onProfileInfoChanged', function() {

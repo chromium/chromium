@@ -64,7 +64,7 @@ class ForcedEnterpriseSigninInterceptionHandle
   void ShowEnterpriseProfileInterceptionDialog(const AccountInfo& account_info,
                                                SkColor profile_color) {
     browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        account_info, profile_color,
+        account_info, /*force_new_profile=*/true, profile_color,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
                        base::Unretained(this)));
@@ -80,8 +80,6 @@ class ForcedEnterpriseSigninInterceptionHandle
         std::move(callback_).Run(SigninInterceptionResult::kDeclined);
         break;
       case signin::SIGNIN_CHOICE_CONTINUE:
-      // TODO (crbug/1275359): Add support for this once the "Link Data"
-      // checkbox is added to the interception dialog.
       case signin::SIGNIN_CHOICE_SIZE:
       default:
         NOTREACHED();

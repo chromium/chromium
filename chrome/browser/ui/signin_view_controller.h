@@ -144,6 +144,7 @@ class SigninViewController {
   // on the dialog.
   void ShowModalEnterpriseConfirmationDialog(
       const AccountInfo& account_info,
+      bool force_new_profile,
       SkColor profile_color,
       signin::SigninChoiceCallback callback);
 

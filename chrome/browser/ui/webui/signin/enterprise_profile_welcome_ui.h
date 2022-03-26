@@ -41,6 +41,7 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
   void Initialize(Browser* browser,
                   ScreenType type,
                   const AccountInfo& account_info,
+                  bool force_new_profile,
                   absl::optional<SkColor> profile_color,
                   signin::SigninChoiceCallback proceed_callback);
 

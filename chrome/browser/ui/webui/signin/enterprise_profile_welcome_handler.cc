@@ -112,12 +112,12 @@ EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
 
 EnterpriseProfileWelcomeHandler::~EnterpriseProfileWelcomeHandler() {
   BrowserList::RemoveObserver(this);
-  HandleCancel(nullptr);
+  HandleCancel(base::Value::List());
 }
 
 void EnterpriseProfileWelcomeHandler::RegisterMessages() {
   profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialized",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleInitialized,
                           base::Unretained(this)));
@@ -126,11 +126,11 @@ void EnterpriseProfileWelcomeHandler::RegisterMessages() {
       base::BindRepeating(
           &EnterpriseProfileWelcomeHandler::HandleInitializedWithSize,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "proceed",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleProceed,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancel",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleCancel,
                           base::Unretained(this)));
@@ -181,10 +181,10 @@ void EnterpriseProfileWelcomeHandler::OnJavascriptDisallowed() {
 }
 
 void EnterpriseProfileWelcomeHandler::HandleInitialized(
-    const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
 }
 
@@ -197,13 +197,18 @@ void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
 }
 
 void EnterpriseProfileWelcomeHandler::HandleProceed(
-    const base::ListValue* args) {
-  if (proceed_callback_)
-    std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
+    const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  if (proceed_callback_) {
+    bool use_existing_profile = args[0].GetIfBool().value_or(false);
+    std::move(proceed_callback_)
+        .Run(use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
+                                  : signin::SIGNIN_CHOICE_NEW_PROFILE);
+  }
 }
 
 void EnterpriseProfileWelcomeHandler::HandleCancel(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (proceed_callback_)
     std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
 }

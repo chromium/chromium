@@ -34,6 +34,7 @@
   }
 
   .action-container {
+    align-items: flex-end;
     bottom: 0;
     box-sizing: border-box;
     position: absolute;
@@ -159,6 +160,11 @@
     font-weight: normal;
   }
 
+  #buttonsContainer cr-checkbox {
+    font-size: 12px;
+    padding-inline-end: 8px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .work-badge {
       border-color: var(--md-background-color);
@@ -211,10 +217,16 @@
   </template>
 </div>
 <div id="buttonsContainer" class="action-container">
+  <template is="dom-if" if="[[showLinkDataCheckbox_]]">
+    <cr-checkbox id="linkData" checked="{{linkData_}}">
+      <div>$i18n{linkDataText}</div>
+    </cr-checkbox>
+  </template>
   <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
       autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
     [[proceedLabel_]]
   </cr-button>
+  </template>
   <cr-button id="cancelButton" on-click="onCancel_">
     $i18n{cancelLabel}
   </cr-button>
