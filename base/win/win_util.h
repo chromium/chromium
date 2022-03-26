@@ -232,6 +232,17 @@ BASE_EXPORT bool IsRunningUnderDesktopName(WStringPiece desktop_name);
 // Returns true if current session is a remote session.
 BASE_EXPORT bool IsCurrentSessionRemote();
 
+#if !defined(OFFICIAL_BUILD)
+// IsAppVerifierEnabled() indicates whether a newly created process will get
+// Application Verifier or pageheap injected into it. Only available in
+// unofficial builds to prevent abuse.
+BASE_EXPORT bool IsAppVerifierEnabled(const std::wstring& process_name);
+#endif  // !defined(OFFICIAL_BUILD)
+
+// IsAppVerifierLoaded() indicates whether Application Verifier is *already*
+// loaded into the current process.
+BASE_EXPORT bool IsAppVerifierLoaded();
+
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {
