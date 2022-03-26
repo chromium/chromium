@@ -52,6 +52,8 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -180,6 +182,18 @@ MATCHER_P(ShownInShelf, shown, "App shown on the shelf") {
 MATCHER_P(ShownInLauncher, shown, "App shown in the launcher") {
   return arg.show_in_launcher.has_value() && arg.show_in_launcher == shown;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+arc::mojom::PrivacyItemPtr CreateArcPrivacyItem(
+    arc::mojom::AppPermissionGroup permission,
+    const std::string& package_name) {
+  arc::mojom::PrivacyItemPtr item = arc::mojom::PrivacyItem::New();
+  item->permission_group = permission;
+  item->privacy_application = arc::mojom::PrivacyApplication::New();
+  item->privacy_application->package_name = package_name;
+  return item;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -364,6 +378,22 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     ASSERT_TRUE(base::Contains(cache.InitializedAppTypes(), app_type));
   }
 
+  void VerifyCapabilityAccess(const std::string& app_id,
+                              apps::mojom::OptionalBool accessing_camera,
+                              apps::mojom::OptionalBool accessing_microphone) {
+    apps::mojom::OptionalBool camera = apps::mojom::OptionalBool::kUnknown;
+    apps::mojom::OptionalBool microphone = apps::mojom::OptionalBool::kUnknown;
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppCapabilityAccessCache()
+        .ForOneApp(app_id, [&camera, &microphone](
+                               const apps::CapabilityAccessUpdate& update) {
+          camera = update.Camera();
+          microphone = update.Microphone();
+        });
+    EXPECT_EQ(camera, accessing_camera);
+    EXPECT_EQ(microphone, accessing_microphone);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -442,6 +472,108 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           {}, app_info->last_launch_time, app_info->install_time,
           MakeFakePermissions());
     }
+  }
+
+  arc_apps->Shutdown();
+}
+
+TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
+  ArcAppTest arc_test;
+  arc_test.SetUp(profile());
+  AppServiceProxyFactory::GetForProfile(profile())->FlushMojoCallsForTesting();
+  ArcApps* arc_apps = apps::ArcAppsFactory::GetForProfile(profile());
+  ASSERT_TRUE(arc_apps);
+
+  const auto& fake_apps = arc_test.fake_apps();
+  std::string package_name1 = fake_apps[0]->package_name;
+  std::string package_name2 = fake_apps[1]->package_name;
+
+  // Install fake apps.
+  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+
+  // Set accessing Camera for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[0]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kUnknown);
+  }
+
+  // Cancel accessing Camera for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[0]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+  }
+
+  // Set accessing Camera and Microphone for `package_name1`, and accessing
+  // Camera for `package_name2`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::MICROPHONE, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
+    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[0]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kTrue);
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[1]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kUnknown);
+  }
+
+  // Cancel accessing Microphone for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
+    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[0]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[1]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+  }
+
+  // Cancel accessing CAMERA for `package_name1` and `package_name2`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[0]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+    VerifyCapabilityAccess(
+        ArcAppTest::GetAppId(*fake_apps[1]),
+        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
+        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
   }
 
   arc_apps->Shutdown();

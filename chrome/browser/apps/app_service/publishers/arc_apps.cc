@@ -1474,6 +1474,67 @@ void ArcApps::OnArcNotificationManagerDestroyed(
   notification_observation_.Reset();
 }
 
+void ArcApps::OnPrivacyItemsChanged(
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+
+  // Get the existing accessing app ids from `accessing_apps_`, and set all of
+  // them as false to explicitly update `AppCapabilityAccessCache` to ensure the
+  // access is stopped when they are not list in `privacy_items`. If they are
+  // still accessing, they will exist in `privacy_items`, and be set as true in
+  // the next loop for `privacy_items`.
+  base::flat_map<std::string, apps::mojom::CapabilityAccessPtr>
+      capability_accesses;
+  for (const auto& app_id : accessing_apps_) {
+    auto access = apps::mojom::CapabilityAccess::New();
+    access->app_id = app_id;
+    access->camera = apps::mojom::OptionalBool::kFalse;
+    access->microphone = apps::mojom::OptionalBool::kFalse;
+    capability_accesses[app_id] = std::move(access);
+  }
+  accessing_apps_.clear();
+
+  // Check the new items in `privacy_items`, and update `capability_accesses` to
+  // set the access item as true, if the camera or the microphone is still in
+  // use.
+  for (const auto& item : privacy_items) {
+    arc::mojom::AppPermissionGroup permission = item->permission_group;
+    if (permission != arc::mojom::AppPermissionGroup::CAMERA &&
+        permission != arc::mojom::AppPermissionGroup::MICROPHONE) {
+      continue;
+    }
+
+    auto package_name = item->privacy_application->package_name;
+    for (const auto& app_id : prefs->GetAppsForPackage(package_name)) {
+      accessing_apps_.insert(app_id);
+      auto it = capability_accesses.find(app_id);
+      if (it == capability_accesses.end()) {
+        capability_accesses[app_id] = apps::mojom::CapabilityAccess::New();
+        it = capability_accesses.find(app_id);
+        it->second->app_id = app_id;
+      }
+      if (permission == arc::mojom::AppPermissionGroup::CAMERA) {
+        it->second->camera = apps::mojom::OptionalBool::kTrue;
+      }
+      if (permission == arc::mojom::AppPermissionGroup::MICROPHONE) {
+        it->second->microphone = apps::mojom::OptionalBool::kTrue;
+      }
+    }
+  }
+
+  // Write the record to `AppCapabilityAccessCache`.
+  for (auto& subscriber : subscribers_) {
+    std::vector<apps::mojom::CapabilityAccessPtr> accesses;
+    for (const auto& item : capability_accesses) {
+      accesses.push_back(item.second->Clone());
+    }
+    subscriber->OnCapabilityAccesses(std::move(accesses));
+  }
+}
+
 void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (!update.StateChanged()) {
     return;

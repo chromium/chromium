@@ -11,10 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -63,7 +66,8 @@ class ArcApps : public KeyedService,
                 public arc::ArcIntentHelperObserver,
                 public ash::ArcNotificationManagerBase::Observer,
                 public ash::ArcNotificationsHostInitializer::Observer,
-                public apps::InstanceRegistry::Observer {
+                public apps::InstanceRegistry::Observer,
+                public arc::mojom::PrivacyItemsHost {
  public:
   static ArcApps* Get(Profile* profile);
 
@@ -83,6 +87,7 @@ class ArcApps : public KeyedService,
   friend class ArcAppsFactory;
   friend class PublisherTest;
   FRIEND_TEST_ALL_PREFIXES(PublisherTest, ArcAppsOnApps);
+  FRIEND_TEST_ALL_PREFIXES(PublisherTest, ArcApps_CapabilityAccess);
 
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;
@@ -196,6 +201,12 @@ class ArcApps : public KeyedService,
   void OnArcNotificationManagerDestroyed(
       ash::ArcNotificationManagerBase* notification_manager) override;
 
+  // PrivacyItemsHost overrides.
+  void OnPrivacyItemsChanged(
+      std::vector<arc::mojom::PrivacyItemPtr> privacy_items) override;
+  void OnMicCameraIndicatorRequirementChanged(bool flag) override {}
+  void OnLocationIndicatorRequirementChanged(bool flag) override {}
+
   // apps::InstanceRegistry::Observer overrides.
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
@@ -249,6 +260,9 @@ class ArcApps : public KeyedService,
 
   AppIdToTaskIds app_id_to_task_ids_;
   TaskIdToAppId task_id_to_app_id_;
+
+  // App id set which might be accessing camera or microphone.
+  base::flat_set<std::string> accessing_apps_;
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<arc::ArcAppShortcutsRequest> arc_app_shortcuts_request_;
