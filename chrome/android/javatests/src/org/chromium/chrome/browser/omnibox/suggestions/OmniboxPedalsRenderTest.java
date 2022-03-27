@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,22 +19,22 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
 
@@ -44,7 +47,8 @@ import java.util.List;
  * Tests of the Omnibox Pedals feature.
  */
 @RunWith(ParameterizedRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=OmniboxPedalsAndroidBatch1"})
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class OmniboxPedalsRenderTest {
@@ -61,8 +65,9 @@ public class OmniboxPedalsRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
                     .build();
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private OmniboxTestUtils mOmniboxUtils;
     private boolean mIncognito;
@@ -74,14 +79,27 @@ public class OmniboxPedalsRenderTest {
         mRenderTestRule.setVariantPrefix(incognito ? "IncognitoTab" : "RegularTab");
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        sActivityTestRule.startMainActivityOnBlankPage();
+        sActivityTestRule.waitForActivityNativeInitializationComplete();
+        sActivityTestRule.waitForDeferredStartup();
+    }
+
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         if (mIncognito) {
-            mActivityTestRule.newIncognitoTabFromMenu();
+            sActivityTestRule.newIncognitoTabFromMenu();
         }
-        mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        sActivityTestRule.loadUrl("about:blank");
+        mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
         mOmniboxUtils.requestFocus();
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
     }
 
     /**
@@ -102,7 +120,6 @@ public class OmniboxPedalsRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testRunChromeSafetyCheckPedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
@@ -119,8 +136,6 @@ public class OmniboxPedalsRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures("OmniboxPedalsAndroidBatch1")
-    @DisabledTest(message = "crbug.com/1298389")
     public void testPlayChromeDinoGamePedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
