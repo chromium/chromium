@@ -519,6 +519,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2505268675989099013">Hisobni himoyalash</translation>
 <translation id="2512101340618156538">Ruxsat berilmagan (standart)</translation>
+<translation id="2512413427717747692">Chrome brauzerini asosiy brauzer tugmasi sifatida sozlash, iOS sozlamalari orqali Chrome brauzerini tizimning asosiy brauzeri sifatida sozlash uchun Enter tugmasini bosing.</translation>
 <translation id="2515629240566999685">Mobil aloqa signalini tekshirish</translation>
 <translation id="2521385132275182522">Quyi oʻngdan steplerlash</translation>
 <translation id="2521736961081452453">Shakl yaratish</translation>
@@ -776,6 +777,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallik qurilmangiz va uning maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="3366477098757335611">Kartalarni ko‘rish</translation>
 <translation id="3369192424181595722">Soat xatoligi</translation>
+<translation id="3371064404604898522">Chrome brauzerini standart etib tayinlash</translation>
 <translation id="3371076217486966826"><ph name="URL" /> sayti quyidagi amallarga ruxsat olmoqchi:
       • Atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatish
       • Kameradan foydalanish</translation>
@@ -973,6 +975,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3969052498612555048">Kodingizni topa olmadingizmi? <ph name="BEGIN_LINK" />Yangi kod oling<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
+<translation id="3978338123949022456">Qidiruv rejimi, soʻrovni kiriting va <ph name="KEYWORD_SUFFIX" /> orqali qidirish uchun Enter tugmasini bosing</translation>
 <translation id="3986705137476756801">Jonli izohni hozircha faolsizlantirish</translation>
 <translation id="3987940399970879459">1 MBdan kam</translation>
 <translation id="3990250421422698716">Qogʻozlarni ajratib toʻplash</translation>
@@ -1206,6 +1209,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="467662567472608290">Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> maxsus imkoniyatlardan foydalanmoqchi</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Sahifa tarjima qilinsinmi?</translation>
 <translation id="468314109939257734">Virtual karta raqamini koʻrish</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">Qidiruv tizimlari</translation>
@@ -1593,10 +1597,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5921639886840618607">Ushbu karta Google hisobingizda saqlansinmi?</translation>
 <translation id="5922853866070715753">Deyarli tayyor</translation>
 <translation id="5932224571077948991">Saytda yoqimsiz yoki befoyda reklamalar chiqadi</translation>
+<translation id="5937560539988385583">Sahifa tarjima qilindi</translation>
 <translation id="5938153366081463283">Virtual karta kiritish</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ochilmoqda…</translation>
 <translation id="5951495562196540101">Qurilmani iste’molchi hisobidan registratsiya qilib bo‘lmadi (to‘plamli litsenziyasi bor)</translation>
+<translation id="5953516610448771166">Bu media uchun jonli izoh ishlamaydi. Izohlari chiqishi uchun bu sayt sozlamalarida <ph name="CONTENT_SETTINGS" /> parametrini bloklang.</translation>
 <translation id="5963413905009737549">Bo‘lim</translation>
 <translation id="5967592137238574583">Aloqa ma’lumotini tahrirlang</translation>
 <translation id="5967867314010545767">Tarixdan olib tashlash</translation>
@@ -1709,6 +1715,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="63172326633386613">Qulaylik sozlamalarini boshqarish</translation>
 <translation id="6321917430147971392">DNS sozlamalarini tekshiring</translation>
 <translation id="6322182122604171028">Windows Hello ishlatib boʻlmadi</translation>
+<translation id="6326947323444967009">iOS sozlamalari orqali Chrome brauzerini tizimning asosiy qilib sozlang</translation>
 <translation id="6328639280570009161">Tarmoqni oldindan aniqlash funksiyasidan foydalanib ko‘ring</translation>
 <translation id="6328784461820205019">“Ulanishingiz himoyalanmagan” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” yoki “&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” yoki “SSL sertifikati xatoligi”</translation>
 <translation id="6328786501058569169">Bu – soxta sayt</translation>
@@ -2554,6 +2561,7 @@ Batafsil axborot:
 <translation id="9080712759204168376">Buyurtma axboroti</translation>
 <translation id="9089260154716455634">Qoidalar amal qilmaydigan vaqt:</translation>
 <translation id="9095388113577226029">Boshqa tillar...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS sozlamalari orqali Chrome brauzerini tizimning asosiy brauzeri sifatida sozlash uchun avval Tab, keyin esa Enter tugmasini bosing.</translation>
 <translation id="9101630580131696064">Tarnov 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> sayti ma’lumotlaringizni himoyalash uchun shifrlashdan foydalanadi, lekin hozir Chromium <ph name="SITE" /> saytiga ulanish uchun uringanda, ushbu sayt shubhali va noto‘g‘ri tasdiqlash ma’lumotlarini qaytarmoqda. Bunday holat zararli sayt o‘zini <ph name="SITE" /> o‘rnida ko‘rsatayotganda yoki Wi-Fi ulanishi uzilib qolganda yuz berishi mumkin. Shaxsiy ma’lumotlaringizga hech qanday xavf tug‘ilgani yo‘q, chunki Chromium aloqani ma’lumotlar almashinuvidan oldin uzib qo‘ydi.</translation>
 <translation id="9106062320799175032">To‘lov manzilini kiriting</translation>

@@ -581,6 +581,7 @@
 <translation id="2505268675989099013">محافظت از حساب</translation>
 <translation id="2509167091171468975">فروشنده موادغذایی و خواربار</translation>
 <translation id="2512101340618156538">مجاز نیست (پیش‌فرض)</translation>
+<translation id="2512413427717747692">‏Chrome را به‌عنوان دکمه مرورگر پیش‌فرض تنظیم کنید. برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید ورود را فشار دهید</translation>
 <translation id="2515629240566999685">بررسی سیگنال در منطقه‌تان</translation>
 <translation id="2521385132275182522">منگنه در پایین سمت راست</translation>
 <translation id="2521736961081452453">ایجاد فرم</translation>
@@ -883,6 +884,7 @@
 <translation id="3366477098757335611">مشاهده کارت‌ها</translation>
 <translation id="3369192424181595722">خطای ساعت</translation>
 <translation id="3369459162151165748">قطعات و لوازم جانبی خودرو</translation>
+<translation id="3371064404604898522">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="3371076217486966826"><ph name="URL" /> می‌خواهد کارهای زیر را انجام دهد:
       • ایجاد نقشه سه‌بعدی از محیط اطرافتان و ردیابی موقعیت دوربین
       • استفاده از دوربین</translation>
@@ -1100,6 +1102,7 @@
 <translation id="3969052498612555048">نمی‌توانید کدتان را پیدا کنید؟ <ph name="BEGIN_LINK" />کد جدید دریافت کنید<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
+<translation id="3978338123949022456">حالت جستجو، پُرسمانی تایپ کنید و برای جستجو با <ph name="KEYWORD_SUFFIX" />، کلید ورود را فشار دهید</translation>
 <translation id="398470910934384994">پرندگان</translation>
 <translation id="3986705137476756801">«زیرنویس ناشنوایان زنده» فعلاً خاموش شود</translation>
 <translation id="3987940399970879459">کمتر از ۱ مگابایت</translation>
@@ -1929,6 +1932,7 @@
 <translation id="6319249456820053699">دوربین و دوربین دستی</translation>
 <translation id="6321917430147971392">‏تنظیمات DNS خودتان را بررسی کنید</translation>
 <translation id="6322182122604171028">‏استفاده از Windows Hello ممکن نشد</translation>
+<translation id="6326947323444967009">‏Chrome را در تنظیمات iOS به‌عنوان مرورگر پیش‌فرض سیستم تنظیم کنید</translation>
 <translation id="6328639280570009161">غیرفعال کردن پیش‌بینی شبکه را امتحان کنید</translation>
 <translation id="6328784461820205019">‏«اتصالتان خصوصی نیست» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;» یا «خطای گواهینامه SSL»</translation>
 <translation id="6328786501058569169">این سایت گول‌زننده است</translation>
@@ -2891,6 +2895,7 @@
 <translation id="908796725011587895">ورزش‌های دانشجویی</translation>
 <translation id="9089260154716455634">خط‌مشی ساعت‌های خاموشی:</translation>
 <translation id="9095388113577226029">زبان‌های بیشتر...</translation>
+<translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید جهش و سپس ورود را فشار دهید</translation>
 <translation id="9096679202588811390">برنامه و نمایش تلویزیونی</translation>
 <translation id="9101630580131696064">سینی ۱</translation>
 <translation id="9103537084693478942">نرم‌افزار ویدیو</translation>

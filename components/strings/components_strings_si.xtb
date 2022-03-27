@@ -581,6 +581,7 @@
 <translation id="2505268675989099013">ගිණුම ආරක්‍ෂා කරන්න</translation>
 <translation id="2509167091171468975">ආහාර සහ සිල්ලර වෙළෙන්දන්</translation>
 <translation id="2512101340618156538">ඉඩ නොදේ (පෙරනිමි)</translation>
+<translation id="2512413427717747692">Chrome පෙරනිමි බ්‍රවුසර බොත්තම ලෙස සකසන්න, iOS සැකසීම් තුළ Chrome පද්ධතියේ පෙරනිමි බ්‍රවුසරය ලෙස සැකසීමට Enter ඔබන්න</translation>
 <translation id="2515629240566999685">ඔබේ ප්‍රදේශයේ සංඥා පරීක්ෂා කරමින්</translation>
 <translation id="2521385132275182522">පහළ දකුණ ස්ටේපල් කරන්න</translation>
 <translation id="2521736961081452453">පෝරමය තනන්න</translation>
@@ -883,6 +884,7 @@
 <translation id="3366477098757335611">කාඩ්පත් බලන්න</translation>
 <translation id="3369192424181595722">ඔරලෝසු දෝෂය</translation>
 <translation id="3369459162151165748">වාහන අමතර කොටස් සහ උපාංග</translation>
+<translation id="3371064404604898522">Chrome පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
 <translation id="3371076217486966826"><ph name="URL" /> හට පහත දේවල් අවශ්‍යයි:
       • ඔබගේ අවට 3D සිතියමක් තැනීම සහ කැමරා පිහිටීම හඹා යාම
       • ඔබගේ කැමරාව භාවිත කිරීම</translation>
@@ -1100,6 +1102,7 @@
 <translation id="3969052498612555048">ඔබගේ කේතය සොයා ගත නොහැකිද? <ph name="BEGIN_LINK" />නව කේතය ලබා ගන්න<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> අවහිර කර ඇත</translation>
+<translation id="3978338123949022456">සෙවීම් ප්‍රකාරය, විමසුමක් ටයිප් කර <ph name="KEYWORD_SUFFIX" /> සමග සෙවීමට Enter ඔබන්න</translation>
 <translation id="398470910934384994">පක්ෂීන්</translation>
 <translation id="3986705137476756801">දැනට සජීවී සිරස්තල ක්‍රියා විරහිත කරන්න</translation>
 <translation id="3987940399970879459">1 MBට වඩා අඩු</translation>
@@ -1926,6 +1929,7 @@
 <translation id="6319249456820053699">කැමරා සහ කැම්කෝඩර්</translation>
 <translation id="6321917430147971392">ඔබේ DNS පසුතල පරීක්ෂා කරන්න</translation>
 <translation id="6322182122604171028">Windows Hello භාවිත කළ නොහැක</translation>
+<translation id="6326947323444967009">iOS සැකසීම් තුළ පද්ධතියේ පෙරනිමි බ්‍රවුසරය ලෙස Chrome සකසන්න</translation>
 <translation id="6328639280570009161">ජාල අනාවැකි අක්‍රීය කිරීමට උත්සහ ගන්න</translation>
 <translation id="6328784461820205019">"ඔබේ සම්බන්ධතාව පුද්ගලික නොවේ" හෝ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" හෝ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" හෝ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" හෝ "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" හෝ "SSL සහතිකයේ දෝෂයයි"</translation>
 <translation id="6328786501058569169">මෙම අඩවිය රැවටිලිකාරය</translation>
@@ -2888,6 +2892,7 @@
 <translation id="908796725011587895">පාසල් ක්‍රීඩා</translation>
 <translation id="9089260154716455634">අක්‍රිය වේලා ප්‍රතිපත්තිය:</translation>
 <translation id="9095388113577226029">තවත් භාෂා...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS සැකසීම් තුළ පද්ධතියේ පෙරනිමි බ්‍රවුසරය ලෙස Chrome සැකසීමට ටැබය ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="9096679202588811390">TV සංදර්ශන සහ වැඩසටහන්</translation>
 <translation id="9101630580131696064">බඳුන 1</translation>
 <translation id="9103537084693478942">වීඩියෝ මෘදුකාංග</translation>

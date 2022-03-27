@@ -68,6 +68,9 @@
 <translation id="1320912611264252795">Mapper i flow til lagring af bogmærker er åbnet i fuld højde</translation>
 <translation id="1327257854815634930">Navigationsoversigt er åbnet</translation>
 <translation id="1331212799747679585">Chrome kan ikke opdateres. Flere valgmuligheder</translation>
+<translation id="1332100670807501334">Ad measurement giver websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.
+
+Når du sletter din browserhistorik – det hele eller for et specifikt website – sletter du også de tilhørende målingsoplysninger. Se <ph name="BEGIN_LINK" />din browserhistorik<ph name="END_LINK" />.</translation>
 <translation id="1332501820983677155">Funktionsgenveje i Google Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
@@ -115,6 +118,7 @@
 Ud fra din interaktion med et website, f.eks. regelmæssige logins på en konto, kan det pågældende website tildele din browser en trust token. Derefter vil der være større sandsynlighed for, at websites, du besøger, og som søger efter og finder en gyldig trust token, vil anse dig for at være et menneske og ikke en bot.
 
 Trust-tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan ikke bruges til at identificere dig.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Sådan kan du administrere dine data:<ph name="END_BOLD" /> Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dine personlige oplysninger Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chrome skal tage med i betragtning.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}one{Fjern # valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1633659023549081553">Find nyt indhold via Chromes startside</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
@@ -147,6 +151,9 @@ Trust-tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1832459821645506983">Ja tak</translation>
 <translation id="1849863543394887018">Du kan deaktivere notifikationer ved at gå til indstillingerne</translation>
+<translation id="1854311313115643875">Når prøver er aktiveret, giver Ad measurement de websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.
+
+Når du sletter din browserhistorik – det hele eller for et specifikt website – sletter du også de tilhørende målingsoplysninger. Se <ph name="BEGIN_LINK" />din browserhistorik<ph name="END_LINK" />.</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre sprog</translation>
@@ -310,6 +317,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2746842245914314523">Du kan få flere oplysninger om disse funktioner i Chrome-indstillingerne. Under prøveperioder er din interaktion med websites muligvis ikke mere privat, end den ville være uden disse nye funktioner.</translation>
 <translation id="2760989362628427051">Aktivér mørkt tema, når enhedens mørke tema eller batterisparefunktion er aktiveret</translation>
 <translation id="2762000892062317888">lige nu</translation>
+<translation id="2765569104201273438">Under eksperimentet vil Chrome estimere, hvilke emner du kan være interesseret i. Derefter vil de websites, du besøger, muligvis bruge disse oplysninger til at vise dig relevante annoncer, uden at få oplyst, hvem du er. Interesser er baseret på din seneste browserhistorik, og du kan se og administrere dem.</translation>
 <translation id="276969039800130567">Logget ind som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder tilbage</translation>
@@ -791,6 +799,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5514904542973294328">Deaktiveret af administratoren af denne enhed</translation>
 <translation id="5515439363601853141">Lås op for at se din adgangskode</translation>
 <translation id="5517095782334947753">Du har bogmærker, historik, adgangskoder og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5524761631371622910">Når prøver er aktiveret, og hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome dine interesser en gang om måneden.</translation>
 <translation id="5524843473235508879">Omdirigeringen blev blokeret.</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
@@ -823,6 +832,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="570347048394355941">Skift til fanen</translation>
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5726692708398506830">Gør alting på siden større</translation>
+<translation id="5727531838415286053">Hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome dine interesser en gang om måneden. Interesserne opdateres, medmindre du fjerner dem.</translation>
 <translation id="5748802427693696783">Skiftet til standardfaner</translation>
 <translation id="5749068826913805084">Chrome skal have lageradgang for at kunne downloade filer.</translation>
 <translation id="5749237766298580851">Fra <ph name="SEPARATOR" /> Anbefales ikke</translation>
@@ -897,6 +907,7 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="6091413777268123602">Takket være Privacy Sandbox-prøveperioder kan websites levere den samme browseroplevelse uden at bruge så mange af dine data. Det vil sige, at dine personlige oplysninger beskyttes bedre, og at du spores mindre på tværs af websites. Vi tilføjer nye prøveperioder, når de er klar til at blive testet.</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>
+<translation id="609511393187302037">Chrome undersøger mulighederne for at begrænse sporing på tværs af websites og samtidig give websites mulighed for at forhindre annoncespam og -svindel.</translation>
 <translation id="6095578583683628124">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>
 <translation id="6112702117600201073">Opdaterer siden</translation>
@@ -944,6 +955,11 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6364438453358674297">Vil du fjerne forslaget fra historikken?</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Forudindlæser oftere sider, som Chrome tror, der er stor chance for, at du besøger. Denne indstilling kan medføre et højere dataforbrug.</translation>
+<translation id="6385407407546870227">Når prøver er aktiveret, kræver Reducering af spam og svindel brugen af trust tokens, som hjælper websites med at bekæmpe svindel og skelne mellem bots og mennesker.
+
+Ud fra din interaktion med et website, f.eks. regelmæssige logins på en konto, kan det pågældende website tildele din browser et trust token. Derefter vil der være større sandsynlighed for, at de websites, som du besøger, og som søger efter og finder et gyldigt trust token, vil anse dig for at være et menneske og ikke en bot.
+
+Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan ikke bruges til at identificere dig.</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online igen</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
@@ -1338,6 +1354,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8445448999790540984">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8453310803815879010">Start Dino-spillet</translation>
+<translation id="8455351369246067579">Chrome vil estimere, hvilke emner du kan være interesseret i. Derefter vil de websites, du besøger, muligvis bruge disse oplysninger til at vise dig relevante annoncer, uden at få oplyst, hvem du er. Interesser er baseret på din seneste browserhistorik, og du kan se og administrere dem.</translation>
 <translation id="8461694314515752532">Kryptér synkroniserede data med din egen adgangssætning til synkronisering</translation>
 <translation id="8466613982764129868">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har forbindelse til internettet</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
@@ -1444,6 +1461,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
 <translation id="8987641763863173640">Administrer indstillinger for forhåndsvisning af video</translation>
 <translation id="898854820045159673">Reaktionen blev tilføjet</translation>
+<translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
