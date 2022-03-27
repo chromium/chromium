@@ -83,7 +83,17 @@ std::string GetAppIdForTab(content::WebContents* contents) {
 }
 
 std::string GetAppIdForBrowser(Browser* browser) {
-  return web_app::GetAppIdFromApplicationName(browser->app_name());
+  std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
+  auto* extension = registry->GetInstalledExtension(app_id);
+  // This is a web-app.
+  if (!extension)
+    return app_id;
+
+  if (extension->is_hosted_app() || extension->is_legacy_packaged_app())
+    return app_id;
+  return "";
 }
 
 std::string GetTitle(content::WebContents* contents) {
@@ -96,6 +106,10 @@ std::string GetTitle(Browser* browser) {
   return active_contents ? base::UTF16ToUTF8(active_contents->GetTitle()) : "";
 }
 
+bool IsExtensionNonAppWindow(Browser* browser) {
+  return browser->is_type_app_popup() && GetAppIdForBrowser(browser) == "";
+}
+
 bool IsAppWindow(Browser* browser) {
   return (browser->is_type_app() || browser->is_type_app_popup()) &&
          GetAppIdForBrowser(browser) != "";
@@ -103,7 +117,7 @@ bool IsAppWindow(Browser* browser) {
 
 bool IsBrowserWindow(Browser* browser) {
   return browser->is_type_normal() || browser->is_type_popup() ||
-         browser->is_type_devtools();
+         browser->is_type_devtools() || IsExtensionNonAppWindow(browser);
 }
 
 }  // namespace
