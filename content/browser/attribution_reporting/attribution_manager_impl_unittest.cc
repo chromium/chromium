@@ -618,6 +618,16 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   base::HistogramTester histograms;
 
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer,
+              OnReportSent(_, /*is_debug_report=*/false,
+                           Field(&SendResult::status,
+                                 SendResult::Status::kTransientFailure)));
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
