@@ -432,8 +432,6 @@ def main():
         'lib/clang/$V/share/asan_*list.txt',
         'lib/clang/$V/share/cfi_*list.txt',
       ],
-      'lld': [
-      ],
   }
 
   # Check that all non-glob wanted files exist on disk.
@@ -484,6 +482,11 @@ def main():
           reclient_input_strings[tool] += ('%s\n' % rel_input)
 
   # Write the reclient inputs files.
+  if sys.platform != 'win32':
+    reclient_input_strings['clang++'] = reclient_input_strings['clang']
+    reclient_input_strings['clang-cl'] = reclient_input_strings['clang']
+  else:
+    reclient_input_strings['clang-cl.exe'] = reclient_input_strings.pop('clang')
   for tool, string in reclient_input_strings.items():
     filename = os.path.join(pdir, 'bin', '%s_remote_toolchain_inputs' % tool)
     print('%s:\n%s' % (filename, string))
