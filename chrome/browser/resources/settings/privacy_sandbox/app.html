@@ -284,9 +284,10 @@
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
-              <iron-icon id="topicsTooltipIcon" tabindex="0"
+              <iron-icon id="topicsTooltipIcon" tabindex="0" role="button"
                   aria-describedby="topicsTooltip" icon="cr:info-outline"
-                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
+                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_"
+                  aria-label="$i18n{privacySandboxAdPersonalizationDialogTopicsTitle}">
               </iron-icon>
               <paper-tooltip id="topicsTooltip" for="topicsTooltipIcon"
                   position="bottom" manual-mode fit-to-visible-bounds>
@@ -321,9 +322,10 @@
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
-              <iron-icon id="fledgeTooltipIcon" tabindex="0"
+              <iron-icon id="fledgeTooltipIcon" tabindex="0" role="button"
                   aria-describedby="fledgeTooltip" icon="cr:info-outline"
-                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
+                  on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_"
+                  aria-label="$i18n{privacySandboxAdPersonalizationDialogFledgeTitle}">
               </iron-icon>
               <paper-tooltip id="fledgeTooltip" for="fledgeTooltipIcon"
                   position="bottom" manual-mode fit-to-visible-bounds>
@@ -364,7 +366,7 @@
                     privacySandboxSettingsView_)]]">
           <div class="ad-personalization-title" slot="title">
             <cr-icon-button id="adPersonalizationBackButton"
-                class="icon-arrow-back"
+                class="icon-arrow-back" aria-label="$i18n{back}"
                 on-click="onAdPersonalizationBackButtonClick_">
             </cr-icon-button>
             <span class="flex">
