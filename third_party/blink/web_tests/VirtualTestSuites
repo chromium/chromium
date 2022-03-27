@@ -667,6 +667,14 @@
     "args": ["--enable-features=OverlayScrollbar"]
   },
   {
+    "prefix": "elastic-overscroll",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [],
+    "args": ["--enable-features=ElasticOverscroll",
+             "--enable-blink-features=FixedElementsDontOverscroll",
+             "--enable-threaded-compositing"]
+  },
+  {
     "prefix": "non-overlay-scrollbar",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],

@@ -630,6 +630,24 @@ function touchTapOn(xPosition, yPosition) {
   });
 }
 
+function touchPull(pull) {
+  const PREVENT_FLING_PAUSE = 40;
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: pull.start_x, y: pull.start_y },
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+            { name: 'pointerMove', x: pull.end_x, y: pull.end_y},
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
 function touchDragTo(drag) {
   const PREVENT_FLING_PAUSE = 40;
   return new Promise(function(resolve, reject) {
