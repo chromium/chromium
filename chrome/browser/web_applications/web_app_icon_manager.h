@@ -29,7 +29,6 @@ class Profile;
 namespace web_app {
 
 class FileUtilsWrapper;
-class WebAppRegistrar;
 
 using SquareSizeDip = int;
 
