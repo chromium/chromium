@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module crosapi.mojom;
 
@@ -176,6 +176,13 @@ interface AppServiceProxy {
   // In the Settings SWA, show the app management page for |app_id|.
   [MinVersion=16]
   ShowAppManagementPage@4(string app_id);
+
+  // Sets |app_id| as the preferred app for all of its supported links ('view'
+  // intent filters with a scheme, host, and port) in ash-chrome. All changes to
+  // the user's preferences as a result of this call will be synchronized back
+  // to lacros-chrome through AppServiceSubscriber::OnPreferredAppsChanged.
+  [MinVersion=17]
+  SetSupportedLinksPreference@5(string app_id);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

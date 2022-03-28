@@ -4048,6 +4048,7 @@ if (!is_android) {
         "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/cpp:instance_update",
         "//components/services/app_service/public/cpp:intents",
+        "//components/services/app_service/public/cpp:preferred_apps",
         "//components/services/app_service/public/cpp:run_on_os_login",
         "//components/services/app_service/public/cpp:test_support",
         "//components/session_manager/core",
@@ -4446,6 +4447,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
@@ -4500,10 +4502,12 @@ if (is_chromeos_lacros) {
       "//components/captive_portal/core:buildflags",
       "//components/feature_engagement/public:public",
       "//components/feature_engagement/test:test_support",
+      "//components/infobars/content:content",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/proxy_config:proxy_config",
       "//components/services/app_service/public/cpp:intents",
+      "//components/services/app_service/public/cpp:preferred_apps",
       "//ui/platform_window",
     ]
 

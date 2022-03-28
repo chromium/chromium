@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 
@@ -50,6 +51,23 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   auto intent = apps_util::ConvertAppServiceToCrosapiIntent(
       apps_util::CreateIntentFromUrl(GURL(kUrl)), nullptr);
   EXPECT_EQ(launched_app->intent, intent);
+}
+
+TEST(AppServiceProxyLacrosTest, SetSupportedLinksPreference) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  AppServiceProxy proxy(nullptr);
+  MockCrosapiAppServiceProxy mock_proxy;
+  proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
+
+  proxy.SetSupportedLinksPreference("foo");
+
+  ASSERT_THAT(mock_proxy.supported_link_apps(), testing::ElementsAre("foo"));
+
+  proxy.SetSupportedLinksPreference("bar");
+
+  ASSERT_THAT(mock_proxy.supported_link_apps(),
+              testing::ElementsAre("foo", "bar"));
 }
 
 }  // namespace apps
