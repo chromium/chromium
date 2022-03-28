@@ -491,4 +491,46 @@ TEST_F(ExtensionDownloaderTest, TestUpdateURLHandle) {
             tasks.rbegin()->update_url);
 }
 
+// Tests that multiple updates are combined in single requests.
+TEST_F(ExtensionDownloaderTest, TestMultipleUpdates) {
+  ExtensionDownloaderTestHelper helper;
+
+  // Add two extensions with different update URLs (to have at least two items
+  // in manifest requests queue).
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL("http://example1.com/"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId2, GURL("http://example2.com/"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+
+  helper.downloader().StartAllPending(nullptr);
+
+  // Add the same two extensions again.
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL("http://example1.com/"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId2, GURL("http://example2.com/"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+
+  helper.downloader().StartAllPending(nullptr);
+
+  int requests_count = 0;
+  network::TestURLLoaderFactory::PendingRequest* request = nullptr;
+  while (helper.test_url_loader_factory().NumPending() > 0) {
+    request = helper.test_url_loader_factory().GetPendingRequest(0);
+    ASSERT_TRUE(request);
+    // Fail all requests with 404 to quickly count them.
+    requests_count++;
+    helper.test_url_loader_factory().AddResponse(
+        request->request.url.spec(), "not found", net::HTTP_NOT_FOUND);
+  }
+  EXPECT_EQ(2, requests_count);
+}
+
 }  // namespace extensions
