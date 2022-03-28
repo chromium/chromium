@@ -55,6 +55,8 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/surface.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
@@ -1907,32 +1909,44 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 class ArcAppLaunchHandlerArcAppBrowserTest
     : public FullRestoreAppLaunchHandlerArcAppBrowserTest {
  protected:
-  void UpdateApp(const std::string& app_id, apps::mojom::Readiness readiness) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_id = app_id;
-    app->app_type = apps::mojom::AppType::kArc;
+  void UpdateApp(const std::string& app_id, apps::Readiness readiness) {
+    apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
     app->readiness = readiness;
 
-    std::vector<apps::mojom::AppPtr> deltas;
-    deltas.push_back(std::move(app));
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().OnApps(std::move(deltas),
-                                     apps::mojom::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      std::vector<apps::AppPtr> deltas;
+      deltas.push_back(std::move(app));
+      proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
+                                       false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
+      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
+                                       apps::mojom::AppType::kArc,
+                                       false /* should_notify_initialized */);
+    }
   }
 
   void RemoveApp(const std::string& app_id) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_id = app_id;
-    app->app_type = apps::mojom::AppType::kArc;
-    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+    apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
+    app->readiness = apps::Readiness::kUninstalledByUser;
 
-    std::vector<apps::mojom::AppPtr> deltas;
-    deltas.push_back(std::move(app));
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().OnApps(std::move(deltas),
-                                     apps::mojom::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      std::vector<apps::AppPtr> deltas;
+      deltas.push_back(std::move(app));
+      proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
+                                       false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
+      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
+                                       apps::mojom::AppType::kArc,
+                                       false /* should_notify_initialized */);
+    }
   }
 
   bool HasRestoreData() {
@@ -2062,7 +2076,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
   VerifyNoRestoreData(app_id2);
 
   // Modify `app_id1` status to be ready to simulate `app_id1` is installed.
-  UpdateApp(app_id1, apps::mojom::Readiness::kReady);
+  UpdateApp(app_id1, apps::Readiness::kReady);
   EXPECT_FALSE(HasRestoreData(app_id1));
   EXPECT_TRUE(GetAppIds().empty());
   VerifyNoRestoreData(app_id1);
@@ -2109,8 +2123,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
   WaitForAppLaunchInfoSaved();
 
   // Modify apps status before restoring, so that apps can't be restored.
-  UpdateApp(app_id1, apps::mojom::Readiness::kDisabledByPolicy);
-  UpdateApp(app_id2, apps::mojom::Readiness::kDisabledByPolicy);
+  UpdateApp(app_id1, apps::Readiness::kDisabledByPolicy);
+  UpdateApp(app_id2, apps::Readiness::kDisabledByPolicy);
   base::HistogramTester histogram_tester;
   Restore();
   widget1->CloseNow();
@@ -2125,14 +2139,14 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
   EXPECT_FALSE(HasRestoreData());
 
   // Modify `app_id1` status to be ready to prepare launching `app_id1`.
-  UpdateApp(app_id1, apps::mojom::Readiness::kReady);
+  UpdateApp(app_id1, apps::Readiness::kReady);
   app_ids = GetAppIds();
   EXPECT_FALSE(base::Contains(app_ids, app_id1));
   EXPECT_TRUE(base::Contains(app_ids, app_id2));
   VerifyWindows(activation_index1, app_id1, kTaskId1);
 
   // Modify `app_id2` status to be ready to prepare launching `app_id2`.
-  UpdateApp(app_id2, apps::mojom::Readiness::kReady);
+  UpdateApp(app_id2, apps::Readiness::kReady);
   app_ids = GetAppIds();
   EXPECT_FALSE(base::Contains(app_ids, app_id1));
   EXPECT_FALSE(base::Contains(app_ids, app_id2));
@@ -2259,7 +2273,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, AppIsReadyLate) {
                    app_restore::kRestoredAppWindowCountHistogram, 1));
 
   // Modify `app_id2` status to be ready to prepare launching `app_id2`.
-  UpdateApp(app_id2, apps::mojom::Readiness::kReady);
+  UpdateApp(app_id2, apps::Readiness::kReady);
   EXPECT_TRUE(GetAppIds().empty());
   EXPECT_TRUE(HasRestoreData());
   VerifyWindows(activation_index1, app_id1, kTaskId1);
@@ -2393,24 +2407,32 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
         ->profile_path_to_restore_data_.clear();
   }
 
-  void ModifyAppReadiness(apps::mojom::Readiness readiness) {
-    apps::mojom::AppType app_type = apps::mojom::AppType::kWeb;
+  void ModifyAppReadiness(apps::Readiness readiness) {
+    apps::AppType app_type = apps::AppType::kWeb;
     if (crosapi::browser_util::IsLacrosEnabled() &&
         web_app::IsWebAppsCrosapiEnabled()) {
-      app_type = apps::mojom::AppType::kSystemWeb;
+      app_type = apps::AppType::kSystemWeb;
     }
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_id =
-        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
-    app->app_type = app_type;
+    apps::AppPtr app = std::make_unique<apps::App>(
+        app_type,
+        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP));
     app->readiness = readiness;
-    deltas.push_back(std::move(app));
-    cache.OnApps(std::move(deltas), app_type,
-                 false /* should_notify_initialized */);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      std::vector<apps::AppPtr> deltas;
+      deltas.push_back(std::move(app));
+      cache.OnApps(std::move(deltas), app_type,
+                   false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
+      cache.OnApps(std::move(mojom_deltas),
+                   apps::ConvertAppTypeToMojomAppType(app_type),
+                   false /* should_notify_initialized */);
+    }
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
@@ -2518,7 +2540,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Modify the app readiness to uninstall to simulate the app is not installed
   // during the system startup phase.
-  ModifyAppReadiness(apps::mojom::Readiness::kUninstalledByUser);
+  ModifyAppReadiness(apps::Readiness::kUninstalledByUser);
 
   // Create FullRestoreAppLaunchHandler.
   auto app_launch_handler =
@@ -2531,7 +2553,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   ASSERT_FALSE(restore_app_browser);
 
   // Modify the app readiness to kReady to simulate the app is installed.
-  ModifyAppReadiness(apps::mojom::Readiness::kReady);
+  ModifyAppReadiness(apps::Readiness::kReady);
 
   // Wait for the restoration.
   content::RunAllTasksUntilIdle();
@@ -2570,7 +2592,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Modify the app readiness to uninstall to simulate the app is not installed
   // during the system startup phase.
-  ModifyAppReadiness(apps::mojom::Readiness::kUninstalledByUser);
+  ModifyAppReadiness(apps::Readiness::kUninstalledByUser);
 
   // Create FullRestoreAppLaunchHandler to simulate the system reboot.
   auto app_launch_handler1 =
@@ -2593,7 +2615,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   app_launch_handler1.reset();
 
   // Modify the app readiness to kReady to simulate the app is installed.
-  ModifyAppReadiness(apps::mojom::Readiness::kReady);
+  ModifyAppReadiness(apps::Readiness::kReady);
 
   // Create FullRestoreAppLaunchHandler to simulate the system reboot again.
   auto app_launch_handler2 =
@@ -2641,7 +2663,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Modify the app readiness to uninstall to simulate the app is not installed
   // during the system startup phase.
-  ModifyAppReadiness(apps::mojom::Readiness::kUninstalledByUser);
+  ModifyAppReadiness(apps::Readiness::kUninstalledByUser);
 
   // Create FullRestoreAppLaunchHandler to simulate the system reboot.
   auto app_launch_handler1 =
@@ -2667,7 +2689,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   app_launch_handler1.reset();
 
   // Modify the app readiness to kReady to simulate the app is installed.
-  ModifyAppReadiness(apps::mojom::Readiness::kReady);
+  ModifyAppReadiness(apps::Readiness::kReady);
 
   // Create FullRestoreAppLaunchHandler to simulate the system reboot again.
   auto app_launch_handler2 =
