@@ -38,18 +38,28 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Returns an Observable that is only activated with the values added after subscription.
+     *
+     * Some Observables synchronously notify observers of their current state the moment they are
+     * subscribed. This operator filters these out and only notifies the observer of changes that
+     * occur after the moment of subscription.
+     */
+    public final Observable<T> after() {
+        return make(observer -> {
+            Box<Boolean> after = new Box<Boolean>(false);
+            Subscription sub = subscribe(t -> after.value ? observer.open(t) : Scopes.NO_OP);
+            after.value = true;
+            return sub;
+        });
+    }
+
+    /**
      * Returns an Observable that is activated when `this` and `other` are activated in order.
      *
      * This is similar to `and()`, but does not activate if `other` is activated before `this`.
      */
     public final <U> Observable<Both<T, U>> andThen(Observable<U> other) {
-        Controller<U> otherAfterThis = new Controller<>();
-        other.subscribe((U value) -> {
-            otherAfterThis.set(value);
-            return otherAfterThis::reset;
-        });
-        subscribe(Observers.onEnter(x -> otherAfterThis.reset()));
-        return and(otherAfterThis);
+        return and(other.after());
     }
 
     /**

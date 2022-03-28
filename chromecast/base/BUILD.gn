@@ -382,6 +382,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/CastSettingsManagerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ControllerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ItertoolsTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableAfterTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndThenTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFilterTest.java",
