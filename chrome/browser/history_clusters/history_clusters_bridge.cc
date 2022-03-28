@@ -22,18 +22,42 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
+namespace {
+const char kHistoryClustersBridgeKey[] = "history-clusters-bridge";
+}
+
 namespace history_clusters {
 
-static jlong JNI_HistoryClustersBridge_Init(
+static ScopedJavaLocalRef<jobject> JNI_HistoryClustersBridge_GetForProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  return reinterpret_cast<intptr_t>(new HistoryClustersBridge(profile));
+  DCHECK(profile);
+
+  HistoryClustersService* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(profile);
+
+  if (history_clusters_service == nullptr)
+    return ScopedJavaLocalRef<jobject>();
+
+  HistoryClustersBridge* bridge = static_cast<HistoryClustersBridge*>(
+      history_clusters_service->GetUserData(kHistoryClustersBridgeKey));
+  if (!bridge) {
+    bridge = new HistoryClustersBridge(env, history_clusters_service);
+    history_clusters_service->SetUserData(kHistoryClustersBridgeKey,
+                                          base::WrapUnique(bridge));
+  }
+
+  return ScopedJavaLocalRef<jobject>(bridge->java_ref());
 }
 
-HistoryClustersBridge::HistoryClustersBridge(Profile* profile) {
-  history_clusters_service_ =
-      HistoryClustersServiceFactory::GetForBrowserContext(profile);
+HistoryClustersBridge::HistoryClustersBridge(
+    JNIEnv* env,
+    HistoryClustersService* history_clusters_service)
+    : history_clusters_service_(history_clusters_service) {
+  ScopedJavaLocalRef<jobject> j_history_clusters_bridge =
+      Java_HistoryClustersBridge_create(env, reinterpret_cast<jlong>(this));
+  java_ref_.Reset(j_history_clusters_bridge);
 }
 
 HistoryClustersBridge::~HistoryClustersBridge() = default;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_BRIDGE_H_
 #define CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_BRIDGE_H_
 
+#include "base/supports_user_data.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/query_clusters_state.h"
@@ -17,12 +18,13 @@ using base::android::ScopedJavaGlobalRef;
 
 namespace history_clusters {
 
-/* Native JNI bridge that provides access to HistoryClusters data. This bridge
- * is instantiated, owned, and destroyed from Java.
- */
-class HistoryClustersBridge {
+/// Native JNI bridge that provides access to HistoryClusters data. This bridge
+/// is instantiated lazily via GetForProfile and is owned by the associated
+/// HistoryClustersService via UserData.
+class HistoryClustersBridge : public base::SupportsUserData::Data {
  public:
-  explicit HistoryClustersBridge(Profile* profile);
+  HistoryClustersBridge(JNIEnv* env,
+                        HistoryClustersService* history_clusters_service);
   // Start a new query for history clusters, fetching the first page of results
   // and calling back to j_callback when done.
   void QueryClusters(JNIEnv* env,
@@ -38,10 +40,12 @@ class HistoryClustersBridge {
   // Destroy the bridge.
   void Destroy(JNIEnv* j_env);
 
+  base::android::ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
+
   HistoryClustersBridge(const HistoryClustersBridge&) = delete;
   HistoryClustersBridge& operator=(const HistoryClustersBridge&) = delete;
 
-  ~HistoryClustersBridge();
+  ~HistoryClustersBridge() override;
 
  private:
   void ClustersQueryDone(JNIEnv* env,
@@ -51,6 +55,8 @@ class HistoryClustersBridge {
                          std::vector<history::Cluster> clusters,
                          bool can_load_more,
                          bool is_continuation);
+
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   HistoryClustersService* history_clusters_service_;
   base::CancelableTaskTracker query_task_tracker_;
   std::unique_ptr<QueryClustersState> query_clusters_state_;

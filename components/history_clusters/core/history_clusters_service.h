@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -67,7 +68,8 @@ class VisitDeletionObserver : public history::HistoryServiceObserver {
 };
 
 // This Service provides an API to the History Clusters for UI entry points.
-class HistoryClustersService : public KeyedService {
+class HistoryClustersService : public base::SupportsUserData,
+                               public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
