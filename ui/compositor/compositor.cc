@@ -122,11 +122,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       base::FeatureList::IsEnabled(
           features::kUiCompositorReleaseTileResourcesForHiddenLayers);
 
-  if (base::FeatureList::IsEnabled(features::kUiCompositorRequiredTilesOnly)) {
-    settings.memory_policy.priority_cutoff_when_visible =
-        gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY;
-  }
-
   // Disable edge anti-aliasing in order to increase support for HW overlays.
   settings.enable_edge_anti_aliasing = false;
 
@@ -217,8 +212,13 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       (memory_limit_when_visible_mb > 0 ? memory_limit_when_visible_mb : 512) *
       1024 * 1024;
 
-  settings.memory_policy.priority_cutoff_when_visible =
-      gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
+  if (base::FeatureList::IsEnabled(features::kUiCompositorRequiredTilesOnly)) {
+    settings.memory_policy.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY;
+  } else {
+    settings.memory_policy.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
+  }
 
   settings.disallow_non_exact_resource_reuse =
       command_line->HasSwitch(switches::kDisallowNonExactResourceReuse);
@@ -903,6 +903,10 @@ void Compositor::SetDelegatedInkPointRenderer(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
   if (display_private_)
     display_private_->SetDelegatedInkPointRenderer(std::move(receiver));
+}
+
+const cc::LayerTreeSettings& Compositor::GetLayerTreeSettings() const {
+  return host_->GetSettings();
 }
 
 }  // namespace ui
