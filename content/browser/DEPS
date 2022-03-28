@@ -175,4 +175,7 @@ specific_include_rules = {
   "launch_as_mojo_client_browsertest.cc": [
     "+ui/ozone/public/ozone_switches.h",
   ],
+  "site_per_process_mac_browsertest\.mm": [
+    "+content/app_shim_remote_cocoa",
+  ],
 }
