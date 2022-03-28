@@ -179,9 +179,11 @@ ci.builder(
     cores = 32,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     notifies = ["Deterministic Android"],
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -194,6 +196,9 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Android"],
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

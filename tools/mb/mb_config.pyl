@@ -83,8 +83,8 @@
       'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
       'Android x86 Builder (dbg)': 'android_debug_static_bot_x86_reclient',
       'Cast Android (dbg)': 'android_cast_debug_static_bot_reclient',
-      'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols',
-      'Deterministic Android (dbg)': 'android_debug_bot',
+      'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols_reclient',
+      'Deterministic Android (dbg)': 'android_debug_bot_reclient',
 
       'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
       'android-bfcache-rel': 'android_release_bot_minimal_symbols_reclient',
@@ -542,8 +542,9 @@
       'Deterministic Linux (dbg)': {
         'local': 'debug_bot_local_build',
         'goma': 'debug_bot',
+        'reclient': 'debug_bot_reclient',
       },
-      'Deterministic Linux': 'release_bot_minimal_symbols',
+      'Deterministic Linux': 'release_bot_minimal_symbols_reclient',
       'Fuchsia ARM64': 'release_bot_fuchsia_arm64',
       'Fuchsia x64': 'release_bot_fuchsia',
       'Leak Detection Linux': 'release_bot_reclient',
@@ -1468,6 +1469,10 @@
       'android', 'debug_bot',
     ],
 
+    'android_debug_bot_reclient': [
+      'android', 'debug_bot_reclient',
+    ],
+
     'android_debug_static_bot': [
       'android', 'debug_static_bot',
     ],
@@ -1719,10 +1724,6 @@
 
     'android_without_codecs_debug_bot_reclient': [
       'android_without_codecs', 'debug_bot_reclient',
-    ],
-
-    'android_without_codecs_release_bot_minimal_symbols': [
-      'android_without_codecs', 'release_bot', 'minimal_symbols', 'strip_debug_info',
     ],
 
     'android_without_codecs_release_bot_minimal_symbols_reclient': [

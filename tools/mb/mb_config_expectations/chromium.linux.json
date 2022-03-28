@@ -59,7 +59,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Deterministic Linux (dbg)": {
@@ -76,6 +77,15 @@
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 1,
+        "use_rbe": true,
+        "use_remoteexec": true
       }
     }
   },

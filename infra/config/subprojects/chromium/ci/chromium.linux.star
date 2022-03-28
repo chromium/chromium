@@ -124,6 +124,9 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -135,6 +138,9 @@ ci.builder(
     cores = 32,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
