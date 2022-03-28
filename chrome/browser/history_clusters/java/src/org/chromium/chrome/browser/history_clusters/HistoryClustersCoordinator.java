@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -36,5 +40,12 @@ public class HistoryClustersCoordinator {
 
     public void destroy() {
         mMediator.destroy();
+    }
+
+    private View buildVisitView(ViewGroup parent) {
+        SelectableItemView<ClusterVisit> itemView =
+                (SelectableItemView<ClusterVisit>) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.history_cluster_visit, parent, false);
+        return itemView;
     }
 }

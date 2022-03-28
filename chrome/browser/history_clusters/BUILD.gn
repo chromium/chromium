@@ -6,18 +6,27 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
+android_resources("java_resources") {
+  sources = [ "java/res/layout/history_cluster_visit.xml" ]
+  deps = [ "//components/browser_ui/widget/android:java_resources" ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryCluster.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersCoordinator.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemProperties.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemView.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediator.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersResult.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersViewBinder.java",
   ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
@@ -25,11 +34,13 @@ android_library("java") {
     "//components/favicon/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
     "//url:gurl_java",
   ]
 
+  resources_package = "org.chromium.chrome.browser.history_clusters"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
