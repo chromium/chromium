@@ -2842,7 +2842,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     // wallpaper picker to the new one.
     std::string url = params.url.spec() + GetBackdropWallpaperSuffix();
     ImageDownloader::Get()->Download(
-        GURL(url), NO_TRAFFIC_ANNOTATION_YET,
+        GURL(url), MISSING_TRAFFIC_ANNOTATION,
         base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                        set_wallpaper_weak_factory_.GetWeakPtr(), params,
                        /*save_file=*/true, std::move(callback)));
@@ -2858,7 +2858,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
           GURL(variants.at(i).raw_url.spec() + GetBackdropWallpaperSuffix()),
-          NO_TRAFFIC_ANNOTATION_YET,
+          MISSING_TRAFFIC_ANNOTATION,
           base::BindOnce(
               &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
               set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,

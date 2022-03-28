@@ -49,7 +49,7 @@ Refer to README.md for content description and update process.
  <item id="client_download_request" added_in_milestone="62" content_hash_code="04bc89c5" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
  <item id="content_suggestion_get_favicon" added_in_milestone="62" content_hash_code="0800f6e5" os_list="linux,windows,chromeos,android" file_path="components/ntp_snippets/content_suggestions_service.cc" />
- <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="07884f7e" os_list="linux,windows,android" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
+ <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="07884f7e" os_list="linux,windows,android,chromeos" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
  <item id="credenential_avatar" added_in_milestone="62" content_hash_code="06bcc86b" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc" />
  <item id="cros_recovery_image_download" added_in_milestone="62" content_hash_code="00a7d792" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc" />
  <item id="desktop_screenshot_save" added_in_milestone="94" content_hash_code="019480c9" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc" />
@@ -125,7 +125,7 @@ Refer to README.md for content description and update process.
  <item id="indexed_db_internals_handler" added_in_milestone="62" content_hash_code="0384abe6" os_list="linux,windows,chromeos,android" file_path="content/browser/indexed_db/indexed_db_internals_ui.cc" />
  <item id="interest_feedv2_image_send" added_in_milestone="86" content_hash_code="06687258" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/image_fetcher.cc" />
  <item id="interest_feedv2_send" added_in_milestone="83" content_hash_code="02f676af" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/feed_network_impl.cc" />
- <item id="interest_group_update_fetcher" added_in_milestone="94" content_hash_code="0272b26d" os_list="linux,windows,android" file_path="content/browser/interest_group/interest_group_update_manager.cc" />
+ <item id="interest_group_update_fetcher" added_in_milestone="94" content_hash_code="0272b26d" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_update_manager.cc" />
  <item id="intranet_redirect_detector" added_in_milestone="62" content_hash_code="03b26f7b" os_list="linux,windows,chromeos" file_path="chrome/browser/intranet_redirect_detector.cc" />
  <item id="javascript_report_error" added_in_milestone="87" content_hash_code="006e4e54" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc" />
  <item id="lib_address_input" added_in_milestone="62" content_hash_code="0374aae8" os_list="linux,windows,chromeos,android" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc" />
@@ -163,7 +163,7 @@ Refer to README.md for content description and update process.
  <item id="openscreen_message" added_in_milestone="83" content_hash_code="076a1faf" os_list="linux,windows,chromeos,android" file_path="components/openscreen_platform/udp_socket.cc" />
  <item id="openscreen_tls_message" added_in_milestone="83" content_hash_code="00f4022a" os_list="linux,windows,chromeos,android" file_path="components/openscreen_platform/tls_connection_factory.cc" />
  <item id="optimization_guide_model" added_in_milestone="79" content_hash_code="01ee6e67" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/prediction_model_fetcher_impl.cc" />
- <item id="optimization_guide_model_download" added_in_milestone="88" content_hash_code="05d71d9b" os_list="linux,windows,android" file_path="components/optimization_guide/core/prediction_model_download_manager.cc" />
+ <item id="optimization_guide_model_download" added_in_milestone="88" content_hash_code="05d71d9b" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/prediction_model_download_manager.cc" />
  <item id="origin_policy_loader" added_in_milestone="69" content_hash_code="07fd1eaf" os_list="linux,windows,chromeos,android" file_path="services/network/origin_policy/origin_policy_fetcher.cc" />
  <item id="parallel_download_job" added_in_milestone="62" content_hash_code="064736f3" os_list="linux,windows,chromeos,android" file_path="components/download/internal/common/parallel_download_job.cc" />
  <item id="password_protection_request" added_in_milestone="62" content_hash_code="01869413" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/password_protection/password_protection_request.cc" />
@@ -364,4 +364,9 @@ Refer to README.md for content description and update process.
  <item id="printing_oauth2_http_exchange" added_in_milestone="101" type="completing" content_hash_code="079d0e2f" os_list="chromeos" semantics_fields="1,3,5,6" policy_fields="-1,3,5" file_path="chrome/browser/ash/printing/oauth2/http_exchange.cc" />
  <item id="printing_oauth2_first_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="00850a77" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
  <item id="printing_oauth2_next_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="002fbbfd" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
+ <item id="fast_pair_footprints_request" added_in_milestone="102" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01d3d58d" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,4" file_path="ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.cc" />
+ <item id="help_content_provider" added_in_milestone="102" content_hash_code="0839311f" os_list="chromeos" file_path="ash/webui/os_feedback_ui/backend/help_content_provider.cc" />
+ <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="102" content_hash_code="068bc93d" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.cc" />
+ <item id="wallpaper_download_google_photo" added_in_milestone="102" content_hash_code="034be7b5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_controller_impl.cc" />
+ <item id="quick_answers_spellchecker" added_in_milestone="102" content_hash_code="06e81b7f" os_list="chromeos" file_path="chromeos/components/quick_answers/utils/spell_checker.cc" />
 </annotations>

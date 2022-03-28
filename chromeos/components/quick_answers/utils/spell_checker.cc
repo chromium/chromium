@@ -40,6 +40,11 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             setting:
               "Quick Answers can be enabled/disabled in ChromeOS Settings and"
               "is subject to eligibility requirements."
+            chrome_policy {
+              QuickAnswersEnabled {
+                QuickAnswersEnabled: false
+              }
+            }
           })");
 
 constexpr int kMaxRetries = 3;

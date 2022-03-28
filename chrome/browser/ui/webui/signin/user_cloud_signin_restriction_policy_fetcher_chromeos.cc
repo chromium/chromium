@@ -31,7 +31,7 @@ const char kSecondaryGoogleAccountUsage[] = "SecondaryGoogleAccountUsage";
 const char kHostedDomainKey[] = "hd";
 constexpr net::NetworkTrafficAnnotationTag annotation =
     net::DefineNetworkTrafficAnnotation(
-        "managed_acccount_signin_restrictions_secure_connect",
+        "managed_acccount_signin_restrictions_secure_connect_chromeos",
         R"(
     semantics {
       sender: "Chrome OS sign-in restrictions"
