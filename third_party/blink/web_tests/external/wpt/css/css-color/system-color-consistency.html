@@ -13,6 +13,7 @@
 </head>
 
 <body>
+  <div style="display: none">
   <div id="target"></div>
   <!-- Reference elements -->
   <!-- Buttons -->
@@ -28,6 +29,7 @@
     <textarea name="text area"></textarea>
   </div>
   <mark id="mark">Marked text</mark>
+  </div>
   <script>
     // Buttons
     for (let element of document.getElementById("buttons").children) {
@@ -36,12 +38,18 @@
       test_computed_value('color', 'ButtonFace', style.getPropertyValue('background-color'), 'resolves to the same color as the background-color of a ' + element.name);
       test_computed_value('color', 'ButtonText', style.getPropertyValue('color'), 'resolves to the same color as text on a ' + element.name);
     }
+
+    // CanvasText
+    style = document.defaultView.getComputedStyle(document.getElementsByTagName('html')[0]);
+    test_computed_value('color', 'CanvasText', style.getPropertyValue('color'), 'has the same color as the color of the html element');
+
     // Field and FieldText
     for (let element of document.getElementById("fields").children) {
       style = document.defaultView.getComputedStyle(element);
       test_computed_value('color', 'Field', style.getPropertyValue('background-color'), 'resolves to the same color as the background-color of a ' + element.name);
       test_computed_value('color', 'FieldText', style.getPropertyValue('color'), 'resolves to the same color as text on a ' + element.name);
     }
+
     // Mark and MarkText
     style = document.defaultView.getComputedStyle(document.getElementById('mark'));
     test_computed_value('color', 'Mark', style.getPropertyValue('background-color'), 'has the same color as the background-color of a mark element');

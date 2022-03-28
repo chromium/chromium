@@ -31,7 +31,7 @@ html {
 
 body {
     display: block;
-    margin: 8px
+    margin: 8px;
 }
 
 body:-webkit-full-page-media {

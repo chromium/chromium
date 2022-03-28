@@ -680,7 +680,7 @@ Color LayoutTheme::DefaultSystemColor(
       return 0xFF551A8B;
     case CSSValueID::kWindow:
     case CSSValueID::kCanvas:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF121212
                                                               : 0xFFFFFFFF;
     case CSSValueID::kWindowframe:
       return 0xFFCCCCCC;
