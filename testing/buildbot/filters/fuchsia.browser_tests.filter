@@ -563,3 +563,36 @@
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization
 -ZoomBubbleDialogTest.InvokeUi_default
 -ZoomControllerBrowserTest.RestoredPageScaleFromNavigation
+
+# TODO(crbug.com/1306610): Remove this condition and merge the deps once PDF
+# rendering no longer requires PPAPI support.
+-All/PrintBackendPrintBrowserTest.UpdatePrintSettings/0
+-All/PrintBackendPrintBrowserTest.UpdatePrintSettings/1
+-BackForwardCachePrintBrowserTest.DisableCaching
+-PdfPluginContextMenuBrowserTest.FullPagePdfFullscreenItems
+-PdfPluginContextMenuBrowserTest.FullPagePdfHasPageItems
+-PdfPluginContextMenuBrowserTest.IframedPdfHasNoPageItems
+-PdfPluginContextMenuBrowserTest.Rotate
+-PdfToPwgRasterBrowserTest.Test*
+-PortalBrowserTest.PdfViewerLoadsInPortal
+-PrintBackendPrintBrowserTestService.Start*
+-PrintBrowserTest.LazyLoadedIframeFetched
+-PrintBrowserTest.LazyLoadedImagesFetched
+-PrintBrowserTest.LegacyLayoutEngineFallback
+-PrintBrowserTest.MultipagePrint
+-PrintBrowserTest.NoScrollingVerticalRl
+-PrintBrowserTest.PDFPluginNotKeyboardFocusable
+-PrintBrowserTest.PrintNup
+-PrintBrowserTest.ResetPageScaleAfterPrintPreview
+-PrintBrowserTest.SelectionContainsIframe
+-PrintBrowserTest.WindowDotPrint
+-PrintExtensionBrowserTest.PrintOptionPage
+-PrintPreviewDestinationDialogTest.PrinterList
+-PrintPreviewDestinationDialogTest.UserAccounts
+-SitePerProcessPrintBrowserTest.BasicPrint
+-SitePerProcessPrintBrowserTest.PrintNup
+-SitePerProcessPrintBrowserTest.SubframeUnavailableBeforePrint
+-SitePerProcessPrintBrowserTest.SubframeUnavailableDuringPrint
+-SitePerProcessPrintExtensionBrowserTest.PrintOptionPage
+-WebViewPdfTest.ContextMenuNavigationInMimeHandlerView
+-WebViewPdfTest.Shim_TestDialogInPdf

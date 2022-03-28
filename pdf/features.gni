@@ -17,9 +17,5 @@ declare_args() {
   # feature is enabled for the PDF viewer.
   enable_ink = enable_cros_media_app
 
-  # TODO(crbug.com/702993): Currently disabled on Fuchsia because the PDF Viewer
-  # currently depends on PPAPI. It does not make sense to port PPAPI, which is
-  # being deprecated, to Fuchsia. Once the PDF Viewer no longer uses PPAPI, the
-  # PDF Viewer should be enabled on Fuchsia, like on other desktop platforms.
-  enable_pdf = !is_android && !is_ios && !is_chromecast && !is_fuchsia
+  enable_pdf = !is_android && !is_ios && !is_chromecast
 }

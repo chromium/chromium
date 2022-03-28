@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//pdf/features.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
@@ -64,6 +65,7 @@ if (enable_pdf) {
       # TODO(crbug.com/1158929): Eliminate chrome_find_request_manager_browsertest.cc's dependence
       # on document_loader_impl.h.
       "//chrome/test:browser_tests",
+      "//chrome/test:browser_tests__exec",  # Fuchsia variant.
     ]
 
     sources = [
@@ -154,6 +156,7 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility",
+      ":buildflags",
       ":features",
       ":ppapi_migration",
       "//base",
@@ -162,7 +165,6 @@ if (enable_pdf) {
       "//components/strings",
       "//gin",
       "//net",
-      "//pdf:buildflags",
       "//printing",
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common:headers",
@@ -211,6 +213,7 @@ if (enable_pdf) {
     visibility = [
       ":*",
       "//components:components_browsertests",
+      "//components:components_browsertests__exec",  # Fuchsia variant.
       "//components/pdf/renderer",
       "//components/pdf/renderer:unit_tests",
     ]
@@ -261,6 +264,12 @@ if (enable_pdf) {
   }
 
   static_library("pdf_view_web_plugin") {
+    # The PDF viewer relies on plugin infrastructure, which is currently tied to
+    # PPAPI support. Fuchsia does not have plugins enabled and is in a state
+    # where this code builds but does not work in Chrome.
+    # TODO(crbug.com/1306610): Remove this assert when this is no longer true.
+    assert(enable_plugins || is_fuchsia)
+
     visibility = [
       ":*",
       "//components/pdf/renderer",
@@ -383,6 +392,7 @@ if (enable_pdf) {
     deps = [
       ":accessibility",
       ":assert_enums",
+      ":buildflags",
       ":features",
       ":internal",
       ":pdf",
@@ -396,7 +406,6 @@ if (enable_pdf) {
       "//gin",
       "//mojo/core/embedder",
       "//mojo/public/cpp/bindings",
-      "//pdf:buildflags",
       "//printing",
       "//skia",
       "//testing/gmock",

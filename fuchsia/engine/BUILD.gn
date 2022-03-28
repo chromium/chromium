@@ -166,6 +166,12 @@ component("web_engine_core") {
   ]
 
   assert_no_deps = [
+    # Although `enable_pdf` is true for Fuchsia, PDF code should not be linked
+    # into WebEngine because it does not have the necessary infrastructure and
+    # this would unnecessarily increase the package size.
+    "//components/pdf/*",
+    "//pdf/*",
+
     # Pepper code should not be included as plugins are disabled.
     # Exclude everything except "//ppapi/buildflags/*", which is allowed.
     "//ppapi:*",

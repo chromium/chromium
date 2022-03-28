@@ -17,7 +17,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
