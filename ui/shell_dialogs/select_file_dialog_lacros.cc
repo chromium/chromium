@@ -101,6 +101,10 @@ bool SelectFileDialogLacros::IsRunning(gfx::NativeWindow owning_window) const {
          GetShellWindowUniqueId(owning_window) == owning_shell_window_id_;
 }
 
+void SelectFileDialogLacros::ListenerDestroyed() {
+  listener_ = nullptr;
+}
+
 void SelectFileDialogLacros::SelectFileImpl(
     Type type,
     const std::u16string& title,
