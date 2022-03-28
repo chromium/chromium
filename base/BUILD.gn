@@ -1569,8 +1569,7 @@ mixed_component("base") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
-  if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
@@ -3476,8 +3475,7 @@ test("base_unittests") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
-  if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
