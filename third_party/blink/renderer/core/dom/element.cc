@@ -3162,6 +3162,8 @@ scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
     return nullptr;
   if (HasAnimations())
     return nullptr;
+  if (HasCustomStyleCallbacks())
+    return nullptr;
   const ComputedStyle* parent_style = ParentComputedStyle();
   DCHECK(parent_style);
   const ComputedStyle* style = GetComputedStyle();
