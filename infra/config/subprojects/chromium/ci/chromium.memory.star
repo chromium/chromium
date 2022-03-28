@@ -255,7 +255,7 @@ ci.builder(
         category = "android",
         short_name = "asn",
     ),
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     goma_backend = None,
