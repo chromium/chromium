@@ -388,6 +388,12 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testMostVisitedTilesMargins() {
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID feature should be disabled on tablets.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            Assert.assertNull(mMVTCarouselLayout);
+            Assert.assertNotNull(mTileGridLayout);
+            return;
+        }
         int lateralPaddingsForNTP =
                 mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                         R.dimen.ntp_header_lateral_paddings_v2);
@@ -405,6 +411,12 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInNewTabOnMVTCarousel() throws ExecutionException {
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID feature should be disabled on tablets.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            Assert.assertNull(mMVTCarouselLayout);
+            Assert.assertNotNull(mTileGridLayout);
+            return;
+        }
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mMVTCarouselLayout.getChildAt(0),
@@ -420,6 +432,12 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInIncognitoTabOnMVTCarousel() throws ExecutionException {
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID feature should be disabled on tablets.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            Assert.assertNull(mMVTCarouselLayout);
+            Assert.assertNotNull(mTileGridLayout);
+            return;
+        }
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mMVTCarouselLayout.getChildAt(0),
@@ -436,6 +454,12 @@ public class NewTabPageTest {
     @FlakyTest(message = "crbug.com/1075804")
     @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testRemoveMostVisitedItemOnMVTCarousel() throws ExecutionException {
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID feature should be disabled on tablets.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            Assert.assertNull(mMVTCarouselLayout);
+            Assert.assertNotNull(mTileGridLayout);
+            return;
+        }
         Assert.assertNotNull(mMVTCarouselLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);
         View mostVisitedItem = mMVTCarouselLayout.getChildAt(0);
