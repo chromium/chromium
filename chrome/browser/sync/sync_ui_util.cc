@@ -433,11 +433,6 @@ void OpenTabForSyncKeyRetrieval(
   OpenTabForSyncTrustedVaultUserAction(browser, retrieval_url);
 }
 
-void OpenTabForSyncTrustedVaultUserActionForTesting(Browser* browser,
-                                                    const GURL& url) {
-  OpenTabForSyncTrustedVaultUserAction(browser, url);
-}
-
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
     syncer::TrustedVaultUserActionTriggerForUMA trigger) {
