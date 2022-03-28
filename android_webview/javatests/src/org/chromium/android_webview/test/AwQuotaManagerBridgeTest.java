@@ -116,7 +116,7 @@ public class AwQuotaManagerBridgeTest {
     @Feature({"AndroidWebView", "WebStore"})
     */
     @Test
-    @DisabledTest(message = "crbug.com/609977")
+    @DisabledTest(message = "crbug.com/609980")
     public void testDeleteAll() throws Exception {
         final long initialUsage = getUsageForOrigin(mOrigin);
 
@@ -132,7 +132,7 @@ public class AwQuotaManagerBridgeTest {
     @Feature({"AndroidWebView", "WebStore"})
     */
     @Test
-    @DisabledTest(message = "crbug.com/609977")
+    @DisabledTest(message = "crbug.com/609980")
     public void testDeleteOrigin() throws Exception {
         final long initialUsage = getUsageForOrigin(mOrigin);
 
@@ -148,7 +148,7 @@ public class AwQuotaManagerBridgeTest {
     @Feature({"AndroidWebView", "WebStore"})
     */
     @Test
-    @DisabledTest(message = "crbug.com/609977")
+    @DisabledTest(message = "crbug.com/609980")
     public void testGetResultsMatch() throws Exception {
         AwQuotaManagerBridge bridge =
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();

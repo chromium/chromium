@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotRevive;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +60,7 @@ public class AwSecondBrowserProcessTest {
      */
     @Test
     @DisabledTest(message = "crbug.com/582146")
+    @DoNotRevive(reason = "Second browser process currently allowed. See crbug.com/558377.")
     public void testCreatingSecondBrowserProcessFails() throws Throwable {
         startSecondBrowserProcess();
         Assert.assertFalse(tryStartingBrowserProcess());
@@ -70,6 +72,7 @@ public class AwSecondBrowserProcessTest {
      */
     @Test
     @DisabledTest(message = "crbug.com/582146")
+    @DoNotRevive(reason = "Second browser process currently allowed. See crbug.com/558377.")
     public void testLockCleanupOnProcessShutdown() throws Throwable {
         startSecondBrowserProcess();
         Assert.assertFalse(tryStartingBrowserProcess());
