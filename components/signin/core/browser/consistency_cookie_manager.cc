@@ -105,7 +105,7 @@ void ConsistencyCookieManager::UpdateCookie(
           GaiaUrls::GetInstance()->gaia_url().host(),
           /*path=*/"/", /*creation=*/now, /*expiration=*/expiry,
           /*last_access=*/now, /*secure=*/true, /*httponly=*/false,
-          net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_DEFAULT,
+          net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
           /*same_party=*/false, /*partition_key=*/absl::nullopt);
   net::CookieOptions cookie_options;
   // Permit to set SameSite cookies.

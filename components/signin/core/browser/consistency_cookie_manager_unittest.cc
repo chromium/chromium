@@ -76,7 +76,9 @@ class ConsistencyCookieManagerTest : public testing::Test {
                                   expected_domain),
                 testing::Property(&net::CanonicalCookie::Path, "/"),
                 testing::Property(&net::CanonicalCookie::IsSecure, true),
-                testing::Property(&net::CanonicalCookie::IsHttpOnly, false)),
+                testing::Property(&net::CanonicalCookie::IsHttpOnly, false),
+                testing::Property(&net::CanonicalCookie::SameSite,
+                                  net::CookieSameSite::STRICT_MODE)),
             GaiaUrls::GetInstance()->gaia_url(), testing::_, testing::_));
   }
 
