@@ -108,6 +108,11 @@ class MacPort(base.Port):
     #
 
     def path_to_apache(self):
+        import platform
+        if platform.machine() == 'arm64':
+            return self._path_from_chromium_base('third_party',
+                                                 'apache-mac-arm64', 'bin',
+                                                 'httpd')
         return self._path_from_chromium_base(
             'third_party', 'apache-mac', 'bin', 'httpd')
 
