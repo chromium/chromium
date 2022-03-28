@@ -676,7 +676,7 @@ void MapperSteelSeriesStratusBt(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperSteelSeriesProtonBt(const Gamepad& input, Gamepad* mapped) {
+void MapperSteelSeriesStratusPlusBt(const Gamepad& input, Gamepad* mapped) {
   MapperSteelSeriesStratusBt(input, mapped);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons_length = BUTTON_INDEX_COUNT;
@@ -962,8 +962,8 @@ constexpr struct MappingData {
     {GamepadId::kSteelSeriesBtProduct1419, MapperSteelSeriesStratusBt},
     // SteelSeries Stratus Duo Bluetooth
     {GamepadId::kSteelSeriesBtProduct1431, MapperSteelSeriesStratusBt},
-    // SteelSeries "Proton" Bluetooth
-    {GamepadId::kSteelSeriesBtProduct1434, MapperSteelSeriesProtonBt},
+    // SteelSeries Stratus+ Bluetooth
+    {GamepadId::kSteelSeriesBtProduct1434, MapperSteelSeriesStratusPlusBt},
     // Razer Serval Controller
     {GamepadId::kRazer1532Product0900, MapperRazerServal},
     // ADT-1 Controller
