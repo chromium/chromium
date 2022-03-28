@@ -598,12 +598,12 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
           "expected.");
       return false;
     }
-  }
 
-  if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
-    mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: target_ip_address_space field is set");
-    return false;
+    if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: target_ip_address_space field is set");
+      return false;
+    }
   }
 
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should

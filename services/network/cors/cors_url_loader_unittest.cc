@@ -3683,6 +3683,75 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnSimpleNetError) {
             mojom::IPAddressSpace::kPublic);
 }
 
+// This test verifies that not having response for preflight will cause
+// PreflightLoader time out and the real request will continue being sent
+// under kPreflightWarn mode.
+TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnSimpleTimeout) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  MockDevToolsObserver devtools_observer;
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator_origin;
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+  // Here we intentionally wait for PreflightLoader to be timed out instead
+  // of calling OnComplete.
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              ElementsAre(MakeBucket(mojom::CorsError::kInvalidResponse, 1)));
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kInvalidResponse,
+                            mojom::IPAddressSpace::kPrivate,
+                            mojom::IPAddressSpace::kPrivate));
+  EXPECT_TRUE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
 // This test verifies that when:
 //
 //  - the private network request policy is set to `kPreflightWarn`
