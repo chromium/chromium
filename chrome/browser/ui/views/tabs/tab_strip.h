@@ -23,11 +23,11 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
-#include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -69,7 +69,7 @@ class ListSelectionModel;
 class TabStrip : public views::View,
                  public views::ViewObserver,
                  public views::WidgetObserver,
-                 public TabController,
+                 public TabSlotController,
                  public BrowserRootView::DropTarget {
  public:
   METADATA_HEADER(TabStrip);
@@ -171,12 +171,6 @@ class TabStrip : public views::View,
   // Destroys the views associated with a recently deleted tab group.
   void OnGroupClosed(const tab_groups::TabGroupId& group);
 
-  // Attempts to move the specified group to the left.
-  void ShiftGroupLeft(const tab_groups::TabGroupId& group);
-
-  // Attempts to move the specified group to the right.
-  void ShiftGroupRight(const tab_groups::TabGroupId& group);
-
   // Returns whether or not strokes should be drawn around and under the tabs.
   bool ShouldDrawStrokes() const;
 
@@ -185,12 +179,6 @@ class TabStrip : public views::View,
 
   // Invoked when a tab needs to show UI that it needs the user's attention.
   void SetTabNeedsAttention(int model_index, bool attention);
-
-  // Returns the Tab at |index|.
-  // TODO(pkasting): Make const correct
-  Tab* tab_at(int index) const {
-    return tab_container_->GetTabAtModelIndex(index);
-  }
 
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
@@ -247,6 +235,8 @@ class TabStrip : public views::View,
 
   // TabController:
   const ui::ListSelectionModel& GetSelectionModel() const override;
+  Tab* tab_at(int index) const override;
+  int GetActiveIndex() const override;
   void SelectTab(Tab* tab, const ui::Event& event) override;
   void ExtendSelectionTo(Tab* tab) override;
   void ToggleSelected(Tab* tab) override;
@@ -257,6 +247,10 @@ class TabStrip : public views::View,
   void ShiftTabPrevious(Tab* tab) override;
   void MoveTabFirst(Tab* tab) override;
   void MoveTabLast(Tab* tab) override;
+  bool ToggleTabGroupCollapsedState(
+      const tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin =
+          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;
@@ -296,10 +290,18 @@ class TabStrip : public views::View,
   float GetHoverOpacityForRadialHighlight() const override;
   std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const override;
+  std::u16string GetGroupContentString(
+      const tab_groups::TabGroupId& group) const override;
   tab_groups::TabGroupColorId GetGroupColorId(
+      const tab_groups::TabGroupId& group) const override;
+  bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
+  absl::optional<int> GetLastTabInGroup(
       const tab_groups::TabGroupId& group) const override;
   SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const override;
+  void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
+  void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
+  const Browser* GetBrowser() const override;
 
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;
@@ -308,8 +310,8 @@ class TabStrip : public views::View,
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   // These system drag & drop methods are forwarded to TabDragController to
-  // support its fallback tab dragging mode in the case where the platform can't
-  // support the usual run loop based mode.
+  // support its fallback tab dragging mode in the case where the platform
+  // can't support the usual run loop based mode.
   bool CanDrop(const OSExchangeData& data) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;

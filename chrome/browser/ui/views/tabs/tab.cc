@@ -39,9 +39,9 @@
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
-#include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
@@ -147,7 +147,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
  public:
   explicit TabCloseButtonObserver(Tab* tab,
                                   views::View* close_button,
-                                  TabController* controller)
+                                  TabSlotController* controller)
       : tab_(tab), close_button_(close_button), controller_(controller) {
     DCHECK(close_button_);
     tab_close_button_observation_.Observe(close_button_.get());
@@ -162,15 +162,15 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 
  private:
   void OnViewFocused(views::View* observed_view) override {
-    controller_->UpdateHoverCard(tab_,
-                                 TabController::HoverCardUpdateType::kFocus);
+    controller_->UpdateHoverCard(
+        tab_, TabSlotController::HoverCardUpdateType::kFocus);
   }
 
   void OnViewBlurred(views::View* observed_view) override {
     // Only hide hover card if not keyboard navigating.
     if (!controller_->IsFocusInTabs()) {
-      controller_->UpdateHoverCard(nullptr,
-                                   TabController::HoverCardUpdateType::kFocus);
+      controller_->UpdateHoverCard(
+          nullptr, TabSlotController::HoverCardUpdateType::kFocus);
     }
   }
 
@@ -179,7 +179,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 
   raw_ptr<Tab> tab_;
   raw_ptr<views::View> close_button_;
-  raw_ptr<TabController> controller_;
+  raw_ptr<TabSlotController> controller_;
 };
 
 // Tab -------------------------------------------------------------------------
@@ -189,7 +189,7 @@ void Tab::SetShowHoverCardOnMouseHoverForTesting(bool value) {
   g_show_hover_card_on_mouse_hover = value;
 }
 
-Tab::Tab(TabController* controller)
+Tab::Tab(TabSlotController* controller)
     : controller_(controller),
       title_(new views::Label()),
       title_animation_(this) {
@@ -233,7 +233,7 @@ Tab::Tab(TabController* controller)
   // the controller outlives this Tab.
   close_button_ = AddChildView(std::make_unique<TabCloseButton>(
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
-      base::BindRepeating(&TabController::OnMouseEventInTab,
+      base::BindRepeating(&TabSlotController::OnMouseEventInTab,
                           base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
 
@@ -256,7 +256,7 @@ Tab::~Tab() {
   tab_close_button_observer_.reset();
   if (controller_->HoverCardIsShowingForTab(this))
     controller_->UpdateHoverCard(
-        nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
 }
 
 void Tab::AnimationEnded(const gfx::Animation* animation) {
@@ -476,7 +476,7 @@ bool IsSelectionModifierDown(const ui::MouseEvent& event) {
 
 bool Tab::OnMousePressed(const ui::MouseEvent& event) {
   controller_->UpdateHoverCard(nullptr,
-                               TabController::HoverCardUpdateType::kEvent);
+                               TabSlotController::HoverCardUpdateType::kEvent);
   controller_->OnMouseEventInTab(this, event);
 
   // Allow a right click from touch to drag, which corresponds to a long click.
@@ -597,8 +597,8 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
   UpdateForegroundColors();
   Layout();
   if (g_show_hover_card_on_mouse_hover)
-    controller_->UpdateHoverCard(this,
-                                 TabController::HoverCardUpdateType::kHover);
+    controller_->UpdateHoverCard(
+        this, TabSlotController::HoverCardUpdateType::kHover);
 }
 
 void Tab::OnMouseExited(const ui::MouseEvent& event) {
@@ -612,7 +612,7 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
 
 void Tab::OnGestureEvent(ui::GestureEvent* event) {
   controller_->UpdateHoverCard(nullptr,
-                               TabController::HoverCardUpdateType::kEvent);
+                               TabSlotController::HoverCardUpdateType::kEvent);
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN: {
       // TAP_DOWN is only dispatched for the first touch point.
@@ -692,14 +692,14 @@ void Tab::AddedToWidget() {
 void Tab::OnFocus() {
   View::OnFocus();
   controller_->UpdateHoverCard(this,
-                               TabController::HoverCardUpdateType::kFocus);
+                               TabSlotController::HoverCardUpdateType::kFocus);
 }
 
 void Tab::OnBlur() {
   View::OnBlur();
   if (!controller_->IsFocusInTabs()) {
-    controller_->UpdateHoverCard(nullptr,
-                                 TabController::HoverCardUpdateType::kFocus);
+    controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kFocus);
   }
 }
 
@@ -799,7 +799,7 @@ void Tab::ActiveStateChanged() {
 void Tab::AlertStateChanged() {
   if (controller_->HoverCardIsShowingForTab(this))
     controller_->UpdateHoverCard(
-        this, TabController::HoverCardUpdateType::kTabDataChanged);
+        this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
   Layout();
 }
 

@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
-#include "chrome/browser/ui/views/tabs/fake_tab_controller.h"
+#include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
@@ -21,18 +21,19 @@ class TabContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
-    tab_controller_ = std::make_unique<FakeTabController>();
+    tab_slot_controller_ = std::make_unique<FakeTabSlotController>();
 
     tab_container_ = std::make_unique<TabContainer>(
         tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
-        nullptr /*drag_context*/, nullptr /*scroll_contents_view*/);
+        nullptr /*drag_context*/, tab_slot_controller_.get(),
+        nullptr /*scroll_contents_view*/);
     tab_container_->SetAvailableWidthCallback(
         base::BindRepeating([]() { return 500; }));
   }
 
   void TearDown() override {
     tab_container_.reset();
-    tab_controller_.reset();
+    tab_slot_controller_.reset();
     tab_strip_controller_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -66,19 +67,19 @@ class TabContainerTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
-  std::unique_ptr<FakeTabController> tab_controller_;
+  std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
   std::unique_ptr<TabContainer> tab_container_;
 };
 
 // Verifies child view order matches model order.
 TEST_F(TabContainerTest, TabViewOrder) {
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 0,
+  tab_container_->AddTab(std::make_unique<Tab>(tab_slot_controller_.get()), 0,
                          TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 1,
+  tab_container_->AddTab(std::make_unique<Tab>(tab_slot_controller_.get()), 1,
                          TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 2,
+  tab_container_->AddTab(std::make_unique<Tab>(tab_slot_controller_.get()), 2,
                          TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 

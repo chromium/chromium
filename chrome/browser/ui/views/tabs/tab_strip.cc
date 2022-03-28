@@ -168,7 +168,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       dragging_views.push_back(source);
 
       const gfx::Range grouped_tabs =
-          tab_strip_->controller()->ListTabsInGroup(source->group().value());
+          tab_strip_->controller_->ListTabsInGroup(source->group().value());
       for (auto index = grouped_tabs.start(); index < grouped_tabs.end();
            ++index) {
         dragging_views.push_back(GetTabAt(index));
@@ -633,7 +633,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       if (dragged_group.has_value())
         return false;
       // Can't drag a tab into a collapsed group.
-      if (tab_strip_->controller()->IsGroupCollapsed(left_group.value()))
+      if (tab_strip_->IsGroupCollapsed(left_group.value()))
         return false;
     }
 
@@ -684,7 +684,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       absl::optional<tab_groups::TabGroupId> right_group =
           GetTabAt(candidate_index)->group();
       if (right_group.has_value() && left_group != right_group) {
-        if (tab_strip_->controller()->IsGroupCollapsed(right_group.value()))
+        if (tab_strip_->IsGroupCollapsed(right_group.value()))
           return 0;
         const int header_width =
             GetTabGroupHeader(*right_group)->bounds().width() -
@@ -732,6 +732,7 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
           std::make_unique<TabContainer>(controller_.get(),
                                          hover_card_controller_.get(),
                                          drag_context_.get(),
+                                         this,
                                          this))) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
@@ -856,7 +857,7 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data) {
   if (!drag_context_->IsMutating() && drag_context_->IsDraggingWindow())
     EndDrag(END_DRAG_COMPLETE);
 
-  Profile* profile = controller()->GetProfile();
+  Profile* profile = controller_->GetProfile();
   if (profile) {
     if (profile->IsGuestSession())
       base::UmaHistogramCounts100("Tab.Count.Guest", GetTabCount());
@@ -938,8 +939,8 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
   // can result in the group expanding in a series of actions where the final
   // active tab is not in the group.
   if (model_index == selected_tabs_.active() && group.has_value() &&
-      controller()->IsGroupCollapsed(group.value())) {
-    controller()->ToggleTabGroupCollapsedState(
+      IsGroupCollapsed(group.value())) {
+    ToggleTabGroupCollapsedState(
         group.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
   }
 
@@ -948,7 +949,7 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
-  tab_container_->OnGroupCreated(group, this);
+  tab_container_->OnGroupCreated(group);
 }
 
 void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
@@ -1015,14 +1016,6 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupClosed(group);
 }
 
-void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
-  ShiftGroupRelative(group, -1);
-}
-
-void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
-  ShiftGroupRelative(group, 1);
-}
-
 bool TabStrip::ShouldDrawStrokes() const {
   // If the controller says we can't draw strokes, don't.
   if (!controller_->CanDrawStrokes())
@@ -1079,8 +1072,8 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
       const tab_groups::TabGroupId new_group = new_active_tab->group().value();
       // If the tab that is about to be activated is in a collapsed group,
       // automatically expand the group.
-      if (controller()->IsGroupCollapsed(new_group))
-        controller()->ToggleTabGroupCollapsedState(
+      if (IsGroupCollapsed(new_group))
+        ToggleTabGroupCollapsedState(
             new_group, ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
       tab_container_->UpdateTabGroupVisuals(new_group);
     }
@@ -1194,7 +1187,7 @@ views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
 }
 
 views::View* TabStrip::GetDefaultFocusableChild() {
-  int active = controller_->GetActiveIndex();
+  int active = GetActiveIndex();
   return active != TabStripModel::kNoTab ? tab_at(active) : nullptr;
 }
 
@@ -1204,6 +1197,14 @@ bool TabStrip::WantsToReceiveAllDragEvents() const {
 
 const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {
   return controller_->GetSelectionModel();
+}
+
+Tab* TabStrip::tab_at(int index) const {
+  return tab_container_->GetTabAtModelIndex(index);
+}
+
+int TabStrip::GetActiveIndex() const {
+  return controller_->GetActiveIndex();
 }
 
 void TabStrip::SelectTab(Tab* tab, const ui::Event& event) {
@@ -1352,6 +1353,12 @@ void TabStrip::MoveTabLast(Tab* tab) {
       l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_LAST));
 }
 
+bool TabStrip::ToggleTabGroupCollapsedState(
+    const tab_groups::TabGroupId group,
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  return controller_->ToggleTabGroupCollapsedState(group, origin);
+}
+
 void TabStrip::ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
                                      ui::MenuSourceType source_type) {
@@ -1455,7 +1462,7 @@ void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
 }
 
 bool TabStrip::ShowDomainInHoverCards() const {
-  const auto* app_controller = controller_->GetBrowser()->app_controller();
+  const auto* app_controller = GetBrowser()->app_controller();
   return !app_controller || !app_controller->system_app();
 }
 
@@ -1566,15 +1573,40 @@ std::u16string TabStrip::GetGroupTitle(
   return controller_->GetGroupTitle(group);
 }
 
+std::u16string TabStrip::GetGroupContentString(
+    const tab_groups::TabGroupId& group) const {
+  return controller_->GetGroupContentString(group);
+}
 tab_groups::TabGroupColorId TabStrip::GetGroupColorId(
     const tab_groups::TabGroupId& group) const {
   return controller_->GetGroupColorId(group);
+}
+
+bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {
+  return controller_->IsGroupCollapsed(group);
+}
+
+absl::optional<int> TabStrip::GetLastTabInGroup(
+    const tab_groups::TabGroupId& group) const {
+  return controller_->GetLastTabInGroup(group);
 }
 
 SkColor TabStrip::GetPaintedGroupColor(
     const tab_groups::TabGroupColorId& color_id) const {
   return GetThemeProvider()->GetColor(
       GetTabGroupTabStripColorId(color_id, ShouldPaintAsActiveFrame()));
+}
+
+void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
+  ShiftGroupRelative(group, -1);
+}
+
+void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
+  ShiftGroupRelative(group, 1);
+}
+
+const Browser* TabStrip::GetBrowser() const {
+  return controller_->GetBrowser();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1891,7 +1923,7 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
       // If the tab is at a group boundary and the group is collapsed, treat the
       // collapsed group as a tab and find the next available slot for the tab
       // to move to.
-      if (controller_->IsGroupCollapsed(target_group.value())) {
+      if (IsGroupCollapsed(target_group.value())) {
         int candidate_index = target_index + offset;
         while (IsValidModelIndex(candidate_index) &&
                tab_at(candidate_index)->group() == target_group) {
@@ -1982,7 +2014,7 @@ void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
   Tab* const tab = static_cast<Tab*>(source);
   if (tab->closing())
     return;
-  parent_->controller()->ShowContextMenuForTab(tab, point, source_type);
+  parent_->ShowContextMenuForTab(tab, point, source_type);
 }
 
 const gfx::Rect& TabStrip::ideal_bounds(tab_groups::TabGroupId group) const {
@@ -2041,7 +2073,7 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
       break;
 
     case ui::ET_GESTURE_TAP: {
-      const int active_index = controller_->GetActiveIndex();
+      const int active_index = GetActiveIndex();
       DCHECK_NE(-1, active_index);
       Tab* active_tab = tab_at(active_index);
       TouchUMA::GestureActionType action = TouchUMA::kGestureTabNoSwitchTap;
@@ -2073,9 +2105,8 @@ void TabStrip::OnTouchUiChanged() {
 }
 
 void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
-  const std::u16string group_title = controller()->GetGroupTitle(group_id);
-  const std::u16string contents_string =
-      controller()->GetGroupContentString(group_id);
+  const std::u16string group_title = GetGroupTitle(group_id);
+  const std::u16string contents_string = GetGroupContentString(group_id);
   GetViewAccessibility().AnnounceText(
       group_title.empty()
           ? l10n_util::GetStringFUTF16(
@@ -2086,9 +2117,8 @@ void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
 }
 
 void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
-  const std::u16string group_title = controller()->GetGroupTitle(group_id);
-  const std::u16string contents_string =
-      controller()->GetGroupContentString(group_id);
+  const std::u16string group_title = GetGroupTitle(group_id);
+  const std::u16string contents_string = GetGroupContentString(group_id);
   GetViewAccessibility().AnnounceText(
       group_title.empty()
           ? l10n_util::GetStringFUTF16(

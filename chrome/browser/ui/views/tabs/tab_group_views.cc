@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -21,11 +22,13 @@
 #include "ui/gfx/geometry/rect.h"
 
 TabGroupViews::TabGroupViews(views::View* container_view,
-                             TabStrip* tab_strip,
+                             TabSlotController* tab_slot_controller,
                              const tab_groups::TabGroupId& group)
-    : container_view_(container_view), tab_strip_(tab_strip), group_(group) {
+    : container_view_(container_view),
+      tab_slot_controller_(tab_slot_controller),
+      group_(group) {
   header_ = container_view_->AddChildView(
-      std::make_unique<TabGroupHeader>(tab_strip_, group_));
+      std::make_unique<TabGroupHeader>(tab_slot_controller_, group_));
   underline_ = container_view_->AddChildView(
       std::make_unique<TabGroupUnderline>(this, group_));
   highlight_ = container_view_->AddChildView(
@@ -57,9 +60,9 @@ void TabGroupViews::OnGroupVisualsChanged() {
 
   header_->VisualsChanged();
   underline_->SchedulePaint();
-  const int active_index = tab_strip_->controller()->GetActiveIndex();
+  const int active_index = tab_slot_controller_->GetActiveIndex();
   if (active_index != TabStripModel::kNoTab)
-    tab_strip_->tab_at(active_index)->SchedulePaint();
+    tab_slot_controller_->tab_at(active_index)->SchedulePaint();
 }
 
 gfx::Rect TabGroupViews::GetBounds() const {
@@ -79,22 +82,23 @@ gfx::Rect TabGroupViews::GetBounds() const {
 
 const Tab* TabGroupViews::GetLastTabInGroup() const {
   const absl::optional<int> last_tab =
-      tab_strip_->controller()->GetLastTabInGroup(group_);
-  return last_tab.has_value() ? tab_strip_->tab_at(last_tab.value()) : nullptr;
+      tab_slot_controller_->GetLastTabInGroup(group_);
+  return last_tab.has_value() ? tab_slot_controller_->tab_at(last_tab.value())
+                              : nullptr;
 }
 
 SkColor TabGroupViews::GetGroupColor() const {
-  return tab_strip_->GetPaintedGroupColor(
-      tab_strip_->controller()->GetGroupColorId(group_));
+  return tab_slot_controller_->GetPaintedGroupColor(
+      tab_slot_controller_->GetGroupColorId(group_));
 }
 
 SkColor TabGroupViews::GetTabBackgroundColor() const {
-  return tab_strip_->GetTabBackgroundColor(
+  return tab_slot_controller_->GetTabBackgroundColor(
       TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
 }
 
 SkColor TabGroupViews::GetGroupBackgroundColor() const {
-  const SkColor active_color = tab_strip_->GetTabBackgroundColor(
+  const SkColor active_color = tab_slot_controller_->GetTabBackgroundColor(
       TabActive::kActive, BrowserFrameActiveState::kUseCurrent);
   return SkColorSetA(active_color, gfx::Tween::IntValueBetween(
                                        TabStyle::kSelectedTabOpacity,

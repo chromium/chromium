@@ -85,8 +85,9 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
     // We don't use Tab::OnMouseEntered here to invoke the hover card because
     // that path is disabled in browser tests. If we enabled it, the real mouse
     // might interfere with the test.
-    tab_strip()->UpdateHoverCard(tab_strip()->tab_at(index),
-                                 TabController::HoverCardUpdateType::kHover);
+    tab_strip()->UpdateHoverCard(
+        tab_strip()->tab_at(index),
+        TabSlotController::HoverCardUpdateType::kHover);
   }
 
   // DialogBrowserTest:

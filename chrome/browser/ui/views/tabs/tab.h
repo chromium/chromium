@@ -31,7 +31,7 @@
 
 class AlertIndicatorButton;
 class TabCloseButton;
-class TabController;
+class TabSlotController;
 class TabIcon;
 struct TabSizeInfo;
 class TabStyleViews;
@@ -67,7 +67,7 @@ class Tab : public gfx::AnimationDelegate,
   // tests to prevent them from interfering with unrelated tests.
   static void SetShowHoverCardOnMouseHoverForTesting(bool value);
 
-  explicit Tab(TabController* controller);
+  explicit Tab(TabSlotController* controller);
   Tab(const Tab&) = delete;
   Tab& operator=(const Tab&) = delete;
   ~Tab() override;
@@ -103,7 +103,7 @@ class Tab : public gfx::AnimationDelegate,
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
 
-  TabController* controller() const { return controller_; }
+  TabSlotController* controller() const { return controller_; }
 
   // Used to set/check whether this Tab is being animated closed.
   void SetClosing(bool closing);
@@ -226,7 +226,7 @@ class Tab : public gfx::AnimationDelegate,
   void CloseButtonPressed(const ui::Event& event);
 
   // The controller, never nullptr.
-  const raw_ptr<TabController> controller_;
+  const raw_ptr<TabSlotController> controller_;
 
   TabRendererData data_;
 

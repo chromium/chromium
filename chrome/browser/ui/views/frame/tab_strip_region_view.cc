@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -134,7 +133,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     return;
 #endif
 
-  const Browser* browser = tab_strip_->controller()->GetBrowser();
+  const Browser* browser = tab_strip_->GetBrowser();
   if (!browser ||
       WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser)) {
     return;

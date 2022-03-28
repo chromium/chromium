@@ -9,9 +9,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -41,6 +41,7 @@ class TabContainer : public views::View,
   TabContainer(TabStripController* controller,
                TabHoverCardController* hover_card_controller,
                TabDragContext* drag_context,
+               TabSlotController* tab_slot_controller,
                views::View* scroll_contents_view);
   ~TabContainer() override;
 
@@ -54,7 +55,7 @@ class TabContainer : public views::View,
 
   void ScrollTabToVisible(int model_index);
 
-  void OnGroupCreated(const tab_groups::TabGroupId& group, TabStrip* tab_strip);
+  void OnGroupCreated(const tab_groups::TabGroupId& group);
   // Opens the editor bubble for the tab |group| as a result of an explicit user
   // action to create the |group|.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
@@ -71,7 +72,7 @@ class TabContainer : public views::View,
   int GetTabCount() const;
 
   void UpdateHoverCard(Tab* tab,
-                       TabController::HoverCardUpdateType update_type);
+                       TabSlotController::HoverCardUpdateType update_type);
 
   void HandleLongTap(ui::GestureEvent* event);
 
@@ -320,6 +321,8 @@ class TabContainer : public views::View,
   TabHoverCardController* hover_card_controller_;
 
   TabDragContext* drag_context_;
+
+  TabSlotController* tab_slot_controller_;
 
   // The View that is to be scrolled by |tab_scrolling_animation_|.
   views::View* scroll_contents_view_;

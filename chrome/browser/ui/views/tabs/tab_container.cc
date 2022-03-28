@@ -302,10 +302,12 @@ void TabContainer::RemoveTabDelegate::AnimationCanceled(
 TabContainer::TabContainer(TabStripController* controller,
                            TabHoverCardController* hover_card_controller,
                            TabDragContext* drag_context,
+                           TabSlotController* tab_slot_controller,
                            views::View* scroll_contents_view)
     : controller_(controller),
       hover_card_controller_(hover_card_controller),
       drag_context_(drag_context),
+      tab_slot_controller_(tab_slot_controller),
       scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
@@ -466,9 +468,9 @@ void TabContainer::ScrollTabToVisible(int model_index) {
   }
 }
 
-void TabContainer::OnGroupCreated(const tab_groups::TabGroupId& group,
-                                  TabStrip* tab_strip) {
-  auto group_view = std::make_unique<TabGroupViews>(this, tab_strip, group);
+void TabContainer::OnGroupCreated(const tab_groups::TabGroupId& group) {
+  auto group_view =
+      std::make_unique<TabGroupViews>(this, tab_slot_controller_, group);
   layout_helper()->InsertGroupHeader(group, group_view->header());
   group_views()[group] = std::move(group_view);
 }
@@ -522,14 +524,14 @@ int TabContainer::GetTabCount() const {
 
 void TabContainer::UpdateHoverCard(
     Tab* tab,
-    TabController::HoverCardUpdateType update_type) {
+    TabSlotController::HoverCardUpdateType update_type) {
   // Some operations (including e.g. starting a drag) can cause the tab focus
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
   // See crbug.com/1220840 for an example case.
   if (bounds_animator_.IsAnimating()) {
     tab = nullptr;
-    update_type = TabController::HoverCardUpdateType::kAnimating;
+    update_type = TabSlotController::HoverCardUpdateType::kAnimating;
   }
 
   if (!hover_card_controller_)
@@ -995,7 +997,7 @@ void TabContainer::UpdateIdealBounds() {
 }
 
 void TabContainer::AnimateToIdealBounds() {
-  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kAnimating);
+  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
 
   for (int i = 0; i < GetTabCount(); ++i) {
     // If the tab is being dragged manually, skip it.
@@ -1144,7 +1146,7 @@ void TabContainer::RemoveTabFromViewModel(int index) {
   Tab* tab = GetTabAtModelIndex(index);
   bool tab_was_active = tab->IsActive();
 
-  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
 
   tabs_view_model_.Remove(index);
   layout_helper_->RemoveTabAt(index, tab);

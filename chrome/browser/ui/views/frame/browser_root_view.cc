@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -330,7 +329,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     const int width = std::round(toolbar_bounds.width() * scale);
 
     gfx::ScopedCanvas scoped_canvas(canvas);
-    int active_tab_index = tabstrip()->controller()->GetActiveIndex();
+    int active_tab_index = tabstrip()->GetActiveIndex();
     if (active_tab_index != ui::ListSelectionModel::kUnselectedIndex) {
       Tab* active_tab = tabstrip()->tab_at(active_tab_index);
       if (active_tab && active_tab->GetVisible()) {

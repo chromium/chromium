@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_
 
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/color_palette.h"
 
-class FakeTabController : public TabController {
+class FakeTabSlotController : public TabSlotController {
  public:
-  FakeTabController() = default;
-  FakeTabController(const FakeTabController&) = delete;
-  FakeTabController& operator=(const FakeTabController&) = delete;
-  ~FakeTabController() override = default;
+  FakeTabSlotController() = default;
+  FakeTabSlotController(const FakeTabSlotController&) = delete;
+  FakeTabSlotController& operator=(const FakeTabSlotController&) = delete;
+  ~FakeTabSlotController() override = default;
 
   void set_active_tab(bool value) { active_tab_ = value; }
   void set_paint_throbber_to_layer(bool value) {
@@ -23,6 +23,8 @@ class FakeTabController : public TabController {
   }
 
   const ui::ListSelectionModel& GetSelectionModel() const override;
+  Tab* tab_at(int index) const override;
+  int GetActiveIndex() const override;
   void SelectTab(Tab* tab, const ui::Event& event) override {}
   void ExtendSelectionTo(Tab* tab) override {}
   void ToggleSelected(Tab* tab) override {}
@@ -33,6 +35,10 @@ class FakeTabController : public TabController {
   void ShiftTabPrevious(Tab* tab) override {}
   void MoveTabFirst(Tab* tab) override {}
   void MoveTabLast(Tab* tab) override {}
+  bool ToggleTabGroupCollapsedState(
+      const tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin =
+          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override {}
@@ -73,13 +79,19 @@ class FakeTabController : public TabController {
   float GetHoverOpacityForRadialHighlight() const override;
 
   std::u16string GetGroupTitle(
-      const tab_groups::TabGroupId& group_id) const override;
-
+      const tab_groups::TabGroupId& group) const override;
+  std::u16string GetGroupContentString(
+      const tab_groups::TabGroupId& group) const override;
   tab_groups::TabGroupColorId GetGroupColorId(
-      const tab_groups::TabGroupId& group_id) const override;
-
+      const tab_groups::TabGroupId& group) const override;
+  bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
+  absl::optional<int> GetLastTabInGroup(
+      const tab_groups::TabGroupId& group) const override;
   SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const override;
+  void ShiftGroupLeft(const tab_groups::TabGroupId& group) override {}
+  void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
+  const Browser* GetBrowser() const override;
 
   void SetTabColors(SkColor bg_color_active,
                     SkColor fg_color_active,
@@ -102,4 +114,4 @@ class FakeTabController : public TabController {
   SkColor tab_fg_color_inactive_ = gfx::kPlaceholderColor;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_

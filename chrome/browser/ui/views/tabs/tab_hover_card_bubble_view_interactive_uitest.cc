@@ -77,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInteractiveUiTest,
   TabStrip* tab_strip =
       BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
   Tab* tab = tab_strip->tab_at(0);
-  tab_strip->UpdateHoverCard(tab, TabController::HoverCardUpdateType::kHover);
+  tab_strip->UpdateHoverCard(tab,
+                             TabSlotController::HoverCardUpdateType::kHover);
   TabHoverCardBubbleView* hover_card = GetHoverCard(tab_strip);
   Widget* widget = hover_card->GetWidget();
   EXPECT_NE(nullptr, widget);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_CONTROLLER_H_
 
 #include <string>
 
@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
+class Browser;
 class Tab;
 class TabSlotView;
 
@@ -21,7 +22,7 @@ enum class BrowserFrameActiveState;
 namespace gfx {
 class Point;
 class Rect;
-}
+}  // namespace gfx
 namespace tab_groups {
 enum class TabGroupColorId;
 class TabGroupId;
@@ -30,13 +31,13 @@ namespace ui {
 class ListSelectionModel;
 class LocatedEvent;
 class MouseEvent;
-}
+}  // namespace ui
 namespace views {
 class View;
 }
 
-// Controller for tabs.
-class TabController {
+// Controller for tabs and group headers.
+class TabSlotController {
  public:
   enum HoverCardUpdateType {
     kHover,
@@ -49,6 +50,12 @@ class TabController {
   };
 
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
+
+  // Returns the tab at |index|.
+  virtual Tab* tab_at(int index) const = 0;
+
+  // Returns the index of the active tab.
+  virtual int GetActiveIndex() const = 0;
 
   // Selects the tab. |event| is the event that causes |tab| to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
@@ -83,6 +90,13 @@ class TabController {
   // Attempts to move the specified tab to the end of the tabstrip (or the end
   // of the pinned tab region if the tab is pinned).
   virtual void MoveTabLast(Tab* tab) = 0;
+
+  // Switches the collapsed state of a tab group. Returns false if the state was
+  // not successfully switched.
+  virtual bool ToggleTabGroupCollapsedState(
+      const tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin =
+          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
@@ -201,8 +215,22 @@ class TabController {
   virtual std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the string describing the contents of the given |group|.
+  virtual std::u16string GetGroupContentString(
+      const tab_groups::TabGroupId& group) const = 0;
+
   // Returns the color ID of the given |group|.
   virtual tab_groups::TabGroupColorId GetGroupColorId(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the |group| collapsed state. Returns false if the group does not
+  // exist or is not collapsed.
+  virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
+
+  // Gets the last tab index in |group|, or nullopt if the group is
+  // currently empty. This is always safe to call unlike
+  // ListTabsInGroup().
+  virtual absl::optional<int> GetLastTabInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the actual painted color of the given |group|, which depends on the
@@ -210,8 +238,16 @@ class TabController {
   virtual SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const = 0;
 
+  // Attempts to move the specified group to the left.
+  virtual void ShiftGroupLeft(const tab_groups::TabGroupId& group) = 0;
+
+  // Attempts to move the specified group to the right.
+  virtual void ShiftGroupRight(const tab_groups::TabGroupId& group) = 0;
+
+  virtual const Browser* GetBrowser() const = 0;
+
  protected:
-  virtual ~TabController() {}
+  virtual ~TabSlotController() = default;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_CONTROLLER_H_
