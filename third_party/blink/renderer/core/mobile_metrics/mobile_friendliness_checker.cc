@@ -168,6 +168,15 @@ bool IsTapTargetCandidate(Node* node) {
 // correctness, but it is rare and we prioritize performance.
 bool ShouldSkipSubtree(const LayoutObject* object) {
   const auto& style = object->StyleRef();
+  if (const LayoutBox* box = DynamicTo<LayoutBox>(object)) {
+    const auto& rect = box->LocalVisualRect();
+    if ((rect.Width() == LayoutUnit() &&
+         style.OverflowX() != EOverflow::kVisible) ||
+        (rect.Height() == LayoutUnit() &&
+         style.OverflowY() != EOverflow::kVisible)) {
+      return true;
+    }
+  }
   return object->IsElementContinuation() ||
          style.Visibility() != EVisibility::kVisible ||
          !style.IsContentVisibilityVisible();
