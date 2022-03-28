@@ -107,6 +107,12 @@ BlobData::BlobData(FileCompositionStatus composition)
 BlobData::~BlobData() = default;
 
 Vector<mojom::blink::DataElementPtr> BlobData::ReleaseElements() {
+  if (last_bytes_provider_) {
+    DCHECK(last_bytes_provider_receiver_);
+    BlobBytesProvider::Bind(std::move(last_bytes_provider_),
+                            std::move(last_bytes_provider_receiver_));
+  }
+
   return std::move(elements_);
 }
 
@@ -139,16 +145,6 @@ std::unique_ptr<BlobData> BlobData::CreateForFileSystemURLWithUnknownSize(
       DataElementFilesystemURL::New(file_system_url, 0, BlobData::kToEndOfFile,
                                     expected_modification_time)));
   return data;
-}
-
-void BlobData::DetachFromCurrentThread() {
-  content_type_ = content_type_.IsolatedCopy();
-  for (auto& element : elements_) {
-    if (element->is_file_filesystem()) {
-      auto& file_element = element->get_file_filesystem();
-      file_element->url = file_element->url.Copy();
-    }
-  }
 }
 
 void BlobData::SetContentType(const String& content_type) {
@@ -274,6 +270,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
   if (!elements_.IsEmpty() && elements_.back()->is_bytes()) {
     // Append bytes to previous element.
     DCHECK(last_bytes_provider_);
+    DCHECK(last_bytes_provider_receiver_);
     const auto& bytes_element = elements_.back()->get_bytes();
     bytes_element->length += data.size();
     if (should_embed_bytes && bytes_element->embedded_data) {
@@ -285,9 +282,18 @@ void BlobData::AppendDataInternal(base::span<const char> data,
       bytes_element->embedded_data = absl::nullopt;
     }
   } else {
+    if (last_bytes_provider_) {
+      // If `last_bytes_provider_` is set, but the previous element is not a
+      // bytes element, a new BytesProvider will be created and we need to
+      // make sure to bind the previous one first.
+      DCHECK(last_bytes_provider_receiver_);
+      BlobBytesProvider::Bind(std::move(last_bytes_provider_),
+                              std::move(last_bytes_provider_receiver_));
+    }
     mojo::PendingRemote<BytesProvider> bytes_provider_remote;
-    last_bytes_provider_ = BlobBytesProvider::CreateAndBind(
-        bytes_provider_remote.InitWithNewPipeAndPassReceiver());
+    last_bytes_provider_ = std::make_unique<BlobBytesProvider>();
+    last_bytes_provider_receiver_ =
+        bytes_provider_remote.InitWithNewPipeAndPassReceiver();
 
     auto bytes_element = DataElementBytes::New(
         data.size(), absl::nullopt, std::move(bytes_provider_remote));
