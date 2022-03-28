@@ -32,7 +32,7 @@ namespace {
 constexpr const char* usage_msg =
     R"(usage: video_decode_accelerator_perf_tests
            [-v=<level>] [--vmodule=<config>] [--output_folder]
-           ([--use-legacy]|[--use_vd]|[--use_vd_vda]) [--linear_output]
+           ([--use-legacy]|[--use_vd_vda]) [--linear_output]
            [--disable_vaapi_lock]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -57,8 +57,6 @@ The following arguments are supported:
                         performance metrics, if not specified results
                         will be stored in the current working directory.
   --use-legacy          use the legacy VDA-based video decoders.
-  --use_vd              use the new VD-based video decoders.
-                        (enabled by default)
   --use_vd_vda          use the new VD-based video decoders with a
                         wrapper that translates to the VDA interface,
                         used to test interaction with older components
@@ -460,7 +458,6 @@ int main(int argc, char** argv) {
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
   bool use_legacy = false;
-  bool use_vd = false;
   bool use_vd_vda = false;
   bool linear_output = false;
   std::vector<base::Feature> disabled_features;
@@ -479,9 +476,6 @@ int main(int argc, char** argv) {
     } else if (it->first == "use-legacy") {
       use_legacy = true;
       implementation = media::test::DecoderImplementation::kVDA;
-    } else if (it->first == "use_vd") {
-      use_vd = true;
-      implementation = media::test::DecoderImplementation::kVD;
     } else if (it->first == "use_vd_vda") {
       use_vd_vda = true;
       implementation = media::test::DecoderImplementation::kVDVDA;
@@ -496,18 +490,8 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (use_legacy && use_vd) {
-    std::cout << "--use-legacy and --use_vd cannot be enabled together.\n"
-              << media::test::usage_msg;
-    return EXIT_FAILURE;
-  }
   if (use_legacy && use_vd_vda) {
     std::cout << "--use-legacy and --use_vd_vda cannot be enabled together.\n"
-              << media::test::usage_msg;
-    return EXIT_FAILURE;
-  }
-  if (use_vd && use_vd_vda) {
-    std::cout << "--use_vd and --use_vd_vda cannot be enabled together.\n"
               << media::test::usage_msg;
     return EXIT_FAILURE;
   }

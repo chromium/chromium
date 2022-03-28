@@ -68,8 +68,6 @@ Multiple command line arguments can be given to the command:
                           frames, currently allowed for AV1 streams only)
                           and none (disable frame validation).
     --use-legacy          use the legacy VDA-based video decoders.
-    --use_vd              use the new VD-based video decoders.
-                          (enabled by default)
     --use_vd_vda          use the new VD-based video decoders with a
                           wrapper that translates to the VDA interface,
                           used to test interaction with older components
