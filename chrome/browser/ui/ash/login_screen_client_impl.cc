@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -37,7 +40,6 @@
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-
 namespace {
 using ash::SupervisedAction;
 
@@ -186,6 +188,34 @@ void LoginScreenClientImpl::FocusOobeDialog() {
 }
 
 void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
+  if (time_show_gaia_signin_initiated_.is_null())
+    time_show_gaia_signin_initiated_ = base::TimeTicks::Now();
+  // Check trusted status as a workaround to ensure that device owner id is
+  // ready. Device owner ID is necessary for IsApprovalRequired checks.
+  const ash::CrosSettingsProvider::TrustedStatus status =
+      ash::CrosSettings::Get()->PrepareTrustedValues(
+          base::BindOnce(&LoginScreenClientImpl::ShowGaiaSignin,
+                         weak_ptr_factory_.GetWeakPtr(), prefilled_account));
+  switch (status) {
+    case ash::CrosSettingsProvider::TRUSTED:
+      // Owner account ID is available. Record time spent waiting for owner
+      // account ID and continue showing Gaia Signin.
+      base::UmaHistogramTimes(
+          "Ash.Login.ShowGaiaSignin.WaitTime",
+          base::TimeTicks::Now() - time_show_gaia_signin_initiated_);
+      time_show_gaia_signin_initiated_ = base::TimeTicks();
+      break;
+    case ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
+      // Do nothing. This function will be called again when the values are
+      // ready.
+      return;
+    case ash::CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
+      base::UmaHistogramBoolean("Ash.Login.ShowGaiaSignin.PermanentlyUntrusted",
+                                true);
+      time_show_gaia_signin_initiated_ = base::TimeTicks();
+      return;
+  }
+
   auto supervised_action = prefilled_account.empty()
                                ? SupervisedAction::kAddUser
                                : SupervisedAction::kReauth;

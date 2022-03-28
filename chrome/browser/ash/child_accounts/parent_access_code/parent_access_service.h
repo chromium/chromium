@@ -51,6 +51,8 @@ class ParentAccessService {
   ParentAccessService& operator=(const ParentAccessService&) = delete;
 
   // Checks if the provided |action| requires parental approval to be performed.
+  // Requires owner_account_id to be available in the UserManager, so if calling
+  // close to startup, ensure owner account is set before calling.
   static bool IsApprovalRequired(SupervisedAction action);
 
   // Checks if |access_code| is valid for the user identified by |account_id|.

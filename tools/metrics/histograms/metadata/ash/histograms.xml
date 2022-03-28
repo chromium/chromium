@@ -2126,6 +2126,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Login.ShowGaiaSignin.PermanentlyUntrusted" enum="Boolean"
+    expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>galenemco@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records instances of a &quot;PERMANENTLY_UNTRUSTED&quot; result during the
+    check for trusted values before showing gaia signin. This is a fatal result
+    which will result in signin not being shown.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.ShowGaiaSignin.WaitTime" units="ms"
+    expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>galenemco@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the amount of time spent waiting for trusted values before showing
+    gaia signin. Waiting for trusted values ensures that the device owner id is
+    present before showing the signin, which is necessary for checking signin
+    permissions for child users. This check may introduce a delay for all users.
+    This metric allows monitoring that delay.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.LoginAnimation.Duration" units="ms"
     expires_after="2022-04-17">
   <owner>oshima@chromium.org</owner>

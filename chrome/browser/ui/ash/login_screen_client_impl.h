@@ -160,6 +160,8 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
 
   base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
 
+  base::TimeTicks time_show_gaia_signin_initiated_;
+
   base::WeakPtrFactory<LoginScreenClientImpl> weak_ptr_factory_{this};
 };
 

@@ -29,8 +29,6 @@ namespace {
 
 // Returns true when the device owner is a child.
 bool IsDeviceOwnedByChild() {
-  // TODO(crbug.com/1143369): Owner id might not be available early after
-  // startup. Wait for it to be ready.
   AccountId owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
   if (owner_account_id.empty()) {
