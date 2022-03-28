@@ -163,6 +163,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
     body_loader->Write(*buffer);
     body_loader->Finish();
+    params->is_static_data = true;
     params->body_loader = std::move(body_loader);
     return;
   }
@@ -195,6 +196,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     body_loader->Write(*buffer);
     body_loader->Finish();
   }
+  params->is_static_data = true;
   params->body_loader = std::move(body_loader);
 }
 
