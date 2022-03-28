@@ -4,6 +4,7 @@
 
 #include "components/content_creation/notes/core/templates/template_fetcher.h"
 
+#include "components/content_creation/notes/core/templates/template_metrics.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -62,6 +63,7 @@ void TemplateFetcher::OnTemplateFetchComplete(
   if (response_body != nullptr) {
     template_string = *response_body;
   }
+  content_creation::LogTemplateFetcherMetrics(!template_string.empty());
   std::move(callback).Run(template_string);
 }
 

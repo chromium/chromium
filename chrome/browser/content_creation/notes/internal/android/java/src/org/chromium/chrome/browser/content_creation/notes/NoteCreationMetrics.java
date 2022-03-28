@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.share_sheet.ChromeProvidedSharingOptionsProvider;
 
 import java.lang.annotation.Retention;
@@ -56,6 +57,9 @@ public final class NoteCreationMetrics {
         int NUM_ENTRIES = 2;
     }
 
+    // Max expected number of dynamically loaded templates.
+    private static final int MAX_NUMBER_OF_TEMPLATES = 50;
+
     /**
      * Records metrics related to the user starting the creation flow.
      */
@@ -70,13 +74,14 @@ public final class NoteCreationMetrics {
      *         selected a template and created their note.
      */
     public static void recordNoteTemplateSelected(
-            long duration, int nbChanges, int selectedTemplateId) {
+            long duration, int nbChanges, int selectedTemplateId, int selectedTemplateIndex) {
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.SelectTemplate", duration);
 
         recordNoteCreationFunnel(NoteCreationFunnel.TEMPLATE_SELECTED);
         recordNoteCreated(/*created=*/true);
         recordNbTemplateChanges(nbChanges);
         recordSelectedTemplateId(selectedTemplateId);
+        recordSelectedTemplateIndex(selectedTemplateIndex);
     }
 
     /**
@@ -173,15 +178,33 @@ public final class NoteCreationMetrics {
      * @param selectedTemplateId The id of the selected template.
      */
     private static void recordSelectedTemplateId(@NoteTemplateIds int selectedTemplateId) {
-        assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
-        assert selectedTemplateId >= 0;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_DYNAMIC_TEMPLATES)) {
+            assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
+            assert selectedTemplateId >= 0;
 
-        if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
-            selectedTemplateId = NoteTemplateIds.UNKNOWN;
+            if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
+                selectedTemplateId = NoteTemplateIds.UNKNOWN;
+            }
+
+            RecordHistogram.recordEnumeratedHistogram("NoteCreation.SelectedTemplate",
+                    selectedTemplateId, NoteTemplateIds.NUM_ENTRIES);
+            return;
         }
+        RecordHistogram.recordExactLinearHistogram("NoteCreation.SelectedDynamicTemplateID",
+                selectedTemplateId, MAX_NUMBER_OF_TEMPLATES);
+    }
 
-        RecordHistogram.recordEnumeratedHistogram(
-                "NoteCreation.SelectedTemplate", selectedTemplateId, NoteTemplateIds.NUM_ENTRIES);
+    /**
+     * Records the index of the template that was selected by the user.
+     *
+     * @param selectedTemplateIndex The index of the selected template.
+     */
+    private static void recordSelectedTemplateIndex(int selectedTemplateIndex) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_DYNAMIC_TEMPLATES)) {
+            return;
+        }
+        RecordHistogram.recordExactLinearHistogram("NoteCreation.SelectedDynamicTemplateIndex",
+                selectedTemplateIndex, MAX_NUMBER_OF_TEMPLATES);
     }
 
     // Empty private constructor for the "static" class.

@@ -35,6 +35,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/content_creation/notes/android:public_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",

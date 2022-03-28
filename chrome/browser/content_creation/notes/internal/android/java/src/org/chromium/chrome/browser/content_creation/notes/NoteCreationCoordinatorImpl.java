@@ -120,7 +120,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         int selectedNoteIndex = mDialog.getSelectedItemIndex();
         NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart(),
                 mDialog.getNbTemplateSwitches(),
-                mListModel.get(selectedNoteIndex).model.get(NoteProperties.TEMPLATE).id);
+                mListModel.get(selectedNoteIndex).model.get(NoteProperties.TEMPLATE).id,
+                selectedNoteIndex);
 
         View noteView = mDialog.getNoteViewAt(selectedNoteIndex);
 
