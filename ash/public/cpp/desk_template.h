@@ -30,6 +30,14 @@ enum class ASH_PUBLIC_EXPORT DeskTemplateSource {
   kPolicy
 };
 
+enum class ASH_PUBLIC_EXPORT DeskTemplateType {
+  // Regular desk template.
+  kTemplate = 0,
+
+  // Saved desk (Save & Recall).
+  kSavedDesk,
+};
+
 // Class to represent a desk template. It can be used to create a desk with
 // a certain set of application windows specified in |desk_restore_data_|.
 class ASH_PUBLIC_EXPORT DeskTemplate {
@@ -64,6 +72,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   void set_template_name(const std::u16string& template_name) {
     template_name_ = template_name;
   }
+
+  DeskTemplateType type() const { return type_; }
+  void set_type(DeskTemplateType type) { type_ = type; }
 
   const ::app_restore::RestoreData* desk_restore_data() const {
     return desk_restore_data_.get();
@@ -111,6 +122,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
 
   // Indicates the source where this desk template originates from.
   const DeskTemplateSource source_;
+
+  // The type of this desk template.
+  DeskTemplateType type_ = DeskTemplateType::kTemplate;
 
   const base::Time created_time_;  // Template creation time.
 

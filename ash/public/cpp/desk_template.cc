@@ -78,6 +78,15 @@ std::string DeskTemplate::ToString() const {
       result += "policy\n";
       break;
   }
+  result += "Type: ";
+  switch (type_) {
+    case DeskTemplateType::kTemplate:
+      result += "template\n";
+      break;
+    case DeskTemplateType::kSavedDesk:
+      result += "saved desk\n";
+      break;
+  }
 
   if (desk_restore_data_)
     result += desk_restore_data_->ToString();
