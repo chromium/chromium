@@ -29,6 +29,15 @@
 // Used to request to refollow this web channel, if it has been unfollowed.
 @property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
+- (instancetype)initWithTitle:(NSString*)title
+                        crURL:(CrURL*)channelURL
+                  unavailable:(BOOL)unavailable
+         unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
+         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FOLLOW_FOLLOWED_WEB_CHANNEL_H_

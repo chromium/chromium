@@ -9,4 +9,21 @@
 #endif
 
 @implementation FollowedWebChannel
+
+- (instancetype)initWithTitle:(NSString*)title
+                        crURL:(CrURL*)channelURL
+                  unavailable:(BOOL)unavailable
+         unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
+         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock {
+  self = [super init];
+  if (self) {
+    _title = title;
+    _channelURL = channelURL;
+    _unavailable = unavailable;
+    _unfollowRequestBlock = unfollowRequestBlock;
+    _refollowRequestBlock = refollowRequestBlock;
+  }
+  return self;
+}
+
 @end
