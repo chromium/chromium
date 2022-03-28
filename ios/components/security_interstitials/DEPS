@@ -1,5 +1,6 @@
 include_rules = [
   "+components/grit",
+  "+components/safe_browsing/ios",
   "+components/security_interstitials/core",
   "+ios/components/ui_util",
   "+ios/web/common",

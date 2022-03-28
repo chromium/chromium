@@ -44,7 +44,6 @@ source_set("safe_browsing") {
 
   deps = [
     ":password_protection_js",
-    ":util",
     "//base",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
@@ -86,6 +85,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/safe_browsing:util",
     "//ios/net",
     "//ios/web/common:user_agent",
     "//ios/web/public",
@@ -138,24 +138,6 @@ source_set("test_support") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("util") {
-  sources = [
-    "unsafe_resource_util.h",
-    "unsafe_resource_util.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-    "//components/safe_browsing/ios/browser:allow_list",
-    "//components/security_interstitials/core",
-    "//components/security_interstitials/core:unsafe_resource",
-    "//ios/web/public",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

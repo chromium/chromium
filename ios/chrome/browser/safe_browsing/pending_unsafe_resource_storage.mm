@@ -6,7 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#import "ios/chrome/browser/safe_browsing/unsafe_resource_util.h"
+#import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
