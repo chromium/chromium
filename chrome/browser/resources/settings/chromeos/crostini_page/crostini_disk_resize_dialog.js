@@ -146,7 +146,7 @@ Polymer({
               }
             },
             reason => {
-              console.log(`Unable to get info: ${reason}`);
+              console.warn(`Unable to get info: ${reason}`);
               this.displayState_ = DisplayState.ERROR;
             });
   },
@@ -179,7 +179,7 @@ Polymer({
               }
             },
             (reason) => {
-              console.log(`Unable to resize disk: ${reason}`);
+              console.warn(`Unable to resize disk: ${reason}`);
               this.resizeState_ = ResizeState.ERROR;
             });
   },

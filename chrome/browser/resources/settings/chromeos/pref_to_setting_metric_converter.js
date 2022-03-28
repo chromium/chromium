@@ -30,7 +30,6 @@ export class PrefToSettingMetricConverter {
 
       // device_page/pointers.js
       case 'settings.touchpad.sensitivity2':
-        console.log(prefValue);
         return {
           setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
           value: {intValue: /** @type {number} */ (prefValue)}

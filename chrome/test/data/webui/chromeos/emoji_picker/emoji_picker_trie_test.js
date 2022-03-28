@@ -63,7 +63,6 @@ suite('TrieUnitTest', () => {
         const actualAllKeys = trie.getKeys();
         assertTrue(Array.isArray(actualAllKeys));
         assertEquals(4, actualAllKeys.length);
-        console.log(actualAllKeys);
         assertTrue(actualAllKeys.includes('grin'));
         assertTrue(actualAllKeys.includes('message'));
         assertTrue(actualAllKeys.includes('moon'));

@@ -227,9 +227,9 @@ QueuedSignRequest.prototype.close = function() {
   }
   if (this.token_) {
     if (hadBegunSigning) {
-      console.log(UTIL_fmt('closing in-progress request'));
+      console.info(UTIL_fmt('closing in-progress request'));
     } else {
-      console.log(UTIL_fmt('closing timed-out request before processing'));
+      console.info(UTIL_fmt('closing timed-out request before processing'));
     }
     this.token_.complete();
   }
@@ -250,7 +250,7 @@ QueuedSignRequest.prototype.setToken = function(token) {
  */
 QueuedSignRequest.prototype.begin = function(token) {
   if (this.timer_.expired()) {
-    console.log(UTIL_fmt('Queued request begun after timeout'));
+    console.info(UTIL_fmt('Queued request begun after timeout'));
     this.close();
     this.errorCb_({errorCode: ErrorCodes.TIMEOUT});
     return;
@@ -460,7 +460,7 @@ Signer.prototype.doSign_ = async function() {
 
   var timeoutSeconds = this.timer_.millisecondsUntilExpired() / 1000.0;
 
-  console.log('Proxying sign request to WebAuthn');
+  console.info('Proxying sign request to WebAuthn');
   return this.doSignWebAuthn_(encodedChallenges, challengeVal);
 };
 
@@ -717,7 +717,7 @@ Signer.prototype.helperComplete_ = function(helperReply, opt_source) {
 
   if (reply.code) {
     var reportedError = mapDeviceStatusCodeToU2fError(reply.code);
-    console.log(UTIL_fmt(
+    console.info(UTIL_fmt(
         'helper reported ' + reply.code.toString(16) + ', returning ' +
         reportedError.errorCode));
     // Log non-expected reply codes if we have an url to send them

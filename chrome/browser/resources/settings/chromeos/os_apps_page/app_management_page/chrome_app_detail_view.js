@@ -50,7 +50,7 @@ Polymer({
               .handler.getExtensionAppPermissionMessages(this.app_.id);
       this.messages_ = messages;
     } catch (err) {
-      console.log(err);
+      console.warn(err);
     }
   },
 

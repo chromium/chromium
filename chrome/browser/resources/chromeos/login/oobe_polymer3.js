@@ -73,20 +73,19 @@ function initializeDebugger() {
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
 function prepareGlobalValues(globalValue) {
-    console.log('Preparing global values.');
-    if (globalValue.cr == undefined) {
-        globalValue.cr = {};
-    }
-    if (globalValue.cr.ui == undefined) {
-      globalValue.cr.ui = {};
-    }
-    if (globalValue.cr.ui.login == undefined) {
-      globalValue.cr.ui.login = {};
-    }
+  if (globalValue.cr == undefined) {
+    globalValue.cr = {};
+  }
+  if (globalValue.cr.ui == undefined) {
+    globalValue.cr.ui = {};
+  }
+  if (globalValue.cr.ui.login == undefined) {
+    globalValue.cr.ui.login = {};
+  }
 
-    // Expose some values in the global object that are needed by OOBE.
-    globalValue.cr.ui.Oobe = Oobe;
-    globalValue.Oobe = Oobe;
+  // Expose some values in the global object that are needed by OOBE.
+  globalValue.cr.ui.Oobe = Oobe;
+  globalValue.Oobe = Oobe;
 }
 
 (function (root) {

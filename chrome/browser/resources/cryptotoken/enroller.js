@@ -856,7 +856,7 @@ Enroller.prototype.sendEnrollRequestToHelper_ = function() {
       return;
     }
 
-    console.log('Proxying registration request to WebAuthn');
+    console.info('Proxying registration request to WebAuthn');
     this.doRegisterWebAuthn_(enrollAppIds[0], v2Challenge, request);
   });
 };
@@ -1279,7 +1279,7 @@ Enroller.prototype.notifySuccess_ = function(
 Enroller.prototype.helperComplete_ = function(reply) {
   if (reply.code) {
     var reportedError = mapDeviceStatusCodeToU2fError(reply.code);
-    console.log(UTIL_fmt(
+    console.info(UTIL_fmt(
         'helper reported ' + reply.code.toString(16) + ', returning ' +
         reportedError.errorCode));
     // Log non-expected reply codes if we have url to send them.
@@ -1291,7 +1291,7 @@ Enroller.prototype.helperComplete_ = function(reply) {
     }
     this.notifyError_(reportedError);
   } else {
-    console.log(UTIL_fmt('Gnubby enrollment succeeded!!!!!'));
+    console.info(UTIL_fmt('Gnubby enrollment succeeded!!!!!'));
     var browserData;
 
     if (reply.version === 'U2F_V2') {

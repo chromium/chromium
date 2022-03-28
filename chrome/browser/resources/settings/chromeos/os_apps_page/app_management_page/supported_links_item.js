@@ -185,7 +185,7 @@ Polymer({
     } catch (err) {
       // If we fail to get the overlapping preferred apps, do not
       // show the overlap warning.
-      console.log(err);
+      console.warn(err);
       this.showOverlappingAppsWarning_ = false;
       return;
     }
@@ -274,7 +274,7 @@ Polymer({
     } catch (err) {
       // If we fail to get the overlapping preferred apps, don't prevent the
       // user from setting their preference.
-      console.log(err);
+      console.warn(err);
     }
 
     // If there are overlapping apps, show the overlap dialog to the user.

@@ -621,11 +621,9 @@ export class AppElement extends PolymerElement {
     if (!this.shouldPrintPerformance_) {
       return;
     }
-    if (!auxTime) {
-      console.log(`${name}: ${time}`);
-    } else {
-      console.log(`${name}: ${time} (${auxTime})`);
-    }
+
+    console.info(
+        !auxTime ? `${name}: ${time}` : `${name}: ${time} (${auxTime})`);
   }
 
   /**

@@ -203,7 +203,7 @@ XhrAppIdChecker.prototype.fetchAllowedOriginsForAppId_ = function(appId) {
   }
 
   if (appId.indexOf('http://') === 0 && !this.allowHttp_) {
-    console.log(UTIL_fmt('http app ids disallowed, ' + appId + ' requested'));
+    console.info(UTIL_fmt('http app ids disallowed, ' + appId + ' requested'));
     return Promise.resolve([]);
   }
 
@@ -216,7 +216,7 @@ XhrAppIdChecker.prototype.fetchAllowedOriginsForAppId_ = function(appId) {
   var self = this;
   return p.then(getOriginsFromJson, function(rc_) {
     var rc = /** @type {number} */ (rc_);
-    console.log(UTIL_fmt('fetching ' + appId + ' failed: ' + rc));
+    console.info(UTIL_fmt('fetching ' + appId + ' failed: ' + rc));
     if (!(rc >= 400 && rc < 500) && !self.timer_.expired()) {
       // Retry
       return self.fetchAllowedOriginsForAppId_(appId);

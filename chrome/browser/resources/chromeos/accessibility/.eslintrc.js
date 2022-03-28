@@ -7,7 +7,8 @@ module.exports = {
     'brace-style': ['error', '1tbs'],
     'curly': ['error', 'multi-line', 'consistent'],
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
-    'prefer-const': ['error', {'destructuring': 'all'}],
+    'no-console': 'off',
     'object-shorthand': ['error', 'always'],
+    'prefer-const': ['error', {'destructuring': 'all'}],
   },
 };

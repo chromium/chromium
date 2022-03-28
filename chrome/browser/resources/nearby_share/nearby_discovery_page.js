@@ -313,7 +313,6 @@ Polymer({
     const currentShareTarget = event.currentTarget.shareTarget;
     const currentIndex = this.shareTargets_.findIndex(
         (target) => tokensEqual(target.id, currentShareTarget.id));
-    console.log(event.code);
     event.stopPropagation();
     switch (event.code) {
       // Down arrow: bring into focus the next shareTarget in list.

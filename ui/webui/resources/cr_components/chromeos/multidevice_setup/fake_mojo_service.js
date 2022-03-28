@@ -73,7 +73,7 @@
   /** @override */
   setHostDevice(hostInstanceIdOrLegacyDeviceId) {
     if (this.shouldSetHostSucceed) {
-      console.log(
+      console.info(
           'setHostDevice(' + hostInstanceIdOrLegacyDeviceId +
           ') called; simulating ' +
           'success.');

@@ -194,5 +194,6 @@ AccessibilityTest.print_ = function(violations) {
       });
     }
   }
+  // eslint-disable-next-line no-console
   console.log(JSON.stringify(violations, null, 4));
 };

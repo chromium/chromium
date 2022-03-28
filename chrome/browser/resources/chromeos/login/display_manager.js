@@ -387,7 +387,7 @@ cr.define('cr.ui.login', function() {
       // condition. This if statement was introduced to fix http://b/113786350.
       if (this.currentScreen.id == SCREEN_APP_LAUNCH_SPLASH &&
           screen.id == SCREEN_GAIA_SIGNIN) {
-        console.log(
+        console.info(
             this.currentScreen.id +
             ' screen showing. Ignoring switch to Gaia screen.');
         return;

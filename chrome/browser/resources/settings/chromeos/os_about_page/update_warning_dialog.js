@@ -51,7 +51,7 @@ Polymer({
   /** @private */
   onContinueTap_() {
     if (!this.updateInfo || !this.updateInfo.version || !this.updateInfo.size){
-      console.log('ERROR: requestUpdateOverCellular arguments are undefined');
+      console.warn('ERROR: requestUpdateOverCellular arguments are undefined');
       return;
     }
     this.browserProxy_.requestUpdateOverCellular(

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-console.log('start guest js');
+console.info('start guest js');
 
 var embedder = null;
 window.addEventListener('message', function(e) {
   var data = JSON.parse(e.data)[0];
-  window.console.log('guest gets message ' + data);
+  window.console.info('guest gets message ' + data);
   if (data === 'create-channel') {
     embedder = e.source;
     doPostMessage('connected');
@@ -15,7 +15,7 @@ window.addEventListener('message', function(e) {
 });
 
 var doPostMessage = function(msg) {
-  window.console.log('guest posts message: ' + msg);
+  window.console.info('guest posts message: ' + msg);
   embedder.postMessage(JSON.stringify([msg]), '*');
 };
 
@@ -26,7 +26,7 @@ document.body.innerHTML +=
 var destNode = document.getElementById('dest');
 var testStep = 0;
 destNode.addEventListener('dragenter', function(e) {
-  console.log('node drag enter');
+  console.info('node drag enter');
   if (testStep === 0) {
     doPostMessage('Step1: destNode gets dragenter');
     testStep = 1;
@@ -47,4 +47,4 @@ destNode.addEventListener('drop', function(e) {
   }
 });
 
-console.log('finish guest js');
+console.info('finish guest js');

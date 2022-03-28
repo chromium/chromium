@@ -324,7 +324,7 @@ Polymer({
               }
             },
             reason => {
-              console.log(`Unable to get info: ${reason}`);
+              console.warn(`Unable to get info: ${reason}`);
             });
   },
 

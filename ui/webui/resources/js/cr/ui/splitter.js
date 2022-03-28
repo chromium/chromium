@@ -59,7 +59,7 @@ Splitter.prototype = {
    */
   startDrag(clientX, isTouchEvent) {
     if (this.handlers_) {
-      console.log('Concurent drags');
+      // Case of concurrent drags.
       this.endDrag_();
     }
     if (isTouchEvent) {

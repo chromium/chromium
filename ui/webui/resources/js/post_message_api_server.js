@@ -73,7 +73,7 @@ export class PostMessageAPIServer extends RequestHandler {
       // Tell the embedded webviews whose src matches our origin to initialize
       // by sending it a message, which will include a handle for it to use to
       // send messages back.
-      console.log(
+      console.info(
           'Sending init message to guest content,  attempt # :' +
           this.numInitializationAttempts_);
 
@@ -121,7 +121,8 @@ export class PostMessageAPIServer extends RequestHandler {
    */
   async onMessage_(event) {
     if (!this.originMatchesFilter(event.origin)) {
-      console.log('Message received from unauthorized origin: ' + event.origin);
+      console.info(
+          'Message received from unauthorized origin: ' + event.origin);
       return;
     }
 

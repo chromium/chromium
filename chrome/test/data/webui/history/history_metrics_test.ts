@@ -104,7 +104,7 @@ suite('Metrics', function() {
 
     // TODO(https://crbug.com/1000573): Log the contents of this histogram
     // for debugging in case the flakiness reoccurs.
-    console.log(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']!));
+    console.info(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']!));
 
     // The "age in days" histogram should record 8 days, since the history
     // entry was created between 7 and 8 days ago and we round the

@@ -86,7 +86,6 @@ function requestData() {
   xhr.open('GET', 'targets-data.json', false);
   xhr.send(null);
   if (xhr.status === 200) {
-    console.log(xhr.responseText);
     return JSON.parse(xhr.responseText);
   }
   return [];
@@ -177,7 +176,6 @@ function requestEvents(data, element) {
 }
 
 function initialize() {
-  console.log('initialize');
   const data = requestData();
 
   bindCheckbox('native', data['native']);

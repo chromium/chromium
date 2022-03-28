@@ -35,8 +35,6 @@ function requestAutocompleteActionPredictorDb() {
  *     a boolean indicating if the system is enabled and the current hit weight.
  */
 function updateAutocompleteActionPredictorDb(database) {
-  console.debug('Updating Table NAP DB');
-
   const filter = $('filter');
   filter.disabled = false;
   filter.onchange = function() {

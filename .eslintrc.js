@@ -16,6 +16,7 @@ module.exports = {
     // Enabled checks.
     'brace-style': ['error', '1tbs'],
     'curly': ['error', 'multi-line', 'consistent'],
+    'no-console': ['error', {allow: ['info', 'warn', 'error', 'assert']}],
     'no-extra-boolean-cast': 'error',
     'no-extra-semi': 'error',
     'no-new-wrappers': 'error',

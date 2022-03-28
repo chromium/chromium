@@ -6,6 +6,8 @@
  * @fileoverview Library providing basic test framework functionality.
  */
 
+/* eslint-disable no-console */
+
 /**
  * See assert.js for where this is used.
  * @suppress {globalThis}

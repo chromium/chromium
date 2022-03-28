@@ -322,7 +322,7 @@ function sendReport() {
 
   // Prevent double clicking from sending additional reports.
   $('send-report-button').disabled = true;
-  console.log('Feedback: Sending report');
+  console.info('Feedback: Sending report');
   if (!feedbackInfo.attachedFile && attachedFileBlob) {
     feedbackInfo.attachedFile = {
       name: $('attach-file').value,

@@ -182,7 +182,7 @@ class FeedbackRequest {
     chrome.feedbackPrivate.sendFeedback(
         this.feedbackInfo_, function(result, landingPageType) {
           if (result === chrome.feedbackPrivate.Status.SUCCESS) {
-            console.log('Feedback: Report sent for request with ID ' + ID);
+            console.info('Feedback: Report sent for request with ID ' + ID);
             if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
                 landingPageType !==
                     chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
@@ -193,7 +193,7 @@ class FeedbackRequest {
               window.open(landingPage, '_blank');
             }
           } else {
-            console.log(
+            console.info(
                 'Feedback: Report for request with ID ' + ID +
                 ' will be sent later.');
           }

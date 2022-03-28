@@ -99,7 +99,8 @@ export class RequestHandler {
    */
   async handleMessage_(event) {
     if (!this.originMatchesFilter(event.origin)) {
-      console.log('Message received from unauthorized origin: ' + event.origin);
+      console.info(
+          'Message received from unauthorized origin: ' + event.origin);
       return;
     }
 
@@ -114,7 +115,7 @@ export class RequestHandler {
     const args = event.data.args || [];
 
     if (!this.canHandle(fn)) {
-      console.log('Unknown function requested: ' + fn);
+      console.info('Unknown function requested: ' + fn);
       return;
     }
 
