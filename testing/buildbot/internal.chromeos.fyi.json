@@ -1126,7 +1126,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R102-14637.0.0",
+        "cros_img": "octopus-release/R102-14640.0.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_RELEASE_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1170,7 +1170,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R102-14637.0.0",
+        "cros_img": "octopus-release/R102-14640.0.0",
         "name": "ozone_unittests_OCTOPUS_RELEASE_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1218,7 +1218,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14637.0.0",
+        "cros_img": "kevin-release/R102-14640.0.0",
         "name": "lacros_all_tast_tests_KEVIN_RELEASE_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1229,7 +1229,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14637.0.0",
+        "cros_img": "hana-release/R102-14640.0.0",
         "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1240,7 +1240,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14637.0.0",
+        "cros_img": "kevin-release/R102-14640.0.0",
         "name": "ozone_unittests_KEVIN_RELEASE_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1250,7 +1250,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14637.0.0",
+        "cros_img": "hana-release/R102-14640.0.0",
         "name": "ozone_unittests_HANA_RELEASE_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1260,7 +1260,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14637.0.0",
+        "cros_img": "kevin-release/R102-14640.0.0",
         "name": "viz_unittests_KEVIN_RELEASE_LKGM",
         "swarming": {},
         "test": "viz_unittests",
@@ -1270,7 +1270,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14637.0.0",
+        "cros_img": "hana-release/R102-14640.0.0",
         "name": "viz_unittests_HANA_RELEASE_LKGM",
         "swarming": {},
         "test": "viz_unittests",
