@@ -5,32 +5,39 @@
       --banner-height: 244px;
     }
 
-    #signinPromoBanner {
-      background-image:
-          url(profile_creation_flow/images/banner_light_image.svg);
+    #leftBanner {
+      background: url(../images/left_banner_image.svg);
+      left: 0;
+    }
+
+    #rightBanner {
+      background: url(../images/right_banner_image.svg);
+      right: 0;
     }
 
     @media (prefers-color-scheme: dark) {
-      #signinPromoBanner {
-        background-image:
-            url(profile_creation_flow/images/banner_dark_image.svg);
+      #leftBanner {
+        background: url(../images/dark_mode_left_banner_image.svg);
+      }
+
+      #rightBanner {
+        background: url(../images/dark_mode_right_banner_image.svg);
       }
     }
 
     #headerContainer {
-      background-color: var(--theme-frame-color);
       height: var(--banner-height);
       position: relative;
       width: 100%;
     }
 
     .banner {
-      background-size: 100% 100%;
-      height: 100%;
+      height: 400px;
+      overflow: hidden;
       position: absolute;
       top: 0;
-      width: 100%;
-      z-index: 0;
+      width: 169px;
+      z-index: -1;
     }
 
     #backButton {

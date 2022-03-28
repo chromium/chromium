@@ -78,6 +78,7 @@
   }
 </style>
 
+<div id="leftBanner" class="banner"></div>
 <div id="headerContainer"
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
@@ -85,7 +86,6 @@
       on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]"
       disabled="[[loadSigninInProgess_]]">
   </cr-icon-button>
-  <div id="signinPromoBanner" class="banner"></div>
   <div id="avatarContainer">
     <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
   </div>
@@ -105,6 +105,7 @@
     $i18n{notNowButtonLabel}
   </cr-button>
 </div>
+<div id="rightBanner" class="banner"></div>
 
 <template is="dom-if" if="[[managedDeviceDisclaimer_]]">
   <div id="infoContainer">

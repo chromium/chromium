@@ -3,11 +3,6 @@
     --account-button-hover-color: var(--md-background-color);
   }
 
-  .banner {
-    background-color: var(--theme-frame-color);
-    height: var(--banner-height);
-  }
-
   #accountsContainer {
     background-color: white;
     border: var(--cr-hairline);
@@ -112,9 +107,9 @@
   }
 </style>
 
+<div id="leftBanner" class="banner"></div>
 <div style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
              --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
-  <div id="signinPromoBanner" class="banner"></div>
   <template is="dom-if" if="[[hasPreviousRoute_]]">
     <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
         on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
@@ -155,4 +150,5 @@
     </button>
   </div>
 </div>
+<div id="rightBanner" class="banner"></div>
 <div id="footer"></div>

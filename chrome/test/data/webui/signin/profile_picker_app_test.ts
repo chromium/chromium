@@ -61,10 +61,6 @@ suite('ProfilePickerAppTest', function() {
             .getPropertyValue('--theme-text-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameTextColor);
-    assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#headerContainer')!)
-            .backgroundColor,
-        browserProxy.profileThemeInfo.themeFrameColor);
   }
 
   test('ProfilePickerMainView', async function() {

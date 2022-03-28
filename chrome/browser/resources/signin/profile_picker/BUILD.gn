@@ -52,8 +52,6 @@ generate_grd("build_grd") {
     "images/right_banner_image.svg",
     "images/dark_mode_left_banner_image.svg",
     "images/dark_mode_right_banner_image.svg",
-    "profile_creation_flow/images/banner_dark_image.svg",
-    "profile_creation_flow/images/banner_light_image.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
 
