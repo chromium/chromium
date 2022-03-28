@@ -36,6 +36,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
@@ -194,19 +196,24 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     auto test_app_info = app_prefs()->GetApp(app_id);
     EXPECT_TRUE(test_app_info);
 
-    std::vector<apps::mojom::AppPtr> apps;
-    auto app = apps::mojom::App::New();
-    app->app_id = app_id;
-    app->app_type = apps::mojom::AppType::kArc;
+    auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
     app->name = app_name;
-    auto intent_filter = apps_util::CreateIntentFilterForUrlScope(url);
-    app->intent_filters.push_back(std::move(intent_filter));
-    apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(apps), apps::mojom::AppType::kArc,
-        false /* should_notify_initialized */);
-    WaitForAppService();
-
+    app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(url));
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      std::vector<apps::AppPtr> apps;
+      apps.push_back(std::move(app));
+      app_service_proxy_->AppRegistryCache().OnApps(
+          std::move(apps), apps::AppType::kArc,
+          false /* should_notify_initialized */);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_apps;
+      mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
+      app_service_proxy_->AppRegistryCache().OnApps(
+          std::move(mojom_apps), apps::mojom::AppType::kArc,
+          false /* should_notify_initialized */);
+      WaitForAppService();
+    }
     return app_id;
   }
 
