@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -28,7 +29,8 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
-         blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
   }
@@ -202,7 +204,7 @@ class InterestGroupOffBrowserTest : public InterestGroupPermissionsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kInterestGroupStorage},
         {blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-         blink::features::kParakeet});
+         blink::features::kParakeet, features::kPrivacySandboxAdsAPIsOverride});
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -222,7 +224,8 @@ class InterestGroupFledgeOnBrowserTest
  public:
   InterestGroupFledgeOnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage, blink::features::kFledge},
+        {blink::features::kInterestGroupStorage, blink::features::kFledge,
+         features::kPrivacySandboxAdsAPIsOverride},
         {blink::features::kAdInterestGroupAPI, blink::features::kParakeet});
   }
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -245,7 +248,8 @@ class InterestGroupParakeetOnBrowserTest
   InterestGroupParakeetOnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kInterestGroupStorage, blink::features::kParakeet},
-        {blink::features::kAdInterestGroupAPI, blink::features::kFledge});
+        {blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         features::kPrivacySandboxAdsAPIsOverride});
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -269,7 +273,8 @@ class InterestGroupAPIOnBrowserTest
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI},
-        {blink::features::kParakeet, blink::features::kFledge});
+        {blink::features::kParakeet, blink::features::kFledge,
+         features::kPrivacySandboxAdsAPIsOverride});
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };

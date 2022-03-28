@@ -191,7 +191,7 @@
     {
       name: "AttributionReporting",
       permissions_policy_name: "attribution-reporting",
-      depends_on: ["ConversionMeasurement"],
+      depends_on: ["AttributionReporting"],
     },
     {
       name: "CrossOriginIsolated",

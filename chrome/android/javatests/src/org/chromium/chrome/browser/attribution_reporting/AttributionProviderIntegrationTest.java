@@ -48,8 +48,9 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 // enable-experimental-web-platform-features turns on the overall ConversionMeasurement Blink
 // feature.
 // conversions-debug-mode will send reports with no delay or noise.
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-experimental-web-platform-features", "conversions-debug-mode"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-experimental-web-platform-features",
+        "enable-blink-test-features", "conversions-debug-mode"})
 @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
 public class AttributionProviderIntegrationTest {
     private static final String EVENT_ID = "12345";

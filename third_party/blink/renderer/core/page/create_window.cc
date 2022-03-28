@@ -70,9 +70,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
                                               LocalDOMWindow* dom_window) {
   WebWindowFeatures window_features;
 
-  bool conversion_measurement_enabled =
+  bool attribution_reporting_enabled =
       dom_window &&
-      RuntimeEnabledFeatures::ConversionMeasurementEnabled(dom_window);
+      RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window);
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
@@ -160,7 +160,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
         key_string != "noreferrer" &&
-        (!conversion_measurement_enabled || key_string != "attributionsrc")) {
+        (!attribution_reporting_enabled || key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
       window_features.menu_bar_visible = false;
       window_features.status_bar_visible = false;
@@ -201,7 +201,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.background = true;
     } else if (key_string == "persistent") {
       window_features.persistent = true;
-    } else if (conversion_measurement_enabled &&
+    } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
       window_features.impression =
           dom_window->GetFrame()->GetAttributionSrcLoader()->RegisterNavigation(

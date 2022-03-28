@@ -7299,6 +7299,16 @@ const FeatureEntry kFeatureEntries[] = {
          "disable-dialog-for-testing/true/show-sample-data/true,"
          "EnableFetchingAccountCapabilities")},
 
+    {"privacy-sandbox-ads-apis",
+     flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
+     flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
+     // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
+     // multiple related features when they are available.
+     SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
+                                 "PrivacySandboxAdsAPIsOverride"
+                                 "Fledge,BrowsingTopics,ConversionMeasurement"
+                                 "OverridePrivacySandboxSettingsLocalTesting")},
+
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},

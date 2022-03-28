@@ -37,6 +37,8 @@ extern const base::FeatureParam<bool>
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings3ShowSampleDataForTesting;
 
+extern const base::Feature kOverridePrivacySandboxSettingsLocalTesting;
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

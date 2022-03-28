@@ -7,7 +7,7 @@
 // https://github.com/WICG/conversion-measurement-api/
 [
     Exposed=Window,
-    RuntimeEnabled=ConversionMeasurement,
+    RuntimeEnabled=AttributionReporting,
     SecureContext
 ] interface AttributionReporting {
     [CallWith=ScriptState, RaisesException] Promise<void> registerSource(DOMString url);

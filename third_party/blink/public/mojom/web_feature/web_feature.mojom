@@ -3501,6 +3501,8 @@ enum WebFeature {
   kV8FunctionPrototypeCaller = 4180,
   kBluetoothDeviceForget = 4181,
   kTopicsAPI_BrowsingTopics_Method = 4182,
+  kPrivacySandboxAdsAPIs = 4187,
+  kFledge = 4188,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

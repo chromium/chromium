@@ -46,7 +46,7 @@
     [RuntimeEnabled=LazyImageLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
     // Attribution Reporting
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionSrc;
+    [RuntimeEnabled=AttributionReporting, CEReactions,Reflect] attribute USVString attributionSrc;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLImageElement-partial
