@@ -1453,8 +1453,14 @@ public class ContextualSearchManager
                 ? ContextualSearchFieldTrial.showDefaultChipInBar()
                 : ContextualSearchFieldTrial.showDefaultChipInPanel();
         int defaultSearchAdjustment = showDefaultSearch ? 1 : 0;
+        assert mRelatedSearches
+                != null : "There is no valid list of Related Searches for this click! "
+                          + "Please update crbug.com/1307267 with this repro.";
         assert (suggestionIndex - defaultSearchAdjustment)
                 < mRelatedSearches.getQueries(isInBarSuggestion).size();
+
+        // TODO(crbug.com/1307267) remove this check once we figure out how this can happen.
+        if (mRelatedSearches == null) return;
 
         if (isInBarSuggestion && mSearchPanel.isPeeking()) {
             mSearchPanel.expandPanel(StateChangeReason.CLICK);
