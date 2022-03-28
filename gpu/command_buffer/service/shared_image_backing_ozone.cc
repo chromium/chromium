@@ -94,7 +94,11 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
-    ozone_backing->BeginAccess(/*readonly=*/true, &fences);
+    bool need_end_fence;
+    ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
+                               &fences, need_end_fence);
+    // Always need an end fence when finish reading from overlays.
+    DCHECK(need_end_fence);
     for (auto& fence : fences) {
       acquire_fences->emplace_back(std::move(fence));
     }
@@ -102,7 +106,8 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
     auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
-    ozone_backing->EndAccess(/*readonly=*/true, std::move(release_fence));
+    ozone_backing->EndAccess(/*readonly=*/true, AccessStream::kOverlay,
+                             std::move(release_fence));
   }
 
   gl::GLImage* GetGLImage() override {
@@ -259,7 +264,31 @@ SharedImageBackingOzone::SharedImageBackingOzone(
       plane_(plane),
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
-      context_state_(std::move(context_state)) {}
+      context_state_(std::move(context_state)) {
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
+  bool used_by_gl =
+      (usage & SHARED_IMAGE_USAGE_GLES2) ||
+      (used_by_skia && context_state_->gr_context_type() == GrContextType::kGL);
+  bool used_by_vulkan = used_by_skia && context_state_->gr_context_type() ==
+                                            GrContextType::kVulkan;
+  bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  write_streams_count_ = 0;
+  if (used_by_gl)
+    write_streams_count_++;  // gl can write
+  if (used_by_vulkan)
+    write_streams_count_++;  // vulkan can write
+  if (used_by_webgpu)
+    write_streams_count_++;  // webgpu can write
+
+  if (write_streams_count_ == 1) {
+    // Initialize last_write_stream_ if its a single stream for cases where
+    // read happens before write eg. video decoder with usage set as SCANOUT.
+    last_write_stream_ = used_by_gl ? AccessStream::kGL
+                                    : (used_by_vulkan ? AccessStream::kVulkan
+                                                      : AccessStream::kWebGPU);
+  }
+}
 
 std::unique_ptr<SharedImageRepresentationVaapi>
 SharedImageBackingOzone::ProduceVASurface(
@@ -352,14 +381,11 @@ void SharedImageBackingOzone::FlushAndSubmitIfNecessary(
   }
 }
 
-bool SharedImageBackingOzone::NeedsSynchronization() const {
-  return (usage() & SHARED_IMAGE_USAGE_WEBGPU) ||
-         (usage() & SHARED_IMAGE_USAGE_SCANOUT);
-}
-
 bool SharedImageBackingOzone::BeginAccess(
     bool readonly,
-    std::vector<gfx::GpuFenceHandle>* fences) {
+    AccessStream access_stream,
+    std::vector<gfx::GpuFenceHandle>* fences,
+    bool& need_end_fence) {
   if (is_write_in_progress_) {
     DLOG(ERROR) << "Unable to begin read or write access because another write "
                    "access is in progress";
@@ -378,23 +404,53 @@ bool SharedImageBackingOzone::BeginAccess(
     is_write_in_progress_ = true;
   }
 
-  if (NeedsSynchronization()) {
-    // Technically, we don't need to wait on other read fences when performing
-    // a read access, but like in the case of |ExternalVkImageBacking|, reading
-    // repeatedly without a write access will cause us to run out of FDs.
-    // TODO(penghuang): Avoid waiting on read semaphores.
-    *fences = std::move(read_fences_);
-    read_fences_.clear();
-    if (!write_fence_.is_null()) {
-      fences->push_back(std::move(write_fence_));
-      write_fence_ = gfx::GpuFenceHandle();
+  // We don't wait for read-after-read.
+  if (!readonly) {
+    for (auto& fence : read_fences_) {
+      // Wait on fence only if reading from stream different than current
+      // stream.
+      if (fence.first != access_stream) {
+        fences->emplace_back(std::move(fence.second));
+      }
     }
+    read_fences_.clear();
+  }
+
+  // If current stream is different than last_write_stream_ then wait on that
+  // stream's write_fence_.
+  if (last_write_stream_ != access_stream && !write_fence_.is_null()) {
+    // For write access we expect new write_fence_ so we can move the old fence
+    // here.
+    if (!readonly)
+      fences->emplace_back(std::move(write_fence_));
+    else
+      fences->emplace_back(write_fence_.Clone());
+  }
+
+  if (readonly) {
+    // Optimization for single write streams. Normally we need a read fence to
+    // wait before write on a write stream. But if it single write stream, we
+    // can skip read fence for it because there's no need to wait for fences on
+    // the same stream.
+    need_end_fence =
+        (write_streams_count_ > 1) || (last_write_stream_ != access_stream);
+  } else {
+    // Log if it's a single write stream and write comes from a different stream
+    // than expected (GL, Vulkan or WebGPU).
+    LOG_IF(DFATAL,
+           write_streams_count_ == 1 && last_write_stream_ != access_stream)
+        << "Unexpected write stream: " << static_cast<int>(access_stream)
+        << ", " << static_cast<int>(last_write_stream_) << ", "
+        << write_streams_count_;
+    // Always need end fence for writes.
+    need_end_fence = true;
   }
 
   return true;
 }
 
 void SharedImageBackingOzone::EndAccess(bool readonly,
+                                        AccessStream access_stream,
                                         gfx::GpuFenceHandle fence) {
   if (readonly) {
     DCHECK_GT(reads_in_progress_, 0u);
@@ -404,16 +460,13 @@ void SharedImageBackingOzone::EndAccess(bool readonly,
     is_write_in_progress_ = false;
   }
 
-  if (NeedsSynchronization()) {
-    if (readonly) {
-      read_fences_.push_back(std::move(fence));
-    } else {
-      DCHECK(write_fence_.is_null());
-      DCHECK(read_fences_.empty());
-      write_fence_ = std::move(fence);
-    }
+  if (readonly) {
+    read_fences_[access_stream] = std::move(fence);
   } else {
-    DCHECK(fence.is_null());
+    DCHECK(write_fence_.is_null());
+    DCHECK(read_fences_.find(access_stream) == read_fences_.end());
+    write_fence_ = std::move(fence);
+    last_write_stream_ = access_stream;
   }
 }
 

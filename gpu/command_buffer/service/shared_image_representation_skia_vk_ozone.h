@@ -74,6 +74,7 @@ class SharedImageRepresentationSkiaVkOzone
   scoped_refptr<SharedContextState> context_state_;
   std::vector<VkSemaphore> begin_access_semaphores_;
   VkSemaphore end_access_semaphore_ = VK_NULL_HANDLE;
+  bool need_end_fence_;
 };
 
 }  // namespace gpu

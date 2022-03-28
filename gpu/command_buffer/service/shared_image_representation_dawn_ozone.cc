@@ -58,7 +58,11 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
       << "Multi-plane formats are not supported.";
 
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing()->BeginAccess(/*readonly=*/false, &fences);
+  bool need_end_fence;
+  ozone_backing()->BeginAccess(
+      /*readonly=*/false, SharedImageBackingOzone::AccessStream::kWebGPU,
+      &fences, need_end_fence);
+  DCHECK(need_end_fence);
 
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};
@@ -94,10 +98,8 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};
 
-  if (ozone_backing()->NeedsSynchronization()) {
-    for (auto& fence : fences) {
-      descriptor.waitFDs.push_back(fence.owned_fd.release());
-    }
+  for (auto& fence : fences) {
+    descriptor.waitFDs.push_back(fence.owned_fd.release());
   }
 
   texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
@@ -127,7 +129,9 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
     DCHECK(export_info.semaphoreHandles.size() == 1);
     gfx::GpuFenceHandle fence;
     fence.owned_fd = base::ScopedFD(export_info.semaphoreHandles[0]);
-    ozone_backing()->EndAccess(false /* readonly */, std::move(fence));
+    ozone_backing()->EndAccess(/*readonly=*/false,
+                               SharedImageBackingOzone::AccessStream::kWebGPU,
+                               std::move(fence));
   }
   dawn_procs_->data.textureDestroy(texture_);
   dawn_procs_->data.textureRelease(texture_);

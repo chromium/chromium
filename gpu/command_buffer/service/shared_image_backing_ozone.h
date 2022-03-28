@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
 
 namespace gpu {
@@ -64,6 +66,8 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
                    SkAlphaType alpha_type);
   void SetSharedMemoryWrapper(SharedMemoryRegionWrapper wrapper);
 
+  enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };
+
  protected:
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
@@ -101,10 +105,13 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       std::vector<GrBackendSemaphore> signal_semaphores,
       SharedContextState* const shared_context_state);
 
-  bool NeedsSynchronization() const;
-
-  bool BeginAccess(bool readonly, std::vector<gfx::GpuFenceHandle>* fences);
-  void EndAccess(bool readonly, gfx::GpuFenceHandle fence);
+  bool BeginAccess(bool readonly,
+                   AccessStream access_stream,
+                   std::vector<gfx::GpuFenceHandle>* fences,
+                   bool& need_end_fence);
+  void EndAccess(bool readonly,
+                 AccessStream access_stream,
+                 gfx::GpuFenceHandle fence);
 
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
@@ -112,11 +119,13 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   gfx::BufferPlane plane_;
   uint32_t reads_in_progress_ = 0;
   bool is_write_in_progress_ = false;
+  int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   gfx::GpuFenceHandle write_fence_;
-  std::vector<gfx::GpuFenceHandle> read_fences_;
+  base::flat_map<AccessStream, gfx::GpuFenceHandle> read_fences_;
+  AccessStream last_write_stream_;
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
   scoped_refptr<SharedContextState> context_state_;

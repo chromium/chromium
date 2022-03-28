@@ -31,21 +31,22 @@ namespace gpu {
 
 bool SharedImageRepresentationGLOzoneShared::BeginAccess(
     GLenum mode,
-    SharedImageBackingOzone* ozone_backing) {
+    SharedImageBackingOzone* ozone_backing,
+    bool& need_end_fence) {
   bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing->BeginAccess(readonly, &fences);
+  ozone_backing->BeginAccess(readonly,
+                             SharedImageBackingOzone::AccessStream::kGL,
+                             &fences, need_end_fence);
 
-  if (ozone_backing->NeedsSynchronization()) {
-    // ChromeOS VMs don't support gpu fences, so there is no good way to
-    // synchronize with GL.
-    if (gl::GLFence::IsGpuFenceSupported()) {
-      for (auto& fence : fences) {
-        gfx::GpuFence gpu_fence = gfx::GpuFence(std::move(fence));
-        std::unique_ptr<gl::GLFence> gl_fence =
-            gl::GLFence::CreateFromGpuFence(gpu_fence);
-        gl_fence->ServerWait();
-      }
+  // ChromeOS VMs don't support gpu fences, so there is no good way to
+  // synchronize with GL.
+  if (gl::GLFence::IsGpuFenceSupported()) {
+    for (auto& fence : fences) {
+      gfx::GpuFence gpu_fence = gfx::GpuFence(std::move(fence));
+      std::unique_ptr<gl::GLFence> gl_fence =
+          gl::GLFence::CreateFromGpuFence(gpu_fence);
+      gl_fence->ServerWait();
     }
   }
 
@@ -55,20 +56,20 @@ bool SharedImageRepresentationGLOzoneShared::BeginAccess(
 }
 
 void SharedImageRepresentationGLOzoneShared::EndAccess(
+    bool need_end_fence,
     GLenum mode,
     SharedImageBackingOzone* ozone_backing) {
   gfx::GpuFenceHandle fence;
-  if (ozone_backing->NeedsSynchronization()) {
-    // ChromeOS VMs don't support gpu fences, so there is no good way to
-    // synchronize with GL.
-    if (gl::GLFence::IsGpuFenceSupported()) {
-      auto gl_fence = gl::GLFence::CreateForGpuFence();
-      DCHECK(gl_fence);
-      fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
-    }
+  // ChromeOS VMs don't support gpu fences, so there is no good way to
+  // synchronize with GL.
+  if (gl::GLFence::IsGpuFenceSupported() && need_end_fence) {
+    auto gl_fence = gl::GLFence::CreateForGpuFence();
+    DCHECK(gl_fence);
+    fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
   }
   bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  ozone_backing->EndAccess(readonly, std::move(fence));
+  ozone_backing->EndAccess(readonly, SharedImageBackingOzone::AccessStream::kGL,
+                           std::move(fence));
 }
 
 scoped_refptr<gl::GLImageNativePixmap>
@@ -179,12 +180,12 @@ bool SharedImageRepresentationGLTextureOzone::BeginAccess(GLenum mode) {
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
   return SharedImageRepresentationGLOzoneShared::BeginAccess(
-      current_access_mode_, ozone_backing());
+      current_access_mode_, ozone_backing(), need_end_fence_);
 }
 
 void SharedImageRepresentationGLTextureOzone::EndAccess() {
-  SharedImageRepresentationGLOzoneShared::EndAccess(current_access_mode_,
-                                                    ozone_backing());
+  SharedImageRepresentationGLOzoneShared::EndAccess(
+      need_end_fence_, current_access_mode_, ozone_backing());
   current_access_mode_ = 0;
 }
 
@@ -251,12 +252,12 @@ bool SharedImageRepresentationGLTexturePassthroughOzone::BeginAccess(
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
   return SharedImageRepresentationGLOzoneShared::BeginAccess(
-      current_access_mode_, ozone_backing());
+      current_access_mode_, ozone_backing(), need_end_fence_);
 }
 
 void SharedImageRepresentationGLTexturePassthroughOzone::EndAccess() {
-  SharedImageRepresentationGLOzoneShared::EndAccess(current_access_mode_,
-                                                    ozone_backing());
+  SharedImageRepresentationGLOzoneShared::EndAccess(
+      need_end_fence_, current_access_mode_, ozone_backing());
   current_access_mode_ = 0;
 }
 

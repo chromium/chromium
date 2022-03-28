@@ -165,7 +165,9 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
   DCHECK(end_access_semaphore_ == VK_NULL_HANDLE);
 
   std::vector<gfx::GpuFenceHandle> fences;
-  if (!ozone_backing()->BeginAccess(readonly, &fences))
+  if (!ozone_backing()->BeginAccess(
+          readonly, SharedImageBackingOzone::AccessStream::kVulkan, &fences,
+          need_end_fence_))
     return false;
 
   VkDevice device = vk_device();
@@ -180,7 +182,7 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
     begin_semaphores->back().initVulkan(vk_semaphore);
   }
 
-  if (end_semaphores) {
+  if (end_semaphores && need_end_fence_) {
     end_access_semaphore_ =
         vk_implementation()->CreateExternalSemaphore(vk_device());
 
@@ -207,7 +209,9 @@ void SharedImageRepresentationSkiaVkOzone::EndAccess(bool readonly) {
     DCHECK(!fence.is_null());
   }
 
-  ozone_backing()->EndAccess(readonly, std::move(fence));
+  ozone_backing()->EndAccess(readonly,
+                             SharedImageBackingOzone::AccessStream::kVulkan,
+                             std::move(fence));
 
   std::vector<VkSemaphore> semaphores = std::move(begin_access_semaphores_);
   begin_access_semaphores_.clear();
