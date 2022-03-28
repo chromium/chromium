@@ -2,7 +2,7 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Maps the superpage occupancy.
+"""Maps the superpage occupancy, and the allocated object sizes on the heap.
 
 To run this:
 
@@ -13,6 +13,7 @@ To run this:
 """
 
 import argparse
+import bisect
 import math
 import json
 
@@ -20,14 +21,17 @@ import matplotlib
 from matplotlib import pylab as plt
 import numpy as np
 
+# Valid for the "before slot" variant.
+_BRP_OVERHEAD = 4
 
-def ParseJson(filename):
+
+def ParseJson(filename: str) -> dict:
   with open(filename, 'r') as f:
     data = json.load(f)
     return data
 
 
-def PlotData(data, output_filename):
+def PlotSuperPageData(data: dict, output_filename: str):
   num_superpages = len(data)
   num_partition_pages = len(data[0]['partition_pages'])
   data_np = np.zeros((num_superpages, num_partition_pages, 3))
@@ -99,16 +103,131 @@ def PlotData(data, output_filename):
   plt.savefig(output_filename, bbox_inches='tight')
 
 
+def _PlotFragmentationCommon(bucket_to_allocated: dict[int, list],
+                             output_filename: str):
+  slot_sizes = sorted(bucket_to_allocated.keys())
+  allocated = []
+  waste = []
+  for slot_size in slot_sizes:
+    slots = np.array(bucket_to_allocated[slot_size])
+    allocated.append(np.sum(slots))
+    waste.append(np.sum(slot_size - slots))
+
+  plt.figure(figsize=(18, 8))
+  indices = range(len(slot_sizes))
+  plt.bar(indices, allocated, label='Requested Memory')
+  b = plt.bar(indices,
+              waste,
+              bottom=allocated,
+              label='Waste due to padding + bucketing')
+
+  waste_percentage = [('%d%%' % (int(100. * w / (w + a)))) if a else ''
+                      for (w, a) in zip(waste, allocated)]
+
+  plt.bar_label(b, labels=waste_percentage)
+  plt.xticks(indices, slot_sizes, rotation='vertical')
+  plt.xlim(left=-.5, right=len(indices))
+  plt.xlabel('Bucket size')
+  plt.ylabel('Memory (bytes)')
+  plt.legend()
+
+  total_allocated = np.sum(allocated)
+  total_waste = np.sum(waste)
+  plt.title('Absolute and relative waste due to bucketing and padding'
+            ' per bucket - Total Allocated = %dMiB, Waste = %d%%' %
+            (total_allocated /
+             (1 << 20), int(100 * total_waste /
+                            (total_allocated + total_waste))))
+  plt.savefig(output_filename, bbox_inches='tight')
+
+
+def _AdjustSizes(data: dict, bucket_sizes: list[int],
+                 adjustment_size: int) -> dict[int, list]:
+  requested_sizes = []
+  for slot_span in data:
+    requested_sizes += slot_span['allocated_sizes']
+
+  # Assumes that all buckets have *some* live allocations.
+  bucket_sizes = sorted(bucket_sizes)
+  bucket_to_allocated = {slot_size: list() for slot_size in bucket_sizes}
+
+  # Map the requested sizes without paddingb to buckets.
+  for requested_size in requested_sizes:
+    adjusted_size = requested_size + adjustment_size
+    bucket_index = bisect.bisect_left(bucket_sizes, adjusted_size)
+    slot_size = bucket_sizes[bucket_index]
+    assert bucket_sizes[bucket_index] >= adjusted_size
+    bucket_to_allocated[slot_size].append(adjusted_size)
+
+  return bucket_to_allocated
+
+
+def PlotSimulatedFragmentationData(data: dict, bucket_sizes: list[int],
+                                   output_filename: str):
+  # No adjustment, want to check waste without any padding.
+  bucket_to_allocated = _AdjustSizes(data, bucket_sizes, 0)
+  _PlotFragmentationCommon(bucket_to_allocated, output_filename)
+
+
+def PlotFragmentationData(data: dict, bucket_sizes: list[int],
+                          output_filename: str):
+  # "Before allocation" takes only 4 bytes, but the instrumentation added
+  # expands this to 8 bytes. To reconstruct what it would have been without it,
+  # take the requested size and add 4 bytes to it.
+  bucket_to_allocated = _AdjustSizes(data, bucket_sizes, _BRP_OVERHEAD)
+  _PlotFragmentationCommon(bucket_to_allocated, output_filename)
+
+
+def PlotDelta(data: dict, bucket_sizes: list[int], output_filename: str):
+  bucket_to_allocated_brp = _AdjustSizes(data, bucket_sizes, _BRP_OVERHEAD)
+  bucket_to_allocated_no_brp = _AdjustSizes(data, bucket_sizes, 0)
+  slot_sizes = sorted(bucket_to_allocated_no_brp)
+
+  allocated_per_bucket_brp = {
+      slot_size: len(bucket_to_allocated_brp[slot_size]) * slot_size
+      for slot_size in bucket_to_allocated_brp
+  }
+  allocated_per_bucket_no_brp = {
+      slot_size: len(bucket_to_allocated_no_brp[slot_size]) * slot_size
+      for slot_size in bucket_to_allocated_no_brp
+  }
+  delta = [
+      allocated_per_bucket_brp[slot_size] -
+      allocated_per_bucket_no_brp[slot_size] for slot_size in slot_sizes
+  ]
+
+  plt.figure(figsize=(18, 8))
+  indices = range(len(slot_sizes))
+  plt.bar(indices, delta, label='Delta')
+  plt.xticks(indices, slot_sizes, rotation='vertical')
+  plt.xlim(left=-.5, right=len(indices))
+  plt.xlabel('Bucket size')
+  plt.ylabel('Memory delta (bytes)')
+  plt.title('Per-bucket size difference BRP/No-BRP - Total = %.1fMiB' %
+            (sum(delta) / (1 << 20)))
+  plt.savefig(output_filename, bbox_inches='tight')
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--json',
                       help='JSON dump from pa_tcache_inspect',
                       required=True)
-  parser.add_argument('--output', help='Output file', required=True)
+  parser.add_argument('--output', help='Output filename prefix', required=True)
 
   args = parser.parse_args()
   data = ParseJson(args.json)
-  PlotData(data, args.output)
+
+  PlotSuperPageData(data['superpages'], args.output + "_superpage.png")
+
+  # Allocated object data is not always available.
+  if 'allocated_sizes' in data:
+    bucket_sizes = [x['slot_size'] for x in data['buckets']]
+    PlotFragmentationData(data['allocated_sizes'], bucket_sizes,
+                          args.output + "_waste.png")
+    PlotSimulatedFragmentationData(data['allocated_sizes'], bucket_sizes,
+                                   args.output + "_waste_simulated.png")
+    PlotDelta(data['allocated_sizes'], bucket_sizes, args.output + "_delta.png")
 
 
 if __name__ == '__main__':

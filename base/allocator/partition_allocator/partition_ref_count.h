@@ -220,6 +220,13 @@ class BASE_EXPORT PartitionRefCount {
     return alive;
   }
 
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+  ALWAYS_INLINE void SetRequestedSize(size_t size) {
+    requested_size_ = static_cast<uint32_t>(size);
+  }
+  ALWAYS_INLINE uint32_t requested_size() const { return requested_size_; }
+#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+
  private:
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
   // Called after updating the ref counts, |count| is the new value of |count_|
@@ -285,6 +292,10 @@ class BASE_EXPORT PartitionRefCount {
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
   volatile uint32_t brp_cookie_;
+#endif
+
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+  uint32_t requested_size_;
 #endif
 };
 

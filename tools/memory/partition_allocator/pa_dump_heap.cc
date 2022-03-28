@@ -9,6 +9,7 @@
 #include <cstring>
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check.h"
@@ -192,6 +193,111 @@ class HeapDumper {
     return super_pages_value;
   }
 
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+  base::Value DumpAllocatedSizes() {
+    // Note: Here and below, it is safe to follow pointers into the super page,
+    // or to the root or buckets, since they share the same address in the this
+    // process as in the Chromium process.
+
+    // Since there is no tracking of full slot spans, the way to enumerate all
+    // allocated memory is to walk the heap itself.
+    base::Value ret = base::Value(base::Value::Type::LIST);
+
+    for (const auto& address_data : super_pages_) {
+      const char* data = address_data.second;
+      // Exclude the first and last partition pagers: metadata and guard,
+      // respectively.
+      size_t partition_page_index = 1;
+      while (partition_page_index < kSuperPageSize / PartitionPageSize() - 1) {
+        uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
+            data + partition_page_index * PartitionPageSize());
+        const auto* partition_page =
+            PartitionPage<ThreadSafe>::FromAddr(slot_span_start);
+        // No bucket for PartitionPages that were never provisioned.
+        if (!partition_page->slot_span_metadata.bucket) {
+          partition_page_index++;
+          continue;
+        }
+
+        const auto& metadata = partition_page->slot_span_metadata;
+        if (metadata.is_decommitted() || metadata.is_empty()) {
+          // Skip this entire slot span, since it doesn't hold live allocations.
+          partition_page_index += metadata.bucket->get_pages_per_slot_span();
+          continue;
+        }
+
+        base::Value slot_span_value =
+            base::Value(base::Value::Type::DICTIONARY);
+        slot_span_value.SetKey("start_address", base::Value{base::StringPrintf(
+                                                    "0x%lx", slot_span_start)});
+        slot_span_value.SetKey(
+            "slot_size",
+            base::Value{static_cast<int>(metadata.bucket->slot_size)});
+
+        // There is no tracking of allocated slots, need to reconstruct
+        // these as everything which is not in the freelist.
+        std::vector<bool> free_slots(metadata.bucket->get_slots_per_span());
+        auto* head = metadata.get_freelist_head();
+        while (head) {
+          size_t offset_in_slot_span =
+              reinterpret_cast<uintptr_t>(head) - slot_span_start;
+          size_t slot_number =
+              metadata.bucket->GetSlotNumber(offset_in_slot_span);
+          free_slots[slot_number] = true;
+          head = head->GetNext(0);
+        }
+
+        base::Value allocated_sizes_value =
+            base::Value(base::Value::Type::LIST);
+        for (size_t slot_index = 0; slot_index < free_slots.size();
+             slot_index++) {
+          // Skip unprovisioned slots, which are always at the end of the slot
+          // span.
+          if (free_slots[slot_index] ||
+              slot_index >= (metadata.bucket->get_slots_per_span() -
+                             metadata.num_unprovisioned_slots)) {
+            continue;
+          }
+          uintptr_t slot_address =
+              slot_span_start + slot_index * metadata.bucket->slot_size;
+          auto* ref_count = internal::PartitionRefCountPointer(slot_address);
+          uint32_t requested_size = ref_count->requested_size();
+
+          // Address space dumping is not synchronized with allocation, meaning
+          // that we can observe the heap in an inconsistent state. Skip
+          // obviously-wrong entries.
+          if (requested_size > metadata.bucket->slot_size || !requested_size)
+            continue;
+
+          allocated_sizes_value.Append(static_cast<int>(requested_size));
+        }
+        slot_span_value.SetKey("allocated_sizes",
+                               std::move(allocated_sizes_value));
+
+        ret.Append(std::move(slot_span_value));
+        partition_page_index += metadata.bucket->get_pages_per_slot_span();
+      }
+    }
+
+    return ret;
+  }
+#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+
+  base::Value DumpBuckets() {
+    auto ret = base::Value(base::Value::Type::LIST);
+    for (const auto& bucket : root_.get()->buckets) {
+      if (bucket.slot_size == kInvalidBucketSize)
+        continue;
+
+      auto bucket_value = base::Value(base::Value::Type::DICTIONARY);
+      bucket_value.SetKey("slot_size",
+                          base::Value{static_cast<int>(bucket.slot_size)});
+      ret.Append(std::move(bucket_value));
+    }
+
+    return ret;
+  }
+
  private:
   static uintptr_t FindRootAddress(pid_t pid,
                                    int mem_fd) NO_THREAD_SAFETY_ANALYSIS {
@@ -257,14 +363,26 @@ int main(int argc, char** argv) {
     }
   }
 
+  auto overall_dump = base::Value(base::Value::Type::DICTIONARY);
   auto dump = dumper.Dump();
+  overall_dump.SetKey("superpages", std::move(dump));
+
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+  auto allocated_sizes = dumper.DumpAllocatedSizes();
+  overall_dump.SetKey("allocated_sizes", std::move(allocated_sizes));
+#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+
+  auto buckets = dumper.DumpBuckets();
+  overall_dump.SetKey("buckets", std::move(buckets));
+
   std::string json_string;
   bool ok = base::JSONWriter::WriteWithOptions(
-      dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT, &json_string);
+      overall_dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT,
+      &json_string);
 
   if (ok) {
     base::FilePath json_filename = command_line->GetSwitchValuePath("json");
-    auto f = base::File(json_filename, base::File::Flags::FLAG_OPEN_ALWAYS |
+    auto f = base::File(json_filename, base::File::Flags::FLAG_CREATE_ALWAYS |
                                            base::File::Flags::FLAG_WRITE);
     if (f.IsValid()) {
       f.WriteAtCurrentPos(json_string.c_str(), json_string.size());

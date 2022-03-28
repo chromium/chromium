@@ -84,7 +84,9 @@ def main():
   parser.add_argument('--json',
                       help='JSON dump from pa_tcache_inspect',
                       required=True)
-  parser.add_argument('--output', help='Output file', required=True)
+  parser.add_argument('--output_prefix',
+                      help='Output file prefix',
+                      required=True)
 
   args = parser.parse_args()
   data = ParseJson(args.json)

@@ -205,6 +205,16 @@ constexpr bool kUseLazyCommit = false;
 #define PA_REF_COUNT_CHECK_COOKIE
 #endif
 
+// Use available space in the reference count to store the initially requested
+// size from the application. This is used for debugging, hence disabled by
+// default.
+// #define PA_REF_COUNT_STORE_REQUESTED_SIZE
+
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE) && \
+    defined(PA_REF_COUNT_CHECK_COOKIE)
+#error "Cannot use a cookie *and* store the allocation size"
+#endif
+
 // Prefer smaller slot spans.
 //
 // Smaller slot spans may improve dirty memory fragmentation, but may also

@@ -1791,8 +1791,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // TODO(keishi): Add LIKELY when brp is fully enabled as |brp_enabled| will be
   // false only for the aligned partition.
   if (brp_enabled()) {
-    new (internal::PartitionRefCountPointer(slot_start))
+    auto* ref_count = new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
+#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+    ref_count->SetRequestedSize(requested_size);
+#else
+    (void)ref_count;
+#endif
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
