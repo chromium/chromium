@@ -52,6 +52,7 @@ const char kResult[] = ".Result";
 // in order, from parts [1, 2, and 3], or [1, 2, 3, and 4]. For example:
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result, or
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result.UrlSoceng
+const char kUrlSocengUmaSuffix[] = ".UrlSoceng";
 
 const uint32_t kFileMagic = 0x600D71FE;
 const uint32_t kFileVersion = 9;
@@ -859,6 +860,15 @@ int64_t V4Store::RecordAndReturnFileSize(const std::string& base_metric) {
   std::string suffix = GetUmaSuffixForStore(store_path_);
   const int64_t file_size_kilobytes = file_size_ / 1024;
   base::UmaHistogramCounts1M(base_metric + suffix, file_size_kilobytes);
+
+  // Add a linear histogram for UrlSoceng since its size is too large to be
+  // accurately represented by the histogram above.
+  const int64_t file_size_megabytes = file_size_kilobytes / 1024;
+  if (suffix == kUrlSocengUmaSuffix) {
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_megabytes, 50);
+  }
+
   return file_size_;
 }
 
