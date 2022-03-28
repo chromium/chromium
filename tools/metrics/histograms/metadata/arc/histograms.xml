@@ -534,8 +534,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ClipboardDragDrop" enum="ArcClipboardDragDropEvent"
-    expires_after="2022-04-24">
-  <owner>tetsui@google.com</owner>
+    expires_after="2022-10-24">
+  <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>The number of clipboard and drag-and-drop events.</summary>
 </histogram>
