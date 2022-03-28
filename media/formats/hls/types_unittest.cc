@@ -7,8 +7,7 @@
 #include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
   auto const error_test = [](base::StringPiece input,
@@ -451,5 +450,4 @@ TEST(HlsFormatParserTest, ParseVariableNameTest) {
   ok_test("______-___-__---");
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls

@@ -9,8 +9,7 @@
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 SourceString SourceString::Create(base::PassKey<SourceLineIterator>,
                                   size_t line,
@@ -90,5 +89,4 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   return SourceString::Create({}, line_number, line_content);
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls

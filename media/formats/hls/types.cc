@@ -12,9 +12,7 @@
 #include "media/formats/hls/source_string.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace media {
-namespace hls {
-namespace types {
+namespace media::hls::types {
 
 namespace {
 re2::StringPiece to_re2(base::StringPiece str) {
@@ -323,6 +321,4 @@ ParseStatus::Or<VariableName> ParseVariableName(SourceString source_str) {
   return VariableName{.name = source_str.Str()};
 }
 
-}  // namespace types
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls::types

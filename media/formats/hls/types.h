@@ -11,10 +11,7 @@
 #include "media/formats/hls/source_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace media {
-namespace hls {
-
-namespace types {
+namespace media::hls::types {
 
 // Data-types used in HLS, as described by the spec
 using DecimalInteger = uint64_t;
@@ -108,8 +105,6 @@ struct VariableName {
 ParseStatus::Or<VariableName> MEDIA_EXPORT
 ParseVariableName(SourceString source_str);
 
-}  // namespace types
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls::types
 
 #endif  // MEDIA_FORMATS_HLS_TYPES_H_

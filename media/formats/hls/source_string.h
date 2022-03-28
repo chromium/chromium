@@ -11,8 +11,7 @@
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 struct SourceLineIterator;
 
@@ -88,7 +87,6 @@ struct MEDIA_EXPORT SourceLineIterator {
   base::StringPiece source_;
 };
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_SOURCE_STRING_H_
