@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/pending_unsafe_resource_storage.h"
+#import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"

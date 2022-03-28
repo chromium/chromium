@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_UNSAFE_RESOURCE_CONTAINER_H_
 
 #include "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/safe_browsing/pending_unsafe_resource_storage.h"
+#import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 

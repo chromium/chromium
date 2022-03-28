@@ -4,6 +4,23 @@
 
 import("//ios/build/config.gni")
 
+source_set("safe_browsing") {
+  sources = [
+    "pending_unsafe_resource_storage.h",
+    "pending_unsafe_resource_storage.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/safe_browsing/ios/browser/password_protection",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/components/security_interstitials/safe_browsing:util",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("util") {
   sources = [
     "unsafe_resource_util.h",
@@ -17,6 +34,23 @@ source_set("util") {
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/web/public",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "pending_unsafe_resource_storage_unittest.mm" ]
+
+  deps = [
+    ":safe_browsing",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

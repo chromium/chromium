@@ -15,8 +15,6 @@ source_set("safe_browsing") {
     "input_event_observer.h",
     "password_protection_java_script_feature.h",
     "password_protection_java_script_feature.mm",
-    "pending_unsafe_resource_storage.h",
-    "pending_unsafe_resource_storage.mm",
     "real_time_url_lookup_service_factory.h",
     "real_time_url_lookup_service_factory.mm",
     "safe_browsing_blocking_page.h",
@@ -85,6 +83,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/security_interstitials/safe_browsing:util",
     "//ios/net",
     "//ios/web/common:user_agent",
@@ -179,7 +178,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_password_protection_service_unittest.mm",
-    "pending_unsafe_resource_storage_unittest.mm",
     "real_time_url_lookup_service_factory_unittest.mm",
     "safe_browsing_blocking_page_unittest.mm",
     "safe_browsing_query_manager_unittest.mm",
