@@ -332,6 +332,7 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
   GetProcs().commandBufferRelease(command_buffer);
 
   webgpu->DissociateMailbox(reservation.id, reservation.generation);
+  GetProcs().textureRelease(reservation.texture);
   webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 
