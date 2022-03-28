@@ -5798,6 +5798,98 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR" desc="Specific error message when we failed to open the alternative browser, because the URL is not one of http://, https:// or file://">
           Only http, https and file protocols are supported for browser redirects.
         </message>
+
+        <!-- chrome://browser-switch/internals strings -->
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_DESC" desc="about:browser-switch/internals page description">
+          Legacy Browser Support (LBS) allows specific URLs patterns to be opened in an alternative browser that supports legacy features required to properly run those sites.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_TITLE" desc="about:browser-switch/internals page title">
+          Legacy Browser Support (LBS) - Internals
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_NOTHING_SHOWN" desc="nothing to show on chrome://browser-switch/internals, because the policy BrowserSwitcherEnabled is disabled">
+          Nothing to show
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_LBS_DISABLED" desc="about:browser-switch/internals text shown when the policy BrowserSwitcherEnabled is disabled">
+          LBS is currently disabled. You can enable LBS by setting the <ph name="BEGIN_LINK">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherEnabled" class="policy-prop"&gt;</ph>{BrowserSwitcherEnabled}<ph name="END_LINK">&lt;/a&gt;</ph> policy.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_URL_CHECKER_TITLE" desc="about:browser-switch/internals, section URL Checker, title of the section">
+          URL Checker
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_URL_CHECKER_DESC" desc="about:browser-switch/internals, section URL Checker, description of the section. It allows the user to enter a URL to see what LBS would do with it">
+          Enter a URL to see what LBS would do with it.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER" desc="about:browser-switch/internals, section URL Checker, the text shows in which browser will open the URL">
+          Opens in: <ph name="OPEN_BROWSER">$1</ph>
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_INVALID_URL" desc="about:browser-switch/internals, section URL Checker, specific error message when the url is invalid">
+          Invalid URL. Make sure it is formatted properly.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_TITLE" desc="about:browser-switch/internals, section XML configuration, title of the section">
+          XML configuration source
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_DESC" desc="about:browser-switch/internals, section XML configuration, description of the section. XML files are used to set the policies">
+          XML files that are being used to set the policies.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_SOURCE" desc="about:browser-switch/internals, section XML configuration, first column of the table. List all policies handled by XML files">
+          Source policy
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_NOT_CONFIGURED" desc="about:browser-switch/internals, section XML configuration, Label when Source policy is not configured">
+          (not configured)
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_SITELIST_NOT_FETCHED" desc="about:browser-switch/internals, section XML configuration, Label when XML sitelists have not been fetched yet">
+          XML sitelists have not been fetched yet.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_SITELIST_DOWNLOAD_BUTTON" desc="about:browser-switch/internals, section XML configuration, Download Button of XML Sitelists">
+          Download now
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_SITELIST_LAST_DOWNLOAD_DATE" desc="about:browser-switch/internals, section XML configuration, Shows information about the last time XML sitelists were downloaded">
+          XML sitelists were last downloaded at <ph name="LAST_DATE_DOWNLOAD">$1</ph>.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_XML_SITELIST_NEXT_DOWNLOAD_DATE" desc="about:browser-switch/internals, section XML configuration, Shows information about the next download time of XML sitelists">
+          Next download is at <ph name="NEXT_DATE_DOWNLOAD">$1</ph>.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_IN_TITLE" desc="about:browser-switch/internals, section Force Open In. Title of the section">
+          Force open in
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_IN_DESCRIPTION" desc="about:browser-switch/internals, section Force Open In. Description of the section. It contains the list of all websites that will be redirected to alternative browsers">
+          The list of websites that redirect to alternative browser.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_IN_FIRST_PARAGRAPH" desc="about:browser-switch/internals, section Force Open In. 1 of 2 parapgraphs. This text shows that URLs that will be opened in an alternative browser are affected by the BrowserSwitcherUrlList, BrowserSwitcherExternalSitelistUrl and BrowserSwitcherUseIeSitelist policies">
+          This list is affected by <ph name="BEGIN_LINK1">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlList" class="policy-prop"&gt;</ph>{BrowserSwitcherUrlList}<ph name="END_LINK1">&lt;/a&gt;</ph>
+          , <ph name="BEGIN_LINK2">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalSitelistUrl" class="policy-prop"&gt;</ph>{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2">&lt;/a&gt;</ph>
+           and <ph name="BEGIN_LINK3">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherUseIeSitelist" class="policy-prop"&gt;</ph>{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_IN_SECOND_PARAGRAPH" desc="about:browser-switch/internals, section Force Open In. 2 of 2 parapgraphs. this text describes that the URLs in the table below will be forced to open in a specific browser">
+          URLs matching these rules will be forced to open in a specific browser.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_TABLE_COLUMN_RULE" desc="about:browser-switch/internals description of the column Rule in the table of the section Force Open In">
+          Rule
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_TABLE_COLUMN_OPENS_IN" desc="about:browser-switch/internals description of the column Opens In in the table of the section Force Open In">
+          Opens in
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_FORCE_OPEN_TABLE_COLUMN_SOURCE" desc="about:browser-switch/internals description of the column Source in the table of the section Force Open In">
+          Source
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_TITLE" desc="about:browser-switch/internals, section Ignore, title of the section">
+          Ignore
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_DESCRIPTION" desc="about:browser-switch/internals, section Ignore, description of the section. Label shows that the following lists of websites can be opened in either browser">
+          The list of websites that can open in either browser.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_FIRST_PARAGRAPH" desc="about:browser-switch/internals, section Ignore, 1 of 2 paragraph. This text mentions that the list of URLs that can be opened in either browser are given by the BrowserSwitcherExternalGreylistUrl and BrowserSwitcherUrlGreylist policies">
+          This list is affected by <ph name="BEGIN_LINK1">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalGreylistUrl" class="policy-prop"&gt;</ph>{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1">&lt;/a&gt;</ph>
+          and <ph name="BEGIN_LINK2">&lt;a href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlGreylist" class="policy-prop"&gt;</ph>{BrowserSwitcherUrlGreylist}<ph name="END_LINK2">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_SECOND_PARAGRAPH" desc="about:browser-switch/internals, section Ignore, 2 of 2 paragraph. This text shows that URLs matching these rules won't trigger in a specific browser">
+          URLs matching these rules won't trigger a browser switch and can be open in either <ph name="BROWSER_NAME">$1</ph> or <ph name="ALTERNATIVE_BROWSER_NAME">$2</ph>.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_TABLE_COLUMN_RULE" desc="about:browser-switch/internals description of the column Rule in the table of the section Ignore">
+          Rule
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_TABLE_COLUMN_SOURCE" desc="about:browser-switch/internals description of the column Source in the table of the section Ignore">
+          Source
+        </message>
       </if>
 
       <if expr="chromeos">

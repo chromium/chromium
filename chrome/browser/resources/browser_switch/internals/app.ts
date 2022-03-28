@@ -6,12 +6,13 @@ import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement,} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserSwitchInternalsProxy, BrowserSwitchInternalsProxyImpl, Decision, RuleSet, RuleSetList, RulesetSources, TimestampPair,} from './browser_switch_internals_proxy.js';
 
-const BrowserSwitchInternalsAppElementBase = PolymerElement;
+const BrowserSwitchInternalsAppElementBase = I18nMixin(PolymerElement);
 
 class BrowserSwitchInternalsAppElement extends
     BrowserSwitchInternalsAppElementBase {
@@ -138,10 +139,10 @@ class BrowserSwitchInternalsAppElement extends
 
     switch (decision.action) {
       case 'stay':
-        opensIn = `Opens in: ${browserName}\n`;
+        opensIn = this.i18n('openBrowser', browserName) + '\n';
         break;
       case 'go':
-        opensIn = `Opens in: ${altBrowserName}\n`;
+        opensIn = this.i18n('openBrowser', altBrowserName) + '\n';
         break;
     }
 
@@ -198,9 +199,7 @@ class BrowserSwitchInternalsAppElement extends
         .catch((errorMessage) => {
           // URL is invalid.
           console.warn(errorMessage);
-          this.urlCheckerOutput_ = [
-            'Invalid URL. Make sure it is formatted properly.',
-          ];
+          this.urlCheckerOutput_ = [this.i18n('invalidURL')];
         });
   }
 
@@ -233,7 +232,7 @@ class BrowserSwitchInternalsAppElement extends
                    // Hacky name guessing
                    policyName: 'BrowserSwitcher' +
                        snakeCaseToUpperCamelCase(prefName.split('.')[1]),
-                   url: url || '(not configured)',
+                   url: url || this.i18n('notConfigured'),
                  })));
   }
 
@@ -251,6 +250,32 @@ class BrowserSwitchInternalsAppElement extends
       getProxy().getRulesetSources().then(
           (sources) => this.updateXmlTable(sources));
     }
+  }
+
+  /**
+   * Section: XML configuration source
+   * Shows information about the last time XML sitelists were downloaded.
+   */
+  private getXMLSitelistsLastDownloadLabel(): string {
+    return this.i18n('xmlSitelistLastDownloadDate', this.lastFetch_);
+  }
+
+  /**
+   * Section: XML configuration source
+   * Shows information about the next download time of XML sitelists.
+   */
+  private getXMLSitelistsNextDownloadLabel(): string {
+    return this.i18n('xmlSitelistNextDownloadDate', this.nextFetch_);
+  }
+
+  /**
+   * Section: Ignore
+   * Paragraph that informs that the URLs that are affected by the lists
+   * BrowserSwitcherExternalGreylistUrl and BrowserSwitcherUrlGreylist
+   * will not trigger a browser switch.
+   */
+  private getIgnoreURLMatchingLabel(): string {
+    return this.i18n('ignoreParagraph2', getBrowserName(), getAltBrowserName());
   }
 }
 

@@ -81,7 +81,7 @@
 </style>
 
 <cr-toolbar
-  page-name="Legacy Browser Support (LBS) - Internals"
+  page-name="$i18n{switchInternalTitle}"
   clear-label="clear"
   role="banner"
   show-search="[[showSearch_]]"
@@ -90,31 +90,25 @@
 
 <div class="container">
   <p>
-    Legacy Browser Support (LBS) allows specific URLs patterns to be opened in
-    an alternative browser that supports legacy features required to properly
-    run those sites.
+    $i18n{switchInternalDescription}
   </p>
 </div>
 <hr></hr>
 
 <section class="container" hidden$="[[isBrowserSwitcherEnabled_]]">
-  <h2>Nothing to show</h2>
+  <h2>$i18n{nothingShown}</h2>
 
   <p>
-    LBS is currently disabled. You can enable LBS by setting the
-    <a href="https://chromeenterprise.google/policies/#BrowserSwitcherEnabled">
-      <span class="policy-prop">{BrowserSwitcherEnabled}</span>
-    </a>
-    policy.
+    $i18nRaw{switcherDisabled}
   </p>
 </section>
 
 <section class="container" hidden$="[[!isBrowserSwitcherEnabled_]]">
   <section>
-    <h2>URL Checker</h2>
+    <h2>$i18n{urlCheckerTitle}</h2>
 
     <label>
-      Enter a URL to see what LBS would do with it.
+      $i18n{urlCheckerDesc}
       <input
         type="text"
         value="{{urlCheckerInput_::input}}"
@@ -132,15 +126,15 @@
 
   <section>
     <h2 class="tooltip">
-      XML configuration source
+      $i18n{xmlTitle}
       <span class="right">
-        XML files that are being used to set the policies.
+        $i18n{xmlDesc}
       </span>
     </h2>
 
     <table>
       <tr>
-        <th>Source policy</th>
+        <th>$i18n{xmlSource}</th>
         <th>URL</th>
       </tr>
       <template is="dom-repeat" items="[[xmlSiteLists_]]">
@@ -154,17 +148,17 @@
     <template is="dom-if" if="[[xmlSiteLists_.length]]">
       <p>
         <template is="dom-if" if="[[!lastFetch_]]">
-          XML sitelists have not been fetched yet.
+          $i18n{sitelistNotFetched}
         </template>
         <template is="dom-if" if="[[lastFetch_]]">
-          XML sitelists were last downloaded at [[lastFetch_]].
+          [[getXMLSitelistsLastDownloadLabel()]]
         </template>
       </p>
       <template is="dom-if" if="[[nextFetch_]]">
-        <p>Next download is at [[nextFetch_]].</p>
+        <p>[[getXMLSitelistsNextDownloadLabel()]]</p>
       </template>
       <p>
-        <button on-click="refreshXml">Download now</button>
+        <button on-click="refreshXml">$i18n{sitelistDownloadButton}</button>
       </p>
     </template>
   </section>
@@ -173,42 +167,23 @@
 
   <section>
     <h2 class="tooltip">
-      Force open in
+      $i18n{forceOpenTitle}
       <span class="right">
-        The list of websites that redirect to alternative browser.
+        $i18n{forceOpenDescription}
       </span>
     </h2>
     <h4>
-      This list is affected by
-      <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlList"
-      >
-        <span class="policy-prop">{BrowserSwitcherUrlList}</span></a
-      >,
-      <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternal\
-        SitelistUrl"
-      >
-        <span class="policy-prop"
-          >{BrowserSwitcherExternalSitelistUrl}
-        </span> </a
-      >, and
-      <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherUseIe\
-      Sitelist"
-      >
-        <span class="policy-prop">{BrowserSwitcherUseIeSitelist}</span></a
-      >
+      $i18nRaw{forceOpenParagraph1}
     </h4>
 
     <p>
-      URLs matching these rules will be forced to open in a specific browser.
+      $i18n{forceOpenParagraph2}
     </p>
     <table>
       <tr>
-        <th>Rule</th>
-        <th>Opens in</th>
-        <th>Source</th>
+        <th>$i18n{forceOpenTableColumnRule}</th>
+        <th>$i18n{forceOpenTableColumnOpensIn}</th>
+        <th>$i18n{forceOpenTableColumnSource}</th>
       </tr>
       <template is="dom-repeat" items="[[siteListRules_]]">
         <tr>
@@ -231,33 +206,22 @@
 
   <section>
     <h2 class="tooltip">
-      Ignore
+      $i18n{ignoreTitle}
       <span class="right">
-        The list of websites that can open in either browser.
+        $i18n{ignoreDescription}
       </span>
     </h2>
     <h4>
-      This list is affected by
-      <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcher\
-      ExternalGreylistUrl"
-      >
-        <span class="policy-prop">{BrowserSwitcherExternalGreylistUrl}</span></a
-      >, and
-      <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlGreylist"
-        ><span class="policy-prop">{BrowserSwitcherUrlGreylist}</span></a
-      >
+      $i18nRaw{ignoreParagraph1}
     </h4>
 
     <p>
-      URLs matching these rules won't trigger a browser switch and can be open
-      in either [[browserName_]] or [[altBrowserName_]].
+      <p>[[getIgnoreURLMatchingLabel()]]</p>
     </p>
     <table>
       <tr>
-        <th>Rule</th>
-        <th>Source</th>
+        <th>$i18n{ignoreTableColumnRule}</th>
+        <th>$i18n{ignoreTableColumnSource}</th>
       </tr>
       <template is="dom-repeat" items="[[greyListRules_]]">
         <tr>
