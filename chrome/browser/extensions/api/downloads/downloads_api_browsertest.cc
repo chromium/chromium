@@ -1801,6 +1801,33 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           result_id)));
 }
 
+// Test that if file name with disallowed characters are provided, the
+// characters will be replaced.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_Disallowed_Character_In_Filename) {
+  LoadExtension("downloads_split");
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
+  GoOnTheRecord();
+
+  // Start downloading a file.
+  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf("[{\"url\": \"%s\", \"filename\": \"foo%%bar\"}]",
+                         download_url.c_str())));
+  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result->is_int());
+  int result_id = result->GetInt();
+  DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
+  ASSERT_TRUE(item);
+  ScopedCancellingItem canceller(item);
+  ASSERT_EQ(download_url, item->GetOriginalUrl().spec());
+  std::unique_ptr<content::DownloadTestObserver> obs(CreateDownloadObserver(1));
+  obs->WaitForFinished();
+  EXPECT_EQ(FILE_PATH_LITERAL("foo_bar"),
+            item->GetFileNameToReportUser().value());
+}
+
 namespace {
 
 class CustomResponse : public net::test_server::HttpResponse {
