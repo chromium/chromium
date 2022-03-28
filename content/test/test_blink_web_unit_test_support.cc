@@ -152,6 +152,10 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   // Set V8 flags.
   v8::V8::SetFlagsFromString(v8_flags.c_str(), v8_flags.size());
 
+  // Makes Mojo calls to the browser. This is called inside
+  // blink::Initialize so it needs to be set first.
+  blink::WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(false);
+
   mojo::BinderMap binders;
   blink::Initialize(this, &binders, main_thread_scheduler_.get());
   g_test_platform = this;

@@ -663,4 +663,8 @@ void WebRuntimeFeatures::EnableCLSScrollAnchoring(bool enable) {
   RuntimeEnabledFeatures::SetCLSScrollAnchoringEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(bool enable) {
+  RuntimeEnabledFeatures::SetAndroidDownloadableFontsMatchingEnabled(enable);
+}
+
 }  // namespace blink

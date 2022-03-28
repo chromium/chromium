@@ -111,7 +111,8 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
 
 void FontUniqueNameLookupAndroid::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts))
+  if (!base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts) ||
+      !RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled())
     return;
 
   EnsureServiceConnected();
