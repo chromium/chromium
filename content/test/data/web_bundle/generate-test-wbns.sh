@@ -85,18 +85,6 @@ gen-bundle \
   -har same_origin.har \
   -o same_origin_b2.wbn
 
-# Generate a WBN which includes urn:uuid resources.
-gen-bundle \
-  -version b1 \
-  -har urn-uuid.har \
-  -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
-  -o urn-uuid.wbn
-
-# Update Content-Length header in urn-uuid.wbn.mock-http-headers.
-(cat cross_origin_b2.wbn.mock-http-headers; \
- echo Content-Length: `wc -c <urn-uuid.wbn`) \
-    > urn-uuid.wbn.mock-http-headers
-
 # Generate a WBN which includes uuid-in-package resources.
 gen-bundle \
   -version b2 \
