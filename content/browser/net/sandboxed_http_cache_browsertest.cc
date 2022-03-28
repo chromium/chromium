@@ -144,20 +144,13 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   network_service_test()->CreateSimpleCache(
       std::move(factory_remote), path,
       base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
-        ADD_FAILURE() << "NOTREACHED";
+        EXPECT_FALSE(cache.is_valid());
       }));
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CreateSimpleCacheWithParentDirectory \
-  DISABLED_CreateSimpleCacheWithParentDirectory
-#else
-#define MAYBE_CreateSimpleCacheWithParentDirectory \
-  CreateSimpleCacheWithParentDirectory
-#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
-                       MAYBE_CreateSimpleCacheWithParentDirectory) {
+                       CreateSimpleCacheWithParentDirectoryTraversal) {
   base::RunLoop run_loop;
 
   const base::FilePath root_path = GetTempDirPath();
@@ -175,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   network_service_test()->CreateSimpleCache(
       std::move(factory_remote), path,
       base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
-        ADD_FAILURE() << "NOTREACHED";
+        EXPECT_FALSE(cache.is_valid());
       }));
   run_loop.Run();
 }
