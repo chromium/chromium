@@ -85,16 +85,14 @@ void DetermineTrakSbix(SkTypeface* typeface, bool* has_trak, bool* has_sbix) {
 HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data, uint64_t unique_id)
     : platform_data_(platform_data), unique_id_(unique_id) {
   HbFontCacheEntry* const cache_entry =
-      FontGlobalContext::GetHarfBuzzFontCache()->GetOrNew(unique_id_,
-                                                          platform_data);
+      FontGlobalContext::GetHarfBuzzFontCache().GetOrNew(unique_id_,
+                                                         platform_data);
   unscaled_font_ = cache_entry->HbFont();
   harfbuzz_font_data_ = cache_entry->HbFontData();
 }
 
 HarfBuzzFace::~HarfBuzzFace() {
-  HarfBuzzFontCache* harfbuzz_font_cache =
-      FontGlobalContext::GetHarfBuzzFontCache();
-  harfbuzz_font_cache->Remove(unique_id_);
+  FontGlobalContext::GetHarfBuzzFontCache().Remove(unique_id_);
 }
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,

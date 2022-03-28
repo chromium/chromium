@@ -36,7 +36,7 @@ class PLATFORM_EXPORT FontGlobalContext {
 
   static inline FontCache& GetFontCache() { return Get().font_cache_; }
 
-  static HarfBuzzFontCache* GetHarfBuzzFontCache();
+  static HarfBuzzFontCache& GetHarfBuzzFontCache();
 
   enum HorizontalAdvanceSource {
     kSkiaHorizontalAdvances,
