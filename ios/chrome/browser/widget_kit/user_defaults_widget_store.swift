@@ -14,7 +14,6 @@ public struct UserDefaultsWidgetStore {
   // the main app.
   private let userDefaults = UserDefaults.standard
 
-
   public func storeWidgetInfo(_ info: [String]) throws {
     let encoder = JSONEncoder()
     let data = try encoder.encode(info)

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+import Namespace
 import UIKit
 import XCTest
-
-import Namespace
 
 class NamespaceTest: XCTestCase {
 
@@ -44,8 +42,7 @@ class NamespaceTest: XCTestCase {
   }
 
   func testNestedNamespace() throws {
-    var goat = outer.inner.NestedGoat();
+    var goat = outer.inner.NestedGoat()
     XCTAssertEqual(goat.GetValue(), 50, "values don't match")
   }
 }
-

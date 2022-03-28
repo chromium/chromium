@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import Pointer
 import UIKit
 import XCTest
-
-import Pointer
 
 class PointerTest: XCTestCase {
 
@@ -23,5 +22,5 @@ class PointerTest: XCTestCase {
     let intPtr = ptr.pointee.IntegerPointer()!
     XCTAssertEqual(intPtr.pointee, 17, "Pointer-to-integer returned from pointer-to-object broken")
   }
-  
+
 }
