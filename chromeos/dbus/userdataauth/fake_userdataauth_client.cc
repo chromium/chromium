@@ -39,6 +39,43 @@ FakeUserDataAuthClient* g_instance = nullptr;
 
 }  // namespace
 
+// Allocate space for test api instance
+base::raw_ptr<FakeUserDataAuthClient::TestApi>
+    FakeUserDataAuthClient::TestApi::instance_;
+
+FakeUserDataAuthClient::TestApi::TestApi(
+    base::raw_ptr<FakeUserDataAuthClient> client) {
+  DCHECK(client != nullptr);
+  client_ = client;
+}
+
+// static
+FakeUserDataAuthClient::TestApi* FakeUserDataAuthClient::TestApi::Get() {
+  if (instance_ == nullptr) {
+    instance_ = new TestApi(FakeUserDataAuthClient::Get());
+  }
+  return instance_;
+}
+
+void FakeUserDataAuthClient::TestApi::SetServiceIsAvailable(bool is_available) {
+  service_is_available_ = is_available;
+  if (!is_available)
+    return;
+  client_->RunPendingWaitForServiceToBeAvailableCallbacks();
+}
+
+void FakeUserDataAuthClient::TestApi::ReportServiceIsNotAvailable() {
+  DCHECK(!service_is_available_);
+  service_reported_not_available_ = true;
+  client_->RunPendingWaitForServiceToBeAvailableCallbacks();
+}
+
+void FakeUserDataAuthClient::TestApi::SetEcryptfsUserHome(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    bool use_ecryptfs) {
+  client_->SetEcryptfsUserHome(cryptohome_id, use_ecryptfs);
+}
+
 FakeUserDataAuthClient::FakeUserDataAuthClient() {
   DCHECK(!g_instance);
   g_instance = this;
@@ -92,7 +129,7 @@ void FakeUserDataAuthClient::Mount(
     if (request.has_account()) {
       account = request.account();
       reply.set_sanitized_username(GetStubSanitizedUsername(account));
-      if (mount_create_required_ && !request.has_create())
+      if (TestApi::Get()->mount_create_required_ && !request.has_create())
         error = ::user_data_auth::CryptohomeErrorCode::
             CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
     } else {
@@ -146,7 +183,7 @@ void FakeUserDataAuthClient::CheckKey(
     CheckKeyCallback callback) {
   ::user_data_auth::CheckKeyReply reply;
 
-  if (enable_auth_check_) {
+  if (TestApi::Get()->enable_auth_check_) {
     const auto it = key_data_map_.find(request.account_id());
     if (it == key_data_map_.end()) {
       reply.set_error(::user_data_auth::CryptohomeErrorCode::
@@ -223,7 +260,8 @@ void FakeUserDataAuthClient::StartMigrateToDircrypto(
                                std::move(callback));
 
   dircrypto_migration_progress_ = 0;
-  if (run_default_dircrypto_migration_) {
+
+  if (TestApi::Get()->run_default_dircrypto_migration_) {
     dircrypto_migration_progress_timer_.Start(
         FROM_HERE, base::Milliseconds(kDircryptoMigrationUpdateIntervalMs),
         this, &FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated);
@@ -241,7 +279,7 @@ void FakeUserDataAuthClient::GetSupportedKeyPolicies(
     GetSupportedKeyPoliciesCallback callback) {
   ::user_data_auth::GetSupportedKeyPoliciesReply reply;
   reply.set_low_entropy_credentials_supported(
-      supports_low_entropy_credentials_);
+      TestApi::Get()->supports_low_entropy_credentials_);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 void FakeUserDataAuthClient::GetAccountDiskUsage(
@@ -489,9 +527,11 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
 
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
-  if (service_is_available_ || service_reported_not_available_) {
+  if (TestApi::Get()->service_is_available_ ||
+      TestApi::Get()->service_reported_not_available_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  TestApi::Get()->service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(
         std::move(callback));
@@ -507,21 +547,7 @@ void FakeUserDataAuthClient::SetEcryptfsUserHome(
     ecryptfs_user_homes_.erase(cryptohome_id);
 }
 
-void FakeUserDataAuthClient::SetServiceIsAvailable(bool is_available) {
-  service_is_available_ = is_available;
-  if (!is_available)
-    return;
-
-  std::vector<WaitForServiceToBeAvailableCallback> callbacks;
-  callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
-  for (auto& callback : callbacks)
-    std::move(callback).Run(true);
-}
-
-void FakeUserDataAuthClient::ReportServiceIsNotAvailable() {
-  DCHECK(!service_is_available_);
-  service_reported_not_available_ = true;
-
+void FakeUserDataAuthClient::RunPendingWaitForServiceToBeAvailableCallbacks() {
   std::vector<WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
   for (auto& callback : callbacks)

@@ -66,6 +66,7 @@ class EncryptionMigrationTestBase
   explicit EncryptionMigrationTestBase(
       const LoginManagerMixin::TestUserInfo& test_user)
       : test_user_(test_user) {}
+
   ~EncryptionMigrationTestBase() override = default;
 
   // OobeBaseTest:
@@ -78,9 +79,10 @@ class EncryptionMigrationTestBase
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
 
-    FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(GetTestCryptohomeId(),
-                                                       true);
-    FakeUserDataAuthClient::Get()->set_run_default_dircrypto_migration(false);
+    FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+        GetTestCryptohomeId(), true);
+    FakeUserDataAuthClient::TestApi::Get()->set_run_default_dircrypto_migration(
+        false);
 
     // Configure encryption migration screen for test.
     EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(this);

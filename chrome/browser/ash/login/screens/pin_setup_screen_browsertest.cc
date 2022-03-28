@@ -48,9 +48,6 @@ class PinSetupScreenTest
       public testing::WithParamInterface<user_manager::UserType> {
  public:
   PinSetupScreenTest() {
-    UserDataAuthClient::InitializeFake();
-    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(false);
-
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
       policy_server_ =
@@ -58,10 +55,15 @@ class PinSetupScreenTest
       user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
           &mixin_host_, test_child_user_.account_id, policy_server_.get());
     }
+
+    chromeos::UserDataAuthClient::InitializeFake();
   }
   ~PinSetupScreenTest() override = default;
 
   void SetUpOnMainThread() override {
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(false);
+
     original_callback_ = GetScreen()->get_exit_callback_for_testing();
     GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
         &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
@@ -247,7 +249,9 @@ class PinForLoginSetupScreenTest : public PinSetupScreenTest {
   PinForLoginSetupScreenTest() {
     // Enable PIN for login (overrides base class setting).
     UserDataAuthClient::InitializeFake();
-    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
+
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(true);
   }
   ~PinForLoginSetupScreenTest() override = default;
 };

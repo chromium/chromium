@@ -178,9 +178,11 @@ class QuickUnlockPrivateUnitTest
     ash::CryptohomeMiscClient::InitializeFake();
     ash::UserDataAuthClient::InitializeFake();
     if (std::get<0>(param) == TestType::kCryptohome) {
-      auto* cryptohome_client = ash::FakeUserDataAuthClient::Get();
-      cryptohome_client->set_supports_low_entropy_credentials(true);
-      cryptohome_client->set_enable_auth_check(true);
+      auto* fake_userdataauth_client_testapi =
+          chromeos::FakeUserDataAuthClient::TestApi::Get();
+      fake_userdataauth_client_testapi->set_supports_low_entropy_credentials(
+          true);
+      fake_userdataauth_client_testapi->set_enable_auth_check(true);
     }
     ash::SystemSaltGetter::Initialize();
 

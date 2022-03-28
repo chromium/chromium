@@ -41,7 +41,8 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
-    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(true);
     storage_ = std::make_unique<PinStorageCryptohome>();
   }
 

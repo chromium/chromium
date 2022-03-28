@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[1].account_id),
       true);
 
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
 
-  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[2].account_id),
       false);
   histogram_tester = std::make_unique<base::HistogramTester>();
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
 
-  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[3].account_id),
       true);
   histogram_tester = std::make_unique<base::HistogramTester>();

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
@@ -23,6 +24,93 @@ namespace chromeos {
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     : public UserDataAuthClient {
  public:
+  class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) TestApi {
+   public:
+    ~TestApi() = default;
+
+    // Not copyable or movable.
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+    TestApi(TestApi&&) = delete;
+    TestApi& operator=(TestApi&&) = delete;
+
+    static TestApi* Get();
+
+    // Sets whether dircrypto migration update should be run automatically.
+    // If set to false, the client will not send any dircrypto migration
+    // progress updates on its own - a test that sets this will have to call
+    // NotifyDircryptoMigrationProgress() for the progress to update.
+    void set_run_default_dircrypto_migration(bool value) {
+      run_default_dircrypto_migration_ = value;
+    }
+
+    // If set, next call to GetSupportedKeyPolicies() will tell caller that low
+    // entropy credentials are supported.
+    void set_supports_low_entropy_credentials(bool supports) {
+      supports_low_entropy_credentials_ = supports;
+    }
+
+    // If enable_auth_check is true, then CheckKey will actually check the
+    // authorization.
+    void set_enable_auth_check(bool enable_auth_check) {
+      enable_auth_check_ = enable_auth_check;
+    }
+
+    // Sets whether the Mount() call should fail when the |create| field is not
+    // provided (the error code will be CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND).
+    // This allows to simulate the behavior during the new user profile
+    // creation.
+    void set_mount_create_required(bool mount_create_required) {
+      mount_create_required_ = mount_create_required;
+    }
+
+    // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
+    // pending callbacks if is_available is true.
+    void SetServiceIsAvailable(bool is_available);
+
+    // Runs pending availability callbacks reporting that the service is
+    // unavailable. Expects service not to be available when called.
+    void ReportServiceIsNotAvailable();
+
+    // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or
+    // dircrypto
+    // (|use_ecryptfs|=false).
+    void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
+                             bool use_ecryptfs);
+
+   private:
+    friend class FakeUserDataAuthClient;
+
+    explicit TestApi(base::raw_ptr<FakeUserDataAuthClient> client);
+
+    // The singleton instance
+    static base::raw_ptr<FakeUserDataAuthClient::TestApi> instance_;
+
+    // Do we run the dircrypto migration, as in, emit signals, when
+    // StartMigrateToDircrypto() is called?
+    bool run_default_dircrypto_migration_ = true;
+
+    // If low entropy credentials are supported for the key. This is the value
+    // that GetSupportedKeyPolicies() returns.
+    bool supports_low_entropy_credentials_ = false;
+
+    // Controls if CheckKeyEx actually checks the key.
+    bool enable_auth_check_ = false;
+
+    // If true, fails if |create| field is not provided
+    bool mount_create_required_ = false;
+
+    // If set, we tell callers that service is available.
+    bool service_is_available_ = true;
+
+    // If set, WaitForServiceToBeAvailable will run the callback, even if
+    // service is not available (instead of adding the callback to pending
+    // callback list).
+    bool service_reported_not_available_ = false;
+
+    base::raw_ptr<FakeUserDataAuthClient> client_;
+  };
+
   // Represents the ongoing AuthSessions.
   struct AuthSessionData {
     // AuthSession id.
@@ -128,8 +216,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) override;
 
-  // Mount() related setter/getters.
-
   // Sets the CryptohomeError value to return.
   void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
     cryptohome_error_ = error;
@@ -154,42 +240,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   const std::string& get_secret_for_last_mount_authentication() const {
     return last_mount_request_.authorization().key().secret();
   }
-  // Sets whether the Mount() call should fail when the |create| field is not
-  // provided (the error code will be CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND).
-  // This allows to simulate the behavior during the new user profile creation.
-  void set_mount_create_required(bool mount_create_required) {
-    mount_create_required_ = mount_create_required;
-  }
-
-  // Key related:
-
-  // If enable_auth_check is true, then CheckKey will actually check the
-  // authorization.
-  void set_enable_auth_check(bool enable_auth_check) {
-    enable_auth_check_ = enable_auth_check;
-  }
-
-  // If set, next call to GetSupportedKeyPolicies() will tell caller that low
-  // entropy credentials are supported.
-  void set_supports_low_entropy_credentials(bool supports) {
-    supports_low_entropy_credentials_ = supports;
-  }
-
-  // eCryptfs related:
-
-  // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or
-  // dircrypto
-  // (|use_ecryptfs|=false).
-  void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
-                           bool use_ecryptfs);
-
-  // Sets whether dircrypto migration update should be run automatically.
-  // If set to false, the client will not send any dircrypto migration progress
-  // updates on its own - a test that sets this will have to call
-  // NotifyDircryptoMigrationProgress() for the progress to update.
-  void set_run_default_dircrypto_migration(bool value) {
-    run_default_dircrypto_migration_ = value;
-  }
 
   // Getter for the AccountIdentifier() that was passed to the last
   // StartMigrateToDircrypto() call.
@@ -203,29 +253,15 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_migrate_to_dircrypto_request_.minimal_migration();
   }
 
-  // AuthenticateAuthSession() related:
   const ::cryptohome::AuthorizationRequest&
   get_last_authenticate_auth_session_authorization() {
     return last_authenticate_auth_session_request_.authorization();
   }
 
-  // AuthenticateAuthFactor() related:
   const ::user_data_auth::AuthenticateAuthFactorRequest&
   get_last_authenticate_auth_factor_request() {
     return last_authenticate_auth_factor_request_;
   }
-
-  // WaitForServiceToBeAvailable() related:
-
-  // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
-  // pending callbacks if is_available is true.
-  void SetServiceIsAvailable(bool is_available);
-
-  // Runs pending availability callbacks reporting that the service is
-  // unavailable. Expects service not to be available when called.
-  void ReportServiceIsNotAvailable();
-
-  // Signal related:
 
   // Calls DircryptoMigrationProgress() on Observer instances.
   void NotifyDircryptoMigrationProgress(
@@ -272,28 +308,23 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const std::string& auth_session_id,
       ::user_data_auth::CryptohomeErrorCode* error) const;
 
-  // Mount() related fields.
+  void RunPendingWaitForServiceToBeAvailableCallbacks();
+
+  // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or
+  // dircrypto
+  // (|use_ecryptfs|=false).
+  void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
+                           bool use_ecryptfs);
+
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   int mount_request_count_ = 0;
   ::user_data_auth::MountRequest last_mount_request_;
-  bool mount_create_required_ = false;
-
-  // Key related fields.
-
-  // Controls if CheckKeyEx actually checks the key.
-  bool enable_auth_check_ = false;
 
   // The key data for various accounts.
   std::map<cryptohome::AccountIdentifier,
            std::map<std::string, cryptohome::Key>>
       key_data_map_;
-
-  // If low entropy credentials are supported for the key. This is the value
-  // that GetSupportedKeyPolicies() returns.
-  bool supports_low_entropy_credentials_ = false;
-
-  // eCryptfs/dircrypto migration related:
 
   // Set of account identifiers whose user homes use ecryptfs. User homes not
   // mentioned here use dircrypto.
@@ -306,16 +337,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // the migration progress signal.
   uint64_t dircrypto_migration_progress_ = 0;
 
-  // Do we run the dircrypto migration, as in, emit signals, when
-  // StartMigrateToDircrypto() is called?
-  bool run_default_dircrypto_migration_ = true;
-
   // The StartMigrateToDircryptoRequest passed in for the last
   // StartMigrateToDircrypto() call.
   ::user_data_auth::StartMigrateToDircryptoRequest
       last_migrate_to_dircrypto_request_;
-
-  // AuthSession related fields:
 
   // The AuthenticateAuthSessionRequest passed in for the last
   // AuthenticateAuthSession() call.
@@ -332,15 +357,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Next available auth session id.
   int next_auth_session_id_ = 0;
-
-  // WaitForServiceToBeAvailable() related fields:
-
-  // If set, we tell callers that service is available.
-  bool service_is_available_ = true;
-
-  // If set, WaitForServiceToBeAvailable will run the callback, even if service
-  // is not available (instead of adding the callback to pending callback list).
-  bool service_reported_not_available_ = false;
 
   // The list of callbacks passed to WaitForServiceToBeAvailable when the
   // service wasn't available.

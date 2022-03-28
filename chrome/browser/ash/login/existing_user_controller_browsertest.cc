@@ -1313,10 +1313,10 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
                        CryptohomeUnavailable) {
-  FakeUserDataAuthClient::Get()->SetServiceIsAvailable(false);
+  FakeUserDataAuthClient::TestApi::Get()->SetServiceIsAvailable(false);
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::NONE);
 
-  FakeUserDataAuthClient::Get()->ReportServiceIsNotAvailable();
+  FakeUserDataAuthClient::TestApi::Get()->ReportServiceIsNotAvailable();
   WaitForAuthErrorMessage();
 }
 

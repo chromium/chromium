@@ -33,11 +33,9 @@ class PinMigrationTest : public LoginManagerTest {
   ~PinMigrationTest() override = default;
 
   void SetUp() override {
-    // Initialize UserDataAuthClient and configure it for testing. It will be
-    // destroyed in ChromeBrowserMain.
     UserDataAuthClient::InitializeFake();
-    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
-
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(true);
     LoginManagerTest::SetUp();
   }
 };
