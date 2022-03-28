@@ -36,12 +36,6 @@ generate_grd("build_grd") {
     "omnibox_output.js",
     "output_results_group.css",
   ]
-  if (!is_android) {
-    input_files += [
-      "omnibox_popup.html",
-      "omnibox_popup.js",
-    ]
-  }
   input_files_base_dir = rebase_path(".", "//")
   grdp_files = [ "$target_gen_dir/mojo_resources.grdp" ]
   deps = [ ":build_mojo_grdp" ]
@@ -66,7 +60,6 @@ js_type_check("closure_compile") {
     ":omnibox_element",
     ":omnibox_input",
     ":omnibox_output",
-    ":omnibox_popup",
   ]
 }
 
@@ -96,11 +89,4 @@ js_library("omnibox_output") {
     "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
   ]
   externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("omnibox_popup") {
-  deps = [
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
-    "//ui/webui/resources/cr_components/omnibox:cr_autocomplete_match_list",
-  ]
 }

@@ -24,10 +24,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
-#endif
-
 OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://omnibox/ source.
@@ -45,12 +41,6 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->AddResourcePaths(
       base::make_span(kOmniboxResources, kOmniboxResourcesSize));
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
-    popup_handler_ = std::make_unique<OmniboxPopupHandler>();
-  }
-#endif
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());
