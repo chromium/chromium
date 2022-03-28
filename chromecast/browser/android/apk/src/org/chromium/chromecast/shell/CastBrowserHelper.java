@@ -6,6 +6,7 @@ package org.chromium.chromecast.shell;
 
 import android.content.Context;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
@@ -45,7 +46,7 @@ public class CastBrowserHelper {
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
 
-        if (CastBrowserModule.isInstalled()) {
+        if (BundleUtils.isBundle()) {
             // CommandLine.java doesn't expect there to be two copies of //base and it ignores
             // the second attempt to initialize the native command line.
             // LibraryLoader.ensureInitialized() is not called because it loads the main
