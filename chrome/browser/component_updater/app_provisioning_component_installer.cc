@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace {
 
@@ -43,9 +44,9 @@ constexpr uint8_t kAppProvisioningPublicKeySHA256[32] = {
 
 constexpr char kAppProvisioningManifestName[] = "App Provisioning";
 
-void LoadAppMetadataFromDisk(const base::FilePath& pb_path) {
+std::string LoadAppMetadataFromDisk(const base::FilePath& pb_path) {
   if (pb_path.empty())
-    return;
+    return "";
 
   VLOG(1) << "Reading Download App Metadata from file: " << pb_path.value();
   std::string binary_pb;
@@ -53,15 +54,24 @@ void LoadAppMetadataFromDisk(const base::FilePath& pb_path) {
     // ComponentReady will only be called when there is some installation of the
     // component ready, so it would be correct to consider this an error.
     VLOG(1) << "Failed reading from " << pb_path.value();
-    return;
+    return "";
   }
 
-  apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(binary_pb);
+  return binary_pb;
 }
 
 }  // namespace
 
 namespace component_updater {
+
+// Called during startup and installation before ComponentReady().
+bool AppProvisioningComponentInstallerPolicy::VerifyInstallation(
+    const base::Value& manifest,
+    const base::FilePath& install_dir) const {
+  // No need to actually validate the proto here, since we'll do the checking
+  // in `PopulateFromDynamicUpdate()`.
+  return base::PathExists(GetInstalledPath(install_dir));
+}
 
 bool AppProvisioningComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -82,11 +92,6 @@ AppProvisioningComponentInstallerPolicy::OnCustomInstall(
 
 void AppProvisioningComponentInstallerPolicy::OnCustomUninstall() {}
 
-base::FilePath AppProvisioningComponentInstallerPolicy::GetInstalledPath(
-    const base::FilePath& base) {
-  return base.Append(kAppProvisioningBinaryPbFileName);
-}
-
 void AppProvisioningComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
@@ -94,18 +99,12 @@ void AppProvisioningComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadAppMetadataFromDisk, GetInstalledPath(install_dir)));
-}
-
-// Called during startup and installation before ComponentReady().
-bool AppProvisioningComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
-    const base::FilePath& install_dir) const {
-  // No need to actually validate the proto here, since we'll do the checking
-  // in `PopulateFromDynamicUpdate()`.
-  return base::PathExists(GetInstalledPath(install_dir));
+      base::BindOnce(&LoadAppMetadataFromDisk, GetInstalledPath(install_dir)),
+      base::BindOnce(
+          &AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI,
+          base::Unretained(this)));
 }
 
 base::FilePath AppProvisioningComponentInstallerPolicy::GetRelativeInstallDir()
@@ -126,6 +125,20 @@ std::string AppProvisioningComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 AppProvisioningComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
+}
+
+base::FilePath AppProvisioningComponentInstallerPolicy::GetInstalledPath(
+    const base::FilePath& base) {
+  return base.Append(kAppProvisioningBinaryPbFileName);
+}
+
+void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
+    const std::string& binary_pb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!binary_pb.empty()) {
+    apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
+        binary_pb);
+  }
 }
 
 void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {

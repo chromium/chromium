@@ -34,14 +34,14 @@ class AppProvisioningComponentInstallerPolicy
 
  private:
   // The following methods override ComponentInstallerPolicy.
+  bool VerifyInstallation(const base::Value& manifest,
+                          const base::FilePath& install_dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value& manifest,
-                          const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
                       base::Value manifest) override;
@@ -51,6 +51,7 @@ class AppProvisioningComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
+  void UpdateAppMetadataOnUI(const std::string& binary_pb);
 };
 
 // Call once during startup to make the component update service aware of
