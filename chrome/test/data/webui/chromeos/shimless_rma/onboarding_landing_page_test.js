@@ -203,4 +203,25 @@ export function onboardingLandingPageTest() {
 
     assertTrue(cancelButtonEventFired);
   });
+
+  test(
+      'OnBoardingPageGetStartedButtonDispatchesTransitionStateEvent',
+      async () => {
+        await initializeLandingPage();
+
+        let getStartedButtonEventFired = false;
+        component.addEventListener('transition-state', (e) => {
+          getStartedButtonEventFired = true;
+        });
+
+        const getStartedButton =
+            component.shadowRoot.querySelector('#getStartedButton');
+        getStartedButton.disabled = false;
+
+        await clickButton('#getStartedButton');
+
+        await flushTasks();
+
+        assertTrue(getStartedButtonEventFired);
+      });
 }
