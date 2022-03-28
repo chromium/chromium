@@ -101,9 +101,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
       text_size_(text_size),
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
-      avoid_embedded_bitmaps_(false),
-      orientation_(orientation),
-      is_hash_table_deleted_value_(false) {
+      orientation_(orientation) {
 #if !BUILDFLAG(IS_MAC)
   style_ = WebFontRenderStyle::GetDefault();
   auto system_style =
