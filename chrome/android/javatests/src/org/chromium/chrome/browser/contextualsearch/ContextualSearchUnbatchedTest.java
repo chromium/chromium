@@ -208,7 +208,6 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
 
     @Test
     @SmallTest
-    @DisableIf.Build(message = "crbug.com/1240342")
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
