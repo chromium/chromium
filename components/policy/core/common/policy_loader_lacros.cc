@@ -39,6 +39,17 @@ bool IsManaged(const enterprise_management::PolicyData& policy_data) {
   return policy_data.state() == enterprise_management::PolicyData::ACTIVE;
 }
 
+// Returns whether a primary device account for this session is child.
+bool IsChildSession() {
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosService::Get()->init_params();
+  if (!init_params) {
+    return false;
+  }
+  return init_params->session_type ==
+         crosapi::mojom::SessionType::kChildSession;
+}
+
 }  // namespace
 
 namespace policy {
@@ -107,15 +118,21 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   DecodeProtoFields(*(validator.payload()), external_data_manager,
                     PolicySource::POLICY_SOURCE_CLOUD_FROM_ASH,
                     PolicyScope::POLICY_SCOPE_USER, &policy_map, per_profile_);
-  switch (per_profile_) {
-    case PolicyPerProfileFilter::kTrue:
-      SetEnterpriseUsersProfileDefaults(&policy_map);
-      break;
-    case PolicyPerProfileFilter::kFalse:
-      SetEnterpriseUsersSystemWideDefaults(&policy_map);
-      break;
-    case PolicyPerProfileFilter::kAny:
-      NOTREACHED();
+
+  // We do not set enterprise defaults for child accounts, because they are
+  // consumer users. The same rule is applied to policy in Ash. See
+  // UserCloudPolicyManagerAsh.
+  if (!IsChildSession()) {
+    switch (per_profile_) {
+      case PolicyPerProfileFilter::kTrue:
+        SetEnterpriseUsersProfileDefaults(&policy_map);
+        break;
+      case PolicyPerProfileFilter::kFalse:
+        SetEnterpriseUsersSystemWideDefaults(&policy_map);
+        break;
+      case PolicyPerProfileFilter::kAny:
+        NOTREACHED();
+    }
   }
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);

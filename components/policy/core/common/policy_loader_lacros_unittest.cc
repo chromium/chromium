@@ -239,6 +239,41 @@ TEST_F(PolicyLoaderLacrosTest, TwoLoaders) {
   per_profile_provider.Shutdown();
 }
 
+TEST_F(PolicyLoaderLacrosTest, ChildUsersNoEnterpriseDefaults) {
+  // Prepare child policy (per_profile:False).
+  per_profile_ = PolicyPerProfileFilter::kFalse;
+
+  em::CloudPolicySettings policy_proto;
+  policy_proto.mutable_lacrossecondaryprofilesallowed()->set_value(false);
+  const std::vector<uint8_t> data = GetValidPolicyFetchResponse(policy_proto);
+
+  // Setup child user session with the policy.
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kChildSession;
+  init_params->device_account_policy = std::move(data);
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+
+  // Load the policy.
+  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner(),
+                            per_profile_);
+  base::RunLoop().RunUntilIdle();
+  std::unique_ptr<PolicyBundle> bundle = loader.Load();
+
+  EXPECT_TRUE(PolicyLoaderLacros::IsMainUserManaged());
+  EXPECT_FALSE(PolicyLoaderLacros::IsDeviceLocalAccountUser());
+  EXPECT_FALSE(PolicyLoaderLacros::IsMainUserAffiliated());
+
+  // Check that desired policy is set and enterprise defaults are not applied.
+  const PolicyMap& policy_map = GetChromePolicyMap(bundle.get());
+  EXPECT_EQ(1u, policy_map.size());
+
+  const PolicyMap::Entry* entry =
+      policy_map.Get(key::kLacrosSecondaryProfilesAllowed);
+  ASSERT_TRUE(entry);
+  EXPECT_FALSE(entry->value(base::Value::Type::BOOLEAN)->GetBool());
+  EXPECT_EQ(policy::POLICY_SOURCE_CLOUD_FROM_ASH, entry->source);
+}
+
 TEST_F(PolicyLoaderLacrosTest, DeviceLocalAccountUsers) {
   SwitchAndCheckLocalDeviceAccountUser(
       crosapi::mojom::SessionType::kPublicSession);
