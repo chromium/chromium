@@ -289,6 +289,9 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
       previous_fragment.MayHaveDescendantAboveBlockStart());
   container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(
       previous_result_.HasDescendantThatDependsOnPercentageBlockSize());
+  container_builder_.SetInitialBreakBefore(
+      previous_result_.InitialBreakBefore());
+  container_builder_.SetPreviousBreakAfter(previous_result_.FinalBreakAfter());
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
