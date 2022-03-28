@@ -15,6 +15,32 @@
 #include "third_party/blink/renderer/platform/loader/mixed_content.h"
 
 namespace blink {
+namespace {
+
+// Record use counter for private network access.
+void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
+                                       const ResourceResponse& response) {
+  DCHECK(execution_context);
+
+  if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
+                                         response.ClientAddressSpace())) {
+    return;
+  }
+
+  // Only record the feature for worker contexts, not worklets. The address
+  // space of worklets is not yet specified.
+  // TODO(https://crbug.com/1291176): Revisit this if worklets should be subject
+  // to PNA checks.
+  if (!execution_context->IsWorkerGlobalScope())
+    return;
+
+  execution_context->CountUse(
+      response.ClientAddressSpace() == network::mojom::IPAddressSpace::kUnknown
+          ? WebFeature::kPrivateNetworkAccessWithinWorkerUnknown
+          : WebFeature::kPrivateNetworkAccessWithinWorker);
+}
+
+}  // namespace
 
 ResourceLoadObserverForWorker::ResourceLoadObserverForWorker(
     CoreProbeSink& probe,
@@ -48,22 +74,6 @@ void ResourceLoadObserverForWorker::DidChangePriority(
     uint64_t identifier,
     ResourceLoadPriority priority,
     int intra_priority_value) {}
-
-// Record use counter for private network access.
-void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
-                                       const ResourceResponse& response) {
-  DCHECK(execution_context);
-  if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
-                                         response.ClientAddressSpace()))
-    return;
-  // Only record the feature for worker contexts, not worklets. The address
-  // space of worklets is not yet specified.
-  // TODO(https://crbug.com/1291176): Revisit this if worklets should be subject
-  // to PNA checks.
-  if (!execution_context->IsWorkerGlobalScope())
-    return;
-  execution_context->CountUse(WebFeature::kPrivateNetworkAccessWithinWorker);
-}
 
 void ResourceLoadObserverForWorker::DidReceiveResponse(
     uint64_t identifier,

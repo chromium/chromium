@@ -37592,6 +37592,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4186" label="ComputePressureObserver_TakeRecords"/>
   <int value="4187" label="PrivacySandboxAdsAPIs"/>
   <int value="4188" label="Fledge"/>
+  <int value="4189" label="PrivateNetworkAccessWithinWorkerUnknown"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
