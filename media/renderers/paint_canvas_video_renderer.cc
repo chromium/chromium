@@ -56,7 +56,6 @@
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (v), (v_stride), (y), (y_stride), (u), (u_stride)
 #define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV12ToARGBMatrix
-#define RESOURCE_FORMAT viz::ResourceFormat::BGRA_8888
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 0
@@ -67,7 +66,6 @@
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (u), (u_stride), (y), (y_stride), (v), (v_stride)
 #define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV21ToARGBMatrix
-#define RESOURCE_FORMAT viz::ResourceFormat::RGBA_8888
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -1666,8 +1664,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.mailbox = sii->CreateSharedImage(
-        RESOURCE_FORMAT, video_frame->coded_size(), gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
+        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         gpu::kNullSurfaceHandle);
     token = sii->GenUnverifiedSyncToken();
   }
@@ -1864,9 +1862,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
         mailbox = sii->CreateSharedImage(
-            RESOURCE_FORMAT, video_frame->coded_size(), gfx::ColorSpace(),
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
-            gpu::kNullSurfaceHandle);
+            viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
+            gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            flags, gpu::kNullSurfaceHandle);
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
 
