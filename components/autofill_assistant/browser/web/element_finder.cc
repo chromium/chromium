@@ -197,6 +197,17 @@ void ElementFinder::UpdateLogInfo(const Result& result,
       info->mutable_semantic_inference_result()->add_status_per_frame(
           NodeDataStatusToSemanticInferenceStatus(node_data_status));
     }
+    for (const auto& semantic_node_result : semantic_node_results_) {
+      auto* predicted_element =
+          info->mutable_semantic_inference_result()->add_predicted_elements();
+      predicted_element->set_backend_node_id(
+          semantic_node_result.backend_node_id());
+      *predicted_element->mutable_semantic_information() =
+          selector_.proto.semantic_information();
+      // TODO(b/217160707): For the ignore_objective case this is not correct
+      // and the inferred objective should be returned from the Agent and used
+      // here.
+    }
   }
 }
 

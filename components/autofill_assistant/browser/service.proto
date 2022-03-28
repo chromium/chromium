@@ -1407,6 +1407,10 @@ message ElementFinderInfoProto {
   message PredictedElement {
     // Whether the inference returned the expectation.
     optional bool matches_css_element = 1;
+    // The predicted objective and predicted role of this element.
+    optional SelectorProto.SemanticInformation semantic_information = 2;
+    // The element's backend node id.
+    optional int32 backend_node_id = 3;
   }
   message SemanticInferenceResult {
     // If this is empty, the model inference did not find any results.
