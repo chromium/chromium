@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -106,9 +105,6 @@ public class FirstRunIntegrationTest {
     private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
     private static final String FRE_PROGRESS_VIEW_INTENT_HISTOGRAM =
             "MobileFre.Progress.ViewIntent";
-
-    @Rule
-    public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
