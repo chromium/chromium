@@ -491,6 +491,7 @@ TEST_F(MediatorTest,
 TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   mock_ui_broker_->NotifyAssociateAccountAction(
       device_, AssociateAccountAction::kAssoicateAccount);
 }
@@ -498,6 +499,7 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
 TEST_F(MediatorTest, AssociateAccountKeyAction_LearnMore) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications).Times(0);
   mock_ui_broker_->NotifyAssociateAccountAction(
       device_, AssociateAccountAction::kLearnMore);
 }

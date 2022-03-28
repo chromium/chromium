@@ -256,6 +256,7 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
       pairer_broker_->PairDevice(device);
+      ui_broker_->RemoveNotifications();
       break;
     case AssociateAccountAction::kLearnMore:
       break;
