@@ -33,8 +33,8 @@ class ContextMenuIncognitoFilterBrowserTest : public InProcessBrowserTest {
     // or a source of: foo.com with outgoing param plzblock1
     std::string encoded_classification = url_param_filter::
         CreateBase64EncodedFilterParamClassificationForTesting(
-            {{"foo.com", {"plzblock1"}}, {"", {"plzblockredirect"}}},
-            {{"", {"plzblock"}}});
+            {{"foo.com", {"plzblock1"}}, {"127.0.0.1", {"plzblockredirect"}}},
+            {{"127.0.0.1", {"plzblock"}}});
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIncognitoParamFilterEnabled,
         {{"classifications", encoded_classification}});

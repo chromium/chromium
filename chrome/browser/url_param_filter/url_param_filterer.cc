@@ -25,7 +25,12 @@ namespace url_param_filter {
 namespace {
 
 // Get the ETLD+1 of the URL, which means any subdomain is treated equivalently.
-std::string GetEtldPlusOne(const GURL& gurl) {
+// IP addresses are returned verbatim. Note that this is schemeless, so
+// filtering is applied equivalently regardless of http vs https vs others.
+std::string GetClassifiedSite(const GURL& gurl) {
+  if (gurl.HostIsIPAddress()) {
+    return gurl.host();
+  }
   return net::registry_controlled_domains::GetDomainAndRegistry(
       gurl, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
@@ -54,20 +59,20 @@ FilterResult FilterUrl(const GURL& source_url,
     return FilterResult{destination_url, filtered_params_count};
   }
 
-  std::string source_etld_plus1 = GetEtldPlusOne(source_url);
-  std::string destination_etld_plus1 = GetEtldPlusOne(destination_url);
+  std::string source_classified_site = GetClassifiedSite(source_url);
+  std::string destination_classified_site = GetClassifiedSite(destination_url);
 
   std::set<std::string> blocked_parameters;
-  // Check whether source eTLD+1 has params classified as requiring filtering.
-  // If so, and the params are present on the destination URL, or any nested
-  // URLs, remove them.
+  // Check whether source site, as seen by the classifier (eTLD+1 or IP), has
+  // params classified as requiring filtering. If so, and the params are present
+  // on the destination URL, or any nested URLs, remove them.
   auto source_classification_result =
-      source_classification_map.find(source_etld_plus1);
+      source_classification_map.find(source_classified_site);
   if (source_classification_result != source_classification_map.end()) {
     AddParams(blocked_parameters, source_classification_result->second);
   }
   auto destination_classification_result =
-      destination_classification_map.find(destination_etld_plus1);
+      destination_classification_map.find(destination_classified_site);
   if (destination_classification_result !=
       destination_classification_map.end()) {
     AddParams(blocked_parameters, destination_classification_result->second);
