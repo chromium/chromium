@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
+#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
@@ -48,42 +49,6 @@ std::vector<aura::Window*> GetWindowListIgnoreModalForActiveDesk() {
 }
 
 }  // namespace
-
-// -----------------------------------------------------------------------------
-// CaptureModeSessionFocusCycler::ScopedA11yOverrideWindowSetter:
-
-// Scoped class that helps setting the window for accessibility focus for the
-// duration of the lifetime of `CaptureModeSessionFocusCycler`. Clears the
-// accessibility focus window when destructed.
-class CaptureModeSessionFocusCycler::ScopedA11yOverrideWindowSetter
-    : public aura::WindowObserver {
- public:
-  ScopedA11yOverrideWindowSetter() = default;
-  ScopedA11yOverrideWindowSetter(const ScopedA11yOverrideWindowSetter&) =
-      delete;
-  ScopedA11yOverrideWindowSetter& operator=(
-      const ScopedA11yOverrideWindowSetter&) = delete;
-  ~ScopedA11yOverrideWindowSetter() override {
-    MaybeUpdateA11yOverrideWindow(nullptr);
-  }
-
-  // Updates the a11y focus window if `current_a11y_override_window_` is not
-  // equal to `a11y_override_window`. This will make sure the accessibility
-  // features can always get the correct a11y override window to focus before
-  // getting the window with actual focus.
-  void MaybeUpdateA11yOverrideWindow(aura::Window* a11y_override_window) {
-    if (current_a11y_override_window_ != a11y_override_window) {
-      Shell::Get()->accessibility_controller()->SetA11yOverrideWindow(
-          a11y_override_window);
-      current_a11y_override_window_ = a11y_override_window;
-    }
-  }
-
- private:
-  // Caches the value of the a11y override window. It will be updated when a
-  // different window should get focus from the accessibility features.
-  aura::Window* current_a11y_override_window_ = nullptr;
-};
 
 // -----------------------------------------------------------------------------
 // CaptureModeSessionFocusCycler::HighlightableView:

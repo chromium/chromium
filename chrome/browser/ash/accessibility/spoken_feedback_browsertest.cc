@@ -753,7 +753,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
       "Chrom* - data:text slash html;charset equal utf-8, less than button "
       "autofocus greater than Click me less than slash button greater than");
   sm_.ExpectSpeechPattern("Press Ctrl plus W to close.");
-  sm_.ExpectSpeechPattern(", window");
 
   sm_.Replay();
 }
@@ -771,6 +770,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableChromeVoxOnOverviewMode) {
   });
 
   EnableChromeVox();
+  // Wait for Chromevox to start while in Overview before `sm_.Call`, which
+  // pushes a callback when the last expected speech was seen.
+  sm_.ExpectSpeechPattern(", window");
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern(

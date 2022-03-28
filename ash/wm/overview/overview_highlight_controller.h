@@ -15,6 +15,7 @@ namespace ash {
 class OverviewHighlightableView;
 class OverviewItem;
 class OverviewSession;
+class ScopedA11yOverrideWindowSetter;
 
 // Manages highlighting items while in overview. Responsible for telling
 // overview items to show or hide their focus ring borders, when tabbing through
@@ -115,6 +116,11 @@ class ASH_EXPORT OverviewHighlightController {
 
   // The current view that is being tab dragged, if any.
   OverviewHighlightableView* tab_dragged_view_ = nullptr;
+
+  // Accessibility features will focus on whatever window is returned by
+  // `GetA11yOverrideWindow()`. Once `this` goes out of scope, the a11y override
+  // window is set to null.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 
 }  // namespace ash
