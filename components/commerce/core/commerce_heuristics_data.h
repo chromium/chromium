@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/values.h"
+#include "base/version.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce_heuristics {
@@ -19,6 +20,13 @@ class CommerceHeuristicsData {
   CommerceHeuristicsData(const CommerceHeuristicsData&) = delete;
   CommerceHeuristicsData& operator=(const CommerceHeuristicsData&) = delete;
   ~CommerceHeuristicsData();
+
+  // Called by component installer to update the version number of the
+  // heuristics.
+  void UpdateVersion(base::Version version);
+
+  // Get the current version number of the heuristics.
+  const std::string GetVersion();
 
   // Populate and cache the heuristics from JSON data.
   bool PopulateDataFromComponent(const std::string& hint_json_data,
@@ -84,6 +92,7 @@ class CommerceHeuristicsData {
 
   std::unique_ptr<re2::RE2> ConstructGlobalRegex(const std::string& type);
 
+  base::Version version_;
   base::Value::Dict hint_heuristics_;
   base::Value::Dict global_heuristics_;
   std::unique_ptr<re2::RE2> product_skip_pattern_;

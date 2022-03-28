@@ -39,6 +39,16 @@ CommerceHeuristicsData& CommerceHeuristicsData::GetInstance() {
 CommerceHeuristicsData::CommerceHeuristicsData() = default;
 CommerceHeuristicsData::~CommerceHeuristicsData() = default;
 
+void CommerceHeuristicsData::UpdateVersion(base::Version version) {
+  version_ = std::move(version);
+}
+
+const std::string CommerceHeuristicsData::GetVersion() {
+  if (!version_.IsValid())
+    return std::string();
+  return version_.GetString();
+}
+
 bool CommerceHeuristicsData::PopulateDataFromComponent(
     const std::string& hint_json_data,
     const std::string& global_json_data,

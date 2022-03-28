@@ -58,7 +58,8 @@ base::FilePath GetCommerceCartExtractionScriptInstalledPath(
   return base.Append(kCommerceCartExtractionScriptFileName);
 }
 
-void LoadHeuristicFilesFromDisk(const base::FilePath& install_dir) {
+void LoadHeuristicFilesFromDisk(const base::Version& version,
+                                const base::FilePath& install_dir) {
   if (install_dir.empty())
     return;
 
@@ -109,7 +110,10 @@ void LoadHeuristicFilesFromDisk(const base::FilePath& install_dir) {
                                       std::move(commerce_product_id_json_data),
                                       std::move(cart_extraction_script_data))) {
     LOG(WARNING) << "Failed populating data.";
+    return;
   }
+  commerce_heuristics::CommerceHeuristicsData::GetInstance().UpdateVersion(
+      version);
 }
 
 }  // namespace
@@ -143,7 +147,7 @@ void CommerceHeuristicsInstallerPolicy::ComponentReady(
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadHeuristicFilesFromDisk, install_dir));
+      base::BindOnce(&LoadHeuristicFilesFromDisk, version, install_dir));
 }
 
 // Called during startup and installation before ComponentReady().
