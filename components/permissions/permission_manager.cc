@@ -438,8 +438,15 @@ PermissionResult PermissionManager::GetPermissionStatus(
   // for an embedded frame.
   DCHECK_EQ(requesting_origin, embedding_origin);
 
-  return GetPermissionStatusHelper(permission, nullptr /* render_frame_host */,
+  return GetPermissionStatusHelper(permission, /*render_frame_host=*/nullptr,
                                    requesting_origin, embedding_origin);
+}
+
+PermissionResult PermissionManager::GetPermissionStatusForDisplayOnSettingsUI(
+    ContentSettingsType permission,
+    const GURL& origin) {
+  return GetPermissionStatusHelper(permission, /*render_frame_host=*/nullptr,
+                                   origin, origin);
 }
 
 PermissionResult PermissionManager::GetPermissionStatusForFrame(

@@ -152,7 +152,7 @@ permissions::PermissionResult ChromePageInfoDelegate::GetPermissionStatus(
   // about *all* permissions once it has default behaviour implemented for
   // ContentSettingTypes that aren't permissions.
   return PermissionManagerFactory::GetForProfile(GetProfile())
-      ->GetPermissionStatus(type, site_url, site_url);
+      ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

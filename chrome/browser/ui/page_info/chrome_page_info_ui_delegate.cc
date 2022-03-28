@@ -186,7 +186,7 @@ bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
 permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
     ContentSettingsType type) {
   return PermissionManagerFactory::GetForProfile(GetProfile())
-      ->GetPermissionStatus(type, site_url_, site_url_);
+      ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url_);
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

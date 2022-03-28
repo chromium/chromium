@@ -59,7 +59,7 @@ permissions::PermissionResult PageInfoDelegateImpl::GetPermissionStatus(
     ContentSettingsType type,
     const GURL& site_url) {
   return PermissionManagerFactory::GetForBrowserContext(GetBrowserContext())
-      ->GetPermissionStatus(type, site_url, site_url);
+      ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -766,8 +766,8 @@ ContentSetting GetContentSettingForOrigin(
       permissions::PermissionStatusSource::UNSPECIFIED);
   if (permissions::PermissionUtil::IsPermission(content_type)) {
     result =
-        PermissionManagerFactory::GetForProfile(profile)->GetPermissionStatus(
-            content_type, origin, origin);
+        PermissionManagerFactory::GetForProfile(profile)
+            ->GetPermissionStatusForDisplayOnSettingsUI(content_type, origin);
   } else {
     DCHECK_EQ(base::Value::Type::INTEGER, value.type());
     result.content_setting = content_settings::ValueToContentSetting(value);

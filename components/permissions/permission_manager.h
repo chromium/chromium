@@ -96,6 +96,14 @@ class PermissionManager : public KeyedService,
                                        const GURL& requesting_origin,
                                        const GURL& embedding_origin);
 
+  // Returns the permission status for a given `permission` and displayed,
+  // top-level `origin`. This should be used only for displaying on the
+  // browser's native UI (PageInfo, Settings, etc.). This method does not take
+  // context specific restrictions (e.g. permission policy) into consideration.
+  PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
+      ContentSettingsType permission,
+      const GURL& origin);
+
   // Returns the permission status for a given frame. This should be preferred
   // over GetPermissionStatus as additional checks can be performed when we know
   // the exact context the request is coming from.
