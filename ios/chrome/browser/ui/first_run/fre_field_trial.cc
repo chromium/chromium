@@ -142,8 +142,9 @@ void AssociateFieldTrialParamsForFRESecondTrialGroup(
   base::FieldTrialParams params;
   params[kFREUIIdentitySwitcherPositionParam] = position;
   params[kFREUIStringsSetParam] = stringsSet;
-  DCHECK(base::AssociateFieldTrialParams(kEnableFREUIModuleIOS.name, group_name,
-                                         params));
+  bool association_result = base::AssociateFieldTrialParams(
+      kEnableFREUIModuleIOS.name, group_name, params);
+  DCHECK(association_result);
 }
 
 // Sets the parameter value of the new MICE FRE parameter.
@@ -151,8 +152,9 @@ void AssociateFieldTrialParamsForNewMICEFREGroup(const std::string& group_name,
                                                  const std::string& value) {
   base::FieldTrialParams params;
   params[kNewMobileIdentityConsistencyFREParam] = value;
-  DCHECK(base::AssociateFieldTrialParams(
-      signin::kNewMobileIdentityConsistencyFRE.name, group_name, params));
+  bool association_result = base::AssociateFieldTrialParams(
+      signin::kNewMobileIdentityConsistencyFRE.name, group_name, params);
+  DCHECK(association_result);
 }
 
 }  // namespace
