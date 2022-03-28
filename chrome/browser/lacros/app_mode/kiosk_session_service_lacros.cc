@@ -14,6 +14,11 @@ namespace {
 
 static KioskSessionServiceLacros* g_kiosk_session_service = nullptr;
 
+bool IsKioskSession(crosapi::mojom::SessionType session_type) {
+  return (session_type == crosapi::mojom::SessionType::kWebKioskSession) ||
+         (session_type == crosapi::mojom::SessionType::kAppKioskSession);
+}
+
 }  // namespace
 
 // static
@@ -49,4 +54,34 @@ void KioskSessionServiceLacros::AttemptUserExit() {
   }
 
   service->GetRemote<crosapi::mojom::KioskSessionService>()->AttemptUserExit();
+}
+
+bool KioskSessionServiceLacros::RestartDevice(const std::string& description) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  CHECK(service);
+
+  if (IsKioskSession(service->init_params()->session_type) &&
+      service->IsAvailable<crosapi::mojom::KioskSessionService>()) {
+    int remote_version = service->GetInterfaceVersion(
+        crosapi::mojom::KioskSessionService::Uuid_);
+    if (remote_version >= 0 &&
+        static_cast<uint32_t>(remote_version) >=
+            crosapi::mojom::KioskSessionService::kRestartDeviceMinVersion) {
+      auto callback = base::BindOnce([](bool status) {
+        if (!status) {
+          LOG(ERROR) << "Restart device was called but failed";
+        }
+      });
+
+      auto& remote = service->GetRemote<crosapi::mojom::KioskSessionService>();
+      remote->RestartDevice(description, std::move(callback));
+      return true;
+    } else {
+      LOG(ERROR) << "Current KioskSessionService " << remote_version
+                 << " does not support RestartDevice";
+    }
+  } else {
+    LOG(ERROR) << "Kiosk session service is not available.";
+  }
+  return false;
 }

@@ -29,6 +29,9 @@ class KioskSessionServiceAsh : public mojom::KioskSessionService {
   // crosapi::mojom::KioskSessionService:
   void AttemptUserExit() override;
 
+  void RestartDevice(const std::string& description,
+                     RestartDeviceCallback callback) override;
+
  private:
   // Any number of crosapi clients can connect to this class.
   mojo::ReceiverSet<mojom::KioskSessionService> receivers_;

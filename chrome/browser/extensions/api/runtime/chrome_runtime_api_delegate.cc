@@ -44,6 +44,10 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#endif
+
 using extensions::Extension;
 using extensions::ExtensionSystem;
 using extensions::ExtensionUpdater;
@@ -338,6 +342,11 @@ bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
       user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
         power_manager::REQUEST_RESTART_OTHER, "chrome.runtime API");
+    return true;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (KioskSessionServiceLacros::Get()->RestartDevice("chrome.runtime API")) {
     return true;
   }
 #endif
