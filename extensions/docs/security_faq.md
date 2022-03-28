@@ -141,6 +141,51 @@ could be installed (without user consent) when the user visits a malicious site,
 this would be considered a security bug. Please report any such bugs
 [here][new-security-bug].
 
+### What is our stance on unpacked extensions?
+
+Attacks that involve loading an unpacked extension are _typically_ not security
+bugs. Two common approaches are:
+* Loading the extension with the `--load-extension` commandline switch, and
+* Persuading the user to load an unpacked extension by enabling developer
+  mode in chrome://extensions and drag-and-dropping a file or click on
+  "Load unpacked extension".
+
+Loading an unpacked extension in these ways is not considered a security bug.
+The former requires local access, which is
+[not in our threat model][physically-local-attacks]. The latter is very
+similar to persuading the user to open devtools and paste code, which is also
+[not considered a security bug][devtools-execution] (in both these cases, the
+user is allowing arbitrary untrusted JavaScript code to run via tools intended
+for developers).
+
+If you identify another way to load an unpacked extension, it may be considered
+a security bug.
+
+### Is accessing private APIs via unpacked extensions a security bug?
+
+Some extension APIs are restricted to extensions with a specified ID. Developers
+can give an unpacked extension a given ID by setting the "key" entry in the
+manifest, as described [here][setting-unpacked-id]. This allows unpacked
+extensions to access powerful APIs.
+
+This is not considered a security bug ([example](https://crbug.com/1301966)).
+See above for [our stance on unpacked extensions][unpacked-extensions-stance].
+The addition of access to private APIs does not change this stance, as it is
+still most similar to a phyiscally-local attack or devtools execution in a
+trusted context (for instance, inspecting a component extension allows access
+to trusted APIs).
+
+### Is spoofing an extension with its ID in an unpacked extension a security bug?
+
+Developers can give an unpacked extension a given ID by setting the "key" entry
+in the manifest, as described [here][setting-unpacked-id]. This would allow a
+developer to imitate a legitimate extension and have access to its ID.
+
+This is not considered a security bug. See above for
+[our stance on unpacked extensions][unpacked-extensions-stance].  If the
+extension is instead treated as being from the webstore (as opposed to an
+unpacked extension), Chromium will validate the content of the extension.
+
 ### Chrome silently syncs extensions across devices. Is this a security vulnerability?
 
 If an attacker has access to one of a victim‘s devices, the attacker can install
@@ -412,3 +457,6 @@ information.
 
 [new-security-bug]: https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug
 [physically-local-attacks]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/faq.md#why-arent-physically_local-attacks-in-chromes-threat-model
+[devtools-execution]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/faq.md#Does-entering-JavaScript_URLs-in-the-URL-bar-or-running-script-in-the-developer-tools-mean-there_s-an-XSS-vulnerability
+[setting-unpacked-id]: https://developer.chrome.com/docs/extensions/mv3/manifest/key/
+[unpacked-extensions-stance]: https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md#what-is-our-stance-on-unpacked-extensions
