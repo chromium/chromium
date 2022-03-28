@@ -235,6 +235,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
   RenderWidgetHostViewBase* GetRootView();
 
+  float ScaleFactor();
+
   RenderFrameHostImpl* host_;
   // WebContents associated with the |host_|.
   WebContents* web_contents_;

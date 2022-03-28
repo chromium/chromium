@@ -29,6 +29,7 @@
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
+#include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -62,6 +63,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
@@ -185,6 +187,17 @@ class SyntheticKeyEventTest : public DevToolsProtocolTest {
 };
 
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
+ public:
+  SyntheticMouseEventTest() {
+// On Android, zoom level is set to 0 in
+// WebContentsImpl::GetPendingPageZoomLevel unless the kAccessibilityPageZoom
+// feature is enabled. We enable it to be able to test mouse events across all
+// platforms.
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndEnableFeature(features::kAccessibilityPageZoom);
+#endif
+  }
+
  protected:
   void SendMouseEvent(const std::string& type,
                       int x,
@@ -201,6 +214,9 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
     }
     SendCommand("Input.dispatchMouseEvent", std::move(params), wait);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
@@ -295,6 +311,63 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
   SendCommand("Debugger.resume", nullptr);
   filter->WaitForAck();
   EXPECT_EQ(3u, result_ids_.size());
+}
+
+// Event dispatch appears to be flaky on Android bots.
+// SendMouseEvent succeeds but event is not consumed by anything.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MouseEventCoordinates DISABLED_MouseEventCoordinates
+#else
+#define MAYBE_MouseEventCoordinates MouseEventCoordinates
+#endif
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+  ASSERT_TRUE(
+      content::ExecJs(shell()->web_contents(),
+                      "logs = []; window.addEventListener('mousedown', e => "
+                      "logs.push(`${e.type},${e.clientX},${e.clientY}`));"));
+
+  SendMouseEvent("mousePressed", 15, 15, "left", true);
+
+  ASSERT_EQ("mousedown,15,15",
+            content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
+                .ExtractString());
+}
+
+// Event dispatch appears to be flaky on Android bots.
+// SendMouseEvent succeeds but event is not consumed by anything.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MouseEventCoordinatesWithZoom \
+  DISABLED_MouseEventCoordinatesWithZoom
+#else
+#define MAYBE_MouseEventCoordinatesWithZoom MouseEventCoordinatesWithZoom
+#endif
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
+                       MAYBE_MouseEventCoordinatesWithZoom) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  SendCommand("Page.enable", nullptr);
+
+  ASSERT_TRUE(
+      content::ExecJs(shell()->web_contents(),
+                      "logs = []; window.addEventListener('mousedown', e => "
+                      "logs.push(`${e.type},${e.clientX},${e.clientY}`));"));
+  HostZoomMap* host_zoom_map =
+      HostZoomMap::GetForWebContents(shell()->web_contents());
+  host_zoom_map->SetZoomLevelForHost(test_url.host(),
+                                     blink::PageZoomFactorToZoomLevel(2.5));
+  ASSERT_TRUE(WaitForNotification("Page.frameResized", true));
+  SendMouseEvent("mousePressed", 15, 15, "left", true);
+
+  ASSERT_EQ("mousedown,15,15",
+            content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
+                .ExtractString());
 }
 
 namespace {

@@ -23,11 +23,13 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
@@ -40,14 +42,12 @@ namespace protocol {
 
 namespace {
 
-gfx::PointF CssPixelsToPointF(double x, double y, float page_scale_factor) {
-  return gfx::PointF(x * page_scale_factor, y * page_scale_factor);
+gfx::PointF CssPixelsToPointF(double x, double y, float scale_factor) {
+  return gfx::PointF(x * scale_factor, y * scale_factor);
 }
 
-gfx::Vector2dF CssPixelsToVector2dF(double x,
-                                    double y,
-                                    float page_scale_factor) {
-  return gfx::Vector2dF(x * page_scale_factor, y * page_scale_factor);
+gfx::Vector2dF CssPixelsToVector2dF(double x, double y, float scale_factor) {
+  return gfx::Vector2dF(x * scale_factor, y * scale_factor);
 }
 
 bool StringToGestureSourceType(Maybe<std::string> in,
@@ -855,7 +855,7 @@ void InputHandler::DispatchMouseEvent(
             ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(),
-                CssPixelsToPointF(x, y, self->page_scale_factor_),
+                CssPixelsToPointF(x, y, self->ScaleFactor()),
                 base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
                                self, std::move(callback),
                                std::move(mouse_event), wheel_event));
@@ -897,7 +897,7 @@ void InputHandler::DispatchDragEvent(
   widget_host->delegate()
       ->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
-          widget_host->GetView(), CssPixelsToPointF(x, y, page_scale_factor_),
+          widget_host->GetView(), CssPixelsToPointF(x, y, ScaleFactor()),
           base::BindOnce(&InputHandler::OnWidgetForDispatchDragEvent,
                          weak_factory_.GetWeakPtr(), event_type, x, y,
                          std::move(data), std::move(modifiers),
@@ -988,6 +988,15 @@ void InputHandler::OnWidgetForDispatchDragEvent(
         base::StringPrintf("Unexpected event type '%s'", event_type.c_str())));
   }
 }
+
+float InputHandler::ScaleFactor() {
+  DCHECK(web_contents_);
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(web_contents_);
+  return blink::PageZoomLevelToZoomFactor(
+             web_contents->GetPendingPageZoomLevel()) *
+         page_scale_factor_;
+}
+
 void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
                                  blink::DragOperationsMask drag_operations_mask,
                                  bool* intercepted) {
@@ -1122,10 +1131,10 @@ void InputHandler::DispatchWebTouchEvent(
     points[id].rotation_angle = point->GetRotationAngle(0.0);
     points[id].force = point->GetForce(1.0);
     points[id].pointer_type = blink::WebPointerProperties::PointerType::kTouch;
-    points[id].SetPositionInWidget(point->GetX() * page_scale_factor_,
-                                   point->GetY() * page_scale_factor_);
-    points[id].SetPositionInScreen(point->GetX() * page_scale_factor_,
-                                   point->GetY() * page_scale_factor_);
+    points[id].SetPositionInWidget(point->GetX() * ScaleFactor(),
+                                   point->GetY() * ScaleFactor());
+    points[id].SetPositionInScreen(point->GetX() * ScaleFactor(),
+                                   point->GetY() * ScaleFactor());
     points[id].tilt_x = point->GetTiltX(0);
     points[id].tilt_y = point->GetTiltY(0);
     points[id].tangential_pressure = point->GetTangentialPressure(0);
@@ -1408,7 +1417,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
   switch (pointer_action_type) {
     case SyntheticPointerActionParams::PointerActionType::PRESS:
       action_params.set_position(
-          gfx::PointF(x * page_scale_factor_, y * page_scale_factor_));
+          gfx::PointF(x * ScaleFactor(), y * ScaleFactor()));
       action_params.set_button(button);
       action_params.set_key_modifiers(key_modifiers);
       action_params.set_width(radius_x * 2.f);
@@ -1418,7 +1427,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
       break;
     case SyntheticPointerActionParams::PointerActionType::MOVE:
       action_params.set_position(
-          gfx::PointF(x * page_scale_factor_, y * page_scale_factor_));
+          gfx::PointF(x * ScaleFactor(), y * ScaleFactor()));
       action_params.set_key_modifiers(key_modifiers);
       action_params.set_width(radius_x * 2.f);
       action_params.set_height(radius_y * 2.f);
@@ -1572,7 +1581,7 @@ void InputHandler::SynthesizePinchGesture(
 
   gesture_params.from_devtools_debugger = true;
   gesture_params.scale_factor = scale_factor;
-  gesture_params.anchor = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.anchor = CssPixelsToPointF(x, y, ScaleFactor());
   if (!PointIsWithinContents(gesture_params.anchor)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;
@@ -1624,7 +1633,7 @@ void InputHandler::SynthesizeScrollGesture(
   const bool kDefaultPreventFling = true;
   const int kDefaultSpeed = 800;
 
-  gesture_params.anchor = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.anchor = CssPixelsToPointF(x, y, ScaleFactor());
   if (!PointIsWithinContents(gesture_params.anchor)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;
@@ -1635,15 +1644,13 @@ void InputHandler::SynthesizeScrollGesture(
   gesture_params.speed_in_pixels_s = speed.fromMaybe(kDefaultSpeed);
 
   if (x_distance.isJust() || y_distance.isJust()) {
-    gesture_params.distances.push_back(
-        CssPixelsToVector2dF(x_distance.fromMaybe(0),
-                             y_distance.fromMaybe(0), page_scale_factor_));
+    gesture_params.distances.push_back(CssPixelsToVector2dF(
+        x_distance.fromMaybe(0), y_distance.fromMaybe(0), ScaleFactor()));
   }
 
   if (x_overscroll.isJust() || y_overscroll.isJust()) {
     gesture_params.distances.push_back(CssPixelsToVector2dF(
-        -x_overscroll.fromMaybe(0), -y_overscroll.fromMaybe(0),
-        page_scale_factor_));
+        -x_overscroll.fromMaybe(0), -y_overscroll.fromMaybe(0), ScaleFactor()));
   }
 
   if (!StringToGestureSourceType(
@@ -1731,7 +1738,7 @@ void InputHandler::SynthesizeTapGesture(
   const int kDefaultDuration = 50;
   const int kDefaultTapCount = 1;
 
-  gesture_params.position = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.position = CssPixelsToPointF(x, y, ScaleFactor());
   gesture_params.from_devtools_debugger = true;
   if (!PointIsWithinContents(gesture_params.position)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
