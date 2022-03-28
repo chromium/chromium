@@ -1173,10 +1173,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>mukai@chromium.org</owner>
   <summary>
     Emitted when the virtual desks activation animation completes to report the
     smoothness of this animation when running on the display on which the active
@@ -1198,10 +1197,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskRemoval" units="%"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>mukai@chromium.org</owner>
   <summary>
     Emitted when the virtual desks removal animation completes to report the
     smoothness of this animation when running on the display on which the active
@@ -1348,9 +1346,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
-    expires_after="2022-10-03">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the first desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1358,9 +1356,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_2" units="units"
-    expires_after="2022-10-03">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the second desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1368,9 +1366,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_3" units="units"
-    expires_after="2022-10-03">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the third desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1378,9 +1376,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_4" units="units"
-    expires_after="2022-10-03">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the fourth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1388,9 +1386,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_5" units="units"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the fifth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1398,9 +1396,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_6" units="units"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the sixth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1408,9 +1406,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_7" units="units"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the seventh desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -1420,7 +1418,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_8" units="units"
     expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the eighth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -1457,9 +1455,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.RemoveDesk" enum="DesksCreationRemovalSource"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
   <summary>
     Emitted when a virtual desk is removed to specify the source of this remove
     operation, i.e. whether from the close-desk button, or keyboard shortcut.
@@ -3418,7 +3416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
-    units="%" expires_after="2022-04-17">
+    units="%" expires_after="2023-04-23">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -4084,7 +4082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.DesksSwitchDistance" units="units"
-    expires_after="2022-04-17">
+    expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -4143,7 +4141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.TimeBetweenTaskSwitches"
-    units="seconds" expires_after="2022-04-17">
+    units="seconds" expires_after="2023-04-23">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
