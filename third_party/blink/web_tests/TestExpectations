@@ -7598,6 +7598,12 @@ crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 crbug.com/1277696 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
 
+# Tests that need updates due to rounding math in layout
+crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
+crbug.com/1309975 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
+crbug.com/1309972 external/wpt/css/css-tables/tentative/table-width-redistribution-fixed-padding.html [ Failure ]
+crbug.com/1310332 editing/selection/mouse/drag-user-select-all-contenteditable.html [ Failure ]
+
 # Sheriff 2022-03-23: More flaky tests.
 crbug.com/1309483 [ Win7 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1309633 [ Mac10.12 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]

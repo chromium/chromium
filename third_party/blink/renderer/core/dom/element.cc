@@ -1221,9 +1221,10 @@ int Element::OffsetLeft() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetLeft(OffsetParent()),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->OffsetLeft(OffsetParent()),
+               layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1232,9 +1233,10 @@ int Element::OffsetTop() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetTop(OffsetParent()),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->OffsetTop(OffsetParent()),
+               layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1243,9 +1245,9 @@ int Element::OffsetWidth() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetWidth(OffsetParent()),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->OffsetWidth(),
+                                                   layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1254,9 +1256,9 @@ int Element::OffsetHeight() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetHeight(OffsetParent()),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->OffsetHeight(), layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1274,8 +1276,9 @@ int Element::clientLeft() {
                                             DocumentUpdateReason::kJavaScript);
 
   if (const auto* layout_object = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustInt(layout_object->ClientLeft().Round(),
-                                            layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientLeft(),
+                                                   layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1285,8 +1288,9 @@ int Element::clientTop() {
                                             DocumentUpdateReason::kJavaScript);
 
   if (const auto* layout_object = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustInt(layout_object->ClientTop().Round(),
-                                            layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientTop(),
+                                                   layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1392,9 +1396,11 @@ int Element::clientWidth() {
         // OverflowClipRect() may return infinite along a particular axis if
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
-        int result = AdjustForAbsoluteZoom::AdjustInt(
-            layout_view->OverflowClipRect(PhysicalOffset()).Width().Round(),
-            layout_view->StyleRef());
+        int result =
+            AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                layout_view->OverflowClipRect(PhysicalOffset()).Width(),
+                layout_view->StyleRef())
+                .Round();
         RecordScrollbarSizeForStudy(result, /* is_width= */ true,
                                     /* is_offset= */ false);
         return result;
@@ -1412,9 +1418,10 @@ int Element::clientWidth() {
 
   int result = 0;
   if (const auto* layout_object = GetLayoutBox()) {
-    result = AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedClientWidthWithTableSpecialBehavior(),
-        layout_object->StyleRef());
+    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                 layout_object->ClientWidthWithTableSpecialBehavior(),
+                 layout_object->StyleRef())
+                 .Round();
     RecordScrollbarSizeForStudy(result, /* is_width= */ true,
                                 /* is_offset= */ false);
   }
@@ -1439,9 +1446,11 @@ int Element::clientHeight() {
         // OverflowClipRect() may return infinite along a particular axis if
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
-        int result = AdjustForAbsoluteZoom::AdjustInt(
-            layout_view->OverflowClipRect(PhysicalOffset()).Height().Round(),
-            layout_view->StyleRef());
+        int result =
+            AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                layout_view->OverflowClipRect(PhysicalOffset()).Height(),
+                layout_view->StyleRef())
+                .Round();
         RecordScrollbarSizeForStudy(result, /* is_width= */ false,
                                     /* is_offset= */ false);
         return result;
@@ -1459,9 +1468,10 @@ int Element::clientHeight() {
 
   int result = 0;
   if (const auto* layout_object = GetLayoutBox()) {
-    result = AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedClientHeightWithTableSpecialBehavior(),
-        layout_object->StyleRef());
+    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                 layout_object->ClientHeightWithTableSpecialBehavior(),
+                 layout_object->StyleRef())
+                 .Round();
     RecordScrollbarSizeForStudy(result, /* is_width= */ false,
                                 /* is_offset= */ false);
   }
@@ -1669,8 +1679,8 @@ int Element::scrollWidth() {
   }
 
   if (LayoutBox* box = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustInt(box->PixelSnappedScrollWidth(),
-                                            box);
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(box->ScrollWidth(), *box)
+        .Round();
   }
   return 0;
 }
@@ -1692,8 +1702,8 @@ int Element::scrollHeight() {
   }
 
   if (LayoutBox* box = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustInt(box->PixelSnappedScrollHeight(),
-                                            box);
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(box->ScrollHeight(), *box)
+        .Round();
   }
   return 0;
 }

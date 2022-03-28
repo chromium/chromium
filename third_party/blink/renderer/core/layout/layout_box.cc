@@ -1024,7 +1024,7 @@ int LayoutBox::PixelSnappedClientHeight() const {
   return SnapSizeToPixel(ClientHeight(), Location().Y() + ClientTop());
 }
 
-int LayoutBox::PixelSnappedClientWidthWithTableSpecialBehavior() const {
+LayoutUnit LayoutBox::ClientWidthWithTableSpecialBehavior() const {
   NOT_DESTROYED();
   // clientWidth/Height is the visual portion of the box content, not including
   // borders or scroll bars, but includes padding. And per
@@ -1036,14 +1036,12 @@ int LayoutBox::PixelSnappedClientWidthWithTableSpecialBehavior() const {
   // Currently, Blink doesn't have table wrapper box, and we are supposed to
   // retrieve clientWidth/Height from table wrapper box, not table grid box. So
   // when we retrieve clientWidth/Height, it includes table's border size.
-  LayoutUnit client_width = ClientWidth();
   if (IsTable())
-    client_width += BorderLeft() + BorderRight();
-  return SnapSizeToPixel(client_width, Location().X() + ClientLeft());
+    return ClientWidth() + BorderLeft() + BorderRight();
+  return ClientWidth();
 }
 
-DISABLE_CFI_PERF
-int LayoutBox::PixelSnappedClientHeightWithTableSpecialBehavior() const {
+LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
   NOT_DESTROYED();
   // clientWidth/Height is the visual portion of the box content, not including
   // borders or scroll bars, but includes padding. And per
@@ -1055,10 +1053,9 @@ int LayoutBox::PixelSnappedClientHeightWithTableSpecialBehavior() const {
   // Currently, Blink doesn't have table wrapper box, and we are supposed to
   // retrieve clientWidth/Height from table wrapper box, not table grid box. So
   // when we retrieve clientWidth/Height, it includes table's border size.
-  LayoutUnit client_height = ClientHeight();
   if (IsTable())
-    client_height += BorderTop() + BorderBottom();
-  return SnapSizeToPixel(client_height, Location().Y() + ClientTop());
+    return ClientHeight() + BorderTop() + BorderBottom();
+  return ClientHeight();
 }
 
 int LayoutBox::PixelSnappedOffsetWidth(const Element*) const {
