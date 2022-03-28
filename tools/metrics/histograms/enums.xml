@@ -81829,6 +81829,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Dialog Off, Managed, Enabled"/>
   <int value="10" label="Dialog Off, Managed, Disabled"/>
   <int value="11" label="Dialog Off, User is restricted"/>
+  <int value="12" label="Dialog Off, Manually Controlled, Enabled"/>
+  <int value="13" label="Dialog Off, Manually Controlled, Disabled"/>
+  <int value="14" label="Dialog not required, Enabled"/>
+  <int value="15" label="Dialog not required, Disabled"/>
 </enum>
 
 <enum name="SettingsResetPromptConfigError">

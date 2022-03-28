@@ -8,8 +8,12 @@ namespace privacy_sandbox {
 
 const base::Feature kPrivacySandboxSettings3{"PrivacySandboxSettings3",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kPrivacySandboxSettings3DefaultOn{
+    &kPrivacySandboxSettings3, "setting-default-on", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
     &kPrivacySandboxSettings3, "consent-required", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
+    &kPrivacySandboxSettings3, "notice-required", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3DisableDialogForTesting{
     &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
 const base::FeatureParam<bool>

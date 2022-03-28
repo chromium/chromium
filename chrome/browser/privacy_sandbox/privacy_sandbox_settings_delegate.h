@@ -17,6 +17,7 @@ class PrivacySandboxSettingsDelegate
 
   // PrivacySandboxSettings::Delegate:
   bool IsPrivacySandboxRestricted() override;
+  bool IsPrivacySandboxConfirmed() override;
 
  private:
   Profile* profile_;

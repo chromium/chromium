@@ -51,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -804,6 +805,12 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   ProvideRequestHandlerKeyCommitmentsToNetworkService("a.test");
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+  auto privacy_sandbox_delegate = std::make_unique<
+      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
+  privacy_sandbox_delegate->SetupDefaultResponse(/*restricted=*/false,
+                                                 /*confirmed=*/true);
+  privacy_sandbox_settings->SetDelegateForTesting(
+      std::move(privacy_sandbox_delegate));
   privacy_sandbox_settings->SetPrivacySandboxEnabled(true);
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
