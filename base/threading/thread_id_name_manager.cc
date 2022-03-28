@@ -145,4 +145,15 @@ void ThreadIdNameManager::RemoveName(PlatformThreadHandle::Handle handle,
   thread_id_to_handle_.erase(id_to_handle_iter);
 }
 
+std::vector<PlatformThreadId> ThreadIdNameManager::GetIds() {
+  AutoLock locked(lock_);
+
+  std::vector<PlatformThreadId> ids;
+  ids.reserve(thread_id_to_handle_.size());
+  for (const auto& iter : thread_id_to_handle_)
+    ids.push_back(iter.first);
+
+  return ids;
+}
+
 }  // namespace base

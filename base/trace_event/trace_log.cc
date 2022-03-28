@@ -2250,11 +2250,13 @@ void TraceLog::set_process_name(const std::string& process_name) {
     AutoLock lock(lock_);
     process_name_ = process_name;
   }
+
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (perfetto::Tracing::IsInitialized()) {
     auto track = perfetto::ProcessTrack::Current();
     auto desc = track.Serialize();
     desc.mutable_process()->set_process_name(process_name);
+    desc.mutable_process()->set_pid(process_id_);
     perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif

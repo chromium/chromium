@@ -464,6 +464,10 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     // to system trace event data.
     base::trace_event::TraceLog::GetInstance()->SetProcessID(
         static_cast<int>(real_pid));
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    // Tell Perfetto SDK about the real PID too.
+    perfetto::Platform::SetCurrentProcessId(real_pid);
+#endif
     base::InitUniqueIdForProcessInPidNamespace(real_pid);
     return 0;
   }
