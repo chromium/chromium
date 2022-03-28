@@ -166,11 +166,11 @@ class PLATFORM_EXPORT FontPlatformData {
 #endif
 
  public:
-  float text_size_;
-  bool synthetic_bold_;
-  bool synthetic_italic_;
-  bool avoid_embedded_bitmaps_;
-  FontOrientation orientation_;
+  float text_size_ = 0;
+  bool synthetic_bold_ = false;
+  bool synthetic_italic_ = false;
+  bool avoid_embedded_bitmaps_ = false;
+  FontOrientation orientation_ = FontOrientation::kHorizontal;
 
  private:
 #if !BUILDFLAG(IS_MAC)
@@ -178,7 +178,7 @@ class PLATFORM_EXPORT FontPlatformData {
 #endif
 
   mutable scoped_refptr<HarfBuzzFace> harfbuzz_face_;
-  bool is_hash_table_deleted_value_;
+  bool is_hash_table_deleted_value_ = false;
 };
 
 }  // namespace blink

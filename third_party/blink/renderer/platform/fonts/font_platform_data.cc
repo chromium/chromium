@@ -45,24 +45,9 @@
 namespace blink {
 
 FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
-    : text_size_(0),
-      synthetic_bold_(false),
-      synthetic_italic_(false),
-      avoid_embedded_bitmaps_(false),
-      orientation_(FontOrientation::kHorizontal),
-      is_hash_table_deleted_value_(true)
-{
-}
+    : is_hash_table_deleted_value_(true) {}
 
-FontPlatformData::FontPlatformData()
-    : text_size_(0),
-      synthetic_bold_(false),
-      synthetic_italic_(false),
-      avoid_embedded_bitmaps_(false),
-      orientation_(FontOrientation::kHorizontal),
-      is_hash_table_deleted_value_(false)
-{
-}
+FontPlatformData::FontPlatformData() = default;
 
 FontPlatformData::FontPlatformData(float size,
                                    bool synthetic_bold,
@@ -71,11 +56,7 @@ FontPlatformData::FontPlatformData(float size,
     : text_size_(size),
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
-      avoid_embedded_bitmaps_(false),
-      orientation_(orientation),
-      is_hash_table_deleted_value_(false)
-{
-}
+      orientation_(orientation) {}
 
 FontPlatformData::FontPlatformData(const FontPlatformData& source)
     : typeface_(source.typeface_),
@@ -86,12 +67,12 @@ FontPlatformData::FontPlatformData(const FontPlatformData& source)
       synthetic_bold_(source.synthetic_bold_),
       synthetic_italic_(source.synthetic_italic_),
       avoid_embedded_bitmaps_(source.avoid_embedded_bitmaps_),
-      orientation_(source.orientation_),
+      orientation_(source.orientation_)
 #if !BUILDFLAG(IS_MAC)
-      style_(source.style_),
+      ,
+      style_(source.style_)
 #endif
-      harfbuzz_face_(nullptr),
-      is_hash_table_deleted_value_(false) {
+{
 }
 
 FontPlatformData::FontPlatformData(const FontPlatformData& src, float text_size)
