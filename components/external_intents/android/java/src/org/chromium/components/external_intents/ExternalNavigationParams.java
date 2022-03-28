@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -190,6 +191,20 @@ public class ExternalNavigationParams {
     @Nullable
     public Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
+    }
+
+    /**
+     * @return Whether the user got to the page by clicking a link on another page.
+     */
+    public boolean isLinkTransition() {
+        return (mPageTransition & PageTransition.CORE_MASK) == PageTransition.LINK;
+    }
+
+    /**
+     * @return Whether the navigation is from an intent.
+     */
+    public boolean isFromIntent() {
+        return (mPageTransition & PageTransition.FROM_API) != 0;
     }
 
     /** The builder for {@link ExternalNavigationParams} objects. */
