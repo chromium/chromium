@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/util/test.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "components/policy/core/common/cloud/dm_token.h"

@@ -12,7 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/token.h"
-#include "chrome/browser/policy/messaging_layer/util/test.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

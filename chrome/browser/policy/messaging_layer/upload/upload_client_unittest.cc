@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/util/test.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
 #include <tuple>
 

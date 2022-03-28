@@ -22,7 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
-#include "chrome/browser/policy/messaging_layer/util/test.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/mock_dm_token_retriever.h"

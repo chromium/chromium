@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_H_
-#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_H_
+// Test support library for request payloads.
+
+#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_REQUEST_PAYLOAD_H_
+#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_REQUEST_PAYLOAD_H_
 
 #include <list>
 #include <ostream>
@@ -357,4 +359,4 @@ Matcher<T> DoesRequestContainRecord(base::StringPiece matched_record_json) {
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_H_
+#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_REQUEST_PAYLOAD_H_

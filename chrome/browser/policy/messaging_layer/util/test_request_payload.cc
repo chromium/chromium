@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/util/test.h"
+// Test support library for request payloads.
+
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
 #include <string>
 
