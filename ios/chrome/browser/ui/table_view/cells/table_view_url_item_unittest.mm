@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "net/base/mac/url_conversions.h"
@@ -31,7 +32,8 @@ TEST_F(TableViewURLItemTest, TextLabels) {
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
   item.title = titleText;
-  item.URL = [[CrURL alloc] initWithNSURL:[NSURL URLWithString:URLText]];
+  CrURL* url = [[CrURL alloc] initWithNSURL:[NSURL URLWithString:URLText]];
+  item.URL = url;
   item.metadata = metadataText;
 
   id cell = [[[item cellClass] alloc] init];
@@ -45,8 +47,11 @@ TEST_F(TableViewURLItemTest, TextLabels) {
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:URLCell withStyler:styler];
   EXPECT_NSEQ(titleText, URLCell.titleLabel.text);
-  EXPECT_NSEQ(host, URLCell.URLLabel.text);
   EXPECT_NSEQ(metadataText, URLCell.metadataLabel.text);
+  NSString* hostname = base::SysUTF16ToNSString(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url.gurl));
+  EXPECT_NSEQ(hostname, URLCell.URLLabel.text);
 }
 
 TEST_F(TableViewURLItemTest, MetadataLabelIsHiddenWhenEmpty) {
@@ -87,8 +92,12 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {
   NSString* const kSupplementalURLText = @"supplement";
   NSString* const kSupplementalURLTextDelimiter = @"x";
   NSString* const kExpectedURLLabelText = [NSString
-      stringWithFormat:@"%s %@ %@", kURL.host().c_str(),
-                       kSupplementalURLTextDelimiter, kSupplementalURLText];
+      stringWithFormat:
+          @"%@ %@ %@",
+          base::SysUTF16ToNSString(
+              url_formatter::
+                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(kURL)),
+          kSupplementalURLTextDelimiter, kSupplementalURLText];
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
   item.title = kTitle;
@@ -119,7 +128,11 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithNoTitle) {
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
   TableViewURLCell* url_cell = base::mac::ObjCCast<TableViewURLCell>(cell);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(kURL.host()), url_cell.titleLabel.text);
+  EXPECT_NSEQ(
+      base::SysUTF16ToNSString(
+          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+              kURL)),
+      url_cell.titleLabel.text);
   EXPECT_NSEQ(kSupplementalURLText, url_cell.URLLabel.text);
 }
 

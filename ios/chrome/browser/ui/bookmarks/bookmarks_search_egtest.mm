@@ -5,7 +5,9 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
@@ -541,8 +543,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Select URL.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"First URL, 127.0.0.1")]
+  NSString* label = [NSString
+      stringWithFormat:
+          @"First URL, %@",
+          base::SysUTF16ToNSString(
+              url_formatter::
+                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      GetFirstUrl()))];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
 
   // Invoke Edit through context menu.
@@ -584,11 +592,23 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Select URLs.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"First URL, 127.0.0.1")]
+  NSString* label = [NSString
+      stringWithFormat:
+          @"First URL, %@",
+          base::SysUTF16ToNSString(
+              url_formatter::
+                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      GetFirstUrl()))];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          @"Second URL, 127.0.0.1")]
+  label = [NSString
+      stringWithFormat:
+          @"Second URL, %@",
+          base::SysUTF16ToNSString(
+              url_formatter::
+                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      GetSecondUrl()))];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
 
   // Delete.
@@ -701,8 +721,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Select URL.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"First URL, 127.0.0.1")]
+  NSString* label = [NSString
+      stringWithFormat:
+          @"First URL, %@",
+          base::SysUTF16ToNSString(
+              url_formatter::
+                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      GetFirstUrl()))];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
 
   // Invoke Edit through context menu.

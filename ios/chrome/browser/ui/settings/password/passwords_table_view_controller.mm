@@ -1005,12 +1005,10 @@ bool IsFaviconEnabled() {
   return passwordItem;
 }
 
-- (PasswordFormContentItem*)
-    blockedFormItemWithText:(NSString*)text
-                    forForm:(const password_manager::PasswordForm&)form {
+- (PasswordFormContentItem*)blockedFormItemForForm:
+    (const password_manager::PasswordForm&)form {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
-  passwordItem.title = text;
   passwordItem.form = form;
   passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(form.url)];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -1512,7 +1510,7 @@ bool IsFaviconEnabled() {
       if (hidden)
         continue;
       [model addItem:(IsFaviconEnabled()
-                          ? [self blockedFormItemWithText:text forForm:form]
+                          ? [self blockedFormItemForForm:form]
                           : [self legacyBlockedFormItemWithText:text
                                                         forForm:form])
           toSectionWithIdentifier:SectionIdentifierBlocked];

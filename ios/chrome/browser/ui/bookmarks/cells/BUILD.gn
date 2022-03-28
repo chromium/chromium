@@ -20,6 +20,7 @@ source_set("cells") {
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser:browser",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/authentication",

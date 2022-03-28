@@ -263,6 +263,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/policy:generated",
     "//components/strings",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/policy:eg_test_support+eg2",

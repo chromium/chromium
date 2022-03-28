@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/elements/favicon_container_view.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,7 +89,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     return self.title;
   if (!self.URL)
     return @"";
-  NSString* hostname = base::SysUTF8ToNSString(self.URL.gurl.host());
+  NSString* hostname = [self displayedURL];
   if (hostname.length)
     return hostname;
   // Backup in case host returns nothing (e.g. about:blank).
@@ -109,7 +109,8 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   // Append the hostname with the supplemental text.
   if (!self.URL)
     return @"";
-  NSString* hostname = base::SysUTF8ToNSString(self.URL.gurl.host());
+
+  NSString* hostname = [self displayedURL];
   if (self.supplementalURLText.length) {
     NSString* delimeter =
         self.supplementalURLTextDelimiter.length
@@ -120,6 +121,12 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   } else {
     return hostname;
   }
+}
+
+- (NSString*)displayedURL {
+  return base::SysUTF16ToNSString(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          self.URL.gurl));
 }
 
 @end

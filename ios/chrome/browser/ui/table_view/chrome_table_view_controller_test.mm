@@ -18,9 +18,10 @@
 #endif
 
 // Add selectors to be tested in the helpers.
-@interface TableViewItem (DetailTextAddition)
+@interface TableViewItem (ItemAddition)
 - (NSString*)text;
 - (NSString*)detailText;
+- (NSString*)displayedURL;
 @end
 
 ChromeTableViewControllerTest::ChromeTableViewControllerTest() {}
@@ -123,12 +124,15 @@ void ChromeTableViewControllerTest::CheckTextCellText(NSString* expected_text,
   EXPECT_NSEQ(expected_text, [cell text]);
 }
 
-void ChromeTableViewControllerTest::CheckURLCellTitle(NSString* expected_title,
-                                                      int section,
-                                                      int item) {
+void ChromeTableViewControllerTest::CheckURLCellEmptyTitle(
+    NSString* expected_title,
+    int section,
+    int item) {
   id cell = GetTableViewItem(section, item);
   ASSERT_TRUE([cell respondsToSelector:@selector(title)]);
-  EXPECT_NSEQ(expected_title, [cell title]);
+  ASSERT_TRUE([cell respondsToSelector:@selector(displayedURL)]);
+  EXPECT_EQ(nil, [cell title]);
+  EXPECT_NSEQ(expected_title, [cell displayedURL]);
 }
 
 void ChromeTableViewControllerTest::CheckTextCellTextWithId(

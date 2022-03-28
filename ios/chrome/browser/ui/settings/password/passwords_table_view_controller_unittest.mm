@@ -351,11 +351,11 @@ TEST_F(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
       password_manager::features::kEnableFaviconForPasswords);
 
   AddBlockedForm2();
-  CheckURLCellTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 0);
+  CheckURLCellEmptyTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 0);
 
   AddBlockedForm1();
-  CheckURLCellTitle(@"secret.com", GetSectionIndex(SavedPasswords), 0);
-  CheckURLCellTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 1);
+  CheckURLCellEmptyTitle(@"secret.com", GetSectionIndex(SavedPasswords), 0);
+  CheckURLCellEmptyTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 1);
 }
 
 // Tests the order in which the saved passwords are displayed.

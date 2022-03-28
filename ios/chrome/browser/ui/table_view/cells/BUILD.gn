@@ -64,6 +64,7 @@ source_set("cells") {
     "resources:table_view_cell_info",
     "//base",
     "//base:i18n",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
@@ -81,7 +82,6 @@ source_set("cells") {
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
-    "//url:url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -120,6 +120,7 @@ source_set("unit_tests") {
     ":cells_constants",
     "//base",
     "//base/test:test_support",
+    "//components/url_formatter",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view:styler",

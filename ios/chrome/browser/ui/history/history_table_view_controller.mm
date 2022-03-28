@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -316,9 +317,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         [[HistoryEntryItem alloc] initWithType:ItemTypeHistoryEntry
                          accessibilityDelegate:self];
     item.text = [history::FormattedTitle(entry.title, entry.url) copy];
-    item.detailText =
-        [base::SysUTF8ToNSString(entry.url.DeprecatedGetOriginAsURL().spec())
-            copy];
+    item.detailText = base::SysUTF16ToNSString(
+        url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+            entry.url));
     item.timeText =
         [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
     item.URL = entry.url;
