@@ -79,6 +79,23 @@ void BluetoothPowerControllerImpl::SetBluetoothEnabledState(bool enabled) {
   SetAdapterState(enabled);
 }
 
+void BluetoothPowerControllerImpl::SetBluetoothHidDetectionActive(bool active) {
+  if (active) {
+    BLUETOOTH_LOG(EVENT) << "HID detection started, enabling adapter.";
+    SetAdapterState(true);
+    return;
+  }
+
+  DCHECK(local_state_)
+      << "HID detection finished but unable to restore persisted Bluetooth "
+         "state because local_state_ is null.";
+  DCHECK(!user_manager::UserManager::Get()->GetActiveUser());
+
+  BLUETOOTH_LOG(EVENT)
+      << "HID detection finished, restoring persisted Bluetooth state.";
+  ApplyBluetoothLocalStatePref();
+}
+
 void BluetoothPowerControllerImpl::SetPrefs(PrefService* primary_profile_prefs,
                                             PrefService* local_state) {
   InitLocalStatePrefService(local_state);

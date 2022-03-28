@@ -14,7 +14,16 @@ FakeBluetoothPowerController::FakeBluetoothPowerController(
 FakeBluetoothPowerController::~FakeBluetoothPowerController() = default;
 
 void FakeBluetoothPowerController::SetBluetoothEnabledState(bool enabled) {
+  last_enabled_ = enabled;
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
+}
+
+void FakeBluetoothPowerController::SetBluetoothHidDetectionActive(bool active) {
+  if (active) {
+    adapter_state_controller_->SetBluetoothEnabledState(true);
+  } else {
+    adapter_state_controller_->SetBluetoothEnabledState(last_enabled_);
+  }
 }
 
 }  // namespace bluetooth_config

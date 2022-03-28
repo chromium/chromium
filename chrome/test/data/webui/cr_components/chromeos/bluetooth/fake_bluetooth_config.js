@@ -140,7 +140,7 @@ export class FakeBluetoothConfig {
    *     observer
    */
   observeDiscoverySessionStatusChanges(observer) {
-    // This method left unimplemented while the observer is not used in JS.
+    // This method is left unimplemented since the observer is not used in JS.
     assertNotReached();
   }
 
@@ -177,6 +177,15 @@ export class FakeBluetoothConfig {
     this.setSystemState(
         enabled ? bluetoothSystemState.kEnabling :
                   bluetoothSystemState.kDisabling);
+  }
+
+  /**
+   * @override
+   * @param {boolean} active
+   */
+  setBluetoothHidDetectionActive(active) {
+    // This method is left unimplemented as it is only used in OOBE.
+    assertNotReached();
   }
 
   /**

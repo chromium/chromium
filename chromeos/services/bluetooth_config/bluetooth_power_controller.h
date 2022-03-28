@@ -25,6 +25,13 @@ class BluetoothPowerController {
   // persisted to local state.
   virtual void SetBluetoothEnabledState(bool enabled) = 0;
 
+  // If |active| is true, enables Bluetooth but doesn't persist the state to
+  // prefs. If |active| is false, restores the Bluetooth enabled state that was
+  // last persisted to local state. This should be called to enable Bluetooth
+  // when OOBE HID detection starts or to restore the persisted Bluetooth state
+  // when OOBE HID detection ends.
+  virtual void SetBluetoothHidDetectionActive(bool active) = 0;
+
   // Sets the PrefServices used to save and retrieve the Bluetooth power state.
   virtual void SetPrefs(PrefService* primary_profile_prefs_,
                         PrefService* local_state) = 0;
