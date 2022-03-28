@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/observers/isolation_context_metrics.h"
 
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

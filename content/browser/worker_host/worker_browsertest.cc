@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

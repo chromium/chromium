@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/web_contents_tester.h"

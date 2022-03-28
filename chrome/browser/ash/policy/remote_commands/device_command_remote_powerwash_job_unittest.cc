@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

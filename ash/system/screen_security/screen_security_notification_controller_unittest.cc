@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "ui/message_center/message_center.h"
 

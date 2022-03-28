@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/ui_resource_layer.h"

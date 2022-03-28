@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"

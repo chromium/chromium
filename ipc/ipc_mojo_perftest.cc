@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"

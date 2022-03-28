@@ -5,6 +5,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
+#include "base/callback.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"

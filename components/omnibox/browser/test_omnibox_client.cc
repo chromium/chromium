@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"

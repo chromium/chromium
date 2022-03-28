@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/after_startup_task_utils.h"

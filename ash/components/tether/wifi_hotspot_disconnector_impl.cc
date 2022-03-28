@@ -8,6 +8,7 @@
 #include "ash/components/tether/network_configuration_remover.h"
 #include "ash/components/tether/pref_names.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state.h"

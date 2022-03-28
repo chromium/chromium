@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/views_test_base.h"
 

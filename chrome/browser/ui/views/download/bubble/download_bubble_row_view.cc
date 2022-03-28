@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"

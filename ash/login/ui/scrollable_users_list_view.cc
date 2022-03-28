@@ -17,6 +17,7 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

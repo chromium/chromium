@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"

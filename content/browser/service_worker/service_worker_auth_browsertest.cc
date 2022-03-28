@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

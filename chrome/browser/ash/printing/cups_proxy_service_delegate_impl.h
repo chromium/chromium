@@ -14,8 +14,6 @@
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chromeos/printing/printer_configuration.h"
 
-#include "base/task/post_task.h"
-
 class Profile;
 
 namespace ash {

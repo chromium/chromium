@@ -14,8 +14,6 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "base/task/post_task.h"
-
 namespace cups_proxy {
 
 using SetupPrinterCallback = base::OnceCallback<void(bool)>;

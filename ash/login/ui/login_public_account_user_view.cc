@@ -12,6 +12,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"

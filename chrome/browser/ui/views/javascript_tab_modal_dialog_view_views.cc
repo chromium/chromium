@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/javascript_tab_modal_dialog_view_views.h"
 
+#include "base/callback.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/views/title_origin_label.h"

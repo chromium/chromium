@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 
 #include "base/barrier_closure.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"

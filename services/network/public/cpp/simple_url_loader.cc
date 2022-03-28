@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"

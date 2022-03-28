@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
 
+#include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"

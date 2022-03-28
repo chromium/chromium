@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"

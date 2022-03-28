@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

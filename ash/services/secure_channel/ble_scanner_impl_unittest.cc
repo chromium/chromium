@@ -16,6 +16,7 @@
 #include "ash/services/secure_channel/fake_ble_synchronizer.h"
 #include "ash/services/secure_channel/fake_bluetooth_helper.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

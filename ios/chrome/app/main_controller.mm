@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/bundle_locations.h"

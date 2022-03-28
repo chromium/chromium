@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/vr/vr_tab_helper.h"

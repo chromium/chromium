@@ -13,6 +13,7 @@
 #include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"

@@ -18,6 +18,7 @@
 #include "ash/public/cpp/shelf_test_api.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"

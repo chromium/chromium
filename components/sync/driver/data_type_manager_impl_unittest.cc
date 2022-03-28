@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

@@ -10,6 +10,7 @@
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_switches.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"

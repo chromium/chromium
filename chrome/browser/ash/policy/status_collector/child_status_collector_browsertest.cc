@@ -13,6 +13,7 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"

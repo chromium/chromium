@@ -13,6 +13,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/safe_sprintf.h"

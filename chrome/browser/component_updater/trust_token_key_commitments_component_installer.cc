@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"

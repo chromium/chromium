@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 
+#include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

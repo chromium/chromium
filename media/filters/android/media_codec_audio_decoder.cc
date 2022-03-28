@@ -9,6 +9,7 @@
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"

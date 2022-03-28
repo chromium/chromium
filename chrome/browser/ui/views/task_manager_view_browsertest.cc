@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/callback.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
