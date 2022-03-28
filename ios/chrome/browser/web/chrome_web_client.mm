@@ -35,6 +35,8 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #include "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
@@ -416,5 +418,17 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
       item->SetVirtualURL(
           reading_list::EntryURLForOfflineURL(item->GetVirtualURL()));
     }
+  }
+}
+
+void ChromeWebClient::WillDisplayMediaCapturePermissionPrompt(
+    web::WebState* web_state) const {
+  // When a prendered page displays a prompt, cancel the prerender.
+  PrerenderService* prerender_service =
+      PrerenderServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  if (prerender_service &&
+      prerender_service->IsWebStatePrerendered(web_state)) {
+    prerender_service->CancelPrerender();
   }
 }

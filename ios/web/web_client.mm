@@ -111,6 +111,9 @@ bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
 
 void WebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {}
 
+void WebClient::WillDisplayMediaCapturePermissionPrompt(
+    web::WebState* web_state) const {}
+
 UserAgentType WebClient::GetDefaultUserAgent(web::WebState* web_state,
                                              const GURL& url) {
   return UserAgentType::MOBILE;

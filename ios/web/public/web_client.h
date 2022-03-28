@@ -182,6 +182,10 @@ class WebClient {
   // Correct missing NTP and reading list virtualURLs and titles. Native session
   // restoration may not properly restore these items.
   virtual void CleanupNativeRestoreURLs(web::WebState* web_state) const;
+
+  // Notify the embedder that |web_state| will display a prompt for the user.
+  virtual void WillDisplayMediaCapturePermissionPrompt(
+      web::WebState* web_state) const;
 };
 
 }  // namespace web

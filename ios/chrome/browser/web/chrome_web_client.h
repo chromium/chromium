@@ -57,6 +57,8 @@ class ChromeWebClient : public web::WebClient {
                                          const GURL& url) override;
   bool RestoreSessionFromCache(web::WebState* web_state) const override;
   void CleanupNativeRestoreURLs(web::WebState* web_state) const override;
+  void WillDisplayMediaCapturePermissionPrompt(
+      web::WebState* web_state) const override;
 
  private:
   // Reference to a view that is attached to a window.

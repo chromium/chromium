@@ -96,6 +96,8 @@ enum class PermissionRequest {
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
+  web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
+      self.webStateImpl);
   decisionHandler(WKPermissionDecisionPrompt);
 }
 
