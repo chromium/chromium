@@ -87,7 +87,7 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
   // We do this here instead of in SetUp()/TearDown() because we need this to
   // run before the task environment (which creates threads and hence is racy
   // with attempting to disable the thread cache).
-  SwapOutProcessThreadCacheForTesting(root);
+  internal::SwapOutProcessThreadCacheForTesting(root);
 
   return root;
 }
@@ -100,7 +100,7 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
 
   ~PartitionAllocThreadCacheTest() override {
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
-    SwapInProcessThreadCacheForTesting(root_);
+    internal::SwapInProcessThreadCacheForTesting(root_);
 
     ThreadSafePartitionRoot::DeleteForTesting(root_);
 
@@ -1073,7 +1073,7 @@ TEST(AlternateBucketDistributionTest, SwitchBeforeAlloc) {
 
   // Clean up
   ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
-  SwapInProcessThreadCacheForTesting(root);
+  internal::SwapInProcessThreadCacheForTesting(root);
 
   ThreadSafePartitionRoot::DeleteForTesting(root);
 
@@ -1102,7 +1102,7 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
 
   // Clean up
   ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
-  SwapInProcessThreadCacheForTesting(root);
+  internal::SwapInProcessThreadCacheForTesting(root);
 
   ThreadSafePartitionRoot::DeleteForTesting(root);
 

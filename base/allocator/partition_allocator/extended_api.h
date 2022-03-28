@@ -9,7 +9,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
 
-namespace base {
+namespace partition_alloc::internal {
 // These two functions are unsafe to run if there are multiple threads running
 // in the process.
 //
@@ -22,6 +22,6 @@ BASE_EXPORT void SwapOutProcessThreadCacheForTesting(
 BASE_EXPORT void SwapInProcessThreadCacheForTesting(
     ThreadSafePartitionRoot* root);
 
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_EXTENDED_API_H_
