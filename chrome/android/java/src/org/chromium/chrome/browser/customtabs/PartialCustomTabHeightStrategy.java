@@ -10,6 +10,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -28,9 +29,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MotionEventCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
@@ -75,6 +73,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private Activity mActivity;
     private @Px int mInitialHeight;
     private final @Px int mMaxHeight;
+    private final @Px int mNavbarHeight;
     private final @Px int mFullyExpandedAdjustmentHeight;
     private ValueAnimator mAnimator;
 
@@ -224,6 +223,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
+        mNavbarHeight = getNavbarHeight();
         mMaxHeight = getMaximumPossibleHeight();
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
@@ -337,20 +337,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // mode.
         if (attributes.height == heightInPhysicalPixels) return;
 
-        attributes.height = heightInPhysicalPixels;
+        // To avoid the bottom navigation bar area flickering when scrolling, position the web
+        // contents area right above the navigation bar so the two won't overlap. The navigation
+        // area now just shows whatever is under it 1) web contents are while scrolling 2)
+        // underlying activity's navigation bar when at rest.
+        attributes.height = heightInPhysicalPixels - mNavbarHeight;
+        attributes.y = mNavbarHeight;
         attributes.gravity = Gravity.BOTTOM;
         mActivity.getWindow().setAttributes(attributes);
-
-        View decorView = mActivity.getWindow().getDecorView();
-        // Hide the navigation bar to reduce flickering at the bottom. Because FLAG_LAYOUT_NO_LIMITS
-        // flag we used in onMoveStart() will make the navigation bar background color to be
-        // transparent, so there is a transient stage.
-        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), true);
-        WindowInsetsControllerCompat controller =
-                WindowCompat.getInsetsController(mActivity.getWindow(), decorView);
-        controller.hide(WindowInsetsCompat.Type.navigationBars());
-        controller.setSystemBarsBehavior(
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
     private void updateWindowHeight(@Px int y) {
@@ -369,7 +363,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
 
-        attributes.y = mMaxHeight - attributes.height;
+        attributes.y = mMaxHeight - attributes.height - mNavbarHeight;
         attributes.height = mMaxHeight;
         attributes.gravity = Gravity.NO_GRAVITY;
         mActivity.getWindow().setAttributes(attributes);
@@ -380,12 +374,25 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
 
-        attributes.height = mMaxHeight - attributes.y;
-        attributes.y = 0;
+        attributes.height = mMaxHeight - attributes.y - mNavbarHeight;
+        attributes.y = mNavbarHeight;
         attributes.gravity = Gravity.BOTTOM;
         mActivity.getWindow().setAttributes(attributes);
 
         mOnResizedCallback.onResized(attributes.height);
+    }
+
+    private @Px int getNavbarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return mActivity.getWindowManager()
+                    .getCurrentWindowMetrics()
+                    .getWindowInsets()
+                    .getInsets(WindowInsets.Type.navigationBars())
+                    .bottom;
+        }
+        Resources res = mActivity.getResources();
+        int resId = res.getIdentifier("navigation_bar_height", "dimen", "android");
+        return resId > 0 ? res.getDimensionPixelSize(resId) : 0;
     }
 
     private @Px int getMaximumPossibleHeight() {
