@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -78,6 +79,14 @@ bool ShouldShowLacrosSideBySideWarningInLacros() {
          !chromeos::LacrosService::Get()
               ->init_params()
               ->standalone_browser_is_only_browser;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string BuildOSSettingsUrl(const std::string& sub_page) {
+  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
+  os_settings_url.append(sub_page);
+  return os_settings_url;
 }
 #endif
 
@@ -298,6 +307,9 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
     {"syncSettingsLacrosSideBySideWarning",
      IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -345,6 +357,12 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString("chromeOSSyncSettingsPath",
                          chromeos::settings::mojom::kSyncSetupSubpagePath);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddString(
+      "osSyncSettingsUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath));
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
