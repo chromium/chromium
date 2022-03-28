@@ -3390,6 +3390,13 @@
        ]
       },
       "the-input-element": {
+       "invalid-datalist-options-crash.html": [
+        "7cdd55196cecaae8cc64fe7fc86b4f7305e7525d",
+        [
+         null,
+         {}
+        ]
+       ],
        "time-datalist-crash.html": [
         "2964032e35283ef4cae28af2b736fa9ba3924260",
         [
@@ -15696,7 +15703,7 @@
    },
    "compat": {
     "webkit-background-origin-text.html": [
-     "06e728342cdb63a72b420423b40b6e32ae3e2162",
+     "dd38690dd969465a0b392d8ec86a5a64fdc17a27",
      [
       null,
       [
@@ -15705,7 +15712,23 @@
         "=="
        ]
       ],
-      {}
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           4000
+          ]
+         ]
+        ]
+       ]
+      }
      ]
     ],
     "webkit-box-clamp-bottom-border.html": [
@@ -15800,7 +15823,7 @@
      ]
     ],
     "webkit-linear-gradient-line-bottom.html": [
-     "21e1c8948bfedb697e64627d7c2372163cd5bb28",
+     "ab45b5917d5764c2266d62b70269d3013ea19b4c",
      [
       null,
       [
@@ -15809,11 +15832,27 @@
         "=="
        ]
       ],
-      {}
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           4000
+          ]
+         ]
+        ]
+       ]
+      }
      ]
     ],
     "webkit-linear-gradient-line-left.html": [
-     "b0e13c13962045498d2f51d56eb2d6e1780b9076",
+     "795a97bbfe23c43bbe4fd5a0103df6093285fd04",
      [
       null,
       [
@@ -15822,11 +15861,27 @@
         "=="
        ]
       ],
-      {}
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           4000
+          ]
+         ]
+        ]
+       ]
+      }
      ]
     ],
     "webkit-linear-gradient-line-right.html": [
-     "0f1a4b9500c362b67430ccbc9caeb165ee5327f4",
+     "91d0f7b49fb053f961335bf19343925bc7c9bd56",
      [
       null,
       [
@@ -15835,11 +15890,27 @@
         "=="
        ]
       ],
-      {}
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           4000
+          ]
+         ]
+        ]
+       ]
+      }
      ]
     ],
     "webkit-linear-gradient-line-top.html": [
-     "579d88220610e4f2ea7e884018b655cf1c5c8dca",
+     "2df36ef3cd208b1c232bcc2d3f5ade74d4023d93",
      [
       null,
       [
@@ -15848,7 +15919,23 @@
         "=="
        ]
       ],
-      {}
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           4000
+          ]
+         ]
+        ]
+       ]
+      }
      ]
     ],
     "webkit-text-fill-color-property-001a.html": [
@@ -73155,7 +73242,7 @@
        ]
       ],
       "background-repeat-space.xht": [
-       "15c044fc5039719c8507f3c3b8630512e4e75e3a",
+       "8867520c56eb70a6d590b9fa3ffe7e20f53519d0",
        [
         null,
         [
@@ -73164,7 +73251,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             53
+            ],
+            [
+             0,
+             2796
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "gradient-repeat-spaced-with-borders.html": [
@@ -73286,7 +73389,7 @@
       ]
      ],
      "background-repeat-space-10.html": [
-      "00205a938b813a5d975ef71ae61883b3a18091e3",
+      "cb1c782116355f25254852b1c0568db8c4c2cba2",
       [
        null,
        [
@@ -73295,11 +73398,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            990
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-1a.html": [
-      "e4376c6391d5671c94f80a69cb62efc0e50df25d",
+      "f2dfa9a0a6d83d51d9a94a7b2fca008809a515cc",
       [
        null,
        [
@@ -73308,11 +73427,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            7950
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-1b.html": [
-      "55bc6dc704dcc156eb0dd6d5650683d520e6d8f2",
+      "b1e6777bf26a2690b9be0f182d8ea441a35678da",
       [
        null,
        [
@@ -73321,11 +73456,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            7950
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-1c.html": [
-      "27470f9e0c07de57852c2daf7c016167ef147085",
+      "3f562042aeed0b9c2f5f86c10fa57ca511bd5625",
       [
        null,
        [
@@ -73334,7 +73485,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            7950
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-2.html": [
@@ -73351,7 +73518,7 @@
       ]
      ],
      "background-repeat-space-3.html": [
-      "9ea709b81f32e565618a4b37791a3bd914e63a1e",
+      "c55f918c175aa47d1d4c58b2bcb91ed84344a67e",
       [
        null,
        [
@@ -73360,11 +73527,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            5300
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-4.html": [
-      "834381c76fec8ed1a6d74301937df99706d8cba2",
+      "36f92c01582119ec79fe4842628b88048c061f9e",
       [
        null,
        [
@@ -73373,11 +73556,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            7905
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-5.html": [
-      "0beca23d9640355fc7576f9cda797ea5a42a9787",
+      "7b499a743e4a521c6baf79c5538a03c02560cfde",
       [
        null,
        [
@@ -73386,11 +73585,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            7950
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-6.html": [
-      "ae2c0fa8f6330c0750b988c0127a60b05ba16671",
+      "80728ca4d55d631977cdd76624e787824c268d2a",
       [
        null,
        [
@@ -73399,11 +73614,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            48
+           ],
+           [
+            0,
+            15780
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-7.html": [
-      "809875f57be06f45eb33498ce385d2233fb5c83d",
+      "c8b8731cc01ec4f952533da6c7571bbdba0e0c48",
       [
        null,
        [
@@ -73412,11 +73643,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            48
+           ],
+           [
+            0,
+            15878
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-8.html": [
-      "473d115ba690c6d8f067699c3ade7e3253149583",
+      "97a2d654952009c17a4f2d94cc7877752f80d995",
       [
        null,
        [
@@ -73425,11 +73672,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            48
+           ],
+           [
+            0,
+            15880
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-9.html": [
-      "28ff46473be46bb9af26e61e17e0657f22ad240c",
+      "79f4c0c0a140d268060bafaf48cd25406d5f2f63",
       [
        null,
        [
@@ -73438,11 +73701,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            981
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-rounded-image-clip.html": [
-      "1179ba549969c494d61bc058925c9b81960c213d",
+      "f492b2b419a486038a02aa6e4bab14b49b04a07c",
       [
        null,
        [
@@ -73451,7 +73730,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            18461
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-size": {
@@ -76514,7 +76809,7 @@
       ]
      ],
      "background-size-027.html": [
-      "38714bba914587a93a4f3d1371dee0a574e14ea2",
+      "c122f9c796746816f6cabf95905d7eb1fd57855b",
       [
        null,
        [
@@ -76523,7 +76818,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            193
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-size-028.html": [
@@ -77115,7 +77426,7 @@
       ]
      ],
      "border-image-repeat-space-1.html": [
-      "c186a3139fe4dce91892236d341df4edbdb66991",
+      "b24883f7bd6d99ba9cb4ed3572ae58201f99f3a8",
       [
        null,
        [
@@ -77124,7 +77435,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            27
+           ],
+           [
+            0,
+            800
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-repeat-space-10.html": [
@@ -77154,7 +77481,7 @@
       ]
      ],
      "border-image-repeat-space-3.html": [
-      "085498f76a94939b6ba19aa2c387642eaba39081",
+      "60916b2a5c1460aeaedb3091ebc247e6ca97f829",
       [
        null,
        [
@@ -77163,7 +77490,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            27
+           ],
+           [
+            0,
+            1600
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-repeat-space-4-ref-1.html": [
@@ -77232,7 +77575,7 @@
       ]
      ],
      "border-image-repeat-space-7.html": [
-      "367657858ea25239c2330db042ef3d6aeea74152",
+      "033a7b43bed1b85fc9fa72b53dc0f9710edd6202",
       [
        null,
        [
@@ -77241,7 +77584,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            53
+           ],
+           [
+            0,
+            2320
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-repeat-space-8.html": [
@@ -78352,7 +78711,7 @@
       ]
      ],
      "css-box-shadow-001.html": [
-      "e6506e00f0e483ab68a7cd0695983c995058ee5a",
+      "ff03d809d0e0a251de6bc4769a2d4769426c160c",
       [
        null,
        [
@@ -78361,7 +78720,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            52
+           ],
+           [
+            0,
+            138
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css3-background-clip-border-box.html": [
@@ -78640,7 +79015,7 @@
       ]
      ],
      "linear-gradient-currentcolor-first-line.html": [
-      "981aa8db921b60969fe9eab489442ed0b424a3d0",
+      "737618fb66634189aae2a6dbb85568e7e8913ca6",
       [
        null,
        [
@@ -78649,7 +79024,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            244
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "local-attachment-content-box-scroll.html": [
@@ -80321,6 +80712,19 @@
         {}
        ]
       ],
+      "multi-line-column-flex-fragmentation-045.html": [
+       "b445a15113ca3aa74036a95a6e6e49bed2ca95fa",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multi-line-row-flex-fragmentation-001.html": [
        "ba6b0103e447994a2778cbd9ea356a490f62b8fb",
        [
@@ -80919,6 +81323,19 @@
         {}
        ]
       ],
+      "multi-line-row-flex-fragmentation-051.html": [
+       "0f826cf3c588ef0f7ab3505d149693314457b332",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-column-flex-fragmentation-001.html": [
        "d1411f9a16a14585b945408b162182ed343419d2",
        [
@@ -81426,6 +81843,45 @@
         {}
        ]
       ],
+      "single-line-column-flex-fragmentation-041.html": [
+       "66a6b0660f4ed8f49e0dbbaa080ba5c65305a071",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-042.html": [
+       "be5732c24d2450cd5707a26dadf65a4a316e3b33",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-043.html": [
+       "decca1369e3cd94b6ee2a88e0217430ac95f5745",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-row-flex-fragmentation-001.html": [
        "379327a4aff584192f076d3f9d8f3ead232c0f5c",
        [
@@ -81753,6 +82209,19 @@
       ],
       "single-line-row-flex-fragmentation-026.html": [
        "9a78bf503b7238cf04cdb969c01ead6ef1affd56",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-028.html": [
+       "4d0b5e52cd38e3d2a91cd9a3c865a4dc64d4556c",
        [
         null,
         [
@@ -100216,7 +100685,7 @@
       ]
      ],
      "align-content-001.htm": [
-      "f947b6930d4768635d0d834cf945c88ab6a2ffaf",
+      "a4e05e7aedc6730e44b490f42e10ea9fbdf3e520",
       [
        null,
        [
@@ -100225,11 +100694,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5709
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-content-002.htm": [
-      "66f52ef1e94f7d5779813d48455d2c54266ff8b7",
+      "1aca52f3a7f131c4a26a4710b72df5be79877c7a",
       [
        null,
        [
@@ -100238,11 +100723,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5708
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-content-003.htm": [
-      "14af13da58ac1e4cd8335bec87e1a081b9a47e2d",
+      "9a750119a625d4317c02fec130ab051a2f5f2671",
       [
        null,
        [
@@ -100251,11 +100752,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5708
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-content-004.htm": [
-      "09dfdaad9b0c0de4144f730b653a538c814babdb",
+      "795b00942266e8b936f00cac79ae8d7871fad80f",
       [
        null,
        [
@@ -100264,11 +100781,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4415
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-content-005.htm": [
-      "738a903cc99d446ee9b826e66a85b1713f861d13",
+      "c57c6295e53018cf55aaa95cfb4749a70bc12348",
       [
        null,
        [
@@ -100277,7 +100810,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            6649
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-content-006.htm": [
@@ -100385,7 +100934,7 @@
       ]
      ],
      "align-items-001.htm": [
-      "b9c27f9cdf14f8d51a91e967c2a2c1981b4ffc87",
+      "a66194f678953c5152e7adb9c05a5981ce0022bd",
       [
        null,
        [
@@ -100394,11 +100943,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5709
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-items-002.htm": [
-      "0398b4c54663caeb39f7cd0d7875832b02583dfc",
+      "f6e1a2193e49b8b6b23fd12fd300b96f0e2d7fd7",
       [
        null,
        [
@@ -100407,11 +100972,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5834
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-items-003.htm": [
-      "3a76608e2bea9ccf08b04b6932ae68de0c497831",
+      "b9cbed0f63de7815dad56595342d7520116f05ef",
       [
        null,
        [
@@ -100420,11 +101001,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5820
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-items-004.htm": [
-      "07f4498d8bd0fc1414bae36ec54759774958fef1",
+      "8552847703b3cbce22f1d8365e6f93f1842d0ffe",
       [
        null,
        [
@@ -100433,7 +101030,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5868
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "align-items-005.htm": [
@@ -109398,7 +110011,7 @@
       ]
      ],
      "justify-content-001.htm": [
-      "577395eaf7ff686cc4f2aa9465fb3059e9f28653",
+      "17384cf6c7fe6beab778c0dd5def045630326b54",
       [
        null,
        [
@@ -109407,11 +110020,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5810
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "justify-content-002.htm": [
-      "c693fadf76b26e686b87b7847c9d2d4162c6c773",
+      "e3c671a53faf491f8015551594fe055e549b2d61",
       [
        null,
        [
@@ -109420,7 +110049,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            6578
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "justify-content-003.htm": [
@@ -109437,7 +110082,7 @@
       ]
      ],
      "justify-content-004.htm": [
-      "552683a212471de7a8fd9adfa78774d8567b6f84",
+      "88dcfe8c026bd2fcef003f644c8b12a097b0331d",
       [
        null,
        [
@@ -109446,11 +110091,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5838
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "justify-content-005.htm": [
-      "e5b95ed10f4bc372c619153e99676e5cdb3cb7d8",
+      "d98571d1a875935710b2dbaa46b5c028e81d4864",
       [
        null,
        [
@@ -109459,7 +110120,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5802
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "layout-algorithm_algo-cross-line-001.html": [
@@ -117173,7 +117850,7 @@
        ]
       ],
       "grid-item-aspect-ratio-stretch-2.html": [
-       "f5b733029c267a1c1ff2a15998947c2a1f1a1017",
+       "2a4dd2d787d34be1097beaaec73922296aad666c",
        [
         null,
         [
@@ -117182,7 +117859,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "grid-item-aspect-ratio-stretch-3.html": [
@@ -121282,7 +121975,7 @@
        ]
       ],
       "flex-sizing-rows-indefinite-height.html": [
-       "8fd1c49b7df3ba0fe3e973e48d0eb21dbd75e49f",
+       "971599aaf0b25756e006544533119f48fa9a7b64",
        [
         null,
         [
@@ -121291,7 +121984,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             3958
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "flex-tracks-with-fractional-size.html": [
@@ -121516,7 +122225,7 @@
        ]
       ],
       "grid-template-flexible-rerun-track-sizing.html": [
-       "c466e5426e7475570618a407007c1c72a1f3789b",
+       "3e5fc4593bc634ea82ff3387380230977a217d1f",
        [
         null,
         [
@@ -121525,7 +122234,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             3958
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -123057,6 +123782,19 @@
        ],
        {}
       ]
+     ],
+     "whitespace-reattach.html": [
+      "f97934eb30e6b5af1ceece9aaf2f52209b959646",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-highlight-api": {
@@ -123871,7 +124609,7 @@
       ]
      ],
      "gradients-with-border.html": [
-      "ab964aeb909e44faafdd47786257ea9586e95ff7",
+      "cfe751da6b4ed348a91de75be6eca84160e7f8c9",
       [
        null,
        [
@@ -123880,7 +124618,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            10955
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "gradients-with-transparent.html": [
@@ -124821,7 +125575,7 @@
       ]
      ],
      "multiple-position-color-stop-linear.html": [
-      "c739a2a71d2dbbc0088df45caac3a679d3d5ab37",
+      "806845da43b611b736494e360a9574b49ff85da0",
       [
        null,
        [
@@ -124830,7 +125584,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            3665
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "multiple-position-color-stop-radial-2.html": [
@@ -127460,7 +128230,7 @@
       ]
      ],
      "repeating-conic-gradient.html": [
-      "548de864a05efc2b286224a28b5aebf93f074251",
+      "9a9587f29f6b491461d9df96d76072cbe13efe9a",
       [
        null,
        [
@@ -127469,7 +128239,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            47
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "tiled-conic-gradients.html": [
@@ -127499,7 +128285,7 @@
       ]
      ],
      "tiled-radial-gradients.html": [
-      "6615e8be358ecf0121a3449664997f1ac1d47e11",
+      "221a7ae19b4301f4923f88b7ea4066584921273b",
       [
        null,
        [
@@ -127508,7 +128294,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            4060
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -131058,7 +131860,7 @@
      "clip-path": {
       "animations": {
        "clip-path-animation-filter.html": [
-        "a4f54904e1ee1f182e89e7cfb4243f2f316ffff0",
+        "c5e3eb5dbdbd88e8ff66366bf4a0f2be76cec53a",
         [
          null,
          [
@@ -131067,7 +131869,23 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              38
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-animation-incompatible-shapes1.html": [
@@ -134164,7 +134982,7 @@
        ]
       ],
       "mask-image-clip-exclude.html": [
-       "f3d4c78d7a17f26d944324c73c0f00b58926ef60",
+       "375fe2de233ed44718e881f1fa5815f74f539415",
        [
         null,
         [
@@ -134173,7 +134991,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             1764
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mask-image-data-url-image.html": [
@@ -150560,7 +151394,7 @@
       "shape-image": {
        "gradients": {
         "shape-outside-linear-gradient-001.html": [
-         "9b8b6f8d3290f33a0397721cee1eff87bcabde8b",
+         "ab580dfce9ea16f3ca22bb01104e851fee23e5b7",
          [
           null,
           [
@@ -150569,11 +151403,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               7914
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-002.html": [
-         "18a98a7f762cc1363d26434a739b46f7cc847906",
+         "c956d7b58386d41afdd2b757da6beef070a77474",
          [
           null,
           [
@@ -150582,11 +151432,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               7917
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-003.html": [
-         "51713abc00fc9812c049abf7cf160274f638fbfd",
+         "3062aaed9584332ed89b618064df356673e138ae",
          [
           null,
           [
@@ -150595,7 +151461,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               7917
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-004.html": [
@@ -165432,7 +166314,7 @@
        ]
       ],
       "shaping-arabic-diacritics-001.html": [
-       "c7eee3481abb176c6956218abc8bd5a15ad9d335",
+       "28f9a1e03de4a76e09cf9f331072d84b74d4e5ad",
        [
         null,
         [
@@ -165441,7 +166323,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "shaping-arabic-diacritics-002.html": [
@@ -171079,7 +171977,7 @@
        ]
       ],
       "textarea-pre-wrap-013.html": [
-       "e3d5c3253d6268864e1e09bbedef70e782a85811",
+       "3aa1360856e14845634ae9b6478fb14ed0bbfcba",
        [
         null,
         [
@@ -171088,7 +171986,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             36
+            ],
+            [
+             0,
+             12
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "textarea-pre-wrap-014.html": [
@@ -172192,7 +173106,7 @@
        ]
       ],
       "white-space-intrinsic-size-017.html": [
-       "66c7bf5f39a9b6fe248aa5b6cca0c1da55fb828d",
+       "9c2bc31947ed1b269d123a88679cb3ed20189399",
        [
         null,
         [
@@ -172201,11 +173115,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             3958
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "white-space-intrinsic-size-018.html": [
-       "2f99c0042dfce0e8cf96d23a107db42115d9c0c5",
+       "cc9117f88b570ee5e489bb18017c1d78a295eedd",
        [
         null,
         [
@@ -172214,7 +173144,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             3958
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "white-space-intrinsic-size-019.html": [
@@ -178929,7 +179875,7 @@
      },
      "gradientTransform": {
       "svg-gradientTransform-001.html": [
-       "a660ac4bee6304e894d1bf7710d0799a0b0eea90",
+       "6db774b3d2ca6dabac22654a25ca1b1e31d83fce",
        [
         null,
         [
@@ -178938,11 +179884,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             4000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-gradientTransform-combination-001.html": [
-       "5e86e3c24b273b6f16e90ab91eb6c381fa4cb6da",
+       "dbe942f1c36568edc23a7510033bffc94edb92f9",
        [
         null,
         [
@@ -178951,11 +179913,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             16000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-gradientTransform-combination-003.html": [
-       "5709eb22f871d8a4b00ae04a3b7ac1ca9dd960fb",
+       "76208d26c2178fc567c94a584de509dbc65a2df8",
        [
         null,
         [
@@ -178964,7 +179942,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             16000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -185444,7 +186438,7 @@
       ]
      ],
      "transform-origin-013.html": [
-      "64f52df125f5d76023bb77036fc845c2c61d551f",
+      "93c17e7fc26ba4c22496abc6c39a57a4670e1f60",
       [
        null,
        [
@@ -185453,7 +186447,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transform-origin-name-001.html": [
@@ -190987,7 +191997,7 @@
     },
     "css-values": {
      "angle-units-001.html": [
-      "61ca931905a06f3959d80a274b30a5de0758910d",
+      "38918d0439e13f92d9d417b5dac308ac720dadca",
       [
        null,
        [
@@ -190996,11 +192006,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "angle-units-002.html": [
-      "08b6fbd93069debdb351744ee147d7ab436e2cab",
+      "fa00b01dc0e35ac6a07857be99cea7384c8f839f",
       [
        null,
        [
@@ -191009,11 +192035,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "angle-units-003.html": [
-      "ace23be3644a3cab168a9121ab28f0aec2aea4b2",
+      "9ac677aad7f4a134fa9d90afff1a6978d8f99e4e",
       [
        null,
        [
@@ -191022,11 +192064,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "angle-units-004.html": [
-      "3a92b2a10d6b28b8bffa8177b217f1cd7972e25e",
+      "e1069a75cca10bf0f1a27ed1e697e6f13ee48d52",
       [
        null,
        [
@@ -191035,11 +192093,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "angle-units-005.html": [
-      "786e33c79caad1f3887e4fa92c6afcd0fdf47289",
+      "e67a3982f4f7d2530fefaa6dd912ff367949601c",
       [
        null,
        [
@@ -191048,7 +192122,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "attr-color-invalid-cast.html": [
@@ -194800,7 +195890,7 @@
       ]
      ],
      "vars-background-shorthand-001.html": [
-      "741e2cc021d7a7bafff697e3b92db011ac3157c7",
+      "df02a8f5efc7fc278f3633559720db38580b561e",
       [
        null,
        [
@@ -194809,7 +195899,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            17900
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "vars-font-shorthand-001.html": [
@@ -207731,7 +208837,7 @@
     },
     "cssom-view": {
      "add-background-attachment-fixed-during-smooth-scroll.html": [
-      "3b0cc39468e6ecc60e644c57de4b179fced0ac1a",
+      "6600c0e0555ce6f867f9525e0e75ba704c282c63",
       [
        null,
        [
@@ -207740,7 +208846,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            27000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "cssom-getBoundingClientRect-vertical-rl.html": [
@@ -211383,7 +212505,7 @@
       ]
      ],
      "offset-rotate-003.html": [
-      "8f52024a6fc6e5883b80a1292b6d644f58eb93f7",
+      "522ff35b051ba969b6d10b7c951e0868158aaff8",
       [
        null,
        [
@@ -211392,7 +212514,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            57
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-rotate-004.html": [
@@ -226052,7 +227190,7 @@
        ]
       ],
       "masked.html": [
-       "ad18e8931aa9bbbac967b4d0ae694d68e92dbbb2",
+       "bfa8ad014cd2a137d95081e3063ddc52346e7c10",
        [
         null,
         [
@@ -226061,7 +227199,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             36
+            ],
+            [
+             0,
+             65
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "overlapped-positioned-and-will-change-transform-descendant.html": [
@@ -280016,7 +281170,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "bc03eaa9e7557719ef37ba0ed1fadfcd0535c58c",
+      "13902b46d8e33774f6ba5826cb9098101f0bd91f",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -280028,7 +281182,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "705b6204cb5a3270df218222e8ae560276b4dc45",
+      "d7037030fcd48be32c694e2884c170bb42d20d55",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -308080,6 +309234,14 @@
    "loading": {
     "early-hints": {
      "resources": {
+      "404-with-early-hints.h2.py": [
+       "bb75bc0cbd427aaa8d99734dfa7eb9fbe01d67a3",
+       []
+      ],
+      "404-with-early-hints.html": [
+       "2d351b08b8adba80cfb74f9ae15fc1c4d06835ac",
+       []
+      ],
       "arbitrary-header-in-early-hints.h2.py": [
        "bb118c3200617231be054ee14fa873f046eac141",
        []
@@ -308104,12 +309266,20 @@
        "0086711fb7c7bb5de136346e4ab7be50bb895d99",
        []
       ],
+      "csp-document-disallow-loader.h2.py": [
+       "bffa90c753df8039846ac741c918d65d510ba950",
+       []
+      ],
+      "csp-document-disallow.html": [
+       "53b6ee232dc38e7e5e9aae372d4377cf8624ed51",
+       []
+      ],
       "delayed-js.h2.py": [
-       "b3d28e86da353a9d26888399a5b7ca7186eb86ec",
+       "93865b930da39216831b33d17bd1bdf0ecb72eed",
        []
       ],
       "early-hints-helpers.sub.js": [
-       "9eb1db383c73ca32d593384614ae5d7b478808ea",
+       "3991e8fe9da479dd0f5b4cea537542ba948a8540",
        []
       ],
       "early-hints-test-loader.h2.py": [
@@ -308133,11 +309303,15 @@
        []
       ],
       "fetch-and-record-js.h2.py": [
-       "d1b5d0e1cb02847dbcbfd635d7b0934775617763",
+       "169f70c0450c79c01dc5c375e9fb35d5b81e5a73",
        []
       ],
       "get-fetch-timing-and-headers.h2.py": [
        "59f67be3cf929d89ecc6ec8598ee7276b1648fa3",
+       []
+      ],
+      "invalid-headers-in-early-hints.h2.py": [
+       "438d1c79accddbe568dc1245acd6e0a3c425c64e",
        []
       ],
       "multiple-early-hints-responses.h2.py": [
@@ -308146,6 +309320,22 @@
       ],
       "multiple-early-hints-responses.html": [
        "3be2852348ba800662fa2caf626654b2f40b5902",
+       []
+      ],
+      "preload-finished-before-final-response.h2.py": [
+       "d0b12408d9cff01352380cec5727145dbed6dded",
+       []
+      ],
+      "preload-finished-before-final-response.html": [
+       "d965b4042039db3578d8a9f25e001232292618f0",
+       []
+      ],
+      "preload-finished-while-receiving-final-response-body.h2.py": [
+       "1ba486002c0acd7cb3c4d6564b2276cf8b812db6",
+       []
+      ],
+      "preload-finished-while-receiving-final-response-body.html": [
+       "5a233612b27d683082fd33cf52d39511e85bc5be",
        []
       ],
       "preload-in-flight-when-consumed.h2.py": [
@@ -308193,11 +309383,19 @@
        []
       ],
       "resume-delayed-js.h2.py": [
-       "f1d9ab7d4510343231c18ea4e2b0c20ea26c2eed",
+       "132f038ac90faf793bd59d6e1af793775a07b505",
+       []
+      ],
+      "square.png": [
+       "01c9666a8de9d5535615aff830810e5df4b2156f",
+       []
+      ],
+      "square.png.headers": [
+       "175cdf80464a658981a55d09d788dee26bf1e1a0",
        []
       ],
       "utils.py": [
-       "aa6f331b4196cfbc82a03aa058ad839081ea10e9",
+       "f24638ab3ac1d9a85c8ff802fb08338e079c6631",
        []
       ]
      }
@@ -474287,6 +475485,24 @@
    },
    "loading": {
     "early-hints": {
+     "404-with-early-hints.h2.window.js": [
+      "f28208a30a006936699ad46f61040c688614aa3e",
+      [
+       "loading/early-hints/404-with-early-hints.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "arbitrary-header-in-early-hints.h2.window.js": [
       "f0e848ec1075ae712615d08902ceaae24200575d",
       [
@@ -474492,10 +475708,64 @@
        }
       ]
      ],
+     "invalid-headers-in-early-hints.h2.window.js": [
+      "6c5161dc8bf72d193c843860f24024f753075314",
+      [
+       "loading/early-hints/invalid-headers-in-early-hints.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "multiple-early-hints-responses.h2.window.js": [
       "2aba051ead3a6ae3c856b11dd86db3275cc96044",
       [
        "loading/early-hints/multiple-early-hints-responses.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preload-finished-before-final-response.h2.window.js": [
+      "c63239be1f59426b35760c26ef47453c9248c59b",
+      [
+       "loading/early-hints/preload-finished-before-final-response.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preload-finished-while-receiving-final-response-body.h2.window.js": [
+      "bb03902bd144925e867a5e15929f39e26aed8420",
+      [
+       "loading/early-hints/preload-finished-while-receiving-final-response-body.h2.window.html",
        {
         "script_metadata": [
          [
@@ -474534,6 +475804,42 @@
        "loading/early-hints/preload-initiator-type.h2.window.html",
        {
         "script_metadata": [
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preload-with-csp-document-disallow.h2.window.js": [
+      "87759b28a0bcf135f6c8b28371037a7e463c948d",
+      [
+       "loading/early-hints/preload-with-csp-document-disallow.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preload-without-csp-document-disallow.h2.window.js": [
+      "3de55d04c354171c6223cdbbdfaa09b5acd2a9d2",
+      [
+       "loading/early-hints/preload-without-csp-document-disallow.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
          [
           "script",
           "resources/early-hints-helpers.sub.js"
