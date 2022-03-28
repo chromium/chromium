@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
@@ -15,9 +19,9 @@ class ChromeUserMetricsExtension;
 
 // Categorizes the user into a FamilyLink supervision type to segment the
 // Chrome user population.
-class FamilyLinkUserMetricsProvider
-    : public metrics::MetricsProvider,
-      public session_manager::SessionManagerObserver {
+class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
+                                      public IdentityManagerFactory::Observer,
+                                      public signin::IdentityManager::Observer {
  public:
   // These enum values represent the user's supervision type and how the
   // supervision has been enabled.
@@ -49,11 +53,30 @@ class FamilyLinkUserMetricsProvider
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
 
-  // session_manager::SessionManagerObserver:
-  void OnUserSessionStarted(bool is_primary_user) override;
+  // IdentityManagerFactoryObserver:
+  void IdentityManagerCreated(
+      signin::IdentityManager* identity_manager) override;
+
+  // signin::IdentityManager::Observer
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
+  static const char* GetHistogramNameForTesting();
 
  private:
   void SetLogSegment(LogSegment log_segment);
+
+  // Used to track the IdentityManagers that this instance is observing so that
+  // this instance can be removed as an observer on its destruction.
+  base::ScopedMultiSourceObservation<signin::IdentityManager,
+                                     signin::IdentityManager::Observer>
+      scoped_observations_{this};
+
+  // Used to track the IdentityManagerFactory instance.
+  base::ScopedObservation<IdentityManagerFactory,
+                          IdentityManagerFactory::Observer>
+      scoped_factory_observation_{this};
 
   // Cache the log segment because it won't change during the session once
   // assigned.

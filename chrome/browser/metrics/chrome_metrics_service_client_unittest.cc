@@ -169,9 +169,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif                   // defined(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
-  // AndroidMetricsProvider, ChromeAndroidMetricsProvider, and
-  // PageLoadMetricsProvider.
-  expected_providers += 3;
+  // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
+  // FamilyLinkUserMetricsProvider, and PageLoadMetricsProvider.
+  expected_providers += 4;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -216,7 +216,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  expected_providers++;  // DesktopSessionMetricsProvider
+  // DesktopSessionMetricsProvider and FamilyLinkUserMetricsProvider
+  expected_providers += 2;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =

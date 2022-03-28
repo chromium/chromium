@@ -15,20 +15,12 @@ constexpr char kFamilyLinkUserLogSegmentHistogramName[] =
 }  // namespace
 
 FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
-  session_manager::SessionManager* session_manager =
-      session_manager::SessionManager::Get();
-  // The |session_manager| is nullptr only for unit tests.
-  if (session_manager)
-    session_manager->AddObserver(this);
+  auto* factory = IdentityManagerFactory::GetInstance();
+  if (factory)
+    scoped_factory_observation_.Observe(factory);
 }
 
-FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() {
-  session_manager::SessionManager* session_manager =
-      session_manager::SessionManager::Get();
-  // The |session_manager| is nullptr only for unit tests.
-  if (session_manager)
-    session_manager->RemoveObserver(this);
-}
+FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;
 
 void FamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
@@ -40,9 +32,51 @@ void FamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
                                 log_segment_.value());
 }
 
-void FamilyLinkUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
-  // TODO(crbug.com/1251622): Implement user session segmentation based on
-  // Capabilities API.
+void FamilyLinkUserMetricsProvider::IdentityManagerCreated(
+    signin::IdentityManager* identity_manager) {
+  CHECK(identity_manager);
+  scoped_observations_.AddObservation(identity_manager);
+}
+
+void FamilyLinkUserMetricsProvider::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (scoped_observations_.IsObservingSource(identity_manager)) {
+    scoped_observations_.RemoveObservation(identity_manager);
+  }
+}
+
+void FamilyLinkUserMetricsProvider::OnExtendedAccountInfoUpdated(
+    const AccountInfo& account_info) {
+  auto is_subject_to_parental_controls =
+      account_info.capabilities.is_subject_to_parental_controls();
+  switch (is_subject_to_parental_controls) {
+    case signin::Tribool::kFalse:
+    case signin::Tribool::kUnknown: {
+      // Log as unsupervised user if the account is subject to parental
+      // controls or if the capability is not known.
+      SetLogSegment(LogSegment::kUnsupervised);
+      return;
+    }
+    case signin::Tribool::kTrue: {
+      auto can_stop_supervision =
+          account_info.capabilities.can_stop_parental_supervision();
+      if (can_stop_supervision == signin::Tribool::kTrue) {
+        // Log as a supervised user that has chosen to enable parental
+        // supervision on their account, e.g. Geller accounts.
+        SetLogSegment(LogSegment::kSupervisionEnabledByUser);
+      } else {
+        // Log as a supervised user that has parental supervision enabled
+        // by a policy applied to their account, e.g. Unicorn accounts.
+        SetLogSegment(LogSegment::kSupervisionEnabledByPolicy);
+      }
+      return;
+    }
+  }
+}
+
+// static
+const char* FamilyLinkUserMetricsProvider::GetHistogramNameForTesting() {
+  return kFamilyLinkUserLogSegmentHistogramName;
 }
 
 void FamilyLinkUserMetricsProvider::SetLogSegment(LogSegment log_segment) {
