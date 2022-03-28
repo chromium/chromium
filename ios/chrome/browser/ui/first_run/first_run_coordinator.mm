@@ -15,7 +15,9 @@
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
@@ -125,17 +127,20 @@
                             showFREConsent:YES
                                   delegate:self];
     case kSync:
-      // TODO(crbug.com/1290848): Need implementation.
-      NOTIMPLEMENTED();
-      return nil;
+      return [[SyncScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kSignInAndSync:
       return [[SigninSyncCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
     case kLegacySignIn:
-      NOTREACHED() << "Reached SignIn/Sync state unexpectedly.";
-      break;
+      return [[LegacySigninScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kDefaultBrowserPromo:
       return [[DefaultBrowserScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

@@ -25,8 +25,9 @@
       [screens addObject:@(kSync)];
       break;
     case NewMobileIdentityConsistencyFRE::kThreeSteps:
-      // TODO(crbug.com/1290848): Need implementation.
-      NOTIMPLEMENTED();
+      [screens addObject:@(kWelcomeAndConsent)];
+      [screens addObject:@(kLegacySignIn)];
+      [screens addObject:@(kSync)];
       break;
     case NewMobileIdentityConsistencyFRE::kUMADialog:
     case NewMobileIdentityConsistencyFRE::kOld:
