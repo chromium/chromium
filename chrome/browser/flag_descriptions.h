@@ -2347,6 +2347,12 @@ extern const char kAllowScrollSettingsDescription[];
 extern const char kAllowTouchpadHapticClickSettingsName[];
 extern const char kAllowTouchpadHapticClickSettingsDescription[];
 
+extern const char kAlwaysEnableHdcpName[];
+extern const char kAlwaysEnableHdcpDescription[];
+extern const char kAlwaysEnableHdcpDefault[];
+extern const char kAlwaysEnableHdcpType0[];
+extern const char kAlwaysEnableHdcpType1[];
+
 extern const char kAmbientModeAnimationName[];
 extern const char kAmbientModeAnimationDescription[];
 

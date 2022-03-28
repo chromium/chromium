@@ -27,6 +27,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowFailedPolicyFetchForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAllowOsInstall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAllowRAInDevMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAlwaysEnableHdcp[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppAutoLaunched[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppOemManifestFile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailability[];

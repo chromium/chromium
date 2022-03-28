@@ -2892,6 +2892,16 @@ constexpr FeatureEntry::FeatureVariation kLensStandaloneVariations[] = {
      std::size(kLensStandaloneWithSidePanel), nullptr},
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
+    {flag_descriptions::kAlwaysEnableHdcpDefault, "", ""},
+    {flag_descriptions::kAlwaysEnableHdcpType0,
+     ash::switches::kAlwaysEnableHdcp, "type0"},
+    {flag_descriptions::kAlwaysEnableHdcpType1,
+     ash::switches::kAlwaysEnableHdcp, "type1"},
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8316,6 +8326,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherLacrosIntegrationName,
      flag_descriptions::kLauncherLacrosIntegrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kLauncherLacrosIntegration)},
+    {"always-enable-hdcp", flag_descriptions::kAlwaysEnableHdcpName,
+     flag_descriptions::kAlwaysEnableHdcpDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kAlwaysEnableHdcpChoices)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

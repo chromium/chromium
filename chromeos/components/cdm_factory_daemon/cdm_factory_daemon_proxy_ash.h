@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
+#include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -68,6 +69,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyAsh
   void OnDaemonMojoConnectionError();
 
   mojo::Remote<cdm::mojom::CdmFactoryDaemon> daemon_remote_;
+
+  // This is used when the chrome flag is set to always enable HDCP.
+  std::unique_ptr<OutputProtectionImpl> forced_output_protection_;
 };
 
 }  // namespace chromeos

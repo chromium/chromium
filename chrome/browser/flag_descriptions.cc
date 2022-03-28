@@ -4085,6 +4085,14 @@ const char kAllowTouchpadHapticClickSettingsName[] =
 const char kAllowTouchpadHapticClickSettingsDescription[] =
     "Shows settings to adjust click sensitivity for haptic touchpads.";
 
+const char kAlwaysEnableHdcpName[] = "Always enable HDCP for external displays";
+const char kAlwaysEnableHdcpDescription[] =
+    "Enables the specified type for HDCP whenever an external display is "
+    "connected. By default, HDCP is only enabled when required.";
+const char kAlwaysEnableHdcpDefault[] = "Default";
+const char kAlwaysEnableHdcpType0[] = "Type 0";
+const char kAlwaysEnableHdcpType1[] = "Type 1";
+
 const char kAmbientModeAnimationName[] =
     "Launch the Lottie animated ChromeOS Screensaver";
 const char kAmbientModeAnimationDescription[] =

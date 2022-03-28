@@ -56139,6 +56139,7 @@ from previous Chrome versions.
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
+  <int value="890560037" label="always-enable-hdcp"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
   <int value="896506516"

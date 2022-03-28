@@ -124,6 +124,13 @@
     "expiry_milestone": 101
   },
   {
+    "name": "always-enable-hdcp",
+    "owners": [ "chromeos-gfx-video@google.com" ],
+    // This flag is used for HDCP compliance testing on ChromeOS so should not
+    // be removed.
+    "expiry_milestone": -1
+  },
+  {
     "name": "ambient-mode-animation",
     "owners": [ "esum", "assistive-eng@google.com" ],
     "expiry_milestone": 103

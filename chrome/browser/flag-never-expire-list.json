@@ -15,6 +15,7 @@
 [
   "allow-all-sites-to-initiate-mirroring",
   "allow-previews",
+  "always-enable-hdcp",
   "arc-native-bridge-toggle",
   "ash-debug-shortcuts",
   "ash-enable-unified-desktop",

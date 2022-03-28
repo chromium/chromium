@@ -45,6 +45,10 @@ const char kAllowOsInstall[] = "allow-os-install";
 // mode. This can be enabled by this flag.
 const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
 
+// Causes HDCP of the specified type to always be enabled when an external
+// display is connected. Used for HDCP compliance testing on ChromeOS.
+const char kAlwaysEnableHdcp[] = "always-enable-hdcp";
+
 // Specifies whether an app launched in kiosk mode was auto launched with zero
 // delay. Used in order to properly restore auto-launched state during session
 // restore flow.

@@ -151,8 +151,6 @@ void OutputProtectionImpl::Create(
                                   std::move(receiver), std::move(delegate)));
     return;
   }
-  if (!delegate)
-    delegate = std::make_unique<DisplaySystemDelegateImpl>();
   // This object should destruct when the mojo connection is lost.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<OutputProtectionImpl>(std::move(delegate)),
@@ -162,7 +160,8 @@ void OutputProtectionImpl::Create(
 OutputProtectionImpl::OutputProtectionImpl(
     std::unique_ptr<DisplaySystemDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  if (!delegate_)
+    delegate_ = std::make_unique<DisplaySystemDelegateImpl>();
 }
 
 OutputProtectionImpl::~OutputProtectionImpl() {
