@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './styles.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ImageTile} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
@@ -24,6 +23,8 @@ import {DisplayableImage} from '../personalization_reducers.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isWallpaperImage} from '../utils.js';
+
+import {getTemplate} from './wallpaper_images_element.html.js';
 
 /**
  * If |current| is set and is an online wallpaper (include daily refresh
@@ -100,7 +101,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

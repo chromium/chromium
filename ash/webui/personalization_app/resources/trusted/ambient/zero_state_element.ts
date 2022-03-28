@@ -7,11 +7,11 @@
  */
 
 import '../../common/styles.js';
-
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {getTemplate} from './zero_state_element.html.js';
 
 export class AmbientZeroState extends WithPersonalizationStore {
   static get is() {
@@ -19,7 +19,7 @@ export class AmbientZeroState extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

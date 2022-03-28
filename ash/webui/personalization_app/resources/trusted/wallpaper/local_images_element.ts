@@ -17,7 +17,7 @@ import '../../common/styles.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getLoadingPlaceholderAnimationDelay} from '../../common/utils.js';
 import {isSelectionEvent} from '../../common/utils.js';
@@ -25,6 +25,7 @@ import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderIn
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isFilePath} from '../utils.js';
 
+import {getTemplate} from './local_images_element.html.js';
 import {fetchLocalData, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -34,7 +35,7 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

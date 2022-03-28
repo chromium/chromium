@@ -7,10 +7,10 @@
  */
 import './animation_theme_item_element.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {AnimationTheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {getTemplate} from './animation_theme_list_element.html.js';
 
 export class AnimationThemeList extends WithPersonalizationStore {
   static get is() {
@@ -18,7 +18,7 @@ export class AnimationThemeList extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

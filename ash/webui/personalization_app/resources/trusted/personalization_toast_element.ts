@@ -7,9 +7,10 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {dismissErrorAction} from './personalization_actions.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+import {getTemplate} from './personalization_toast_element.html.js';
 
 export class PersonalizationToastElement extends WithPersonalizationStore {
   static get is() {
@@ -17,7 +18,7 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

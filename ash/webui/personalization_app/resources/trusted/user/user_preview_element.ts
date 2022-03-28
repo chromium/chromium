@@ -11,7 +11,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {UserInfo} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -20,6 +19,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {initializeUserData} from './user_controller.js';
 import {UserImageObserver} from './user_image_observer.js';
 import {getUserProvider} from './user_interface_provider.js';
+import {getTemplate} from './user_preview_element.html.js';
 import {selectUserImageUrl} from './user_selectors.js';
 
 export class UserPreview extends WithPersonalizationStore {
@@ -28,7 +28,7 @@ export class UserPreview extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

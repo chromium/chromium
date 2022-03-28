@@ -9,7 +9,8 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../common/styles.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './wallpaper_grid_item_element.html.js';
 
 export class WallpaperGridItem extends PolymerElement {
   static get is() {
@@ -17,7 +18,7 @@ export class WallpaperGridItem extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

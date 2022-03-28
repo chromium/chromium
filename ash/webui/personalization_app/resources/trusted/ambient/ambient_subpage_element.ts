@@ -15,8 +15,6 @@ import './animation_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -24,6 +22,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
+import {getTemplate} from './ambient_subpage_element.html.js';
 import {ToggleRow} from './toggle_row_element.js';
 
 export class AmbientSubpage extends WithPersonalizationStore {
@@ -32,7 +31,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

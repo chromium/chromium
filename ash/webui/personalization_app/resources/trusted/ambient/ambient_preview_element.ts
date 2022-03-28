@@ -12,8 +12,6 @@ import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import '../../common/styles.js';
 import '../cros_button_style.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -23,6 +21,7 @@ import {getPhotoCount, getTopicSourceName, replaceResolutionSuffix} from '../uti
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
+import {getTemplate} from './ambient_preview_element.html.js';
 
 export class AmbientPreview extends WithPersonalizationStore {
   static get is() {
@@ -30,7 +29,7 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

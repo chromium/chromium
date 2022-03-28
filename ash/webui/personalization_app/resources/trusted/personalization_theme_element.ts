@@ -11,9 +11,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/styles.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {WithPersonalizationStore} from './personalization_store.js';
+import {getTemplate} from './personalization_theme_element.html.js';
 import {setColorModePref} from './theme/theme_controller.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {ThemeObserver} from './theme/theme_observer.js';
@@ -24,7 +23,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -9,9 +9,9 @@
 import './styles.js';
 import '../../common/styles.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {getTemplate} from './google_photos_zero_state_element.html.js';
 
 export class GooglePhotosZeroState extends WithPersonalizationStore {
   static get is() {
@@ -19,7 +19,7 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   /** Returns the message to be displayed. */

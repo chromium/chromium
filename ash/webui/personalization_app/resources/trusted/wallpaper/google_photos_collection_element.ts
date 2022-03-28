@@ -9,15 +9,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
-import '/common/styles.js';
+import '../../common/styles.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
+import {getTemplate} from './google_photos_collection_element.html.js';
 import {initializeGooglePhotosData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -38,7 +38,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

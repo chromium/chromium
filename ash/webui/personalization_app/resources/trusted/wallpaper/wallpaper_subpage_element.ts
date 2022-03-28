@@ -8,9 +8,11 @@
  */
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Paths} from '../personalization_router_element.js';
+
+import {getTemplate} from './wallpaper_subpage_element.html.js';
 
 export class WallpaperSubpage extends PolymerElement {
   static get is() {
@@ -18,7 +20,7 @@ export class WallpaperSubpage extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

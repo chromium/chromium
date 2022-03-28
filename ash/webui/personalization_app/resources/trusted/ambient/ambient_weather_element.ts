@@ -11,13 +11,12 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {TemperatureUnit} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setTemperatureUnit} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {getTemplate} from './ambient_weather_element.html.js';
 
 export function inBetween(num: number, minValue: number, maxValue: number) {
   return minValue <= num && num <= maxValue;
@@ -29,7 +28,7 @@ export class AmbientWeatherUnit extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

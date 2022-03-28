@@ -9,11 +9,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '/common/icons.js';
-import '/common/styles.js';
+import '../../common/icons.js';
+import '../../common/styles.js';
 import './styles.js';
-
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CurrentWallpaper, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -21,6 +19,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+import {getTemplate} from './wallpaper_preview_element.html.js';
 
 export class WallpaperPreview extends WithPersonalizationStore {
   static get is() {
@@ -28,7 +27,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

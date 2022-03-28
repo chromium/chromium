@@ -7,9 +7,10 @@
  */
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {getTemplate} from './art_album_dialog_element.html.js';
 
 export interface ArtAlbumDialog {
   $: {dialog: CrDialogElement};
@@ -21,7 +22,7 @@ export class ArtAlbumDialog extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

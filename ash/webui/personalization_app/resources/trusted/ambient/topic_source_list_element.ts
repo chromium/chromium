@@ -7,13 +7,13 @@
  * behaviors similar to a radio button group, e.g. single selection.
  */
 
-import 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
+import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {getTemplate} from './topic_source_list_element.html.js';
 
 export class TopicSourceList extends WithPersonalizationStore {
   static get is() {
@@ -21,7 +21,7 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

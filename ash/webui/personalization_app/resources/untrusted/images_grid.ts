@@ -8,11 +8,13 @@ import './setup.js';
 import '../trusted/wallpaper/styles.js';
 
 import {assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Events, EventType, ImageTile} from '../common/constants.js';
 import {isSelectionEvent} from '../common/utils.js';
 import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';
+
+import {getTemplate} from './images_grid.html.js';
 
 /**
  * @fileoverview Responds to |SendImageTilesEvent| from trusted. Handles user
@@ -25,7 +27,7 @@ export class ImagesGrid extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

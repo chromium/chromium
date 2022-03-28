@@ -7,18 +7,18 @@
  */
 
 import '../../common/styles.js';
-
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {isSelectionEvent} from '../../common/utils.js';
 import {AnimationTheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+
 import {setAnimationTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {getTemplate} from './animation_theme_item_element.html.js';
 
 export class AnimationThemeItem extends WithPersonalizationStore {
   static get is() {
@@ -26,7 +26,7 @@ export class AnimationThemeItem extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

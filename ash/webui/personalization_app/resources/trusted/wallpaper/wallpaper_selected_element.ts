@@ -10,11 +10,10 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import '/common/icons.js';
+import '../../common/icons.js';
 import './styles.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {CurrentWallpaper, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
@@ -24,6 +23,7 @@ import {getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from 
 
 import {getDailyRefreshCollectionId, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+import {getTemplate} from './wallpaper_selected_element.html.js';
 
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
@@ -31,7 +31,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

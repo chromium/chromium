@@ -15,7 +15,6 @@ import './album_list_element.js';
 import './art_album_dialog_element.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
@@ -23,6 +22,7 @@ import {Paths, PersonalizationRouter} from '../personalization_router_element.js
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {AlbumSelectedChangedEvent} from './album_list_element.js';
+import {getTemplate} from './albums_subpage_element.html.js';
 import {setAlbumSelected} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
@@ -32,7 +32,7 @@ export class AlbumsSubpage extends WithPersonalizationStore {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
