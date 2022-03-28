@@ -43,7 +43,7 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
 
     // This was added by PrepareBrowserCommandLineForTests(), re-enable default
     // apps as we wish to test that they get installed.
-    command_line->RemoveSwitch(switches::kDisablePreinstalledApps);
+    command_line->RemoveSwitch(switches::kDisableDefaultApps);
   }
 
   base::FilePath empty_path_;

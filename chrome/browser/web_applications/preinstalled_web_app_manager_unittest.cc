@@ -544,7 +544,7 @@ class DisabledPreinstalledWebAppManagerTest
  public:
   DisabledPreinstalledWebAppManagerTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisablePreinstalledApps);
+        switches::kDisableDefaultApps);
   }
 };
 

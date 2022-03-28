@@ -423,7 +423,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
     // Prevent preinstalled apps from installing so these tests can control when
     // they are installed.
-    command_line->AppendSwitch(switches::kDisablePreinstalledApps);
+    command_line->AppendSwitch(switches::kDisableDefaultApps);
 
     chromeos::DBusThreadManager::Initialize();
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);

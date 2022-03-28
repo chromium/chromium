@@ -44,7 +44,7 @@ std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
 
 bool PreinstalledWebAppsDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisablePreinstalledApps);
+      ::switches::kDisableDefaultApps);
 }
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {

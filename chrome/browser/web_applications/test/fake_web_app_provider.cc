@@ -190,7 +190,7 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   // Disable preinstalled apps by default as they add noise and time to tests
   // that don't need them.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisablePreinstalledApps);
+      switches::kDisableDefaultApps);
 
   // Default to not wait for a test extension system, that is usually never
   // started in web app tests.

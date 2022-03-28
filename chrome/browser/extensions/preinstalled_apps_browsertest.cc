@@ -80,7 +80,7 @@ class PreinstalledAppsBrowserTest : public ExtensionBrowserTest {
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpDefaultCommandLine(command_line);
     // We rely on pre-installed apps being present for these tests.
-    command_line->RemoveSwitch(::switches::kDisablePreinstalledApps);
+    command_line->RemoveSwitch(::switches::kDisableDefaultApps);
 
     if (ShouldEnableWebAppMigration()) {
       feature_list_.InitAndEnableFeature(

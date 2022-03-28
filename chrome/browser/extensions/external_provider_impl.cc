@@ -752,7 +752,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   // In tests don't install pre-installed apps.
   // It would only slowdown tests and make them flaky.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisablePreinstalledApps)) {
+          ::switches::kDisableDefaultApps)) {
     return;
   }
 
