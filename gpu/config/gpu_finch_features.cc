@@ -80,7 +80,7 @@ const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
 
 // Use thread-safe media path on WebView.
 const base::Feature kWebViewThreadSafeMedia{"WebViewThreadSafeMedia",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 const base::Feature kAImageReader{"AImageReader",
