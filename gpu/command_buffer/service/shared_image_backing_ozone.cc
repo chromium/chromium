@@ -117,7 +117,7 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
           static_cast<SharedImageBackingOzone*>(backing())->GetNativePixmap();
       gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
           pixmap->GetBufferSize(), buffer_format);
-      gl_image_->Initialize(pixmap);
+      gl_image_->InitializeForOverlay(pixmap);
     }
 
     return gl_image_.get();

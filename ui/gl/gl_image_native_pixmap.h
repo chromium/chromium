@@ -23,6 +23,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
 
   // Create an EGLImage from a given NativePixmap.
   bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  bool InitializeForOverlay(scoped_refptr<gfx::NativePixmap> pixmap);
   // Create an EGLImage from a given GL texture.
   bool InitializeFromTexture(uint32_t texture_id);
   // Export the wrapped EGLImage to dmabuf fds.
@@ -31,6 +32,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   // Overridden from GLImage:
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
+  bool BindTexImage(unsigned target) override;
   bool CopyTexImage(unsigned target) override;
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
@@ -51,6 +53,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   gfx::BufferPlane plane_;
   bool has_image_flush_external_;
   bool has_image_dma_buf_export_;
+  bool did_initialize_;
 };
 
 }  // namespace gl

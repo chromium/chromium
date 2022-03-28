@@ -209,6 +209,7 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
       attrs.push_back(EGL_NONE);
     }
 
+    did_initialize_ = true;
     if (!GLImageEGL::Initialize(EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
                                 static_cast<EGLClientBuffer>(nullptr),
                                 &attrs[0])) {
@@ -216,6 +217,13 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
     }
   }
 
+  pixmap_ = pixmap;
+  return true;
+}
+
+bool GLImageNativePixmap::InitializeForOverlay(
+    scoped_refptr<gfx::NativePixmap> pixmap) {
+  DCHECK(!pixmap_);
   pixmap_ = pixmap;
   return true;
 }
@@ -330,7 +338,13 @@ unsigned GLImageNativePixmap::GetDataType() {
   return gl::BufferFormatToGLDataType(format_);
 }
 
+bool GLImageNativePixmap::BindTexImage(unsigned target) {
+  DCHECK(did_initialize_);
+  return GLImageEGL::BindTexImage(target);
+}
+
 bool GLImageNativePixmap::CopyTexImage(unsigned target) {
+  DCHECK(did_initialize_);
   if (egl_image_ != EGL_NO_IMAGE_KHR)
     return false;
 
