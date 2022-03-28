@@ -59,7 +59,7 @@ class PLATFORM_EXPORT Biquad final {
     has_sample_accurate_values_ = is_sample_accurate;
   }
 
-  // frequency is 0 - 1 normalized, resonance and dbGain are in decibels.
+  // frequency is 0 - 1 normalized, resonance and db_gain are in decibels.
   // Q is a unitless quality factor.
   void SetLowpassParams(int, double frequency, double resonance);
   void SetHighpassParams(int, double frequency, double resonance);

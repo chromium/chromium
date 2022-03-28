@@ -95,8 +95,8 @@ DynamicsCompressor::DynamicsCompressor(float sample_rate,
       db_threshold_(kUninitializedValue),
       db_knee_(kUninitializedValue),
       knee_threshold_(kUninitializedValue),
-      knee_threshold_db_(kUninitializedValue),
-      yknee_threshold_db_(kUninitializedValue),
+      db_knee_threshold_(kUninitializedValue),
+      db_yknee_threshold_(kUninitializedValue),
       knee_(kUninitializedValue) {
   SetNumberOfChannels(number_of_channels);
   // Initializes most member variables
@@ -221,26 +221,26 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
     // compression_diff_db is the difference between current compression level
     // and the desired level.
-    float compression_diff_db;
+    float db_compression_diff;
 
     if (scaled_desired_gain == 0) {
-      compression_diff_db = is_releasing ? -1 : 1;
+      db_compression_diff = is_releasing ? -1 : 1;
     } else {
-      compression_diff_db = audio_utilities::LinearToDecibels(
+      db_compression_diff = audio_utilities::LinearToDecibels(
           compressor_gain_ / scaled_desired_gain);
     }
 
     if (is_releasing) {
-      // Release mode - compression_diff_db should be negative dB
-      max_attack_compression_diff_db_ = -1;
+      // Release mode - db_compression_diff should be negative dB
+      db_max_attack_compression_diff_ = -1;
 
-      compression_diff_db = EnsureFinite(compression_diff_db, -1);
+      db_compression_diff = EnsureFinite(db_compression_diff, -1);
 
-      // Adaptive release - higher compression (lower compression_diff_db)
+      // Adaptive release - higher compression (lower db_compression_diff)
       // releases faster.
 
       // Contain within range: -12 -> 0 then scale to go from 0 -> 3
-      float x = compression_diff_db;
+      float x = db_compression_diff;
       x = ClampTo(x, -12.0f, 0.0f);
       x = 0.25f * (x + 12);
 
@@ -252,26 +252,26 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       const float x4 = x2 * x2;
       const float calc_release_frames = a + b * x + c * x2 + d * x3 + e * x4;
 
-      constexpr float kSpacingDb = 5;
-      const float db_per_frame = kSpacingDb / calc_release_frames;
+      constexpr float kDbSpacing = 5;
+      const float db_per_frame = kDbSpacing / calc_release_frames;
 
       envelope_rate = audio_utilities::DecibelsToLinear(db_per_frame);
     } else {
-      // Attack mode - compression_diff_db should be positive dB
+      // Attack mode - db_compression_diff should be positive dB
 
-      compression_diff_db = EnsureFinite(compression_diff_db, 1);
+      db_compression_diff = EnsureFinite(db_compression_diff, 1);
 
       // As long as we're still in attack mode, use a rate based off
-      // the largest compression_diff_db we've encountered so far.
-      if (max_attack_compression_diff_db_ == -1 ||
-          max_attack_compression_diff_db_ < compression_diff_db) {
-        max_attack_compression_diff_db_ = compression_diff_db;
+      // the largest db_compression_diff we've encountered so far.
+      if (db_max_attack_compression_diff_ == -1 ||
+          db_max_attack_compression_diff_ < db_compression_diff) {
+        db_max_attack_compression_diff_ = db_compression_diff;
       }
 
-      const float eff_atten_diff_db =
-          std::max(0.5f, max_attack_compression_diff_db_);
+      const float db_eff_atten_diff =
+          std::max(0.5f, db_max_attack_compression_diff_);
 
-      const float x = 0.25f / eff_atten_diff_db;
+      const float x = 0.25f / db_eff_atten_diff;
       envelope_rate = 1 - fdlibm::powf(x, 1 / attack_frames);
     }
 
@@ -315,10 +315,10 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       const float attenuation =
           abs_input <= 0.0001f ? 1 : shaped_input / abs_input;
 
-      const float attenuation_db =
+      const float db_attenuation =
           std::max(2.0f, -audio_utilities::LinearToDecibels(attenuation));
 
-      const float db_per_frame = attenuation_db / sat_release_frames;
+      const float db_per_frame = db_attenuation / sat_release_frames;
 
       const float sat_release_rate =
           audio_utilities::DecibelsToLinear(db_per_frame) - 1;
@@ -399,7 +399,7 @@ void DynamicsCompressor::Reset() {
   pre_delay_read_index_ = 0;
   pre_delay_write_index_ = kDefaultPreDelayFrames;
 
-  max_attack_compression_diff_db_ = -1;  // uninitialized state
+  db_max_attack_compression_diff_ = -1;  // uninitialized state
 }
 
 void DynamicsCompressor::SetNumberOfChannels(unsigned number_of_channels) {
@@ -506,20 +506,20 @@ float DynamicsCompressor::Saturate(float x, float k) const {
     return KneeCurve(x, k);
   }
   // Constant ratio after knee.
-  const float x_db = audio_utilities::LinearToDecibels(x);
-  const float y_db = yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
-  return audio_utilities::DecibelsToLinear(y_db);
+  const float db_x = audio_utilities::LinearToDecibels(x);
+  const float db_y = db_yknee_threshold_ + slope_ * (db_x - db_knee_threshold_);
+  return audio_utilities::DecibelsToLinear(db_y);
 }
 
 float DynamicsCompressor::KAtSlope(float desired_slope) const {
-  const float x_db = db_threshold_ + db_knee_;
-  const float x = audio_utilities::DecibelsToLinear(x_db);
+  const float db_x = db_threshold_ + db_knee_;
+  const float x = audio_utilities::DecibelsToLinear(db_x);
   float x2 = 1;
-  float x2_db = 0;
+  float db_x2 = 0;
 
   if (!(x < linear_threshold_)) {
     x2 = x * 1.001;
-    x2_db = audio_utilities::LinearToDecibels(x2);
+    db_x2 = audio_utilities::LinearToDecibels(x2);
   }
 
   // Approximate k given initial values.
@@ -536,9 +536,9 @@ float DynamicsCompressor::KAtSlope(float desired_slope) const {
     // This slope is equal to the inverse of the compression "ratio".
     // In other words, a compression ratio of 20 would be a slope of 1/20.
     if (!(x < linear_threshold_)) {
-      const float y_db = audio_utilities::LinearToDecibels(KneeCurve(x, k));
-      const float y2_db = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
-      slope = (y2_db - y_db) / (x2_db - x_db);
+      const float db_y = audio_utilities::LinearToDecibels(KneeCurve(x, k));
+      const float db_y2 = audio_utilities::LinearToDecibels(KneeCurve(x2, k));
+      slope = (db_y2 - db_y) / (db_x2 - db_x);
     }
 
     if (slope < desired_slope) {
@@ -571,10 +571,10 @@ float DynamicsCompressor::UpdateStaticCurveParameters(float db_threshold,
 
     const float k = KAtSlope(1 / ratio_);
 
-    knee_threshold_db_ = db_threshold + db_knee;
-    knee_threshold_ = audio_utilities::DecibelsToLinear(knee_threshold_db_);
+    db_knee_threshold_ = db_threshold + db_knee;
+    knee_threshold_ = audio_utilities::DecibelsToLinear(db_knee_threshold_);
 
-    yknee_threshold_db_ =
+    db_yknee_threshold_ =
         audio_utilities::LinearToDecibels(KneeCurve(knee_threshold_, k));
 
     knee_ = k;

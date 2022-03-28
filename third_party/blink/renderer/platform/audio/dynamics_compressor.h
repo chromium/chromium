@@ -123,10 +123,10 @@ class PLATFORM_EXPORT DynamicsCompressor {
   int pre_delay_read_index_ = 0;
   int pre_delay_write_index_ = kDefaultPreDelayFrames;
 
-  float max_attack_compression_diff_db_;
+  float db_max_attack_compression_diff_;
 
   // Amount of input change in dB required for 1 dB of output change.
-  // This applies to the portion of the curve above knee_threshold_db_ (see
+  // This applies to the portion of the curve above db_knee_threshold_ (see
   // below).
   float ratio_;
   float slope_;  // Inverse ratio.
@@ -137,14 +137,14 @@ class PLATFORM_EXPORT DynamicsCompressor {
 
   // db_knee_ is the number of dB above the threshold before we enter the
   // "ratio" portion of the curve.
-  // knee_threshold_db_ = db_threshold_ + db_knee_
-  // The portion between db_threshold_ and knee_threshold_db_ is the "soft knee"
+  // db_knee_threshold_ = db_threshold_ + db_knee_
+  // The portion between db_threshold_ and db_knee_threshold_ is the "soft knee"
   // portion of the curve which transitions smoothly from the linear portion to
   // the ratio portion.
   float db_knee_;
   float knee_threshold_;
-  float knee_threshold_db_;
-  float yknee_threshold_db_;
+  float db_knee_threshold_;
+  float db_yknee_threshold_;
 
   // Internal parameter for the knee portion of the curve.
   float knee_;
