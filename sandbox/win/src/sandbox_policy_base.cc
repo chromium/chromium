@@ -89,8 +89,7 @@ IntegrityLevel
         INTEGRITY_LEVEL_SYSTEM;
 
 PolicyBase::PolicyBase()
-    : ref_count(1),
-      lockdown_level_(USER_LOCKDOWN),
+    : lockdown_level_(USER_LOCKDOWN),
       initial_level_(USER_LOCKDOWN),
       job_level_(JobLevel::kLockdown),
       ui_exceptions_(0),
@@ -118,18 +117,6 @@ PolicyBase::PolicyBase()
 PolicyBase::~PolicyBase() {
   delete policy_maker_;
   delete policy_;
-}
-
-void PolicyBase::AddRef() {
-  // ref_count starts at 1 so cannot increase from 0 to 1.
-  CHECK(::InterlockedIncrement(&ref_count) > 1);
-}
-
-void PolicyBase::Release() {
-  LONG result = ::InterlockedDecrement(&ref_count);
-  CHECK(result >= 0);
-  if (result == 0)
-    delete this;
 }
 
 ResultCode PolicyBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {
@@ -763,11 +750,6 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
   }
 
   return SBOX_ALL_OK;
-}
-
-std::unique_ptr<PolicyInfo> PolicyBase::GetPolicyInfo() {
-  auto diagnostic = std::make_unique<PolicyDiagnostic>(this);
-  return diagnostic;
 }
 
 void PolicyBase::SetAllowNoSandboxJob() {

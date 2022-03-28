@@ -46,9 +46,9 @@ class SandboxFeatureTest
   virtual AppContainerType GetExpectedAppContainerType();
   virtual std::vector<base::win::Sid> GetExpectedCapabilities();
 
-  void ValidateSecurityLevels(const scoped_refptr<TargetPolicy>& policy);
-  void ValidatePolicyFlagSettings(const scoped_refptr<TargetPolicy>& policy);
-  void ValidateAppContainerSettings(const scoped_refptr<TargetPolicy>& policy);
+  void ValidateSecurityLevels(TargetPolicy* policy);
+  void ValidatePolicyFlagSettings(TargetPolicy* policy);
+  void ValidateAppContainerSettings(TargetPolicy* policy);
 
   base::test::ScopedFeatureList feature_list_;
 };

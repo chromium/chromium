@@ -45,8 +45,7 @@ namespace policy {
 namespace {
 class TestTargetPolicy : public TargetPolicy {
  public:
-  void AddRef() override {}
-  void Release() override {}
+  ~TestTargetPolicy() override {}
   ResultCode SetTokenLevel(sandbox::TokenLevel initial,
                            TokenLevel lockdown) override {
     return SBOX_ALL_OK;
@@ -135,7 +134,6 @@ class TestTargetPolicy : public TargetPolicy {
     return blocklisted_dlls_;
   }
 
-  std::unique_ptr<PolicyInfo> GetPolicyInfo() override { return nullptr; }
   void SetAllowNoSandboxJob() override { NOTREACHED(); }
   bool GetAllowNoSandboxJob() override { return false; }
 
@@ -374,12 +372,12 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   base::HandlesToInheritVector handles_to_inherit;
   BrokerServices* broker = SandboxFactory::GetBrokerServices();
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   // PreSpawn should get called, but not modifying the policy for this test.
   EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_)).WillOnce(Return(true));
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
       cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_renderer_delegate, policy);
+      &test_renderer_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
   // Check some default values come back. No need to check the exact policy in
   // detail, but just that GeneratePolicyForSandboxedProcess generated some kind
@@ -395,14 +393,14 @@ TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   base::HandlesToInheritVector handles_to_inherit;
   BrokerServices* broker = SandboxFactory::GetBrokerServices();
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   // Unsandboxed processes never call the delegate prespawn as there is no
   // policy.
   EXPECT_CALL(test_unsandboxed_delegate, PreSpawnTarget(_)).Times(0);
 
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
       cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_unsandboxed_delegate, policy);
+      &test_unsandboxed_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS, result);
 }
 

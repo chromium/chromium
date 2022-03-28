@@ -229,16 +229,10 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
-#if DCHECK_IS_ON()
-    // Policy can be applied to one target only.
-    DCHECK(!policy_applied_);
-    policy_applied_ = true;
-#endif
-    result = broker_->SpawnTarget(prog_name, arguments.c_str(), policy_,
-                                  &warning_result, &last_error, &target);
+    result =
+        broker_->SpawnTarget(prog_name, arguments.c_str(), std::move(policy_),
+                             &warning_result, &last_error, &target);
   }
-  if (release_policy_in_run_)
-    policy_ = nullptr;
 
   if (SBOX_ALL_OK != result)
     return SBOX_TEST_FAILED_TO_RUN_TEST;

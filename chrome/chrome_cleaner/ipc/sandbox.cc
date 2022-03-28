@@ -53,10 +53,9 @@ const char* kSwitchesToPropagate[] = {
 
 std::map<SandboxType, base::Process>* g_target_processes = nullptr;  // Leaked.
 
-scoped_refptr<sandbox::TargetPolicy> GetSandboxPolicy(
+std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
     sandbox::BrokerServices* sandbox_broker_services) {
-  scoped_refptr<sandbox::TargetPolicy> policy(
-      sandbox_broker_services->CreatePolicy());
+  auto policy = sandbox_broker_services->CreatePolicy();
 
   sandbox::ResultCode sandbox_result = policy->SetTokenLevel(
       sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LOCKDOWN);
@@ -244,8 +243,7 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
     return RESULT_CODE_FAILED_TO_START_SANDBOX_PROCESS;
   }
 
-  scoped_refptr<sandbox::TargetPolicy> policy =
-      GetSandboxPolicy(sandbox_broker_services);
+  auto policy = GetSandboxPolicy(sandbox_broker_services);
   base::CommandLine command_line = sandbox_command_line;
 
   // Create an event so the sandboxed process can notify the broker when it
@@ -276,8 +274,8 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
             << command_line.GetArgumentsString();
   sandbox::ResultCode sandbox_result = sandbox_broker_services->SpawnTarget(
       command_line.GetProgram().value().c_str(),
-      command_line.GetCommandLineString().c_str(), policy, &last_sbox_warning,
-      &last_win_error, &temp_process_info);
+      command_line.GetCommandLineString().c_str(), std::move(policy),
+      &last_sbox_warning, &last_win_error, &temp_process_info);
   if (sandbox_result != sandbox::SBOX_ALL_OK) {
     LOG(DFATAL) << "Failed to spawn sandbox target: " << sandbox_result
                 << ", last sandbox warning: " << last_sbox_warning

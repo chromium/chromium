@@ -61,7 +61,7 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   base::HandlesToInheritVector handles_to_inherit;
   ::sandbox::BrokerServices* broker =
       ::sandbox::SandboxFactory::GetBrokerServices();
-  scoped_refptr<::sandbox::TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
 
   content::RendererSandboxedProcessLauncherDelegateWin test_renderer_delegate(
       &cmd_line, /* is_jit_disabled */ false);
@@ -70,12 +70,12 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   ::sandbox::ResultCode result =
       ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
           cmd_line, ::sandbox::policy::switches::kRendererProcess,
-          handles_to_inherit, &test_renderer_delegate, policy);
+          handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
-  ValidateSecurityLevels(policy);
-  ValidatePolicyFlagSettings(policy);
-  ValidateAppContainerSettings(policy);
+  ValidateSecurityLevels(policy.get());
+  ValidatePolicyFlagSettings(policy.get());
+  ValidateAppContainerSettings(policy.get());
 }
 
 INSTANTIATE_TEST_SUITE_P(

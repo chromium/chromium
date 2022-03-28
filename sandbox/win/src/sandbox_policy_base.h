@@ -33,20 +33,18 @@ namespace sandbox {
 class Dispatcher;
 class LowLevelPolicy;
 class PolicyDiagnostic;
-class PolicyInfo;
 class TargetProcess;
 struct PolicyGlobal;
 
 class PolicyBase final : public TargetPolicy {
  public:
   PolicyBase();
+  ~PolicyBase() override;
 
   PolicyBase(const PolicyBase&) = delete;
   PolicyBase& operator=(const PolicyBase&) = delete;
 
   // TargetPolicy:
-  void AddRef() override;
-  void Release() override;
   ResultCode SetTokenLevel(TokenLevel initial, TokenLevel lockdown) override;
   TokenLevel GetInitialTokenLevel() const override;
   TokenLevel GetLockdownTokenLevel() const override;
@@ -82,7 +80,6 @@ class PolicyBase final : public TargetPolicy {
                                     bool create_profile) override;
   scoped_refptr<AppContainer> GetAppContainer() override;
   void SetEffectiveToken(HANDLE token) override;
-  std::unique_ptr<PolicyInfo> GetPolicyInfo() override;
   void SetAllowNoSandboxJob() override;
   bool GetAllowNoSandboxJob() override;
 
@@ -129,9 +126,8 @@ class PolicyBase final : public TargetPolicy {
   const base::HandlesToInheritVector& GetHandlesBeingShared();
 
  private:
-  // Allow PolicyInfo to snapshot PolicyBase for diagnostics.
+  // Allow PolicyDiagnostic to snapshot PolicyBase for diagnostics.
   friend class PolicyDiagnostic;
-  ~PolicyBase();
 
   // Sets up interceptions for a new target. This policy must own |target|.
   ResultCode SetupAllInterceptions(TargetProcess& target);
@@ -145,8 +141,6 @@ class PolicyBase final : public TargetPolicy {
 
   // The policy takes ownership of a target as it is applied to it.
   std::unique_ptr<TargetProcess> target_;
-  // Standard object-lifetime reference counter.
-  volatile LONG ref_count;
   // The user-defined global policy settings.
   TokenLevel lockdown_level_;
   TokenLevel initial_level_;

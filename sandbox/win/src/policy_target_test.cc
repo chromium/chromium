@@ -228,7 +228,6 @@ TEST(PolicyTargetTest, OpenProcess) {
 TEST(PolicyTargetTest, PolicyBaseNoJobLifetime) {
   TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
                     USER_LOCKDOWN);
-  runner.SetReleasePolicyInRun(true);
   // TargetPolicy and its SharedMemIPCServer should continue to exist until
   // the child process dies.
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_thread"))
@@ -259,9 +258,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   BrokerServices* broker = GetBroker();
 
   // Precreate the desktop.
-  scoped_refptr<TargetPolicy> temp_policy = broker->CreatePolicy();
-  temp_policy->CreateAlternateDesktop(false);
-  temp_policy = nullptr;
+  broker->CreatePolicy()->CreateAlternateDesktop(false);
 
   ASSERT_TRUE(broker);
 
@@ -279,13 +276,13 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   DWORD last_error = ERROR_SUCCESS;
   base::win::ScopedProcessInformation target;
 
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(false);
   policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   result =
-      broker->SpawnTarget(prog_name, arguments.c_str(), policy, &warning_result,
-                          &last_error, &temp_process_info);
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -300,9 +297,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   ::WaitForSingleObject(target.process_handle(), INFINITE);
 
   // Close the desktop handle.
-  temp_policy = broker->CreatePolicy();
-  temp_policy->DestroyAlternateDesktop();
-  temp_policy = nullptr;
+  broker->CreatePolicy()->DestroyAlternateDesktop();
 
   // Close the null dacl desktop.
   EXPECT_TRUE(::SetThreadDesktop(old_desktop));
@@ -317,9 +312,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   BrokerServices* broker = GetBroker();
 
   // Precreate the desktop.
-  scoped_refptr<TargetPolicy> temp_policy = broker->CreatePolicy();
-  temp_policy->CreateAlternateDesktop(false);
-  temp_policy = nullptr;
+  broker->CreatePolicy()->CreateAlternateDesktop(false);
 
   ASSERT_TRUE(broker);
 
@@ -337,15 +330,15 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   DWORD last_error = ERROR_SUCCESS;
   base::win::ScopedProcessInformation target;
 
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(false);
   policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
-  result =
-      broker->SpawnTarget(prog_name, arguments.c_str(), policy, &warning_result,
-                          &last_error, &temp_process_info);
+  // Keep the desktop name to test against later.
   std::wstring desktop_name = policy->GetAlternateDesktop();
-  policy = nullptr;
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -367,9 +360,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   ::WaitForSingleObject(target.process_handle(), INFINITE);
 
   // Close the desktop handle.
-  temp_policy = broker->CreatePolicy();
-  temp_policy->DestroyAlternateDesktop();
-  temp_policy = nullptr;
+  broker->CreatePolicy()->DestroyAlternateDesktop();
 
   // Make sure the desktop does not exist anymore.
   desk = ::OpenDesktop(desktop_name.c_str(), 0, false, DESKTOP_ENUMERATE);
@@ -384,9 +375,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   BrokerServices* broker = GetBroker();
 
   // Precreate the desktop.
-  scoped_refptr<TargetPolicy> temp_policy = broker->CreatePolicy();
-  temp_policy->CreateAlternateDesktop(true);
-  temp_policy = nullptr;
+  broker->CreatePolicy()->CreateAlternateDesktop(true);
 
   ASSERT_TRUE(broker);
 
@@ -403,16 +392,16 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   ResultCode warning_result = SBOX_ALL_OK;
   base::win::ScopedProcessInformation target;
 
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(true);
   policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
-  result =
-      broker->SpawnTarget(prog_name, arguments.c_str(), policy, &warning_result,
-                          &last_error, &temp_process_info);
+  // Keep the desktop name for later.
   std::wstring desktop_name = policy->GetAlternateDesktop();
-  policy = nullptr;
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -442,9 +431,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   ::WaitForSingleObject(target.process_handle(), INFINITE);
 
   // Close the desktop handle.
-  temp_policy = broker->CreatePolicy();
-  temp_policy->DestroyAlternateDesktop();
-  temp_policy = nullptr;
+  broker->CreatePolicy()->DestroyAlternateDesktop();
 }
 
 // Creates multiple policies, with alternate desktops on both local and
@@ -452,9 +439,9 @@ TEST(PolicyTargetTest, WinstaPolicy) {
 TEST(PolicyTargetTest, BothLocalAndAlternateWinstationDesktop) {
   BrokerServices* broker = GetBroker();
 
-  scoped_refptr<TargetPolicy> policy1 = broker->CreatePolicy();
-  scoped_refptr<TargetPolicy> policy2 = broker->CreatePolicy();
-  scoped_refptr<TargetPolicy> policy3 = broker->CreatePolicy();
+  auto policy1 = broker->CreatePolicy();
+  auto policy2 = broker->CreatePolicy();
+  auto policy3 = broker->CreatePolicy();
 
   ResultCode result;
   result = policy1->SetAlternateDesktop(false);
@@ -502,7 +489,7 @@ TEST(PolicyTargetTest, ShareHandleTest) {
           std::move(writable_region));
   ASSERT_TRUE(read_only_region.IsValid());
 
-  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
   policy->AddHandleToShare(read_only_region.GetPlatformHandle());
 
   std::wstring arguments(L"\"");
@@ -520,9 +507,8 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
   result =
-      broker->SpawnTarget(prog_name, arguments.c_str(), policy, &warning_result,
-                          &last_error, &temp_process_info);
-  policy = nullptr;
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)

@@ -53,7 +53,7 @@ TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
   base::HandlesToInheritVector handles_to_inherit;
   ::sandbox::BrokerServices* broker =
       ::sandbox::SandboxFactory::GetBrokerServices();
-  scoped_refptr<::sandbox::TargetPolicy> policy = broker->CreatePolicy();
+  auto policy = broker->CreatePolicy();
 
   ppapi::PpapiPermissions permissions(ppapi::Permission::PERMISSION_NONE);
   PpapiPluginSandboxedProcessLauncherDelegate test_ppapi_delegate(permissions);
@@ -62,12 +62,12 @@ TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
   ::sandbox::ResultCode result =
       ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
           cmd_line, ::sandbox::policy::switches::kPpapiSandbox,
-          handles_to_inherit, &test_ppapi_delegate, policy);
+          handles_to_inherit, &test_ppapi_delegate, policy.get());
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
-  ValidateSecurityLevels(policy);
-  ValidatePolicyFlagSettings(policy);
-  ValidateAppContainerSettings(policy);
+  ValidateSecurityLevels(policy.get());
+  ValidatePolicyFlagSettings(policy.get());
+  ValidateAppContainerSettings(policy.get());
 }
 
 INSTANTIATE_TEST_SUITE_P(

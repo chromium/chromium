@@ -307,7 +307,7 @@ class AppContainerTest : public ::testing::Test {
     ResultCode last_warning = SBOX_ALL_OK;
     DWORD last_error = 0;
     ResultCode result = broker_services_->SpawnTarget(
-        prog_name, prog_name, policy_, &last_warning, &last_error,
+        prog_name, prog_name, std::move(policy_), &last_warning, &last_error,
         &process_info);
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;
     scoped_process_info_.Set(process_info);
@@ -316,7 +316,7 @@ class AppContainerTest : public ::testing::Test {
   std::wstring package_name_;
   raw_ptr<BrokerServices> broker_services_;
   scoped_refptr<AppContainerBase> container_;
-  scoped_refptr<TargetPolicy> policy_;
+  std::unique_ptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;
 };
 

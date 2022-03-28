@@ -65,7 +65,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       const std::string& process_type,
       const base::HandlesToInheritVector& handles_to_inherit,
       SandboxDelegate* delegate,
-      const scoped_refptr<TargetPolicy>& policy);
+      TargetPolicy* policy);
 
   // Wrapper around TargetPolicy::SetJobLevel that checks if the
   // sandbox should be let to run without a job object assigned.

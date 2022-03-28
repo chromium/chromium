@@ -74,22 +74,19 @@ std::vector<base::win::Sid> SandboxFeatureTest::GetExpectedCapabilities() {
   return {};
 }
 
-void SandboxFeatureTest::ValidateSecurityLevels(
-    const scoped_refptr<TargetPolicy>& policy) {
+void SandboxFeatureTest::ValidateSecurityLevels(TargetPolicy* policy) {
   EXPECT_EQ(policy->GetIntegrityLevel(), GetExpectedIntegrityLevel());
   EXPECT_EQ(policy->GetLockdownTokenLevel(), GetExpectedLockdownTokenLevel());
   EXPECT_EQ(policy->GetInitialTokenLevel(), GetExpectedInitialTokenLevel());
 }
 
-void SandboxFeatureTest::ValidatePolicyFlagSettings(
-    const scoped_refptr<TargetPolicy>& policy) {
+void SandboxFeatureTest::ValidatePolicyFlagSettings(TargetPolicy* policy) {
   EXPECT_EQ(policy->GetProcessMitigations(), GetExpectedMitigationFlags());
   EXPECT_EQ(policy->GetDelayedProcessMitigations(),
             GetExpectedDelayedMitigationFlags());
 }
 
-void SandboxFeatureTest::ValidateAppContainerSettings(
-    const scoped_refptr<TargetPolicy>& policy) {
+void SandboxFeatureTest::ValidateAppContainerSettings(TargetPolicy* policy) {
   if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kLowbox) {
     EXPECT_EQ(GetExpectedAppContainerType(),
               policy->GetAppContainer()->GetAppContainerType());

@@ -385,7 +385,7 @@ TEST(IntegrationTestsTest, RunJoblessChildFromInsideJob) {
             runner.RunTest(L"IntegrationTestsTest_job none"));
 }
 
-// GetPolicyInfo validation
+// GetPolicyDiagnostics validation
 TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   TestRunner runner;
 
@@ -394,7 +394,7 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   // This helper can be reused if it has finished waiting.
   auto waiter = std::make_unique<PolicyDiagnosticsWaiter>();
   {
-    // But the receiver cannot be reused as it is consumed by GetPolicyInfo().
+    // Receiver cannot be reused as it is consumed by GetPolicyDiagnostics().
     auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());
     auto result = runner.broker()->GetPolicyDiagnostics(std::move(receiver));
     ASSERT_EQ(SBOX_ALL_OK, result);

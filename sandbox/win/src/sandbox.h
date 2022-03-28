@@ -35,7 +35,6 @@
 // sandbox: Google User-Land Application Sandbox
 namespace sandbox {
 
-class BrokerServices;
 class PolicyDiagnosticsReceiver;
 class ProcessState;
 class TargetPolicy;
@@ -68,9 +67,10 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
   // SpawnTarget()
-  virtual scoped_refptr<TargetPolicy> CreatePolicy() = 0;
+  virtual std::unique_ptr<TargetPolicy> CreatePolicy() = 0;
 
-  // Creates a new target (child process) in a suspended state.
+  // Creates a new target (child process) in a suspended state and takes
+  // ownership of |policy|.
   // Parameters:
   //   exe_path: This is the full path to the target binary. This parameter
   //   can be null and in this case the exe path must be the first argument
@@ -89,12 +89,10 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //   responsible for closing the handles returned in this structure.
   // Returns:
   //   ALL_OK if successful. All other return values imply failure.
-  virtual ResultCode SpawnTarget(const wchar_t* exe_path,
-                                 const wchar_t* command_line,
-                                 scoped_refptr<TargetPolicy> policy,
-                                 ResultCode* last_warning,
-                                 DWORD* last_error,
-                                 PROCESS_INFORMATION* target) = 0;
+  virtual ResultCode SpawnTarget(
+      const wchar_t* exe_path, const wchar_t* command_line,
+      std::unique_ptr<TargetPolicy> policy, ResultCode* last_warning,
+      DWORD* last_error, PROCESS_INFORMATION* target) = 0;
 
   // This call blocks (waits) for all the targets to terminate.
   // Returns:

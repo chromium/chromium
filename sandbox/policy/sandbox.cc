@@ -52,12 +52,12 @@ bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
     // Only pre-create alternate desktop if there will be sandboxed processes in
     // the future.
     if (!command_line.HasSwitch(switches::kNoSandbox)) {
-      scoped_refptr<TargetPolicy> policy = broker_services->CreatePolicy();
       // IMPORTANT: This piece of code needs to run as early as possible in the
       // process because it will initialize the sandbox broker, which requires
       // the process to swap its window station. During this time all the UI
       // will be broken. This has to run before threads and windows are created.
-      ResultCode result = policy->CreateAlternateDesktop(true);
+      ResultCode result =
+          broker_services->CreatePolicy()->CreateAlternateDesktop(true);
       CHECK(SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION != result);
     }
     return true;

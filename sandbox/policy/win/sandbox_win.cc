@@ -32,7 +32,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/scoped_handle.h"
@@ -52,7 +51,6 @@
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
-#include "sandbox/win/src/sandbox_policy_diagnostic.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -155,26 +153,6 @@ const wchar_t* const kTroublesomeDlls[] = {
 // This is for finch. See also crbug.com/464430 for details.
 const base::Feature kEnableCsrssLockdownFeature{
     "EnableCsrssLockdown", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Helps emit trace events for sandbox policy. This mediates memory between
-// chrome.exe and chrome.dll.
-class PolicyTraceHelper : public base::trace_event::ConvertableToTraceFormat {
- public:
-  explicit PolicyTraceHelper(TargetPolicy* policy) {
-    // |info| must live until JsonString() output is copied.
-    std::unique_ptr<PolicyInfo> info = policy->GetPolicyInfo();
-    json_string_ = std::string(info->JsonString());
-  }
-  ~PolicyTraceHelper() override = default;
-
-  // ConvertableToTraceFormat.
-  void AppendAsTraceFormat(std::string* out) const override {
-    out->append(json_string_);
-  }
-
- private:
-  std::string json_string_;
-};  // PolicyTraceHelper
 
 #if !defined(NACL_WIN64)
 // Adds the policy rules for the path and path\ with the semantic |access|.
@@ -1002,7 +980,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
-    const scoped_refptr<TargetPolicy>& policy) {
+    TargetPolicy* policy) {
   const base::CommandLine& launcher_process_command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -1049,7 +1027,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     return result;
 
   if (process_type == switches::kRendererProcess) {
-    result = SandboxWin::AddWin32kLockdownPolicy(policy.get());
+    result = AddWin32kLockdownPolicy(policy);
     if (result != SBOX_ALL_OK)
       return result;
   }
@@ -1070,12 +1048,12 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   if (result != SBOX_ALL_OK)
     return result;
 
-  result = SetJobLevel(cmd_line, JobLevel::kLockdown, 0, policy.get());
+  result = SetJobLevel(cmd_line, JobLevel::kLockdown, 0, policy);
   if (result != SBOX_ALL_OK)
     return result;
 
   if (!delegate->DisableDefaultPolicy()) {
-    result = AddDefaultPolicyForSandboxedProcess(policy.get());
+    result = AddDefaultPolicyForSandboxedProcess(policy);
     if (result != SBOX_ALL_OK)
       return result;
   }
@@ -1092,11 +1070,11 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
       process_type == switches::kPpapiPluginProcess ||
       sandbox_type == Sandbox::kPrintCompositor) {
     AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
-                 TargetPolicy::FILES_ALLOW_READONLY, policy.get());
+                 TargetPolicy::FILES_ALLOW_READONLY, policy);
   }
 #endif
 
-  result = AddGenericPolicy(policy.get());
+  result = AddGenericPolicy(policy);
   if (result != SBOX_ALL_OK) {
     NOTREACHED();
     return result;
@@ -1106,7 +1084,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   if (IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
       delegate->GetAppContainerId(&appcontainer_id)) {
     result = AddAppContainerProfileToPolicy(cmd_line, sandbox_type,
-                                            appcontainer_id, policy.get());
+                                            appcontainer_id, policy);
     DCHECK_EQ(result, SBOX_ALL_OK);
     if (result != SBOX_ALL_OK)
       return result;
@@ -1142,7 +1120,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   policy->SetStderrHandle(GetStdHandle(STD_ERROR_HANDLE));
 #endif
 
-  if (!delegate->PreSpawnTarget(policy.get()))
+  if (!delegate->PreSpawnTarget(policy))
     return SBOX_ERROR_DELEGATE_PRE_SPAWN;
 
   return result;
@@ -1155,9 +1133,9 @@ ResultCode SandboxWin::StartSandboxedProcess(
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     base::Process* process) {
-  scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
+  auto policy = g_broker_services->CreatePolicy();
   ResultCode result = GeneratePolicyForSandboxedProcess(
-      cmd_line, process_type, handles_to_inherit, delegate, policy);
+      cmd_line, process_type, handles_to_inherit, delegate, policy.get());
 
   if (ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS == result) {
     return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
@@ -1173,19 +1151,12 @@ ResultCode SandboxWin::StartSandboxedProcess(
   DWORD last_error = ERROR_SUCCESS;
   result = g_broker_services->SpawnTarget(
       cmd_line.GetProgram().value().c_str(),
-      cmd_line.GetCommandLineString().c_str(), policy, &last_warning,
+      cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_warning,
       &last_error, &temp_process_info);
 
   base::win::ScopedProcessInformation target(temp_process_info);
 
   TRACE_EVENT_END0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
-
-  // Trace policy as processes are started. Useful for both failure and success.
-  TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("sandbox"), "processLaunch",
-                       TRACE_EVENT_SCOPE_PROCESS, "sandboxType",
-                       GetSandboxTypeInEnglish(delegate->GetSandboxType()),
-                       "policy",
-                       std::make_unique<PolicyTraceHelper>(policy.get()));
 
   if (SBOX_ALL_OK != result) {
     base::UmaHistogramSparse("Process.Sandbox.Launch.Error", last_error);

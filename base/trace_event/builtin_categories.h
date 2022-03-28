@@ -234,7 +234,6 @@
   X(TRACE_DISABLED_BY_DEFAULT("power"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("sandbox"))                                \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots"))     \

@@ -18,9 +18,8 @@ constexpr size_t maxParams = 2;
 
 // This fills policies with rules based on the current
 // renderer sandbox in Chrome.
-scoped_refptr<sandbox::PolicyBase> InitPolicy() {
-  scoped_refptr<sandbox::PolicyBase> policy(new sandbox::PolicyBase);
-  policy->Release();
+std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
+  auto policy = std::make_unique<sandbox::PolicyBase>();
 
   policy->AddRule(sandbox::TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
                   sandbox::TargetPolicy::FAKE_USER_GDI_INIT, nullptr);
@@ -53,7 +52,7 @@ struct FakeCountedParameterSetBase {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FakeCountedParameterSetBase params;
 
-  static scoped_refptr<sandbox::PolicyBase> policy = InitPolicy();
+  static std::unique_ptr<sandbox::PolicyBase> policy = InitPolicy();
 
   if (size < 20)
     return 0;
