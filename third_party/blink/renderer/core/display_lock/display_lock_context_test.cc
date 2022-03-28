@@ -3603,4 +3603,17 @@ TEST_F(DisplayLockContextTest, NoUpdatesInDisplayNone) {
   EXPECT_FALSE(child->GetLayoutObject());
 }
 
+TEST_F(DisplayLockContextTest, ElementActivateDisplayLockIfNeeded) {
+  SetHtmlInnerHTML(R"HTML(
+    <div style="height: 10000px"></div>
+    <div style="content-visibility: hidden" hidden="until-found"></div>
+    <div style="content-visibility: auto"><div id="target"></div></div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  // Non-ancestor c-v:hidden should not prevent the activation.
+  EXPECT_TRUE(target->ActivateDisplayLockIfNeeded(
+      DisplayLockActivationReason::kScrollIntoView));
+}
+
 }  // namespace blink

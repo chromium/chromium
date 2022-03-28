@@ -4797,14 +4797,16 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
     if (!prior_element)
       continue;
     if (auto* context = prior_element->GetDisplayLockContext()) {
-      // If any of the ancestors is not activatable for the given reason, we
-      // can't activate.
-      if (context->IsLocked() && !context->IsActivatable(reason))
-        return false;
       // Collect display-locked ancestors and shaping-deferred prior elements.
-      if (FlatTreeTraversal::Contains(*prior_element, *this) ||
-          (prior_element->GetLayoutObject() &&
-           prior_element->GetLayoutObject()->IsShapingDeferred())) {
+      if (prior_element->GetLayoutObject() &&
+          prior_element->GetLayoutObject()->IsShapingDeferred()) {
+        activatable_targets.push_back(std::make_pair(
+            prior_element, &prior_element->GetTreeScope().Retarget(*this)));
+      } else if (FlatTreeTraversal::Contains(*prior_element, *this)) {
+        // If any of the ancestors is not activatable for the given reason, we
+        // can't activate.
+        if (context->IsLocked() && !context->IsActivatable(reason))
+          return false;
         activatable_targets.push_back(std::make_pair(
             prior_element, &prior_element->GetTreeScope().Retarget(*this)));
       }
