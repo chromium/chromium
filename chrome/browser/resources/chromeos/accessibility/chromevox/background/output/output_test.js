@@ -106,371 +106,394 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
 };
 
 
-TEST_F('ChromeVoxOutputE2ETest', 'Links', async function() {
-  const root = await this.runWithLoadedTree('<a href="#">Click here</a>');
-  const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'Click here|Internal link|Press Search+Space to activate',
-        'spans_': [
-          // Attributes.
-          {value: 'name', start: 0, end: 10},
-
-          // Link earcon (based on the name).
-          {value: {earconId: 'LINK'}, start: 0, end: 10},
-
-          {value: {'delay': true}, start: 25, end: 55}
-        ]
-      },
-      o.speechOutputForTest);
-  checkBrailleOutput(
-      'Click here intlnk', [{value: new OutputNodeSpan(el), start: 0, end: 17}],
-      o);
-});
-
-TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', async function() {
-  const root = await this.runWithLoadedTree('<input type="checkbox">');
-  const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      '|Check box|Not checked|Press Search+Space to toggle',
-      [
-        {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
-        {value: 'role', start: 1, end: 10},
-        {value: {'delay': true}, start: 23, end: 51}
-      ],
-      o);
-  checkBrailleOutput(
-      'chk ( )', [{value: new OutputNodeSpan(el), start: 0, end: 7}], o);
-});
-
-TEST_F(
-    'ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored',
-    async function() {
-      const root = await this.runWithLoadedTree('<p>OK');
-      let el = root.firstChild.firstChild.firstChild;
-      assertEquals('inlineTextBox', el.role);
-      let range = cursors.Range.fromNode(el);
-      let o = new Output().withSpeechAndBraille(range, null, 'navigate');
-      assertEqualsJSON(
-          {
-            string_: 'OK',
-            'spans_': [
-              // Attributes.
-              {value: 'name', start: 0, end: 2}
-            ]
-          },
-          o.speechOutputForTest);
-      checkBrailleOutput(
-          'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
-
-      el = root.firstChild.firstChild;
-      assertEquals('staticText', el.role);
-      range = cursors.Range.fromNode(el);
-      o = new Output().withSpeechAndBraille(range, null, 'navigate');
-      assertEqualsJSON(
-          {
-            string_: 'OK',
-            'spans_': [
-              // Attributes.
-              {value: 'name', start: 0, end: 2}
-            ]
-          },
-          o.speechOutputForTest);
-      checkBrailleOutput(
-          'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
-    });
-
-TEST_F('ChromeVoxOutputE2ETest', 'Headings', async function() {
-  const root = await this.runWithLoadedTree(`
-      <h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>
-      <h1><a href="a.com">b</a></h1> `);
-  let el = root.firstChild;
-  for (let i = 1; i <= 6; ++i) {
+TEST_F('ChromeVoxOutputE2ETest', 'Links', function() {
+  this.runWithLoadedTree('<a href="#">Click here</a>', function(root) {
+    const el = root.firstChild.firstChild;
     const range = cursors.Range.fromNode(el);
     const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-    const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
     assertEqualsJSON(
         {
-          string_: letter + '|Heading ' + i,
+          string_: 'Click here|Internal link|Press Search+Space to activate',
           'spans_': [
             // Attributes.
-            {value: 'nameOrDescendants', start: 0, end: 1}
+            {value: 'name', start: 0, end: 10},
+
+            // Link earcon (based on the name).
+            {value: {earconId: 'LINK'}, start: 0, end: 10},
+
+            {value: {'delay': true}, start: 25, end: 55}
           ]
         },
         o.speechOutputForTest);
     checkBrailleOutput(
-        letter + ' h' + i, [{value: new OutputNodeSpan(el), start: 0, end: 4}],
-        o);
-    el = el.nextSibling;
-  }
+        'Click here intlnk',
+        [{value: new OutputNodeSpan(el), start: 0, end: 17}], o);
+  });
+});
 
-  range = cursors.Range.fromNode(el);
-  o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'b|Link|Heading 1',
-        'spans_': [
-          {value: 'name', start: 0, end: 1},
-          {value: new OutputEarconAction('LINK'), start: 0, end: 1},
-          {value: 'role', start: 2, end: 6}
-        ]
-      },
-      o.speechOutputForTest);
-  checkBrailleOutput(
-      'b lnk h1',
-      [
-        {value: new OutputNodeSpan(el.firstChild.firstChild), start: 0, end: 1},
-        {value: new OutputNodeSpan(el), start: 0, end: 8},
-        {value: new OutputNodeSpan(el.firstChild), start: 2, end: 5}
-      ],
-      o);
+TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', function() {
+  this.runWithLoadedTree('<input type="checkbox">', function(root) {
+    const el = root.firstChild.firstChild;
+    const range = cursors.Range.fromNode(el);
+    const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        '|Check box|Not checked|Press Search+Space to toggle',
+        [
+          {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
+          {value: 'role', start: 1, end: 10},
+          {value: {'delay': true}, start: 23, end: 51}
+        ],
+        o);
+    checkBrailleOutput(
+        'chk ( )', [{value: new OutputNodeSpan(el), start: 0, end: 7}], o);
+  });
+});
+
+TEST_F('ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
+  this.runWithLoadedTree('<p>OK', function(root) {
+    let el = root.firstChild.firstChild.firstChild;
+    assertEquals('inlineTextBox', el.role);
+    let range = cursors.Range.fromNode(el);
+    let o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    assertEqualsJSON(
+        {
+          string_: 'OK',
+          'spans_': [
+            // Attributes.
+            {value: 'name', start: 0, end: 2}
+          ]
+        },
+        o.speechOutputForTest);
+    checkBrailleOutput(
+        'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
+
+    el = root.firstChild.firstChild;
+    assertEquals('staticText', el.role);
+    range = cursors.Range.fromNode(el);
+    o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    assertEqualsJSON(
+        {
+          string_: 'OK',
+          'spans_': [
+            // Attributes.
+            {value: 'name', start: 0, end: 2}
+          ]
+        },
+        o.speechOutputForTest);
+    checkBrailleOutput(
+        'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
+  });
+});
+
+TEST_F('ChromeVoxOutputE2ETest', 'Headings', function() {
+  this.runWithLoadedTree(
+      `
+      <h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>
+      <h1><a href="a.com">b</a></h1> `,
+      function(root) {
+        let el = root.firstChild;
+        for (let i = 1; i <= 6; ++i) {
+          const range = cursors.Range.fromNode(el);
+          const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+          const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
+          assertEqualsJSON(
+              {
+                string_: letter + '|Heading ' + i,
+                'spans_': [
+                  // Attributes.
+                  {value: 'nameOrDescendants', start: 0, end: 1}
+                ]
+              },
+              o.speechOutputForTest);
+          checkBrailleOutput(
+              letter + ' h' + i,
+              [{value: new OutputNodeSpan(el), start: 0, end: 4}], o);
+          el = el.nextSibling;
+        }
+
+        range = cursors.Range.fromNode(el);
+        o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'b|Link|Heading 1',
+              'spans_': [
+                {value: 'name', start: 0, end: 1},
+                {value: new OutputEarconAction('LINK'), start: 0, end: 1},
+                {value: 'role', start: 2, end: 6}
+              ]
+            },
+            o.speechOutputForTest);
+        checkBrailleOutput(
+            'b lnk h1',
+            [
+              {
+                value: new OutputNodeSpan(el.firstChild.firstChild),
+                start: 0,
+                end: 1
+              },
+              {value: new OutputNodeSpan(el), start: 0, end: 8},
+              {value: new OutputNodeSpan(el.firstChild), start: 2, end: 5}
+            ],
+            o);
+      });
 });
 
 // TODO(crbug.com/901725): test is flaky.
-TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', async function() {
-  const root =
-      await this.runWithLoadedTree('<audio src="foo.mp3" controls></audio>');
-  let el = root.find({role: RoleType.BUTTON});
-  let range = cursors.Range.fromNode(el);
-  let o =
-      new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
+TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
+  this.runWithLoadedTree(
+      '<audio src="foo.mp3" controls></audio>', function(root) {
+        let el = root.find({role: RoleType.BUTTON});
+        let range = cursors.Range.fromNode(el);
+        let o = new Output().withoutHints().withSpeechAndBraille(
+            range, null, 'navigate');
 
-  checkSpeechOutput(
-      'play|Disabled|Button|audio|Tool bar',
-      [
-        {value: new OutputEarconAction('BUTTON'), start: 0, end: 4},
-        {value: 'name', start: 21, end: 26}, {value: 'role', start: 27, end: 35}
-      ],
-      o);
+        checkSpeechOutput(
+            'play|Disabled|Button|audio|Tool bar',
+            [
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 4},
+              {value: 'name', start: 21, end: 26},
+              {value: 'role', start: 27, end: 35}
+            ],
+            o);
 
-  checkBrailleOutput(
-      'play xx btn audio tlbar',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 11},
-        {value: new OutputNodeSpan(el.parent), start: 12, end: 23}
-      ],
-      o);
+        checkBrailleOutput(
+            'play xx btn audio tlbar',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 11},
+              {value: new OutputNodeSpan(el.parent), start: 12, end: 23}
+            ],
+            o);
 
-  // TODO(dtseng): Replace with a query.
-  el = el.nextSibling.nextSibling.nextSibling;
-  const prevRange = range;
-  range = cursors.Range.fromNode(el);
-  o = new Output().withoutHints().withSpeechAndBraille(
-      range, prevRange, 'navigate');
-  checkSpeechOutput(
-      '|audio time scrubber|Slider|0:00|Min 0|Max 0',
-      [
-        {value: 'name', start: 0, end: 0},
-        {value: new OutputEarconAction('SLIDER'), start: 0, end: 0},
-        {value: 'description', start: 1, end: 20},
-        {value: 'role', start: 21, end: 27},
-        {value: 'value', start: 28, end: 32}
-      ],
-      o);
-  checkBrailleOutput(
-      'audio time scrubber sldr 0:00 min:0 max:0',
-      [{value: new OutputNodeSpan(el), start: 0, end: 41}], o);
+        // TODO(dtseng): Replace with a query.
+        el = el.nextSibling.nextSibling.nextSibling;
+        const prevRange = range;
+        range = cursors.Range.fromNode(el);
+        o = new Output().withoutHints().withSpeechAndBraille(
+            range, prevRange, 'navigate');
+        checkSpeechOutput(
+            '|audio time scrubber|Slider|0:00|Min 0|Max 0',
+            [
+              {value: 'name', start: 0, end: 0},
+              {value: new OutputEarconAction('SLIDER'), start: 0, end: 0},
+              {value: 'description', start: 1, end: 20},
+              {value: 'role', start: 21, end: 27},
+              {value: 'value', start: 28, end: 32}
+            ],
+            o);
+        checkBrailleOutput(
+            'audio time scrubber sldr 0:00 min:0 max:0',
+            [{value: new OutputNodeSpan(el), start: 0, end: 41}], o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
-  const root = await this.runWithLoadedTree(
+TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
+  this.runWithLoadedTree(
       '<input type="text"></input>' +
-      '<input type="email"></input>' +
-      '<input type="password"></input>' +
-      '<input type="tel"></input>' +
-      '<input type="number"></input>' +
-      '<input type="time"></input>' +
-      '<input type="date"></input>' +
-      '<input type="file"</input>' +
-      '<input type="search"</input>' +
-      '<input type="invalidType"</input>');
-  const expectedSpansNonSearchBox = [
-    {value: 'name', start: 0, end: 0},
-    {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
-    {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
-    {value: 'value', start: 1, end: 1}, {value: 'inputType', start: 2}
-  ];
-  const expectedSpansForSearchBox = [
-    {value: 'name', start: 0, end: 0},
-    {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
-    {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
-    {value: 'value', start: 1, end: 1}, {value: 'role', start: 2, end: 8}
-  ];
+          '<input type="email"></input>' +
+          '<input type="password"></input>' +
+          '<input type="tel"></input>' +
+          '<input type="number"></input>' +
+          '<input type="time"></input>' +
+          '<input type="date"></input>' +
+          '<input type="file"</input>' +
+          '<input type="search"</input>' +
+          '<input type="invalidType"</input>',
+      function(root) {
+        const expectedSpansNonSearchBox = [
+          {value: 'name', start: 0, end: 0},
+          {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
+          {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
+          {value: 'value', start: 1, end: 1}, {value: 'inputType', start: 2}
+        ];
+        const expectedSpansForSearchBox = [
+          {value: 'name', start: 0, end: 0},
+          {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
+          {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
+          {value: 'value', start: 1, end: 1}, {value: 'role', start: 2, end: 8}
+        ];
 
-  const expectedSpeechValues = [
-    '||Edit text', '||Edit text, email entry', '||Password edit text',
-    '||Edit text numeric only',
-    [
-      '|Spin button',
-      [
-        {value: 'name', start: 0, end: 0},
-        {value: new OutputEarconAction('LISTBOX'), start: 0, end: 0},
-        {value: 'role', start: 1, end: 12}
-      ]
-    ],
-    ['Time control', [{value: 'role', start: 0, end: 12}]],
-    ['Date control', [{value: 'role', start: 0, end: 12}]],
-    [
-      'No file chosen, Choose File|Button',
-      [
-        {value: 'name', start: 0, end: 27},
-        {value: new OutputEarconAction('BUTTON'), start: 0, end: 27},
-        {value: 'role', start: 28, end: 34}
-      ]
-    ],
-    '||Search', '||Edit text'
-  ];
-  // TODO(plundblad): Some of these are wrong, there should be an initial
-  // space for the cursor in edit fields.
-  const expectedBrailleValues = [
-    ' ed', ' @ed 8dot', ' pwded', ' #ed', {string_: 'spnbtn', spans_: []},
-    {string_: 'time'}, {string_: 'date'},
-    {string_: 'No file chosen, Choose File btn'}, ' search', ' ed'
-  ];
-  assertEquals(expectedSpeechValues.length, expectedBrailleValues.length);
-
-  let el = root.firstChild.firstChild;
-  expectedSpeechValues.forEach(function(expectedValue) {
-    const range = cursors.Range.fromNode(el);
-    const o = new Output().withoutHints().withSpeechAndBraille(
-        range, null, 'navigate');
-    let expectedSpansForValue = null;
-    if (typeof expectedValue === 'object') {
-      checkSpeechOutput(expectedValue[0], expectedValue[1], o);
-    } else {
-      expectedSpansForValue = expectedValue === '||Search' ?
-          expectedSpansForSearchBox :
-          expectedSpansNonSearchBox;
-      expectedSpansForValue[4].end = expectedValue.length;
-      checkSpeechOutput(expectedValue, expectedSpansForValue, o);
-    }
-    el = el.nextSibling;
-  });
-
-  el = root.firstChild.firstChild;
-  expectedBrailleValues.forEach(function(expectedValue) {
-    const range = cursors.Range.fromNode(el);
-    const o = new Output().withoutHints().withBraille(range, null, 'navigate');
-    if (typeof expectedValue === 'string') {
-      checkBrailleOutput(
-          expectedValue,
+        const expectedSpeechValues = [
+          '||Edit text', '||Edit text, email entry', '||Password edit text',
+          '||Edit text numeric only',
           [
-            {value: {startIndex: 0, endIndex: 0}, start: 0, end: 0},
-            {value: new OutputNodeSpan(el), start: 0, end: expectedValue.length}
+            '|Spin button',
+            [
+              {value: 'name', start: 0, end: 0},
+              {value: new OutputEarconAction('LISTBOX'), start: 0, end: 0},
+              {value: 'role', start: 1, end: 12}
+            ]
           ],
-          o);
-    } else {
-      let spans = [{
-        value: new OutputNodeSpan(el),
-        start: 0,
-        end: expectedValue.string_.length
-      }];
-      if (expectedValue.spans_) {
-        spans = spans.concat(expectedValue.spans_);
-      }
+          ['Time control', [{value: 'role', start: 0, end: 12}]],
+          ['Date control', [{value: 'role', start: 0, end: 12}]],
+          [
+            'No file chosen, Choose File|Button',
+            [
+              {value: 'name', start: 0, end: 27},
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 27},
+              {value: 'role', start: 28, end: 34}
+            ]
+          ],
+          '||Search', '||Edit text'
+        ];
+        // TODO(plundblad): Some of these are wrong, there should be an initial
+        // space for the cursor in edit fields.
+        const expectedBrailleValues = [
+          ' ed', ' @ed 8dot', ' pwded', ' #ed', {string_: 'spnbtn', spans_: []},
+          {string_: 'time'}, {string_: 'date'},
+          {string_: 'No file chosen, Choose File btn'}, ' search', ' ed'
+        ];
+        assertEquals(expectedSpeechValues.length, expectedBrailleValues.length);
 
-      checkBrailleOutput(expectedValue.string_, spans, o);
-    }
-    el = el.nextSibling;
-  });
+        let el = root.firstChild.firstChild;
+        expectedSpeechValues.forEach(function(expectedValue) {
+          const range = cursors.Range.fromNode(el);
+          const o = new Output().withoutHints().withSpeechAndBraille(
+              range, null, 'navigate');
+          let expectedSpansForValue = null;
+          if (typeof expectedValue === 'object') {
+            checkSpeechOutput(expectedValue[0], expectedValue[1], o);
+          } else {
+            expectedSpansForValue = expectedValue === '||Search' ?
+                expectedSpansForSearchBox :
+                expectedSpansNonSearchBox;
+            expectedSpansForValue[4].end = expectedValue.length;
+            checkSpeechOutput(expectedValue, expectedSpansForValue, o);
+          }
+          el = el.nextSibling;
+        });
+
+        el = root.firstChild.firstChild;
+        expectedBrailleValues.forEach(function(expectedValue) {
+          const range = cursors.Range.fromNode(el);
+          const o =
+              new Output().withoutHints().withBraille(range, null, 'navigate');
+          if (typeof expectedValue === 'string') {
+            checkBrailleOutput(
+                expectedValue,
+                [
+                  {value: {startIndex: 0, endIndex: 0}, start: 0, end: 0}, {
+                    value: new OutputNodeSpan(el),
+                    start: 0,
+                    end: expectedValue.length
+                  }
+                ],
+                o);
+          } else {
+            let spans = [{
+              value: new OutputNodeSpan(el),
+              start: 0,
+              end: expectedValue.string_.length
+            }];
+            if (expectedValue.spans_) {
+              spans = spans.concat(expectedValue.spans_);
+            }
+
+            checkBrailleOutput(expectedValue.string_, spans, o);
+          }
+          el = el.nextSibling;
+        });
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'List', async function() {
-  const root = await this.runWithLoadedTree(
-      '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>');
-  const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'a|List item|first|List|with 3 items',
-      [
-        {value: {earconId: 'LIST_ITEM'}, start: 0, end: 1},
-        {value: 'name', start: 12, end: 17}, {value: 'role', start: 18, end: 22}
-      ],
-      o);
-  // TODO(plundblad): This output is wrong.  Add special handling for
-  // braille here.
-  checkBrailleOutput(
-      'a lstitm first lst +3',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 8},
-        {value: new OutputNodeSpan(el.parent), start: 9, end: 21}
-      ],
-      o);
+TEST_F('ChromeVoxOutputE2ETest', 'List', function() {
+  this.runWithLoadedTree(
+      '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>',
+      function(root) {
+        const el = root.firstChild.firstChild;
+        const range = cursors.Range.fromNode(el);
+        const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            'a|List item|first|List|with 3 items',
+            [
+              {value: {earconId: 'LIST_ITEM'}, start: 0, end: 1},
+              {value: 'name', start: 12, end: 17},
+              {value: 'role', start: 18, end: 22}
+            ],
+            o);
+        // TODO(plundblad): This output is wrong.  Add special handling for
+        // braille here.
+        checkBrailleOutput(
+            'a lstitm first lst +3',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 8},
+              {value: new OutputNodeSpan(el.parent), start: 9, end: 21}
+            ],
+            o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
+  this.runWithLoadedTree(
+      `
     <ul role="tree" style="list-style-type:none">
       <li aria-expanded="true" role="treeitem">a
       <li role="treeitem">b
       <li aria-expanded="false" role="treeitem">c
     </ul>
-  `);
-  let el = root.firstChild.children[0].firstChild;
-  let range = cursors.Range.fromNode(el);
-  let o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'a|Tree item|Expanded| 1 of 3 | level 1 |Tree|with 3 items',
-      [
-        {value: 'name', 'start': 0, end: 1},
-        {value: 'state', start: 12, end: 20},
-        {value: 'role', 'start': 40, end: 44},
-      ],
-      o);
-  checkBrailleOutput(
-      'a tritm - 1/3 level 1 tree +3',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 1},
-        {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
-        {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
-      ],
-      o);
+  `,
+      function(root) {
+        let el = root.firstChild.children[0].firstChild;
+        let range = cursors.Range.fromNode(el);
+        let o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            'a|Tree item|Expanded| 1 of 3 | level 1 |Tree|with 3 items',
+            [
+              {value: 'name', 'start': 0, end: 1},
+              {value: 'state', start: 12, end: 20},
+              {value: 'role', 'start': 40, end: 44},
+            ],
+            o);
+        checkBrailleOutput(
+            'a tritm - 1/3 level 1 tree +3',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
+              {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
+            ],
+            o);
 
-  el = root.firstChild.children[1].firstChild;
-  range = cursors.Range.fromNode(el);
-  o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'b|Tree item| 2 of 3 | level 1 |Tree|with 3 items',
-      [
-        {value: 'name', start: 0, end: 1}, {value: 'role', 'start': 31, end: 35}
-      ],
-      o);
-  checkBrailleOutput(
-      'b tritm 2/3 level 1 tree +3',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 1},
-        {value: new OutputNodeSpan(el.parent), start: 2, end: 20},
-        {value: new OutputNodeSpan(el.parent.parent), start: 20, end: 27}
-      ],
-      o);
+        el = root.firstChild.children[1].firstChild;
+        range = cursors.Range.fromNode(el);
+        o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            'b|Tree item| 2 of 3 | level 1 |Tree|with 3 items',
+            [
+              {value: 'name', start: 0, end: 1},
+              {value: 'role', 'start': 31, end: 35}
+            ],
+            o);
+        checkBrailleOutput(
+            'b tritm 2/3 level 1 tree +3',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 20},
+              {value: new OutputNodeSpan(el.parent.parent), start: 20, end: 27}
+            ],
+            o);
 
-  el = root.firstChild.children[2].firstChild;
-  range = cursors.Range.fromNode(el);
-  o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'c|Tree item|Collapsed| 3 of 3 | level 1 |Tree|with 3 items',
-      [
-        {value: 'name', 'start': 0, end: 1},
-        {value: 'state', start: 12, end: 21},
-        {value: 'role', 'start': 41, end: 45},
-      ],
-      o);
-  checkBrailleOutput(
-      'c tritm + 3/3 level 1 tree +3',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 1},
-        {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
-        {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
-      ],
-      o);
+        el = root.firstChild.children[2].firstChild;
+        range = cursors.Range.fromNode(el);
+        o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            'c|Tree item|Collapsed| 3 of 3 | level 1 |Tree|with 3 items',
+            [
+              {value: 'name', 'start': 0, end: 1},
+              {value: 'state', start: 12, end: 21},
+              {value: 'role', 'start': 41, end: 45},
+            ],
+            o);
+        checkBrailleOutput(
+            'c tritm + 3/3 level 1 tree +3',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
+              {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
+            ],
+            o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Menu', function() {
   const site = `
     <div role="menu">
       <div role="menuitem">a</div>
@@ -479,72 +502,78 @@ TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
     </div>
     <div role="menubar" aria-orientation="horizontal"></div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  let el = root.firstChild.firstChild;
-  let range = cursors.Range.fromNode(el);
-  let o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'a|Menu item| 1 of 3 |Menu',
-      [{value: 'name', start: 0, end: 1}, {value: 'role', start: 21, end: 25}],
-      o);
-  checkBrailleOutput(
-      'a mnuitm 1/3 mnu',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 12},
-        {value: new OutputNodeSpan(el.parent), start: 13, end: 16}
-      ],
-      o);
+  this.runWithLoadedTree(site, function(root) {
+    let el = root.firstChild.firstChild;
+    let range = cursors.Range.fromNode(el);
+    let o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'a|Menu item| 1 of 3 |Menu',
+        [
+          {value: 'name', start: 0, end: 1}, {value: 'role', start: 21, end: 25}
+        ],
+        o);
+    checkBrailleOutput(
+        'a mnuitm 1/3 mnu',
+        [
+          {value: new OutputNodeSpan(el), start: 0, end: 12},
+          {value: new OutputNodeSpan(el.parent), start: 13, end: 16}
+        ],
+        o);
 
-  // Ancestry.
-  el = root.firstChild;
-  range = cursors.Range.fromNode(el);
-  o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'Menu|with 3 items|' +
-          'Press up or down arrow to navigate; enter to activate',
-      [
-        {value: 'role', start: 0, end: 4},
-        {value: {delay: true}, start: 18, end: 71}
-      ],
-      o);
+    // Ancestry.
+    el = root.firstChild;
+    range = cursors.Range.fromNode(el);
+    o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'Menu|with 3 items|' +
+            'Press up or down arrow to navigate; enter to activate',
+        [
+          {value: 'role', start: 0, end: 4},
+          {value: {delay: true}, start: 18, end: 71}
+        ],
+        o);
 
-  el = root.lastChild;
-  range = cursors.Range.fromNode(el);
-  o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'Menu bar|Press left or right arrow to navigate; enter to activate',
-      [
-        {value: 'role', start: 0, end: 8},
-        {value: {delay: true}, start: 9, end: 65}
-      ],
-      o);
+    el = root.lastChild;
+    range = cursors.Range.fromNode(el);
+    o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'Menu bar|Press left or right arrow to navigate; enter to activate',
+        [
+          {value: 'role', start: 0, end: 8},
+          {value: {delay: true}, start: 9, end: 65}
+        ],
+        o);
+  });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ListBox', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'ListBox', function() {
+  this.runWithLoadedTree(
+      `
     <select multiple>
       <option>1</option>
       <option>2</option>
     </select>
-  `);
-  const el = root.firstChild.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      '1|List item| 1 of 2 |Not selected|List box|with 2 items',
-      [
-        {value: 'name', start: 0, end: 1},
-        {value: new OutputEarconAction('LIST_ITEM'), start: 0, end: 1},
-        {value: 'role', start: 34, end: 42}
-      ],
-      o);
-  checkBrailleOutput(
-      '1 lstitm 1/2 ( ) lstbx +2',
-      [
-        {value: new OutputNodeSpan(el), start: 0, end: 16},
-        {value: new OutputNodeSpan(el.parent), start: 17, end: 25}
-      ],
-      o);
+  `,
+      function(root) {
+        const el = root.firstChild.firstChild.firstChild;
+        const range = cursors.Range.fromNode(el);
+        const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            '1|List item| 1 of 2 |Not selected|List box|with 2 items',
+            [
+              {value: 'name', start: 0, end: 1},
+              {value: new OutputEarconAction('LIST_ITEM'), start: 0, end: 1},
+              {value: 'role', start: 34, end: 42}
+            ],
+            o);
+        checkBrailleOutput(
+            '1 lstitm 1/2 ( ) lstbx +2',
+            [
+              {value: new OutputNodeSpan(el), start: 0, end: 16},
+              {value: new OutputNodeSpan(el.parent), start: 17, end: 25}
+            ],
+            o);
+      });
 });
 
 SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
@@ -635,208 +664,249 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
   }
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', function() {
+  this.runWithLoadedTree(
+      `
     <div>that has content</div>
     <div></div>
     <div role='group'><div>nested content</div></div>
-  `);
-  const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'that has content', [{value: 'name', start: 0, end: 16}], o);
-  checkBrailleOutput(
-      'that has content', [{value: new OutputNodeSpan(el), start: 0, end: 16}],
-      o);
+  `,
+      function(root) {
+        const el = root.firstChild.firstChild;
+        const range = cursors.Range.fromNode(el);
+        const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+        checkSpeechOutput(
+            'that has content', [{value: 'name', start: 0, end: 16}], o);
+        checkBrailleOutput(
+            'that has content',
+            [{value: new OutputNodeSpan(el), start: 0, end: 16}], o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', function() {
+  this.runWithLoadedTree(
+      `
     <div role="banner"><p>inside</p></div>
     <div role="banner"><p>inside</p></div>
     <div role="navigation"><p>inside</p></div>
-  `);
-  const first = root.children[0].firstChild;
-  const second = root.children[1].firstChild;
-  const third = root.children[2].firstChild;
-  const firstRange = cursors.Range.fromNode(first);
-  const secondRange = cursors.Range.fromNode(second);
-  const thirdRange = cursors.Range.fromNode(third);
+  `,
+      function(root) {
+        const first = root.children[0].firstChild;
+        const second = root.children[1].firstChild;
+        const third = root.children[2].firstChild;
+        const firstRange = cursors.Range.fromNode(first);
+        const secondRange = cursors.Range.fromNode(second);
+        const thirdRange = cursors.Range.fromNode(third);
 
-  const oWithoutPrev = new Output().withSpeech(firstRange, null, 'navigate');
-  const oWithPrev =
-      new Output().withSpeech(secondRange, firstRange, 'navigate');
-  const oWithPrevExit =
-      new Output().withSpeech(thirdRange, secondRange, 'navigate');
-  assertEquals('inside|Banner', oWithoutPrev.speechOutputForTest.string_);
+        const oWithoutPrev =
+            new Output().withSpeech(firstRange, null, 'navigate');
+        const oWithPrev =
+            new Output().withSpeech(secondRange, firstRange, 'navigate');
+        const oWithPrevExit =
+            new Output().withSpeech(thirdRange, secondRange, 'navigate');
+        assertEquals('inside|Banner', oWithoutPrev.speechOutputForTest.string_);
 
-  // Make sure we don't read the exited ancestry change.
-  assertEquals('inside|Banner', oWithPrev.speechOutputForTest.string_);
+        // Make sure we don't read the exited ancestry change.
+        assertEquals('inside|Banner', oWithPrev.speechOutputForTest.string_);
 
-  // Different role; do read the exited ancestry here.
-  assertEquals('inside|Navigation', oWithPrevExit.speechOutputForTest.string_);
+        // Different role; do read the exited ancestry here.
+        assertEquals(
+            'inside|Navigation', oWithPrevExit.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'Brief', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'Brief', function() {
+  this.runWithLoadedTree(
+      `
     <div role="article"><p>inside</p></div>
-  `);
-  const node = root.children[0].firstChild;
-  const range = cursors.Range.fromNode(node);
+  `,
+      function(root) {
+        const node = root.children[0].firstChild;
+        const range = cursors.Range.fromNode(node);
 
-  localStorage['useVerboseMode'] = 'false';
-  const oWithoutPrev = new Output().withSpeech(range, null, 'navigate');
-  assertEquals('inside', oWithoutPrev.speechOutputForTest.string_);
+        localStorage['useVerboseMode'] = 'false';
+        const oWithoutPrev = new Output().withSpeech(range, null, 'navigate');
+        assertEquals('inside', oWithoutPrev.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', async function() {
+TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', function() {
   function toFixed(num) {
     return parseFloat(Number(num).toFixed(1));
   }
-  const root = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>
-      <h1><a href="a.com">b</a></h1> `);
-  let el = root.firstChild;
-  for (let i = 1; i <= 6; ++i) {
-    const range = cursors.Range.fromNode(el);
-    const o = new Output().withRichSpeech(range, null, 'navigate');
-    const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
-    assertEqualsJSON(
-        {
-          string_: letter + '|Heading ' + i,
-          'spans_': [
-            // Aural styles.
-            {value: {'relativePitch': toFixed(-0.1 * i)}, start: 0, end: 0},
+      <h1><a href="a.com">b</a></h1> `,
+      function(root) {
+        let el = root.firstChild;
+        for (let i = 1; i <= 6; ++i) {
+          const range = cursors.Range.fromNode(el);
+          const o = new Output().withRichSpeech(range, null, 'navigate');
+          const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
+          assertEqualsJSON(
+              {
+                string_: letter + '|Heading ' + i,
+                'spans_': [
+                  // Aural styles.
+                  {
+                    value: {'relativePitch': toFixed(-0.1 * i)},
+                    start: 0,
+                    end: 0
+                  },
 
-            // Attributes.
-            {value: 'nameOrDescendants', start: 0, end: 1},
+                  // Attributes.
+                  {value: 'nameOrDescendants', start: 0, end: 1},
 
-            {value: {'relativePitch': -0.2}, start: 2, end: 2}
-          ]
-        },
-        o.speechOutputForTest);
-    el = el.nextSibling;
-  }
+                  {value: {'relativePitch': -0.2}, start: 2, end: 2}
+                ]
+              },
+              o.speechOutputForTest);
+          el = el.nextSibling;
+        }
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', async function() {
-  const root = await this.runWithLoadedTree(`
-      <div role="button" aria-pressed="true">Subscribe</div>`);
-  const el = root.firstChild;
-  const o = new Output().withSpeechAndBraille(cursors.Range.fromNode(el));
-  assertEqualsJSON(
-      {
-        string_:
-            '|Subscribe|Toggle Button|Pressed|Press Search+Space to toggle',
-        spans_: [
-          {value: {earconId: 'CHECK_ON'}, start: 0, end: 0},
-          {value: 'name', start: 1, end: 10},
-          {value: 'role', start: 11, end: 24},
-          {value: {'delay': true}, start: 33, end: 61}
-        ]
-      },
-      o.speechOutputForTest);
-  assertEquals('Subscribe tgl btn =', o.brailleOutputForTest.string_);
+TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', function() {
+  this.runWithLoadedTree(
+      `
+      <div role="button" aria-pressed="true">Subscribe</div>`,
+      function(root) {
+        const el = root.firstChild;
+        const o = new Output().withSpeechAndBraille(cursors.Range.fromNode(el));
+        assertEqualsJSON(
+            {
+              string_:
+                  '|Subscribe|Toggle Button|Pressed|Press Search+Space to toggle',
+              spans_: [
+                {value: {earconId: 'CHECK_ON'}, start: 0, end: 0},
+                {value: 'name', start: 1, end: 10},
+                {value: 'role', start: 11, end: 24},
+                {value: {'delay': true}, start: 33, end: 61}
+              ]
+            },
+            o.speechOutputForTest);
+        assertEquals('Subscribe tgl btn =', o.brailleOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', function() {
+  this.runWithLoadedTree(
+      `
       <p>This</p>
       <p>fragment</p>
       <p>Should be separated</p>
       <p>with spaces</p>
-    `);
-  const unjoined = new Output().format('$descendants', root);
-  assertEquals(
-      'This|fragment|Should be separated|with spaces',
-      unjoined.speechOutputForTest.string_);
+    `,
+      function(root) {
+        const unjoined = new Output().format('$descendants', root);
+        assertEquals(
+            'This|fragment|Should be separated|with spaces',
+            unjoined.speechOutputForTest.string_);
 
-  const joined = new Output().format('$joinedDescendants', root);
-  assertEquals(
-      'This fragment Should be separated with spaces',
-      joined.speechOutputForTest.string_);
+        const joined = new Output().format('$joinedDescendants', root);
+        assertEquals(
+            'This fragment Should be separated with spaces',
+            joined.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', function() {
+  this.runWithLoadedTree(
+      `
       <div><button>ok</button></div>
-    `);
-  const div = root.find({role: RoleType.GENERIC_CONTAINER});
-  const o = new Output().withSpeech(cursors.Range.fromNode(div));
-  assertEquals('ok', o.speechOutputForTest.string_);
+    `,
+      function(root) {
+        const div = root.find({role: RoleType.GENERIC_CONTAINER});
+        const o = new Output().withSpeech(cursors.Range.fromNode(div));
+        assertEquals('ok', o.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', function() {
+  this.runWithLoadedTree(
+      `
       <div role="grid">
         <div role="row" tabindex=0 aria-label="start"></div>
         <div role="row" tabindex=0 aria-label="end"></div>
       </div>
-    `);
-  const r1 = cursors.Range.fromNode(root.firstChild.firstChild);
-  const r2 = cursors.Range.fromNode(root.firstChild.lastChild);
-  assertEquals(
-      'start|Row', new Output().withSpeech(r1, r2).speechOutputForTest.string_);
+    `,
+      function(root) {
+        const r1 = cursors.Range.fromNode(root.firstChild.firstChild);
+        const r2 = cursors.Range.fromNode(root.firstChild.lastChild);
+        assertEquals(
+            'start|Row',
+            new Output().withSpeech(r1, r2).speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', function() {
+  this.runWithLoadedTree(
+      `
     <p>this is a <em>test</em>of emphasized text</p>
-  `);
-  const start = root.firstChild.firstChild;
-  const end = root.firstChild.lastChild;
-  const range = new cursors.Range(
-      cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
-  const o = new Output().withBraille(range, null, 'navigate');
-  checkBrailleOutput(
-      'this is a test of emphasized text',
-      [
-        {value: new OutputNodeSpan(start), start: 0, end: 10},
-        {value: new OutputNodeSpan(start.nextSibling), start: 10, end: 14},
-        {value: new OutputNodeSpan(end), start: 15, end: 33}
-      ],
-      o);
+  `,
+      function(root) {
+        const start = root.firstChild.firstChild;
+        const end = root.firstChild.lastChild;
+        const range = new cursors.Range(
+            cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
+        const o = new Output().withBraille(range, null, 'navigate');
+        checkBrailleOutput(
+            'this is a test of emphasized text',
+            [
+              {value: new OutputNodeSpan(start), start: 0, end: 10}, {
+                value: new OutputNodeSpan(start.nextSibling),
+                start: 10,
+                end: 14
+              },
+              {value: new OutputNodeSpan(end), start: 15, end: 33}
+            ],
+            o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', function() {
+  this.runWithLoadedTree(
+      `
     <ul><li><a href="#">test</a></li></ul>
-  `);
-  const link = root.find({role: RoleType.LINK});
-  // The 'inlineTextBox' found from root would return the inlineTextBox of
-  // the list marker. Here we want the link's inlineTextBox.
-  const text = link.find({role: RoleType.INLINE_TEXT_BOX});
-  const listItem = root.find({role: RoleType.LIST_ITEM});
-  const list = root.find({role: RoleType.LIST});
-  let range = cursors.Range.fromNode(text);
-  let o = new Output().withBraille(range, null, 'navigate');
-  checkBrailleOutput(
-      'test lnk lstitm lst end',
-      [
-        {value: new OutputNodeSpan(text), start: 0, end: 4},
-        {value: new OutputNodeSpan(link), start: 5, end: 8},
-        {value: new OutputNodeSpan(listItem), start: 9, end: 15},
-        {value: new OutputNodeSpan(list), start: 16, end: 23}
-      ],
-      o);
+  `,
+      function(root) {
+        const link = root.find({role: RoleType.LINK});
+        // The 'inlineTextBox' found from root would return the inlineTextBox of
+        // the list marker. Here we want the link's inlineTextBox.
+        const text = link.find({role: RoleType.INLINE_TEXT_BOX});
+        const listItem = root.find({role: RoleType.LIST_ITEM});
+        const list = root.find({role: RoleType.LIST});
+        let range = cursors.Range.fromNode(text);
+        let o = new Output().withBraille(range, null, 'navigate');
+        checkBrailleOutput(
+            'test lnk lstitm lst end',
+            [
+              {value: new OutputNodeSpan(text), start: 0, end: 4},
+              {value: new OutputNodeSpan(link), start: 5, end: 8},
+              {value: new OutputNodeSpan(listItem), start: 9, end: 15},
+              {value: new OutputNodeSpan(list), start: 16, end: 23}
+            ],
+            o);
 
-  // Now, test the "bullet" which comes before the above.
-  const bullet = root.find({role: RoleType.LIST_MARKER});
-  range = cursors.Range.fromNode(bullet);
-  o = new Output().withBraille(range, null, 'navigate');
-  checkBrailleOutput(
-      '\u2022 lstitm lst +1',
-      [
-        {value: new OutputNodeSpan(bullet), start: 0, end: 2},
-        {value: new OutputNodeSpan(listItem), start: 2, end: 8},
-        {value: new OutputNodeSpan(list), start: 9, end: 15}
-      ],
-      o);
+        // Now, test the "bullet" which comes before the above.
+        const bullet = root.find({role: RoleType.LIST_MARKER});
+        range = cursors.Range.fromNode(bullet);
+        o = new Output().withBraille(range, null, 'navigate');
+        checkBrailleOutput(
+            '\u2022 lstitm lst +1',
+            [
+              {value: new OutputNodeSpan(bullet), start: 0, end: 2},
+              {value: new OutputNodeSpan(listItem), start: 2, end: 8},
+              {value: new OutputNodeSpan(list), start: 9, end: 15}
+            ],
+            o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
+  this.runWithLoadedTree(
+      `
     <div role="slider" aria-valuemin="1" aria-valuemax="10" aria-valuenow="2"
                        aria-label="volume"></div>
     <progress aria-valuemin="1" aria-valuemax="10"
@@ -845,64 +915,75 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
            aria-label="volume"></meter>
     <div role="spinbutton" aria-valuemin="1" aria-valuemax="10"
                            aria-valuenow="2" aria-label="volume"></div>
-  `);
-  let obj = root.find({role: RoleType.SLIDER});
-  let o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
-  checkSpeechOutput(
-      'volume|Slider|2|Min 1|Max 10',
-      [
-        {value: 'name', start: 0, end: 6},
-        {value: new OutputEarconAction('SLIDER'), start: 0, end: 6},
-        {value: 'role', start: 7, end: 13}, {value: 'value', start: 14, end: 15}
-      ],
-      o);
+  `,
+      function(root) {
+        let obj = root.find({role: RoleType.SLIDER});
+        let o =
+            new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+        checkSpeechOutput(
+            'volume|Slider|2|Min 1|Max 10',
+            [
+              {value: 'name', start: 0, end: 6},
+              {value: new OutputEarconAction('SLIDER'), start: 0, end: 6},
+              {value: 'role', start: 7, end: 13},
+              {value: 'value', start: 14, end: 15}
+            ],
+            o);
 
-  obj = root.find({role: RoleType.PROGRESS_INDICATOR});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
-  checkSpeechOutput(
-      'volume|Progress indicator|2|Min 1|Max 10',
-      [
-        {value: 'name', start: 0, end: 6}, {value: 'role', start: 7, end: 25},
-        {value: 'value', start: 26, end: 27}
-      ],
-      o);
+        obj = root.find({role: RoleType.PROGRESS_INDICATOR});
+        o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+        checkSpeechOutput(
+            'volume|Progress indicator|2|Min 1|Max 10',
+            [
+              {value: 'name', start: 0, end: 6},
+              {value: 'role', start: 7, end: 25},
+              {value: 'value', start: 26, end: 27}
+            ],
+            o);
 
-  obj = root.find({role: RoleType.METER});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
-  checkSpeechOutput(
-      'volume|Meter|2|Min 1|Max 10',
-      [
-        {value: 'name', start: 0, end: 6}, {value: 'role', start: 7, end: 12},
-        {value: 'value', start: 13, end: 14}
-      ],
-      o);
+        obj = root.find({role: RoleType.METER});
+        o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+        checkSpeechOutput(
+            'volume|Meter|2|Min 1|Max 10',
+            [
+              {value: 'name', start: 0, end: 6},
+              {value: 'role', start: 7, end: 12},
+              {value: 'value', start: 13, end: 14}
+            ],
+            o);
 
-  obj = root.find({role: RoleType.SPIN_BUTTON});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
-  checkSpeechOutput(
-      'volume|Spin button|2|Min 1|Max 10',
-      [
-        {value: 'name', start: 0, end: 6},
-        {value: new OutputEarconAction('LISTBOX'), start: 0, end: 6},
-        {value: 'role', start: 7, end: 18}, {value: 'value', start: 19, end: 20}
-      ],
-      o);
+        obj = root.find({role: RoleType.SPIN_BUTTON});
+        o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+        checkSpeechOutput(
+            'volume|Spin button|2|Min 1|Max 10',
+            [
+              {value: 'name', start: 0, end: 6},
+              {value: new OutputEarconAction('LISTBOX'), start: 0, end: 6},
+              {value: 'role', start: 7, end: 18},
+              {value: 'value', start: 19, end: 20}
+            ],
+            o);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', function() {
+  this.runWithLoadedTree(
+      `
     <div aria-label="hi" role="button" aria-roledescription="foo"></div>
-  `);
-  const obj = root.find({role: RoleType.BUTTON});
-  const o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
-  checkSpeechOutput(
-      'hi|foo',
-      [
-        {value: 'name', start: 0, end: 2},
-        {value: new OutputEarconAction('BUTTON'), start: 0, end: 2},
-        {value: 'role', start: 3, end: 6}
-      ],
-      o);
+  `,
+      function(root) {
+        const obj = root.find({role: RoleType.BUTTON});
+        const o =
+            new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+        checkSpeechOutput(
+            'hi|foo',
+            [
+              {value: 'name', start: 0, end: 2},
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 2},
+              {value: 'role', start: 3, end: 6}
+            ],
+            o);
+      });
 });
 
 SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
@@ -1047,45 +1128,53 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
           missingRole.join(' '));
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', function() {
+  this.runWithLoadedTree(
+      `
     <table border=1>
       <tr><td>Name</td><td id="active">Age</td><td>Address</td></tr>
     </table>
-  `);
-  const obj = root.find({role: RoleType.CELL});
-  const o = new Output().withRichSpeechAndBraille(cursors.Range.fromNode(obj));
-  assertEquals(
-      'Name|row 1 column 1|Table , 1 by 3', o.speechOutputForTest.string_);
-  assertEquals(
-      'Name r1c1 Age r1c2 Address r1c3', o.brailleOutputForTest.string_);
+  `,
+      function(root) {
+        const obj = root.find({role: RoleType.CELL});
+        const o =
+            new Output().withRichSpeechAndBraille(cursors.Range.fromNode(obj));
+        assertEquals(
+            'Name|row 1 column 1|Table , 1 by 3',
+            o.speechOutputForTest.string_);
+        assertEquals(
+            'Name r1c1 Age r1c2 Address r1c3', o.brailleOutputForTest.string_);
+      });
 });
 
-TEST_F(
-    'ChromeVoxOutputE2ETest', 'TextFieldObeysRoleDescription',
-    async function() {
-      const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'TextFieldObeysRoleDescription', function() {
+  this.runWithLoadedTree(
+      `
     <div role="textbox" aria-roledescription="square"></div>
     <div role="region" aria-roledescription="circle"></div>
-  `);
-      const text = root.find({role: RoleType.TEXT_FIELD});
+  `,
+      function(root) {
+        const text = root.find({role: RoleType.TEXT_FIELD});
 
-      // True even though |text| does not have editable state.
-      assertTrue(AutomationPredicate.editText(text));
+        // True even though |text| does not have editable state.
+        assertTrue(AutomationPredicate.editText(text));
 
-      let o =
-          new Output().withRichSpeechAndBraille(cursors.Range.fromNode(text));
-      assertEquals('|square', o.speechOutputForTest.string_);
-      assertEquals('square', o.brailleOutputForTest.string_);
+        let o =
+            new Output().withRichSpeechAndBraille(cursors.Range.fromNode(text));
+        assertEquals('|square', o.speechOutputForTest.string_);
+        assertEquals('square', o.brailleOutputForTest.string_);
 
-      const region = root.find({role: RoleType.REGION});
-      o = new Output().withRichSpeechAndBraille(cursors.Range.fromNode(region));
-      assertEquals('circle', o.speechOutputForTest.string_);
-      assertEquals('circle', o.brailleOutputForTest.string_);
-    });
+        const region = root.find({role: RoleType.REGION});
+        o = new Output().withRichSpeechAndBraille(
+            cursors.Range.fromNode(region));
+        assertEquals('circle', o.speechOutputForTest.string_);
+        assertEquals('circle', o.brailleOutputForTest.string_);
+      });
+});
 
-TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
+  this.runWithLoadedTree(
+      `
     <ul role="tree">schedule
       <li role="treeitem">wake up
       <li role="treeitem">drink coffee
@@ -1095,306 +1184,335 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
       </ul>
       <li role="treeitem">cook dinner
     </ul>
-  `);
-  const lists = root.findAll({role: RoleType.TREE});
-  const outerList = lists[0];
-  const innerList = lists[1];
+  `,
 
-  let el = outerList.children[0];
-  let startRange = cursors.Range.fromNode(el);
-  let o = new Output().withSpeech(startRange, null, 'navigate');
-  assertEquals('schedule|Tree|with 3 items', o.speechOutputForTest.string_);
+      function(root) {
+        const lists = root.findAll({role: RoleType.TREE});
+        const outerList = lists[0];
+        const innerList = lists[1];
 
-  el = outerList.children[1];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
-  assertEquals(
-      'wake up|Tree item|Not selected| 1 of 3 | level 1 ',
-      o.speechOutputForTest.string_);
+        let el = outerList.children[0];
+        let startRange = cursors.Range.fromNode(el);
+        let o = new Output().withSpeech(startRange, null, 'navigate');
+        assertEquals(
+            'schedule|Tree|with 3 items', o.speechOutputForTest.string_);
 
-  el = outerList.children[2];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
-  assertEquals(
-      'drink coffee|Tree item|Not selected| 2 of 3 | level 1 ',
-      o.speechOutputForTest.string_);
+        el = outerList.children[1];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(outerList.children[0]),
+            'navigate');
+        assertEquals(
+            'wake up|Tree item|Not selected| 1 of 3 | level 1 ',
+            o.speechOutputForTest.string_);
 
-  el = outerList.children[3];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
-  assertEquals(
-      'cook dinner|Tree item|Not selected| 3 of 3 | level 1 ',
-      o.speechOutputForTest.string_);
+        el = outerList.children[2];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(outerList.children[0]),
+            'navigate');
+        assertEquals(
+            'drink coffee|Tree item|Not selected| 2 of 3 | level 1 ',
+            o.speechOutputForTest.string_);
 
-  el = innerList.children[0];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[2]), 'navigate');
-  assertEquals('tasks|Tree|with 2 items', o.speechOutputForTest.string_);
+        el = outerList.children[3];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(outerList.children[0]),
+            'navigate');
+        assertEquals(
+            'cook dinner|Tree item|Not selected| 3 of 3 | level 1 ',
+            o.speechOutputForTest.string_);
 
-  el = innerList.children[1];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(innerList.children[0]), 'navigate');
-  assertEquals(
-      'meeting|Tree item|Not selected| 1 of 2 | level 2 ',
-      o.speechOutputForTest.string_);
+        el = innerList.children[0];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(outerList.children[2]),
+            'navigate');
+        assertEquals('tasks|Tree|with 2 items', o.speechOutputForTest.string_);
 
-  el = innerList.children[2];
-  startRange = cursors.Range.fromNode(el);
-  o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(innerList.children[0]), 'navigate');
-  assertEquals(
-      'lunch|Tree item|Not selected| 2 of 2 | level 2 ',
-      o.speechOutputForTest.string_);
+        el = innerList.children[1];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(innerList.children[0]),
+            'navigate');
+        assertEquals(
+            'meeting|Tree item|Not selected| 1 of 2 | level 2 ',
+            o.speechOutputForTest.string_);
+
+        el = innerList.children[2];
+        startRange = cursors.Range.fromNode(el);
+        o = new Output().withSpeech(
+            startRange, cursors.Range.fromNode(innerList.children[0]),
+            'navigate');
+        assertEquals(
+            'lunch|Tree item|Not selected| 2 of 2 | level 2 ',
+            o.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', function() {
+  this.runWithLoadedTree(
+      `
     <div title="title"></div>
     <div aria-label="label" title="title"></div>
     <div aria-describedby="desc" title="title"></div>
     <div aria-label="label" aria-describedby="desc" title="title"></div>
     <div aria-label=""></div>
     <p id="desc">describedby</p>
-  `);
-  const title = root.children[0];
-  let o =
-      new Output().withSpeech(cursors.Range.fromNode(title), null, 'navigate');
-  assertEqualsJSON(
-      {string_: 'title', spans_: [{value: 'name', start: 0, end: 5}]},
-      o.speechOutputForTest);
+  `,
+      function(root) {
+        const title = root.children[0];
+        let o = new Output().withSpeech(
+            cursors.Range.fromNode(title), null, 'navigate');
+        assertEqualsJSON(
+            {string_: 'title', spans_: [{value: 'name', start: 0, end: 5}]},
+            o.speechOutputForTest);
 
-  const labelTitle = root.children[1];
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(labelTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'label|title',
-        spans_: [
-          {value: 'name', start: 0, end: 5},
-          {value: 'description', start: 6, end: 11}
-        ]
-      },
-      o.speechOutputForTest);
+        const labelTitle = root.children[1];
+        o = new Output().withSpeech(
+            cursors.Range.fromNode(labelTitle), null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'label|title',
+              spans_: [
+                {value: 'name', start: 0, end: 5},
+                {value: 'description', start: 6, end: 11}
+              ]
+            },
+            o.speechOutputForTest);
 
-  const describedByTitle = root.children[2];
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(describedByTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'title|describedby',
-        spans_: [
-          {value: 'name', start: 0, end: 5},
-          {value: 'description', start: 6, end: 17}
-        ]
-      },
-      o.speechOutputForTest);
+        const describedByTitle = root.children[2];
+        o = new Output().withSpeech(
+            cursors.Range.fromNode(describedByTitle), null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'title|describedby',
+              spans_: [
+                {value: 'name', start: 0, end: 5},
+                {value: 'description', start: 6, end: 17}
+              ]
+            },
+            o.speechOutputForTest);
 
-  const labelDescribedByTitle = root.children[3];
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(labelDescribedByTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'label|describedby',
-        spans_: [
-          {value: 'name', start: 0, end: 5},
-          {value: 'description', start: 6, end: 17}
-        ]
-      },
-      o.speechOutputForTest);
+        const labelDescribedByTitle = root.children[3];
+        o = new Output().withSpeech(
+            cursors.Range.fromNode(labelDescribedByTitle), null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'label|describedby',
+              spans_: [
+                {value: 'name', start: 0, end: 5},
+                {value: 'description', start: 6, end: 17}
+              ]
+            },
+            o.speechOutputForTest);
 
-  // Hijack the 4th node to force tooltip to return a value. This can only
-  // occur on ARC++ where tooltip gets set even if name and description
-  // are both empty.
-  const tooltip = root.children[4];
-  Object.defineProperty(root.children[4], 'tooltip', {get: () => 'tooltip'});
+        // Hijack the 4th node to force tooltip to return a value. This can only
+        // occur on ARC++ where tooltip gets set even if name and description
+        // are both empty.
+        const tooltip = root.children[4];
+        Object.defineProperty(
+            root.children[4], 'tooltip', {get: () => 'tooltip'});
 
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(tooltip), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'tooltip',
-        spans_: [{value: {'delay': true}, start: 0, end: 7}]
-      },
-      o.speechOutputForTest);
+        o = new Output().withSpeech(
+            cursors.Range.fromNode(tooltip), null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'tooltip',
+              spans_: [{value: {'delay': true}, start: 0, end: 7}]
+            },
+            o.speechOutputForTest);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'InitialSpeechProperties', async function() {
-  const root = await this.runWithLoadedTree(`
-    <p>test</p>  `);
-  // Capture speech properties sent to tts.
-  this.currentProperties = [];
-  ChromeVox.tts.speak = (textString, queueMode, properties) => {
-    this.currentProperties.push(properties);
-  };
+TEST_F('ChromeVoxOutputE2ETest', 'InitialSpeechProperties', function() {
+  this.runWithLoadedTree(
+      `
+    <p>test</p>  `,
+      function(root) {
+        // Capture speech properties sent to tts.
+        this.currentProperties = [];
+        ChromeVox.tts.speak = (textString, queueMode, properties) => {
+          this.currentProperties.push(properties);
+        };
 
-  const o = new Output().withSpeech(cursors.Range.fromNode(root.firstChild));
-  o.go();
-  assertEqualsJSON([{category: TtsCategory.NAV}], this.currentProperties);
-  this.currentProperties = [];
+        const o =
+            new Output().withSpeech(cursors.Range.fromNode(root.firstChild));
+        o.go();
+        assertEqualsJSON([{category: TtsCategory.NAV}], this.currentProperties);
+        this.currentProperties = [];
 
-  o.withInitialSpeechProperties({
-    phoneticCharacters: true,
-    // This should not override existing value.
-    category: TtsCategory.LIVE
-  });
-  o.go();
-  assertEqualsJSON(
-      [{phoneticCharacters: true, category: TtsCategory.NAV}],
-      this.currentProperties);
+        o.withInitialSpeechProperties({
+          phoneticCharacters: true,
+          // This should not override existing value.
+          category: TtsCategory.LIVE
+        });
+        o.go();
+        assertEqualsJSON(
+            [{phoneticCharacters: true, category: TtsCategory.NAV}],
+            this.currentProperties);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', function() {
+  this.runWithLoadedTree(
+      `
         <div tabindex=-1>
           <div aria-label="hello there world">
             <p>hello world</p>
           </div>
         </div>
-      `);
-  const focusableDiv = root.firstChild;
-  assertEquals(RoleType.GENERIC_CONTAINER, focusableDiv.role);
-  assertEquals(chrome.automation.NameFromType.CONTENTS, focusableDiv.nameFrom);
-  const o = new Output().withSpeech(cursors.Range.fromNode(focusableDiv));
-  assertEquals('hello there world', o.speechOutputForTest.string_);
+      `,
+      function(root) {
+        const focusableDiv = root.firstChild;
+        assertEquals(RoleType.GENERIC_CONTAINER, focusableDiv.role);
+        assertEquals(
+            chrome.automation.NameFromType.CONTENTS, focusableDiv.nameFrom);
+        const o = new Output().withSpeech(cursors.Range.fromNode(focusableDiv));
+        assertEquals('hello there world', o.speechOutputForTest.string_);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', async function() {
+TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', function() {
   const site = `
       <div aria-current="page">Home</div>
       <div aria-current="false">About</div>
       `;
-  const root = await this.runWithLoadedTree(site);
-  const currentDiv = root.firstChild;
-  assertEquals(
-      chrome.automation.AriaCurrentState.PAGE, currentDiv.ariaCurrentState);
-  const o = new Output().withSpeech(
-      cursors.Range.fromNode(currentDiv), null, 'navigate');
-  assertEquals('Home|Current page', o.speechOutputForTest.string_);
+  this.runWithLoadedTree(site, function(root) {
+    const currentDiv = root.firstChild;
+    assertEquals(
+        chrome.automation.AriaCurrentState.PAGE, currentDiv.ariaCurrentState);
+    const o = new Output().withSpeech(
+        cursors.Range.fromNode(currentDiv), null, 'navigate');
+    assertEquals('Home|Current page', o.speechOutputForTest.string_);
+  });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', async function() {
-  const root = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', function() {
+  this.runWithLoadedTree(
+      `
     <div aria-errormessage="error" aria-invalid="true">OK</div>
     <div id="error" aria-label="error"></div>
-  `);
-  const div = root.children[0];
-  const range = cursors.Range.fromNode(div);
+  `,
+      function(root) {
+        const div = root.children[0];
+        const range = cursors.Range.fromNode(div);
 
-  let o = new Output().withSpeech(range, null, 'navigate');
-  assertEqualsJSON(
-      {string_: 'OK|error', spans_: [{value: 'name', start: 3, end: 8}]},
-      o.speechOutputForTest);
+        let o = new Output().withSpeech(range, null, 'navigate');
+        assertEqualsJSON(
+            {string_: 'OK|error', spans_: [{value: 'name', start: 3, end: 8}]},
+            o.speechOutputForTest);
 
-  // Force a few properties to be set so that hints are triggered.
-  Object.defineProperty(div, 'clickable', {get: () => true});
+        // Force a few properties to be set so that hints are triggered.
+        Object.defineProperty(div, 'clickable', {get: () => true});
 
-  o = new Output().withSpeech(range, null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'OK|error|Press Search+Space to activate',
-        spans_: [
-          {value: 'name', start: 3, end: 8},
-          {value: {delay: true}, start: 9, end: 39}
-        ]
-      },
-      o.speechOutputForTest);
+        o = new Output().withSpeech(range, null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'OK|error|Press Search+Space to activate',
+              spans_: [
+                {value: 'name', start: 3, end: 8},
+                {value: {delay: true}, start: 9, end: 39}
+              ]
+            },
+            o.speechOutputForTest);
 
-  Object.defineProperty(div, 'placeholder', {get: () => 'placeholder'});
-  o = new Output().withSpeech(range, null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'OK|error|placeholder|Press Search+Space to activate',
-        spans_: [
-          {value: 'name', start: 3, end: 8},
-          {value: {delay: true}, start: 9, end: 20}, {start: 21, end: 51}
-        ]
-      },
-      o.speechOutputForTest);
+        Object.defineProperty(div, 'placeholder', {get: () => 'placeholder'});
+        o = new Output().withSpeech(range, null, 'navigate');
+        assertEqualsJSON(
+            {
+              string_: 'OK|error|placeholder|Press Search+Space to activate',
+              spans_: [
+                {value: 'name', start: 3, end: 8},
+                {value: {delay: true}, start: 9, end: 20}, {start: 21, end: 51}
+              ]
+            },
+            o.speechOutputForTest);
+      });
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
+TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', function() {
   const site = `<button></button>`;
-  const root = await this.runWithLoadedTree(site);
-  let called = false;
-  ChromeVoxState.instance.setFocusBounds = this.newCallback(() => {
-    called = true;
+  this.runWithLoadedTree(site, function(root) {
+    let called = false;
+    ChromeVoxState.instance.setFocusBounds = this.newCallback(() => {
+      called = true;
+    });
+
+    const button = root.find({role: RoleType.BUTTON});
+
+    // Triggers drawing of the focus ring.
+    new Output().withSpeech(cursors.Range.fromNode(button)).go();
+    assertTrue(called);
+    called = false;
+
+    // Does not trigger drawing of the focus ring.
+    new Output()
+        .withSpeech(cursors.Range.fromNode(button))
+        .withoutFocusRing()
+        .go();
+    assertFalse(called);
   });
-
-  const button = root.find({role: RoleType.BUTTON});
-
-  // Triggers drawing of the focus ring.
-  new Output().withSpeech(cursors.Range.fromNode(button)).go();
-  assertTrue(called);
-  called = false;
-
-  // Does not trigger drawing of the focus ring.
-  new Output()
-      .withSpeech(cursors.Range.fromNode(button))
-      .withoutFocusRing()
-      .go();
-  assertFalse(called);
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', async function() {
-  const root = await this.runWithLoadedTree('<input type="checkbox">');
-  const checkbox = root.firstChild.firstChild;
+TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
+  this.runWithLoadedTree('<input type="checkbox">', function(root) {
+    const checkbox = root.firstChild.firstChild;
 
-  Object.defineProperty(
-      checkbox, 'checkedStateDescription',
-      {get: () => 'checked state description'});
-  const range = cursors.Range.fromNode(checkbox);
-  const o =
-      new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      '|Check box|checked state description',
-      [
-        {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
-        {value: 'role', start: 1, end: 10},
-        {value: 'checkedStateDescription', start: 11, end: 36}
-      ],
-      o);
-});
-
-TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', async function() {
-  const root = await this.runWithLoadedTree('<p>test</p>');
-  const actionable = root.firstChild.firstChild;
-  Object.defineProperty(actionable, 'customActions', {
-    get: () => [{id: 0, description: 'custom action description'}],
+    Object.defineProperty(
+        checkbox, 'checkedStateDescription',
+        {get: () => 'checked state description'});
+    const range = cursors.Range.fromNode(checkbox);
+    const o = new Output().withoutHints().withSpeechAndBraille(
+        range, null, 'navigate');
+    checkSpeechOutput(
+        '|Check box|checked state description',
+        [
+          {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
+          {value: 'role', start: 1, end: 10},
+          {value: 'checkedStateDescription', start: 11, end: 36}
+        ],
+        o);
   });
-  const range = cursors.Range.fromNode(actionable);
-  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-  checkSpeechOutput(
-      'test|Actions available. Press Search+Ctrl+A to view',
-      [
-        {value: 'name', start: 0, end: 4},
-        {value: {delay: true}, start: 5, end: 51}
-      ],
-      o);
 });
 
-TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', async function() {
+TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', function() {
+  this.runWithLoadedTree('<p>test</p>', function(root) {
+    const actionable = root.firstChild.firstChild;
+    Object.defineProperty(actionable, 'customActions', {
+      get: () => [{id: 0, description: 'custom action description'}],
+    });
+    const range = cursors.Range.fromNode(actionable);
+    const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'test|Actions available. Press Search+Ctrl+A to view',
+        [
+          {value: 'name', start: 0, end: 4},
+          {value: {delay: true}, start: 5, end: 51}
+        ],
+        o);
+  });
+});
+
+TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', function() {
   this.resetContextualOutput();
-  const root =
-      await this.runWithLoadedTree('<p>test</p><div role="menu">a</div>');
-  let o = new Output().withSpeech(cursors.Range.fromNode(root));
-  assertEquals('last', o.contextOrder_);
+  this.runWithLoadedTree('<p>test</p><div role="menu">a</div>', function(root) {
+    let o = new Output().withSpeech(cursors.Range.fromNode(root));
+    assertEquals('last', o.contextOrder_);
 
-  const p = root.find({role: RoleType.PARAGRAPH});
-  const menu = root.find({role: RoleType.MENU});
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(p), cursors.Range.fromNode(menu));
-  assertEquals('last', o.contextOrder_);
+    const p = root.find({role: RoleType.PARAGRAPH});
+    const menu = root.find({role: RoleType.MENU});
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(p), cursors.Range.fromNode(menu));
+    assertEquals('last', o.contextOrder_);
 
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(menu), cursors.Range.fromNode(p));
-  assertEquals('first', o.contextOrder_);
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(menu), cursors.Range.fromNode(p));
+    assertEquals('first', o.contextOrder_);
 
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(menu.firstChild), cursors.Range.fromNode(p));
-  assertEquals('first', o.contextOrder_);
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(menu.firstChild), cursors.Range.fromNode(p));
+    assertEquals('first', o.contextOrder_);
+  });
 });

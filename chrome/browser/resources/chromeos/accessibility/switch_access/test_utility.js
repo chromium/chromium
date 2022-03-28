@@ -55,7 +55,7 @@ const TestUtility = {
         chrome.accessibilityPrivate.SwitchAccessCommand.SELECT);
   },
 
-  /** Only call after runWithLoadedTree() */
+  /** Only call from inside runWithLoadedTree() */
   startFocusInside(rootWebArea) {
     if (!rootWebArea) {
       throw new Error('Web root node is undefined');

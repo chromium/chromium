@@ -28,9 +28,10 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxNextE2ETest {
 };
 
 
-TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionAddElement', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionAddElement', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <h1>Document with live region</h1>
       <p id="live" aria-live="assertive"></p>
       <button id="go">Go</button>
@@ -39,16 +40,19 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionAddElement', async function() {
           document.getElementById('live').innerHTML = 'Hello, world';
         }, false);
       </script>
-    `);
-  const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(go.doDefault.bind(go))
-      .expectCategoryFlushSpeech('Hello, world');
-  mockFeedback.replay();
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(go.doDefault.bind(go))
+            .expectCategoryFlushSpeech('Hello, world');
+        mockFeedback.replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionRemoveElement', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionRemoveElement', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <h1>Document with live region</h1>
       <p id="live" aria-live="assertive" aria-relevant="removals">Hello, world</p>
       <button id="go">Go</button>
@@ -57,18 +61,21 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionRemoveElement', async function() {
           document.getElementById('live').innerHTML = '';
         }, false);
       </script>
-    `);
-  const go = rootNode.find({role: RoleType.BUTTON});
-  go.doDefault();
-  mockFeedback.expectCategoryFlushSpeech('removed:')
-      .expectQueuedSpeech('Hello, world');
-  mockFeedback.replay();
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        go.doDefault();
+        mockFeedback.expectCategoryFlushSpeech('removed:')
+            .expectQueuedSpeech('Hello, world');
+        mockFeedback.replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomic', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomic', function() {
   LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <div id="live" aria-live="assertive" aria-atomic="true">
         <div></div><div>Bravo</div><div></div>
       </div>
@@ -79,18 +86,20 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomic', async function() {
           document.querySelectorAll('div div')[0].textContent = 'Alpha';
         }, false);
       </script>
-    `);
-  const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(go.doDefault.bind(go))
-      .expectCategoryFlushSpeech('Alpha Bravo Charlie');
-  mockFeedback.replay();
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(go.doDefault.bind(go))
+            .expectCategoryFlushSpeech('Alpha Bravo Charlie');
+        mockFeedback.replay();
+      });
 });
 
-TEST_F(
-    'ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomicText', async function() {
-      LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
-      const mockFeedback = this.createMockFeedback();
-      const rootNode = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomicText', function() {
+  LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
       <h1 aria-atomic="true" id="live"aria-live="assertive">foo</h1>
       <button id="go">go</button>
       <script>
@@ -98,23 +107,25 @@ TEST_F(
           document.getElementById('live').innerText = 'bar';
         });
       </script>
-    `);
-      const go = rootNode.find({role: RoleType.BUTTON});
-      mockFeedback.call(go.doDefault.bind(go))
-          .expectCategoryFlushSpeech('bar', 'Heading 1');
-      mockFeedback.replay();
-    });
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(go.doDefault.bind(go))
+            .expectCategoryFlushSpeech('bar', 'Heading 1');
+        mockFeedback.replay();
+      });
+});
 
-TEST_F(
-    'ChromeVoxLiveRegionsTest', 'LiveRegionChangeImageAlt', async function() {
-      // Note that there is a live region outputted as a result of page load;
-      // the test expects a live region announcement after a click on the
-      // button, but the LiveRegions module has a half second filter for live
-      // region announcements on the same node. Set that timeout to 0 to prevent
-      // flakeyness.
-      LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
-      const mockFeedback = this.createMockFeedback();
-      const rootNode = await this.runWithLoadedTree(`
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeImageAlt', function() {
+  // Note that there is a live region outputted as a result of page load; the
+  // test expects a live region announcement after a click on the button, but
+  // the LiveRegions module has a half second filter for live region
+  // announcements on the same node. Set that timeout to 0 to prevent
+  // flakeyness.
+  LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
       <div id="live" aria-live="assertive">
         <img id="img" src="#" alt="Before">
       </div>
@@ -124,16 +135,19 @@ TEST_F(
           document.getElementById('img').setAttribute('alt', 'After');
         }, false);
       </script>
-    `);
-      const go = rootNode.find({role: RoleType.BUTTON});
-      mockFeedback.call(go.doDefault.bind(go))
-          .expectCategoryFlushSpeech('After');
-      mockFeedback.replay();
-    });
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(go.doDefault.bind(go))
+            .expectCategoryFlushSpeech('After');
+        mockFeedback.replay();
+      });
+});
 
-TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <div id="live" aria-live="assertive"></div>
       <button id="go">Go</button>
       <button id="focus">Focus</button>
@@ -145,35 +159,38 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
           }, 50);
         }, false);
       </script>
-    `);
-  // Due to the above timing component, the live region can come either
-  // before or after the focus output. This depends on the EventBundle to
-  // which we get the live region. It can either be in its own bundle or
-  // be part of the bundle with the focus change. In either case, the
-  // first event should be flushed; the second should either be queued (in
-  // the case of the focus) or category flushed for the live region.
-  let sawFocus = false;
-  let sawLive = false;
-  const focusOrLive = function(candidate) {
-    sawFocus = candidate.text === 'Focus' || sawFocus;
-    sawLive = candidate.text === 'Live' || sawLive;
-    if (sawFocus && sawLive) {
-      return candidate.queueMode !== QueueMode.FLUSH;
-    } else if (sawFocus || sawLive) {
-      return candidate.queueMode === QueueMode.FLUSH;
-    }
-  };
-  const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(this.simulateUserInteraction.bind(this))
-      .call(go.doDefault.bind(go))
-      .expectSpeech(focusOrLive)
-      .expectSpeech(focusOrLive);
-  mockFeedback.replay();
+    `,
+      function(rootNode) {
+        // Due to the above timing component, the live region can come either
+        // before or after the focus output. This depends on the EventBundle to
+        // which we get the live region. It can either be in its own bundle or
+        // be part of the bundle with the focus change. In either case, the
+        // first event should be flushed; the second should either be queued (in
+        // the case of the focus) or category flushed for the live region.
+        let sawFocus = false;
+        let sawLive = false;
+        const focusOrLive = function(candidate) {
+          sawFocus = candidate.text === 'Focus' || sawFocus;
+          sawLive = candidate.text === 'Live' || sawLive;
+          if (sawFocus && sawLive) {
+            return candidate.queueMode !== QueueMode.FLUSH;
+          } else if (sawFocus || sawLive) {
+            return candidate.queueMode === QueueMode.FLUSH;
+          }
+        };
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(this.simulateUserInteraction.bind(this))
+            .call(go.doDefault.bind(go))
+            .expectSpeech(focusOrLive)
+            .expectSpeech(focusOrLive);
+        mockFeedback.replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <div id="live" aria-live="assertive"></div>
       <button id="go">Go</button>
       <button id="focus">Focus</button>
@@ -185,25 +202,28 @@ TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
           }, 200);
         }, false);
       </script>
-    `);
-  const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(this.simulateUserInteraction.bind(this))
-      .call(go.doDefault.bind(go))
-      .expectSpeech('Focus')
-      .expectSpeech((candidate) => {
-        return candidate.text === 'Live' &&
-            (candidate.queueMode === QueueMode.CATEGORY_FLUSH ||
-             candidate.queueMode === QueueMode.QUEUE);
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(this.simulateUserInteraction.bind(this))
+            .call(go.doDefault.bind(go))
+            .expectSpeech('Focus')
+            .expectSpeech((candidate) => {
+              return candidate.text === 'Live' &&
+                  (candidate.queueMode === QueueMode.CATEGORY_FLUSH ||
+                   candidate.queueMode === QueueMode.QUEUE);
+            });
+        mockFeedback.replay();
       });
-  mockFeedback.replay();
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionCategoryFlush', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionCategoryFlush', function() {
   // Adjust the live region queue time to be shorter (i.e. flushes happen for
   // live regions coming 1 ms in time). Also, can help with flakeyness.
   LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 1;
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
       <div id="live1" aria-live="assertive"></div>
       <div id="live2" aria-live="assertive"></div>
       <button id="go">Go</button>
@@ -216,17 +236,20 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionCategoryFlush', async function() {
           }, 1000);
         }, false);
       </script>
-    `);
-  const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(go.doDefault.bind(go))
-      .expectCategoryFlushSpeech('Live1')
-      .expectCategoryFlushSpeech('Live2');
-  mockFeedback.replay();
+    `,
+      function(rootNode) {
+        const go = rootNode.find({role: RoleType.BUTTON});
+        mockFeedback.call(go.doDefault.bind(go))
+            .expectCategoryFlushSpeech('Live1')
+            .expectCategoryFlushSpeech('Live2');
+        mockFeedback.replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
     <p>start</p>
     <button>first</button>
     <div role="button" id="live" aria-live="assertive">
@@ -240,53 +263,62 @@ TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
         pressed = !pressed;
       }, 50);
     </script>
-  `);
-  const focusAfterNodeChange = window.setTimeout.bind(window, function() {
-    root.firstChild.nextSibling.focus();
-  }, 1000);
-  mockFeedback.call(focusAfterNodeChange)
-      .expectSpeech('hello!')
-      .expectNextSpeechUtteranceIsNot('hello!')
-      .expectNextSpeechUtteranceIsNot('hello!');
-  mockFeedback.replay();
+  `,
+      function(root) {
+        const focusAfterNodeChange = window.setTimeout.bind(window, function() {
+          root.firstChild.nextSibling.focus();
+        }, 1000);
+        mockFeedback.call(focusAfterNodeChange)
+            .expectSpeech('hello!')
+            .expectNextSpeechUtteranceIsNot('hello!')
+            .expectNextSpeechUtteranceIsNot('hello!');
+        mockFeedback.replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', function() {
   const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
     <button></button>
     <div aria-live="assertive">
       <p>hello</p><p>there</p>
     </div>
-  `);
-  const live = new LiveRegions(ChromeVoxState.instance);
-  const [t1, t2] = root.findAll({role: RoleType.STATIC_TEXT});
-  mockFeedback.expectSpeech('hello there')
-      .clearPendingOutput()
-      .call(function() {
-        live.onTreeChange({type: TreeChangeType.TEXT_CHANGED, target: t2});
-        live.onTreeChange(
-            {type: TreeChangeType.SUBTREE_UPDATE_END, target: t2});
-      })
-      .expectNextSpeechUtteranceIsNot('hello')
-      .expectSpeech('there')
-      .clearPendingOutput();
-  mockFeedback
-      .call(function() {
-        live.onTreeChange({type: TreeChangeType.TEXT_CHANGED, target: t1});
-        live.onTreeChange({type: TreeChangeType.TEXT_CHANGED, target: t2});
-        live.onTreeChange(
-            {type: TreeChangeType.SUBTREE_UPDATE_END, target: t2});
-      })
-      .expectSpeech('hello')
-      .expectSpeech('there');
-  mockFeedback.replay();
+  `,
+      function(root) {
+        const live = new LiveRegions(ChromeVoxState.instance);
+        const [t1, t2] = root.findAll({role: RoleType.STATIC_TEXT});
+        mockFeedback.expectSpeech('hello there')
+            .clearPendingOutput()
+            .call(function() {
+              live.onTreeChange(
+                  {type: TreeChangeType.TEXT_CHANGED, target: t2});
+              live.onTreeChange(
+                  {type: TreeChangeType.SUBTREE_UPDATE_END, target: t2});
+            })
+            .expectNextSpeechUtteranceIsNot('hello')
+            .expectSpeech('there')
+            .clearPendingOutput();
+        mockFeedback
+            .call(function() {
+              live.onTreeChange(
+                  {type: TreeChangeType.TEXT_CHANGED, target: t1});
+              live.onTreeChange(
+                  {type: TreeChangeType.TEXT_CHANGED, target: t2});
+              live.onTreeChange(
+                  {type: TreeChangeType.SUBTREE_UPDATE_END, target: t2});
+            })
+            .expectSpeech('hello')
+            .expectSpeech('there');
+        mockFeedback.replay();
+      });
 });
 
 // Flaky: https://crbug.com/945199
-TEST_F('ChromeVoxLiveRegionsTest', 'DISABLED_LiveStatusOff', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'DISABLED_LiveStatusOff', function() {
   const mockFeedback = this.createMockFeedback();
-  const rootNode = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
     <div><input aria-live="off" type="text"></input></div>
     <script>
       let input = document.querySelector('input');
@@ -305,22 +337,25 @@ TEST_F('ChromeVoxLiveRegionsTest', 'DISABLED_LiveStatusOff', async function() {
         }
       });
     </script>
-  `);
-  const input = root.find({role: RoleType.TEXT_FIELD});
-  const clickInput = input.parent.doDefault.bind(input.parent);
-  mockFeedback.call(input.focus.bind(input))
-      .call(clickInput)
-      .expectSpeech('bb')
-      .clearPendingOutput()
-      .call(clickInput)
-      .expectNextSpeechUtteranceIsNot('bba')
-      .expectSpeech('a')
-      .replay();
+  `,
+      function(root) {
+        const input = root.find({role: RoleType.TEXT_FIELD});
+        const clickInput = input.parent.doDefault.bind(input.parent);
+        mockFeedback.call(input.focus.bind(input))
+            .call(clickInput)
+            .expectSpeech('bb')
+            .clearPendingOutput()
+            .call(clickInput)
+            .expectNextSpeechUtteranceIsNot('bba')
+            .expectSpeech('a')
+            .replay();
+      });
 });
 
-TEST_F('ChromeVoxLiveRegionsTest', 'TreeChangeOnIgnoredNode', async function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'TreeChangeOnIgnoredNode', function() {
   const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(`
+  this.runWithLoadedTree(
+      `
     <button></button>
     <script>
       const button = document.body.children[0];
@@ -334,13 +369,14 @@ TEST_F('ChromeVoxLiveRegionsTest', 'TreeChangeOnIgnoredNode', async function() {
         document.body.appendChild(ignored);
       });
     </script>
-  `);
-  const button = root.find({role: chrome.automation.RoleType.BUTTON});
-  mockFeedback.call(button.doDefault.bind(button))
-      .expectSpeech('Alert', 'hi')
-      .replay();
+  `,
+      function(root) {
+        const button = root.find({role: chrome.automation.RoleType.BUTTON});
+        mockFeedback.call(button.doDefault.bind(button))
+            .expectSpeech('Alert', 'hi')
+            .replay();
+      });
 });
-
 SYNC_TEST_F('ChromeVoxLiveRegionsTest', 'ShouldIgnoreLiveRegion', function() {
   const liveRegions = new LiveRegions(ChromeVoxState.instance);
 
