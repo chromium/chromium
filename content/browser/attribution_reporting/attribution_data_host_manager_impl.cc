@@ -7,8 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
@@ -24,11 +26,34 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TriggerQueueEvent {
+  kSkippedQueue = 0,
+  kDropped = 1,
+  kEnqueued = 2,
+  kProcessedWithDelay = 3,
+  kFlushed = 4,
+
+  kMaxValue = kFlushed,
+};
+
+void RecordTriggerQueueEvent(TriggerQueueEvent event) {
+  base::UmaHistogramEnumeration("Conversions.TriggerQueueEvents", event);
+}
+
+const base::FeatureParam<base::TimeDelta> kTriggerDelay{
+    &blink::features::kConversionMeasurement, "trigger_delay",
+    base::Seconds(5)};
+
+constexpr size_t kMaxDelayedTriggers = 30;
 
 proto::AttributionAggregatableSource ConvertToProto(
     const blink::mojom::AttributionAggregatableSource& aggregatable_source) {
@@ -89,10 +114,29 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   }
 };
 
+struct AttributionDataHostManagerImpl::DelayedTrigger {
+  const base::TimeTicks delay_until;
+  AttributionTrigger trigger;
+
+  base::TimeDelta TimeUntil() const {
+    return delay_until - base::TimeTicks::Now();
+  }
+
+  void RecordDelay() const {
+    base::TimeTicks original_time = delay_until - kTriggerDelay.Get();
+    base::UmaHistogramMediumTimes("Conversions.TriggerQueueDelay",
+                                  base::TimeTicks::Now() - original_time);
+  }
+};
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(attribution_manager) {
   DCHECK(attribution_manager_);
+
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &AttributionDataHostManagerImpl::OnReceiverDisconnected,
+      base::Unretained(this)));
 }
 
 AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
@@ -106,6 +150,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
   receivers_.Add(this, std::move(data_host),
                  FrozenContext{.context_origin = std::move(context_origin),
                                .source_type = AttributionSourceType::kEvent});
+  data_hosts_in_source_mode_++;
 }
 
 void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
@@ -113,12 +158,19 @@ void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     const blink::AttributionSrcToken& attribution_src_token) {
   navigation_data_host_map_.emplace(attribution_src_token,
                                     std::move(data_host));
+  data_hosts_in_source_mode_++;
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const url::Origin& source_origin,
     const url::Origin& destination_origin) {
+  if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(destination_origin)) {
+    NotifyNavigationFailure(attribution_src_token);
+    return;
+  }
+
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   // TODO(johnidel): Record metrics for how often this occurs.
@@ -138,6 +190,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
     const blink::AttributionSrcToken& attribution_src_token) {
   // TODO(johnidel): Record metrics for how many potential sources are dropped.
   navigation_data_host_map_.erase(attribution_src_token);
+  OnSourceEligibleDataHostFinished();
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
@@ -222,6 +275,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   if (!context.destination.has_value()) {
     context.destination = url::Origin();
+    OnSourceEligibleDataHostFinished();
   } else if (!context.destination->opaque()) {
     return;
   }
@@ -274,7 +328,106 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
                       : absl::nullopt,
       std::move(event_triggers), std::move(*aggregatable_trigger));
 
-  attribution_manager_->HandleTrigger(std::move(trigger));
+  // Handle the trigger immediately if we're not waiting for any sources to be
+  // registered.
+  if (data_hosts_in_source_mode_ == 0) {
+    DCHECK(delayed_triggers_.empty());
+    RecordTriggerQueueEvent(TriggerQueueEvent::kSkippedQueue);
+    attribution_manager_->HandleTrigger(std::move(trigger));
+    return;
+  }
+
+  // Otherwise, buffer triggers for `kTriggerDelay` if we haven't exceeded the
+  // maximum queue length. This gives sources time to be registered prior to
+  // attribution, which helps ensure that navigation sources are stored before
+  // attribution occurs on the navigation destination. Note that this is not a
+  // complete fix, as sources taking longer to register than `kTriggerDelay`
+  // will still fail to be found during attribution.
+  //
+  // TODO(crbug.com/1309173): Implement a better solution to this problem.
+
+  if (delayed_triggers_.size() >= kMaxDelayedTriggers) {
+    RecordTriggerQueueEvent(TriggerQueueEvent::kDropped);
+    return;
+  }
+
+  const base::TimeDelta delay = kTriggerDelay.Get();
+
+  delayed_triggers_.emplace_back(DelayedTrigger{
+      .delay_until = base::TimeTicks::Now() + delay,
+      .trigger = std::move(trigger),
+  });
+  RecordTriggerQueueEvent(TriggerQueueEvent::kEnqueued);
+
+  if (!trigger_timer_.IsRunning())
+    SetTriggerTimer(delay);
+}
+
+void AttributionDataHostManagerImpl::SetTriggerTimer(base::TimeDelta delay) {
+  DCHECK(!delayed_triggers_.empty());
+  trigger_timer_.Start(FROM_HERE, delay, this,
+                       &AttributionDataHostManagerImpl::ProcessDelayedTrigger);
+}
+
+void AttributionDataHostManagerImpl::ProcessDelayedTrigger() {
+  DCHECK(!delayed_triggers_.empty());
+
+  DelayedTrigger delayed_trigger = std::move(delayed_triggers_.front());
+  delayed_triggers_.pop_front();
+  DCHECK_LE(delayed_trigger.delay_until, base::TimeTicks::Now());
+
+  attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger));
+  RecordTriggerQueueEvent(TriggerQueueEvent::kProcessedWithDelay);
+  delayed_trigger.RecordDelay();
+
+  if (!delayed_triggers_.empty()) {
+    base::TimeDelta delay = delayed_triggers_.front().TimeUntil();
+    SetTriggerTimer(delay);
+  }
+}
+
+void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
+  const FrozenContext& context = receivers_.current_context();
+  // If the receiver was handling triggers, there's nothing to do here.
+  if (context.destination.has_value() && context.destination->opaque())
+    return;
+
+  OnSourceEligibleDataHostFinished();
+}
+
+void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished() {
+  // Decrement the number of receivers in source mode and flush triggers if
+  // applicable.
+  //
+  // Note that flushing is best-effort.
+  // Sources/triggers which are registered after the trigger count towards this
+  // limit as well, but that is intentional to keep this simple.
+  //
+  // TODO(apaseltiner): Should we flush triggers when the
+  // `AttributionDataHostManagerImpl` is about to be destroyed?
+
+  DCHECK_GT(data_hosts_in_source_mode_, 0u);
+  data_hosts_in_source_mode_--;
+  if (data_hosts_in_source_mode_ > 0)
+    return;
+
+  trigger_timer_.Stop();
+
+  // Process triggers synchronously. This is OK, because the current
+  // `kMaxDelayedTriggers` of 30 is relatively small and the attribution manager
+  // only does a small amount of work and then posts a task to a different
+  // sequence.
+  static_assert(kMaxDelayedTriggers <= 30,
+                "Consider using PostTask instead of handling triggers "
+                "synchronously to avoid blocking for too long.");
+
+  for (auto& delayed_trigger : delayed_triggers_) {
+    attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger));
+    RecordTriggerQueueEvent(TriggerQueueEvent::kFlushed);
+    delayed_trigger.RecordDelay();
+  }
+
+  delayed_triggers_.clear();
 }
 
 }  // namespace content

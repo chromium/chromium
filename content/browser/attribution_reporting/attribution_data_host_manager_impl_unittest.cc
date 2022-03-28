@@ -11,13 +11,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_base.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,6 +47,37 @@ using ::testing::Mock;
 using ::testing::Optional;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
+
+struct ExpectedTriggerQueueEventCounts {
+  base::HistogramBase::Count skipped_queue = 0;
+  base::HistogramBase::Count dropped = 0;
+  base::HistogramBase::Count enqueued = 0;
+  base::HistogramBase::Count processed_with_delay = 0;
+  base::HistogramBase::Count flushed = 0;
+
+  base::flat_map<base::TimeDelta, base::HistogramBase::Count> delays;
+};
+
+void CheckTriggerQueueHistograms(const base::HistogramTester& histograms,
+                                 ExpectedTriggerQueueEventCounts expected) {
+  static constexpr char kEventsMetric[] = "Conversions.TriggerQueueEvents";
+  static constexpr char kDelayMetric[] = "Conversions.TriggerQueueDelay";
+
+  histograms.ExpectBucketCount(kEventsMetric, 0, expected.skipped_queue);
+  histograms.ExpectBucketCount(kEventsMetric, 1, expected.dropped);
+  histograms.ExpectBucketCount(kEventsMetric, 2, expected.enqueued);
+  histograms.ExpectBucketCount(kEventsMetric, 3, expected.processed_with_delay);
+  histograms.ExpectBucketCount(kEventsMetric, 4, expected.flushed);
+
+  base::HistogramBase::Count total = 0;
+
+  for (const auto& [delay, count] : expected.delays) {
+    histograms.ExpectTimeBucketCount(kDelayMetric, delay, count);
+    total += count;
+  }
+
+  histograms.ExpectTotalCount(kDelayMetric, total);
+}
 
 }  // namespace
 
@@ -820,6 +857,506 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
 
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceModeReceiverConnected_TriggerDelayed) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  // Because there is a connected data host in source mode, this trigger should
+  // be delayed.
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 1,
+                                              .processed_with_delay = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(5), 1},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationSourceReceiverConnected_TriggerDelayed) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  const blink::AttributionSrcToken attribution_src_token;
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterNavigationDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      attribution_src_token);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  // Because there is a connected data host in source mode, this trigger should
+  // be delayed.
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 1,
+                                              .processed_with_delay = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(5), 1},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceModeReceiverConnectsDisconnects_TriggerNotDelayed) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(mock_manager_, HandleTrigger);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  source_data_host_remote.reset();
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
+}
+
+TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(2);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote1;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote1.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote2;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote2.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+
+  trigger_data_host_remote1->TriggerDataAvailable(trigger_data.Clone());
+  trigger_data_host_remote2->TriggerDataAvailable(std::move(trigger_data));
+
+  trigger_data_host_remote1.FlushForTesting();
+  trigger_data_host_remote2.FlushForTesting();
+
+  // 1. Trigger 1 is enqueued because the other data host is connected in source
+  //    mode.
+  // 2. Trigger 2 resets the source mode receiver count to 0, which flushes
+  //    trigger 1.
+  // 3. Trigger 2 skips the queue.
+  CheckTriggerQueueHistograms(histograms, {
+                                              .skipped_queue = 1,
+                                              .enqueued = 1,
+                                              .flushed = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(0), 1},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationSourceReceiverConnectsFails_TriggerNotDelayed) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(mock_manager_, HandleTrigger);
+
+  const blink::AttributionSrcToken attribution_src_token;
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterNavigationDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      attribution_src_token);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  data_host_manager_->NotifyNavigationFailure(attribution_src_token);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
+
+  histograms.ExpectTotalCount("Conversions.TriggerQueueDelay", 0);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceModeReceiverConnected_DelayedTriggersHandledInOrder) {
+  base::HistogramTester histograms;
+
+  const auto reporting_origin1 =
+      url::Origin::Create(GURL("https://report1.test"));
+  const auto reporting_origin2 =
+      url::Origin::Create(GURL("https://report2.test"));
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches(
+                                   {.reporting_origin = reporting_origin1})));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches(
+                                   {.reporting_origin = reporting_origin2})));
+  }
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto send_trigger = [&](url::Origin reporting_origin) {
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin = std::move(reporting_origin);
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  };
+
+  send_trigger(reporting_origin1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  send_trigger(reporting_origin2);
+  trigger_data_host_remote.FlushForTesting();
+
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::Seconds(4));
+  checkpoint.Call(2);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 2,
+                                              .processed_with_delay = 2,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(5), 2},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceModeReceiverConnectsDisconnects_DelayedTriggersFlushed) {
+  base::HistogramTester histograms;
+
+  base::RunLoop loop;
+  EXPECT_CALL(mock_manager_, HandleTrigger)
+      .WillOnce([&](AttributionTrigger trigger) { loop.Quit(); });
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  source_data_host_remote.reset();
+  loop.Run();
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 1,
+                                              .flushed = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(2), 1},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceModeReceiverConnected_ExcessiveDelayedTriggersDropped) {
+  constexpr size_t kMaxDelayedTriggers = 30;
+
+  base::HistogramTester histograms;
+
+  base::RunLoop loop;
+  auto barrier = base::BarrierClosure(kMaxDelayedTriggers, loop.QuitClosure());
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto send_trigger = [&](url::Origin reporting_origin) {
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin = std::move(reporting_origin);
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  };
+
+  for (size_t i = 0; i < kMaxDelayedTriggers; i++) {
+    url::Origin reporting_origin = url::Origin::Create(GURL(
+        base::StrCat({"https://report", base::NumberToString(i), ".test"})));
+
+    EXPECT_CALL(mock_manager_, HandleTrigger(AttributionTriggerMatches({
+                                   .reporting_origin = reporting_origin,
+                               })))
+        .WillOnce([&](AttributionTrigger trigger) { barrier.Run(); });
+
+    send_trigger(std::move(reporting_origin));
+  }
+
+  // This one should be dropped.
+  send_trigger(url::Origin::Create(GURL("https://excessive.test")));
+
+  trigger_data_host_remote.FlushForTesting();
+  source_data_host_remote.reset();
+  loop.Run();
+
+  CheckTriggerQueueHistograms(
+      histograms, {
+                      .dropped = 1,
+                      .enqueued = kMaxDelayedTriggers,
+                      .flushed = kMaxDelayedTriggers,
+                      .delays =
+                          {
+                              {base::Seconds(0), kMaxDelayedTriggers},
+                          },
+                  });
+}
+
+TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      source_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page1.example")));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->destination = url::Origin::Create(GURL("https://dest.test"));
+  source_data->reporting_origin =
+      url::Origin::Create(GURL("https://report1.test"));
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregatable_source =
+      blink::mojom::AttributionAggregatableSource::New();
+  source_data_host_remote->SourceDataAvailable(std::move(source_data));
+  source_data_host_remote.FlushForTesting();
+
+  // Because there is still a connected data host in source mode, this trigger
+  // should be delayed.
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report2.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data->aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 1,
+                                              .processed_with_delay = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(5), 1},
+                                                  },
+                                          });
+}
+
+// Tests that an insecure context origin or destination origin in
+// `AttributionDataHostManagerImpl::NotifyNavigationForDataHost()` disconnects
+// the data host and flushes triggers.
+TEST_F(AttributionDataHostManagerImplTest, InsecureNavigationOrigin_Dropped) {
+  const struct {
+    url::Origin page_origin;
+    url::Origin destination_origin;
+  } kTestCases[] = {
+      {
+          url::Origin::Create(GURL("http://page.example")),
+          url::Origin::Create(GURL("https://trigger.example")),
+      },
+      {
+          url::Origin::Create(GURL("https://page.example")),
+          url::Origin::Create(GURL("http://trigger.example")),
+      },
+      {
+          url::Origin::Create(GURL("http://page.example")),
+          url::Origin::Create(GURL("http://trigger.example")),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+
+    const blink::AttributionSrcToken attribution_src_token;
+
+    mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+    data_host_manager_->RegisterNavigationDataHost(
+        source_data_host_remote.BindNewPipeAndPassReceiver(),
+        attribution_src_token);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+    data_host_manager_->RegisterDataHost(
+        trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://page2.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://report2.test"));
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New();
+    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    trigger_data_host_remote.FlushForTesting();
+
+    data_host_manager_->NotifyNavigationForDataHost(
+        attribution_src_token, test_case.page_origin,
+        test_case.destination_origin);
+
+    auto source_data = blink::mojom::AttributionSourceData::New();
+    source_data->source_event_id = 10;
+    source_data->destination = test_case.destination_origin;
+    source_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+    source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    source_data->aggregatable_source =
+        blink::mojom::AttributionAggregatableSource::New();
+    source_data_host_remote->SourceDataAvailable(std::move(source_data));
+    source_data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+
+    CheckTriggerQueueHistograms(histograms, {
+                                                .enqueued = 1,
+                                                .flushed = 1,
+                                                .delays =
+                                                    {
+                                                        {base::Seconds(0), 1},
+                                                    },
+                                            });
+  }
 }
 
 }  // namespace content

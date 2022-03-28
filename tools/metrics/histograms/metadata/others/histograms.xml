@@ -3473,6 +3473,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.TriggerQueueDelay" units="ms"
+    expires_after="2022-09-17">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the delay between a trigger being received by the
+    AttributionDataHostManagerImpl and it being processed. Only recorded for
+    triggers that are added to the trigger queue, rather than handled
+    immediately or dropped.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerQueueEvents"
+    enum="ConversionTriggerQueueEvent" expires_after="2022-09-17">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records events for triggers that may be delayed using a queue by
+    AttributionDataHostManagerImpl. A single trigger may emit multiple events if
+    it is part of the queue.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.UniqueReportingOriginsPerPage.Conversions"
     units="origins" expires_after="M105">
   <owner>linnan@chromium.org</owner>

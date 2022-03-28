@@ -5,13 +5,21 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 
+#include <stddef.h>
+
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace content {
 
@@ -59,11 +67,19 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // receiver.
   struct FrozenContext;
 
+  struct DelayedTrigger;
+
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
   void TriggerDataAvailable(
       blink::mojom::AttributionTriggerDataPtr data) override;
+
+  void OnReceiverDisconnected();
+  void OnSourceEligibleDataHostFinished();
+
+  void SetTriggerTimer(base::TimeDelta delay);
+  void ProcessDelayedTrigger();
 
   // Owns `this`.
   raw_ptr<AttributionManager> attribution_manager_;
@@ -78,6 +94,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   base::flat_map<blink::AttributionSrcToken,
                  mojo::PendingReceiver<blink::mojom::AttributionDataHost>>
       navigation_data_host_map_;
+
+  // The number of connected receivers that may register a source. Used to
+  // determine whether to buffer triggers. Event receivers are counted here
+  // until they register a trigger.
+  size_t data_hosts_in_source_mode_ = 0;
+  base::OneShotTimer trigger_timer_;
+  base::circular_deque<DelayedTrigger> delayed_triggers_;
 };
 
 }  // namespace content
