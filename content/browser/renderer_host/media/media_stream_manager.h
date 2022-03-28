@@ -252,7 +252,11 @@ class CONTENT_EXPORT MediaStreamManager
                          int requester_id);
 
   // Closes the stream device for a certain render frame. The stream must have
-  // been opened by a call to GenerateStream. Must be called on the IO thread.
+  // been opened by a call to GenerateStream or GetOpenDevice. Must be called on
+  // the IO thread. Closing a cloned MediaStreamDevice, created by
+  // GetOpenDevice, doesn't affect the original MediaStreamDevice it was created
+  // from. Similarly, closing the original MediaStreamDevice, created by
+  // GenerateStream, doesn't affect the cloned device.
   void StopStreamDevice(int render_process_id,
                         int render_frame_id,
                         int requester_id,
@@ -482,13 +486,18 @@ class CONTENT_EXPORT MediaStreamManager
   MediaStreamProvider* GetDeviceManager(
       blink::mojom::MediaStreamType stream_type);
   void StartEnumeration(DeviceRequest* request, const std::string& label);
-  // Creates and returns a DeviceRequest of type MEDIA_GENERATE_STREAM.
-  static std::unique_ptr<DeviceRequest> CreateMediaGenerateStreamRequest(
+  // Creates and returns a DeviceRequest of type |type|. |type| should be either
+  // blink::MEDIA_GENERATE_STREAM or blink::MEDIA_GET_OPEN_DEVICE.
+  // TODO(crbug.com/1288839): Once all device-related callbacks are packed in a
+  // single struct, delete this function and replace its usage with
+  // make_unique<DeviceRequest> calls.
+  static std::unique_ptr<DeviceRequest> CreateDeviceRequest(
       int render_process_id,
       int render_frame_id,
       int requester_id,
       int page_request_id,
       const blink::StreamControls& controls,
+      blink::MediaStreamRequestType type,
       MediaDeviceSaltAndOrigin salt_and_origin,
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,

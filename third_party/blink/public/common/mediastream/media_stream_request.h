@@ -28,6 +28,7 @@ enum MediaStreamRequestType {
   MEDIA_DEVICE_ACCESS = 0,
   MEDIA_DEVICE_UPDATE,
   MEDIA_GENERATE_STREAM,
+  MEDIA_GET_OPEN_DEVICE,
   MEDIA_OPEN_DEVICE_PEPPER_ONLY  // Only used in requests made by Pepper.
 };
 
