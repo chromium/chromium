@@ -610,7 +610,7 @@ class WTF_EXPORT StringImpl {
 
 #if DCHECK_IS_ON()
   mutable ThreadRestrictionVerifier verifier_;
-  mutable unsigned int ref_count_change_count_{0};
+  mutable std::atomic<unsigned> ref_count_change_count_{0};
 #endif
   // TODO (crbug.com/1083392): Use base::AtomicRefCount once Blink strings are
   // fully thread-safe and ThreadRestrictionVerifier is no longer needed.
