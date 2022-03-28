@@ -237,7 +237,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
   }
 
  protected:
-  ui::TestNativeTheme native_theme_;
+  ui::TestNativeTheme test_native_theme_;
   raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;
 };
@@ -263,11 +263,6 @@ class ThemeProviderRedirectedEquivalenceTest
       ozone_params.single_process = true;
       ui::OzonePlatform::InitializeForUI(ozone_params);
       auto linux_ui = BuildGtkUi();
-      linux_ui->SetUseSystemThemeCallback(base::BindRepeating(
-          [](bool use_system_theme, aura::Window* window) {
-            return use_system_theme;
-          },
-          std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom));
       linux_ui->Initialize();
       views::LinuxUI::SetInstance(std::move(linux_ui));
 #endif  // BUILDFLAG(USE_GTK)
@@ -278,6 +273,13 @@ class ThemeProviderRedirectedEquivalenceTest
 
       initialized_mixers = true;
     }
+#if BUILDFLAG(USE_GTK)
+    views::LinuxUI::instance()->SetUseSystemThemeCallback(base::BindRepeating(
+        [](bool use_system_theme, aura::Window* window) {
+          return use_system_theme;
+        },
+        std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom));
+#endif  // BUILDFLAG(USE_GTK)
 
     const auto param_tuple = GetParam();
     auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
@@ -286,32 +288,39 @@ class ThemeProviderRedirectedEquivalenceTest
 
     // ThemeService tracks the global NativeTheme instance for native UI. Update
     // this to reflect test params and propagate any updates.
-    ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    original_forced_colors_ = native_theme->InForcedColorsMode();
-    original_preferred_contrast_ = native_theme->GetPreferredContrast();
-    original_should_use_dark_colors_ = native_theme->ShouldUseDarkColors();
+    native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(USE_GTK)
+    if (system_theme == SystemTheme::kCustom) {
+      const auto* linux_ui = views::LinuxUI::instance();
+      native_theme_ = linux_ui->GetNativeTheme(nullptr);
+    }
+#endif
+    original_forced_colors_ = native_theme_->InForcedColorsMode();
+    original_preferred_contrast_ = native_theme_->GetPreferredContrast();
+    original_should_use_dark_colors_ = native_theme_->ShouldUseDarkColors();
 
     const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
 #if BUILDFLAG(IS_WIN)
     if (high_contrast)
       color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
-    native_theme->set_forced_colors(high_contrast);
+    native_theme_->set_forced_colors(high_contrast);
 #endif  // BUILDFLAG(IS_WIN)
-    native_theme->set_preferred_contrast(
+    native_theme_->set_preferred_contrast(
         high_contrast ? ui::NativeTheme::PreferredContrast::kMore
                       : ui::NativeTheme::PreferredContrast::kNoPreference);
-    native_theme->set_use_dark_colors(color_scheme ==
-                                      ui::NativeTheme::ColorScheme::kDark);
+    native_theme_->set_use_dark_colors(color_scheme ==
+                                       ui::NativeTheme::ColorScheme::kDark);
 
-    // If native_theme has changed, call NativeTheme::NotifyOnNativeThemeUpdated
-    // to notify observers that the NativeTheme has been updated so that the
-    // ThemeService will know to update its ThemeSupplier to match the
-    // NativeTheme. The ColorProvider cache will also be reset.
-    if (original_forced_colors_ != native_theme->InForcedColorsMode() ||
-        original_preferred_contrast_ != native_theme->GetPreferredContrast() ||
+    // If native_theme_ has changed, call
+    // NativeTheme::NotifyOnNativeThemeUpdated to notify observers that the
+    // NativeTheme has been updated so that the ThemeService will know to update
+    // its ThemeSupplier to match the NativeTheme. The ColorProvider cache will
+    // also be reset.
+    if (original_forced_colors_ != native_theme_->InForcedColorsMode() ||
+        original_preferred_contrast_ != native_theme_->GetPreferredContrast() ||
         original_should_use_dark_colors_ !=
-            native_theme->ShouldUseDarkColors()) {
-      native_theme->NotifyOnNativeThemeUpdated();
+            native_theme_->ShouldUseDarkColors()) {
+      native_theme_->NotifyOnNativeThemeUpdated();
     }
 
     // Update ThemeService to use the system theme if necessary.
@@ -324,11 +333,10 @@ class ThemeProviderRedirectedEquivalenceTest
 
   void TearDown() override {
     // Restore the original NativeTheme parameters.
-    ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    native_theme->set_forced_colors(original_forced_colors_);
-    native_theme->set_preferred_contrast(original_preferred_contrast_);
-    native_theme->set_use_dark_colors(original_should_use_dark_colors_);
-    native_theme->NotifyOnNativeThemeUpdated();
+    native_theme_->set_forced_colors(original_forced_colors_);
+    native_theme_->set_preferred_contrast(original_preferred_contrast_);
+    native_theme_->set_use_dark_colors(original_should_use_dark_colors_);
+    native_theme_->NotifyOnNativeThemeUpdated();
     ThemeServiceTest::TearDown();
   }
 
@@ -374,6 +382,7 @@ class ThemeProviderRedirectedEquivalenceTest
   ui::NativeTheme::PreferredContrast original_preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
   bool original_should_use_dark_colors_ = false;
+  raw_ptr<ui::NativeTheme> native_theme_;
 };
 
 #define E(color_id, theme_property_id, ...) theme_property_id,
@@ -612,12 +621,12 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableExtensionTest) {
 TEST_F(ThemeServiceTest, OmniboxContrast) {
   using TP = ThemeProperties;
   for (bool dark : {false, true}) {
-    native_theme_.SetDarkMode(dark);
+    test_native_theme_.SetDarkMode(dark);
     for (bool high_contrast : {false, true}) {
       set_theme_supplier(
           theme_service_,
           high_contrast ? base::MakeRefCounted<IncreasedContrastThemeSupplier>(
-                              &native_theme_)
+                              &test_native_theme_)
                         : nullptr);
       constexpr int contrasting_ids[][2] = {
           {TP::COLOR_OMNIBOX_RESULTS_ICON, TP::COLOR_OMNIBOX_RESULTS_BG},
@@ -699,8 +708,8 @@ TEST_F(ThemeServiceTest, OmniboxContrast) {
 TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
   theme_service_->UseDefaultTheme();
 
-  native_theme_.SetUserHasContrastPreference(true);
-  theme_service_->OnNativeThemeUpdated(&native_theme_);
+  test_native_theme_.SetUserHasContrastPreference(true);
+  theme_service_->OnNativeThemeUpdated(&test_native_theme_);
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   bool using_increased_contrast =
       theme_service_->GetThemeSupplier() &&
@@ -708,11 +717,11 @@ TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
           CustomThemeSupplier::ThemeType::INCREASED_CONTRAST;
   bool expecting_increased_contrast =
       theme_service_->theme_helper_for_testing()
-          .ShouldUseIncreasedContrastThemeSupplier(&native_theme_);
+          .ShouldUseIncreasedContrastThemeSupplier(&test_native_theme_);
   EXPECT_EQ(using_increased_contrast, expecting_increased_contrast);
 
-  native_theme_.SetUserHasContrastPreference(false);
-  theme_service_->OnNativeThemeUpdated(&native_theme_);
+  test_native_theme_.SetUserHasContrastPreference(false);
+  theme_service_->OnNativeThemeUpdated(&test_native_theme_);
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   EXPECT_EQ(theme_service_->GetThemeSupplier(), nullptr);
 }
@@ -807,13 +816,7 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
-// TODO(crbug.com/1056953): Enable on Linux GTK.
-#if BUILDFLAG(USE_GTK)
-#define MAYBE_GetColor DISABLED_GetColor
-#else
-#define MAYBE_GetColor GetColor
-#endif
-TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
+TEST_P(ThemeProviderRedirectedEquivalenceTest, GetColor) {
   static constexpr const auto kTolerances = base::MakeFixedFlatMap<int, int>(
       {{ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY, 1},
        {ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED, 1},
@@ -829,6 +832,19 @@ TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
       return it->second;
     return 0;
   };
+
+#if BUILDFLAG(USE_GTK)
+  const auto param_tuple = GetParam();
+  const auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
+  const auto contrast_mode = std::get<ContrastMode>(param_tuple);
+  const auto system_theme = std::get<SystemTheme>(param_tuple);
+  // For GTK, test only the light, non high contrast mode.
+  // TODO(crbug.com/1310397): make a dedicated test for GTK colors.
+  if (system_theme == SystemTheme::kCustom &&
+      !(color_scheme == ui::NativeTheme::ColorScheme::kLight &&
+        contrast_mode == ContrastMode::kNonHighContrast))
+    return;
+#endif  // BUILDFLAG(USE_GTK)
 
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());

@@ -380,6 +380,7 @@
     ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND) \
   E(kColorToolbarButtonBorder, ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
+  E_CPONLY(kColorToolbarButtonIconDefault) \
   E(kColorToolbarButtonIconHovered, \
     ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED) \
   E(kColorToolbarButtonIconInactive, \
@@ -394,7 +395,9 @@
   E(kColorToolbarInkDrop, ThemeProperties::COLOR_TOOLBAR_INK_DROP) \
   E(kColorToolbarSeparator, \
     ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \
+  E_CPONLY(kColorToolbarSeparatorDefault) \
   E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT) \
+  E_CPONLY(kColorToolbarTextDefault) \
   E(kColorToolbarTopSeparatorFrameActive, \
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE) \
   E(kColorToolbarTopSeparatorFrameInactive, \

@@ -546,7 +546,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarButtonBackground] =
       ui::GetColorWithMaxContrast(kColorToolbarButtonText);
   mixer[kColorToolbarButtonBorder] = ui::SetAlpha(kColorToolbarInkDrop, 0x20);
-  mixer[kColorToolbarButtonIcon] = ui::HSLShift(
+  mixer[kColorToolbarButtonIcon] = {kColorToolbarButtonIconDefault};
+  mixer[kColorToolbarButtonIconDefault] = ui::HSLShift(
       gfx::kGoogleGrey700, GetThemeTint(ThemeProperties::TINT_BUTTONS, key));
   mixer[kColorToolbarButtonIconHovered] = {kColorToolbarButtonIcon};
   mixer[kColorToolbarButtonIconInactive] = {
@@ -561,8 +562,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorToolbarButtonBackground, gfx::kGoogleBlue600, gfx::kGoogleGrey100,
       gfx::kGoogleBlue900, SK_ColorWHITE);
   mixer[kColorToolbarInkDrop] = ui::GetColorWithMaxContrast(kColorToolbar);
-  mixer[kColorToolbarSeparator] = ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
-  mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+  mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
+  mixer[kColorToolbarSeparatorDefault] =
+      ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
+  mixer[kColorToolbarText] = {kColorToolbarTextDefault};
+  mixer[kColorToolbarTextDefault] = {dark_mode ? SK_ColorWHITE
+                                               : gfx::kGoogleGrey800};
   mixer[kColorToolbarTopSeparatorFrameActive] =
       GetToolbarTopSeparatorColorTransform(kColorToolbar,
                                            ui::kColorFrameActive);

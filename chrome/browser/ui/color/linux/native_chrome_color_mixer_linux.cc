@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -14,6 +16,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 
 namespace {
 
@@ -126,14 +129,18 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparatorDefault};
+  mixer[kColorBookmarkButtonIcon] = {kColorToolbarButtonIconDefault};
   mixer[kColorDownloadShelfContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
+  mixer[kColorInfoBarForeground] = {kColorToolbarTextDefault};
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] =
       UseIfNonzeroAlpha(ui::kColorNativeTextfieldBorderUnfocused);
   mixer[kColorNewTabPageBackground] = {ui::kColorTextfieldBackground};
   mixer[kColorNewTabPageHeader] = {ui::kColorNativeButtonBorder};
+  mixer[kColorNewTabPageLink] = {ui::kColorTextfieldSelectionBackground};
   mixer[kColorNewTabPageText] = {ui::kColorTextfieldForeground};
   mixer[kColorOmniboxText] = {ui::kColorTextfieldForeground};
   mixer[kColorOmniboxBackground] = {ui::kColorTextfieldBackground};
