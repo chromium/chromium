@@ -93,12 +93,12 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertTrue(!!buttons);
       assertEquals(buttons.length, 3);
       // Click account buttons.
-      buttons[0]!.click();
-      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-0');
       buttons[1]!.click();
+      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-0');
+      buttons[2]!.click();
       await verifyLoadSignInProfileCreationFlowCalled('gaia-id-1');
       // Click "Use another account".
-      buttons[2]!.click();
+      buttons[0]!.click();
       await verifyLoadSignInProfileCreationFlowCalled('');
     });
   });
