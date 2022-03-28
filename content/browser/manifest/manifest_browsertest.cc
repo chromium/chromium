@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -813,6 +814,56 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
             })));
     run_loop.Run();
   }
+}
+
+class ManifestFencedFrameBrowserTest : public ManifestBrowserTest {
+ public:
+  ManifestFencedFrameBrowserTest() = default;
+  ~ManifestFencedFrameBrowserTest() override = default;
+
+ protected:
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that GetManifest() returns an empty manifest if it's requested in
+// a fenced frame.
+IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
+                       GetManifestInFencedFrame) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+
+  // Add a manifest to `fenced_frame_rfh`.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh,
+                     R"( var link = document.createElement('link');
+                         link.rel = 'manifest';
+                         link.href = '../manifest/dummy-manifest.json';
+                         document.head.appendChild(link);)"));
+
+  base::RunLoop run_loop;
+  fenced_frame_rfh->GetPage().GetManifest(
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+            // Even though `fenced_frame_rfh` has a manifest updated above,
+            // this should get an empty manifest since it's not a primary main
+            // frame.
+            EXPECT_TRUE(manifest_url.is_empty());
+            EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+            run_loop.Quit();
+          })));
+  run_loop.Run();
 }
 
 } // namespace content
