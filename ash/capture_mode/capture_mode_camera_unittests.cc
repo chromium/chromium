@@ -1598,44 +1598,6 @@ TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnap) {
   VerifyPreviewAlignment(GetCaptureBoundsInScreen());
 }
 
-// Tests the use case after pressing on the resize button on camera preview and
-// releasing the press outside of camera preview, camera preview is still
-// draggable. Regression test for https://crbug.com/1308885.
-TEST_P(CaptureModeCameraPreviewTest,
-       CameraPreviewDragToSnapAfterPressOnResizeButton) {
-  StartCaptureSessionWithParam();
-  auto* camera_controller = GetCameraController();
-  AddDefaultCamera();
-  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
-  auto* preview_widget = camera_controller->camera_preview_widget();
-  auto* resize_button = GetPreviewResizeButton();
-  const int camera_previw_width =
-      preview_widget->GetWindowBoundsInScreen().width();
-  const gfx::Point capture_bounds_center_point =
-      GetCaptureBoundsInScreen().CenterPoint();
-  const gfx::Point center_point_of_resize_button =
-      resize_button->GetBoundsInScreen().CenterPoint();
-
-  // By default the snap position of preview widget should be `kBottomRight`.
-  EXPECT_EQ(CameraPreviewSnapPosition::kBottomRight,
-            camera_controller->camera_preview_snap_position());
-
-  auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(center_point_of_resize_button);
-  event_generator->PressLeftButton();
-
-  const gfx::Vector2d delta(-camera_previw_width, -camera_previw_width);
-  // Now move mouse to the outside of the camera preview and then release.
-  event_generator->MoveMouseTo(center_point_of_resize_button + delta);
-  event_generator->ReleaseLeftButton();
-
-  // Now try to drag the camera preview to the top left, after camera preview is
-  // snapped, the current snap position should be `kTopLeft`.
-  DragPreviewToPoint(preview_widget, capture_bounds_center_point + delta);
-  EXPECT_EQ(CameraPreviewSnapPosition::kTopLeft,
-            camera_controller->camera_preview_snap_position());
-}
-
 TEST_P(CaptureModeCameraPreviewTest, CaptureUisVisibilityChangeOnDragAndDrop) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
