@@ -1010,6 +1010,13 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [allowed_experimental_policies addObject:ntp_location_key];
   }
 
+  if ([defaults boolForKey:@"DisallowChromeDataInBackups"]) {
+    NSString* allow_backups_key =
+        base::SysUTF8ToNSString(policy::key::kAllowChromeDataInBackups);
+    [testing_policies addEntriesFromDictionary:@{allow_backups_key : @NO}];
+    [allowed_experimental_policies addObject:allow_backups_key];
+  }
+
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
   // policy.
   if ([allowed_experimental_policies count] > 0) {
@@ -1028,7 +1035,8 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
 NSString* TestingPoliciesHash() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   return [NSString
-      stringWithFormat:@"%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d",
+      stringWithFormat:@"%d|%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d",
+                       [defaults boolForKey:@"DisallowChromeDataInBackups"],
                        [defaults boolForKey:@"EnableSyncDisabledPolicy"],
                        [defaults boolForKey:@"EnableSamplePolicies"],
                        (int)[defaults
