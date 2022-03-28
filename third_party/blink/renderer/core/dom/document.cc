@@ -2596,6 +2596,21 @@ void Document::EnsurePaintLocationDataValidForNode(
   if (!node->InActiveDocument())
     return;
 
+  if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
+    if (GetDisplayLockDocumentState().LockedDisplayLockCount() !=
+        GetDisplayLockDocumentState().DisplayLockBlockingAllActivationCount()) {
+      for (const Node* previous = node; previous;
+           previous = FlatTreeTraversal::Previous(*previous)) {
+        const Element* prior_element = DynamicTo<Element>(previous);
+        if (!prior_element || !prior_element->GetLayoutObject() ||
+            !prior_element->GetLayoutObject()->IsShapingDeferred())
+          continue;
+        prior_element->GetDisplayLockContext()->SetRequestedState(
+            EContentVisibility::kVisible);
+      }
+    }
+  }
+
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);
 

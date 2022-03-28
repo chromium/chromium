@@ -273,6 +273,25 @@ TEST_F(DeferredShapingTest, ScrollIntoView) {
   EXPECT_FALSE(IsLocked("ancestor"));
 }
 
+TEST_F(DeferredShapingTest, ElementGeometry) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="ancestor">IFC
+<span style="display:inline-block" id="previous">MMMM MMMM MMMM</sapn>
+<span id="target">inline</span>
+</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_TRUE(IsDefer("ancestor"));
+  EXPECT_TRUE(IsLocked("ancestor"));
+
+  GetElementById("target")->getBoundingClientRect();
+  EXPECT_FALSE(IsDefer("previous"));
+  EXPECT_FALSE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("ancestor"));
+  EXPECT_FALSE(IsLocked("ancestor"));
+}
+
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>
