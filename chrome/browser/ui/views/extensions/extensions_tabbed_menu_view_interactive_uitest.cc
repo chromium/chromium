@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"

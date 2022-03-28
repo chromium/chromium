@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"

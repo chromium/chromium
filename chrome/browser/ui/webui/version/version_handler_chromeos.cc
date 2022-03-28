@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/version_info/channel.h"

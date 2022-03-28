@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"

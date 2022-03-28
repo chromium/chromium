@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "ui/events/event_handler.h"

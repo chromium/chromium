@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_DOCUMENT_OVERLAY_WINDOW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_DOCUMENT_OVERLAY_WINDOW_VIEWS_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 
 class BackToTabImageButton;

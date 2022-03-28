@@ -16,6 +16,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"

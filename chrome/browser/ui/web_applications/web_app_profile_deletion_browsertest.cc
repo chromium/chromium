@@ -6,6 +6,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
