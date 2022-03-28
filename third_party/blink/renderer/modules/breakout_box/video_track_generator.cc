@@ -35,7 +35,10 @@ VideoTrackGenerator::VideoTrackGenerator(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   auto track_id = WTF::CreateCanonicalUUIDString();
   MediaStreamSource* wrapped_source = MakeGarbageCollected<MediaStreamSource>(
-      track_id, MediaStreamSource::kTypeVideo, track_id, /*remote=*/false);
+      track_id, MediaStreamSource::kTypeVideo, track_id, /*remote=*/false,
+      std::make_unique<PushableMediaStreamVideoSource>(
+          ExecutionContext::From(script_state)
+              ->GetTaskRunner(TaskType::kInternalMediaRealTime)));
   wrapped_generator_ = MakeGarbageCollected<MediaStreamTrackGenerator>(
       script_state, wrapped_source);
 }

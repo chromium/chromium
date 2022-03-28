@@ -13,17 +13,6 @@
 
 namespace blink {
 
-MockMediaStreamVideoSource* CreateMockVideoSource() {
-  MockMediaStreamVideoSource* mock_video_source =
-      new MockMediaStreamVideoSource();
-  MediaStreamSource* media_stream_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          "source_id", MediaStreamSource::kTypeVideo, "source_name",
-          /*remote=*/false);
-  media_stream_source->SetPlatformSource(base::WrapUnique(mock_video_source));
-  return mock_video_source;
-}
-
 MediaStreamTrack* CreateVideoMediaStreamTrack(ExecutionContext* context,
                                               MediaStreamVideoSource* source) {
   return MakeGarbageCollected<MediaStreamTrack>(

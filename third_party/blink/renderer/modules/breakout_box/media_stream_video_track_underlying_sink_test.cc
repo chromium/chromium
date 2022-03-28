@@ -31,13 +31,13 @@ namespace blink {
 class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSinkTest() {
-    pushable_video_source_ = new PushableMediaStreamVideoSource(
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    auto pushable_video_source =
+        std::make_unique<PushableMediaStreamVideoSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting());
+    pushable_video_source_ = pushable_video_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        /*remote=*/false);
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_));
+        /*remote=*/false, std::move(pushable_video_source));
   }
 
   ~MediaStreamVideoTrackUnderlyingSinkTest() override {

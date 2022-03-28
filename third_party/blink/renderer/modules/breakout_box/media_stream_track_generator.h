@@ -49,6 +49,10 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   void CreateVideoOutputPlatformTrack();
   void CreateVideoStream(ScriptState* script_state);
 
+  static std::unique_ptr<WebPlatformMediaStreamSource> MakePlatformSource(
+      ScriptState* script_state,
+      MediaStreamSource::StreamType type);
+
   Member<MediaStreamAudioTrackUnderlyingSink> audio_underlying_sink_;
   Member<MediaStreamVideoTrackUnderlyingSink> video_underlying_sink_;
   Member<WritableStream> writable_;

@@ -82,21 +82,45 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
       /*track_id=*/WTF::CreateCanonicalUUIDString());
 }
 
+// static
+std::unique_ptr<WebPlatformMediaStreamSource>
+MediaStreamTrackGenerator::MakePlatformSource(
+    ScriptState* script_state,
+    MediaStreamSource::StreamType type) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  switch (type) {
+    case MediaStreamSource::StreamType::kTypeVideo:
+      return std::make_unique<PushableMediaStreamVideoSource>(
+          execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime));
+    case MediaStreamSource::StreamType::kTypeAudio:
+      // TODO(https://crbug.com/1168281): use a different thread than the IO
+      // thread to deliver Audio.
+      return std::make_unique<PushableMediaStreamAudioSource>(
+          execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+          Platform::Current()->GetIOTaskRunner());
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
     MediaStreamSource::StreamType type,
     const String& track_id)
-    : MediaStreamTrackGenerator(
-          script_state,
-          MakeGarbageCollected<MediaStreamSource>(track_id,
-                                                  type,
-                                                  track_id,
-                                                  /*remote=*/false)) {}
+    : MediaStreamTrackGenerator(script_state,
+                                MakeGarbageCollected<MediaStreamSource>(
+                                    track_id,
+                                    type,
+                                    track_id,
+                                    /*remote=*/false,
+                                    MakePlatformSource(script_state, type))) {}
 
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(ScriptState* script_state,
                                                      MediaStreamSource* source)
     : MediaStreamTrack(ExecutionContext::From(script_state),
                        MakeGarbageCollected<MediaStreamComponent>(source)) {
+  DCHECK(source->GetPlatformSource())
+      << "The source should already have a platform source";
   if (source->GetType() == MediaStreamSource::kTypeVideo) {
     CreateVideoOutputPlatformTrack();
   } else {
@@ -126,32 +150,23 @@ PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
 }
 
 void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
-  std::unique_ptr<PushableMediaStreamVideoSource> platform_source =
-      std::make_unique<PushableMediaStreamVideoSource>(
-          GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime));
-  PushableMediaStreamVideoSource* platform_source_ptr = platform_source.get();
-  Component()->Source()->SetPlatformSource(std::move(platform_source));
   std::unique_ptr<MediaStreamVideoTrack> platform_track =
       std::make_unique<MediaStreamVideoTrack>(
-          platform_source_ptr,
+          static_cast<blink::MediaStreamVideoSource*>(
+              Component()->Source()->GetPlatformSource()),
           MediaStreamVideoSource::ConstraintsOnceCallback(),
           /*enabled=*/true);
   Component()->SetPlatformTrack(std::move(platform_track));
 }
 
 void MediaStreamTrackGenerator::CreateAudioOutputPlatformTrack() {
-  // TODO(https:/crbug.com/1168281): use a different thread than the IO thread
-  // to deliver Audio.
-  std::unique_ptr<PushableMediaStreamAudioSource> platform_source =
-      std::make_unique<PushableMediaStreamAudioSource>(
-          GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime),
-          Platform::Current()->GetIOTaskRunner());
-
-  platform_source->ConnectToTrack(Component());
-
-  Component()->Source()->SetPlatformSource(std::move(platform_source));
+  // MediaStreamAudioSource creates and sets a PlatformTrack in
+  // ConnectToTrack().
+  // TODO(https://crbug.com/1302689): Create and provide the PlatformTrack
+  // inside the MediaStreamComponent constructor.
+  static_cast<blink::MediaStreamAudioSource*>(
+      Component()->Source()->GetPlatformSource())
+      ->ConnectToTrack(Component());
 }
 
 void MediaStreamTrackGenerator::CreateVideoStream(ScriptState* script_state) {

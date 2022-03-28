@@ -62,12 +62,11 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
 };
 
 MediaStreamSource* CreateConnectedMediaStreamSource(
-    MediaStreamVideoSource* video_source) {
+    std::unique_ptr<MediaStreamVideoSource> video_source) {
   MediaStreamSource* media_stream_source =
       MakeGarbageCollected<MediaStreamSource>(
           "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-          false /* remote */);
-  media_stream_source->SetPlatformSource(base::WrapUnique(video_source));
+          false /* remote */, std::move(video_source));
   return media_stream_source;
 }
 
@@ -82,9 +81,12 @@ WebMediaStreamTrack StartVideoSource(MediaStreamVideoSource* video_source) {
 class PushableMediaStreamVideoSourceTest : public testing::Test {
  public:
   PushableMediaStreamVideoSourceTest() {
-    pushable_video_source_ = new PushableMediaStreamVideoSource(
-        scheduler::GetSingleThreadTaskRunnerForTesting());
-    stream_source_ = CreateConnectedMediaStreamSource(pushable_video_source_);
+    auto pushable_video_source =
+        std::make_unique<PushableMediaStreamVideoSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting());
+    pushable_video_source_ = pushable_video_source.get();
+    stream_source_ =
+        CreateConnectedMediaStreamSource(std::move(pushable_video_source));
   }
 
   void TearDown() override {

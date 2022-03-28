@@ -39,20 +39,21 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   }
 
   MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
+    auto pushable_audio_source =
+        std::make_unique<PushableMediaStreamAudioSource>(
+            Thread::MainThread()->GetTaskRunner(),
+            Platform::Current()->GetIOTaskRunner());
+    PushableMediaStreamAudioSource* pushable_audio_source_ptr =
+        pushable_audio_source.get();
     MediaStreamSource* media_stream_source =
         MakeGarbageCollected<MediaStreamSource>(
             "dummy_source_id", MediaStreamSource::kTypeAudio,
-            "dummy_source_name", false /* remote */);
-    PushableMediaStreamAudioSource* pushable_audio_source =
-        new PushableMediaStreamAudioSource(
-            Thread::MainThread()->GetTaskRunner(),
-            Platform::Current()->GetIOTaskRunner());
-    media_stream_source->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source));
+            "dummy_source_name", false /* remote */,
+            std::move(pushable_audio_source));
     MediaStreamComponent* component =
         MakeGarbageCollected<MediaStreamComponent>(
             String::FromUTF8("audio_track"), media_stream_source);
-    pushable_audio_source->ConnectToTrack(component);
+    pushable_audio_source_ptr->ConnectToTrack(component);
 
     return MakeGarbageCollected<MediaStreamTrack>(execution_context, component);
   }
