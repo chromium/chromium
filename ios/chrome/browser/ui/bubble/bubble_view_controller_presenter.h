@@ -8,7 +8,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#include "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
+
+// Procedural block with a snoozeAction argument, used for the bubble's
+// dismissal callback.
+typedef void (^ProceduralBlockWithSnoozeAction)(
+    feature_engagement::Tracker::SnoozeAction);
 
 @class BubbleViewController;
 
@@ -41,15 +47,30 @@
 @property(nonatomic, copy) NSString* voiceOverAnnouncement;
 
 // Initializes the presenter. |text| is the text displayed by the bubble.
-// |arrowDirection| is the direction the bubble's arrow is pointing. |alignment|
-// is the position of the arrow on the bubble. |dismissalCallback| is a block
-// invoked when the bubble is dismissed (manual and automatic dismissal).
-// |dismissalCallback| is optional.
+// |titleString| is the title displayed by the bubble. |image| is the image
+// displayed by the bubble. |arrowDirection| is the direction the bubble's arrow
+// is pointing. |alignment| is the position of the arrow on the bubble. |type|
+// is the type of bubble content. |dismissalCallback| is a block invoked when
+// the bubble is dismissed (manual and automatic dismissal). |dismissalCallback|
+// is optional.
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+                       image:(UIImage*)image
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+           dismissalCallback:(ProceduralBlockWithSnoozeAction)dismissalCallback
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializes the presenter with a Default BubbleViewType. |text| is the text
+// displayed by the bubble. |arrowDirection| is the direction the bubble's arrow
+// is pointing. |alignment| is the position of the arrow on the bubble.
+// |dismissalCallback| is a block invoked when the bubble is dismissed (manual
+// and automatic dismissal). |dismissalCallback| is optional.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
-           dismissalCallback:(ProceduralBlock)dismissalCallback
-    NS_DESIGNATED_INITIALIZER;
+           dismissalCallback:(ProceduralBlockWithSnoozeAction)dismissalCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 

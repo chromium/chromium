@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
+#import "base/notreached.h"
 #include "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/common/material_timing.h"
 
@@ -15,12 +16,61 @@ namespace {
 const CGFloat kAnimationDuration = ios::material::kDuration3;
 // The vertical offset distance used in the sink-down animation.
 const CGFloat kVerticalOffset = 8.0f;
+
+BubbleView* BubbleViewWithType(BubbleViewType bubbleViewType,
+                               NSString* text,
+                               NSString* title,
+                               UIImage* image,
+                               BubbleArrowDirection arrowDirection,
+                               BubbleAlignment alignment,
+                               id<BubbleViewDelegate> delegate) {
+  BOOL showTitle = NO;
+  BOOL showImage = NO;
+  BOOL showCloseButton = NO;
+  BOOL showSnoozeButton = NO;
+  NSTextAlignment textAlignment = NSTextAlignmentNatural;
+
+  switch (bubbleViewType) {
+    case BubbleViewTypeDefault:
+      textAlignment = NSTextAlignmentCenter;
+      break;
+    case BubbleViewTypeWithClose:
+      showCloseButton = YES;
+      break;
+    case BubbleViewTypeRich:
+      showCloseButton = YES;
+      showTitle = YES;
+      showImage = YES;
+      break;
+    case BubbleViewTypeRichWithSnooze:
+      showCloseButton = YES;
+      showTitle = YES;
+      showImage = YES;
+      showSnoozeButton = YES;
+      break;
+  }
+  BubbleView* bubbleView =
+      [[BubbleView alloc] initWithText:text
+                        arrowDirection:arrowDirection
+                             alignment:alignment
+                      showsCloseButton:showCloseButton
+                                 title:showTitle ? title : nil
+                                 image:showImage ? image : nil
+                     showsSnoozeButton:showSnoozeButton
+                         textAlignment:textAlignment
+                              delegate:delegate];
+  return bubbleView;
+}
+
 }  // namespace
 
 @interface BubbleViewController ()
 @property(nonatomic, copy, readonly) NSString* text;
+@property(nonatomic, strong, readonly) UIImage* image;
 @property(nonatomic, assign, readonly) BubbleArrowDirection arrowDirection;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
+@property(nonatomic, weak) id<BubbleViewDelegate> delegate;
+@property(nonatomic, assign, readonly) BubbleViewType bubbleViewType;
 @property(nonatomic, strong) BubbleView* view;
 @end
 
@@ -31,21 +81,29 @@ const CGFloat kVerticalOffset = 8.0f;
 @dynamic view;
 
 - (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+                       image:(UIImage*)image
               arrowDirection:(BubbleArrowDirection)direction
-                   alignment:(BubbleAlignment)alignment {
+                   alignment:(BubbleAlignment)alignment
+              bubbleViewType:(BubbleViewType)type
+                    delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _text = text;
+    _image = image;
+    self.title = [titleString copy];
     _arrowDirection = direction;
     _alignment = alignment;
+    _bubbleViewType = type;
+    _delegate = delegate;
   }
   return self;
 }
 
 - (void)loadView {
-  self.view = [[BubbleView alloc] initWithText:self.text
-                                arrowDirection:self.arrowDirection
-                                     alignment:self.alignment];
+  self.view =
+      BubbleViewWithType(self.bubbleViewType, self.text, self.title, self.image,
+                         self.arrowDirection, self.alignment, self.delegate);
   // Begin hidden.
   [self.view setAlpha:0.0f];
   [self.view setHidden:YES];
@@ -89,4 +147,5 @@ const CGFloat kVerticalOffset = 8.0f;
 - (void)setBubbleAlignmentOffset:(CGFloat)alignmentOffset {
   self.view.alignmentOffset = alignmentOffset;
 }
+
 @end

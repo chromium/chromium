@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -73,43 +74,6 @@ class BubbleViewTest : public PlatformTest {
   NSString* longText_;
   // Text alignment for bubble's title, text and snooze button.
   NSTextAlignment textAlignment_;
-
-  UIView* GetViewOfClassWithIdentifier(Class uiClass,
-                                       NSString* accessibilityIdentifier,
-                                       BubbleView* bubbleView) {
-    for (UIView* subview in bubbleView.subviews) {
-      if ([subview isKindOfClass:uiClass] &&
-          subview.accessibilityIdentifier == accessibilityIdentifier) {
-        return subview;
-      }
-    }
-    return nil;
-  }
-
-  UIButton* GetCloseButton(BubbleView* bubbleView) {
-    return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
-        [UIButton class], kBubbleViewCloseButtonIdentifier, bubbleView));
-  }
-
-  UILabel* GetTitleLabel(BubbleView* bubbleView) {
-    return base::mac::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
-        [UILabel class], kBubbleViewTitleLabelIdentifier, bubbleView));
-  }
-
-  UIImageView* GetImageView(BubbleView* bubbleView) {
-    return base::mac::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
-        [UIImageView class], kBubbleViewImageViewIdentifier, bubbleView));
-  }
-
-  UIButton* GetSnoozeButton(BubbleView* bubbleView) {
-    return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
-        [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubbleView));
-  }
-
-  UIView* GetArrowView(BubbleView* bubbleView) {
-    return GetViewOfClassWithIdentifier(
-        [UIView class], kBubbleViewArrowViewIdentifier, bubbleView);
-  }
 };
 
 // Test |sizeThatFits| given short text.
@@ -161,7 +125,7 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIButton* closeButton = GetCloseButton(bubble);
+  UIButton* closeButton = GetCloseButtonFromBubbleView(bubble);
   ASSERT_FALSE(closeButton);
 }
 
@@ -179,7 +143,7 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIButton* closeButton = GetCloseButton(bubble);
+  UIButton* closeButton = GetCloseButtonFromBubbleView(bubble);
   ASSERT_TRUE(closeButton);
   // Tests close button action.
   [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
@@ -193,7 +157,7 @@ TEST_F(BubbleViewTest, TitleIsNotPresent) {
                                               alignment:alignment_];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UILabel* titleLabel = GetTitleLabel(bubble);
+  UILabel* titleLabel = GetTitleLabelFromBubbleView(bubble);
   ASSERT_FALSE(titleLabel);
 }
 
@@ -210,7 +174,7 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UILabel* titleLabel = GetTitleLabel(bubble);
+  UILabel* titleLabel = GetTitleLabelFromBubbleView(bubble);
   ASSERT_TRUE(titleLabel);
   ASSERT_EQ(titleLabel.text, shortText_);
 }
@@ -228,7 +192,7 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UILabel* titleLabel = GetTitleLabel(bubble);
+  UILabel* titleLabel = GetTitleLabelFromBubbleView(bubble);
   ASSERT_TRUE(titleLabel);
   ASSERT_EQ(titleLabel.textAlignment, NSTextAlignmentNatural);
 }
@@ -240,7 +204,7 @@ TEST_F(BubbleViewTest, ImageIsNotPresent) {
                                               alignment:alignment_];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIImageView* imageView = GetImageView(bubble);
+  UIImageView* imageView = GetImageViewFromBubbleView(bubble);
   ASSERT_FALSE(imageView);
 }
 
@@ -258,7 +222,7 @@ TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIImageView* imageView = GetImageView(bubble);
+  UIImageView* imageView = GetImageViewFromBubbleView(bubble);
   ASSERT_TRUE(imageView);
   EXPECT_EQ(imageView.image, testImage);
 }
@@ -276,7 +240,7 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIButton* snoozeButton = GetSnoozeButton(bubble);
+  UIButton* snoozeButton = GetSnoozeButtonFromBubbleView(bubble);
   ASSERT_FALSE(snoozeButton);
 }
 
@@ -294,7 +258,7 @@ TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
-  UIButton* snoozeButton = GetSnoozeButton(bubble);
+  UIButton* snoozeButton = GetSnoozeButtonFromBubbleView(bubble);
   ASSERT_TRUE(snoozeButton);
   // Tests snooze button action.
   [snoozeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
@@ -310,7 +274,7 @@ TEST_F(BubbleViewTest, ArrowViewLeadingAligned) {
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   [bubble layoutIfNeeded];
-  UIView* arrowView = GetArrowView(bubble);
+  UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
   // The center of the arrow must be at a distance of |alignmentOffset_| to the
   // leading edge of the bubble.
@@ -326,7 +290,7 @@ TEST_F(BubbleViewTest, ArrowViewCenterAligned) {
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   [bubble layoutIfNeeded];
-  UIView* arrowView = GetArrowView(bubble);
+  UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
   // |alignmentOffset| should be ignored with BubbleAlignmentCenter.
   EXPECT_EQ(CGRectGetMidX(arrowView.frame), CGRectGetMidX(bubble.frame));
@@ -342,7 +306,7 @@ TEST_F(BubbleViewTest, ArrowViewTrailingAligned) {
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   [superview addSubview:bubble];
   [bubble layoutIfNeeded];
-  UIView* arrowView = GetArrowView(bubble);
+  UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
   // The center of the arrow must be at a distance of |alignmentOffset_| to the
   // trailing edge of the bubble.

@@ -36,6 +36,18 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
   BubbleAlignmentTrailing,
 };
 
+// Type of bubble views.
+typedef NS_ENUM(NSInteger, BubbleViewType) {
+  // Bubble view with text.
+  BubbleViewTypeDefault,
+  // Bubble view with text and close button.
+  BubbleViewTypeWithClose,
+  // Bubble view with title, text, image and close button.
+  BubbleViewTypeRich,
+  // Bubble view with title, text, image, close button and snooze button.
+  BubbleViewTypeRichWithSnooze,
+};
+
 // Delegate for actions happening in BubbleView.
 @protocol BubbleViewDelegate <NSObject>
 

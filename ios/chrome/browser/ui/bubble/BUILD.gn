@@ -42,8 +42,11 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "bubble_unittest_util.h",
+    "bubble_unittest_util.mm",
     "bubble_util_unittest.mm",
     "bubble_view_controller_presenter_unittest.mm",
+    "bubble_view_controller_unittest.mm",
     "bubble_view_unittest.mm",
   ]
   deps = [

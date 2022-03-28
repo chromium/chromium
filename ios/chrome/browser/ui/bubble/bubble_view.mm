@@ -430,7 +430,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   NSLayoutConstraint* alignLabelToTop =
       [label.topAnchor constraintEqualToAnchor:background.topAnchor
                                       constant:kBubbleVerticalPadding];
-  alignLabelToTop.priority = UILayoutPriorityDefaultHigh;
+  alignLabelToTop.priority = UILayoutPriorityDefaultLow;
   NSArray<NSLayoutConstraint*>* constraints = @[
     // Center the background view on the bubble view.
     [background.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],

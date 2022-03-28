@@ -4,11 +4,14 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,16 +36,22 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   BubbleViewControllerPresenterTest()
       : bubbleViewControllerPresenter_([[BubbleViewControllerPresenter alloc]
                  initWithText:@"Text"
+                        title:@"Title"
+                        image:[[UIImage alloc] init]
                arrowDirection:BubbleArrowDirectionUp
                     alignment:BubbleAlignmentCenter
-            dismissalCallback:^{
+                   bubbleType:BubbleViewTypeRichWithSnooze
+            dismissalCallback:^(
+                feature_engagement::Tracker::SnoozeAction action) {
               dismissalCallbackCount_++;
+              dismissalCallbackAction_ = action;
             }]),
         window_([[UIWindow alloc]
             initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)]),
         parentViewController_([[UIViewController alloc] init]),
         anchorPoint_(CGPointMake(250.0, 250.0)),
-        dismissalCallbackCount_(0) {
+        dismissalCallbackCount_(0),
+        dismissalCallbackAction_() {
     parentViewController_.view.frame = CGRectMake(0.0, 0.0, 500.0, 500.0);
     [window_ addSubview:parentViewController_.view];
   }
@@ -62,6 +71,8 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   // |dismissalCallback| has been invoked. Defaults to 0. Every time the
   // callback is invoked, |dismissalCallbackCount_| increments.
   int dismissalCallbackCount_;
+  absl::optional<feature_engagement::Tracker::SnoozeAction>
+      dismissalCallbackAction_;
 };
 
 // Tests that, after initialization, the internal BubbleViewController and
@@ -183,4 +194,44 @@ TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnDismissal) {
                          view:parentViewController_.view
                   anchorPoint:anchorPoint_];
   EXPECT_TRUE(bubbleViewControllerPresenter_.isUserEngaged);
+}
+
+// Tests that tapping the bubble view's close button invoke the dismissal
+// callback with a dismiss action.
+TEST_F(BubbleViewControllerPresenterTest,
+       BubbleViewCloseButtonCallDismissalCallback) {
+  [bubbleViewControllerPresenter_
+      presentInViewController:parentViewController_
+                         view:parentViewController_.view
+                  anchorPoint:anchorPoint_];
+  BubbleView* bubbleView = base::mac::ObjCCastStrict<BubbleView>(
+      bubbleViewControllerPresenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubbleView);
+  UIButton* closeButton = GetCloseButtonFromBubbleView(bubbleView);
+  EXPECT_TRUE(closeButton);
+  [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_TRUE(dismissalCallbackAction_);
+  EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::DISMISSED,
+            dismissalCallbackAction_);
+  EXPECT_EQ(1, dismissalCallbackCount_);
+}
+
+// Tests that tapping the bubble view's snooze button invoke the dismissal
+// callback with a snooze action.
+TEST_F(BubbleViewControllerPresenterTest,
+       BubbleViewSnoozeButtonCallDismissalCallback) {
+  [bubbleViewControllerPresenter_
+      presentInViewController:parentViewController_
+                         view:parentViewController_.view
+                  anchorPoint:anchorPoint_];
+  BubbleView* bubbleView = base::mac::ObjCCastStrict<BubbleView>(
+      bubbleViewControllerPresenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubbleView);
+  UIButton* snoozeButton = GetSnoozeButtonFromBubbleView(bubbleView);
+  EXPECT_TRUE(snoozeButton);
+  [snoozeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_TRUE(dismissalCallbackAction_);
+  EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::SNOOZED,
+            dismissalCallbackAction_);
+  EXPECT_EQ(1, dismissalCallbackCount_);
 }

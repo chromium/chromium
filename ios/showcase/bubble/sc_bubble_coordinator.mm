@@ -32,8 +32,12 @@
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   self.bubbleViewController =
       [[BubbleViewController alloc] initWithText:@"Lorem ipsum dolor"
+                                           title:nil
+                                           image:nil
                                   arrowDirection:direction
-                                       alignment:alignment];
+                                       alignment:alignment
+                                  bubbleViewType:BubbleViewTypeDefault
+                                        delegate:nil];
 
   // Mock UI element for the bubble to be anchored on. Set the x-coordinate of
   // the origin to be two-thirds of the container's width.
