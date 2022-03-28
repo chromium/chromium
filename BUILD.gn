@@ -347,6 +347,7 @@ group("gn_all") {
 
   if (is_android) {
     deps += [
+      "//android_webview/tools/js_sandbox_tests:webview_js_sandbox_test_app",
       "//base:base_junit_tests",
       "//base/android/jni_generator:jni_generator_tests",
       "//base/android/linker:chromium_android_linker",

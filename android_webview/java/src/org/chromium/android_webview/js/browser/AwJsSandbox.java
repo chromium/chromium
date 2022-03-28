@@ -8,12 +8,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.webkit.WebView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.js.common.IJsSandboxContext;
 import org.chromium.android_webview.js.common.IJsSandboxService;
-import org.chromium.android_webview.js.renderer.JsSandboxService0;
 import org.chromium.base.ContextUtils;
 
 /**
@@ -26,6 +29,8 @@ public class AwJsSandbox implements AutoCloseable {
     // variable in here that tracks the existing services we are connected to and
     // connect to a different one when creating a new object.
     private static final String TAG = "AwJsSandbox";
+    private static final String JS_SANDBOX_SERVICE_NAME =
+            "org.chromium.android_webview.js.renderer.JsSandboxService0";
 
     private IJsSandboxService mJsSandboxService;
     private ConnectionSetup mConnection;
@@ -65,13 +70,31 @@ public class AwJsSandbox implements AutoCloseable {
      * @param callback used to pass a callback function on creation of object.
      */
     public static void newConnectedInstance(ReadyCallback callback) {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), JsSandboxService0.class);
+        PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
+        ComponentName compName =
+                new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
+        int flag = Context.BIND_AUTO_CREATE | Context.BIND_EXTERNAL_SERVICE;
+        bindToServiceWithCallback(compName, flag, callback);
+    }
+
+    @VisibleForTesting
+    public static void newConnectedInstanceForTesting(ReadyCallback callback) {
+        ComponentName compName =
+                new ComponentName(ContextUtils.getApplicationContext(), JS_SANDBOX_SERVICE_NAME);
+        int flag = Context.BIND_AUTO_CREATE;
+        bindToServiceWithCallback(compName, flag, callback);
+    }
+
+    private static void bindToServiceWithCallback(
+            ComponentName compName, int flag, ReadyCallback callback) {
+        Intent intent = new Intent();
+        intent.setComponent(compName);
         ConnectionSetup connectionSetup = new ConnectionSetup(callback);
-        boolean isBinding = ContextUtils.getApplicationContext().bindService(
-                intent, connectionSetup, Context.BIND_AUTO_CREATE);
+        boolean isBinding =
+                ContextUtils.getApplicationContext().bindService(intent, connectionSetup, flag);
         if (!isBinding) {
             throw new RuntimeException(
-                    "System couldn't find the sandbox service or client doesn't have"
+                    "System couldn't find the sandbox service or client doesn't have "
                     + "permission to bind to it " + intent);
         }
     }
