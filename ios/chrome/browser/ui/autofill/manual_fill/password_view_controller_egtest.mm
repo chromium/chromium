@@ -531,6 +531,10 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   // Look for the alert.
   [[EarlGrey selectElementWithMatcher:NotSecureWebsiteAlert()]
       assertWithMatcher:grey_not(grey_nil())];
+
+  // Dismiss the alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that the password icon is not present when no passwords are available.

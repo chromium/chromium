@@ -512,6 +512,10 @@ BOOL WaitForKeyboardToAppear() {
 - (void)testCreditCardLocalNumberDoesntInjectOnHttp {
   [self verifyCreditCardButtonWithTitle:kLocalNumberObfuscated
                         doesInjectValue:@""];
+
+  // Dismiss the warning alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 }
 
 // Tests an alert is shown warning the user when trying to fill a credit card
@@ -522,6 +526,10 @@ BOOL WaitForKeyboardToAppear() {
   // Look for the alert.
   [[EarlGrey selectElementWithMatcher:NotSecureWebsiteAlert()]
       assertWithMatcher:grey_not(grey_nil())];
+
+  // Dismiss the alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that credit card cardholder is injected.
