@@ -81,7 +81,7 @@ PageInfoMainView::PageInfoMainView(
 
   AddChildView(CreateBubbleHeaderView())
       ->SetProperty(views::kMarginsKey,
-                    gfx::Insets(0, 0, hover_list_spacing, 0));
+                    gfx::Insets::TLBR(0, 0, hover_list_spacing, 0));
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
@@ -280,7 +280,7 @@ void PageInfoMainView::SetPermissionInfo(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   reset_button_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(controls_spacing, side_offset, controls_spacing, 0));
+      gfx::Insets::TLBR(controls_spacing, side_offset, controls_spacing, 0));
   reset_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON);
 
@@ -390,7 +390,8 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   const int icon_label_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  label->SetProperty(views::kMarginsKey, gfx::Insets(0, icon_label_spacing));
+  label->SetProperty(views::kMarginsKey,
+                     gfx::Insets::VH(0, icon_label_spacing));
   label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -413,7 +414,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   // Set views::kInternalPaddingKey for flex layout to account for internal
   // button padding when calculating margins.
   exit_button->SetProperty(views::kInternalPaddingKey,
-                           gfx::Insets(exit_button->GetInsets().top(), 0));
+                           gfx::Insets::VH(exit_button->GetInsets().top(), 0));
   content_view->AddChildView(std::move(exit_button));
 
   flex_layout->SetInteriorMargin(layout_provider->GetInsetsMetric(
@@ -426,7 +427,8 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       2;
   auto* separator = page_feature_info_view_->AddChildView(
       std::make_unique<views::Separator>());
-  separator->SetProperty(views::kMarginsKey, gfx::Insets(separator_spacing, 0));
+  separator->SetProperty(views::kMarginsKey,
+                         gfx::Insets::VH(separator_spacing, 0));
 
   PreferredSizeChanged();
 #endif
@@ -510,7 +512,7 @@ void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
+      ->SetInteriorMargin(gfx::Insets::VH(0, kIconColumnWidth));
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_PRIMARY,

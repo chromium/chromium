@@ -130,18 +130,16 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   // title label, so that we can use its preferred size.
   const int title_label_height = title_label_ptr->GetPreferredSize().height();
   icon_view_ptr->SetBorder(views::CreateEmptyBorder(
-      /*top=*/(title_label_height - kIconHeight) / 2,
-      /*left=*/0, /*bottom=*/0, /*right=*/0));
+      gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
   // TODO(crbug.com/873140): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the right
   //                         choice here, but INSETS_DIALOG_TITLE gives too much
   //                         padding. Create a new Harmony DistanceMetric?
   const int separator_horizontal_padding =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-  separator_ptr->SetBorder(views::CreateEmptyBorder(
-      /*top=*/(title_label_height - kSeparatorHeight) / 2,
-      /*left=*/separator_horizontal_padding, /*bottom=*/0,
-      /*right=*/separator_horizontal_padding));
+  separator_ptr->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      (title_label_height - kSeparatorHeight) / 2, separator_horizontal_padding,
+      0, separator_horizontal_padding)));
 }
 
 TitleWithIconAndSeparatorView::~TitleWithIconAndSeparatorView() {}

@@ -45,7 +45,7 @@ std::unique_ptr<views::Label> CreateIndexLabel() {
       ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
   index_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   index_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPadding / 2, 0)));
+      views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
   return index_label;
 }
 
@@ -55,7 +55,7 @@ std::unique_ptr<views::StyledLabel> CreateSuggestionLabel() {
   auto suggestion_label = std::make_unique<views::StyledLabel>();
   suggestion_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   suggestion_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPadding / 2, 0)));
+      views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
   suggestion_label->SetAutoColorReadabilityEnabled(false);
   // StyledLabel eats event, probably because it has to handle links.
   // Explicitly sets can_process_events_within_subtree to false for
@@ -66,7 +66,7 @@ std::unique_ptr<views::StyledLabel> CreateSuggestionLabel() {
 
 std::unique_ptr<views::ImageView> CreateDownIcon() {
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+  icon->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, kDownIconHorizontalPadding, 0, kDownIconHorizontalPadding)));
   return icon;
 }
@@ -80,7 +80,7 @@ std::unique_ptr<views::Label> CreateEnterLabel() {
                                    kAnnotationFontSize,
                                    gfx::Font::Weight::MEDIUM));
   label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kEnterKeyHorizontalPadding)));
+      views::CreateEmptyBorder(gfx::Insets::VH(0, kEnterKeyHorizontalPadding)));
   return label;
 }
 
@@ -150,8 +150,8 @@ std::unique_ptr<views::View> SuggestionView::CreateAnnotationContainer() {
 std::unique_ptr<views::View>
 SuggestionView::CreateDownAndEnterAnnotationLabel() {
   auto label = std::make_unique<views::View>();
-  label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kAnnotationPaddingLeft, 0, 0)));
+  label->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kAnnotationPaddingLeft, 0, 0)));
   label
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal))
@@ -165,8 +165,8 @@ SuggestionView::CreateDownAndEnterAnnotationLabel() {
 
 std::unique_ptr<views::View> SuggestionView::CreateTabAnnotationLabel() {
   auto label = std::make_unique<views::View>();
-  label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kAnnotationPaddingLeft, 0, 0)));
+  label->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kAnnotationPaddingLeft, 0, 0)));
   label->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   label->AddChildView(CreateTabLabel());

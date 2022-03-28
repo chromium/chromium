@@ -80,7 +80,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
               base::Unretained(this)),
           views::style::CONTEXT_DIALOG_BODY_TEXT));
   remember_setting_->SetProperty(views::kMarginsKey,
-                                 gfx::Insets(controls_spacing, 0, 0, 0));
+                                 gfx::Insets::TLBR(controls_spacing, 0, 0, 0));
 
   const int title_height = title_->GetPreferredSize().height();
   toggle_button_ = permission_info_container->AddChildView(
@@ -94,8 +94,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   // and label in the first row.
   const int margin =
       (title_height - GetLayoutConstant(PAGE_INFO_ICON_SIZE)) / 2;
-  icon_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
-  toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
+  icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
+  toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
   // TODO(crbug.com/1225563): Consider to use permission specific text.

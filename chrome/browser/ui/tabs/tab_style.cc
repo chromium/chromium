@@ -48,7 +48,7 @@ int TabStyle::GetDragHandleExtension(int height) {
 
 // static
 gfx::Insets TabStyle::GetTabInternalPadding() {
-  return gfx::Insets(0, GetCornerRadius());
+  return gfx::Insets::VH(0, GetCornerRadius());
 }
 
 // static

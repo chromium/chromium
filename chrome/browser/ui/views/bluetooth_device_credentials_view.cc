@@ -116,7 +116,8 @@ void BluetoothDeviceCredentialsView::InitControls(
 
   auto contents_wrapper = std::make_unique<views::View>();
   contents_wrapper->SetProperty(
-      views::kMarginsKey, gfx::Insets(vertical_spacing, horizontal_spacing));
+      views::kMarginsKey,
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 
   contents_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

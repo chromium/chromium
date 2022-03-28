@@ -24,7 +24,7 @@ class LinkLabelButton : public views::LabelButton {
  public:
   LinkLabelButton(PressedCallback callback, const std::u16string& text)
       : LabelButton(std::move(callback), text, views::style::CONTEXT_BUTTON) {
-    SetBorder(views::CreateEmptyBorder(0, 0, 0, 0));
+    SetBorder(views::CreateEmptyBorder(0));
     label()->SetTextStyle(views::style::STYLE_LINK);
   }
 

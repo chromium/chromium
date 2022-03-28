@@ -314,9 +314,9 @@ PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
   // If the feature AutofillVisualImprovementsForSuggestionUi is enabled, also
   // add a padding after the separator.
   // TODO(crbug.com/1274134): Clean up once improvements are launched.
-  SetBorder(views::CreateEmptyBorder(
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       GetContentsVerticalPadding(), 0,
-      UseImprovedSuggestionUi() ? GetContentsVerticalPadding() : 0, 0));
+      UseImprovedSuggestionUi() ? GetContentsVerticalPadding() : 0, 0)));
 }
 
 void PopupSeparator::OnThemeChanged() {
@@ -737,7 +737,7 @@ void AutofillPopupItemView::CreateContent() {
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, GetHorizontalMargin())));
+      gfx::Insets::VH(0, GetHorizontalMargin())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -773,12 +773,10 @@ void AutofillPopupItemView::CreateContent() {
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
         .SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
-        .SetDefault(views::kMarginsKey,
-                    gfx::Insets(
-                        /*vertical=*/0,
-                        /*horizontal=*/
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
 
     first_line_container->AddChildView(std::move(main_text_label));
     first_line_container->AddChildView(std::move(minor_text_label));
@@ -915,9 +913,9 @@ void AutofillPopupItemView::UpdateLayoutSize(views::BoxLayout* layout_manager,
   // In the case that there are three rows in total, adding extra padding to
   // avoid cramming.
   if (num_subtexts == 2) {
-    layout_manager->set_inside_border_insets(
-        gfx::Insets(kAutofillPopupAdditionalPadding, GetHorizontalMargin(),
-                    kAutofillPopupAdditionalPadding, GetHorizontalMargin()));
+    layout_manager->set_inside_border_insets(gfx::Insets::TLBR(
+        kAutofillPopupAdditionalPadding, GetHorizontalMargin(),
+        kAutofillPopupAdditionalPadding, GetHorizontalMargin()));
   }
 }
 
@@ -1130,7 +1128,7 @@ void AutofillPopupFooterView::CreateContent() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, GetHorizontalMargin())));
+          gfx::Insets::VH(0, GetHorizontalMargin())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -1180,18 +1178,17 @@ void AutofillPopupFooterView::CreateContent() {
 void AutofillPopupFooterView::RefreshStyle() {
   AutofillPopupItemView::RefreshStyle();
   SetBorder(views::CreateSolidSidedBorder(
-      // If the footer is the first item, do not draw a top border line that
-      // acts as a separator line.
-      // Also, if the feature to improve the suggestion UI is used, do not draw
-      // it.
-      // TODO(crbug.com/1274134): Clean up once improvements are launched.
-      /*top=*/(GetLineNumber() == 0 || UseImprovedSuggestionUi())
-          ? 0
-          : views::MenuConfig::instance().separator_thickness,
-      /*left=*/0,
-      /*bottom=*/0,
-      /*right=*/0,
-      /*color=*/popup_view()->GetSeparatorColor()));
+      gfx::Insets::TLBR(
+          // If the footer is the first item, do not draw a top border line that
+          // acts as a separator line.
+          // Also, if the feature to improve the suggestion UI is used, do not
+          // draw it.
+          // TODO(crbug.com/1274134): Clean up once improvements are launched.
+          (GetLineNumber() == 0 || UseImprovedSuggestionUi())
+              ? 0
+              : views::MenuConfig::instance().separator_thickness,
+          0, 0, 0),
+      popup_view()->GetSeparatorColor()));
 }
 
 int AutofillPopupFooterView::GetPrimaryTextStyle() {
@@ -1286,7 +1283,7 @@ void AutofillPopupWarningView::CreateContent() {
 
   SetUseDefaultFillLayout(true);
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_margin, horizontal_margin)));
+      gfx::Insets::VH(vertical_margin, horizontal_margin)));
 
   AddChildView(std::make_unique<SuggestionLabel>(
       controller->GetSuggestionMainTextAt(GetLineNumber()), popup_view()));
@@ -1584,8 +1581,8 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
             views::BoxLayout::Orientation::kVertical));
 
     // This adds a padding area on the top and the bottom of the popup content.
-    content_padding_wrapper->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
+    content_padding_wrapper->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(GetContentsVerticalPadding(), 0)));
 
     content_view = AddChildView(std::move(content_padding_wrapper));
 
@@ -1628,7 +1625,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       // Add the padding to the top unconditionally, but only add a padding to
       // the bottom if there are no footer items to follow.
       views::View* padding_wrapper = new views::View();
-      padding_wrapper->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      padding_wrapper->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
           GetContentsVerticalPadding(), 0,
           (footer_item_line_numbers.empty()) ? GetContentsVerticalPadding() : 0,
           0)));

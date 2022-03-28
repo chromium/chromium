@@ -132,8 +132,7 @@ SecurePaymentConfirmationNoCredsDialogView::CreateBodyView(
   no_matching_creds_view->SetAllowCharacterBreak(true);
   no_matching_creds_view->SetID(
       static_cast<int>(DialogViewID::NO_MATCHING_CREDS_TEXT));
-  no_matching_creds_view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kBodyExtraInset)));
+  no_matching_creds_view->SetBorder(views::CreateEmptyBorder(kBodyExtraInset));
 
   return no_matching_creds_view;
 }

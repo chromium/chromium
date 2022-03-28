@@ -110,8 +110,8 @@ class DseImageView : public views::ImageView {
                                 base::Unretained(this))) {
     SetFlipCanvasOnPaintForRTLUI(false);
     SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(0, views::LayoutProvider::Get()->GetDistanceMetric(
-                           views::DISTANCE_RELATED_CONTROL_VERTICAL))));
+        gfx::Insets::VH(0, views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_RELATED_CONTROL_VERTICAL))));
     UpdateIconImage();
   }
   ~DseImageView() override = default;

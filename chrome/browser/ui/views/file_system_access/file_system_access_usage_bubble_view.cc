@@ -137,7 +137,7 @@ class CollapsibleListView : public views::View {
     const views::LayoutProvider* provider = ChromeLayoutProvider::Get();
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0),
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(0),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
     auto label_container = std::make_unique<views::View>();
@@ -146,7 +146,7 @@ class CollapsibleListView : public views::View {
     auto* label_layout =
         label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(/*vertical=*/0, indent),
+            gfx::Insets::VH(0, indent),
             provider->GetDistanceMetric(
                 views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
     std::u16string label_text;
@@ -386,15 +386,15 @@ void FileSystemAccessUsageBubbleView::Init() {
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, dialog_insets.left(), 0, dialog_insets.right()),
+      gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right()),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  set_margins(
-      gfx::Insets(provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
-                  0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                  0));
+  set_margins(gfx::Insets::TLBR(
+      provider->GetDistanceMetric(
+          views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
+      0,
+      provider->GetDistanceMetric(
+          views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+      0));
 
   base::FilePath embedded_path;
   int heading_message_id =

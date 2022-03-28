@@ -555,7 +555,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   EXPECT_EQ("13,10,13,10", SystemInfoDisplayInsetsToString(result[1].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
-                                         gfx::Insets(20, 30, 50, 60));
+                                         gfx::Insets::TLBR(20, 30, 50, 60));
   result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());
@@ -573,7 +573,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   EXPECT_EQ("9,8,9,8", SystemInfoDisplayInsetsToString(result[0].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
-                                         gfx::Insets(10, 20, 30, 40));
+                                         gfx::Insets::TLBR(10, 20, 30, 40));
   result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());

@@ -77,8 +77,10 @@ constexpr int kHoverCardTitleMaxLines = 2;
 constexpr int kHorizontalMargin = 18;
 constexpr int kVerticalMargin = 10;
 constexpr int kFootnoteVerticalMargin = 8;
-constexpr gfx::Insets kTitleMargins(kVerticalMargin, kHorizontalMargin);
-constexpr gfx::Insets kAlertMargins(kFootnoteVerticalMargin, kHorizontalMargin);
+constexpr auto kTitleMargins =
+    gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
+constexpr auto kAlertMargins =
+    gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
 
 bool CustomShadowsSupported() {
 #if BUILDFLAG(IS_WIN)
@@ -808,7 +810,8 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     title_margins.set_bottom(0);
     domain_label_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(0, kHorizontalMargin, kVerticalMargin, kHorizontalMargin));
+        gfx::Insets::TLBR(0, kHorizontalMargin, kVerticalMargin,
+                          kHorizontalMargin));
   }
 
   title_label_->SetProperty(views::kMarginsKey, title_margins);
@@ -928,7 +931,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
             color_provider->GetColor(ui::kColorBubbleFooterBackground)));
         alert_label->SetBorder(views::CreatePaddedBorder(
             views::CreateSolidSidedBorder(
-                0, 0, 1, 0,
+                gfx::Insets::TLBR(0, 0, 1, 0),
                 color_provider->GetColor(ui::kColorBubbleFooterBorder)),
             kAlertMargins));
       }

@@ -37,16 +37,16 @@ namespace {
 constexpr int kDialogCornerRadius = 12;
 
 // The dialog insets.
-constexpr gfx::Insets kMarginInsets(20, 0, 20, 0);
+constexpr auto kMarginInsets = gfx::Insets::TLBR(20, 0, 20, 0);
 
 // The insets in the upper part of the dialog.
-constexpr gfx::Insets kTopPanelInsets(0, 24, 16, 24);
+constexpr auto kTopPanelInsets = gfx::Insets::TLBR(0, 24, 16, 24);
 
 // The insests in the container holding the list of confidential contents.
-constexpr gfx::Insets kConfidentialListInsets(8, 24, 8, 24);
+constexpr auto kConfidentialListInsets = gfx::Insets::TLBR(8, 24, 8, 24);
 
 // The insets of a single confidential content row.
-constexpr gfx::Insets kConfidentialRowInsets(6, 0, 6, 0);
+constexpr auto kConfidentialRowInsets = gfx::Insets::TLBR(6, 0, 6, 0);
 
 // The spacing between the elements in a box layout.
 constexpr int kBetweenChildSpacing = 16;

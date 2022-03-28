@@ -61,11 +61,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   views::FlexLayout* const layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetInteriorMargin(gfx::Insets(0, WebAppFrameRightMargin()))
+      .SetInteriorMargin(gfx::Insets::VH(0, WebAppFrameRightMargin()))
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(0,
-                      HorizontalPaddingBetweenPageActionsAndAppMenuButtons()))
+          gfx::Insets::VH(
+              0, HorizontalPaddingBetweenPageActionsAndAppMenuButtons()))
       .SetCollapseMargins(true)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)

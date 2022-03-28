@@ -27,9 +27,9 @@
 
 namespace {
 
-constexpr gfx::Insets kInsets{6, 15};
+constexpr auto kInsets = gfx::Insets::VH(6, 15);
 constexpr gfx::Size kSize{400, 30};
-constexpr gfx::Insets kBorderInsets{4, 8};
+constexpr auto kBorderInsets = gfx::Insets::VH(4, 8);
 
 }  // anonymous namespace
 

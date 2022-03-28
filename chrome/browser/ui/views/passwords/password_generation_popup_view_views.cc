@@ -214,9 +214,9 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
   password_view_ = new GeneratedPasswordBox();
-  password_view_->SetBorder(
-      views::CreateEmptyBorder(kVerticalPadding, kHorizontalMargin,
-                               kVerticalPadding, kHorizontalMargin));
+  password_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
+                        kHorizontalMargin)));
   password_view_->Init(controller_);
   AddChildView(password_view_.get());
   PasswordSelectionUpdated();
@@ -226,9 +226,9 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
                                  views::style::STYLE_SECONDARY);
   help_label_->SetMultiLine(true);
   help_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  help_label_->SetBorder(
-      views::CreateEmptyBorder(kVerticalPadding, kHorizontalMargin,
-                               kVerticalPadding, kHorizontalMargin));
+  help_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
+                        kHorizontalMargin)));
   AddChildView(help_label_.get());
 }
 

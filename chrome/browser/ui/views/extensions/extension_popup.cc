@@ -110,7 +110,7 @@ void ExtensionPopup::AddedToWidget() {
   const bool contents_has_rounded_corners =
       extension_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(radius));
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(contents_has_rounded_corners ? 0 : radius, 0)));
+      gfx::Insets::VH(contents_has_rounded_corners ? 0 : radius, 0)));
 }
 
 void ExtensionPopup::OnWidgetActivationChanged(views::Widget* widget,

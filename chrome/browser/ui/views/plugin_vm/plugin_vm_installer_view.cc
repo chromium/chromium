@@ -50,7 +50,7 @@ namespace {
 
 PluginVmInstallerView* g_plugin_vm_installer_view = nullptr;
 
-constexpr gfx::Insets kButtonRowInsets(0, 64, 32, 64);
+constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
 constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
 
@@ -106,7 +106,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
           plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)) {
   VLOG(2) << "PluginVmInstallerView created";
   // Layout constants from the spec.
-  gfx::Insets kDialogInsets(60, 64, 0, 64);
+  constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
   constexpr gfx::Size kLogoImageSize(32, 32);
   constexpr int kTitleFontSize = 28;
   const gfx::FontList kTitleFont({"Google Sans"}, gfx::Font::NORMAL,
@@ -153,7 +153,8 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
 
   title_label_ = new views::Label(GetTitle(), {kTitleFont});
   title_label_->SetProperty(
-      views::kMarginsKey, gfx::Insets(kTitleHeight - kTitleFontSize, 0, 0, 0));
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kTitleHeight - kTitleFontSize, 0, 0, 0));
   title_label_->SetMultiLine(false);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   upper_container_view->AddChildView(title_label_);
@@ -161,7 +162,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   views::View* message_container_view = new views::View();
   message_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kMessageHeight - kMessageFontSize, 0, 0, 0)));
+      gfx::Insets::TLBR(kMessageHeight - kMessageFontSize, 0, 0, 0)));
   upper_container_view->AddChildView(message_container_view);
 
   message_label_ = new views::Label(GetMessage(), {kMessageFont});
@@ -178,15 +179,16 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   progress_bar_ = new views::ProgressBar(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
+      gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
   upper_container_view->AddChildView(progress_bar_);
 
   download_progress_message_label_ =
       new views::Label(std::u16string(), {kDownloadProgressMessageFont});
   download_progress_message_label_->SetProperty(
-      views::kMarginsKey, gfx::Insets(kDownloadProgressMessageHeight -
-                                          kDownloadProgressMessageFontSize,
-                                      0, 0, 0));
+      views::kMarginsKey,
+      gfx::Insets::TLBR(
+          kDownloadProgressMessageHeight - kDownloadProgressMessageFontSize, 0,
+          0, 0));
   download_progress_message_label_->SetMultiLine(false);
   download_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   upper_container_view->AddChildView(download_progress_message_label_);
@@ -607,7 +609,7 @@ void PluginVmInstallerView::SetBigImage() {
   auto setImage = [this](int image_id, gfx::Size size, int bottom_inset) {
     big_image_->SetImageSize(size);
     lower_container_layout_->set_inside_border_insets(
-        gfx::Insets(0, 0, bottom_inset, 0));
+        gfx::Insets::TLBR(0, 0, bottom_inset, 0));
     big_image_->SetImage(
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
   };

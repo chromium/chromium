@@ -30,7 +30,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
 
   // We don't want the bubble to be flush with either the side or top of the
   // Mac native menu, because it looks funny.
-  constexpr gfx::Insets kMacMenuInsets(10, -5);
+  constexpr auto kMacMenuInsets = gfx::Insets::VH(10, -5);
   anchor_rect.Inset(kMacMenuInsets);
 
   return base::WrapUnique(new HelpBubbleViews(

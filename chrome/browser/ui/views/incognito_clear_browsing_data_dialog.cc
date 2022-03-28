@@ -82,7 +82,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetDefault(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+  layout->SetDefault(views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0));
   layout->SetCollapseMargins(true);
   layout->SetIgnoreDefaultMainAxisMargins(true);
 

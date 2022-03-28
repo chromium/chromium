@@ -140,20 +140,20 @@ FindBarView::FindBarView(FindBarHost* host) {
   // that will add up to the right spacing amounts.
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const gfx::Insets horizontal_margin(
+  const auto horizontal_margin = gfx::Insets::VH(
       0,
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL) / 2);
   const gfx::Insets vector_button =
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
-  const gfx::Insets vector_button_horizontal_margin(
-      0, horizontal_margin.left() - vector_button.left(), 0,
-      horizontal_margin.right() - vector_button.right());
-  const gfx::Insets toast_control_vertical_margin(
+  const auto vector_button_horizontal_margin =
+      gfx::Insets::TLBR(0, horizontal_margin.left() - vector_button.left(), 0,
+                        horizontal_margin.right() - vector_button.right());
+  const auto toast_control_vertical_margin = gfx::Insets::VH(
       provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL), 0);
-  const gfx::Insets toast_label_vertical_margin(
+  const auto toast_label_vertical_margin = gfx::Insets::VH(
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL), 0);
-  const gfx::Insets image_button_margins(toast_control_vertical_margin +
-                                         vector_button_horizontal_margin);
+  const auto image_button_margins =
+      toast_control_vertical_margin + vector_button_horizontal_margin;
 
   views::Builder<FindBarView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)

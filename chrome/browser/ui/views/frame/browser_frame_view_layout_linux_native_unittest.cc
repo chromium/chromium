@@ -21,11 +21,11 @@ constexpr gfx::Size kCloseButtonSize = gfx::Size(2, 3);
 constexpr gfx::Size kMaximizeButtonSize = gfx::Size(5, 7);
 constexpr gfx::Size kMinimizeButtonSize = gfx::Size(11, 13);
 
-constexpr gfx::Insets kCloseButtonMargin = gfx::Insets(17, 19, 23, 29);
-constexpr gfx::Insets kMaximizeButtonMargin = gfx::Insets(31, 37, 41, 43);
-constexpr gfx::Insets kMinimizeButtonMargin = gfx::Insets(47, 53, 59, 61);
+constexpr gfx::Insets kCloseButtonMargin = gfx::Insets::TLBR(17, 19, 23, 29);
+constexpr gfx::Insets kMaximizeButtonMargin = gfx::Insets::TLBR(31, 37, 41, 43);
+constexpr gfx::Insets kMinimizeButtonMargin = gfx::Insets::TLBR(47, 53, 59, 61);
 
-constexpr gfx::Insets kTopAreaSpacing = gfx::Insets(67, 71, 73, 79);
+constexpr gfx::Insets kTopAreaSpacing = gfx::Insets::TLBR(67, 71, 73, 79);
 
 constexpr int kInterNavButtonSpacing = 83;
 

@@ -31,7 +31,7 @@ SiteSettingsExpandButton::SiteSettingsExpandButton(PressedCallback callback)
       .SetAccessibleName(l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_TITLE))
       .SetBorder(views::CreateEmptyBorder(
-          gfx::Insets(vertical_spacing, horizontal_spacing)))
+          gfx::Insets::VH(vertical_spacing, horizontal_spacing)))
       .AddChild(
           views::Builder<views::StyledLabel>()
               .SetText(l10n_util::GetStringUTF16(

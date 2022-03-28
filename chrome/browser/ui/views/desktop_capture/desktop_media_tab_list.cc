@@ -257,7 +257,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   full_panel->AddChildView(std::move(preview_sidebar));
 
   full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(15, 0, 0, 0),
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::TLBR(15, 0, 0, 0),
       /*between_child_spacing=*/12, true));
 
   auto container = std::make_unique<View>();

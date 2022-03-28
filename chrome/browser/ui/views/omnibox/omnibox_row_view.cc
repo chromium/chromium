@@ -116,8 +116,8 @@ class OmniboxRowView::HeaderView : public views::View {
                                 assumed_match_cell_icon_width) /
                                    2;
 
-    return gfx::Insets(vertical, left_inset, vertical,
-                       OmniboxMatchCellView::kMarginRight);
+    return gfx::Insets::TLBR(vertical, left_inset, vertical,
+                             OmniboxMatchCellView::kMarginRight);
   }
   bool OnMousePressed(const ui::MouseEvent& event) override {
     // Needed to receive the OnMouseReleased event.
@@ -360,7 +360,7 @@ gfx::Insets OmniboxRowView::GetInsets() const {
   // A visible header means this is the start of a new section. Give the section
   // that just ended an extra 4dp of padding. https://crbug.com/1076646
   if (line_ != 0 && header_view_ && header_view_->GetVisible())
-    return gfx::Insets(4, 0, 0, 0);
+    return gfx::Insets::TLBR(4, 0, 0, 0);
 
   return gfx::Insets();
 }

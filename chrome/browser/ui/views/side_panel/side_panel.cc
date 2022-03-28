@@ -40,12 +40,11 @@ constexpr int kOverlapFromToolbar = 4;
 // On the top side, background is drawn on top of the top-content separator and
 // some units of background inside the toolbar (or bookmarks bar) itself.
 // Subtract both of those to not get visually-excessive padding.
-constexpr gfx::Insets kBorderInsets(kBorderThickness -
-                                        views::Separator::kThickness -
-                                        kOverlapFromToolbar,
-                                    kBorderThickness,
-                                    kBorderThickness,
-                                    kBorderThickness);
+constexpr auto kBorderInsets = gfx::Insets::TLBR(
+    kBorderThickness - views::Separator::kThickness - kOverlapFromToolbar,
+    kBorderThickness,
+    kBorderThickness,
+    kBorderThickness);
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content.
@@ -114,7 +113,8 @@ class SidePanelBorder : public views::Border {
     // This additional inset matches the growth inside BorderView::Layout()
     // below to let us paint on top of the toolbar separator. This additional
     // inset is outside the SidePanel itself, but not outside the BorderView.
-    return kBorderInsets + gfx::Insets(views::Separator::kThickness, 0, 0, 0);
+    return kBorderInsets +
+           gfx::Insets::TLBR(views::Separator::kThickness, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
@@ -137,7 +137,7 @@ class BorderView : public views::View {
     // Let BorderView grow slightly taller so that it overlaps the divider into
     // the toolbar or bookmarks bar above it.
     gfx::Rect bounds = parent()->GetLocalBounds();
-    bounds.Inset(gfx::Insets(-views::Separator::kThickness, 0, 0, 0));
+    bounds.Inset(gfx::Insets::TLBR(-views::Separator::kThickness, 0, 0, 0));
 
     SetBoundsRect(bounds);
   }
@@ -160,7 +160,7 @@ SidePanel::SidePanel(BrowserView* browser_view)
   constexpr int kDefaultWidth = 320;
   SetPanelWidth(kDefaultWidth + kBorderInsets.width());
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
+  SetBorder(views::CreateEmptyBorder(kBorderInsets));
 
   AddObserver(this);
 }

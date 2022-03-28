@@ -78,7 +78,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator() {
                                     DISTANCE_CONTENT_LIST_VERTICAL_MULTI) /
                                 2;
   auto separator = std::make_unique<views::Separator>();
-  separator->SetProperty(views::kMarginsKey, gfx::Insets(separator_spacing, 0));
+  separator->SetProperty(views::kMarginsKey,
+                         gfx::Insets::VH(separator_spacing, 0));
   return separator;
 }
 
@@ -90,7 +91,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateLabelWrapper() {
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, icon_label_spacing));
+                             gfx::Insets::VH(0, icon_label_spacing));
   label_wrapper->SetProperty(views::kCrossAxisAlignmentKey,
                              views::LayoutAlignment::kStretch);
   label_wrapper->SetProperty(
@@ -174,7 +175,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(
-          gfx::Insets(0, side_margin, bottom_margin, side_margin));
+          gfx::Insets::TLBR(0, side_margin, bottom_margin, side_margin));
   header->SetProperty(views::kFlexBehaviorKey, stretch_specification);
   wrapper->AddChildView(CreateSeparator());
 

@@ -12,7 +12,7 @@ gfx::Rect TabSlotView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = View::GetAnchorBoundsInScreen();
 
   // Slightly inset anchor bounds to let bubbles hug the tabs more closely.
-  bounds.Inset(gfx::Insets(2, 0));
+  bounds.Inset(gfx::Insets::VH(2, 0));
   return bounds;
 }
 

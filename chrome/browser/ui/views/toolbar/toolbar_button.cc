@@ -376,8 +376,8 @@ void ToolbarButton::SetLabelSideSpacing(int spacing) {
     // Add spacing to the opposing side.
     label_insets =
         gfx::MaybeFlipForRTL(GetHorizontalAlignment()) == gfx::ALIGN_RIGHT
-            ? gfx::Insets(0, spacing, 0, 0)
-            : gfx::Insets(0, 0, 0, spacing);
+            ? gfx::Insets::TLBR(0, spacing, 0, 0)
+            : gfx::Insets::TLBR(0, 0, 0, spacing);
   }
   if (!label()->GetBorder() ||
       label_insets != label()->GetBorder()->GetInsets()) {
@@ -453,7 +453,7 @@ gfx::Rect ToolbarButton::GetAnchorBoundsInScreen() const {
   // not (leading_margin_ cannot be used as it can be 0 in fullscreen on Touch).
   // When this is implemented, use 0 as a replacement for leading_margin_ in
   // fullscreen only. Always keep the rest.
-  insets.Set(insets.top(), 0, insets.bottom(), 0);
+  insets.set_left_right(0, 0);
   bounds.Inset(insets);
   return bounds;
 }

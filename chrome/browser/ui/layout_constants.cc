@@ -100,7 +100,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (inset) {
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
-      return touch_ui ? gfx::Insets(5, 10) : gfx::Insets(4, 8);
+      return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
 
     case TOOLBAR_BUTTON:
       return gfx::Insets(touch_ui ? 12 : 6);
@@ -112,7 +112,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     }
 
     case TOOLBAR_INTERIOR_MARGIN:
-      return touch_ui ? gfx::Insets() : gfx::Insets(4, 8);
+      return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
 
     case DOWNLOAD_ICON:
       return gfx::Insets(4);

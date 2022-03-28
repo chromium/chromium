@@ -867,61 +867,61 @@ void TryChromeDialog::Context::TaskbarCalculator::CreateRightArrowRegion(
 // static
 constexpr TryChromeDialog::Context::TaskbarCalculator::PopupProperties
     TryChromeDialog::Context::TaskbarCalculator::kTopTaskbarProperties_ = {
-        {0, 0, kArrowInset, 0},
+        gfx::Insets::TLBR(0, 0, kArrowInset, 0),
         {kArrowWidth, kArrowHeight},
         {0.0f, 1.0f} /* Translate down */,
         &CreateTopArrowRegion,
         {// ArrowBorder::Properties
-         gfx::Insets(kArrowHeight - kArrowInset, 0, 0, 0),
-         gfx::Insets(0,
-                     kTryChromeBorderThickness,
-                     0,
-                     kTryChromeBorderThickness),
+         gfx::Insets::TLBR(kArrowHeight - kArrowInset, 0, 0, 0),
+         gfx::Insets::TLBR(0,
+                           kTryChromeBorderThickness,
+                           0,
+                           kTryChromeBorderThickness),
          ArrowBorder::ArrowRotation::k180Degrees}};
 
 // static
 constexpr TryChromeDialog::Context::TaskbarCalculator::PopupProperties
     TryChromeDialog::Context::TaskbarCalculator::kLeftTaskbarProperties_{
-        {0, 0, 0, kArrowInset},
+        gfx::Insets::TLBR(0, 0, 0, kArrowInset),
         {kArrowHeight, kArrowWidth},
         {1.0f, 0.0f} /* Translate right */,
         &CreateLeftArrowRegion,
         {// ArrowBorder::Properties
-         gfx::Insets(0, kArrowHeight - kArrowInset, 0, 0),
-         gfx::Insets(kTryChromeBorderThickness,
-                     0,
-                     kTryChromeBorderThickness,
-                     0),
+         gfx::Insets::TLBR(0, kArrowHeight - kArrowInset, 0, 0),
+         gfx::Insets::TLBR(kTryChromeBorderThickness,
+                           0,
+                           kTryChromeBorderThickness,
+                           0),
          ArrowBorder::ArrowRotation::k90Degrees}};
 
 // static
 constexpr TryChromeDialog::Context::TaskbarCalculator::PopupProperties
     TryChromeDialog::Context::TaskbarCalculator::kBottomTaskbarProperties_{
-        {kArrowInset, 0, 0, 0},
+        gfx::Insets::TLBR(kArrowInset, 0, 0, 0),
         {kArrowWidth, kArrowHeight},
         {0.0f, -1.0f} /* Translate up */,
         &CreateBottomArrowRegion,
         {// ArrowBorder::Properties
-         gfx::Insets(0, 0, kArrowHeight - kArrowInset, 0),
-         gfx::Insets(0,
-                     kTryChromeBorderThickness,
-                     0,
-                     kTryChromeBorderThickness),
+         gfx::Insets::TLBR(0, 0, kArrowHeight - kArrowInset, 0),
+         gfx::Insets::TLBR(0,
+                           kTryChromeBorderThickness,
+                           0,
+                           kTryChromeBorderThickness),
          ArrowBorder::ArrowRotation::kNone}};
 
 // static
 constexpr TryChromeDialog::Context::TaskbarCalculator::PopupProperties
     TryChromeDialog::Context::TaskbarCalculator::kRightTaskbarProperties_{
-        {0, kArrowInset, 0, 0},
+        gfx::Insets::TLBR(0, kArrowInset, 0, 0),
         {kArrowHeight, kArrowWidth},
         {-1.0f, 0.0f} /* Translate left */,
         &CreateRightArrowRegion,
         {// ArrowBorder::Properties
-         gfx::Insets(0, 0, 0, kArrowHeight - kArrowInset),
-         gfx::Insets(kTryChromeBorderThickness,
-                     0,
-                     kTryChromeBorderThickness,
-                     0),
+         gfx::Insets::TLBR(0, 0, 0, kArrowHeight - kArrowInset),
+         gfx::Insets::TLBR(kTryChromeBorderThickness,
+                           0,
+                           kTryChromeBorderThickness,
+                           0),
          ArrowBorder::ArrowRotation::k270Degrees}};
 
 // TryChromeDialog::ModalShowDelegate ------------------------------------------
@@ -1189,7 +1189,7 @@ void TryChromeDialog::OnContextInitialized() {
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetProperty(
                 views::kMarginsKey,
-                gfx::Insets(
+                gfx::Insets::TLBR(
                     0, kLogoPadding - kTryChromeBorderThickness + logo_padding,
                     0, 0)));
   }

@@ -140,12 +140,10 @@ void VirtualCardManualFallbackBubbleViews::Init() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets(
-                      /*vertical=*/0,
-                      /*horizontal=*/
-                      layout_provider->GetDistanceMetric(
-                          views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationMonth));
   expiry_row->AddChildView(std::make_unique<views::Label>(u"/"));

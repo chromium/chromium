@@ -108,7 +108,7 @@ TEST_F(ToolbarButtonViewsTest, NoDefaultLayoutInsets) {
 
 TEST_F(ToolbarButtonViewsTest, SetLayoutInsets) {
   ToolbarButton button;
-  gfx::Insets new_insets(2, 3, 4, 5);
+  auto new_insets = gfx::Insets::TLBR(2, 3, 4, 5);
   button.SetLayoutInsets(new_insets);
   EXPECT_EQ(new_insets, button.GetLayoutInsets());
   EXPECT_EQ(new_insets, button.GetInsets());

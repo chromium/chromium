@@ -47,9 +47,9 @@ using media_router::mojom::MediaRouteProviderId;
 namespace {
 
 // Constants for the MediaItemUIDeviceSelectorView
-constexpr gfx::Insets kExpandButtonStripInsets{6, 15};
+constexpr auto kExpandButtonStripInsets = gfx::Insets::VH(6, 15);
 constexpr gfx::Size kExpandButtonStripSize{400, 30};
-constexpr gfx::Insets kExpandButtonBorderInsets{4, 8};
+constexpr auto kExpandButtonBorderInsets = gfx::Insets::VH(4, 8);
 
 // Constant for DropdownButton
 const int kDropdownButtonIconSize = 15;

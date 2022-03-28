@@ -217,13 +217,14 @@ void SharingDialogView::Init() {
     case SharingDialogType::kDialogWithoutDevicesWithApp:
     case SharingDialogType::kDialogWithDevicesMaybeApps:
       // Spread buttons across the whole dialog width.
-      insets = gfx::Insets(kSharingDialogSpacing, 0, kSharingDialogSpacing, 0);
+      insets = gfx::Insets::VH(kSharingDialogSpacing, 0);
       InitListView();
       break;
   }
 
-  set_margins(gfx::Insets(insets.top(), 0, insets.bottom(), 0));
-  SetBorder(views::CreateEmptyBorder(0, insets.left(), 0, insets.right()));
+  set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
 
   if (GetWidget())
     SizeToContents();
@@ -232,10 +233,10 @@ void SharingDialogView::Init() {
 void SharingDialogView::InitListView() {
   constexpr int kPrimaryIconSize = 20;
   const gfx::Insets device_border =
-      gfx::Insets(kSharingDialogSpacing, kSharingDialogSpacing * 2,
-                  kSharingDialogSpacing, 0);
+      gfx::Insets::TLBR(kSharingDialogSpacing, kSharingDialogSpacing * 2,
+                        kSharingDialogSpacing, 0);
   // Apps need more padding at the top and bottom as they only have one line.
-  const gfx::Insets app_border = device_border + gfx::Insets(2, 0, 2, 0);
+  const gfx::Insets app_border = device_border + gfx::Insets::VH(2, 0);
 
   auto button_list = std::make_unique<views::View>();
   button_list->SetLayoutManager(std::make_unique<views::BoxLayout>(

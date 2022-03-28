@@ -87,10 +87,8 @@ std::unique_ptr<views::View> CreateRow() {
       .SetCollapseMargins(true)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/0,
-              /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   return row;
 }
 
@@ -344,10 +342,9 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetCollapseMargins(true)
         .SetDefault(
             views::kMarginsKey,
-            gfx::Insets(
-                /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                    DISTANCE_CONTROL_LIST_VERTICAL),
-                /*horizontal=*/0));
+            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_CONTROL_LIST_VERTICAL),
+                            0));
 
     if (destination_dropdown)
       AddChildView(std::move(destination_dropdown));
@@ -392,10 +389,9 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetCollapseMargins(true)
         .SetDefault(
             views::kMarginsKey,
-            gfx::Insets(
-                /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                    DISTANCE_CONTROL_LIST_VERTICAL),
-                /*horizontal=*/0));
+            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_CONTROL_LIST_VERTICAL),
+                            0));
 
     username_dropdown_ = username_dropdown.get();
     password_dropdown_ = password_dropdown.get();

@@ -44,8 +44,8 @@ namespace {
 constexpr int kMarginDip = 10;
 constexpr int kLineHeightDip = 20;
 constexpr int kContentSpacingDip = 8;
-constexpr gfx::Insets kMainViewInsets = {16, 12, 16, 16};
-constexpr gfx::Insets kContentInsets = {0, 12, 0, 0};
+constexpr auto kMainViewInsets = gfx::Insets::TLBR(16, 12, 16, 16);
+constexpr auto kContentInsets = gfx::Insets::TLBR(0, 12, 0, 0);
 
 // Google icon.
 constexpr int kGoogleIconSizeDip = 16;
@@ -56,13 +56,13 @@ constexpr int kDescFontSizeDelta = 1;
 
 // Buttons common.
 constexpr int kButtonSpacingDip = 8;
-constexpr gfx::Insets kButtonBarInsets = {8, 0, 0, 0};
-constexpr gfx::Insets kButtonInsets = {6, 16, 6, 16};
+constexpr auto kButtonBarInsets = gfx::Insets::TLBR(8, 0, 0, 0);
+constexpr auto kButtonInsets = gfx::Insets::TLBR(6, 16, 6, 16);
 constexpr int kButtonFontSizeDelta = 1;
 
 // Compact buttons layout.
 constexpr int kCompactButtonLayoutThreshold = 200;
-constexpr gfx::Insets kCompactButtonInsets = {6, 12, 6, 12};
+constexpr auto kCompactButtonInsets = gfx::Insets::TLBR(6, 12, 6, 12);
 constexpr int kCompactButtonFontSizeDelta = 0;
 
 int GetActualLabelWidth(int anchor_view_width) {
@@ -233,7 +233,7 @@ void UserConsentView::InitLayout() {
   auto* google_icon =
       main_view_->AddChildView(std::make_unique<views::ImageView>());
   google_icon->SetBorder(views::CreateEmptyBorder(
-      (kLineHeightDip - kGoogleIconSizeDip) / 2, 0, 0, 0));
+      gfx::Insets::TLBR((kLineHeightDip - kGoogleIconSizeDip) / 2, 0, 0, 0)));
   google_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
                                               kGoogleIconSizeDip,
                                               gfx::kPlaceholderColor));
@@ -252,9 +252,8 @@ void UserConsentView::InitContent() {
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetInteriorMargin(kContentInsets)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0,
-                                                  /*bottom=*/kContentSpacingDip,
-                                                  /*right=*/0));
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, kContentSpacingDip, 0));
 
   // Title.
   title_ =
@@ -289,8 +288,7 @@ void UserConsentView::InitButtonBar() {
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
-                              /*right=*/kButtonSpacingDip));
+                  gfx::Insets::TLBR(0, 0, 0, kButtonSpacingDip));
 
   // No thanks button.
   auto no_thanks_button = std::make_unique<CustomizedLabelButton>(

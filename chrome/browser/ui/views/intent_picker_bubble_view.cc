@@ -78,7 +78,7 @@ class IntentPickerLabelButton : public views::LabelButton {
     if (!icon_model.IsEmpty())
       SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
     auto* provider = ChromeLayoutProvider::Get();
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
         provider->GetInsetsMetric(views::INSETS_DIALOG).left())));
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -382,9 +382,9 @@ void IntentPickerBubbleView::Initialize() {
           : views::DialogContentType::kControl);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(insets.top(), 0, insets.bottom(), 0),
+      gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-  insets = gfx::Insets(0, insets.left(), 0, insets.right());
+  insets = gfx::Insets::TLBR(0, insets.left(), 0, insets.right());
 
   scroll_view_ = AddChildView(std::move(scroll_view));
 

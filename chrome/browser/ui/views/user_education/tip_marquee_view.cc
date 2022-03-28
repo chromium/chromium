@@ -89,7 +89,7 @@ class TestTipMarqueeViewLearnMoreBubble
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal);
     layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-    layout->SetInteriorMargin(gfx::Insets(10, 0, 0, 0));
+    layout->SetInteriorMargin(gfx::Insets::TLBR(10, 0, 0, 0));
     views::View* const placeholder_image =
         AddChildView(std::make_unique<views::View>());
     placeholder_image->SetPreferredSize(gfx::Size(150, 175));
@@ -103,12 +103,12 @@ class TestTipMarqueeViewLearnMoreBubble
         rhs_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
     rhs_layout->SetOrientation(views::LayoutOrientation::kVertical);
     rhs_layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-    rhs_layout->SetInteriorMargin(gfx::Insets(0, 16, 0, 0));
+    rhs_layout->SetInteriorMargin(gfx::Insets::TLBR(0, 16, 0, 0));
 
     auto* const title_text =
         rhs_view->AddChildView(std::make_unique<views::Label>(
             kTipMarqueeViewTestTitleText, views::style::CONTEXT_DIALOG_TITLE));
-    title_text->SetProperty(views::kMarginsKey, gfx::Insets(6, 0, 10, 0));
+    title_text->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(6, 0, 10, 0));
 
     auto* const body_text = rhs_view->AddChildView(
         std::make_unique<views::Label>(kTipMarqueeViewTestBodyText,
@@ -206,7 +206,7 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
   // tip_text_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, kTipMarqueeIconTotalWidth, 0, 0)));
+      gfx::Insets::TLBR(0, kTipMarqueeIconTotalWidth, 0, 0)));
 
   SetVisible(false);
 

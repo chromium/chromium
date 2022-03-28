@@ -34,7 +34,7 @@ PageInfoRowView::PageInfoRowView() {
   // and label in the first row.
   const int label_height = title_->GetPreferredSize().height();
   const int margin = (label_height - icon_size) / 2;
-  layout_manager_->SetDefault(views::kMarginsKey, gfx::Insets(margin, 0));
+  layout_manager_->SetDefault(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 }
 
 void PageInfoRowView::SetIcon(const ui::ImageModel image) {

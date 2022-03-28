@@ -263,7 +263,7 @@ class DownloadItemView::ContextMenuButton : public views::ImageButton {
     views::ConfigureVectorImageButton(this);
     SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT));
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(10)));
+    SetBorder(views::CreateEmptyBorder(10));
     SetHasInkDropActionOnClick(false);
   }
 

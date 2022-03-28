@@ -384,16 +384,17 @@ void ZoomBubbleView::Init() {
   // Calculate child views margins in |this| client view.
   const int label_vertical_spacing =
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
-  const gfx::Insets label_margin(label_vertical_spacing - margins().top(), 0,
-                                 label_vertical_spacing - margins().bottom(),
-                                 kPercentLabelPadding - spacing);
+  const auto label_margin =
+      gfx::Insets::TLBR(label_vertical_spacing - margins().top(), 0,
+                        label_vertical_spacing - margins().bottom(),
+                        kPercentLabelPadding - spacing);
 
   // Account for the apparent margins that vector buttons have around icons.
   const int control_vertical_spacing =
       provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL);
-  const gfx::Insets control_vertical_margin(
-      control_vertical_spacing - margins().top(), 0,
-      control_vertical_spacing - margins().bottom(), 0);
+  const auto control_vertical_margin =
+      gfx::Insets::TLBR(control_vertical_spacing - margins().top(), 0,
+                        control_vertical_spacing - margins().bottom(), 0);
   const gfx::Insets vector_button_margin(
       control_vertical_margin -
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON));

@@ -177,7 +177,7 @@ std::u16string CvcUnmaskViewController::GetSheetTitle() {
 void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
-  const gfx::Insets content_insets = gfx::Insets(
+  const gfx::Insets content_insets = gfx::Insets::VH(
       kPaymentRequestRowVerticalInsets, kPaymentRequestRowHorizontalInsets);
   content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, content_insets,

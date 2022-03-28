@@ -158,8 +158,8 @@ END_METADATA
 
 // Insets used to position |contents_| within |contents_host_|.
 gfx::Insets GetContentInsets() {
-  return gfx::Insets(RoundedOmniboxResultsFrame::GetNonResultSectionHeight(), 0,
-                     0, 0);
+  return gfx::Insets::TLBR(
+      RoundedOmniboxResultsFrame::GetNonResultSectionHeight(), 0, 0, 0);
 }
 
 }  // namespace
@@ -226,8 +226,9 @@ int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
 
 // static
 gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
-  return ui::TouchUiController::Get()->touch_ui() ? gfx::Insets(6, 1, 5, 1)
-                                                  : gfx::Insets(4, 6);
+  return ui::TouchUiController::Get()->touch_ui()
+             ? gfx::Insets::TLBR(6, 1, 5, 1)
+             : gfx::Insets::VH(4, 6);
 }
 
 // static

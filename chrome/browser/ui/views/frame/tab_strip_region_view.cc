@@ -112,7 +112,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   // This is the margin necessary to ensure correct spacing between right-
   // aligned control and the end of the TabStripRegionView.
-  const gfx::Insets control_padding = gfx::Insets(
+  const auto control_padding = gfx::Insets::TLBR(
       0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
 
   tip_marquee_view_ = AddChildView(
@@ -278,7 +278,7 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
   // should be improved, likely by taking the scroll state of the tabstrip into
   // account.
   new_tab_button_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
+      gfx::Insets::TLBR(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
 }
 
 BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)

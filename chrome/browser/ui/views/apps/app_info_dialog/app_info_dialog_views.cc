@@ -166,7 +166,8 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
 
   auto dialog_header = std::make_unique<AppInfoHeaderPanel>(profile, app);
   dialog_header->SetBorder(views::CreateSolidSidedBorder(
-      0, 0, kHorizontalSeparatorHeight, 0, kDialogSeparatorColor));
+      gfx::Insets::TLBR(0, 0, kHorizontalSeparatorHeight, 0),
+      kDialogSeparatorColor));
   dialog_header_ = AddChildView(std::move(dialog_header));
 
   dialog_body_ = AddChildView(std::move(dialog_body));
@@ -175,7 +176,8 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   auto dialog_footer = AppInfoFooterPanel::CreateFooterPanel(profile, app);
   if (dialog_footer) {
     dialog_footer->SetBorder(views::CreateSolidSidedBorder(
-        kHorizontalSeparatorHeight, 0, 0, 0, kDialogSeparatorColor));
+        gfx::Insets::TLBR(kHorizontalSeparatorHeight, 0, 0, 0),
+        kDialogSeparatorColor));
     dialog_footer_ = AddChildView(std::move(dialog_footer));
   }
 

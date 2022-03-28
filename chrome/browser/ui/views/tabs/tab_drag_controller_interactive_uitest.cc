@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   masked_window->SetProperty(aura::client::kZOrderingKey,
                              ui::ZOrderLevel::kFloatingWindow);
   auto targeter = std::make_unique<aura::WindowTargeter>();
-  targeter->SetInsets(gfx::Insets(0, bounds.width() - 10, 0, 0));
+  targeter->SetInsets(gfx::Insets::TLBR(0, bounds.width() - 10, 0, 0));
   masked_window->SetEventTargeter(std::move(targeter));
 
   ASSERT_FALSE(SubtreeShouldBeExplored(masked_window.get(),

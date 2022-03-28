@@ -83,8 +83,8 @@ CookieInfoView::CookieInfoView() {
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const gfx::Insets& dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
-  SetBorder(views::CreateEmptyBorder(0, dialog_insets.left(), 0,
-                                     dialog_insets.right()));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right())));
 
   View* const contents = SetContents(std::make_unique<views::View>());
   views::TableLayout* layout =

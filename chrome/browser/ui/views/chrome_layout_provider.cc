@@ -55,21 +55,23 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case views::INSETS_CHECKBOX_RADIO_BUTTON: {
       gfx::Insets insets = LayoutProvider::GetInsetsMetric(metric);
       // Checkboxes and radio buttons should be aligned flush to the left edge.
-      return gfx::Insets(insets.top(), 0, insets.bottom(), insets.right());
+      return gfx::Insets::TLBR(insets.top(), 0, insets.bottom(),
+                               insets.right());
     }
     case views::INSETS_VECTOR_IMAGE_BUTTON:
       return gfx::Insets(kHarmonyLayoutUnit / 4);
     case views::InsetsMetric::INSETS_LABEL_BUTTON:
-      return touch_ui
-                 ? gfx::Insets(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit / 2)
-                 : LayoutProvider::GetInsetsMetric(metric);
+      return touch_ui ? gfx::Insets::VH(kHarmonyLayoutUnit / 2,
+                                        kHarmonyLayoutUnit / 2)
+                      : LayoutProvider::GetInsetsMetric(metric);
     case INSETS_BOOKMARKS_BAR_BUTTON:
-      return touch_ui ? gfx::Insets(8, 10) : gfx::Insets(6);
+      return touch_ui ? gfx::Insets::VH(8, 10) : gfx::Insets(6);
     case INSETS_TOAST:
-      return gfx::Insets(0, kHarmonyLayoutUnit);
+      return gfx::Insets::VH(0, kHarmonyLayoutUnit);
     case INSETS_OMNIBOX_PILL_BUTTON:
-      return touch_ui ? gfx::Insets(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit)
-                      : gfx::Insets(5, 12);
+      return touch_ui
+                 ? gfx::Insets::VH(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit)
+                 : gfx::Insets::VH(5, 12);
     case INSETS_PAGE_INFO_HOVER_BUTTON: {
       const gfx::Insets insets =
           LayoutProvider::GetInsetsMetric(views::INSETS_LABEL_BUTTON);
@@ -77,7 +79,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
           GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
       // Hover button in page info requires double the height compared to the
       // label button because it behaves like a menu control.
-      return gfx::Insets(insets.height(), horizontal_padding);
+      return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
     default:
       return LayoutProvider::GetInsetsMetric(metric);

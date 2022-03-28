@@ -328,8 +328,8 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     int top_thickness = 0;
     if (ShouldCustomDrawSystemTitlebar() && GetWidget()->IsMaximized())
       top_thickness = frame_thickness;
-    *insets = gfx::Insets(top_thickness, frame_thickness, frame_thickness,
-                          frame_thickness);
+    *insets = gfx::Insets::TLBR(top_thickness, frame_thickness, frame_thickness,
+                                frame_thickness);
   }
   return true;
 }
@@ -366,8 +366,8 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     const int inset = (base::win::GetVersion() < base::win::Version::WIN8)
                           ? kWin7GlassInset
                           : 0;
-    *insets = gfx::Insets(tabstrip_region_bounds.bottom() + inset, inset, inset,
-                          inset);
+    *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom() + inset, inset,
+                                inset, inset);
   }
   return true;
 }

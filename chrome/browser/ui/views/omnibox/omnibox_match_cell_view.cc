@@ -276,8 +276,8 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
                   : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
-  return gfx::Insets(vertical_margin, OmniboxMatchCellView::kMarginLeft,
-                     vertical_margin, OmniboxMatchCellView::kMarginRight);
+  return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
+                           vertical_margin, OmniboxMatchCellView::kMarginRight);
 }
 
 void OmniboxMatchCellView::Layout() {

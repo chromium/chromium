@@ -33,7 +33,7 @@ namespace {
 
 constexpr SkColor kCheckmarkColor = 0xFF609265;
 
-constexpr gfx::Insets kRowInsets = gfx::Insets(
+constexpr auto kRowInsets = gfx::Insets::TLBR(
     kPaymentRequestRowVerticalInsets,
     kPaymentRequestRowHorizontalInsets,
     kPaymentRequestRowVerticalInsets,
@@ -196,7 +196,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::CreateListView() {
 
   content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kPaymentRequestRowVerticalInsets, 0), 0));
+      gfx::Insets::VH(kPaymentRequestRowVerticalInsets, 0), 0));
 
   for (auto& item : items_)
     content_view->AddChildView(item.release());

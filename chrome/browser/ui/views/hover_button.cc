@@ -38,7 +38,7 @@ std::unique_ptr<views::Border> CreateBorderWithVerticalSpacing(
   const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
   return views::CreateEmptyBorder(
-      gfx::Insets(vertical_spacing, horizontal_spacing));
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 }
 
 // Wrapper class for the icon that maintains consistent spacing for both badged
@@ -59,7 +59,7 @@ class IconWrapper : public views::View {
     // |MenuButton| already does this with its own image.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetProperty(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+    SetProperty(views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0));
   }
 
   // views::View:
@@ -174,7 +174,7 @@ HoverButton::HoverButton(PressedCallback callback,
                                views::MaximumFlexSizeRule::kUnbounded));
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets(vertical_spacing, 0));
+                             gfx::Insets::VH(vertical_spacing, 0));
   label_wrapper_ = AddChildView(std::move(label_wrapper));
   // Observe |label_wrapper_| bounds changes to ensure the HoverButton tooltip
   // is kept in sync with the size.
@@ -199,8 +199,9 @@ HoverButton::HoverButton(PressedCallback callback,
     const int secondary_spacing =
         resize_row_for_secondary_view ? vertical_spacing : 0;
     secondary_view->SetProperty(
-        views::kMarginsKey, gfx::Insets(secondary_spacing, icon_label_spacing,
-                                        secondary_spacing, 0));
+        views::kMarginsKey,
+        gfx::Insets::TLBR(secondary_spacing, icon_label_spacing,
+                          secondary_spacing, 0));
     secondary_view_ = AddChildView(std::move(secondary_view));
   }
 

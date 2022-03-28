@@ -146,9 +146,9 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
   if (!frame()->IsFullscreen()) {
     const int kCaptionWidth = base::mac::IsAtMostOS10_15() ? 70 : 85;
     if (CaptionButtonsOnLeadingEdge())
-      bounds.Inset(gfx::Insets(0, kCaptionWidth, 0, 0));
+      bounds.Inset(gfx::Insets::TLBR(0, kCaptionWidth, 0, 0));
     else
-      bounds.Inset(gfx::Insets(0, 0, 0, kCaptionWidth));
+      bounds.Inset(gfx::Insets::TLBR(0, 0, 0, kCaptionWidth));
   }
 
   return bounds;

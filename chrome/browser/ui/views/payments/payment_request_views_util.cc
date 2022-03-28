@@ -245,9 +245,9 @@ void PopulateSheetHeaderView(bool show_back_arrow,
 
   constexpr int kVerticalInset = 14;
   constexpr int kHeaderHorizontalInset = 16;
-  container->SetBorder(
-      views::CreateEmptyBorder(kVerticalInset, kHeaderHorizontalInset,
-                               kVerticalInset, kHeaderHorizontalInset));
+  container->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
+                        kHeaderHorizontalInset)));
 
   if (show_back_arrow) {
     auto back_arrow =
@@ -460,7 +460,7 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
   constexpr int kRowHorizontalSpacing = 8;
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kPaymentRequestRowHorizontalInsets),
+      gfx::Insets::VH(0, kPaymentRequestRowHorizontalInsets),
       kRowHorizontalSpacing);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(

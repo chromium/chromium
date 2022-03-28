@@ -367,8 +367,7 @@ void SharesheetHeaderView::ShowTextPreview() {
   if (index >= 1) {
     static_cast<views::BoxLayout*>(GetLayoutManager())
         ->set_inside_border_insets(
-            gfx::Insets(/* vertical */ kHeaderViewNarrowInsideBorderInsets,
-                        /* horizontal */ kSpacing));
+            gfx::Insets::VH(kHeaderViewNarrowInsideBorderInsets, kSpacing));
   }
 }
 

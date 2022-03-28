@@ -138,7 +138,7 @@ void SuggestionWindowView::OnThemeChanged() {
 
   learn_more_button_->SetBorder(views::CreatePaddedBorder(
       views::CreateSolidSidedBorder(
-          1, 0, 0, 0,
+          gfx::Insets::TLBR(1, 0, 0, 0),
           GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)),
       views::LayoutProvider::Get()->GetInsetsMetric(
           views::INSETS_VECTOR_IMAGE_BUTTON)));
@@ -189,7 +189,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
       l10n_util::GetStringUTF16(IDS_SUGGESTION_LEARN_MORE)));
   setting_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // TODO(crbug/1102215): Implement proper UI layout using Insets constant.
-  constexpr gfx::Insets insets(0, kPadding, kPadding, kPadding);
+  constexpr auto insets = gfx::Insets::TLBR(0, kPadding, kPadding, kPadding);
   setting_link_->SetBorder(views::CreateEmptyBorder(insets));
   constexpr int kSettingLinkFontSize = 11;
   setting_link_->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::ITALIC,

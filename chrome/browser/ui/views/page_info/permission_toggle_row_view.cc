@@ -96,7 +96,7 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
   toggle_button->SetPreferredSize({toggle_button->GetPreferredSize().width(),
                                    row_view_->GetFirstLineHeight()});
   toggle_button->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, icon_label_spacing));
+                             gfx::Insets::VH(0, icon_label_spacing));
   toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_SELECTOR_TOOLTIP,
       PageInfoUI::PermissionTypeToUIString(permission_.type)));
@@ -128,8 +128,8 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
       spacer_view->SetPreferredSize({icon_size, icon_size});
       spacer_view_ = row_view_->AddControl(std::move(spacer_view));
     } else {
-      toggle_button_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets(0, icon_label_spacing, 0, 0));
+      toggle_button_->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, icon_label_spacing, 0, 0));
     }
   }
 }
@@ -142,7 +142,7 @@ void PermissionToggleRowView::InitForManagedSource(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   state_label->SetProperty(views::kMarginsKey,
-                           gfx::Insets(0, icon_label_spacing));
+                           gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));
 
   auto managed_icon = std::make_unique<NonAccessibleImageView>();

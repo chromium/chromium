@@ -747,11 +747,11 @@ void ToolbarView::InitLayout() {
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(0, default_margin));
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, default_margin));
 
   location_bar_->SetProperty(views::kFlexBehaviorKey, location_bar_flex_rule);
   location_bar_->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, location_bar_margin));
+                             gfx::Insets::VH(0, location_bar_margin));
 
   if (extensions_container_) {
     const views::FlexSpecification extensions_flex_rule =
@@ -991,9 +991,9 @@ void ToolbarView::OnTouchUiChanged() {
     const int default_margin = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
     const int location_bar_margin = GetLayoutConstant(TOOLBAR_STANDARD_SPACING);
     layout_manager_->SetDefault(views::kMarginsKey,
-                                gfx::Insets(0, default_margin));
+                                gfx::Insets::VH(0, default_margin));
     location_bar_->SetProperty(views::kMarginsKey,
-                               gfx::Insets(0, location_bar_margin));
+                               gfx::Insets::VH(0, location_bar_margin));
 
     LoadImages();
     PreferredSizeChanged();

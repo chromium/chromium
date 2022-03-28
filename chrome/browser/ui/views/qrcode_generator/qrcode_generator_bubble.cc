@@ -253,9 +253,9 @@ void QRCodeGeneratorBubble::Init() {
   textfield_url->set_controller(this);
   textfield_url->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE),
-                  0, 0, 0));
+      gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE),
+                        0, 0, 0));
   int textfield_min_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
                                 views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                             insets.left() - insets.right();
@@ -281,11 +281,12 @@ void QRCodeGeneratorBubble::Init() {
   // Padding - larger between controls and action buttons.
   bottom_error_container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, 0,
-                  ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
-                      bottom_error_label_->GetPreferredSize().height(),
-                  0));
+      gfx::Insets::TLBR(
+          0, 0,
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
+              bottom_error_label_->GetPreferredSize().height(),
+          0));
 
   auto* button_container =
       AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -301,7 +302,7 @@ void QRCodeGeneratorBubble::Init() {
       views::BubbleBorder::Arrow::BOTTOM_RIGHT);
   tooltip_icon->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, 0, 0, kPaddingTooltipDownloadButtonPx));
+      gfx::Insets::TLBR(0, 0, 0, kPaddingTooltipDownloadButtonPx));
   tooltip_icon_ = button_container->AddChildView(std::move(tooltip_icon));
 
   auto* flex = button_container->AddChildView(std::make_unique<views::View>());

@@ -88,11 +88,11 @@ void ExtensionsMenuButton::UpdateState() {
   // The horizontal insets reasonably align the extension icons with text inside
   // the dialog. Note that |kIconSize| also contains space for badging, so we
   // can't trivially use dialog-text insets (empty space inside the icon).
-  constexpr gfx::Insets kBorderInsets =
-      gfx::Insets((InstalledExtensionMenuItemView::kMenuItemHeightDp -
-                   InstalledExtensionMenuItemView::kIconSize.height()) /
-                      2,
-                  12);
+  constexpr auto kBorderInsets =
+      gfx::Insets::VH((InstalledExtensionMenuItemView::kMenuItemHeightDp -
+                       InstalledExtensionMenuItemView::kIconSize.height()) /
+                          2,
+                      12);
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 }
 

@@ -1817,7 +1817,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
         container_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
-        .SetDefault(views::kMarginsKey, gfx::Insets(0, 2));
+        .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2));
     container_view->AddChildView(bb_view_.get());
     bb_view_->SetProperty(
         views::kFlexBehaviorKey,

@@ -47,7 +47,7 @@ void NearbyShareOverlayView::AddedToWidget() {
 NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)
     : has_child_view_(child_view) {
   if (has_child_view_) {
-    SetInteriorMargin(gfx::Insets(0, 32));
+    SetInteriorMargin(gfx::Insets::VH(0, 32));
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);
     SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 

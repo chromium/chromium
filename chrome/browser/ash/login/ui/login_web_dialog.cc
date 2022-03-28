@@ -26,7 +26,7 @@ namespace {
 using ::content::WebContents;
 using ::content::WebUIMessageHandler;
 
-constexpr gfx::Insets kMinMargins{64, 64};
+constexpr gfx::Insets kMinMargins{64};
 constexpr gfx::Size kMinSize{128, 128};
 constexpr gfx::Size kMaxSize{512, 512};
 

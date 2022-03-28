@@ -160,14 +160,14 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
       .SetInteriorMargin(
-          gfx::Insets(0, OmniboxMatchCellView::GetTextIndent(),
-                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING),
-                      0))
+          gfx::Insets::TLBR(0, OmniboxMatchCellView::GetTextIndent(),
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING),
+                            0))
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   // For all of these buttons, the visibility set from UpdateFromModel().
   // The Keyword and Pedal buttons also get their text from there, since the

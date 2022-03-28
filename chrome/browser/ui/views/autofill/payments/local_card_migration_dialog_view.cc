@@ -169,10 +169,9 @@ std::unique_ptr<views::Label> CreateTitle(
 #else
   constexpr int kMigrationDialogTitleMarginTop = 12;
 #endif
-  title->SetBorder(views::CreateEmptyBorder(
-      /*top=*/kMigrationDialogTitleMarginTop,
-      /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
-      /*right=*/kMigrationDialogInsets.right()));
+  title->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kMigrationDialogTitleMarginTop, kMigrationDialogInsets.left(), 0,
+      kMigrationDialogInsets.right())));
   title->SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
                                             gfx::Font::NORMAL,
                                             gfx::Font::Weight::NORMAL));
@@ -316,8 +315,8 @@ class LocalCardMigrationOfferView : public views::View {
         provider->GetDistanceMetric(
             views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
     // Don't set bottom since there is a legal message view in the offer dialog.
-    contents_container->SetBorder(views::CreateEmptyBorder(
-        0, kMigrationDialogInsets.left(), 0, kMigrationDialogInsets.right()));
+    contents_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, kMigrationDialogInsets.left(), 0, kMigrationDialogInsets.right())));
 
     const std::vector<MigratableCreditCard>& card_list =
         controller->GetCardList();

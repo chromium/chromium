@@ -163,8 +163,8 @@ void SecurityInformationView::AddResetDecisionsLabel(
   const int between_paragraphs_distance =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  reset_decisions_label_container_->SetBorder(
-      views::CreateEmptyBorder(between_paragraphs_distance, 0, 0, 0));
+  reset_decisions_label_container_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(between_paragraphs_distance, 0, 0, 0)));
 
   InvalidateLayout();
 }
@@ -242,7 +242,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
 
   // Add padding at the top.
   password_reuse_button_container_->SetBorder(
-      views::CreateEmptyBorder(8, 0, 0, 0));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(8, 0, 0, 0)));
 
   InvalidateLayout();
 }

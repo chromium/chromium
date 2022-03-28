@@ -170,7 +170,7 @@ void LocationBarBubbleDelegateView::DidFinishNavigation(
 
 gfx::Rect LocationBarBubbleDelegateView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
-  bounds.Inset(gfx::Insets(
+  bounds.Inset(gfx::Insets::VH(
       GetLayoutConstant(LOCATION_BAR_BUBBLE_ANCHOR_VERTICAL_INSET), 0));
   return bounds;
 }

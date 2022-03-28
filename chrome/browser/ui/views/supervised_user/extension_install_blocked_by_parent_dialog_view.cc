@@ -129,8 +129,9 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
   const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
 
-  set_margins(gfx::Insets(content_insets.top(), content_insets.left(),
-                          content_insets.bottom(), content_insets.right()));
+  set_margins(gfx::Insets::TLBR(content_insets.top(), content_insets.left(),
+                                content_insets.bottom(),
+                                content_insets.right()));
 
   auto* message_body_label = AddChildView(std::make_unique<views::Label>(
       body_string, views::style::CONTEXT_DIALOG_BODY_TEXT));

@@ -51,8 +51,8 @@ ui::ImageModel DefaultSearchIconSource::GetSizedIconImage(int size) const {
   // vector icons.
   DCHECK_GE(size, icon.Height());
   DCHECK_GE(size, icon.Width());
-  gfx::Insets padding_border((size - icon.Height()) / 2,
-                             (size - icon.Width()) / 2);
+  auto padding_border =
+      gfx::Insets::VH((size - icon.Height()) / 2, (size - icon.Width()) / 2);
 
   return padding_border.IsEmpty()
              ? ui::ImageModel::FromImage(icon)

@@ -148,8 +148,8 @@ void MediaGalleriesDialogViews::InitChildViews() {
   scroll_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       small_vertical_padding));
-  scroll_container->SetBorder(
-      views::CreateEmptyBorder(vertical_padding, 0, vertical_padding, 0));
+  scroll_container->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(vertical_padding, 0, vertical_padding, 0)));
 
   std::vector<std::u16string> section_headers =
       controller_->GetSectionHeaders();
@@ -164,10 +164,10 @@ void MediaGalleriesDialogViews::InitChildViews() {
       auto header = std::make_unique<views::Label>(section_headers[i]);
       header->SetMultiLine(true);
       header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      header->SetBorder(views::CreateEmptyBorder(
+      header->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
           vertical_padding,
           provider->GetInsetsMetric(views::INSETS_DIALOG).left(),
-          vertical_padding, 0));
+          vertical_padding, 0)));
       scroll_container->AddChildView(std::move(header));
     }
 

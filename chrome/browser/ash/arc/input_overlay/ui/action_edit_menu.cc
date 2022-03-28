@@ -31,9 +31,7 @@ class ActionEditMenu::BindingButton : public views::LabelButton {
   BindingButton(PressedCallback callback, int text_source_id)
       : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)) {
     SetAccessibleName(l10n_util::GetStringUTF16(text_source_id));
-    SetBorder(views::CreateEmptyBorder(/*top=*/0, /*left=*/16,
-                                       /*bottom=*/0,
-                                       /*right=*/12));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 16, 0, 12)));
     SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
     auto* color_provider = ash::AshColorProvider::Get();
@@ -135,8 +133,7 @@ void ActionEditMenu::InitActionTapEditMenu() {
   int additional_width = std::max({keyboard_key_->GetMinSize().width(),
                                    mouse_left_->GetMinSize().width(),
                                    mouse_right_->GetMinSize().width()});
-  SetBorder(views::CreateEmptyBorder(/*top=*/8, /*left=*/0,
-                                     /*bottom=*/8, /*right=*/0));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(8, 0, 8, 0)));
   SetSize(gfx::Size(kMenuWidth + additional_width, kMenuHeight));
   SetPosition(anchor_->GetEditMenuPosition(size()));
   auto* action = anchor_->action();

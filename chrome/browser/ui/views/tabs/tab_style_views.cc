@@ -221,9 +221,9 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
     // the clip, especially if other children get crossfaded.
     const auto opacities = GetSeparatorOpacities(true);
     constexpr float kChildClipPadding = 2.5f;
-    aligned_bounds.Inset(gfx::InsetsF(0.0f, kChildClipPadding + opacities.left,
-                                      0.0f,
-                                      kChildClipPadding + opacities.right));
+    aligned_bounds.Inset(
+        gfx::InsetsF::TLBR(0.0f, kChildClipPadding + opacities.left, 0.0f,
+                           kChildClipPadding + opacities.right));
   }
 
   // Calculate the corner radii. Note that corner radius is based on original
@@ -414,7 +414,7 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
 gfx::Insets GM2TabStyle::GetContentsInsets() const {
   const int stroke_thickness = GetStrokeThickness();
   const int horizontal_inset = GetContentsHorizontalInsetSize();
-  return gfx::Insets(
+  return gfx::Insets::TLBR(
       stroke_thickness, horizontal_inset,
       stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
       horizontal_inset);
@@ -958,8 +958,9 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
   // Note: This intentionally doesn't subtract TABSTRIP_TOOLBAR_OVERLAP from the
   // bottom inset, because we want to pixel-align the bottom of the stroke, not
   // the bottom of the overlap.
-  gfx::InsetsF layout_insets(stroke_thickness, corner_radius, stroke_thickness,
-                             corner_radius + GetSeparatorSize().width());
+  auto layout_insets =
+      gfx::Insets::TLBR(stroke_thickness, corner_radius, stroke_thickness,
+                        corner_radius + GetSeparatorSize().width());
   aligned_bounds.Inset(layout_insets);
 
   // Scale layout bounds from DIP to px.

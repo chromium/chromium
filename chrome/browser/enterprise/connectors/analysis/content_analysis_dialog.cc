@@ -59,7 +59,7 @@ constexpr base::TimeDelta kResizeAnimationDuration = base::Milliseconds(100);
 constexpr int kSideImageSize = 24;
 constexpr int kLineHeight = 20;
 
-constexpr gfx::Insets kSideImageInsets = gfx::Insets(8, 8, 8, 8);
+constexpr gfx::Insets kSideImageInsets(8);
 constexpr int kMessageAndIconRowLeadingPadding = 32;
 constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
@@ -308,7 +308,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     // Padding to distance the top image from the icon and message.
     contents_view_->SetBetweenChildSpacing(16);
     // padding to distance the message from the button(s).
-    contents_view_->SetInsideBorderInsets(gfx::Insets(0, 0, 10, 0));
+    contents_view_->SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, 10, 0));
 
     // Add the top image.
     image_ = contents_view_->AddChildView(
@@ -809,8 +809,8 @@ void ContentAnalysisDialog::AddJustificationTextLabelToDialog() {
   justification_text_label_ =
       contents_layout_->AddChildView(std::make_unique<views::Label>());
   justification_text_label_->SetText(delegate_->GetBypassJustificationLabel());
-  justification_text_label_->SetBorder(
-      views::CreateEmptyBorder(kPaddingBeforeBypassJustification, 0, 0, 0));
+  justification_text_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kPaddingBeforeBypassJustification, 0, 0, 0)));
   justification_text_label_->SetLineHeight(kLineHeight);
   justification_text_label_->SetMultiLine(true);
   justification_text_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);

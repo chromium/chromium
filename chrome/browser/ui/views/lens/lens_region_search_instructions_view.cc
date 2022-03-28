@@ -65,7 +65,7 @@ void LensRegionSearchInstructionsView::Init() {
       .SetCollapseMargins(true);
 
   ChromeLayoutProvider* const layout_provider = ChromeLayoutProvider::Get();
-  set_margins(gfx::Insets(
+  set_margins(gfx::Insets::TLBR(
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
           .top(),
       layout_provider->GetDistanceMetric(
@@ -94,8 +94,8 @@ void LensRegionSearchInstructionsView::Init() {
   AddChildView(std::move(label));
 
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  close_button_->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, kCloseButtonExtraMargin, 0, 0));
+  close_button_->SetProperty(
+      views::kMarginsKey, gfx::Insets::TLBR(0, kCloseButtonExtraMargin, 0, 0));
   AddChildView(std::move(close_button_));
 }
 

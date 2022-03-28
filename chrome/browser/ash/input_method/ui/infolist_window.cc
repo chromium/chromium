@@ -127,14 +127,16 @@ InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
   title_label_ = new views::Label(entry.title, {title_font_list});
   title_label_->SetPosition(gfx::Point(0, 0));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetBorder(views::CreateEmptyBorder(4, 7, 2, 4));
+  title_label_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(4, 7, 2, 4)));
 
   description_label_ = new views::Label(entry.body, {description_font_list});
   description_label_->SetPosition(gfx::Point(0, 0));
   description_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label_->SetMultiLine(true);
   description_label_->SizeToFit(kInfolistEntryWidth);
-  description_label_->SetBorder(views::CreateEmptyBorder(2, 17, 4, 4));
+  description_label_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 17, 4, 4)));
   AddChildView(title_label_);
   AddChildView(description_label_);
   UpdateBackground();
@@ -165,7 +167,7 @@ void InfolistEntryView::UpdateBackground() {
         1, color_provider->GetColor(ui::kColorFocusableBorderFocused)));
   } else {
     SetBackground(nullptr);
-    SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
+    SetBorder(views::CreateEmptyBorder(1));
   }
   SchedulePaint();
 }
@@ -199,7 +201,7 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
   caption_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   caption_label->SetEnabledColor(
       color_provider->GetColor(ui::kColorLabelForeground));
-  caption_label->SetBorder(views::CreateEmptyBorder(2, 2, 2, 2));
+  caption_label->SetBorder(views::CreateEmptyBorder(2));
   caption_label->SetBackground(
       views::CreateSolidBackground(color_utils::AlphaBlend(
           SK_ColorBLACK, color_provider->GetColor(ui::kColorWindowBackground),

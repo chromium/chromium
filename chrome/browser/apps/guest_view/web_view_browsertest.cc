@@ -1035,11 +1035,11 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, WebViewRespectsInsets) {
   content::RenderWidgetHostView* guest_host_view =
       guest->GetRenderWidgetHostView();
 
-  gfx::Insets insets(0, 0, 100, 0);
+  auto insets = gfx::Insets::TLBR(0, 0, 100, 0);
   gfx::Rect expected(guest_host_view->GetVisibleViewportSize());
   expected.Inset(insets);
 
-  guest_host_view->SetInsets(gfx::Insets(0, 0, 100, 0));
+  guest_host_view->SetInsets(gfx::Insets::TLBR(0, 0, 100, 0));
 
   gfx::Size size_after = guest_host_view->GetVisibleViewportSize();
   EXPECT_EQ(expected.size(), size_after);

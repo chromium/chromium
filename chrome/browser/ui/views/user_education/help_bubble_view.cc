@@ -75,10 +75,10 @@ constexpr base::TimeDelta kDefaultTimeoutWithButtons = base::Seconds(0);
 constexpr int kBubbleMaxWidthDip = 340;
 
 // The insets from the bubble border to the text inside.
-constexpr gfx::Insets kBubbleContentsInsets(16, 20);
+constexpr auto kBubbleContentsInsets = gfx::Insets::VH(16, 20);
 
 // The insets from the button border to the text inside.
-constexpr gfx::Insets kBubbleButtonPadding(6, 16);
+constexpr auto kBubbleButtonPadding = gfx::Insets::VH(6, 16);
 
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
@@ -463,7 +463,8 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetInteriorMargin(kBubbleContentsInsets)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(0, 0, default_spacing, 0))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, default_spacing, 0))
       .SetIgnoreDefaultMainAxisMargins(true);
 
   // Set up top row container layout.
@@ -474,7 +475,8 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
           ->SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           .SetMinimumCrossAxisSize(kCloseButtonHeight)
-          .SetDefault(views::kMarginsKey, gfx::Insets(0, default_spacing, 0, 0))
+          .SetDefault(views::kMarginsKey,
+                      gfx::Insets::TLBR(0, default_spacing, 0, 0))
           .SetIgnoreDefaultMainAxisMargins(true);
   progress_container->SetProperty(
       views::kFlexBehaviorKey,
@@ -489,13 +491,13 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithAlignment(views::LayoutAlignment::kEnd));
     close_button->SetProperty(views::kMarginsKey,
-                              gfx::Insets(0, default_spacing, 0, 0));
+                              gfx::Insets::TLBR(0, default_spacing, 0, 0));
   }
 
   // Icon view should have padding between it and the title or body label.
   if (icon_view_) {
     icon_view_->SetProperty(views::kMarginsKey,
-                            gfx::Insets(0, 0, 0, default_spacing));
+                            gfx::Insets::TLBR(0, 0, 0, default_spacing));
   }
 
   // Set label flex properties. This ensures that if the width of the bubble
@@ -527,17 +529,20 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   if (icon_view_) {
     const int indent = kBubbleContentsInsets.left() + kBodyIconBackgroundSize +
                        default_spacing;
-    for (size_t i = 1; i < labels_.size(); ++i)
-      labels_[i]->SetProperty(views::kMarginsKey, gfx::Insets(0, indent, 0, 0));
+    for (size_t i = 1; i < labels_.size(); ++i) {
+      labels_[i]->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, indent, 0, 0));
+    }
   }
 
   // Set up button container layout.
   // Add in the default spacing between bubble content and bottom/buttons.
   button_container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(layout_provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                  0, 0, 0));
+      gfx::Insets::TLBR(
+          layout_provider->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+          0, 0, 0));
 
   // Create button container internal layout.
   auto& button_layout =
@@ -546,10 +551,10 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
           .SetDefault(
               views::kMarginsKey,
-              gfx::Insets(0,
-                          layout_provider->GetDistanceMetric(
-                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
-                          0, 0))
+              gfx::Insets::TLBR(0,
+                                layout_provider->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                                0, 0))
           .SetIgnoreDefaultMainAxisMargins(true);
   button_container->SetProperty(
       views::kFlexBehaviorKey,

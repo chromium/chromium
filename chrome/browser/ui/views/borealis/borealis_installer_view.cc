@@ -46,7 +46,7 @@ namespace {
 
 BorealisInstallerView* g_borealis_installer_view = nullptr;
 
-constexpr gfx::Insets kButtonRowInsets(0, 64, 32, 64);
+constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
 constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
 
@@ -93,7 +93,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
       profile_(profile),
       observation_(this) {
   // Layout constants from the spec used for the plugin vm installer.
-  gfx::Insets kDialogInsets(60, 64, 0, 64);
+  constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
   const int kPrimaryMessageHeight = views::style::GetLineHeight(
       CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
   const int kSecondaryMessageHeight = views::style::GetLineHeight(
@@ -129,7 +129,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   primary_message_label_ = new TitleLabel(GetPrimaryMessage(), CONTEXT_HEADLINE,
                                           views::style::STYLE_PRIMARY);
   primary_message_label_->SetProperty(
-      views::kMarginsKey, gfx::Insets(kPrimaryMessageHeight, 0, 0, 0));
+      views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
   primary_message_label_->SetMultiLine(false);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   upper_container_view->AddChildView(primary_message_label_);
@@ -139,7 +139,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   secondary_message_container_view->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(kSecondaryMessageHeight, 0, 0, 0)));
+          gfx::Insets::TLBR(kSecondaryMessageHeight, 0, 0, 0)));
   upper_container_view->AddChildView(secondary_message_container_view);
   secondary_message_label_ = new views::Label(
       GetSecondaryMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -151,7 +151,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   progress_bar_ = new views::ProgressBar(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
+      gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
   upper_container_view->AddChildView(progress_bar_);
 
   installation_progress_message_label_ =
@@ -159,7 +159,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
                        views::style::STYLE_SECONDARY);
   installation_progress_message_label_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(kInstallationProgressMessageHeight, 0, 0, 0));
+      gfx::Insets::TLBR(kInstallationProgressMessageHeight, 0, 0, 0));
   installation_progress_message_label_->SetMultiLine(false);
   installation_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   upper_container_view->AddChildView(installation_progress_message_label_);
@@ -472,7 +472,7 @@ void BorealisInstallerView::SetImage() {
   auto setImage = [this](int image_id, gfx::Size size, int bottom_inset) {
     big_image_->SetImageSize(size);
     lower_container_layout_->set_inside_border_insets(
-        gfx::Insets(0, 0, bottom_inset, 0));
+        gfx::Insets::TLBR(0, 0, bottom_inset, 0));
     big_image_->SetImage(
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
   };

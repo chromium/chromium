@@ -196,7 +196,7 @@ void ChromeKeyboardBoundsObserver::UpdateInsets(
            << " Bounds: " << view_bounds_in_screen.ToString()
            << " Overlap: " << overlap;
   if (overlap > 0 && overlap < view_bounds_in_screen.height())
-    view->SetInsets(gfx::Insets(0, 0, overlap, 0));
+    view->SetInsets(gfx::Insets::TLBR(0, 0, overlap, 0));
   else
     view->SetInsets(gfx::Insets());
 }

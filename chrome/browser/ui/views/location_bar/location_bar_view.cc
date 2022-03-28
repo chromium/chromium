@@ -271,7 +271,7 @@ void LocationBarView::Init() {
         views::style::STYLE_LINK);
     omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     omnibox_additional_text_view->SetBorder(
-        views::CreateEmptyBorder(0, 10, 0, 0));
+        views::CreateEmptyBorder(gfx::Insets::TLBR(0, 10, 0, 0)));
     omnibox_additional_text_view->SetVisible(false);
     omnibox_additional_text_view_ =
         AddChildView(std::move(omnibox_additional_text_view));

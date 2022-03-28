@@ -118,7 +118,7 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
   gfx::Insets insets =
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::DialogContentType::kText, views::DialogContentType::kText);
-  insets += gfx::Insets(top_inset_padding, 0, 0, 0);
+  insets += gfx::Insets::TLBR(top_inset_padding, 0, 0, 0);
   SetBorder(views::CreateEmptyBorder(insets));
 
   AddChildView(std::move(label));

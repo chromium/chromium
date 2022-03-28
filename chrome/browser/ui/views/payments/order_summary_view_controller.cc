@@ -44,7 +44,7 @@ class LineItemRow : public views::View {
     // spacing spacing for clickable rows, so don't use
     // kPaymentRequestRowVerticalInsets.
     constexpr int kRowVerticalInset = 4;
-    const gfx::Insets row_insets(
+    const auto row_insets = gfx::Insets::TLBR(
         kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
         kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
     SetBorder(payments::CreatePaymentRequestRowBorder(

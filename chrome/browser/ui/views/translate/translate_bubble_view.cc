@@ -683,9 +683,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   tabbed_pane_->GetTabAt(1)->SetProperty(views::kElementIdentifierKey,
                                          kTargetLanguageTab);
   tabbed_pane_->GetTabAt(0)->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(2, 20)));
+      views::CreateEmptyBorder(gfx::Insets::VH(2, 20)));
   tabbed_pane_->GetTabAt(1)->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(2, 20)));
+      views::CreateEmptyBorder(gfx::Insets::VH(2, 20)));
   tabbed_pane_->set_listener(this);
 
   auto* padding_view =
@@ -712,9 +712,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   if (icon) {
     icon->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(0, 0, 0,
-                    provider->GetDistanceMetric(
-                        views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+        gfx::Insets::TLBR(0, 0, 0,
+                          provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   }
   tabbed_pane_->SetProperty(
       views::kFlexBehaviorKey,
@@ -728,17 +728,17 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   options_menu->SetProperty(views::kElementIdentifierKey, kOptionsMenuButton);
   options_menu->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, provider->GetDistanceMetric(
-                         views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+      gfx::Insets::VH(0, provider->GetDistanceMetric(
+                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   if (always_translate_checkbox_) {
     horizontal_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(0, 0,
-                    provider->GetDistanceMetric(
-                        views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                    0));
+        gfx::Insets::TLBR(0, 0,
+                          provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0));
     always_translate_checkbox_->SetProperty(views::kMarginsKey,
-                                            gfx::Insets(2, 0));
+                                            gfx::Insets::VH(2, 0));
   }
 
   return view;
@@ -815,9 +815,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   button_row->AddChildView(std::move(advanced_button));
   button_row->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, 0, 0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+      gfx::Insets::TLBR(0, 0, 0,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   view->AddChildView(std::move(button_row));
 
   // Layout();
@@ -959,7 +959,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
     icon_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
     icon_view->AddChildView(std::move(language_icon));
     icon_view->SetProperty(views::kMarginsKey,
-                           gfx::Insets(vertical_spacing, 0));
+                           gfx::Insets::VH(vertical_spacing, 0));
   }
   auto* form_view = view->AddChildView(std::make_unique<views::View>());
   form_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -968,10 +968,10 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
 
   language_title_label->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(vertical_spacing, 0, vertical_spacing,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_RELATED_CONTROL_HORIZONTAL) *
-                      4));
+      gfx::Insets::TLBR(vertical_spacing, 0, vertical_spacing,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL) *
+                            4));
   language_title_label->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kStart);
   auto* title_row = form_view->AddChildView(std::make_unique<views::View>());
@@ -984,19 +984,19 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
   form_view->AddChildView(std::move(combobox))
       ->SetProperty(
           views::kMarginsKey,
-          gfx::Insets(0, 0, 0,
-                      provider->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+          gfx::Insets::TLBR(0, 0, 0,
+                            provider->GetDistanceMetric(
+                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
 
   auto button_row = std::make_unique<views::BoxLayoutView>();
   if (advanced_always_translate_checkbox) {
     advanced_always_translate_checkbox_ =
         form_view->AddChildView(std::move(advanced_always_translate_checkbox));
     button_row->SetProperty(views::kMarginsKey,
-                            gfx::Insets(vertical_spacing, 0, 0, 0));
+                            gfx::Insets::TLBR(vertical_spacing, 0, 0, 0));
   } else {
     button_row->SetProperty(views::kMarginsKey,
-                            gfx::Insets(2 * vertical_spacing, 0, 0, 0));
+                            gfx::Insets::TLBR(2 * vertical_spacing, 0, 0, 0));
   }
 
   button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
@@ -1004,9 +1004,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   button_row->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, 0, 0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+      gfx::Insets::TLBR(0, 0, 0,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   button_row->AddChildView(std::move(advanced_reset_button));
   button_row->AddChildView(std::move(advanced_done_button));
   form_view->AddChildView(std::move(button_row));
@@ -1197,8 +1197,8 @@ void TranslateBubbleView::UpdateLanguageNames(
 }
 
 void TranslateBubbleView::UpdateInsets(TranslateBubbleModel::ViewState state) {
-  gfx::Insets kTabStateMargins = gfx::Insets(7, 16, 8, 12);
-  gfx::Insets kDialogStateMargins = gfx::Insets(5, 16, 16, 4);
+  gfx::Insets kTabStateMargins = gfx::Insets::TLBR(7, 16, 8, 12);
+  gfx::Insets kDialogStateMargins = gfx::Insets::TLBR(5, 16, 16, 4);
 
   if (state == TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
       state == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||

@@ -235,7 +235,8 @@ ContentSettingBubbleContents::ListItemContainer::ListItemContainer(
 void ContentSettingBubbleContents::ListItemContainer::AddItem(
     const ContentSettingBubbleModel::ListItem& item) {
   // Padding for list items and icons.
-  static constexpr gfx::Insets kTitleDescriptionListItemInset(3, 0, 13, 0);
+  static constexpr auto kTitleDescriptionListItemInset =
+      gfx::Insets::TLBR(3, 0, 13, 0);
 
   auto item_icon = std::make_unique<views::ImageView>();
   if (item.image) {
@@ -488,8 +489,8 @@ void ContentSettingBubbleContents::Init() {
   // Layout for the item list (blocked plugins and popups).
   if (!bubble_content.list_items.empty()) {
     auto list_item_container = std::make_unique<ListItemContainer>(this);
-    list_item_container->SetBorder(
-        views::CreateEmptyBorder(0, margins().left(), 0, margins().right()));
+    list_item_container->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, margins().left(), 0, margins().right())));
     auto scroll_view = std::make_unique<views::ScrollView>();
     list_item_container_ =
         scroll_view->SetContents(std::move(list_item_container));
@@ -567,7 +568,7 @@ void ContentSettingBubbleContents::Init() {
   // LayoutRowType::FULL_WIDTH need to not have them applied to look correct.
   const int left_margin = margins().left();
   const int right_margin = margins().right();
-  set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
+  set_margins(gfx::Insets::TLBR(margins().top(), 0, margins().bottom(), 0));
 
   for (LayoutRow& row : rows) {
     if (row.type != LayoutRowType::FULL_WIDTH) {
@@ -576,8 +577,8 @@ void ContentSettingBubbleContents::Init() {
                              ? provider->GetDistanceMetric(
                                    DISTANCE_SUBSECTION_HORIZONTAL_INDENT)
                              : 0);
-      row.view->SetBorder(
-          views::CreateEmptyBorder(0, row_left_margin, 0, right_margin));
+      row.view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(0, row_left_margin, 0, right_margin)));
     }
     AddChildView(std::move(row.view));
   }

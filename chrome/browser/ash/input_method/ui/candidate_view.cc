@@ -66,13 +66,12 @@ class ShortcutLabel : public views::Label {
     // candidate_label, like Chinese font for Chinese input method?
 
     // Setup paddings.
-    const gfx::Insets kVerticalShortcutLabelInsets(1, 6, 1, 6);
-    const gfx::Insets kHorizontalShortcutLabelInsets(1, 3, 1, 0);
+    const auto kVerticalShortcutLabelInsets = gfx::Insets::TLBR(1, 6, 1, 6);
+    const auto kHorizontalShortcutLabelInsets = gfx::Insets::TLBR(1, 3, 1, 0);
     const gfx::Insets insets = (orientation == ui::CandidateWindow::VERTICAL
                                     ? kVerticalShortcutLabelInsets
                                     : kHorizontalShortcutLabelInsets);
-    SetBorder(views::CreateEmptyBorder(insets.top(), insets.left(),
-                                       insets.bottom(), insets.right()));
+    SetBorder(views::CreateEmptyBorder(insets));
 
     SetElideBehavior(gfx::NO_ELIDE);
   }
@@ -151,7 +150,7 @@ std::unique_ptr<views::Label> CreateCandidateLabel(
 CandidateView::CandidateView(PressedCallback callback,
                              ui::CandidateWindow::Orientation orientation)
     : views::Button(std::move(callback)), orientation_(orientation) {
-  SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
+  SetBorder(views::CreateEmptyBorder(1));
 
   shortcut_label_ = AddChildView(std::make_unique<ShortcutLabel>(orientation));
   candidate_label_ = AddChildView(CreateCandidateLabel(orientation));
@@ -216,7 +215,7 @@ void CandidateView::SetHighlighted(bool highlighted) {
     }
   } else {
     SetBackground(nullptr);
-    SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
+    SetBorder(views::CreateEmptyBorder(1));
   }
   SchedulePaint();
 }

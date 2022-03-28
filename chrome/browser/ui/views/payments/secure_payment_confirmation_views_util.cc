@@ -124,7 +124,8 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
       title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetLineHeight(kTitleLineHeight);
-  title_label->SetBorder(views::CreateEmptyBorder(0, 0, kBodyInsets, 0));
+  title_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBodyInsets, 0)));
 
   return title_label;
 }

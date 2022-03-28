@@ -33,8 +33,9 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const gfx::Insets dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
-  SetBorder(views::CreateEmptyBorder(
-      0, dialog_insets.left(), trailing_vertical_space, dialog_insets.right()));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, dialog_insets.left(),
+                                                       trailing_vertical_space,
+                                                       dialog_insets.right())));
   if (menu_controller)
     set_context_menu_controller(menu_controller);
 
@@ -54,9 +55,9 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   secondary_text_->SetEnabledColor(kDeemphasizedTextColor);
   secondary_text_->SetElideBehavior(gfx::ELIDE_HEAD);
   secondary_text_->SetTooltipText(tooltip_text);
-  secondary_text_->SetBorder(views::CreateEmptyBorder(
+  secondary_text_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL),
-      0, 0));
+      0, 0)));
 }
 
 MediaGalleryCheckboxView::~MediaGalleryCheckboxView() = default;

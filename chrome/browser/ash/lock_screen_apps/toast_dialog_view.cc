@@ -53,12 +53,12 @@ ToastDialogView::ToastDialogView(const std::u16string& app_name,
       chrome::DialogIdentifier::LOCK_SCREEN_NOTE_APP_TOAST);
 
   SetArrow(views::BubbleBorder::NONE);
-  set_margins(
-      gfx::Insets(kDialogMessageMarginTopDp, kDialogMessageMarginStartDp,
-                  kDialogMessageMarginBottomDp, kDialogMessageMarginEndDp));
+  set_margins(gfx::Insets::TLBR(
+      kDialogMessageMarginTopDp, kDialogMessageMarginStartDp,
+      kDialogMessageMarginBottomDp, kDialogMessageMarginEndDp));
   set_title_margins(
-      gfx::Insets(kDialogTitleMarginTopDp, kDialogTitleMarginStartDp,
-                  kDialogTitleMarginBottomDp, kDialogTitleMarginEndDp));
+      gfx::Insets::TLBR(kDialogTitleMarginTopDp, kDialogTitleMarginStartDp,
+                        kDialogTitleMarginBottomDp, kDialogTitleMarginEndDp));
   set_shadow(views::BubbleBorder::STANDARD_SHADOW);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());

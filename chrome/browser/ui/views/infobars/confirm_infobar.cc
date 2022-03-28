@@ -33,9 +33,9 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
         GetDelegate()->GetButtonLabel(type)));
     button->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_TOAST_CONTROL_VERTICAL),
-                    0));
+        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_TOAST_CONTROL_VERTICAL),
+                        0));
     return button;
   };
 

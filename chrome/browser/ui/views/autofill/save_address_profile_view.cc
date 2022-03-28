@@ -77,10 +77,8 @@ void AddAddressSection(views::View* parent_view,
       .SetCollapseMargins(true)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/0,
-              /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->AddChildView(std::move(icon_view));
   row->AddChildView(std::move(view));
 }
@@ -266,10 +264,9 @@ SaveAddressProfileView::SaveAddressProfileView(
       .SetCollapseMargins(true)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL),
-              /*horizontal=*/0));
+          gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_CONTROL_LIST_VERTICAL),
+                          0));
 
   const std::string locale = g_browser_process->GetApplicationLocale();
   const AutofillProfile& profile = controller_->GetProfileToSave();
@@ -379,22 +376,23 @@ void SaveAddressProfileView::AlignIcons() {
     // Set views::kMarginsKey for flex layout to center the icon vertically with
     // the text in front of it. Label line height are guaranteed to be bigger
     // than kIconSize.
-    icon_view->SetProperty(views::kMarginsKey,
-                           gfx::Insets((label_line_height - kIconSize) / 2, 0));
+    icon_view->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH((label_line_height - kIconSize) / 2, 0));
   }
 
   int edit_button_height = edit_button_->GetPreferredSize().height();
   int height_difference = (edit_button_height - label_line_height) / 2;
   if (height_difference > 0) {
     // We need to push the `address_components_view` down.
-    address_components_view_->SetProperty(views::kMarginsKey,
-                                          gfx::Insets(height_difference, 0));
+    address_components_view_->SetProperty(
+        views::kMarginsKey, gfx::Insets::VH(height_difference, 0));
     edit_button_->SetProperty(views::kMarginsKey, gfx::Insets());
   } else {
     // We need to push the `edit_button` down.
     address_components_view_->SetProperty(views::kMarginsKey, gfx::Insets());
     edit_button_->SetProperty(views::kMarginsKey,
-                              gfx::Insets(-height_difference, 0));
+                              gfx::Insets::VH(-height_difference, 0));
   }
 }
 

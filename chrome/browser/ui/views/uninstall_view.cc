@@ -70,14 +70,14 @@ void UninstallView::SetupControls() {
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetProperty(
                       views::kMarginsKey,
-                      gfx::Insets(0, 0, unrelated_vertical_spacing, 0)),
+                      gfx::Insets::TLBR(0, 0, unrelated_vertical_spacing, 0)),
               // The "delete profile" check box.
               views::Builder<views::Checkbox>()
                   .CopyAddressTo(&delete_profile_)
                   .SetText(
                       l10n_util::GetStringUTF16(IDS_UNINSTALL_DELETE_PROFILE))
                   .SetProperty(views::kMarginsKey,
-                               gfx::Insets(0, checkbox_indent, 0, 0)));
+                               gfx::Insets::TLBR(0, checkbox_indent, 0, 0)));
 
   // Set default browser combo box. If the default should not or cannot be
   // changed, widgets are not shown. We assume here that if Chrome cannot
@@ -91,7 +91,7 @@ void UninstallView::SetupControls() {
       builder.AddChildren(
           views::Builder<views::View>().SetProperty(
               views::kMarginsKey,
-              gfx::Insets(related_vertical_spacing, 0, 0, 0)),
+              gfx::Insets::TLBR(related_vertical_spacing, 0, 0, 0)),
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
               .SetBetweenChildSpacing(related_horizontal_spacing)
@@ -107,7 +107,7 @@ void UninstallView::SetupControls() {
                           },
                           base::Unretained(this)))
                       .SetProperty(views::kMarginsKey,
-                                   gfx::Insets(0, checkbox_indent, 0, 0)),
+                                   gfx::Insets::TLBR(0, checkbox_indent, 0, 0)),
                   views::Builder<views::Combobox>()
                       .CopyAddressTo(&browsers_combo_)
                       .SetModel(this)
@@ -117,7 +117,8 @@ void UninstallView::SetupControls() {
 
   std::move(builder)
       .AddChild(views::Builder<views::View>().SetProperty(
-          views::kMarginsKey, gfx::Insets(related_vertical_small, 0, 0, 0)))
+          views::kMarginsKey,
+          gfx::Insets::TLBR(related_vertical_small, 0, 0, 0)))
       .BuildChildren();
 }
 

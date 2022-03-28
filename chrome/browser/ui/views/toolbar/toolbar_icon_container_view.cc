@@ -125,8 +125,9 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
       std::make_unique<views::FlexLayout>());
   flex_layout->SetCollapseMargins(true)
       .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
 }
 
 ToolbarIconContainerView::~ToolbarIconContainerView() {

@@ -1270,10 +1270,10 @@ void TabContainer::AddMessageLoopObserver() {
     constexpr int kTabStripAnimationHSlop = 60;
     mouse_watcher_ = std::make_unique<views::MouseWatcher>(
         std::make_unique<views::MouseWatcherViewHost>(
-            this,
-            gfx::Insets(0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
-                        kTabStripAnimationVSlop,
-                        base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
+            this, gfx::Insets::TLBR(
+                      0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
+                      kTabStripAnimationVSlop,
+                      base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
         this);
   }
   mouse_watcher_->Start(GetWidget()->GetNativeWindow());

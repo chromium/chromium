@@ -62,7 +62,7 @@ gfx::Insets GetCloseButtonSpacing() {
   auto* provider = ChromeLayoutProvider::Get();
   const gfx::Insets vector_button_insets =
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
-  return gfx::Insets(
+  return gfx::Insets::VH(
              provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL),
              GetElementSpacing()) -
          vector_button_insets;
@@ -95,9 +95,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     icon_->SizeToPreferredSize();
     icon_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_TOAST_LABEL_VERTICAL),
-                    0));
+        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_TOAST_LABEL_VERTICAL),
+                        0));
     AddChildView(icon_.get());
   }
 
@@ -111,9 +111,10 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
                                   gfx::kPlaceholderColor);
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
-    close_button->SetProperty(views::kMarginsKey,
-                              gfx::Insets(close_button_spacing.top(), 0,
-                                          close_button_spacing.bottom(), 0));
+    close_button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(close_button_spacing.top(), 0,
+                          close_button_spacing.bottom(), 0));
     close_button_ = AddChildView(std::move(close_button));
   }
 }
@@ -358,10 +359,11 @@ void InfoBarView::AssignWidthsSorted(Views* views, int available_width) {
 void InfoBarView::SetLabelDetails(views::Label* label) const {
   label->SizeToPreferredSize();
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetProperty(views::kMarginsKey,
-                     gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                     DISTANCE_TOAST_LABEL_VERTICAL),
-                                 0));
+  label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_TOAST_LABEL_VERTICAL),
+                      0));
 }
 
 void InfoBarView::LinkClicked(const ui::Event& event) {

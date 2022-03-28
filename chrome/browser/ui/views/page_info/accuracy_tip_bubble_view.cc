@@ -63,7 +63,8 @@ std::unique_ptr<views::View> CreateRow(const std::u16string& text,
   auto icon_view = std::make_unique<NonAccessibleImageView>();
   icon_view->SetImage(
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kVectorIconSize));
-  icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
+  icon_view->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(0, 0, 0, icon_margin));
   icon_view->SetProperty(views::kCrossAxisAlignmentKey,
                          views::LayoutAlignment::kStart);
   line->AddChildView(std::move(icon_view));
@@ -142,7 +143,7 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(vertical_margin, 0))
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(vertical_margin, 0))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

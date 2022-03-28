@@ -56,13 +56,13 @@ using views::View;
 // Spacing between this view and the anchor view.
 constexpr int kMarginDip = 10;
 
-constexpr gfx::Insets kMainViewInsets(4, 0);
-constexpr gfx::Insets kContentViewInsets(8, 0, 8, 16);
+constexpr auto kMainViewInsets = gfx::Insets::VH(4, 0);
+constexpr auto kContentViewInsets = gfx::Insets::TLBR(8, 0, 8, 16);
 constexpr int kMaxRows = 3;
 
 // Google icon.
 constexpr int kGoogleIconSizeDip = 16;
-constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 10);
+constexpr auto kGoogleIconInsets = gfx::Insets::TLBR(10, 10, 0, 10);
 
 // Info icon.
 constexpr int kDogfoodIconSizeDip = 20;
@@ -81,7 +81,8 @@ constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
 
 // Phonetics audio button.
-constexpr gfx::Insets kPhoneticsAudioButtonMarginInsets(0, 4, 0, 4);
+constexpr auto kPhoneticsAudioButtonMarginInsets =
+    gfx::Insets::TLBR(0, 4, 0, 4);
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
 constexpr int kPhoneticsAudioButtonBorderDip = 3;
 
@@ -133,9 +134,8 @@ View* AddHorizontalUiElements(
   auto* layout =
       labels_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0,
-                                                  /*bottom=*/0,
-                                                  /*right=*/kLabelSpacingDip));
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, 0, kLabelSpacingDip));
 
   for (const auto& element : elements) {
     switch (element->type) {
@@ -225,8 +225,7 @@ class ReportQueryView : public views::Button {
         .SetMainAxisAlignment(views::LayoutAlignment::kStart);
 
     dogfood_icon_ = AddChildView(std::make_unique<views::ImageView>());
-    dogfood_icon_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kDogfoodIconBorderDip)));
+    dogfood_icon_->SetBorder(views::CreateEmptyBorder(kDogfoodIconBorderDip));
 
     description_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
@@ -249,8 +248,8 @@ class ReportQueryView : public views::Button {
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithAlignment(views::LayoutAlignment::kEnd));
     report_label_->SetProperty(
-        views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
-                                        /*right=*/kReportQueryButtonMarginDip));
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, kReportQueryButtonMarginDip));
   }
 
   // Disallow copy and assign.
@@ -475,8 +474,7 @@ void QuickAnswersView::AddContentView() {
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kContentViewInsets)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/kLineSpacingDip,
-                              /*right=*/0));
+                  gfx::Insets::TLBR(0, 0, kLineSpacingDip, 0));
   content_view_->AddChildView(
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
   std::string loading =
@@ -498,7 +496,7 @@ void QuickAnswersView::AddSettingsButton() {
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
   settings_button_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kSettingsButtonBorderDip)));
+      views::CreateEmptyBorder(kSettingsButtonBorderDip));
 }
 
 void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
@@ -528,7 +526,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
   phonetics_audio_button_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPhoneticsAudioButtonBorderDip)));
+      views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
 }
 
 void QuickAnswersView::AddGoogleIcon() {

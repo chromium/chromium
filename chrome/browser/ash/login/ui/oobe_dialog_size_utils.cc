@@ -19,7 +19,7 @@ constexpr double kEightPrecent = 0.08;
 constexpr gfx::Size kMaxDialogSize{768, 768};
 // Min height should match --oobe-dialog-min-height;
 constexpr gfx::Size kMinDialogSize{464, 384};
-constexpr gfx::Insets kMinMargins{48, 48};
+constexpr gfx::Insets kMinMargins{48};
 
 // Sizes come from specs except min widths which are taken as maximal zoomed
 // display widths of smallest device ChromeTab (960x600).

@@ -231,8 +231,9 @@ ColorPickerView::ColorPickerView(
   // picker element, since that is the amount by which the color picker's
   // margins should be adjusted to make it visually align with other controls.
   gfx::Insets child_insets = elements_[0]->GetInsets();
-  SetProperty(views::kInternalPaddingKey,
-              gfx::Insets(0, child_insets.left(), 0, child_insets.right()));
+  SetProperty(
+      views::kInternalPaddingKey,
+      gfx::Insets::TLBR(0, child_insets.left(), 0, child_insets.right()));
 
   // Our children should take keyboard focus, not us.
   SetFocusBehavior(views::View::FocusBehavior::NEVER);

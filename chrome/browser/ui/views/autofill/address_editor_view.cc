@@ -61,7 +61,7 @@ void AddressEditorView::CreateEditorView() {
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kBetweenChildSpacing / 2, 0), kBetweenChildSpacing));
+      gfx::Insets::VH(kBetweenChildSpacing / 2, 0), kBetweenChildSpacing));
 
   for (const auto& field : controller_->editor_fields()) {
     CreateInputField(field);

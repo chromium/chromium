@@ -198,8 +198,8 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   // around them to align them vertically with the other vector icons.
   DCHECK_GE(icon_size, icon.Height());
   DCHECK_GE(icon_size, icon.Width());
-  gfx::Insets padding_border((icon_size - icon.Height()) / 2,
-                             (icon_size - icon.Width()) / 2);
+  auto padding_border = gfx::Insets::VH((icon_size - icon.Height()) / 2,
+                                        (icon_size - icon.Width()) / 2);
   if (!padding_border.IsEmpty()) {
     return gfx::Image(gfx::CanvasImageSource::CreatePadded(*icon.ToImageSkia(),
                                                            padding_border));

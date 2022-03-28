@@ -107,7 +107,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   // contents align with the title text.
   gfx::Insets insets = layout_provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
-  set_margins(insets + gfx::Insets(0, insets.left() + kIconSizeInDip, 0, 0));
+  set_margins(insets +
+              gfx::Insets::TLBR(0, insets.left() + kIconSizeInDip, 0, 0));
 
   std::u16string checkbox_label = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,

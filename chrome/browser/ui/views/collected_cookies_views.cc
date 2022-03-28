@@ -385,13 +385,13 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(
-          gfx::Insets(provider->GetDistanceMetric(
-                          views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
-                      0,
-                      provider->GetDistanceMetric(
-                          views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                      0));
+      .SetInteriorMargin(gfx::Insets::TLBR(
+          provider->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
+          0,
+          provider->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+          0));
 
   SetAcceptCallback(base::BindOnce(&CollectedCookiesViews::OnDialogClosed,
                                    base::Unretained(this)));

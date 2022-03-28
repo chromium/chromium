@@ -115,7 +115,7 @@ const views::View* SharingHubBubbleViewImpl::GetButtonContainerForTesting()
 
 void SharingHubBubbleViewImpl::Init() {
   const int kPadding = 8;
-  set_margins(gfx::Insets(kPadding, 0, kPadding, 0));
+  set_margins(gfx::Insets::TLBR(kPadding, 0, kPadding, 0));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
@@ -158,11 +158,8 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   share_link_label->SetMultiLine(true);
   share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  constexpr auto kPrimaryIconBorder = gfx::Insets(
-      /*top*/ kLabelLinePaddingTop,
-      /*left*/ kIndent,
-      /*bottom*/ kLabelLinePaddingBottom,
-      /*right*/ kIndent);
+  constexpr auto kPrimaryIconBorder = gfx::Insets::TLBR(
+      kLabelLinePaddingTop, kIndent, kLabelLinePaddingBottom, kIndent);
   share_link_label->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   share_link_label_ = action_list_view->AddChildView(share_link_label);
 

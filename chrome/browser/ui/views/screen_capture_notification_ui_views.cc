@@ -270,7 +270,7 @@ views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
 std::unique_ptr<views::NonClientFrameView>
 ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
     views::Widget* widget) {
-  constexpr auto kPadding = gfx::Insets(5, 10);
+  constexpr auto kPadding = gfx::Insets::VH(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
   SkColor color =

@@ -50,7 +50,7 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   // Prevent DCHECKing for our non-opaque background.
   SetTextSubpixelRenderingEnabled(false);
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBackToTabBorderThickness)));
+  SetBorder(views::CreateEmptyBorder(kBackToTabBorderThickness));
 
   const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));

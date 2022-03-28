@@ -73,7 +73,8 @@ system_display::LayoutPosition GetLayoutPositionFromMojo(
 }
 
 gfx::Insets GetInsets(const system_display::Insets& insets) {
-  return gfx::Insets(insets.top, insets.left, insets.bottom, insets.right);
+  return gfx::Insets::TLBR(insets.top, insets.left, insets.bottom,
+                           insets.right);
 }
 
 bool IsValidRotation(int rotation) {

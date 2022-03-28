@@ -43,8 +43,8 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
-  set_margins(gfx::Insets(kGrammarPaddingSize, kGrammarPaddingSize,
-                          kGrammarPaddingSize, kGrammarPaddingSize));
+  set_margins(gfx::Insets::TLBR(kGrammarPaddingSize, kGrammarPaddingSize,
+                                kGrammarPaddingSize, kGrammarPaddingSize));
 
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(

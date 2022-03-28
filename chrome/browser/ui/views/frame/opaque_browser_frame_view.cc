@@ -367,8 +367,9 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   constexpr int kResizeAreaCornerSize = 16;
   auto resize_border = FrameBorderInsets(false);
   if (base::i18n::IsRTL()) {
-    resize_border = gfx::Insets(resize_border.top(), resize_border.right(),
-                                resize_border.bottom(), resize_border.left());
+    resize_border =
+        gfx::Insets::TLBR(resize_border.top(), resize_border.right(),
+                          resize_border.bottom(), resize_border.left());
   }
   // The top resize border has extra thickness.
   resize_border.set_top(FrameTopBorderThickness(false));

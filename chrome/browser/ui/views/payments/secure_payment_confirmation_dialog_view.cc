@@ -45,7 +45,8 @@ class BorderedRowView : public views::View {
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(views::CreateSolidSidedBorder(
-        0, 0, 1, 0, GetColorProvider()->GetColor(ui::kColorSeparator)));
+        gfx::Insets::TLBR(0, 0, 1, 0),
+        GetColorProvider()->GetColor(ui::kColorSeparator)));
   }
 };
 

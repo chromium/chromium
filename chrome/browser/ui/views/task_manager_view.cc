@@ -345,7 +345,7 @@ void TaskManagerView::Init() {
       provider->GetInsetsMetric(views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
   // don't have a title.
-  const gfx::Insets content_insets(
+  const auto content_insets = gfx::Insets::TLBR(
       dialog_insets.top(), dialog_insets.left(),
       provider->GetDistanceMetric(
           views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),

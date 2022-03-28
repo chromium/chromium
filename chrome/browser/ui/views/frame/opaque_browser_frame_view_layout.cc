@@ -287,8 +287,8 @@ gfx::Insets OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets() const {
 }
 
 gfx::Insets OpaqueBrowserFrameViewLayout::RestoredFrameEdgeInsets() const {
-  return gfx::Insets(kTopFrameEdgeThickness, kSideFrameEdgeThickness,
-                     kSideFrameEdgeThickness, kSideFrameEdgeThickness);
+  return gfx::Insets::TLBR(kTopFrameEdgeThickness, kSideFrameEdgeThickness,
+                           kSideFrameEdgeThickness, kSideFrameEdgeThickness);
 }
 
 int OpaqueBrowserFrameViewLayout::NonClientExtraTopThickness() const {

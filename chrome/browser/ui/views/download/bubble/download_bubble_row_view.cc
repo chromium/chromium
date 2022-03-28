@@ -46,7 +46,7 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, icon_label_spacing));
+                             gfx::Insets::VH(0, icon_label_spacing));
   label_wrapper->SetProperty(views::kCrossAxisAlignmentKey,
                              views::LayoutAlignment::kStretch);
   label_wrapper->SetProperty(

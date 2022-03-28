@@ -68,11 +68,11 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT);
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description->SetBorder(
-      views::CreateEmptyBorder(0, 0, /*bottom=*/
-                               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_RELATED_CONTROL_VERTICAL_SMALL),
-                               0));
+  description->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_RELATED_CONTROL_VERTICAL_SMALL),
+                        0)));
   AddChildView(std::move(description));
 
   DCHECK(!controller_.unsynced_credentials().empty());
@@ -85,9 +85,9 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
         &PasswordSaveUnsyncedCredentialsLocallyView::ButtonPressed,
         base::Unretained(this), base::Unretained(checkbox)));
     checkbox->SetBorder(views::CreateEmptyBorder(
-        0, 0, 0, /*right=*/
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL)));
+        gfx::Insets::TLBR(0, 0, 0,
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL))));
     // Usually all passwords should be saved, so they're selected by default.
     checkbox->SetChecked(true);
     num_selected_checkboxes_++;

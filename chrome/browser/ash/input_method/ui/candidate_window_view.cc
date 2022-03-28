@@ -115,7 +115,7 @@ class InformationTextArea : public views::View {
       : min_width_(min_width) {
     label_ = new views::Label;
     label_->SetHorizontalAlignment(align);
-    label_->SetBorder(views::CreateEmptyBorder(2, 2, 2, 4));
+    label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(2, 2, 2, 4)));
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(label_);
@@ -151,7 +151,8 @@ class InformationTextArea : public views::View {
     if (!position_ || !GetWidget())
       return;
     SetBorder(views::CreateSolidSidedBorder(
-        (position_ == TOP) ? 1 : 0, 0, (position_ == BOTTOM) ? 1 : 0, 0,
+        gfx::Insets::TLBR((position_ == TOP) ? 1 : 0, 0,
+                          (position_ == BOTTOM) ? 1 : 0, 0),
         GetColorProvider()->GetColor(ui::kColorMenuBorder)));
   }
 

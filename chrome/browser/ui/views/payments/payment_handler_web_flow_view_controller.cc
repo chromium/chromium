@@ -112,8 +112,8 @@ class ReadOnlyOriginView : public views::View {
 
       // Pad to keep header as the same height as when the page title is valid.
       constexpr int kVerticalPadding = 10;
-      origin_label->SetBorder(
-          views::CreateEmptyBorder(kVerticalPadding, 0, kVerticalPadding, 0));
+      origin_label->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
     }
     // Turn off autoreadability because the computed |foreground| color takes
     // contrast into account.
@@ -146,7 +146,8 @@ class ReadOnlyOriginView : public views::View {
       app_icon_view->SetImageSize(gfx::Size(
           adjusted_width,
           IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
-      app_icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, 8));
+      app_icon_view->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(0, 0, 0, 8));
     }
   }
   ReadOnlyOriginView(const ReadOnlyOriginView&) = delete;

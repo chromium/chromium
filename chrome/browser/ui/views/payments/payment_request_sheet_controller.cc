@@ -199,7 +199,7 @@ class BorderedScrollView : public views::ScrollView {
     SetBorder(views::CreateBorderPainter(
         std::make_unique<BorderedScrollViewBorderPainter>(
             GetColorProvider()->GetColor(ui::kColorSeparator), this),
-        gfx::Insets(1, 0)));
+        gfx::Insets::VH(1, 0)));
   }
 };
 
@@ -452,7 +452,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
 
   auto container =
       views::Builder<views::TableLayoutView>()
-          .SetBorder(views::CreateEmptyBorder(gfx::Insets(16)))
+          .SetBorder(views::CreateEmptyBorder(16))
           .AddColumn(views::LayoutAlignment::kStart,
                      views::LayoutAlignment::kCenter,
                      views::TableLayout::kFixedSize,

@@ -224,10 +224,8 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/0,
-              /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   from_view = AddChildView(std::move(from_image));
 
@@ -268,10 +266,9 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
                                    /*adjust_height_for_width=*/true))
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL),
-              /*horizontal=*/0));
+          gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_CONTROL_LIST_VERTICAL),
+                          0));
 
   AddChildView(CreateDescription());
 

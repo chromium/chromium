@@ -27,7 +27,7 @@ ExpandableContainerView::DetailsView::DetailsView(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, 0, bottom_padding, 0),
+      gfx::Insets::TLBR(0, 0, bottom_padding, 0),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 

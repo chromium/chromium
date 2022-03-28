@@ -91,7 +91,7 @@ DeviceChooserContentView::DeviceChooserContentView(
         views::BoxLayout::MainAxisAlignment::kCenter);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    layout->set_inside_border_insets(gfx::Insets(0, 6));
+    layout->set_inside_border_insets(gfx::Insets::VH(0, 6));
     container->AddChildView(std::move(view));
     return container;
   };

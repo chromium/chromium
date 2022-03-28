@@ -204,7 +204,8 @@ TabStripScrollContainer::TabStripScrollContainer(
   // The space in dips between the scroll buttons and the NTB.
   constexpr int kScrollButtonsTrailingMargin = 8;
   trailing_scroll_button_->SetProperty(
-      views::kMarginsKey, gfx::Insets(0, 0, 0, kScrollButtonsTrailingMargin));
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, 0, 0, kScrollButtonsTrailingMargin));
 
   // The default layout orientation (kHorizontal) and cross axis alignment
   // (kStretch) work for our use case.

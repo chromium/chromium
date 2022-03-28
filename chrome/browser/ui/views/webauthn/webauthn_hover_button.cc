@@ -129,8 +129,8 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   const int vert_inset = is_two_line ? 8 : 12;
   constexpr int horz_inset = 8;
-  SetBorder(
-      views::CreateEmptyBorder(vert_inset, horz_inset, vert_inset, horz_inset));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(vert_inset, horz_inset, vert_inset, horz_inset)));
 }
 
 BEGIN_METADATA(WebAuthnHoverButton, HoverButton)

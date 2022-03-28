@@ -310,8 +310,10 @@ void MediaDialogView::Init() {
       live_caption_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets(kLiveCaptionHorizontalMarginDip,
-                          kLiveCaptionVerticalMarginDip),
+              // TODO(crbug.com/1305767): The order of the parameters to
+              // gfx::Insets::VH() seems wrong.
+              gfx::Insets::VH(kLiveCaptionHorizontalMarginDip,
+                              kLiveCaptionVerticalMarginDip),
               kLiveCaptionBetweenChildSpacing));
 
   auto live_caption_image = std::make_unique<views::ImageView>();

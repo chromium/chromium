@@ -132,7 +132,7 @@ void SendTabToSelfBubbleViewImpl::Init() {
   auto* provider = ChromeLayoutProvider::Get();
   const int top_margin = provider->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT);
-  set_margins(gfx::Insets(top_margin, 0, 0, 0));
+  set_margins(gfx::Insets::TLBR(top_margin, 0, 0, 0));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -161,15 +161,15 @@ void SendTabToSelfBubbleViewImpl::CreateHintTextLabel() {
   auto* provider = ChromeLayoutProvider::Get();
   container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(0, 0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                  0));
+      gfx::Insets::TLBR(0, 0,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                        0));
   auto* container_layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(0, provider->GetDistanceMetric(
-                             views::DISTANCE_BUTTON_HORIZONTAL_PADDING))));
+          gfx::Insets::VH(0, provider->GetDistanceMetric(
+                                 views::DISTANCE_BUTTON_HORIZONTAL_PADDING))));
   container_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 

@@ -28,8 +28,8 @@ BrowserFrameViewLayoutLinux::~BrowserFrameViewLayoutLinux() = default;
 
 gfx::Insets BrowserFrameViewLayoutLinux::MirroredFrameBorderInsets() const {
   auto border = FrameBorderInsets(false);
-  return base::i18n::IsRTL() ? gfx::Insets(border.top(), border.right(),
-                                           border.bottom(), border.left())
+  return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
+                                                 border.bottom(), border.left())
                              : border;
 }
 
@@ -67,8 +67,8 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   input_extents.Inset(-gfx::Insets(kResizeBorder));
   frame_extents.Union(input_extents);
 
-  return gfx::Insets(-frame_extents.y(), -frame_extents.x(),
-                     frame_extents.bottom(), frame_extents.right());
+  return gfx::Insets::TLBR(-frame_extents.y(), -frame_extents.x(),
+                           frame_extents.bottom(), frame_extents.right());
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {

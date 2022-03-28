@@ -217,8 +217,9 @@ void CookieControlsBubbleView::Init() {
   // TODO(crbug.com/1013092): The bubble should display a header view with full
   // width without having to tweak margins.
   gfx::Insets insets = margins();
-  set_margins(gfx::Insets(insets.top(), 0, insets.bottom(), 0));
-  SetBorder(views::CreateEmptyBorder(0, insets.left(), 0, insets.right()));
+  set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
 }
 
 void CookieControlsBubbleView::AddedToWidget() {

@@ -605,8 +605,8 @@ void ExtensionInstallDialogView::CreateContents() {
   const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
   extension_info_and_justification_container->SetBorder(
-      views::CreateEmptyBorder(0, content_insets.left(), 0,
-                               content_insets.right()));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, content_insets.left(), 0,
+                                                 content_insets.right())));
   extension_info_and_justification_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -661,13 +661,15 @@ void ExtensionInstallDialogView::CreateContents() {
   if (sections.empty() && !is_justification_field_enabled) {
     // Use a smaller margin between the title area and buttons, since there
     // isn't any content.
-    set_margins(gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                            0, 0, 0));
+    set_margins(
+        gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                          0, 0, 0));
     return;
   }
 
-  set_margins(gfx::Insets(content_insets.top(), 0, content_insets.bottom(), 0));
+  set_margins(
+      gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
   for (ExtensionInfoSection& section : sections) {
     views::Label* header_label = new views::Label(

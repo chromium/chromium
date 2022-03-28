@@ -164,7 +164,8 @@ void NewBadgeLabel::UpdatePaddingForNewBadge() {
 
   // If there is right-padding, ensure that layouts understand it can be
   // collapsed into a margin.
-  SetProperty(views::kInternalPaddingKey, gfx::Insets(0, 0, 0, right_padding));
+  SetProperty(views::kInternalPaddingKey,
+              gfx::Insets::TLBR(0, 0, 0, right_padding));
 }
 
 void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {

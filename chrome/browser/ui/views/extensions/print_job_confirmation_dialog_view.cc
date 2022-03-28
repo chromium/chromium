@@ -113,8 +113,8 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
   // contents align with the title text.
   set_margins(
       margins() +
-      gfx::Insets(0, margins().left() + extension_misc::EXTENSION_ICON_SMALL, 0,
-                  0));
+      gfx::Insets::TLBR(
+          0, margins().left() + extension_misc::EXTENSION_ICON_SMALL, 0, 0));
 
   auto heading = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(

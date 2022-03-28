@@ -344,7 +344,8 @@ void Tab::Layout() {
     const int left = std::min(after_title_padding, close_x);
     const int bottom = height() - close_button_size - top;
     const int right = std::max(0, width() - (close_x + close_button_size));
-    close_button_->SetButtonPadding(gfx::Insets(top, left, bottom, right));
+    close_button_->SetButtonPadding(
+        gfx::Insets::TLBR(top, left, bottom, right));
     close_button_->SetBoundsRect(
         {gfx::Point(close_x - left, 0), close_button_->GetPreferredSize()});
   }

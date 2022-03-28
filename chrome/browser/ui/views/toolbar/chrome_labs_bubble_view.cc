@@ -55,11 +55,11 @@ class ChromeLabsFooter : public views::View {
                          views::FlexSpecification(
                              views::MinimumFlexSizeRule::kPreferred,
                              views::MaximumFlexSizeRule::kPreferred, true))
-            .SetBorder(views::CreateEmptyBorder(
-                gfx::Insets(0, 0,
-                            views::LayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                            0)))
+            .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+                0, 0,
+                views::LayoutProvider::Get()->GetDistanceMetric(
+                    views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                0)))
             .Build());
     AddChildView(views::Builder<views::MdTextButton>()
                      .CopyAddressTo(&restart_button_)

@@ -337,7 +337,7 @@ void TabLayer::SetProperties(int id,
   front_border_->SetAperture(border_resource->aperture());
   front_border_->SetBorder(border_resource->Border(
       border_size,
-      gfx::InsetsF(1.f, side_border_scale, 1.f, side_border_scale)));
+      gfx::InsetsF::TLBR(1.f, side_border_scale, 1.f, side_border_scale)));
 
   front_border_inner_shadow_->SetUIResourceId(
       border_inner_shadow_resource->ui_resource()->id());

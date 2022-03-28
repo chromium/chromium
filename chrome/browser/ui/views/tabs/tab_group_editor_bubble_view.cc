@@ -89,8 +89,8 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 
   const gfx::Insets control_insets =
       ui::TouchUiController::Get()->touch_ui()
-          ? gfx::Insets(5 * vertical_spacing / 4, horizontal_spacing)
-          : gfx::Insets(vertical_spacing, horizontal_spacing);
+          ? gfx::Insets::VH(5 * vertical_spacing / 4, horizontal_spacing)
+          : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
 
   auto button = CreateBubbleMenuItem(button_id, name, callback, icon);
   button->SetBorder(views::CreateEmptyBorder(control_insets));
@@ -450,15 +450,17 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(gfx::Insets(vertical_spacing, 0));
+      .SetInteriorMargin(gfx::Insets::VH(vertical_spacing, 0));
 
-  title_field_->SetProperty(views::kMarginsKey,
-                            gfx::Insets(vertical_spacing, horizontal_spacing));
+  title_field_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 
   color_selector_->SetProperty(views::kMarginsKey,
-                               gfx::Insets(0, horizontal_spacing));
+                               gfx::Insets::VH(0, horizontal_spacing));
 
-  separator->SetProperty(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+  separator->SetProperty(views::kMarginsKey,
+                         gfx::Insets::VH(vertical_spacing, 0));
 
   // The save_group_line_container is only created if the
   // feature::kTabGroupsSave is enabled.
@@ -473,7 +475,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
 
     save_group_icon->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(0, 0, 0, new_tab_menu_item->GetImageLabelSpacing()));
+        gfx::Insets::TLBR(0, 0, 0, new_tab_menu_item->GetImageLabelSpacing()));
 
     save_group_line_container
         ->SetLayoutManager(std::make_unique<views::FlexLayout>())

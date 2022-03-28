@@ -206,8 +206,8 @@ void PermissionPromptBubbleView::AddRequestLine(
   auto* line_container = AddChildView(std::make_unique<views::View>());
   line_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, provider->GetDistanceMetric(
-                         DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
+      gfx::Insets::VH(0, provider->GetDistanceMetric(
+                             DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
   constexpr int kPermissionIconSize = 18;

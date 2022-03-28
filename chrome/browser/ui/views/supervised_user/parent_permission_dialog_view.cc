@@ -209,8 +209,8 @@ class ParentPermissionInputSection : public views::TextfieldController {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
     const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
         views::DialogContentType::kControl, views::DialogContentType::kControl);
-    view->SetBorder(views::CreateEmptyBorder(0, content_insets.left(), 0,
-                                             content_insets.right()));
+    view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, content_insets.left(), 0, content_insets.right())));
 
     // Add to main view.
     main_view->AddChildView(std::move(view));
@@ -437,15 +437,17 @@ void ParentPermissionDialogView::CreateContents() {
   const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
   const int content_width = GetPreferredSize().width() - content_insets.width();
-  set_margins(gfx::Insets(content_insets.top(), 0, content_insets.bottom(), 0));
+  set_margins(
+      gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
   // Extension-specific views.
   if (params_->extension && !prompt_permissions_.permissions.empty()) {
     auto install_permissions_section_container =
         std::make_unique<views::View>();
-    install_permissions_section_container->SetBorder(views::CreateEmptyBorder(
-        kPermissionSectionPaddingTop, content_insets.left(),
-        kPermissionSectionPaddingBottom, content_insets.right()));
+    install_permissions_section_container->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(
+            kPermissionSectionPaddingTop, content_insets.left(),
+            kPermissionSectionPaddingBottom, content_insets.right())));
     install_permissions_section_container->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -471,8 +473,8 @@ void ParentPermissionDialogView::CreateContents() {
     permissions_header->SetMultiLine(true);
     permissions_header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     permissions_header->SizeToFit(content_width);
-    permissions_header->SetBorder(views::CreateEmptyBorder(
-        0, content_insets.left(), 0, content_insets.right()));
+    permissions_header->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, content_insets.left(), 0, content_insets.right())));
 
     // Add this outside the scrolling section, so it can't be obscured by
     // scrolling.
@@ -514,8 +516,8 @@ void ParentPermissionDialogView::CreateContents() {
   auto invalid_credential_label = std::make_unique<MaybeEmptyLabel>("", font);
 
   invalid_credential_label->SetBorder(views::CreateEmptyBorder(
-      kInvalidCredentialLabelTopPadding, content_insets.left(), 0,
-      content_insets.right()));
+      gfx::Insets::TLBR(kInvalidCredentialLabelTopPadding,
+                        content_insets.left(), 0, content_insets.right())));
   invalid_credential_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   invalid_credential_label->SetMultiLine(true);
   invalid_credential_label->SizeToFit(content_width);

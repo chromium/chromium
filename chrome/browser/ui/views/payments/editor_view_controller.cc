@@ -50,8 +50,8 @@ class ErrorLabelView : public views::Label {
     SetMultiLine(true);
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     constexpr int kErrorLabelTopPadding = 6;
-    SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kErrorLabelTopPadding, 0, 0, 0)));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)));
   }
 
   // views::Label:
@@ -228,9 +228,9 @@ std::unique_ptr<views::View> EditorViewController::CreateEditorView() {
   // |______|__________|______________|_________|____________|_________________|
   constexpr int kInputRowSpacing = 12;
 
-  editor_view->SetBorder(views::CreateEmptyBorder(
+  editor_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kInputRowSpacing, payments::kPaymentRequestRowHorizontalInsets, 0,
-      payments::kPaymentRequestRowHorizontalInsets));
+      payments::kPaymentRequestRowHorizontalInsets)));
 
   editor_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

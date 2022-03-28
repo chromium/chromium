@@ -112,7 +112,8 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
           vector_icons::kDescriptionIcon, ui::kColorIcon, kIconSize)));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  icon->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
+  icon->SetProperty(views::kMarginsKey,
+                    gfx::Insets::TLBR(0, 0, 0, icon_margin));
 
   // File name list.
   std::vector<std::u16string> file_names;

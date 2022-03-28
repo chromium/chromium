@@ -256,7 +256,8 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
   checkbox_label->AddStyleRange(before_link_range, checkbox_style);
 
   // Shift the text down to align with the checkbox.
-  checkbox_label->SetBorder(views::CreateEmptyBorder(3, 0, 0, 0));
+  checkbox_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(3, 0, 0, 0)));
 
   auto clear_site_data_checkbox =
       std::make_unique<views::Checkbox>(std::u16string());

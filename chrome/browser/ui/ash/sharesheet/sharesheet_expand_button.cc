@@ -23,8 +23,8 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
     : Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kExpandButtonInsideBorderInsetsVertical,
-                  kExpandButtonInsideBorderInsetsHorizontal),
+      gfx::Insets::VH(kExpandButtonInsideBorderInsetsVertical,
+                      kExpandButtonInsideBorderInsetsHorizontal),
       kExpandButtonBetweenChildSpacing, true));
   // Sets all views to be center-aligned along the orientation axis.
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);

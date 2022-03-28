@@ -509,9 +509,9 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                         .SetTextContext(
                             ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                        .SetBorder(views::CreateEmptyBorder(
+                        .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                             vertical_spacing, horizontal_spacing,
-                            vertical_spacing, horizontal_spacing)),
+                            vertical_spacing, horizontal_spacing))),
                     // Empty section for the menu items. Items
                     // will be populated later.
                     views::Builder<views::BoxLayoutView>()
@@ -536,8 +536,8 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                   .CopyAddressTo(&site_access_message_)
                   .SetVisible(false)
                   .SetBorder(views::CreateEmptyBorder(
-                      gfx::Insets(vertical_spacing, horizontal_spacing,
-                                  vertical_spacing, horizontal_spacing)))
+                      gfx::Insets::TLBR(vertical_spacing, horizontal_spacing,
+                                        vertical_spacing, horizontal_spacing)))
                   .SetTextContext(
                       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL))
 

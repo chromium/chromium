@@ -68,9 +68,9 @@ FileSystemConfirmationModal::FileSystemConfirmationModal(
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_OK, accept_button);
   // Set the message to be shown.
   std::unique_ptr<views::Label> view = std::make_unique<views::Label>(message_);
-  view->SetBorder(
-      views::CreateEmptyBorder(kMessageMarginHorizontal, kMessageMarginLeft,
-                               kMessageMarginHorizontal, kMessageMarginRight));
+  view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kMessageMarginHorizontal, kMessageMarginLeft,
+                        kMessageMarginHorizontal, kMessageMarginRight)));
   view->SetMultiLine(true);
   view->SizeToFit(kModalWidth);
   view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);

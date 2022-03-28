@@ -112,7 +112,7 @@ void RelaunchRecommendedBubbleView::Init() {
                            ChromeLayoutProvider::Get()->GetDistanceMetric(
                                DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE);
   label->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, title_offset - margins().left(), 0, 0)));
+      gfx::Insets::TLBR(0, title_offset - margins().left(), 0, 0)));
 
   AddChildView(std::move(label));
 

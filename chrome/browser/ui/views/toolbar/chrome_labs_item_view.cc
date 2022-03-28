@@ -112,9 +112,9 @@ ChromeLabsItemView::ChromeLabsItemView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      DISTANCE_CONTROL_LIST_VERTICAL),
-                  0)));
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_CONTROL_LIST_VERTICAL),
+                      0)));
 
   experiment_name_ =
       AddChildView(std::make_unique<NewBadgeLabel>(lab.visible_name));
@@ -141,10 +141,10 @@ ChromeLabsItemView::ChromeLabsItemView(
                            views::MinimumFlexSizeRule::kPreferred,
                            views::MaximumFlexSizeRule::kPreferred, true))
           .SetBorder(views::CreateEmptyBorder(
-              gfx::Insets(0, 0,
-                          views::LayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                          0)))
+              gfx::Insets::TLBR(0, 0,
+                                views::LayoutProvider::Get()->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                                0)))
           .Build());
 
   // It may cause confusion if screen readers read out all experiments and
@@ -209,7 +209,7 @@ ChromeLabsItemView::ChromeLabsItemView(
                       l10n_util::GetStringUTF16(IDS_CHROMELABS_SEND_FEEDBACK))
                   .SetProperty(
                       views::kMarginsKey,
-                      gfx::Insets(
+                      gfx::Insets::TLBR(
                           0,
                           views::LayoutProvider::Get()->GetDistanceMetric(
                               views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
