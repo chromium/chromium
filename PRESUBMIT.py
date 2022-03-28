@@ -4479,8 +4479,9 @@ def ChecksCommon(input_api, output_api):
         input_api.RunTests(
             input_api.canned_checks.CheckVPythonSpec(input_api, output_api)))
 
+    dirmd = 'dirmd.bat' if input_api.is_windows else 'dirmd'
     dirmd_bin = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                       'third_party', 'depot_tools', 'dirmd')
+                                       'third_party', 'depot_tools', dirmd)
     results.extend(
         input_api.RunTests(
             input_api.canned_checks.CheckDirMetadataFormat(
