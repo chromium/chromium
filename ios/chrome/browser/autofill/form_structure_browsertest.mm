@@ -349,10 +349,11 @@ namespace {
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
   static std::set<std::string> failing_test_names{
-      // TODO(crbug.com/1187842): This page contains iframes. Until filling
+      // TODO(crbug.com/1187842): These pages contains iframes. Until filling
       // across iframes is also supported on iOS, iOS has has different
       // expectations compared to non-iOS platforms.
       "049_register_ebay.com.html",
+      "148_payment_dickblick.com.html",
   };
   return failing_test_names;
 }

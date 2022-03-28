@@ -326,6 +326,7 @@ TEST_P(FormCacheIframeBrowserTest, ExtractFramesTwice) {
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
+// TODO(crbug.com/1117028) Adjust expectations when we omit invisible iframes.
 TEST_P(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
   LoadHTML(R"(
     <form id="form1">
@@ -351,7 +352,8 @@ TEST_P(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
-  EXPECT_TRUE(forms.updated_forms.empty());
+  EXPECT_THAT(forms.updated_forms,
+              UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
   iframe1.SetAttribute("style", "display: block;");
@@ -363,8 +365,7 @@ TEST_P(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
   ASSERT_GT(GetSize(iframe3), 0);
 
   forms = form_cache.ExtractNewForms(nullptr);
-  EXPECT_THAT(forms.updated_forms,
-              UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
+  EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
 
   iframe2.SetAttribute("style", "display: none;");
@@ -375,8 +376,8 @@ TEST_P(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
   ASSERT_LE(GetSize(iframe3), 0);
 
   forms = form_cache.ExtractNewForms(nullptr);
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form1")));
-  EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
+  EXPECT_TRUE(forms.updated_forms.empty());
+  EXPECT_TRUE(forms.removed_forms.empty());
 }
 
 TEST_P(ParameterizedFormCacheBrowserTest, ExtractFormsAfterModification) {
