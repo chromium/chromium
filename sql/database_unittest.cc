@@ -739,6 +739,27 @@ TEST_P(SQLDatabaseTest, Raze) {
   }
 }
 
+TEST_P(SQLDatabaseTest, RazeDuringSelect) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(1)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(2)"));
+
+  {
+    // SELECT implicitly creates a transaction while it's executing. This
+    // implicit transaction will not be caught by Raze()'s checks.
+    Statement select(db_->GetUniqueStatement("SELECT id FROM rows"));
+    ASSERT_TRUE(select.Step());
+    EXPECT_FALSE(db_->Raze()) << "Raze() should fail while SELECT is executing";
+  }
+
+  {
+    Statement count(db_->GetUniqueStatement("SELECT COUNT(*) FROM rows"));
+    ASSERT_TRUE(count.Step());
+    EXPECT_EQ(2, count.ColumnInt(0)) << "Raze() deleted some data";
+  }
+}
+
 // Helper for SQLDatabaseTest.RazePageSize.  Creates a fresh db based on
 // db_prefix, with the given initial page size, and verifies it against the
 // expected size.  Then changes to the final page size and razes, verifying that
