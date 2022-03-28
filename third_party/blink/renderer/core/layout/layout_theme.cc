@@ -597,9 +597,10 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
 Color LayoutTheme::DefaultSystemColor(
     CSSValueID css_value_id,
     mojom::blink::ColorScheme color_scheme) const {
+  // The source for the deprecations commented on below is
+  // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
+
   switch (css_value_id) {
-    case CSSValueID::kActiveborder:
-      return 0xFFFFFFFF;
     case CSSValueID::kActivecaption:
       return 0xFFCCCCCC;
     case CSSValueID::kActivetext:
@@ -609,7 +610,15 @@ Color LayoutTheme::DefaultSystemColor(
                                                               : 0xFFFFFFFF;
     case CSSValueID::kBackground:
       return 0xFF6363CE;
+
     case CSSValueID::kButtonborder:
+    // The following system colors were deprecated to default to ButtonBorder
+    case CSSValueID::kActiveborder:
+    case CSSValueID::kInactiveborder:
+    case CSSValueID::kThreeddarkshadow:
+    case CSSValueID::kThreedhighlight:
+    case CSSValueID::kThreedlightshadow:
+    case CSSValueID::kThreedshadow:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
                                                               : 0xFF767676;
     case CSSValueID::kButtonface:
@@ -638,8 +647,6 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kHighlighttext:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
-    case CSSValueID::kInactiveborder:
-      return 0xFFFFFFFF;
     case CSSValueID::kInactivecaption:
       return 0xFFFFFFFF;
     case CSSValueID::kInactivecaptiontext:
@@ -667,16 +674,8 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kText:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
-    case CSSValueID::kThreeddarkshadow:
-      return 0xFF666666;
     case CSSValueID::kThreedface:
       return 0xFFC0C0C0;
-    case CSSValueID::kThreedhighlight:
-      return 0xFFDDDDDD;
-    case CSSValueID::kThreedlightshadow:
-      return 0xFFC0C0C0;
-    case CSSValueID::kThreedshadow:
-      return 0xFF888888;
     case CSSValueID::kVisitedtext:
       return 0xFF551A8B;
     case CSSValueID::kWindow:
@@ -719,6 +718,13 @@ Color LayoutTheme::SystemColorFromNativeTheme(
       break;
     case CSSValueID::kButtonborder:
     case CSSValueID::kButtontext:
+    // Deprecated colors, see DefaultSystemColor().
+    case CSSValueID::kActiveborder:
+    case CSSValueID::kInactiveborder:
+    case CSSValueID::kThreeddarkshadow:
+    case CSSValueID::kThreedhighlight:
+    case CSSValueID::kThreedlightshadow:
+    case CSSValueID::kThreedshadow:
       theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonText;
       break;
     case CSSValueID::kGraytext:
