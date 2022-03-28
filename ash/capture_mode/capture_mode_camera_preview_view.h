@@ -5,9 +5,24 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_CAMERA_PREVIEW_VIEW_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CAMERA_PREVIEW_VIEW_H_
 
+#include "ash/capture_mode/camera_video_frame_renderer.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
+
+namespace media {
+struct VideoCaptureFormat;
+}  // namespace media
+
+namespace video_capture::mojom {
+class VideoSource;
+}  // namespace video_capture::mojom
+
+namespace views {
+class NativeViewHost;
+}  // namespace views
 
 namespace ash {
 
@@ -20,23 +35,31 @@ class CameraPreviewView : public views::View {
  public:
   METADATA_HEADER(CameraPreviewView);
 
-  CameraPreviewView(CaptureModeCameraController* camera_controller,
-                    const gfx::Size& preview_view_preferred_size);
+  CameraPreviewView(
+      CaptureModeCameraController* camera_controller,
+      const CameraId& camera_id,
+      const gfx::Size& preferred_size,
+      mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
+      const media::VideoCaptureFormat& capture_format);
   CameraPreviewView(const CameraPreviewView&) = delete;
   CameraPreviewView& operator=(const CameraPreviewView&) = delete;
   ~CameraPreviewView() override;
 
-  CaptureModeButton* resize_button_for_test() const { return resize_button_; }
+  const CameraId& camera_id() const { return camera_id_; }
 
- protected:
   // views::View:
+  void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void Layout() override;
 
+  CaptureModeButton* resize_button_for_test() const { return resize_button_; }
+
  private:
+  friend class CaptureModeTestApi;
+
   // Called when the resize button is clicked or touched.
   void OnResizeButtonPressed();
 
@@ -48,7 +71,25 @@ class CameraPreviewView : public views::View {
   // expand button or collapse button.
   void UpdateResizeButtonTooltip();
 
+  // Located events within the bounds of this view should be sent to, and
+  // handled by this view only (e.g. for drag and drop). They should not be sent
+  // to any native window hosting the camera video frames, otherwise we will
+  // lose those events. This function disable event targeting for the
+  // `camera_video_host_view_` and all the native windows it is hosting.
+  void DisableEventHandlingInCameraVideoHostHierarchy();
+
   CaptureModeCameraController* const camera_controller_;
+
+  // The ID of the camera for which this preview was created.
+  const CameraId camera_id_;
+
+  // Renders the camera video frames into its `host_window()`.
+  CameraVideoFrameRenderer camera_video_renderer_;
+
+  // The view that hosts the native window `host_window()` of the
+  // `camera_video_renderer_` into this view's hierarchy.
+  views::NativeViewHost* const camera_video_host_view_;
+
   CaptureModeButton* const resize_button_;
 };
 

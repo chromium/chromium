@@ -100,6 +100,11 @@ class CameraVideoFrameHandler : public video_capture::mojom::VideoFrameHandler {
   void OnStartedUsingGpuDecode() override;
   void OnStopped() override;
 
+  // The `kGpuMemoryBuffer` type is requested only when running on an actual
+  // device. This allows force-requesting them even when running on
+  // linux-chromeos for unit testing purposes.
+  static void SetForceUseGpuMemoryBufferForTest(bool value);
+
  private:
   // Called when a video frame is destroyed, which was backed by a buffer whose
   // ID is the given `buffer_id`. This lets us inform the video capture

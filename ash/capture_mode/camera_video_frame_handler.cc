@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/capture_mode/camera_video_frame_handler.h"
+#include <iostream>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -10,11 +11,13 @@
 #include "base/system/sys_info.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -31,6 +34,8 @@ namespace ash {
 
 namespace {
 
+bool g_force_use_gpu_memory_buffer_for_test = false;
+
 // A constant flag that describes which APIs the shared image mailboxes created
 // for the video frame will be used with.
 constexpr uint32_t kSharedImageUsage =
@@ -38,19 +43,45 @@ constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 // The usage of the GpuMemoryBuffer that backs the video frames on an actual
-// device. The buffer is going to be presented on the screen for rendering, will
-// be used as a texture, and can be read by CPU and potentially a video encode
-// accelerator.
+// device (of type `NATIVE_PIXMAP`). The buffer is going to be presented on the
+// screen for rendering, will be used as a texture, and can be read by CPU and
+// potentially a video encode accelerator.
 constexpr gfx::BufferUsage kGpuMemoryBufferUsage =
     gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
+
+// The usage of the GpuMemoryBuffer that backs the video frames in unittests,
+// since the type of that buffer will be `SHARED_MEMORY_BUFFER` which doesn't
+// support the above on-device usage.
+constexpr gfx::BufferUsage kGpuMemoryBufferUsageForTest =
+    gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
 
 // The only supported video pixel format used on devices is `PIXEL_FORMAT_NV12`.
 // This maps to a buffer format of `YUV_420_BIPLANAR`.
 constexpr gfx::BufferFormat kGpuMemoryBufferFormat =
     gfx::BufferFormat::YUV_420_BIPLANAR;
 
+// In unittests, the video pixel format used is `PIXEL_FORMAT_ARGB`, since the
+// video frames are painted and verified manually using Skia. The buffer format
+// used for this is `BGRA_8888`.
+constexpr gfx::BufferFormat kGpuMemoryBufferFormatForTest =
+    gfx::BufferFormat::BGRA_8888;
+
+gfx::BufferUsage GetBufferUsage() {
+  return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferUsageForTest
+                                                : kGpuMemoryBufferUsage;
+}
+
+gfx::BufferFormat GetBufferFormat() {
+  return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferFormatForTest
+                                                : kGpuMemoryBufferFormat;
+}
+
 ui::ContextFactory* GetContextFactory() {
   return aura::Env::GetInstance()->context_factory();
+}
+
+bool IsGpuBufferTypeSupported(gfx::GpuMemoryBufferType type) {
+  return type == gfx::NATIVE_PIXMAP || type == gfx::SHARED_MEMORY_BUFFER;
 }
 
 // Adjusts the requested video capture `params` depending on whether we're
@@ -59,7 +90,8 @@ void AdjustParamsForCurrentConfig(media::VideoCaptureParams* params) {
   DCHECK(params);
 
   // The default params are good enough when running on linux-chromeos.
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
+  if (!base::SysInfo::IsRunningOnChromeOS() &&
+      !g_force_use_gpu_memory_buffer_for_test) {
     DCHECK_EQ(params->buffer_type,
               media::VideoCaptureBufferType::kSharedMemory);
     return;
@@ -89,8 +121,8 @@ std::vector<gfx::BufferPlane> CreateGpuBufferPlanes() {
 // to our GPU buffer usage, buffer format, and the given `context_capabilities`.
 uint32_t CalculateBufferTextureTarget(
     const gpu::Capabilities& context_capabilities) {
-  return gpu::GetBufferTextureTarget(
-      kGpuMemoryBufferUsage, kGpuMemoryBufferFormat, context_capabilities);
+  return gpu::GetBufferTextureTarget(GetBufferUsage(), GetBufferFormat(),
+                                     context_capabilities);
 }
 
 // -----------------------------------------------------------------------------
@@ -177,7 +209,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         buffer_texture_target_(CalculateBufferTextureTarget(
             context_provider_->ContextCapabilities())) {
     DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
-    DCHECK_EQ(gpu_memory_buffer_handle_.type, gfx::NATIVE_PIXMAP);
+    DCHECK(IsGpuBufferTypeSupported(gpu_memory_buffer_handle_.type));
     DCHECK(context_provider_);
     context_provider_->AddObserver(this);
   }
@@ -240,6 +272,28 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   }
 
  private:
+  // Creates and returns a new `GpuMemoryBuffer` from a cloned handle of our
+  // `gpu_memory_buffer_handle_`. The type of the buffer depends on the type of
+  // the handle and can only be either `NATIVE_PIXMAP` or
+  // `SHARED_MEMORY_BUFFER`.
+  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBufferFromHandle(
+      const gfx::Size& size) {
+    const auto buffer_format = GetBufferFormat();
+    const auto buffer_usage = GetBufferUsage();
+    if (gpu_memory_buffer_handle_.type == gfx::NATIVE_PIXMAP) {
+      return gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+          client_native_pixmap_factory_.get(),
+          gpu_memory_buffer_handle_.Clone(), size, buffer_format, buffer_usage,
+          base::DoNothing());
+    }
+
+    DCHECK_EQ(gpu_memory_buffer_handle_.type, gfx::SHARED_MEMORY_BUFFER);
+    DCHECK(g_force_use_gpu_memory_buffer_for_test);
+    return gpu::GpuMemoryBufferImplSharedMemory::CreateFromHandle(
+        gpu_memory_buffer_handle_.Clone(), size, buffer_format, buffer_usage,
+        base::DoNothing());
+  }
+
   // Initializes this holder by creating shared images and storing them in
   // `mailboxes_`. These shared images are backed by a GpuMemoryBuffer whose
   // handle is a clone of our `gpu_memory_buffer_handle_`. This operation should
@@ -257,12 +311,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     // to create a new GpuMemoryBuffer which will be used to create the shared
     // images. This way, the lifetime of our `gpu_memory_buffer_handle_` remains
     // tied to the lieftime of this object (i.e. until `OnBufferRetired()` is
-    // called.
+    // called).
     std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-        gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-            client_native_pixmap_factory_.get(),
-            gpu_memory_buffer_handle_.Clone(), frame_info->coded_size,
-            kGpuMemoryBufferFormat, kGpuMemoryBufferUsage, base::DoNothing());
+        CreateGpuMemoryBufferFromHandle(frame_info->coded_size);
 
     if (!gmb) {
       LOG(ERROR) << "Failed to create a GpuMemoryBuffer.";
@@ -278,8 +329,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
       mailboxes_[plane] = shared_image_interface->CreateSharedImage(
           gmb.get(), gmb_manager, buffer_planes_[plane],
-          *(frame_info->color_space), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, kSharedImageUsage);
+          frame_info->color_space.value_or(gfx::ColorSpace()),
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage);
     }
 
     // Since this is the first time we create the shared images in `mailboxes_`,
@@ -297,7 +348,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(!should_create_shared_images_);
 
     if (frame_info->pixel_format !=
-        media::VideoPixelFormat::PIXEL_FORMAT_NV12) {
+            media::VideoPixelFormat::PIXEL_FORMAT_NV12 &&
+        frame_info->pixel_format !=
+            media::VideoPixelFormat::PIXEL_FORMAT_ARGB) {
       LOG(ERROR) << "Unsupported pixel format";
       return {};
     }
@@ -317,7 +370,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     mailbox_holder_sync_token_.Clear();
 
     auto frame = media::VideoFrame::WrapNativeTextures(
-        media::VideoPixelFormat::PIXEL_FORMAT_NV12, mailbox_holder_array,
+        frame_info->pixel_format, mailbox_holder_array,
         base::BindOnce(&GpuMemoryBufferHandleHolder::OnMailboxReleased,
                        weak_ptr_factory_.GetWeakPtr()),
         frame_info->coded_size, frame_info->visible_rect,
@@ -512,6 +565,11 @@ void CameraVideoFrameHandler::OnStarted() {}
 void CameraVideoFrameHandler::OnStartedUsingGpuDecode() {}
 
 void CameraVideoFrameHandler::OnStopped() {}
+
+// static
+void CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(bool value) {
+  g_force_use_gpu_memory_buffer_for_test = value;
+}
 
 void CameraVideoFrameHandler::OnVideoFrameGone(int buffer_id) {
   DCHECK(video_frame_access_handler_remote_);

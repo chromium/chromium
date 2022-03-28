@@ -21,8 +21,6 @@
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -101,6 +99,35 @@ bool DidDevicesChange(
   }
 
   return false;
+}
+
+// Picks and returns the most suitable supported camera format from the given
+// list of `supported_formats` for the given camera `preview_widget_size`.
+// Note that this assumes that `supported_formats` is sorted as described in the
+// documentation of `CameraInfo::supported_formats`.
+media::VideoCaptureFormat PickSuitableCaptureFormat(
+    const gfx::Size& preview_widget_size,
+    const media::VideoCaptureFormats& supported_formats) {
+  DCHECK(!supported_formats.empty());
+  DCHECK_EQ(preview_widget_size.height(), preview_widget_size.width())
+      << "The preview widget is always assumed to be a square.";
+
+  size_t result_index = 0;
+  float current_frame_rate = 0.f;
+  for (size_t i = 0; i < supported_formats.size(); ++i) {
+    const auto& format = supported_formats[i];
+    // Once we find a format with a larger height than the preview's, we stop
+    // and return what we found so far.
+    if (format.frame_size.height() > preview_widget_size.height())
+      break;
+
+    if (format.frame_rate >= current_frame_rate && format.frame_rate <= 30.f) {
+      current_frame_rate = format.frame_rate;
+      result_index = i;
+    }
+  }
+
+  return supported_formats[result_index];
 }
 
 // Returns the CameraInfo item in `list` whose ID is equal to the given `id`, or
@@ -453,16 +480,16 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 }
 
 void CaptureModeCameraController::RefreshCameraPreview() {
-  bool create_or_keep_widget = false;
+  const CameraInfo* camera_info = nullptr;
   if (selected_camera_.is_valid()) {
-    if (const CameraInfo* camera_info =
-            GetCameraInfoById(selected_camera_, available_cameras_);
+    if (camera_info = GetCameraInfoById(selected_camera_, available_cameras_);
         camera_info) {
       // When a selected camera becomes available, we stop any grace period
       // timer (if any), and decide whether to show or hide the preview widget
       // based on the current value of `should_show_preview_`.
       camera_reconnect_timer_.Stop();
-      create_or_keep_widget = should_show_preview_;
+      if (!should_show_preview_)
+        camera_info = nullptr;
     } else {
       // Here the selected camera is disconnected, we'll give it a grace period
       // just in case it may reconnect again (this helps in the case of flaky
@@ -476,20 +503,33 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     }
   }
 
-  if (!create_or_keep_widget) {
+  if (!camera_info) {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
     return;
   }
 
   if (!camera_preview_widget_) {
-    const gfx::Rect preview_bounds = GetPreviewWidgetBounds();
+    const auto preview_bounds = GetPreviewWidgetBounds();
     camera_preview_widget_ = CreateCameraPreviewWidget(preview_bounds);
+    mojo::Remote<video_capture::mojom::VideoSource> camera_video_source;
+    video_source_provider_remote_->GetVideoSource(
+        camera_info->device_id,
+        camera_video_source.BindNewPipeAndPassReceiver());
     camera_preview_view_ = camera_preview_widget_->SetContentsView(
-        std::make_unique<CameraPreviewView>(this, preview_bounds.size()));
+        std::make_unique<CameraPreviewView>(
+            this, selected_camera_, preview_bounds.size(),
+            std::move(camera_video_source),
+            PickSuitableCaptureFormat(preview_bounds.size(),
+                                      camera_info->supported_formats)));
     ui::Layer* layer = camera_preview_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
+    layer->SetMasksToBounds(true);
   }
+
+  DCHECK(camera_preview_view_);
+  DCHECK_EQ(selected_camera_, camera_preview_view_->camera_id());
+
   camera_preview_widget_->Show();
 }
 

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace aura {
 class Window;
@@ -16,6 +17,10 @@ class Window;
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace media {
+class VideoFrame;
+}  // namespace media
 
 namespace ash {
 
@@ -110,6 +115,24 @@ class ASH_EXPORT CaptureModeTestApi {
   // Returns a pointer to the folder selection dialog window or nullptr if no
   // such window exists.
   aura::Window* GetFolderSelectionDialogWindow();
+
+  // If `value` is true, the `kGpuMemoryBuffer` type will be requested even when
+  // running on linux-chromeos.
+  void SetForceUseGpuMemoryBufferForCameraFrames(bool value);
+
+  // Returns the number of cameras currently connected.
+  size_t GetNumberOfAvailableCameras() const;
+
+  // Sets the camera at `index` of
+  // `CaptureModeCameraController::available_cameras()` as the selected camera.
+  void SelectCameraAtIndex(size_t index);
+
+  // Unselects the currently selected camera (if any).
+  void TurnCameraOff();
+
+  using CameraVideoFrameCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+  void SetOnCameraVideoFrameRendered(CameraVideoFrameCallback callback);
 
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or

@@ -28,8 +28,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_constants.h"
@@ -722,8 +725,7 @@ IN_PROC_BROWSER_TEST_F(
 
 class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  CaptureModeSettingsBrowserTest() {}
-
+  CaptureModeSettingsBrowserTest() = default;
   ~CaptureModeSettingsBrowserTest() override = default;
 
   // extensions::ExtensionBrowserTest:
@@ -752,4 +754,57 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
   EXPECT_EQ(transient_root->GetId(),
             ash::kShellWindowId_CaptureModeFolderSelectionDialogOwner);
   EXPECT_NE(transient_root, browser()->window()->GetNativeWindow());
+}
+
+// This test fixture tests the chromeos-linux path of camera video frames coming
+// from the actual video_capture service using a fake camera device. It can only
+// test the `kSharedMemory` buffer type. The `kGpuMemoryBuffer` type path cannot
+// be tested here, as the `GpuMemoryBufferTracker` instance on chromeos attempts
+// creating a `GpuMemoryBuffer` with the usage
+// `VEA_READ_CAMERA_AND_CPU_READ_WRITE` which is not supported in a
+// chromeos-linux environment. This path however is tested in ash_unittests.
+class CaptureModeCameraBrowserTests : public InProcessBrowserTest {
+ public:
+  CaptureModeCameraBrowserTests() = default;
+  ~CaptureModeCameraBrowserTests() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This command-line switch adds a single fake camera.
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kCaptureModeSelfieCamera);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ash::CaptureModeTestApi test_api;
+    ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
+    test_api.SelectCameraAtIndex(0);
+  }
+
+  void WaitForAndVerifyRenderedVideoFrame() {
+    constexpr int kFramesToRender = 15;
+    for (int i = 0; i < kFramesToRender; ++i) {
+      base::RunLoop loop;
+      ash::CaptureModeTestApi().SetOnCameraVideoFrameRendered(
+          base::BindLambdaForTesting(
+              [&loop](scoped_refptr<media::VideoFrame> frame) {
+                ASSERT_TRUE(frame);
+                loop.Quit();
+              }));
+      loop.Run();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CaptureModeCameraBrowserTests, VerifyFrames) {
+  ash::CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
+  WaitForAndVerifyRenderedVideoFrame();
 }
