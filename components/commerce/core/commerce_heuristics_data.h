@@ -55,6 +55,18 @@ class CommerceHeuristicsData {
   // request.
   const re2::RE2* GetAddToCartRequestPattern();
 
+  // Try to get the pattern regex to decide if a URL is cart page URL in
+  // `domain`.
+  const re2::RE2* GetCartPageURLPatternForDomain(const std::string& domain);
+
+  // Try to get the pattern regex to decide if a URL is checkout page URL in
+  // `domain`.
+  const re2::RE2* GetCheckoutPageURLPatternForDomain(const std::string& domain);
+
+  // Try to get the pattern regex to decide if a URL is purchase page URL in
+  // `domain`.
+  const re2::RE2* GetPurchasePageURLPatternForDomain(const std::string& domain);
+
  private:
   friend class CommerceHeuristicsDataTest;
 
@@ -64,6 +76,11 @@ class CommerceHeuristicsData {
 
   absl::optional<std::string> GetCommerceGlobalHeuristics(
       const std::string& type);
+
+  const re2::RE2* GetCommerceHintHeuristicsRegex(
+      std::map<std::string, std::unique_ptr<re2::RE2>>& map,
+      const std::string type,
+      const std::string domain);
 
   std::unique_ptr<re2::RE2> ConstructGlobalRegex(const std::string& type);
 
@@ -76,6 +93,12 @@ class CommerceHeuristicsData {
   std::unique_ptr<re2::RE2> checkout_url_pattern_;
   std::unique_ptr<re2::RE2> purchase_button_pattern_;
   std::unique_ptr<re2::RE2> add_to_cart_request_pattern_;
+  std::map<std::string, std::unique_ptr<re2::RE2>>
+      domain_cart_url_pattern_mapping_;
+  std::map<std::string, std::unique_ptr<re2::RE2>>
+      domain_checkout_url_pattern_mapping_;
+  std::map<std::string, std::unique_ptr<re2::RE2>>
+      domain_purchase_url_pattern_mapping_;
 };
 
 }  // namespace commerce_heuristics
