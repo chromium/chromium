@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 struct MediaGalleryPrefInfo;
@@ -22,7 +23,7 @@ class Label;
 // A view composed of a checkbox, optional folder icon button, and secondary
 // text that will elide to its parent's width. Used by
 // MediaGalleriesDialogViews.
-class MediaGalleryCheckboxView : public views::View {
+class MediaGalleryCheckboxView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(MediaGalleryCheckboxView);
   MediaGalleryCheckboxView(const MediaGalleryPrefInfo& pref_info,

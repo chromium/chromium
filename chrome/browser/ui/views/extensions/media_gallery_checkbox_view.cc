@@ -16,20 +16,13 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-
-namespace {
-
-// Equal to the #9F9F9F color used in spec (note WebUI color is #999).
-const SkColor kDeemphasizedTextColor = SkColorSetRGB(159, 159, 159);
-
-}  // namespace
+#include "ui/views/style/typography.h"
 
 MediaGalleryCheckboxView::MediaGalleryCheckboxView(
     const MediaGalleryPrefInfo& pref_info,
     int trailing_vertical_space,
     views::ContextMenuController* menu_controller) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
+  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const gfx::Insets dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
@@ -48,11 +41,11 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   checkbox_->SetTooltipText(tooltip_text);
 
   std::u16string details = pref_info.GetGalleryAdditionalDetails();
-  secondary_text_ = AddChildView(std::make_unique<views::Label>(details));
+  secondary_text_ = AddChildView(std::make_unique<views::Label>(
+      details, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   if (menu_controller)
     secondary_text_->set_context_menu_controller(menu_controller);
   secondary_text_->SetVisible(details.length() > 0);
-  secondary_text_->SetEnabledColor(kDeemphasizedTextColor);
   secondary_text_->SetElideBehavior(gfx::ELIDE_HEAD);
   secondary_text_->SetTooltipText(tooltip_text);
   secondary_text_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
@@ -63,7 +56,7 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
 MediaGalleryCheckboxView::~MediaGalleryCheckboxView() = default;
 
 void MediaGalleryCheckboxView::Layout() {
-  views::View::Layout();
+  views::BoxLayoutView::Layout();
   if (GetPreferredSize().width() <= GetLocalBounds().width())
     return;
 
@@ -89,5 +82,5 @@ void MediaGalleryCheckboxView::Layout() {
   }
 }
 
-BEGIN_METADATA(MediaGalleryCheckboxView, views::View)
+BEGIN_METADATA(MediaGalleryCheckboxView, views::BoxLayoutView)
 END_METADATA

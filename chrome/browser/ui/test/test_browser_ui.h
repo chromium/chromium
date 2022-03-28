@@ -132,6 +132,10 @@ class TestBrowserUi {
   // with no other code.
   void ShowAndVerifyUi();
 
+  // Returns whether or not the test was invoked with the interactive ui flag.
+  // This is useful for some SetUp() calls that may be interested in that state.
+  bool IsInteractiveUi() const;
+
  private:
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

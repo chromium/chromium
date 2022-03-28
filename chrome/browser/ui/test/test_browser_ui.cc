@@ -115,9 +115,13 @@ void TestBrowserUi::ShowAndVerifyUi() {
   PreShow();
   ShowUi(NameFromTestCase());
   ASSERT_TRUE(VerifyUi());
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherInteractive))
+  if (IsInteractiveUi())
     WaitForUserDismissal();
   else
     DismissUi();
+}
+
+bool TestBrowserUi::IsInteractiveUi() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kTestLauncherInteractive);
 }

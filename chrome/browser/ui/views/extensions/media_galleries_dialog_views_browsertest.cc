@@ -28,12 +28,13 @@
 
 namespace {
 
-MediaGalleryPrefInfo MakePrefInfo(MediaGalleryPrefId id) {
+MediaGalleryPrefInfo MakePrefInfo(
+    MediaGalleryPrefId id,
+    storage_monitor::StorageInfo::Type storage_type) {
   MediaGalleryPrefInfo gallery;
   gallery.pref_id = id;
   gallery.device_id = storage_monitor::StorageInfo::MakeDeviceId(
-      storage_monitor::StorageInfo::FIXED_MASS_STORAGE,
-      base::NumberToString(id));
+      storage_type, base::NumberToString(id));
   gallery.display_name = u"Display Name";
   return gallery;
 }
@@ -60,14 +61,21 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
     EXPECT_CALL(controller_, WebContents())
         .WillRepeatedly(testing::Return(content));
     ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-        browser(), about_blank, 1, WindowOpenDisposition::CURRENT_TAB, 0);
+        browser(), about_blank, 1, WindowOpenDisposition::CURRENT_TAB,
+        IsInteractiveUi() ? ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP : 0);
   }
 
   void ShowUi(const std::string& name) override {
     std::vector<std::u16string> headers = {std::u16string(), u"header2"};
     MediaGalleriesDialogController::Entries attached_permissions = {
-        MediaGalleriesDialogController::Entry(MakePrefInfo(1), true),
-        MediaGalleriesDialogController::Entry(MakePrefInfo(2), false)};
+        MediaGalleriesDialogController::Entry(
+            MakePrefInfo(1, storage_monitor::StorageInfo::FIXED_MASS_STORAGE),
+            true),
+        MediaGalleriesDialogController::Entry(
+            MakePrefInfo(
+                2,
+                storage_monitor::StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM),
+            false)};
     ON_CALL(controller_, GetSectionHeaders())
         .WillByDefault(testing::Return(headers));
     EXPECT_CALL(controller_, GetSectionEntries(testing::_))
