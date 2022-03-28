@@ -19,6 +19,7 @@
  * @property {?TreeNode} parent - Parent tree node, null if this is a root node.
  * @property {string} idPath - Full path to this node.
  * @property {string} srcPath - Path to the source containing this symbol.
+ * @property {string} disassembly - The disassembly for the node.
  * @property {string} container - The container for the node.
  * @property {string} component - OWNERS Component for this symbol.
  * @property {string} fullName - The full name of the node.

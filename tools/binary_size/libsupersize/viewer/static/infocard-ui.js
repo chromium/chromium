@@ -52,6 +52,25 @@ const displayInfocard = (() => {
     }
 
     /**
+     * Displays the disassembly overlay.
+     * @param {string} disassembly
+     */
+    _showDisassemblyOverlay(disassembly) {
+      const eltModal = document.getElementById('disassembly-modal');
+      const eltCode = document.getElementById('disassembly-code');
+      const eltDownload = document.getElementById('disassembly-download');
+      const eltClose = document.getElementById('disassembly-close');
+      eltCode.textContent = disassembly;
+      eltModal.style.display = '';
+      const blob = new Blob([disassembly], {type: 'text/plain'});
+      eltDownload.href = URL.createObjectURL(blob);
+      eltClose.onclick = function() {
+        URL.revokeObjectURL(blob);
+        eltModal.style.display = 'none';
+      }
+    }
+
+    /**
      * Updates the size header, which normally displayed the byte size of the
      * node followed by an abbreviated version.
      *
@@ -86,13 +105,23 @@ const displayInfocard = (() => {
         const add_field = (title, text) => {
           const div = document.createElement('div');
           div.appendChild(dom.textElement('span', title, 'symbol-name-info'));
-          div.appendChild(document.createTextNode(text));
+          div.appendChild(text.href ? text : document.createTextNode(text));
           elements.push(div);
         };
         if (node.container !== '') add_field('Container: ', node.container);
         add_field('Path: ', node.srcPath);
         add_field('Component: ', node.component || '(No component)');
         add_field('Full Name: ', node.fullName || '');
+        if (node.disassembly && node.disassembly !== '') {
+          const eltAnchor = document.createElement('a')
+          eltAnchor.appendChild(document.createTextNode('Show Disassembly'))
+          eltAnchor.href = '#';
+          eltAnchor.addEventListener(`click`, (e) => {
+            e.preventDefault();
+            this._showDisassemblyOverlay(node.disassembly)
+          });
+          add_field('Disassembly: ', eltAnchor);
+        }
 
       } else {
         const path = node.idPath.slice(0, node.shortNameIndex);

@@ -374,6 +374,9 @@ void TreeNode::WriteIntoJson(
     if (symbol->Component()) {
       (*out)["component"] = symbol->Component();
     }
+    if (symbol->Disassembly()) {
+      (*out)["disassembly"] = *(symbol->Disassembly());
+    }
   } else {
     (*out)["idPath"] = id_path.ToString();
     if (!is_sparse && !children.empty()) {

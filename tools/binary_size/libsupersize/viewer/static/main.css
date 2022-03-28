@@ -232,27 +232,31 @@ ul {
 
 .modal {
   background-color: rgba(0,0,0,0.5);
-  height: 100%;
+  bottom: 0;
   left: 0;
-  overflow: auto;
   position: fixed;
+  right: 0;
   top: 0;
-  width: 100%;
-  z-index: 1;
+  z-index: 10;
 }
 
 .modal-content {
-  align-items: flex-end;   /* Or center if you'd prefer */
+  align-items: center;
   background-color: #fefefe;
-  border: 1px solid #888;
   border-radius: 5px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin: 15% auto;
-  min-width: 250px;
-  padding: 20px;
-  width: 50%;
+  left: 0;
+  margin: auto;
+  max-height: calc(100% - 80px);
+  max-width: calc(100% - 60px);
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .download-button {
@@ -297,4 +301,12 @@ ul {
   position: relative;
   text-align: center;
   top: -1em;
+}
+
+#disassembly-code {
+  border: 1px solid #ccc;
+  font-family: monospace;
+  min-width: 500px;
+  overflow: auto;
+  white-space: pre-wrap;
 }
