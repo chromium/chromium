@@ -2211,16 +2211,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "CreateCompositorWorkerContext": "true"
-                    },
+                    "name": "Enabled_20220314",
                     "enable_features": [
                         "AvoidUnnecessaryBeforeUnloadCheck",
                         "DefaultStyleSheetsEarlyInit",
                         "EarlyBodyLoad",
                         "EarlyCodeCache",
-                        "EarlyEstablishGpuChannel",
                         "ElidePrioritizationOfPreNativeBootstrapTasks",
                         "ElideTabPreloadAtStartup",
                         "FasterSetCookie",
@@ -2234,6 +2230,9 @@
                         "PrefetchAndroidFonts",
                         "TreatBootstrapAsDefault",
                         "URLLoaderSyncClient"
+                    ],
+                    "disable_features": [
+                        "EarlyEstablishGpuChannel"
                     ]
                 }
             ]
@@ -2250,20 +2249,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "CreateCompositorWorkerContext": "true"
-                    },
+                    "name": "Enabled_20220314",
                     "enable_features": [
                         "AvoidUnnecessaryBeforeUnloadCheck",
                         "DefaultStyleSheetsEarlyInit",
                         "EarlyBodyLoad",
                         "EarlyCodeCache",
-                        "EarlyEstablishGpuChannel",
                         "ElidePrioritizationOfPreNativeBootstrapTasks",
                         "ElideTabPreloadAtStartup",
                         "FasterSetCookie",
-                        "FontManagerEarlyInit",
                         "IncludeIpcOverheadInNavigationStart",
                         "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
@@ -2273,6 +2267,10 @@
                         "PrewarmSearchResultsPageFonts",
                         "TreatBootstrapAsDefault",
                         "URLLoaderSyncClient"
+                    ],
+                    "disable_features": [
+                        "EarlyEstablishGpuChannel",
+                        "OptimizeLookalikeUrlNavigationThrottle"
                     ]
                 }
             ]
@@ -2286,16 +2284,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "CreateCompositorWorkerContext": "true"
-                    },
+                    "name": "Enabled_20220314",
                     "enable_features": [
                         "AvoidUnnecessaryBeforeUnloadCheck",
                         "DefaultStyleSheetsEarlyInit",
                         "EarlyBodyLoad",
                         "EarlyCodeCache",
-                        "EarlyEstablishGpuChannel",
                         "ElidePrioritizationOfPreNativeBootstrapTasks",
                         "ElideTabPreloadAtStartup",
                         "FasterSetCookie",
@@ -2309,6 +2303,9 @@
                         "PrefetchAndroidFonts",
                         "TreatBootstrapAsDefault",
                         "URLLoaderSyncClient"
+                    ],
+                    "disable_features": [
+                        "EarlyEstablishGpuChannel"
                     ]
                 }
             ]
