@@ -274,6 +274,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
     return container_builder_.Abort(NGLayoutResult::kOutOfFragmentainerSpace);
   }
 
+  intrinsic_block_size_ =
+      std::max(intrinsic_block_size_, BorderScrollbarPadding().block_start);
   intrinsic_block_size_ += BorderScrollbarPadding().block_end;
 
   // Figure out how much space we've already been able to process in previous
